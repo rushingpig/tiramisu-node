@@ -7,19 +7,11 @@
  */
 "use strict";
 var express = require('express');
-var router = express.Router({
-    caseSensitive:false,
-    mergeParams:false,
-    strict:false
-});
+var config = require('../../config');
+var router = express.Router(config.exp_router_options);
 
 
-function assembleRouter(){
-
-    router.get('/mt',mt_controller.checkTicket);
-    return router;
-
-}
 
 
-module.exports = assembleRouter();
+
+module.exports = router;

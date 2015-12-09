@@ -35,5 +35,20 @@ util.transformTimestamp = function (req, res, next) {
 util.vanllilaQueryErrorHandler = function (err, rows, ignore2) {
   if (err) {console.error(err.message + rows.length);}
 }
+/**
+ * get client ip
+ * @param req
+ * @returns {*|string}
+ */
+util.getClientIp=function(req) {
+  return req.headers['X-FORWARDED-FOR'] ||
+      req.headers['X-Real-IP'] ||
+      req.headers['Proxy-Client-IP'] ||
+      req.headers['WL-Proxy-Client-IP'] ||
+      req.connection.remoteAddress ||
+      req.socket.remoteAddress ||
+      '0.0.0.0';
+};
+
 
 module.exports = util;

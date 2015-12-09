@@ -10,7 +10,7 @@
 var middleware = {};
 
 middleware.passport =  require('./security/passport_mw');
-middleware.login = require('./login/ogin_mw');
+middleware.login = require('./login/login_mw');
 middleware.system = require('./sys/system_mw');
 
 

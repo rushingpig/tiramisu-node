@@ -10,7 +10,7 @@ var config = require('../../config');
 function LoginMiddleware() {
 }
 LoginMiddleware.loginFilter = function (req, res, next) {
-    if(req.path === '/login'){
+    if(req.path === '/login'){  //  exclude the login path
         next();
     }else if (!req.session.user) {
         res.redirect('/login');
@@ -24,6 +24,5 @@ LoginMiddleware.sessionFilter = function(req,res,next){
     session.cookie.maxAge = config.session_options.cookieMaxAge;
     session.cookie.expires = config.session_options.expires;
     next();
-    console.log('heihei...........',session);
 };
 module.exports = LoginMiddleware;

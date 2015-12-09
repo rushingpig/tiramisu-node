@@ -9,9 +9,9 @@
 
 var middleware = {};
 
-middleware.passport =  require('./security/mw_passport');
-middleware.login = require('./login/mw_login');
-middleware.system = require('./system/mw_system');
+middleware.passport =  require('./security/passport_mw');
+middleware.login = require('./login/ogin_mw');
+middleware.system = require('./sys/system_mw');
 
 
 module.exports = middleware;

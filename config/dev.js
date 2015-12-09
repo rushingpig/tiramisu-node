@@ -45,9 +45,18 @@ var session_options = function(){
     };
 };
 
+var tables = {
+    sys_user : 'sys_user',
+    sys_role : 'sys_role',
+    sys_menu : 'sys_menu',
+    sys_user_role : 'sys_user_role',
+    sys_role_menu : 'sys_role_menu'
+};
+
 module .exports = {
     exp_static_options : exp_static_options,
     exp_session_options : exp_session_options,
     exp_router_options : exp_router_options,
+    tables : tables,
 };
 

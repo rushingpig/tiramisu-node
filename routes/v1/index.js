@@ -9,9 +9,11 @@
 var express = require('express');
 var config = require('../../config');
 var router = express.Router(config.exp_router_options);
+var paymentRouter = require('./payment');
 
-
-
-
+router.get('/', function (req, res) {
+  res.send('v1 api');
+})
+router.use('/payment', paymentRouter);
 
 module.exports = router;

@@ -40,14 +40,15 @@ util.vanllilaQueryErrorHandler = function (err, rows, ignore2) {
  * @param req
  * @returns {*|string}
  */
-util.getClientIp=function(req) {
-  return req.headers['X-FORWARDED-FOR'] ||
+util.getClientIP=function(req) {
+  let ip = req.headers['X-FORWARDED-FOR'] ||
       req.headers['X-Real-IP'] ||
       req.headers['Proxy-Client-IP'] ||
       req.headers['WL-Proxy-Client-IP'] ||
       req.connection.remoteAddress ||
       req.socket.remoteAddress ||
       '0.0.0.0';
+  return ip.split(':').pop();
 };
 
 

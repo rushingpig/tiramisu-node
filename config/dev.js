@@ -53,10 +53,18 @@ var tables = {
     sys_role_menu : 'sys_role_menu'
 };
 
+var ping_xx = {
+    apiKey: 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
+}
+
+var login_required = false;
+
 module .exports = {
     exp_static_options : exp_static_options,
     exp_session_options : exp_session_options,
     exp_router_options : exp_router_options,
     tables : tables,
+    ping_xx: ping_xx,
+    login_required: login_required
 };
 

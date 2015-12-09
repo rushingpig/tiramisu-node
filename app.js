@@ -31,7 +31,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(middleware.system.wrapperResponse);
 app.use(session(config.exp_session_options));
-app.use(middleware.login.loginFilter);
+if (config.login_required) {
+    app.use(middleware.login.loginFilter);
+}
 
 app.use(express.static(path.join(__dirname, 'public'),config.exp_static_options));
 
@@ -51,7 +53,6 @@ app.post('/login', passport.authenticate('local', {
 
 app.use(router);
 app.use("/v1",v1Router);
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

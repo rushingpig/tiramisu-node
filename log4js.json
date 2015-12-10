@@ -5,20 +5,20 @@
     },
     {
       "type": "dateFile",
-      "absolute": true,
+      "absolute": false,
       "pattern" : "-yyyy-MM-dd.log",
       "alwaysIncludePattern": true,
-      "filename": "express_dateFile",
+      "filename": "express_daily",
       "maxLogSize": 20480,
       "backups": 3,
       "category": "express"
     },
     {
       "type": "dateFile",
-      "absolute": true,
+      "absolute": false,
       "pattern" : "-yyyy-MM-dd.log",
       "alwaysIncludePattern": true,
-      "filename": "tiramisu_dateFile",
+      "filename": "tiramisu_daily",
       "maxLogSize": 20480,
       "backups": 10,
       "category": "tiramisu"

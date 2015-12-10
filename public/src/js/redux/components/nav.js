@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import config from '../config/nav_config';
+import nav_config from '../config/nav.config';
 import Util from '../utils/index';
+import {Link} from 'react-router';
 
 // class MenuItem extend Component {
 //   render(){
@@ -18,31 +19,25 @@ import Util from '../utils/index';
 
 export default class Nav extends Component {
   render(){
-
-    var treeDOM = config.map(firstLevelItem => {
-        // var activeThis = this.state.activeLink && this.state.activeLink.firstLevel === (firstLevelItem && firstLevelItem.key);
-
+    var current_path = location.pathname;
+    var treeDOM = nav_config.map(firstLevelItem => {
+      var active;
       if (Util.core.isArray(firstLevelItem.link)) { //有二级菜单
         let secondLevels = firstLevelItem.link.map(secondLevelItem => {
-            // let activeThis = (secondLevelItem && secondLevelItem.key) === (this.state.activeLink && this.state.activeLink.secondLevel);
+            var a = secondLevelItem.link == current_path;
+            a && (active = true);
             return (
-              <li key={secondLevelItem.key}>
-                <a href={secondLevelItem.link} className="">
+              <li key={secondLevelItem.key} className={a ? 'active' : ''}>
+                <Link to={secondLevelItem.link} className="menu-2">
                     {secondLevelItem.name}
-                </a>
+                </Link>
               </li>
             );
         })
-        // .filter(function(d) {
-        //     return d !== false;
-        // });
-
-        // if (this.props.smallSider || activeThis)
-        //     ulStyle.height = 38 * secondLevels.length;
 
         return (
-          <li key={firstLevelItem.key} className="menu-list">
-            <a href="#">
+          <li key={firstLevelItem.key} className={"menu-list " + (active ? 'active' : '')}>
+            <a className="menu-1" href="javascript:;">
               <i className={`fa fa-${firstLevelItem.icon}`} />
               {firstLevelItem.name}
             </a>
@@ -51,11 +46,11 @@ export default class Nav extends Component {
         )
       } else { //只有一级菜单
         return (
-          <li key={firstLevelItem.key} className="menu-list">
-            <a href={firstLevelItem.link}>
+          <li key={firstLevelItem.key} className="menu-list" className={firstLevelItem.link == current_path ? 'active' : ''}>
+            <Link to={firstLevelItem.link} clasName="menu-1">
               <i className={`fa fa-${firstLevelItem.icon}`} />
               {firstLevelItem.name}
-            </a>
+            </Link>
           </li>
         );
       }

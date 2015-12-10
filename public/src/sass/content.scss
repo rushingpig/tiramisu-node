@@ -1,0 +1,8 @@
+.sticky-header{
+  .main-content {
+    padding-top: 50px;
+  }
+}
+.login-show, .login-show .main-content {
+    overflow: hidden !important;
+}

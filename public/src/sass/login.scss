@@ -1,0 +1,128 @@
+.login-container{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  background: $theme-bg-color url("http://adminex.themebucket.net/images/login-bg.jpg") no-repeat fixed;
+  background-size: cover;
+  transition: all .8s ease-out;
+}
+.login-hide .login-container{
+  opacity: 0;
+  transform: translate3d(140%,50px,-600px);
+}
+.login-body {
+  width: 100%;
+  height: 100%;
+}
+
+.form-signin {
+  max-width: 330px;
+  margin: 100px auto;
+  background: #fff;
+  border-radius: 5px;
+  .form-signin-heading {
+    margin: 0;
+    padding: 25px 15px;
+    text-align: center;
+    color: #fff;
+    position: relative;
+  }
+}
+
+.sign-title {
+  font-size: 24px;
+  color: #fff;
+  position: absolute;
+  top: -60px;
+  left: 0;
+  text-align: center;
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.form-signin {
+  .checkbox {
+    margin-bottom: 14px;
+    font-size: 13px;
+    font-weight: normal;
+    color: #fff;
+    font-weight: normal;
+    font-family: 'Open Sans', sans-serif;
+    position: absolute;
+    bottom: -50px;
+    width: 100%;
+    left: 0;
+
+    a, a:hover {
+      color: #fff;
+    }
+    input[type=checkbox] {
+      position: relative;
+      margin-left: 0;
+    }
+  }
+  .form-control {
+    position: relative;
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+
+    &:focus {
+      z-index: 2;
+    }
+  }
+  input[type="text"], input[type="password"] {
+    margin-bottom: 15px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border: 1px solid #eaeaec;
+    background: #eaeaec;
+    box-shadow: none;
+    font-size: 12px;
+  }
+  .btn-login {
+    background: #6bc5a4;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: normal;
+    font-family: 'Open Sans', sans-serif;
+    margin: 20px 0 5px;
+    padding: 5px;
+    transition: all 0.3s;
+    font-size: 30px;
+
+    &:hover {
+      background: #688ac2;
+      transition: all 0.3s;
+    }
+  }
+  p {
+    text-align: left;
+    color: #b6b6b6;
+    font-size: 16px;
+    font-weight: normal;
+  }
+  a, a:hover {
+    color: #6bc5a4;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+}
+
+.login-wrap {
+  padding: 20px;
+  position: relative;
+}
+
+.registration {
+  color: #c7c7c7;
+  text-align: center;
+  margin-top: 15px;
+}

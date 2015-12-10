@@ -88,6 +88,8 @@ sql += "CREATE TABLE  IF NOT EXISTS `sys_user_role` (" +
     "  PRIMARY KEY (`user_id`,`role_id`)" +
     ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='用户-角色';";
 
+sql +="TRUNCATE TABLE `sys_user`;";
+
 sql += "INSERT INTO `sys_user` VALUES ('1', '2', 'admin', '123', '0001', '系统管理员', 'admin@xfxb.net', '8675', '8675', null, null, '0:0:0:0:0:0:0:1', '2015-11-20 19:49:08', '1', '1', '2013-05-27 08:00:00', '1', '2013-05-27 08:00:00', '最高管理员', '0')";
 
 module.exports = sql;

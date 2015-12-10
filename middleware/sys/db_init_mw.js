@@ -18,6 +18,7 @@ DBInitMiddleware.initdb = ()=>{
         pool.getConnection((err,conn)=> {
             conn.query(sql, (err)=> {
                 if (err) {
+                    console.log(err);
                     console.log('=============================================');
                     console.log('==============init db failed=================');
                     console.log('=============================================');

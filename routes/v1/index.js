@@ -9,11 +9,17 @@
 var express = require('express');
 var config = require('../../config');
 var router = express.Router(config.exp_router_options);
+// service module
 var paymentRouter = require('./payment');
+var service = require('../../service');
+
 
 router.get('/', function (req, res) {
-  res.send('v1 api');
-})
+    res.sendHtml('welcome to v1 api');
+});
 router.use('/payment', paymentRouter);
+
+
+
 
 module.exports = router;

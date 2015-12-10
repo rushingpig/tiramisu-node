@@ -7,5 +7,13 @@
  */
 "use strict";
 
+function MenuDao(table){
+    this.table = table;
+}
 
-module.exports = new MenuDao();
+MenuDao.prototype.findByUserId = function(userId){
+
+}
+
+
+module.exports = MenuDao;

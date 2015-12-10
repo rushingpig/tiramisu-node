@@ -1,9 +1,9 @@
 /**
- * @des    : the common router
+ * @des    : the common router for root
  * @author : pigo.can
  * @date   : 15/12/9 上午9:52
- * @email  : rushingpig@163.com
- * @version: v1.0
+ * @email  : zhenglin.zhu@xfxb.net
+ * @version: v0.0.1
  */
 "use strict";
 var express = require('express');

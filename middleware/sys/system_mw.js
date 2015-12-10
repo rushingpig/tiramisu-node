@@ -1,5 +1,5 @@
 /**
- * @des    :
+ * @des    : wrap the response of express (an instance of http.ServerResponse)
  * @author : pigo.can
  * @date   : 15/12/9 下午1:17
  * @email  : rushingpig@163.com
@@ -24,6 +24,10 @@ SystemMiddleware.prototype = {
                 res.set('Content-Type','text/html');
                 res.render(tplName);
             };
+            res.sendText = function(text){
+                res.set('Content-Type','text/plain');
+                res.send(text);
+            }
             next();
         }else{
             throw new Error('The res instance should not be empty...');

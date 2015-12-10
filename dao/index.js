@@ -6,3 +6,7 @@
  * @version: v0.0.1
  */
 "use strict";
+module.exports = {
+    menu : require('./sys/menu_dao'),
+    user : require('./sys/user_dao'),
+}

@@ -7,3 +7,10 @@
  */
 "use strict";
 
+const service = {
+    user : require('./sys/user_service'),
+};
+
+module.exports = service;
+
+

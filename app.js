@@ -17,7 +17,7 @@ var v1Router = require('./routes/v1');
 var router = require('./routes');
 var middleware = require('./middleware');
 var LogHelper = require('./common/LogHelper');
-
+//  init the log4js config
 new LogHelper(log4js).config();
 
 // view engine setup
@@ -30,7 +30,7 @@ app.set('view engine', '.hbs');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
-app.use(log4js.connectLogger(logger, { level: 'auto' }));
+app.use(log4js.connectLogger(logger, { level: 'FATAL' }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -39,7 +39,7 @@ app.use(session(config.exp_session_options));
 if (config.login_required) {
     app.use(middleware.login.loginFilter);
 }
-
+middleware.db.initdb();
 app.use(express.static(path.join(__dirname, 'public'),config.exp_static_options));
 
 ////  do authentication

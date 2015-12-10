@@ -66,6 +66,7 @@ var mysql_options = {
     charset         : 'utf8_general_ci',
     timezone        : 'local',
     supportBigNumbers : true,
+    multipleStatements : true,  //  if in the production recommend to be false
     dateStrings     : true, //  Force date types (TIMESTAMP, DATETIME, DATE) to be returned as strings rather then inflated into JavaScript Date objects.
     debug           : false, //  when in production or test environment ,it should be set to false. it just be used in dev
 
@@ -73,7 +74,7 @@ var mysql_options = {
 
 var log4js_options = {
     reloadSecs: 300 ,
-    cwd : '../log/'
+    cwd : './log/'
 };
 
 var ping_xx = {

@@ -2,9 +2,10 @@ var config = require('./config');
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var log4js = require('log4js');
+var logger = log4js.getLogger('express');
 var session = require('express-session');
 var exphbs = require('express-handlebars');
 var passport = require('passport');
@@ -15,6 +16,9 @@ var app = express();
 var v1Router = require('./routes/v1');
 var router = require('./routes');
 var middleware = require('./middleware');
+var LogHelper = require('./common/LogHelper');
+
+new LogHelper(log4js).config();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -25,7 +29,8 @@ app.set('view engine', '.hbs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+
+app.use(log4js.connectLogger(logger, { level: 'auto' }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -46,10 +51,7 @@ passport.deserializeUser(middleware.passport.deserializeUser);
 
 
 //  router config
-app.post('/login', passport.authenticate('local', {
-        successRedirect: '/index',
-        failureRedirect: '/login'})
-);
+app.post('/login',middleware.passport.authenticate(passport));
 
 app.use(router);
 app.use("/v1",v1Router);

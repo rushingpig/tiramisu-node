@@ -23,6 +23,7 @@ router.get('/index',function(req,res){
 });
 router.get('/logout',function(req,res){
     req.session.user = null;
+    req.logout();
     res.redirect('/login');
 });
 

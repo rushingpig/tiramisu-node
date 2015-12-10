@@ -1,0 +1,28 @@
+{
+  "appenders": [
+    {
+      "type":"console"
+    },
+    {
+      "type": "dateFile",
+      "absolute": true,
+      "pattern" : "-yyyy-MM-dd.log",
+      "alwaysIncludePattern": true,
+      "filename": "express_dateFile",
+      "maxLogSize": 20480,
+      "backups": 3,
+      "category": "express"
+    },
+    {
+      "type": "dateFile",
+      "absolute": true,
+      "pattern" : "-yyyy-MM-dd.log",
+      "alwaysIncludePattern": true,
+      "filename": "tiramisu_dateFile",
+      "maxLogSize": 20480,
+      "backups": 10,
+      "category": "tiramisu"
+    }
+  ],
+  "replaceConsole": true
+}

@@ -6,6 +6,8 @@
  * @version: v1.0
  */
 "use strict";
+var baseDao = require('../../dao/base_dao');
+var se =require('../login/session_event');
 function PassportMiddlerware() {
 }
 function localStrategy(req,username, password, done) {
@@ -19,7 +21,7 @@ function localStrategy(req,username, password, done) {
     if (user.password != password) {
         return done(null, false, {message: 'incorrect password'});
     }
-    req.session.user = user;
+    se.emit('fill',req,user);
     return done(null, user);
 }
 
@@ -29,6 +31,22 @@ function serializeUser(user, done) {
 }
 function deserializeUser(user, done) {
     done(null, user);
+}
+/**
+ * authenticate the user
+ * @param passport
+ * @returns {Function} middleware
+ */
+function authenticate(passport){
+    return function(req,res,next){
+        passport.authenticate('local', function(err,user){
+            if(!user){
+                res.render('login',{msg:'用户名或者密码错误,请重新输入'});
+            }else{
+                res.render('index');
+            }
+        })(req,res);
+    }
 }
 
 function getLocalstrategyConfig(){
@@ -40,9 +58,11 @@ function getLocalstrategyConfig(){
     };
 }
 
+
 PassportMiddlerware.localStrategy = localStrategy;
 PassportMiddlerware.serializeUser = serializeUser;
 PassportMiddlerware.deserializeUser = deserializeUser;
 PassportMiddlerware.getLocalstrategyConfig = getLocalstrategyConfig;
+PassportMiddlerware.authenticate = authenticate;
 
 module.exports = PassportMiddlerware;

@@ -7,10 +7,11 @@
  */
 "use strict";
 var config = require('../../config');
+
 function LoginMiddleware() {
 }
 LoginMiddleware.loginFilter = function (req, res, next) {
-    if(req.path === '/login'){  //  exclude the login path
+    if(req.path === '/login'){  //  exclude the login path  TODO 将需要过滤的以数组形式配置在config中,增加灵活性
         next();
     }else if (!req.session.user) {
         res.redirect('/login');

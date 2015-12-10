@@ -44,13 +44,36 @@ var session_options = function(){
         expires : new Date(Date.now() + baseTime)
     };
 };
-
+//  the table list in database  ->  tiramisu
 var tables = {
     sys_user : 'sys_user',
     sys_role : 'sys_role',
     sys_menu : 'sys_menu',
     sys_user_role : 'sys_user_role',
     sys_role_menu : 'sys_role_menu'
+};
+//  mysql config options
+var mysql_options = {
+    acquireTimeout  : 10000,
+    waitForConnections : true,
+    queueLimit      : 100,
+    connectionLimit : 50,
+    host            : 'localhost',
+    port            : 3306,
+    user            : 'root',
+    password        : 'pigo2015',
+    database        : 'tiramisu',
+    charset         : 'utf8_general_ci',
+    timezone        : 'local',
+    supportBigNumbers : true,
+    dateStrings     : true, //  Force date types (TIMESTAMP, DATETIME, DATE) to be returned as strings rather then inflated into JavaScript Date objects.
+    debug           : false, //  when in production or test environment ,it should be set to false. it just be used in dev
+
+};
+
+var log4js_options = {
+    reloadSecs: 300 ,
+    cwd : '../log/'
 };
 
 var ping_xx = {
@@ -65,6 +88,8 @@ module .exports = {
     exp_router_options : exp_router_options,
     tables : tables,
     ping_xx: ping_xx,
-    login_required: login_required
+    login_required: login_required,
+    mysql_options : mysql_options,
+    log4js_options : log4js_options
 };
 

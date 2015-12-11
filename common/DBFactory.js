@@ -1,8 +1,8 @@
 /**
- * @des    :
+ * @des    : deprecated
  * @author : pigo.can
  * @date   : 15/12/7 下午5:13
- * @email  : rushingpig@163.com
+ * @email  : zhenglin.zhu@xfxb.net
  * @version: v1.0
  */
 "use strict";

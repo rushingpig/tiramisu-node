@@ -1,5 +1,5 @@
 /**
- * @des    :
+ * @des    : deprecated
  * @author : pigo.can
  * @date   : 15/12/7 下午5:01
  * @email  : rushingpig@163.com

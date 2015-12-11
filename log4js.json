@@ -24,5 +24,8 @@
       "category": "tiramisu"
     }
   ],
-  "replaceConsole": true
+  "replaceConsole": true,
+  "levels":{
+    "tiramisu":"INFO"
+  }
 }

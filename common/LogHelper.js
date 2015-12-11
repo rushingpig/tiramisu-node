@@ -19,8 +19,9 @@ LogHelper.prototype.config = function(){
 };
 /**
  * <ul>get the specified logger object
- *      <li>the default name of logger is <b>default</b></li>
- *      <li>the default level is <b>INFO</b></li>
+ *      <li>the default name of logger is <b><i>default</i></b></li>
+ *      <li>the default level is <b><i>INFO</i></b></li>
+ *      <li>you can alse refer the level in the log4js.json file</li>
  * </ul>
  * @param loggerName
  * @param level

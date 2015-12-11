@@ -25,7 +25,7 @@ var exp_session_options = {
     cookie : {
         secure : false,
         maxAge : 1000000,
-        expires : Date.now() + 1000000
+        expires : new Date(Date.now() + 1000000)
     }
 };
 //  express router config options
@@ -41,7 +41,7 @@ var session_options = function(){
     return {
         baseTime : baseTime,
         cookieMaxAge : baseTime,  //  unit ms
-        expires : new Date(Date.now() + baseTime)
+        expires : false //new Date(Date.now() + baseTime)
     };
 };
 //  the table list in database  ->  tiramisu

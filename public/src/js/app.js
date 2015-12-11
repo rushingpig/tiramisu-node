@@ -25725,7 +25725,7 @@
 	    dispatch({
 	      type: LOGIN_START
 	    });
-	    return (0, _utilsRequest.get)(_configUrl2['default'].login, { username: username, password: password }).done(function (json) {
+	    return (0, _utilsRequest.post)(_configUrl2['default'].login, { username: username, password: password }).done(function (json) {
 	      dispatch({
 	        type: LOGIN_SUCCESS
 	      });

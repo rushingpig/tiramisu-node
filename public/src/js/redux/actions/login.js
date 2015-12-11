@@ -11,7 +11,7 @@ export function login(username, password){
     dispatch({
       type: LOGIN_START
     });
-    return get(Url.login, {username, password})
+    return post(Url.login, {username, password})
       .done(function(json){
         dispatch({
           type: LOGIN_SUCCESS

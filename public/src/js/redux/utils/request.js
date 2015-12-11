@@ -17,6 +17,7 @@ export function get(url, data){
   return new Promise(function(resolve, reject){
     req.get(url)
       .query(data)
+      .set('X-Requested-With', 'XMLHttpRequest')
       .end(_end_callback);
   });
 }
@@ -25,6 +26,7 @@ export function post(url, data){
   return new Promise(function(resolve, reject){
     req.post(url)
       .send(data)
+      .set('X-Requested-With', 'XMLHttpRequest')
       .end(_end_callback);
   });
 }

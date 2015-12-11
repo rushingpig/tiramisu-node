@@ -25774,13 +25774,13 @@
 
 	function get(url, data) {
 	  return new _utilsPromise2['default'](function (resolve, reject) {
-	    _superagent2['default'].get(url).query(data).end(_end_callback);
+	    _superagent2['default'].get(url).query(data).set('X-Requested-With', 'XMLHttpRequest').end(_end_callback);
 	  });
 	}
 
 	function post(url, data) {
 	  return new _utilsPromise2['default'](function (resolve, reject) {
-	    _superagent2['default'].post(url).send(data).end(_end_callback);
+	    _superagent2['default'].post(url).send(data).set('X-Requested-With', 'XMLHttpRequest').end(_end_callback);
 	  });
 	}
 
@@ -27201,7 +27201,7 @@
 	  value: true
 	});
 	exports['default'] = {
-	  login: '/login'
+	  login: '/v1/a/login'
 	};
 	module.exports = exports['default'];
 

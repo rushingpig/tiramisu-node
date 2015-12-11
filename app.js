@@ -11,7 +11,6 @@ var exphbs = require('express-handlebars');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
-
 var app = express();
 var v1Router = require('./routes/v1');
 var router = require('./routes');
@@ -30,7 +29,7 @@ app.set('view engine', '.hbs');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
-app.use(log4js.connectLogger(logger, { level: 'FATAL' }));
+app.use(log4js.connectLogger(logger, { level: 'auto' ,format:':method :status ✪:url✪  [:response-time ms]'}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());

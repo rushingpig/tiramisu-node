@@ -6,6 +6,7 @@
  * @version: v1.0
  */
 "use strict";
+var res_obj = require('../../util/res_obj');
 var userService = require('../../service').user;
 var se =require('../login/session_event');
 function PassportMiddlerware() {
@@ -44,12 +45,12 @@ function deserializeUser(user, done) {
  * @returns {Function} middleware
  */
 function authenticate(passport){
-    return function(req,res,next){
+    return (req,res,next)=>{
         passport.authenticate('local', function(err,user,msg){
             if(msg && !user){
-                res.render('login',msg);
+                res.api(res_obj.INVALID_USERNAME_OR_PASSWORD,null);
             }else{
-                res.render('index');
+                res.api();
             }
         })(req,res);
     }

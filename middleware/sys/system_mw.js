@@ -6,34 +6,79 @@
  * @version: v1.0
  */
 "use strict";
-function SystemMiddleware(type){
+var clone = require('clone');
+var res_obj = require('../../util/res_obj');
+
+function SystemMiddleware(type) {
     this.type = type;
 }
 
 SystemMiddleware.prototype = {
-    wrapperResponse : function(req,res,next){
-        if(res){
-            res.sendJson = function(body){
+    // intercept and wrap the ServerResponse instance
+    wrapperResponse: function (req, res, next) {
+        if (res) {
+            res.sendJson = function (body) {
                 res.json(body);
             };
-            res.sendHtml = function(html){
-                res.set('Content-Type','text/html');
+            res.sendHtml = function (html) {
+                res.set('Content-Type', 'text/html');
                 res.send(html);
             };
-            res.renders = function(tplName){
-                res.set('Content-Type','text/html');
+            res.renders = function (tplName) {
+                res.set('Content-Type', 'text/html');
                 res.render(tplName);
             };
-            res.sendText = function(text){
-                res.set('Content-Type','text/plain');
+            res.sendText = function (text) {
+                res.set('Content-Type', 'text/plain');
                 res.send(text);
-            }
+            };
+            res.api = api(res);
             next();
-        }else{
+        } else {
             throw new Error('The res instance should not be empty...');
         }
     },
 };
+/**
+ * <b>
+ *     <li>if the res code is not normal (!'0000'),then you call the method should carry two arguments</li>
+ *     <li>
+ *         <ul>else if the res code is normal and you just want to padding the data,you can do these :
+ *              <li>one argument -> data</li>
+ *              <li>two arguments - > res_obj.key , data</li>
+ *              <li>no arguments</li>
+ *     </li>
+ * </b>
+ * @param res
+ * @returns {Function}
+ */
+function api(res) {
+    return (res_tpl, data)=> {
+        let temp = {};
+        try {
+            // one valid argument
+            if (data === undefined && res_tpl) {
+                data = res_tpl;
+                temp = clone(res_obj.OK);
+                temp.data = data;
+                return res.json(temp);
+            } else if(res_tpl){
+                temp = clone(res_tpl);
+                temp.data = data || {};
+                return res.json(temp);
+            }else{
+                temp = clone(res_obj.OK);
+                temp.data = data || {};
+                return res.json(temp);
+            }
+        } catch (err) {
+            temp = clone(res_obj.FAIL);
+            temp.data = {};
+            return res.json(temp)
+        }
+    };
+}
+
 
 module.exports = new SystemMiddleware();
 module.exports.SystemMiddleware = SystemMiddleware;

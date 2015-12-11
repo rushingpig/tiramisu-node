@@ -25,7 +25,7 @@ var exp_session_options = {
     cookie : {
         secure : false,
         maxAge : 1000000,
-        expires : false     //Date.now + 1000000
+        expires : Date.now() + 1000000
     }
 };
 //  express router config options
@@ -73,7 +73,7 @@ var mysql_options = {
 };
 
 var log4js_options = {
-    reloadSecs: 300 ,
+    reloadSecs: 300 ,   // the
     cwd : './log/'
 };
 

@@ -19,6 +19,10 @@ module.exports = {
     FAIL : {
         code : '9999',
         msg  : '服务器开小差了...',
+    },
+    SESSION_TIME_OUT : {
+        code : '1001',
+        msg : '长时间未操作,请重新登录...'
     }
 
 };

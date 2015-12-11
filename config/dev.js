@@ -72,6 +72,9 @@ var mysql_options = {
 
 };
 
+//  exclude path arrays
+var exclude_paths = ['/','/v1/a/login'];
+
 var log4js_options = {
     reloadSecs: 300 ,   // the
     cwd : './log/'
@@ -81,7 +84,7 @@ var ping_xx = {
     apiKey: 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
 }
 
-var login_required = false;
+var login_required = true;
 
 module .exports = {
     exp_static_options : exp_static_options,
@@ -91,6 +94,7 @@ module .exports = {
     ping_xx: ping_xx,
     login_required: login_required,
     mysql_options : mysql_options,
-    log4js_options : log4js_options
+    log4js_options : log4js_options,
+    exclude_paths : exclude_paths
 };
 

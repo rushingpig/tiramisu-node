@@ -12,7 +12,7 @@ var router = express.Router(config.exp_router_options);
 
 
 router.get('/',function(req,res){
-    res.redirect('/index');
+    res.render('index');
 });
 
 router.get('/login',function(req,res){

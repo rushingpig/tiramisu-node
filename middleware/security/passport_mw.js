@@ -18,7 +18,6 @@ function localStrategy(req,username, password, done) {
     }
     userService.getUserInfo(username,password).then(
         (user)=>{
-
             if(!user || user.password !== password){
                 return done(null,false,{msg:"用户名或错误,请确认后重新输入..."})
             }

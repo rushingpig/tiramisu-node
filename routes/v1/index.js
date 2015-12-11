@@ -12,6 +12,15 @@ var router = express.Router(config.exp_router_options);
 // service module
 var paymentRouter = require('./payment');
 var service = require('../../service');
+var v = express.Router(config.exp_router_options);
+var a = express.Router(config.exp_router_options);
+
+router.use('/v',v);
+router.use('/a',a);
+
+
+
+
 
 
 router.get('/', function (req, res) {

@@ -29,17 +29,18 @@ app.set('view engine', '.hbs');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
-app.use(log4js.connectLogger(logger, { level: 'auto' ,format:':method :status ✪:url✪  [:response-time ms]'}));
+app.use(log4js.connectLogger(logger, { level: 'auto' ,format:':method :status ✪ :url ✪  [:response-time ms]'}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(middleware.system.wrapperResponse);
 app.use(session(config.exp_session_options));
+app.use(express.static(path.join(__dirname, 'public'),config.exp_static_options));
 if (config.login_required) {
     app.use(middleware.login.loginFilter);
 }
 middleware.db.initdb();
-app.use(express.static(path.join(__dirname, 'public'),config.exp_static_options));
+
 
 ////  do authentication
 app.use(passport.initialize());
@@ -50,7 +51,7 @@ passport.deserializeUser(middleware.passport.deserializeUser);
 
 
 //  router config
-app.post('/login',middleware.passport.authenticate(passport));
+app.post('/v1/a/login',middleware.passport.authenticate(passport));
 
 app.use(router);
 app.use("/v1",v1Router);

@@ -7,14 +7,20 @@
  */
 "use strict";
 var config = require('../../config');
+var res_obj = require('../../util/res_obj');
 
 function LoginMiddleware() {
 }
 LoginMiddleware.loginFilter = function (req, res, next) {
-    if(req.path === '/login'){  //  exclude the login path  TODO 将需要过滤的以数组形式配置在config中,增加灵活性
+    if(config.exclude_paths.indexOf(req.path) !== -1){  //  exclude the login path
         next();
     }else if (!req.session.user) {
-        res.redirect('/login');
+        console.log('==========');
+        if(req.xhr){
+            res.api(res_obj.SESSION_TIME_OUT,null);
+        }else{
+            res.render('index');
+        }
     }else{
         next();
     }

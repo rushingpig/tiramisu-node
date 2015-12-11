@@ -8,7 +8,6 @@
 "use strict";
 var path = require('path');
 var fs = require('fs');
-var sql = require('../../sql');
 var pool = require('../../dao/base_dao').pool;
 
 function DBInitMiddleware(){
@@ -46,6 +45,7 @@ DBInitMiddleware.initdb = ()=>{
             });
         });
     }
+    return;
 }
 
 module.exports = DBInitMiddleware;

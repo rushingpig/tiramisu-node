@@ -4,7 +4,7 @@ import config from '../config/app.config';
 import Nav from './nav';
 import Header from './header';
 
-export class App extends Component {
+export class Main extends Component {
   render(){
     return (
       <div id="app-container" className="sticky-header">

@@ -2821,7 +2821,7 @@ a:hover {
     margin-right: 10px;
     width: 16px;
     text-align: center; }
-  .left-side .menu-list.active > a:after {
+  .left-side .menu-list.open > a:after {
     content: '_';
     margin-top: -6px; }
   .left-side .sub-menu-list {
@@ -3006,6 +3006,9 @@ a:hover {
   .form-signin .btn-login:hover {
     background: #688ac2;
     transition: all 0.3s; }
+  .form-signin .btn-login[disabled] {
+    background: #6bc5a4;
+    cursor: default; }
 
 .form-signin p {
   text-align: left;

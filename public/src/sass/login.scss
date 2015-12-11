@@ -101,6 +101,10 @@
       background: #688ac2;
       transition: all 0.3s;
     }
+    &[disabled] {
+      background: #6bc5a4;
+      cursor: default;
+    }
   }
   p {
     text-align: left;

@@ -46,12 +46,15 @@
       margin-right: 10px
       width: 16px
       text-align: center
-  .menu-list.active
-    >a
-      @extend .menu-list-active
-      &:after
-        content: '_'
-        margin-top: -6px
+  .menu-list
+    &.active
+      >a
+        @extend .menu-list-active
+    &.open
+      >a
+        &:after
+          content: '_'
+          margin-top: -6px
   .sub-menu-list
     list-style: none
     display: none

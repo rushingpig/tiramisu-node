@@ -19153,7 +19153,7 @@
 	          { className: 'left-side' },
 	          _react2['default'].createElement(
 	            'div',
-	            { className: 'logo' },
+	            { className: 'logo text-center' },
 	            _react2['default'].createElement(
 	              'a',
 	              { href: '#' },
@@ -19432,8 +19432,16 @@
 	            _react2['default'].createElement(
 	              'a',
 	              { className: 'menu-1', href: 'javascript:;' },
-	              _react2['default'].createElement('i', { className: 'fa fa-' + firstLevelItem.icon }),
-	              firstLevelItem.name
+	              _react2['default'].createElement(
+	                'span',
+	                null,
+	                firstLevelItem.name
+	              )
+	            ),
+	            _react2['default'].createElement(
+	              'a',
+	              { className: 'menu-1 short-menu', href: 'javascript:;' },
+	              firstLevelItem.short_name
 	            ),
 	            _react2['default'].createElement(
 	              'ul',
@@ -19449,8 +19457,12 @@
 	            _react2['default'].createElement(
 	              _reactRouter.Link,
 	              { to: firstLevelItem.link, clasName: 'menu-1' },
-	              _react2['default'].createElement('i', { className: 'fa fa-' + firstLevelItem.icon }),
 	              firstLevelItem.name
+	            ),
+	            _react2['default'].createElement(
+	              _reactRouter.Link,
+	              { to: firstLevelItem.link, clasName: 'menu-1 short-menu' },
+	              firstLevelItem.short_name
 	            )
 	          );
 	        }
@@ -19531,6 +19543,7 @@
 	exports["default"] = [{
 	    "key": "order_management",
 	    "name": "订单管理",
+	    "short_name": "订单",
 	    "icon": "clipboard",
 	    "link": [{
 	        "key": "om_index",

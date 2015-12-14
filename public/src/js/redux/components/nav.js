@@ -38,8 +38,10 @@ export default class Nav extends Component {
         return (
           <li key={firstLevelItem.key} className={"menu-list " + (active ? 'active' : '')}>
             <a className="menu-1" href="javascript:;">
-              <i className={`fa fa-${firstLevelItem.icon}`} />
-              {firstLevelItem.name}
+              <span>{firstLevelItem.name}</span>
+            </a>
+            <a className="menu-1 short-menu" href="javascript:;">
+              {firstLevelItem.short_name}
             </a>
             <ul className="sub-menu-list">{secondLevels}</ul>
           </li>
@@ -48,8 +50,10 @@ export default class Nav extends Component {
         return (
           <li key={firstLevelItem.key} className="menu-list" className={firstLevelItem.link == current_path ? 'active' : ''}>
             <Link to={firstLevelItem.link} clasName="menu-1">
-              <i className={`fa fa-${firstLevelItem.icon}`} />
               {firstLevelItem.name}
+            </Link>
+            <Link to={firstLevelItem.link} clasName="menu-1 short-menu">
+              {firstLevelItem.short_name}
             </Link>
           </li>
         );

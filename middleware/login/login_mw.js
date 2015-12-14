@@ -15,11 +15,10 @@ LoginMiddleware.loginFilter = function (req, res, next) {
     if(config.exclude_paths.indexOf(req.path) !== -1){  //  exclude the login path
         next();
     }else if (!req.session.user) {
-        console.log('==========');
         if(req.xhr){
             res.api(res_obj.SESSION_TIME_OUT,null);
         }else{
-            res.render('index');
+            res.render('index',{isLogin : false});
         }
     }else{
         next();

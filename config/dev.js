@@ -11,7 +11,7 @@ var exp_static_options = {
     dotfiles: "ignore",
     etag: true,
     extensions: false,
-    index: "index.html",
+    index: "/",     // 设定对根目录的映射
     lastModified: true,
     maxAge:0,
     redirect:true,

@@ -9,6 +9,7 @@
 var res_obj = require('../../util/res_obj');
 var userService = require('../../service').user;
 var se =require('../login/session_event');
+var crypto = require('../../common/CryptoUtils');
 function PassportMiddlerware() {
 }
 
@@ -16,21 +17,29 @@ function localStrategy(req,username, password, done) {
     if(!(username && password)){
         return done(null,false,{msg : '请输入有效的用户名和密码'});
     }
-    userService.getUserInfo(username,password).then(
+    let db_password = crypto.md5(password.toString().trim());
+    userService.getUserInfo(username,db_password).then(
         (user)=>{
-            if(!user || user.password !== password){
+            if(!user){
                 return done(null,false,{msg:"用户名或错误,请确认后重新输入..."})
             }
-            return done(null,user);
             //  set user session
             se.emit('fill',req,user);
+            return done(null,user);
+
         },
         (err)=>{
-            return done(null,false,{msg:'服务器开小差了,稍后再来...'})
+            return done(err)
         }
-    );
+    ).catch((err)=>{
+            return done(err);
+    });
 }
-
+/**
+ * just for session
+ * @param user
+ * @param done
+ */
 function serializeUser(user, done) {
 
     done(null, user);
@@ -46,7 +55,9 @@ function deserializeUser(user, done) {
 function authenticate(passport){
     return (req,res,next)=>{
         passport.authenticate('local', function(err,user,msg){
-            if(msg && !user){
+            if(err){
+                res.api(res_obj.FAIL,null);
+            }else if(msg && !user){
                 res.api(res_obj.INVALID_USERNAME_OR_PASSWORD,null);
             }else{
                 res.api();

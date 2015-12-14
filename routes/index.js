@@ -12,19 +12,13 @@ var router = express.Router(config.exp_router_options);
 
 
 router.get('/',function(req,res){
-    res.render('index');
+    res.render('index',{isLogin : req.session.user ? true : false});
 });
 
-router.get('/login',function(req,res){
-    res.renders('login');
-});
-router.get('/index',function(req,res){
-    res.render('index');
-});
 router.get('/logout',function(req,res){
     req.session.user = null;
     req.logout();
-    res.redirect('/login');
+    res.redirect('/');
 });
 
 module.exports = router;

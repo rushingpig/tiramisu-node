@@ -1,3 +1,5 @@
 export default {
-  root: '/'
+  root: '/',
+
+  success_code: '0000',
 }

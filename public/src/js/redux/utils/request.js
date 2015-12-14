@@ -1,16 +1,19 @@
 import req from 'superagent';
 import Promise from '../utils/promise';
+import config from '../config/app.config';
 
-function _end_callback(err, res){
-  if(res.ok){
-    if(res.body.code === '0000'){
-      resolve(res.body.data);
+function _end_callback(resolve, reject){
+  return function(err, res){
+    if(res.ok){
+      if(res.body.code === config.success_code){
+        resolve(res.body.data);
+      }else{
+        reject(res.body.msg, res.body.code);
+      }
     }else{
-      reject(res.body.msg, res.body.code);
+      reject(res.text || 'error');
     }
-  }else{
-    reject(res.text || 'error');
-  }
+  };
 }
 
 export function get(url, data){
@@ -18,7 +21,7 @@ export function get(url, data){
     req.get(url)
       .query(data)
       .set('X-Requested-With', 'XMLHttpRequest')
-      .end(_end_callback);
+      .end(_end_callback(resolve, reject));
   });
 }
 
@@ -27,6 +30,6 @@ export function post(url, data){
     req.post(url)
       .send(data)
       .set('X-Requested-With', 'XMLHttpRequest')
-      .end(_end_callback);
+      .end(_end_callback(resolve, reject));
   });
 }

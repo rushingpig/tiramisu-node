@@ -1,6 +1,20 @@
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import createLogger from 'redux-logger';
+import thunk from 'redux-thunk';
 import testApp from '../reducers/login';
 
+if(process.env.NODE_ENV == 'production'){
+  //生产环境不需要logger
+  var createStoreWithMiddleware = applyMiddleware(
+    thunk
+  )(createStore);
+}else{
+  var createStoreWithMiddleware = applyMiddleware(
+    thunk,
+    createLogger()
+  )(createStore);
+}
+
 export default function(){
-  return createStore(testApp);
+  return createStoreWithMiddleware(testApp);
 }

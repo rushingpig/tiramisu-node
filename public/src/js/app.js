@@ -19026,10 +19026,6 @@
 
 	var _componentsBody = __webpack_require__(156);
 
-	var _componentsLogin = __webpack_require__(211);
-
-	var _componentsLogin2 = _interopRequireDefault(_componentsLogin);
-
 	var _history = __webpack_require__(236);
 
 	var _history2 = _interopRequireDefault(_history);
@@ -19053,8 +19049,7 @@
 	        { history: _history2['default'] },
 	        _react2['default'].createElement(
 	          _reactRouter.Route,
-	          { path: '/', component: _componentsBody.Main },
-	          _react2['default'].createElement(_reactRouter.IndexRoute, { component: _componentsLogin2['default'] }),
+	          { path: '/', component: _componentsBody.Entry },
 	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/index', component: _componentsBody.Om1 }),
 	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/refund', component: _componentsBody.Om2 }),
 	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/invoice', component: _componentsBody.Om3 }),
@@ -19109,8 +19104,37 @@
 
 	var _header2 = _interopRequireDefault(_header);
 
-	var Main = (function (_Component) {
-	  _inherits(Main, _Component);
+	var _login = __webpack_require__(211);
+
+	var _login2 = _interopRequireDefault(_login);
+
+	var Entry = (function (_Component) {
+	  _inherits(Entry, _Component);
+
+	  function Entry() {
+	    _classCallCheck(this, Entry);
+
+	    _get(Object.getPrototypeOf(Entry.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(Entry, [{
+	    key: 'render',
+	    value: function render() {
+	      return xfxb.login ? _react2['default'].createElement(
+	        Main,
+	        null,
+	        this.props.children
+	      ) : _react2['default'].createElement(_login2['default'], null);
+	    }
+	  }]);
+
+	  return Entry;
+	})(_react.Component);
+
+	exports.Entry = Entry;
+
+	var Main = (function (_Component2) {
+	  _inherits(Main, _Component2);
 
 	  function Main() {
 	    _classCallCheck(this, Main);
@@ -19162,8 +19186,8 @@
 
 	exports.Main = Main;
 
-	var NoPage = (function (_Component2) {
-	  _inherits(NoPage, _Component2);
+	var NoPage = (function (_Component3) {
+	  _inherits(NoPage, _Component3);
 
 	  function NoPage() {
 	    _classCallCheck(this, NoPage);
@@ -19191,8 +19215,8 @@
 
 	exports.NoPage = NoPage;
 
-	var Om1 = (function (_Component3) {
-	  _inherits(Om1, _Component3);
+	var Om1 = (function (_Component4) {
+	  _inherits(Om1, _Component4);
 
 	  function Om1() {
 	    _classCallCheck(this, Om1);
@@ -19220,8 +19244,8 @@
 
 	exports.Om1 = Om1;
 
-	var Om2 = (function (_Component4) {
-	  _inherits(Om2, _Component4);
+	var Om2 = (function (_Component5) {
+	  _inherits(Om2, _Component5);
 
 	  function Om2() {
 	    _classCallCheck(this, Om2);
@@ -19249,8 +19273,8 @@
 
 	exports.Om2 = Om2;
 
-	var Om3 = (function (_Component5) {
-	  _inherits(Om3, _Component5);
+	var Om3 = (function (_Component6) {
+	  _inherits(Om3, _Component6);
 
 	  function Om3() {
 	    _classCallCheck(this, Om3);
@@ -19278,8 +19302,8 @@
 
 	exports.Om3 = Om3;
 
-	var Om4 = (function (_Component6) {
-	  _inherits(Om4, _Component6);
+	var Om4 = (function (_Component7) {
+	  _inherits(Om4, _Component7);
 
 	  function Om4() {
 	    _classCallCheck(this, Om4);
@@ -19317,7 +19341,9 @@
 	  value: true
 	});
 	exports['default'] = {
-	  root: '/'
+	  root: '/',
+
+	  success_code: '0000'
 	};
 	module.exports = exports['default'];
 
@@ -19439,6 +19465,51 @@
 	          treeDOM
 	        )
 	      );
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var $nav = $('.left-side');
+
+	      $nav.on('click', 'a', function () {
+	        var $this = $(this),
+	            $p = $this.parent(),
+	            $menulist = $this.parents('.menu-list').eq(0);
+
+	        $menulist.siblings('li.active').removeClass('active').find('li.active').remove('active');
+
+	        //左侧菜单展开
+	        if (!$('#app-container').hasClass('left-side-collapsed')) {
+	          // 一级
+	          if ($this.hasClass('menu-1')) {
+	            $p.toggleClass('open').find('.sub-menu-list').slideToggle(180, function () {
+	              $menulist.addClass('active');
+	            });
+	          }
+	          //左侧菜单收缩
+	        } else {
+	            $menulist.addClass('active');
+	            if ($this.hasClass('menu-2')) {
+	              $menulist.removeClass('on-hover');
+	            }
+	          }
+
+	        $p.addClass('active').siblings('.active').removeClass('active');
+	      }).find('.menu-list').each(function () {
+	        $(this).on('mouseenter', function () {
+	          $(this).addClass('on-hover');
+	        }).on('mouseleave', function () {
+	          $(this).removeClass('on-hover');
+	        });
+	      });
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      var $nav = $('.left-side');
+	      $nav.off('click').find('.menu-list').each(function () {
+	        $(this).off('click');
+	      });
 	    }
 	  }]);
 
@@ -24425,6 +24496,8 @@
 	  value: true
 	});
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 	var _react = __webpack_require__(2);
@@ -24441,20 +24514,20 @@
 
 	var _actionsLogin = __webpack_require__(229);
 
+	var _history = __webpack_require__(236);
+
+	var _history2 = _interopRequireDefault(_history);
+
 	var Login = _react2['default'].createClass({
 	  displayName: 'Login',
 
-	  getInitialState: function getInitialState() {
-	    return {
-	      username: '',
-	      password: ''
-	    };
-	  },
 	  render: function render() {
 	    var _props = this.props;
 	    var login_ing = _props.login_ing;
 	    var validate = _props.validate;
 	    var error_msg = _props.error_msg;
+	    var username = _props.username;
+	    var password = _props.password;
 
 	    validate && $('body').addClass('login-hide'); //通过
 
@@ -24480,13 +24553,13 @@
 	          _react2['default'].createElement(
 	            'div',
 	            { className: 'login-wrap' },
-	            _react2['default'].createElement('input', { value: this.state.username,
+	            _react2['default'].createElement('input', { value: username, ref: 'username',
 	              onChange: this.onUsernameChange, type: 'text', className: 'form-control', placeholder: '用户名', autofocus: '' }),
-	            _react2['default'].createElement('input', { value: this.state.password,
+	            _react2['default'].createElement('input', { value: password, ref: 'password',
 	              onChange: this.onPasswordChange, type: 'password', className: 'form-control', placeholder: '密码' }),
 	            _react2['default'].createElement(
 	              'div',
-	              null,
+	              { className: 'error-msg' },
 	              error_msg
 	            ),
 	            _react2['default'].createElement(
@@ -24575,27 +24648,48 @@
 	    );
 	  },
 	  login: function login() {
-	    console.log(this.props);
-	    (0, _actionsLogin.login)(this.state.username, this.state.password)(this.props.dispatch);
+	    var _props2 = this.props;
+	    var username = _props2.username;
+	    var password = _props2.password;
+	    var dispatch = _props2.dispatch;
+
+	    if (!username) {
+	      this.tipNoInput('username');return;
+	    } else if (!password) {
+	      this.tipNoInput('password');return;
+	    }
+	    dispatch((0, _actionsLogin.login)(username, password)).done(function () {
+	      window.xfxb.login = true;
+	      //登录后，直接定位到所在url
+	      _history2['default'].replace(location.pathname + location.search);
+	    });
 	    // render(AppRouter, document.getElementById('app'));
 	    // this.refs.me.style.display = 'none';
 	    // $('body').addClass('login-hide'); //使app可滚动, 顺带动画
 	  },
 	  onUsernameChange: function onUsernameChange(e) {
-	    this.setState({ username: e.target.value });
+	    // this.setState({username: e.target.value});
+	    this.props.dispatch((0, _actionsLogin.usernameChange)(e.target.value));
 	  },
 	  onPasswordChange: function onPasswordChange(e) {
-	    this.setState({ password: e.target.value });
+	    this.props.dispatch((0, _actionsLogin.passwordChange)(e.target.value));
+	    // this.setState({password: e.target.value});
+	  },
+	  tipNoInput: function tipNoInput(ref) {
+	    var $input = $(this.refs[ref]).addClass('tip').focus();
+	    setTimeout(function () {
+	      $input.removeClass('tip');
+	    }, 400);
 	  }
 	});
 
 	function mapStateToProps(state) {
-	  return state.login;
+	  return _extends({}, state.login, state.form);
 	}
 
-	function mapDispatchToProps(dispatch) {
-	  return bindActionCreators(CounterActions, dispatch);
-	}
+	// function mapDispatchToProps(dispatch) {
+	//   return bindActionCreators(CounterActions, dispatch)
+	// }
 
 	exports['default'] = (0, _reactRedux.connect)(mapStateToProps)(Login);
 	module.exports = exports['default'];
@@ -25701,6 +25795,8 @@
 	  value: true
 	});
 	exports.login = login;
+	exports.usernameChange = usernameChange;
+	exports.passwordChange = passwordChange;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -25717,8 +25813,12 @@
 	var LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 	exports.LOGIN_SUCCESS = LOGIN_SUCCESS;
 	var LOGIN_FAIL = 'LOGIN_FAIL';
-
 	exports.LOGIN_FAIL = LOGIN_FAIL;
+	var USERNAME_CHANGE = 'USERNAME_CHANGE';
+	exports.USERNAME_CHANGE = USERNAME_CHANGE;
+	var PASSWORD_CHANGE = 'PASSWORD_CHANGE';
+
+	exports.PASSWORD_CHANGE = PASSWORD_CHANGE;
 
 	function login(username, password) {
 	  return function (dispatch) {
@@ -25735,6 +25835,20 @@
 	        msg: msg
 	      });
 	    });
+	  };
+	}
+
+	function usernameChange(username) {
+	  return {
+	    type: USERNAME_CHANGE,
+	    username: username
+	  };
+	}
+
+	function passwordChange(password) {
+	  return {
+	    type: PASSWORD_CHANGE,
+	    password: password
 	  };
 	}
 
@@ -25760,27 +25874,33 @@
 
 	var _utilsPromise2 = _interopRequireDefault(_utilsPromise);
 
-	function _end_callback(err, res) {
-	  if (res.ok) {
-	    if (res.body.code === '0000') {
-	      resolve(res.body.data);
+	var _configAppConfig = __webpack_require__(157);
+
+	var _configAppConfig2 = _interopRequireDefault(_configAppConfig);
+
+	function _end_callback(resolve, reject) {
+	  return function (err, res) {
+	    if (res.ok) {
+	      if (res.body.code === _configAppConfig2['default'].success_code) {
+	        resolve(res.body.data);
+	      } else {
+	        reject(res.body.msg, res.body.code);
+	      }
 	    } else {
-	      reject(res.body.msg, res.body.code);
+	      reject(res.text || 'error');
 	    }
-	  } else {
-	    reject(res.text || 'error');
-	  }
+	  };
 	}
 
 	function get(url, data) {
 	  return new _utilsPromise2['default'](function (resolve, reject) {
-	    _superagent2['default'].get(url).query(data).set('X-Requested-With', 'XMLHttpRequest').end(_end_callback);
+	    _superagent2['default'].get(url).query(data).set('X-Requested-With', 'XMLHttpRequest').end(_end_callback(resolve, reject));
 	  });
 	}
 
 	function post(url, data) {
 	  return new _utilsPromise2['default'](function (resolve, reject) {
-	    _superagent2['default'].post(url).send(data).set('X-Requested-With', 'XMLHttpRequest').end(_end_callback);
+	    _superagent2['default'].post(url).send(data).set('X-Requested-With', 'XMLHttpRequest').end(_end_callback(resolve, reject));
 	  });
 	}
 
@@ -27415,18 +27535,200 @@
 
 	var _redux = __webpack_require__(219);
 
-	var _reducersLogin = __webpack_require__(239);
+	var _reduxLogger = __webpack_require__(239);
+
+	var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
+
+	var _reduxThunk = __webpack_require__(240);
+
+	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
+
+	var _reducersLogin = __webpack_require__(241);
 
 	var _reducersLogin2 = _interopRequireDefault(_reducersLogin);
 
+	if (true) {
+	  //生产环境不需要logger
+	  var createStoreWithMiddleware = (0, _redux.applyMiddleware)(_reduxThunk2['default'])(_redux.createStore);
+	} else {
+	  var createStoreWithMiddleware = (0, _redux.applyMiddleware)(_reduxThunk2['default'], (0, _reduxLogger2['default'])())(_redux.createStore);
+	}
+
 	exports['default'] = function () {
-	  return (0, _redux.createStore)(_reducersLogin2['default']);
+	  return createStoreWithMiddleware(_reducersLogin2['default']);
 	};
 
 	module.exports = exports['default'];
 
 /***/ },
 /* 239 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var repeat = function repeat(str, times) {
+	  return new Array(times + 1).join(str);
+	};
+	var pad = function pad(num, maxLength) {
+	  return repeat("0", maxLength - num.toString().length) + num;
+	};
+	var formatTime = function formatTime(time) {
+	  return " @ " + pad(time.getHours(), 2) + ":" + pad(time.getMinutes(), 2) + ":" + pad(time.getSeconds(), 2) + "." + pad(time.getMilliseconds(), 3);
+	};
+
+	// Use the new performance api to get better precision if available
+	var timer = typeof performance !== "undefined" && typeof performance.now === "function" ? performance : Date;
+
+	/**
+	 * Creates logger with followed options
+	 *
+	 * @namespace
+	 * @property {object} options - options for logger
+	 * @property {string} options.level - console[level]
+	 * @property {bool} options.duration - print duration of each action?
+	 * @property {bool} options.timestamp - print timestamp with each action?
+	 * @property {object} options.colors - custom colors
+	 * @property {object} options.logger - implementation of the `console` API
+	 * @property {boolean} options.collapsed - is group collapsed?
+	 * @property {boolean} options.predicate - condition which resolves logger behavior
+	 * @property {function} options.stateTransformer - transform state before print
+	 * @property {function} options.actionTransformer - transform action before print
+	 */
+
+	function createLogger() {
+	  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+	  return function (_ref) {
+	    var getState = _ref.getState;
+	    return function (next) {
+	      return function (action) {
+	        var _options$level = options.level;
+	        var level = _options$level === undefined ? "log" : _options$level;
+	        var _options$logger = options.logger;
+	        var logger = _options$logger === undefined ? window.console : _options$logger;
+	        var collapsed = options.collapsed;
+	        var predicate = options.predicate;
+	        var _options$duration = options.duration;
+	        var duration = _options$duration === undefined ? false : _options$duration;
+	        var _options$timestamp = options.timestamp;
+	        var timestamp = _options$timestamp === undefined ? true : _options$timestamp;
+	        var transformer = options.transformer;
+	        var _options$stateTransfo = options.stateTransformer;
+	        var // deprecated
+	        stateTransformer = _options$stateTransfo === undefined ? function (state) {
+	          return state;
+	        } : _options$stateTransfo;
+	        var _options$actionTransf = options.actionTransformer;
+	        var actionTransformer = _options$actionTransf === undefined ? function (actn) {
+	          return actn;
+	        } : _options$actionTransf;
+	        var _options$colors = options.colors;
+	        var colors = _options$colors === undefined ? {
+	          title: function title() {
+	            return "#000000";
+	          },
+	          prevState: function prevState() {
+	            return "#9E9E9E";
+	          },
+	          action: function action() {
+	            return "#03A9F4";
+	          },
+	          nextState: function nextState() {
+	            return "#4CAF50";
+	          }
+	        } : _options$colors;
+
+	        // exit if console undefined
+
+	        if (typeof logger === "undefined") {
+	          return next(action);
+	        }
+
+	        // exit early if predicate function returns false
+	        if (typeof predicate === "function" && !predicate(getState, action)) {
+	          return next(action);
+	        }
+
+	        if (transformer) {
+	          console.error("Option 'transformer' is deprecated, use stateTransformer instead");
+	        }
+
+	        var started = timer.now();
+	        var prevState = stateTransformer(getState());
+
+	        var formattedAction = actionTransformer(action);
+	        var returnedValue = next(action);
+
+	        var took = timer.now() - started;
+	        var nextState = stateTransformer(getState());
+
+	        // message
+	        var time = new Date();
+	        var isCollapsed = typeof collapsed === "function" ? collapsed(getState, action) : collapsed;
+
+	        var formattedTime = formatTime(time);
+	        var titleCSS = colors.title ? "color: " + colors.title(formattedAction) + ";" : null;
+	        var title = "action " + formattedAction.type + (timestamp ? formattedTime : "") + (duration ? " in " + took.toFixed(2) + " ms" : "");
+
+	        // render
+	        try {
+	          if (isCollapsed) {
+	            if (colors.title) logger.groupCollapsed("%c " + title, titleCSS);else logger.groupCollapsed(title);
+	          } else {
+	            if (colors.title) logger.group("%c " + title, titleCSS);else logger.group(title);
+	          }
+	        } catch (e) {
+	          logger.log(title);
+	        }
+
+	        if (colors.prevState) logger[level]("%c prev state", "color: " + colors.prevState(prevState) + "; font-weight: bold", prevState);else logger[level]("prev state", prevState);
+
+	        if (colors.action) logger[level]("%c action", "color: " + colors.action(formattedAction) + "; font-weight: bold", formattedAction);else logger[level]("action", formattedAction);
+
+	        if (colors.nextState) logger[level]("%c next state", "color: " + colors.nextState(nextState) + "; font-weight: bold", nextState);else logger[level]("next state", nextState);
+
+	        try {
+	          logger.groupEnd();
+	        } catch (e) {
+	          logger.log("—— log end ——");
+	        }
+
+	        return returnedValue;
+	      };
+	    };
+	  };
+	}
+
+	exports.default = createLogger;
+	module.exports = exports['default'];
+
+/***/ },
+/* 240 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	exports.__esModule = true;
+	exports['default'] = thunkMiddleware;
+
+	function thunkMiddleware(_ref) {
+	  var dispatch = _ref.dispatch;
+	  var getState = _ref.getState;
+
+	  return function (next) {
+	    return function (action) {
+	      return typeof action === 'function' ? action(dispatch, getState) : next(action);
+	    };
+	  };
+	}
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27454,15 +27756,30 @@
 	    case _actionsLogin.LOGIN_START:
 	      return _extends({}, state, { login_ing: true });
 	    case _actionsLogin.LOGIN_SUCCESS:
-	      return _extends({}, state, { validate: true });
+	      return _extends({}, state, { validate: true, login_ing: false });
 	    case _actionsLogin.LOGIN_FAIL:
-	      return _extends({}, state, { error_msg: action.msg });
+	      return _extends({}, state, { error_msg: action.msg, login_ing: false });
 	    default:
 	      return state;
 	  }
 	}
+
+	function form(state, action) {
+	  if (state === undefined) state = {};
+
+	  switch (action.type) {
+	    case _actionsLogin.USERNAME_CHANGE:
+	      return _extends({}, state, { username: action.username });
+	    case _actionsLogin.PASSWORD_CHANGE:
+	      return _extends({}, state, { password: action.password });
+	    default:
+	      return state;
+	  }
+	}
+
 	var rootReducer = (0, _redux.combineReducers)({
-	  login: login
+	  login: login,
+	  form: form
 	});
 
 	exports['default'] = rootReducer;

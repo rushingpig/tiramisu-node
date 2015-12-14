@@ -3,6 +3,15 @@ import {render} from 'react-dom';
 import config from '../config/app.config';
 import Nav from './nav';
 import Header from './header';
+import Login from './login';
+
+export class Entry extends Component {
+  render(){
+    return xfxb.login
+      ? <Main>{this.props.children}</Main>
+      : <Login />
+  }
+}
 
 export class Main extends Component {
   render(){

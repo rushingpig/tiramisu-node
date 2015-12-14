@@ -26,9 +26,11 @@ var webpack_deploy_config = require('./src/js/redux/webpack.deploy.config.js');
 var config = {
   app_port: 8080,
   webpack_port: 3000,
+  node_port: 3001,
   root: '/',  //资源路径
   src: 'src/',
   dest: './',
+  views: '../views/'
 };
 var s = function(file_path){
   return path.join(config.src, file_path);
@@ -58,19 +60,23 @@ gulp.task('sass', function() {
 
 gulp.task('browser-sync', function() {
   browserSync.init(['css/*.css', 'js/*.js', 'index.html'], {
-    server: {
-      baseDir: './',
-      middleware: function(req, res, next){
-        if(!(/\.(gif|png|jpg|js|css)$/ig.test(req._parsedUrl.pathname))){
-          res.setHeader('content-type', 'text/html');
-          res.write(fs.readFileSync('./index.html'));
-          res.end();
-        }else{
-          next();
-        }
-      }
-    },
+    // server: {
+    //   baseDir: './',
+    //   middleware: function(req, res, next){
+    //     if(!(/\.(gif|png|jpg|js|css)$/ig.test(req._parsedUrl.pathname))){
+    //       res.setHeader('content-type', 'text/html');
+    //       res.write(fs.readFileSync('./index.html'));
+    //       res.end();
+    //     }else{
+    //       next();
+    //     }
+    //   }
+    // },
+    proxy: "localhost:" + config.node_port,
     port: config.app_port,
+    ui: {
+      port: config.app_port + 1
+    },
     reloadOnRestart: true,
     open: false
   });
@@ -91,7 +97,11 @@ gulp.task('template:pre', function(){
     .pipe(replace(/\{\{root\}\}/g, config.root))
     .pipe(replace(/\{\{app\.js\}\}/, wds_server + 'app.js'))
     .pipe(replace(/\{\{webpack-dev-server\.js\}\}/, '<script src="' + wds_server + 'webpack-dev-server.js"></script>'))
-    .pipe(gulp.dest('./'));
+    .pipe(gulp.dest('./'))
+    .pipe(rename({
+      extname: '.hbs'
+    }))
+    .pipe(gulp.dest(config.views));
 });
 
 gulp.task('template:deploy', function(){
@@ -99,8 +109,11 @@ gulp.task('template:deploy', function(){
     .pipe(replace(/\{\{root\}\}/g, config.root))
     .pipe(replace(/\{\{app\.js\}\}/, '/js/app.min.js?rev=@@hash'))
     .pipe(replace(/\{\{webpack-dev-server\.js\}\}/, ''))
-    // .pipe(rev())
-    .pipe(gulp.dest('./'));
+    .pipe(gulp.dest('./'))
+    .pipe(rename({
+      extname: '.hbs'
+    }))
+    .pipe(gulp.dest(config.views));
 });
 gulp.task('template:local', function(){
   var local_root = '';
@@ -165,6 +178,7 @@ gulp.task('default', ['css', 'sass', 'scripts', 'images', 'template:pre', 'brows
   gulp.watch(s('images/*'), ['images']);
   gulp.watch(s('css/*.css'), ['css']);
   gulp.watch(s('*.html'), ['template:pre']);
+
 });
 
 gulp.task('deploy', gulpSequence('webpack:react', 'scripts', 'template:deploy', 'rev'));

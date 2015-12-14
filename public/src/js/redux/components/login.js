@@ -2,17 +2,12 @@ import React from 'react';
 import {render, findDOMNode} from 'react-dom';
 import config from '../config/app.config';
 import {connect} from 'react-redux';
-import {login} from '../actions/login';
+import {login, usernameChange, passwordChange} from '../actions/login';
+import history from '../history';
 
 var Login = React.createClass({
-  getInitialState(){
-    return {
-      username: '',
-      password: ''
-    }
-  },
   render() {
-    const {login_ing, validate, error_msg} = this.props;
+    const {login_ing, validate, error_msg, username, password} = this.props;
 
     validate && $('body').addClass('login-hide'); //通过
 
@@ -25,11 +20,11 @@ var Login = React.createClass({
             <img src={config.root + "images/login-logo.png"} alt="" />
           </div>
           <div className="login-wrap">
-            <input value={this.state.username}
+            <input value={username} ref="username"
                 onChange={this.onUsernameChange} type="text" className="form-control" placeholder="用户名" autofocus=""/>
-            <input value={this.state.password}
+            <input value={password} ref="password"
                 onChange={this.onPasswordChange} type="password" className="form-control" placeholder="密码"/>
-            <div>{error_msg}</div>
+            <div className="error-msg">{error_msg}</div>
             <button disabled={login_ing} onClick={this.login} className="btn btn-lg btn-login btn-block">
                 <i className="fa fa-check"></i>
             </button>
@@ -72,26 +67,43 @@ var Login = React.createClass({
     )
   },
   login(){
-    console.log(this.props);
-    login(this.state.username, this.state.password)(this.props.dispatch);
+    var {username, password, dispatch} = this.props;
+    if(!username){
+      this.tipNoInput('username'); return ;
+    }else if(!password){
+      this.tipNoInput('password'); return ;
+    }
+    dispatch(login(username, password)).done(function(){
+      window.xfxb.login = true;
+      //登录后，直接定位到所在url
+      history.replace(location.pathname + location.search);
+    });
     // render(AppRouter, document.getElementById('app'));
     // this.refs.me.style.display = 'none';
     // $('body').addClass('login-hide'); //使app可滚动, 顺带动画
   },
   onUsernameChange: function(e){
-    this.setState({username: e.target.value});
+    // this.setState({username: e.target.value});
+    this.props.dispatch(usernameChange(e.target.value));
   },
   onPasswordChange: function(e){
-    this.setState({password: e.target.value})
+    this.props.dispatch(passwordChange(e.target.value));
+    // this.setState({password: e.target.value});
+  },
+  tipNoInput: function(ref){
+    var $input = $(this.refs[ref]).addClass('tip').focus();
+    setTimeout(function(){
+      $input.removeClass('tip');
+    }, 400);
   }
 });
 
 function mapStateToProps(state){
-  return state.login;
+  return {...state.login, ...state.form};
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(CounterActions, dispatch)
-}
+// function mapDispatchToProps(dispatch) {
+//   return bindActionCreators(CounterActions, dispatch)
+// }
 
 export default connect(mapStateToProps)(Login);

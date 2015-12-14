@@ -5,6 +5,8 @@ import Url from '../config/url';
 export const LOGIN_START = 'LOGIN_START';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGIN_FAIL = 'LOGIN_FAIL';
+export const USERNAME_CHANGE = 'USERNAME_CHANGE';
+export const PASSWORD_CHANGE = 'PASSWORD_CHANGE';
 
 export function login(username, password){
   return (dispatch) => {
@@ -23,5 +25,19 @@ export function login(username, password){
           msg
         })
       })
+  }
+}
+
+export function usernameChange(username){
+  return {
+    type: USERNAME_CHANGE,
+    username
+  }
+}
+
+export function passwordChange(password){
+  return {
+    type: PASSWORD_CHANGE,
+    password
   }
 }

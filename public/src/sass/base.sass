@@ -10,3 +10,52 @@ a
   &:hover
     @extend .no-text-deco
     color: $theme-color
+
+.inline-block
+  display: inline-block !important
+
+.space
+  margin-left: 6px
+  margin-right: 6px
+.round
+  @include border-radius(5px)
+.bordered
+  display: inline-block
+  border: 1px solid $theme-color
+.strong
+  font-weight: bold
+  color: $theme-font-color
+.text-left
+  text-align: left !important
+.nowrap
+  white-space: nowrap
+
+.search-input
+  position: relative
+  &.form-inline
+    display: inline-block
+  input
+    padding-right: 20px
+    &:focus
+      + i
+        color: #666
+    &.input-sm
+      + i
+        top: 8px
+  .fa
+    color: #cfcfce
+    position: absolute
+    right: 5px
+    top: 9px
+    cursor: pointer
+
+.btn
+  &.btn-theme
+    color: #fff
+    background-color: $btn-color
+    border-color: $btn-color
+  &.btn-theme:hover, &.btn-theme:focus, &.btn-theme:active.focus, &.btn-theme.active:hover, &.btn-theme.active:focus, &.btn-theme.active.focus, .open > &.btn-theme.dropdown-toggle:hover, .open > &.btn-theme.dropdown-toggle:focus, .open > &.btn-theme.dropdown-toggle.focus
+    color: #fff
+    background-color: darken($btn-color, 5)
+    border-color: darken($btn-color, 8)
+

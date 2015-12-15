@@ -26,9 +26,11 @@ export class Main extends Component {
           </div>
           <Nav />
         </div>
-        <div className="main-content">
+        <div className="right-side">
           <Header />
-          {this.props.children}
+          <div className="main-content">
+            {this.props.children}
+          </div>
         </div>
       </div>
     )

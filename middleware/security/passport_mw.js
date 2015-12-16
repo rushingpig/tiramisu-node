@@ -26,9 +26,6 @@ function localStrategy(req,username, password, done) {
             //  set user session
             se.emit('fill',req,user);
             return done(null,user);
-        },
-        (err)=>{
-            return done(err)
         }
     ).catch((err)=>{
             return done(err);

@@ -50,7 +50,21 @@ var tables = {
     sys_role : 'sys_role',
     sys_menu : 'sys_menu',
     sys_user_role : 'sys_user_role',
-    sys_role_menu : 'sys_role_menu'
+    sys_role_menu : 'sys_role_menu',
+//==================================
+    buss_city : 'buss_city',
+    buss_delivery_station : 'buss_delivery_station',
+    buss_order :'buss_order',
+    buss_order_history : 'buss_order_history',
+    buss_order_product : 'buss_order_product',
+    buss_order_src : 'buss_order_src',
+    buss_pay_modes : 'buss_pay_modes',
+    buss_product : 'buss_product',
+    buss_product_category : 'buss_product_category',
+    buss_recipient : 'buss_recipient',
+    buss_shop : 'buss_shop',
+//====================================
+    dict_regionalism : 'dict_regionalism',
 };
 //  mysql config options
 var mysql_options = {
@@ -84,7 +98,7 @@ var ping_xx = {
     apiKey: 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
 }
 
-var login_required = true;
+var login_required = false;
 
 module .exports = {
     exp_static_options : exp_static_options,

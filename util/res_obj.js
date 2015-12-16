@@ -20,6 +20,10 @@ module.exports = {
         code : '1001',
         msg : '长时间未操作,请重新登录...'
     },
+    NO_MORE_RESULTS : {
+        code : '9998',
+        msg : 'no more results...'
+    },
     FAIL : {
         code : '9999',
         msg  : '服务器开小差了...',

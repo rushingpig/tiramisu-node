@@ -10,6 +10,7 @@ var session = require('express-session');
 var exphbs = require('express-handlebars');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var validator = require('express-validator');
 
 var app = express();
 var v1Router = require('./routes/v1');
@@ -32,6 +33,7 @@ app.set('view engine', '.hbs');
 app.use(log4js.connectLogger(logger, { level: 'auto' ,format:':method :status ✪ :url ✪  [:response-time ms]'}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(validator());
 app.use(cookieParser());
 app.use(middleware.system.wrapperResponse);
 app.use(session(config.exp_session_options));
@@ -74,6 +76,7 @@ if (app.get('env') === 'development') {
             message: err.message,
             error: err
         });
+        //res.renders('index',{isLogin : req.session.user ? true : false});
     });
 }
 

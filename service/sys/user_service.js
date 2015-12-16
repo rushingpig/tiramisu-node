@@ -21,11 +21,12 @@ UserService.prototype.getUserInfo = (username,password)=>{
                 let user = results[0];
                 return user;
             }
-        },
-        (err) =>{
+        }
+    ).catch(
+        (err)=>{
             return err;
         }
-    )
+    );
 };
 
 module.exports = new UserService();

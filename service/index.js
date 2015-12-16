@@ -9,6 +9,7 @@
 
 const service = {
     user : require('./sys/user_service'),
+    address : require('./sys/address_service'),
 };
 
 module.exports = service;

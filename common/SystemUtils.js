@@ -7,8 +7,8 @@
  */
 "use strict";
 module.exports = {
-    wrapService: (next,promise, resolve)=> {
-        promise.then(resolve).catch((err)=> {
+    wrapService: (next,promise)=> {
+        promise.catch((err)=> {
             next(err);
         });
     },

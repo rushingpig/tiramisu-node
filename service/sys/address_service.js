@@ -20,10 +20,10 @@ function AddressService() {
  * @param next
  */
 AddressService.prototype.getProvinces = (req, res, next)=> {
-    systemUtils.wrapService(next,addressDao.findAllProvinces(), (results)=> {
+    systemUtils.wrapService(next, addressDao.findAllProvinces(), (results)=> {
         let data = {};
-        if(!results || results.length == 0){
-            res.api(res_obj.NO_MORE_RESULTS,null);
+        if (!results || results.length == 0) {
+            res.api(res_obj.NO_MORE_RESULTS, null);
             return;
         }
         results.forEach((curr, index, arra)=> {
@@ -34,34 +34,36 @@ AddressService.prototype.getProvinces = (req, res, next)=> {
 };
 AddressService.prototype.getCities = (req, res, next)=> {
     let provinceId = req.params.provinceId;
-    systemUtils.wrapService(next,addressDao.findCitiesByProvinceId(provinceId), (results)=> {
-        let data = {};
-        console.log(results);
-        if(!results || results.length == 0){
-            res.api(res_obj.NO_MORE_RESULTS,null);
-            return;
-        }
-        results.forEach((curr, index, arra)=> {
-            data[curr.id] = curr.name;
-        });
-        res.api(data);
-    });
+    systemUtils.wrapService(next, addressDao.findCitiesByProvinceId(provinceId)
+            .then((results)=> {
+                let data = {};
+                if (!results || results.length == 0) {
+                    res.api(res_obj.NO_MORE_RESULTS, null);
+                    return;
+                }
+                results.forEach((curr, index, arra)=> {
+                    data[curr.id] = curr.name;
+                });
+                res.api(data);
+            })
+    );
 };
 AddressService.prototype.getDistricts = (req, res, next)=> {
     let cityId = req.params.cityId;
-    systemUtils.wrapService(next,addressDao.findDistrictsByCityId(cityId), (results)=> {
-        let data = {};
-        if(!results || results.length == 0){
-            res.api(res_obj.NO_MORE_RESULTS,null);
-            return;
-        }
-        results.forEach((curr, index, arra)=> {
-            data[curr.id] = curr.name;
-        });
-        res.api(data);
-    });
+    systemUtils.wrapService(next, addressDao.findDistrictsByCityId(cityId)
+        .then((results)=> {
+            let data = {};
+            if (!results || results.length == 0) {
+                res.api(res_obj.NO_MORE_RESULTS, null);
+                return;
+            }
+            results.forEach((curr, index, arra)=> {
+                data[curr.id] = curr.name;
+            });
+            res.api(data);
+        })
+    );
 };
-
 
 
 module.exports = new AddressService();

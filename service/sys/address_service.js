@@ -20,9 +20,9 @@ function AddressService() {
  * @param next
  */
 AddressService.prototype.getProvinces = (req, res, next)=> {
-    systemUtils.wrapService(next, addressDao.findAllProvinces(), (results)=> {
+    systemUtils.wrapService(next, addressDao.findAllProvinces().then((results)=> {
         let data = {};
-        if (!results || results.length == 0) {
+        if (!results || results.length === 0) {
             res.api(res_obj.NO_MORE_RESULTS, null);
             return;
         }
@@ -30,7 +30,7 @@ AddressService.prototype.getProvinces = (req, res, next)=> {
             data[curr.id] = curr.name;
         });
         res.api(data);
-    });
+    }));
 };
 /**
  * get city list by province id
@@ -60,6 +60,12 @@ AddressService.prototype.getCities = (req, res, next)=> {
  * @param next
  */
 AddressService.prototype.getDistricts = (req, res, next)=> {
+    req.checkParams('cityId').notEmpty().isInt();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,null);
+        return;
+    }
     let cityId = req.params.cityId;
     systemUtils.wrapService(next, addressDao.findDistrictsByCityId(cityId).then((results)=> {
             let data = {};

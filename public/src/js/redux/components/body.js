@@ -18,7 +18,7 @@ export class Main extends Component {
     return (
       <div id="app-container" className="sticky-header">
         <div className="left-side">
-          <div className="logo">
+          <div className="logo text-center">
             <a href="#"><img src={config.root + "images/logo.png"} alt="" /></a>
           </div>
           <div className="logo-icon text-center">
@@ -26,9 +26,11 @@ export class Main extends Component {
           </div>
           <Nav />
         </div>
-        <div className="main-content">
+        <div className="right-side">
           <Header />
-          {this.props.children}
+          <div className="main-content">
+            {this.props.children}
+          </div>
         </div>
       </div>
     )

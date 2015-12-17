@@ -1,19 +1,18 @@
 .left-side
   position: fixed
-  width: 240px
+  width: $left-side-w
   height: 100%
-  background-color: $theme-bg-color
   overflow-y: auto
+  border-right: 2px solid $theme-color
   z-index: 100
   .logo
-    padding-top: 5px
-    height: 50px
+    padding: 10px 0 6px
     a
       @extend no-text-deco
-      font-size: 28px
-      color: #fff
-      margin: 0 0 0 20px
-      display: inline-block
+      display: block
+      img
+        display: inline-block
+        width: 150px
   .logo-icon
     display: none
   .nav
@@ -22,10 +21,11 @@
     &:hover
       color: $theme-color
     a
-      color: #fff
+      font-size: 18px
+      font-weight: bold
+      color: $theme-black
       display: block
       padding: 8px 15px
-      font-size: 13px
       line-height: 20px
       padding-left: 16px
       transition: background-color 0.2s ease-out 0s, color 0.2s ease-out 0s
@@ -33,14 +33,15 @@
         @extend .menu-list-active
     > a
       padding: 12px 20px
-      font-size: 16px
+      text-indent: 30px
       &:after
-        font-size: 14px
-        font-weight: bold
         //content: '\f067'
         content: '+'
-        color: inherit
+        color: $theme-black
         float: right
+        margin-right: 10px
+    a.short-menu
+      display: none
     i
       font-size: 15px
       margin-right: 10px
@@ -60,12 +61,13 @@
     display: none
     margin: 0
     padding: 0
-    background: $nav-active-bg
+    background: $theme-light-color
+    text
     &.active
       display: block
     li a
-      color: #fff
-      font-size: 13px
+      font-size: 16px
+      font-weight: normal
       //height: $nav-sub-item-height
       //line-height: $nav-sub-item-height
       padding: $nav-sub-item-height/2 5px $nav-sub-item-height/2 50px
@@ -73,23 +75,26 @@
       &:hover,&:active,&:focus,&.active
         @extend .submenu-list-active
         
-        
     li.active a
       @extend .submenu-list-active
+      color: $nav-active-font-color
   .active
     .sub-menu-list
       display: block
 .left-side-collapsed
   .left-side
     width: $nav-collapsed-w
-    top: $nav-collapsed-w
     overflow: visible !important
+    background: $theme-dark-color
+    border: none
     .logo
       display: none
     .logo-icon
-      height: 45px
-      margin-top: -48px
+      height: 49px
       display: block !important
+      a, img
+        display: inline-block
+        width: 100%
     nav
       margin: 2px 0 20px 0
       li.menu-list
@@ -97,10 +102,15 @@
           text-align: left
           padding: 6px 10px
           padding-left: 10px
+          color: #fff
+          font-size: 14px
+          text-indent: 5px
         >a
-          text-align: center
-          padding: 10px
           position: relative
+          font-size: 15px
+          text-align: center
+          text-indent: 0
+          padding: 0
           &:after
             display: none
           span
@@ -114,26 +124,28 @@
               position: absolute
               pointer-events: none
               border-color: rgba(0, 0, 0, 0)
-              border-right-color: $theme-color
+              border-right-color: $theme-dark-color
               border-width: 6px
               margin-top: -6px
+        .short-menu
+          display: block
+          padding: 10px 0
         .sub-menu-list
           display: none
         &.on-hover
           >a
-            background-color: #fff
-            color: $theme-bg-color
+            background-color: $theme-light-color
+            color: $theme-black
           a span
             display: block
-            color: #fff
           .sub-menu-list
             display: block;
             position: absolute
             top: 40px
             left: 53px
             margin: 0
-            min-width: 172px
-            background: $nav-active-bg
+            min-width: $sub-menu-min-w
+            background: $theme-light-color
             z-index: 100
             border-radius: 0 0 2px 0
             overflow-y: auto;
@@ -141,15 +153,18 @@
           margin-right: 0
         span
           position: absolute
-          background: #65CEA7
+          background: $theme-dark-color
           padding: 10px
           left: 52px
           top: 0
-          min-width: 173px
+          min-width: $sub-menu-min-w + 1
           text-align: left
           z-index: 100
           display: none
-  .main-content
+      .menu-list.active
+        a
+          color: $theme-black
+  .right-side
     margin-left: $nav-collapsed-w
 
 .sticky-header.left-side-collapsed

@@ -1,0 +1,58 @@
+.order-manage {
+  .top-header {
+    
+  }
+  .search {
+    margin-top: 12px;
+    .panel-body {
+      padding: 12px 10px;
+    }
+  }
+
+  .time {
+    width: 82px;
+  }
+  // .address-in-table {
+  //   width: 200px;
+  //   text-indent: 10px;
+  // }
+  .address-detail-td {
+    width: 170px;
+    display: table;
+    span {
+      display: table-cell;
+      vertical-align: top;
+    }
+  }
+
+  .address-all {
+    @extend .inline-block;
+    width: 120px;
+    white-space: noraml;
+  }
+
+  .remark-in-table {
+    width: 120px;
+    @extend .text-overflow;
+  }
+  .bordered {
+    @include border-radius(3px);
+    @extend .inline-block;
+    padding: 2px 3px;
+  }
+}
+
+.line-router {
+  font-size: 14px;
+  font-weight: bold;
+  .node {
+    border-bottom: 2px solid;
+    display: inline-block;
+    cursor: pointer;
+  }
+  .active {
+    border-bottom: none;
+    color: $theme-font-color;
+    cursor: default;
+  }
+}

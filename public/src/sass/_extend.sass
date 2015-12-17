@@ -5,9 +5,16 @@
 .theme-color
   color: $theme-color
 .menu-list-active
-  color: $theme-color
-  background-color: $nav-active-bg
+  // color: $theme-color
+  background-color: $theme-light-color
 .submenu-list-active
-  color: $theme-color
-  background-color: $nav-active-item-bg
+  // color: $theme-color
+  background-color: $theme-dark-color
   @extend .no-text-deco
+
+.text-overflow
+  overflow: hidden
+  text-overflow: ellipsis
+  white-space: nowrap
+.inline-block
+  display: inline-block

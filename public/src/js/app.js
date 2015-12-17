@@ -67,7 +67,7 @@
 
 	var _reactRedux = __webpack_require__(212);
 
-	var _storesConfigureStore = __webpack_require__(238);
+	var _storesConfigureStore = __webpack_require__(242);
 
 	var _storesConfigureStore2 = _interopRequireDefault(_storesConfigureStore);
 
@@ -19026,6 +19026,10 @@
 
 	var _componentsBody = __webpack_require__(156);
 
+	var _componentsOrderManage = __webpack_require__(238);
+
+	var _componentsOrderManage2 = _interopRequireDefault(_componentsOrderManage);
+
 	var _history = __webpack_require__(236);
 
 	var _history2 = _interopRequireDefault(_history);
@@ -19050,9 +19054,8 @@
 	        _react2['default'].createElement(
 	          _reactRouter.Route,
 	          { path: '/', component: _componentsBody.Entry },
-	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/index', component: _componentsBody.Om1 }),
+	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/index', component: _componentsOrderManage2['default'] }),
 	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/refund', component: _componentsBody.Om2 }),
-	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/invoice', component: _componentsBody.Om3 }),
 	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/winning', component: _componentsBody.Om4 }),
 	          _react2['default'].createElement(_reactRouter.Route, { path: '*', component: _componentsBody.NoPage })
 	        )
@@ -19153,7 +19156,7 @@
 	          { className: 'left-side' },
 	          _react2['default'].createElement(
 	            'div',
-	            { className: 'logo' },
+	            { className: 'logo text-center' },
 	            _react2['default'].createElement(
 	              'a',
 	              { href: '#' },
@@ -19173,9 +19176,13 @@
 	        ),
 	        _react2['default'].createElement(
 	          'div',
-	          { className: 'main-content' },
+	          { className: 'right-side' },
 	          _react2['default'].createElement(_header2['default'], null),
-	          this.props.children
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'main-content' },
+	            this.props.children
+	          )
 	        )
 	      );
 	    }
@@ -19432,8 +19439,16 @@
 	            _react2['default'].createElement(
 	              'a',
 	              { className: 'menu-1', href: 'javascript:;' },
-	              _react2['default'].createElement('i', { className: 'fa fa-' + firstLevelItem.icon }),
-	              firstLevelItem.name
+	              _react2['default'].createElement(
+	                'span',
+	                null,
+	                firstLevelItem.name
+	              )
+	            ),
+	            _react2['default'].createElement(
+	              'a',
+	              { className: 'menu-1 short-menu', href: 'javascript:;' },
+	              firstLevelItem.short_name
 	            ),
 	            _react2['default'].createElement(
 	              'ul',
@@ -19449,8 +19464,12 @@
 	            _react2['default'].createElement(
 	              _reactRouter.Link,
 	              { to: firstLevelItem.link, clasName: 'menu-1' },
-	              _react2['default'].createElement('i', { className: 'fa fa-' + firstLevelItem.icon }),
 	              firstLevelItem.name
+	            ),
+	            _react2['default'].createElement(
+	              _reactRouter.Link,
+	              { to: firstLevelItem.link, clasName: 'menu-1 short-menu' },
+	              firstLevelItem.short_name
 	            )
 	          );
 	        }
@@ -19531,6 +19550,7 @@
 	exports["default"] = [{
 	    "key": "order_management",
 	    "name": "订单管理",
+	    "short_name": "订单",
 	    "icon": "clipboard",
 	    "link": [{
 	        "key": "om_index",
@@ -27531,19 +27551,823 @@
 	  value: true
 	});
 
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _commonDateRangePicker = __webpack_require__(239);
+
+	var _commonDateRangePicker2 = _interopRequireDefault(_commonDateRangePicker);
+
+	var _commonSelect = __webpack_require__(240);
+
+	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+
+	var _commonPagination = __webpack_require__(241);
+
+	var _commonPagination2 = _interopRequireDefault(_commonPagination);
+
+	var ManagePannel = (function (_Component) {
+	  _inherits(ManagePannel, _Component);
+
+	  function ManagePannel(props) {
+	    _classCallCheck(this, ManagePannel);
+
+	    _get(Object.getPrototypeOf(ManagePannel.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      current_page: 2
+	    };
+	  }
+
+	  _createClass(ManagePannel, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'order-manage' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'clearfix top-header' },
+	          _react2['default'].createElement(
+	            'button',
+	            { className: 'btn btn-theme pull-left' },
+	            '添加订单'
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'pull-right line-router' },
+	            _react2['default'].createElement(
+	              'span',
+	              { className: 'node' },
+	              '总订单页面'
+	            ),
+	            _react2['default'].createElement(
+	              'span',
+	              null,
+	              '　/　'
+	            ),
+	            _react2['default'].createElement(
+	              'span',
+	              { className: 'node active' },
+	              '处理页面'
+	            )
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'panel search' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'panel-body form-inline' },
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'search-input inline-block' },
+	              _react2['default'].createElement('input', { className: 'form-control input-sm', placeholder: '关键字' }),
+	              _react2['default'].createElement('i', { className: 'fa fa-search' })
+	            ),
+	            ' 时间',
+	            _react2['default'].createElement(_commonDateRangePicker2['default'], null),
+	            _react2['default'].createElement(_commonSelect2['default'], { className: 'space' }),
+	            _react2['default'].createElement(_commonSelect2['default'], { className: 'space' }),
+	            _react2['default'].createElement(_commonSelect2['default'], { className: 'space' }),
+	            _react2['default'].createElement(_commonSelect2['default'], { className: 'space' }),
+	            _react2['default'].createElement(
+	              'button',
+	              { className: 'btn btn-theme btn-sm' },
+	              _react2['default'].createElement('i', { className: 'fa fa-search' })
+	            )
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'panel' },
+	          _react2['default'].createElement(
+	            'header',
+	            { className: 'panel-heading' },
+	            '订单列表'
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'panel-body' },
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'table-responsive' },
+	              _react2['default'].createElement(
+	                'table',
+	                { className: 'table text-center' },
+	                _react2['default'].createElement(
+	                  'thead',
+	                  null,
+	                  _react2['default'].createElement(
+	                    'tr',
+	                    null,
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '操作管理'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '商户订单'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '订单号'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '下单人'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '下单时间'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '收货人信息'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '配送方式'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '订单来源'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '支付状态'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '总金额'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '订单状态'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '配送站'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '送达时间'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '是否提交'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '是否处理'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '所属城市'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '取消理由'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '备注'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '操作人'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '创建人'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '操作时间'
+	                    )
+	                  )
+	                ),
+	                _react2['default'].createElement(
+	                  'tbody',
+	                  null,
+	                  _react2['default'].createElement(
+	                    'tr',
+	                    null,
+	                    _react2['default'].createElement('td', null),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      '700025'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      '2342342343242424'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      '蝴蝶',
+	                      _react2['default'].createElement('br', null),
+	                      '11122223333'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      _react2['default'].createElement(
+	                        'div',
+	                        { className: 'time' },
+	                        '2015-12-10',
+	                        _react2['default'].createElement('br', null),
+	                        '10:10:05'
+	                      )
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      { className: 'text-left' },
+	                      '姓名：蝴蝶',
+	                      _react2['default'].createElement('br', null),
+	                      '电话：11122223333',
+	                      _react2['default'].createElement('br', null),
+	                      _react2['default'].createElement(
+	                        'div',
+	                        { className: 'address-detail-td' },
+	                        _react2['default'].createElement(
+	                          'span',
+	                          { className: 'inline-block' },
+	                          '地址：'
+	                        ),
+	                        _react2['default'].createElement(
+	                          'span',
+	                          { className: 'address-all' },
+	                          '广东省深圳市福田区xxxxxxxxx'
+	                        )
+	                      ),
+	                      '建筑：中兴通讯'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      '陪送上门'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      { className: 'nowrap' },
+	                      '第三方预约',
+	                      _react2['default'].createElement('br', null),
+	                      _react2['default'].createElement(
+	                        'span',
+	                        { className: 'bordered' },
+	                        '大众点评网'
+	                      )
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      _react2['default'].createElement(
+	                        'strong',
+	                        { className: 'strong' },
+	                        '货到付款'
+	                      )
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      { className: 'nowrap' },
+	                      '总金额：xxxx ',
+	                      _react2['default'].createElement('br', null),
+	                      '应收：xxxx'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      _react2['default'].createElement(
+	                        'div',
+	                        { className: 'bg-success round' },
+	                        '已分配',
+	                        _react2['default'].createElement('br', null),
+	                        '配送站'
+	                      )
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      '车公庙配送中心'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      _react2['default'].createElement(
+	                        'div',
+	                        { className: 'time' },
+	                        '2015-12-10',
+	                        _react2['default'].createElement('br', null),
+	                        '10:10:10'
+	                      )
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      '是'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      '是'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      '深圳'
+	                    ),
+	                    _react2['default'].createElement('td', null),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      _react2['default'].createElement(
+	                        'div',
+	                        { className: 'remark-in-table' },
+	                        '车公庙车公庙车公庙车公庙车公庙车公庙'
+	                      )
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      '蝴蝶'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      '蝴蝶'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      _react2['default'].createElement(
+	                        'div',
+	                        { className: 'time' },
+	                        '2015-12-10',
+	                        _react2['default'].createElement('br', null),
+	                        '10:10:05',
+	                        _react2['default'].createElement('br', null),
+	                        _react2['default'].createElement(
+	                          'a',
+	                          { href: '#' },
+	                          '操作记录'
+	                        )
+	                      )
+	                    )
+	                  )
+	                )
+	              )
+	            )
+	          ),
+	          _react2['default'].createElement(_commonPagination2['default'], {
+	            current_page: this.state.current_page,
+	            total_count: 25,
+	            perpage_count: 10,
+	            onPageChange: this.onPageChange
+	          })
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'onPageChange',
+	    value: function onPageChange(page) {
+	      this.setState({ current_page: page });
+	    }
+	  }]);
+
+	  return ManagePannel;
+	})(_react.Component);
+
+	exports['default'] = ManagePannel;
+	module.exports = exports['default'];
+
+/***/ },
+/* 239 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var DateRangePicker = _react2['default'].createClass({
+	  displayName: 'DateRangePicker',
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      begin: '',
+	      end: '',
+	      className: ''
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      begin: this.props.begin,
+	      end: this.props.end
+	    };
+	  },
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+	    if (nextProps.begin != this.props.begin || nextProps.end != this.props.end) {
+	      this.setState({
+	        begin: nextProps.begin || this.state.begin,
+	        end: nextProps.end || this.state.end
+	      }, (function () {
+	        $([this.refs.begin, this.refs.end]).each(function () {
+	          $(this).data('datepicker').update();
+	        });
+	      }).bind(this));
+	    }
+	  },
+	  componentDidMount: function componentDidMount() {
+	    $(window).load((function () {
+	      var $begin = $(this.refs.begin).datepicker({
+	        format: 'yyyy-mm-dd'
+	      }).on('changeDate', (function (e) {
+	        this.props.onChange(e.target.value, $end.val());
+	        $begin.data('datepicker').hide();
+	        $end.focus();
+	      }).bind(this));
+	      var $end = $(this.refs.end).datepicker({
+	        format: 'yyyy-mm-dd'
+	      }).on('changeDate', (function (e) {
+	        this.props.onChange($begin.val(), e.target.value);
+	        $end.data('datepicker').hide();
+	      }).bind(this));
+	    }).bind(this));
+	  },
+	  onChange: function onChange() {}, //占位
+	  render: function render() {
+	    var classnames = "form-control input-sm input-nm-w " + this.props.className;
+	    return _react2['default'].createElement(
+	      'div',
+	      { style: { 'display': 'inline-block' } },
+	      _react2['default'].createElement('input', { ref: 'begin', value: this.props.begin, onChange: this.onChange, className: classnames }),
+	      ' ~ ',
+	      _react2['default'].createElement('input', { ref: 'end', value: this.props.end, onChange: this.onChange, className: classnames })
+	    );
+	  }
+	});
+
+	exports['default'] = DateRangePicker;
+	module.exports = exports['default'];
+
+/***/ },
+/* 240 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var React = __webpack_require__(2);
+	var Select = React.createClass({
+	  displayName: 'Select',
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      "default-text": '--请选择--',
+	      "default-value": -1,
+	      "options": [],
+	      "no-default": false
+	    };
+	  },
+	  render: function render() {
+	    var list = this.props.options.map(function (n) {
+	      return React.createElement(
+	        'option',
+	        { value: n.id, key: n.id },
+	        n.text
+	      );
+	    });
+	    var className = "form-control input-sm " + (this.props.className || '');
+	    this.props = _extends({}, this.props, { className: className });
+	    return React.createElement(
+	      'select',
+	      this.props,
+	      this.props['no-default'] ? null : React.createElement(
+	        'option',
+	        { value: this.props['default-value'] },
+	        this.props['default-text']
+	      ),
+	      list
+	    );
+	  }
+	});
+	module.exports = Select;
+
+/***/ },
+/* 241 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var Pagination = _react2["default"].createClass({
+	    displayName: "Pagination",
+
+	    getDefaultProps: function getDefaultProps() {
+	        return {
+	            random_btn_active: true,
+	            random_btn_show: true,
+	            perpage_count: 20, //每页显示20条
+	            total_count: 0,
+	            current_page: 0,
+	            page_num_show: 10, //分页的页码，显示10个
+	            onPageChange: null //,
+	            //onPageChangeBefore: null
+	        };
+	    },
+	    _calc_pages: function _calc_pages() {
+	        var total_count = this.props.total_count;
+	        var perpage_count = this.props.perpage_count;
+	        var current_page = this.props.current_page;
+
+	        if (total_count < 0 || total_count == Infinity) {
+	            var total_pages = -1;
+	        } else {
+	            var total_pages = Math.ceil(total_count / perpage_count);
+	        }
+	        this.total_pages = total_pages;
+
+	        //分页的分页~
+	        var page_num_show = this.props.page_num_show;
+	        if (total_pages == -1) {
+	            //Infinity处理
+	            var pagesOfpage = -1;
+	        } else {
+	            var pagesOfpage = Math.ceil(total_pages / page_num_show);
+	        }
+	        var cpageOfPage = Math.floor(current_page / page_num_show);
+	        var long_prev = cpageOfPage > 0;
+	        var long_next = cpageOfPage < pagesOfpage - 1 || pagesOfpage == -1;
+
+	        var page_num_start = cpageOfPage * page_num_show;
+	        if (total_pages == -1) {
+	            var page_num_end = (cpageOfPage + 1) * page_num_show;
+	        } else {
+	            var page_num_end = Math.min((cpageOfPage + 1) * page_num_show, total_pages);
+	        }
+
+	        return {
+	            "current_page": current_page,
+	            "total_pages": total_pages,
+
+	            "start": page_num_start,
+	            "end": page_num_end,
+	            "long_prev": long_prev,
+	            "long_next": long_next
+	        };
+	    },
+	    _selectPage: function _selectPage(page) {
+	        // if (this.props.onPageChangeBefore){
+	        //     this.props.onPageChangeBefore(page);
+	        // }
+	        if (this.props.onPageChange) {
+	            this.props.onPageChange(page);
+	            /*
+	            this.setState({
+	                current_page: page
+	            }, function(){
+	                this.props.onPageChange(page);
+	            });
+	            */
+	        }
+	    },
+	    _prevPage: function _prevPage() {
+	        if (this.props.current_page > 0) {
+	            this._selectPage(this.props.current_page - 1);
+	        }
+	    },
+	    _nextPage: function _nextPage() {
+	        var total_pages = this.total_pages;
+	        if (total_pages == -1 || this.props.current_page < total_pages - 1) {
+	            this._selectPage(this.props.current_page + 1);
+	        }
+	    },
+	    _longJumpPre: function _longJumpPre() {
+	        var pn = this.props.page_num_show;
+	        var page = Math.floor(this.props.current_page / pn) * pn - 1;
+	        this._selectPage(page);
+	    },
+	    _longJumpNext: function _longJumpNext() {
+	        var pn = this.props.page_num_show;
+	        var page = Math.floor(this.props.current_page / pn + 1) * pn;
+	        this._selectPage(page);
+	    },
+	    render: function render() {
+	        var page_info = this._calc_pages();
+	        var total_pages = page_info.total_pages;
+
+	        var preDisabledCls = page_info.current_page > 0 ? "" : " disabled",
+	            nextDisabledCls = total_pages == -1 || page_info.current_page < total_pages - 1 ? "" : " disabled";
+
+	        var longNextStyle = { display: 'none' },
+	            longPreStyle = { display: 'none' };
+	        if (page_info.long_next) {
+	            longNextStyle = {};
+	        }
+	        if (page_info.long_prev) {
+	            longPreStyle = {};
+	        }
+
+	        var lastPageStyle = longNextStyle;
+	        if (total_pages == -1) {
+	            //无穷大的页码就不能显示最后一页按钮
+	            lastPageStyle = { display: 'none' };
+	        }
+
+	        var page_numbers = [];
+	        for (var n = page_info.start; n < page_info.end && this.props.random_btn_show; n++) {
+	            var actived = n == page_info.current_page;
+	            var classnames = 'paginate_button';
+	            if (this.props.random_btn_active) {
+	                classnames += actived ? ' active' : '';
+	                page_numbers.push(_react2["default"].createElement(
+	                    "li",
+	                    { className: classnames, onClick: this._selectPage.bind(this, n), key: n },
+	                    _react2["default"].createElement(
+	                        "a",
+	                        { href: "javascript:;" },
+	                        n + 1
+	                    )
+	                ));
+	            } else {
+	                if (actived) {
+	                    classnames += " active";
+	                } else {
+	                    classnames += " disabled";
+	                }
+	                page_numbers.push(_react2["default"].createElement(
+	                    "li",
+	                    { className: classnames, key: n },
+	                    _react2["default"].createElement(
+	                        "a",
+	                        { href: "javascript:;" },
+	                        n + 1
+	                    )
+	                ));
+	            }
+	        }
+
+	        var firstPage, longJumpPre, lastPage, longJumpNext;
+	        if (this.props.random_btn_show) {
+	            //TODO random_btn_active
+
+	            firstPage = _react2["default"].createElement(
+	                "li",
+	                { className: "paginate_button", style: longPreStyle, onClick: this._selectPage.bind(this, 0) },
+	                _react2["default"].createElement(
+	                    "a",
+	                    { href: "javascript:;" },
+	                    "首页"
+	                )
+	            );
+	            longJumpPre = _react2["default"].createElement(
+	                "li",
+	                { className: "paginate_button", style: longPreStyle, onClick: this._longJumpPre },
+	                _react2["default"].createElement(
+	                    "a",
+	                    { href: "javascript:;" },
+	                    "..."
+	                )
+	            );
+
+	            lastPage = _react2["default"].createElement(
+	                "li",
+	                { className: "paginate_button", style: lastPageStyle, onClick: this._selectPage.bind(this, total_pages - 1) },
+	                _react2["default"].createElement(
+	                    "a",
+	                    { href: "javascript:;" },
+	                    "末页"
+	                )
+	            );
+	            longJumpNext = _react2["default"].createElement(
+	                "li",
+	                { className: "paginate_button", style: longNextStyle, onClick: this._longJumpNext },
+	                _react2["default"].createElement(
+	                    "a",
+	                    { href: "javascript:;" },
+	                    "..."
+	                )
+	            );
+	        }
+
+	        return _react2["default"].createElement(
+	            "div",
+	            { className: "clearfix", style: { "padding": "0 20px" } },
+	            _react2["default"].createElement(
+	                "ul",
+	                { className: "pagination pull-right" },
+	                _react2["default"].createElement(
+	                    "li",
+	                    { className: 'paginate_button previous' + preDisabledCls, onClick: this._prevPage },
+	                    _react2["default"].createElement(
+	                        "a",
+	                        { href: "javascript:;" },
+	                        "«"
+	                    )
+	                ),
+	                firstPage,
+	                longJumpPre,
+	                page_numbers,
+	                longJumpNext,
+	                lastPage,
+	                _react2["default"].createElement(
+	                    "li",
+	                    { className: 'paginate_button next' + nextDisabledCls, onClick: this._nextPage },
+	                    _react2["default"].createElement(
+	                        "a",
+	                        { href: "javascript:;" },
+	                        "»"
+	                    )
+	                )
+	            ),
+	            _react2["default"].createElement(
+	                "div",
+	                { style: { 'lineHeight': '31px', 'marginRight': '15px' } },
+	                '共' + this.props.total_count + '项'
+	            )
+	        );
+	    }
+	});
+
+	exports["default"] = Pagination;
+	module.exports = exports["default"];
+
+/***/ },
+/* 242 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 	var _redux = __webpack_require__(219);
 
-	var _reduxLogger = __webpack_require__(239);
+	var _reduxLogger = __webpack_require__(243);
 
 	var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
 
-	var _reduxThunk = __webpack_require__(240);
+	var _reduxThunk = __webpack_require__(244);
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-	var _reducersLogin = __webpack_require__(241);
+	var _reducersLogin = __webpack_require__(245);
 
 	var _reducersLogin2 = _interopRequireDefault(_reducersLogin);
 
@@ -27561,7 +28385,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 239 */
+/* 243 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27706,7 +28530,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 240 */
+/* 244 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -27728,7 +28552,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 241 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

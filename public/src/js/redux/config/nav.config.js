@@ -1,6 +1,7 @@
 export default [{
   "key": "order_management",
   "name": "订单管理",
+  "short_name": "订单",
   "icon": "clipboard",
   "link": [{
       "key": "om_index",

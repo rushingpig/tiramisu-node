@@ -42,7 +42,7 @@ var d = function(file_path){
 *  concat common css, 
 */
 gulp.task('css', function(){
-  gulp.src([s('css/normalize.css'), s('css/bs.css')])
+  gulp.src([s('css/normalize.css'), s('css/bs.css'), s('css/datepicker.css')])
   .pipe(concat('common.css'))
   .pipe(minifyCss())
   .pipe(gulp.dest(d('css')));

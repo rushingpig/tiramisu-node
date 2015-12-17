@@ -2,7 +2,7 @@
   .header-section {
     position: fixed;
     top: 0;
-    left: 240px;
+    left: $left-side-w;
     width: 100%;
     z-index: 100;
   }
@@ -28,7 +28,7 @@
   cursor: pointer;
   float: left;
   color: #212121;
-  border-right: 1px solid #e7e7e7;
+  border-right: 1px solid $theme-light-color;
   transition: all 0.2s ease-out 0s;
 
   &:hover {

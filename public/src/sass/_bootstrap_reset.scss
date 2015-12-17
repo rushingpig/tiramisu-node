@@ -69,7 +69,11 @@
 }
 
 /*pagination*/
-
+.pagination {
+    font-size: 12px;
+    margin-right: 20px;
+    margin-top: 0;
+}
 .pagination > li > a, .pagination > li > span {
     background-color: #EFF2F7;
     border: 1px solid #EFF2F7;
@@ -90,8 +94,8 @@
 .pagination > li.active > a:hover,
 
 .pager li > a:hover, .pager li > a:focus{
-    background-color: #65CEA7;
-    border-color: #65CEA7;
+    background-color: $pagination-color;
+    border-color: $pagination-color;
     color: #fff;
 }
 
@@ -100,7 +104,12 @@
     border: 1px solid #EFF2F7;
     color: #535351;
 }
-
+.pagination > .disabled > span, .pagination > .disabled > span:hover, .pagination > .disabled > span:focus, .pagination > .disabled > a, .pagination > .disabled > a:hover, .pagination > .disabled > a:focus {
+    color: #aaa;
+    background-color: #EFF2F7;
+    border-color: #EFF2F7;
+    cursor: not-allowed;
+}
 /*button*/
 
 .btn-primary {
@@ -198,4 +207,21 @@
     background-color: #D9534F;
     border-color: #D9534F;
     color: #fff;
+}
+
+.table > thead > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > th,
+.table > tbody > tr > td,
+.table > tfoot > tr > th,
+.table > tfoot > tr > td {
+    text-align: center;
+    vertical-align: middle;
+    font-size: 12px;
+    padding: 8px;
+}
+.table > thead > tr > th,
+.table > thead > tr > td {
+    white-space: nowrap;
+    font-size: 14px;
 }

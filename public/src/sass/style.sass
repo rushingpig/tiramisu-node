@@ -1,6 +1,6 @@
+@import "variables"
 @import "bootstrap/_bootstrap.scss"
 @import "bootstrap_reset.scss"
-@import "variables"
 @import "mixins"
 @import "extend"
 @import "base"
@@ -14,16 +14,20 @@ html,body,body>section
 // .login-hide
 //   #app-container
 //     opacity: 1
-.main-content
+.right-side
   @extend .h100
-  margin-left: 240px
-  background: #eff0f4
+  margin-left: $left-side-w
+  background: $theme-bg-color
   min-height: 1000px
-.login-hide
   .main-content
+    padding: 12px
+.login-hide
+  .right-side
     display: block
 
 @import "nav"
 @import "login.scss"
 @import "header.scss"
 @import "content.scss"
+
+@import "order_manage.scss"

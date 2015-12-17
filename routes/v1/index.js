@@ -12,7 +12,9 @@ var router = express.Router(config.exp_router_options);
 // service module
 var paymentRouter = require('./payment');
 var service = require('../../service'),
-    addressService = service.address;
+    addressService = service.address,
+    deliveryService = service.delivery,
+    orderService = service.order;
 
 var v = express.Router(config.exp_router_options);
 var a = express.Router(config.exp_router_options);
@@ -28,6 +30,8 @@ a.get('/provinces',addressService.getProvinces);
 a.get('/province/:provinceId/cities',addressService.getCities);
 //a.get(/^\/city\/(\d+)\/districts$/,addressService.getDistricts);
 a.get('/city/:cityId/districts',addressService.getDistricts);
+a.get('/stations',deliveryService.getDeliveryStationList);
+a.get('/srcs',orderService.getOrderSrcList);
 //=====================router for business end======================
 
 

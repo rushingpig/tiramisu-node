@@ -10,4 +10,6 @@ module.exports = {
     menu : require('./sys/menu_dao'),
     user : require('./sys/user_dao'),
     address : require('./sys/address_dao'),
+    delivery : require('./buss/delivery/delivery_dao'),
+    order : require('./buss/order/order_dao'),
 }

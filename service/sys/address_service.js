@@ -32,26 +32,36 @@ AddressService.prototype.getProvinces = (req, res, next)=> {
         res.api(data);
     });
 };
+/**
+ * get city list by province id
+ * @param req
+ * @param res
+ * @param next
+ */
 AddressService.prototype.getCities = (req, res, next)=> {
     let provinceId = req.params.provinceId;
-    systemUtils.wrapService(next, addressDao.findCitiesByProvinceId(provinceId)
-            .then((results)=> {
-                let data = {};
-                if (!results || results.length == 0) {
-                    res.api(res_obj.NO_MORE_RESULTS, null);
-                    return;
-                }
-                results.forEach((curr, index, arra)=> {
-                    data[curr.id] = curr.name;
-                });
-                res.api(data);
-            })
+    systemUtils.wrapService(next, addressDao.findCitiesByProvinceId(provinceId).then((results)=> {
+            let data = {};
+            if (!results || results.length == 0) {
+                res.api(res_obj.NO_MORE_RESULTS, null);
+                return;
+            }
+            results.forEach((curr, index, arra)=> {
+                data[curr.id] = curr.name;
+            });
+            res.api(data);
+        })
     );
 };
+/**
+ * get districts by city id
+ * @param req
+ * @param res
+ * @param next
+ */
 AddressService.prototype.getDistricts = (req, res, next)=> {
     let cityId = req.params.cityId;
-    systemUtils.wrapService(next, addressDao.findDistrictsByCityId(cityId)
-        .then((results)=> {
+    systemUtils.wrapService(next, addressDao.findDistrictsByCityId(cityId).then((results)=> {
             let data = {};
             if (!results || results.length == 0) {
                 res.api(res_obj.NO_MORE_RESULTS, null);

@@ -33,9 +33,9 @@ function form(state = {}, action){
   }
 }
 
-const rootReducer = combineReducers({
+const loginReducer = combineReducers({
   login,
   form
 })
 
-export default rootReducer
+export default loginReducer

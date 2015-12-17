@@ -41,18 +41,3 @@
     padding: 2px 3px;
   }
 }
-
-.line-router {
-  font-size: 14px;
-  font-weight: bold;
-  .node {
-    border-bottom: 2px solid;
-    display: inline-block;
-    cursor: pointer;
-  }
-  .active {
-    border-bottom: none;
-    color: $theme-font-color;
-    cursor: default;
-  }
-}

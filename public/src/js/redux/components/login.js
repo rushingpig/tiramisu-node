@@ -99,7 +99,8 @@ var Login = React.createClass({
 });
 
 function mapStateToProps(state){
-  return {...state.login, ...state.form};
+  var s = state.login
+  return {...s.login, ...s.form};
 }
 
 // function mapDispatchToProps(dispatch) {

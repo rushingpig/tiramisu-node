@@ -1,6 +1,8 @@
 .sticky-header{
   .right-side {
+    overflow: auto;
     padding-top: 50px;
+    // font-size: 12px;
   }
 }
 .login-show, .login-show .right-side {

@@ -1,9 +1,58 @@
-import React, {Component} from 'react';
-import DateRangePicker from '../common/dateRangePicker';
+import React, {Component, PropTypes} from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as OrderManageActions from '../../actions/order_manage';
+import DatePicker from '../common/datepicker';
 import Select from '../common/select';
 import Pagination from '../common/pagination';
 
-export default class ManagePannel extends Component {
+class TopHeader extends Component {
+  render(){
+    return (
+      <div className="clearfix top-header">
+        <button className="btn btn-theme pull-left">添加订单</button>
+        <div className="pull-right line-router">
+          <span className="node">总订单页面</span>
+          <span>{'　/　'}</span>
+          <span className="node active">处理页面</span>
+        </div>
+      </div>
+    )
+  }
+}
+
+class FilterHeader extends Component {
+  render(){
+    var { start_date, distribute_date, startDateChange, distributeDateChange } = this.props;
+    return (
+      <div className="panel search">
+        <div className="panel-body form-inline">
+          <div className="search-input inline-block">
+            <input className="form-control input-sm" placeholder="关键字" />
+            <i className="fa fa-search"></i>
+          </div>
+          {' 开始时间'}
+          <DatePicker date={start_date} onChange={startDateChange} />
+          {' 配送时间'}
+          <DatePicker date={distribute_date} onChange={distributeDateChange} />
+          <Select className="space"/>
+          <Select className="space"/>
+          <Select className="space"/>
+          <Select className="space"/>
+          <button className="btn btn-theme btn-sm"><i className="fa fa-search"></i></button>
+        </div>
+      </div>
+    )
+  }
+}
+FilterHeader.propTypes = {
+  start_date: PropTypes.string.isRequired,
+  distribute_date: PropTypes.string.isRequired,
+  startDateChange: PropTypes.func.isRequired,
+  distributeDateChange: PropTypes.func.isRequired
+}
+
+class ManagePannel extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -11,33 +60,13 @@ export default class ManagePannel extends Component {
     };
   }
   render(){
+    var {filter, startDateChange, distributeDateChange} = this.props;
+    filter = { ...filter, ...{startDateChange, distributeDateChange} };
     return (
       <div className="order-manage">
 
-        <div className="clearfix top-header">
-          <button className="btn btn-theme pull-left">添加订单</button>
-          <div className="pull-right line-router">
-            <span className="node">总订单页面</span>
-            <span>{'　/　'}</span>
-            <span className="node active">处理页面</span>
-          </div>
-        </div>
-        <div className="panel search">
-          <div className="panel-body form-inline">
-            <div className="search-input inline-block">
-              <input className="form-control input-sm" placeholder="关键字" />
-              <i className="fa fa-search"></i>
-            </div>
-            {' 时间'}
-            <DateRangePicker />
-            <Select className="space"/>
-            <Select className="space"/>
-            <Select className="space"/>
-            <Select className="space"/>
-            <button className="btn btn-theme btn-sm"><i className="fa fa-search"></i></button>
-          </div>
-        </div>
-
+        <TopHeader />
+        <FilterHeader {...filter} />
 
         <div className="panel">
           <header className="panel-heading">订单列表</header>
@@ -122,3 +151,15 @@ export default class ManagePannel extends Component {
     this.setState({current_page: page});
   }
 }
+
+function mapStateToProps(state){
+  return state.orderManage;
+}
+
+/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
+function mapDispatchToProps(dispatch){
+  return bindActionCreators(OrderManageActions, dispatch);
+}
+
+// export default connect(mapStateToProps, OrderManageActions)(ManagePannel);
+export default connect(mapStateToProps, mapDispatchToProps)(ManagePannel);

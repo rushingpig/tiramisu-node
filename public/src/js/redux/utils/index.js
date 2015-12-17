@@ -99,6 +99,40 @@ function getDate(base, offset) {
   return dateFormat(newDate, 'yyyy-MM-dd');
 };
 
+/**
+ * Applies a function to every key-value pair inside an object.
+ *
+ * @param {Object} obj The source object.
+ * @param {Function} fn The mapper function that receives the value and the key.
+ * @returns {Object} A new object that contains the mapped values for the keys.
+ */
+function mapValues(obj, fn) {
+  return Object.keys(obj).reduce((result, key) => {
+    result[key] = fn(obj[key], key)
+    return result
+  }, {})
+}
+function each(target, cb) {
+  if (target && typeof target === 'object') {
+    if (core_isArray(target)) {
+      //target.forEach(target, cb);
+      for (var i = 0, len = target.length; i < len; i++)
+        cb(target[i], i);
+    } else {
+      for (var a in target)
+        cb(target[a], a);
+    }
+  }
+}
+function map(target, cb) {
+  var res = [];
+  each(target, function(n, i) {
+    res.push(cb(n, i));
+  });
+  return res;
+}
+
+
 export default {
   core: {
     isArray: core_isArray,
@@ -113,4 +147,9 @@ export default {
   },
   dateFormat,
   getDate,
+
+  //对象、数组
+  mapValues,
+  each,
+  map,
 };

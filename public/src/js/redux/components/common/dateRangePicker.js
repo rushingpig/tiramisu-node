@@ -1,5 +1,4 @@
 import React from 'react';
-import {dateFormat} from '../../utils/index';
 
 var DateRangePicker = React.createClass({
   getDefaultProps: function() {
@@ -28,7 +27,7 @@ var DateRangePicker = React.createClass({
     }
   },
   componentDidMount: function() {
-    $(window).load(function(){
+    $(function(){
       var $begin = $(this.refs.begin).datepicker({
         format: 'yyyy-mm-dd',
       }).on('changeDate', function(e) {

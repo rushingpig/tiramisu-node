@@ -1,3 +1,7 @@
+
+/**************************/
+/********* 实体类 **********/
+/**************************/
 body
   background: #fff
   font-family: 'sans-serif'
@@ -5,12 +9,38 @@ body
   perspective: 1000
   &.login_hide
     overflow: auto
+html,body,body>section
+  @extend .h100
+
+#app-container
+  @extend .h100
+  overflow: auto
+// #app-container
+//   transition: transform .8s
+//   opacity: 0
+// .login-hide
+//   #app-container
+//     opacity: 1
+
+.right-side
+  @extend .h100
+  margin-left: $left-side-w
+  background: $theme-bg-color
+  min-height: 1000px
+  .main-content
+    padding: 12px
+.login-hide
+  .right-side
+    display: block
 a
   @extend .no-text-deco
   &:hover
     @extend .no-text-deco
     color: $theme-color
 
+/**************************/
+/********* 修饰类 **********/
+/**************************/
 .inline-block
   display: inline-block !important
 
@@ -30,6 +60,24 @@ a
 .nowrap
   white-space: nowrap
 
+/**************************/
+/********* 组件类 **********/
+/**************************/
+.line-router
+  font-size: 14px
+  font-weight: bold
+  padding-bottom: 9px
+  .node
+    display: inline-block
+    cursor: pointer
+    border-bottom: 1px solid transparent
+    &:hover
+      border-color: $theme-black
+  .active
+    border-bottom: none
+    color: $theme-font-color
+    cursor: default
+
 .search-input
   position: relative
   &.form-inline
@@ -48,6 +96,12 @@ a
     right: 5px
     top: 9px
     cursor: pointer
+
+.form-inline
+  .form-control.input-date
+    width: 95px
+  .form-select.form-control
+    min-width: 146px
 
 .btn
   &.btn-theme

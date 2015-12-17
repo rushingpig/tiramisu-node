@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -3195,7 +3196,7 @@ button.close {
   white-space: nowrap;
   font-size: 14px; }
 
-.h100, html, body, body > section, .right-side {
+.h100, html, body, body > section, #app-container, .right-side {
   height: 100%; }
 
 .no-text-deco, .submenu-list-active, .left-side .sub-menu-list li a:hover, .left-side .sub-menu-list li a:active, .left-side .sub-menu-list li a:focus, .left-side .sub-menu-list li a.active, .left-side .sub-menu-list li.active a, a, a:hover {
@@ -3218,6 +3219,9 @@ button.close {
 .inline-block, .order-manage .address-all, .order-manage .bordered {
   display: inline-block; }
 
+/**************************/
+/********* 实体类 **********/
+/**************************/
 body {
   background: #fff;
   font-family: 'sans-serif';
@@ -3227,9 +3231,25 @@ body {
   body.login_hide {
     overflow: auto; }
 
+#app-container {
+  overflow: auto; }
+
+.right-side {
+  margin-left: 220px;
+  background: #fef8ee;
+  min-height: 1000px; }
+  .right-side .main-content {
+    padding: 12px; }
+
+.login-hide .right-side {
+  display: block; }
+
 a:hover {
   color: #fcdfb3; }
 
+/**************************/
+/********* 修饰类 **********/
+/**************************/
 .inline-block, .order-manage .address-all, .order-manage .bordered {
   display: inline-block !important; }
 
@@ -3254,6 +3274,24 @@ a:hover {
 .nowrap {
   white-space: nowrap; }
 
+/**************************/
+/********* 组件类 **********/
+/**************************/
+.line-router {
+  font-size: 14px;
+  font-weight: bold;
+  padding-bottom: 9px; }
+  .line-router .node {
+    display: inline-block;
+    cursor: pointer;
+    border-bottom: 1px solid transparent; }
+    .line-router .node:hover {
+      border-color: #4A4947; }
+  .line-router .active {
+    border-bottom: none;
+    color: #D8A85F;
+    cursor: default; }
+
 .search-input {
   position: relative; }
   .search-input.form-inline {
@@ -3271,6 +3309,12 @@ a:hover {
     top: 9px;
     cursor: pointer; }
 
+.form-inline .form-control.input-date {
+  width: 95px; }
+
+.form-inline .form-select.form-control {
+  min-width: 146px; }
+
 .btn.btn-theme {
   color: #fff;
   background-color: #D2C398;
@@ -3280,16 +3324,6 @@ a:hover {
   color: #fff;
   background-color: #cab986;
   border-color: #c6b27c; }
-
-.right-side {
-  margin-left: 220px;
-  background: #fef8ee;
-  min-height: 1000px; }
-  .right-side .main-content {
-    padding: 12px; }
-
-.login-hide .right-side {
-  display: block; }
 
 .left-side {
   position: fixed;
@@ -3676,6 +3710,7 @@ a:hover {
   box-shadow: none; }
 
 .sticky-header .right-side {
+  overflow: auto;
   padding-top: 50px; }
 
 .login-show, .login-show .right-side {
@@ -3706,15 +3741,3 @@ a:hover {
 .order-manage .bordered {
   border-radius: 3px;
   padding: 2px 3px; }
-
-.line-router {
-  font-size: 14px;
-  font-weight: bold; }
-  .line-router .node {
-    border-bottom: 2px solid;
-    display: inline-block;
-    cursor: pointer; }
-  .line-router .active {
-    border-bottom: none;
-    color: #D8A85F;
-    cursor: default; }

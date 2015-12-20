@@ -3245,7 +3245,7 @@ body {
   display: block; }
 
 a:hover {
-  color: #fcdfb3; }
+  color: #D8A85F; }
 
 /**************************/
 /********* 修饰类 **********/
@@ -3309,11 +3309,18 @@ a:hover {
     top: 9px;
     cursor: pointer; }
 
+hr.dotted {
+  border: none;
+  border-bottom: 1px dotted rgba(0, 0, 0, 0.2); }
+
 .form-inline .form-control.input-date {
   width: 95px; }
 
 .form-inline .form-select.form-control {
   min-width: 146px; }
+
+.error, .error:focus, .error:active, .error:hover {
+  border-color: #FF6C60 !important; }
 
 .btn.btn-theme {
   color: #fff;

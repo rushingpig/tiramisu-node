@@ -76,7 +76,12 @@ if (app.get('env') === 'development') {
             message: err.message,
             error: err
         });
-        //res.renders('index',{isLogin : req.session.user ? true : false});
+    });
+}
+
+if (app.get('env') === 'dev') {
+    app.use(function (err, req, res, next) {
+        res.renders('index',{isLogin : req.session.user ? true : false});
     });
 }
 

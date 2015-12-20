@@ -23,7 +23,7 @@ class TopHeader extends Component {
 
 class FilterHeader extends Component {
   render(){
-    var { start_date, distribute_date, startDateChange, distributeDateChange } = this.props;
+    var { start_date, delivery_date, startDateChange, deliveryDateChange } = this.props;
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
@@ -34,7 +34,7 @@ class FilterHeader extends Component {
           {' 开始时间'}
           <DatePicker date={start_date} onChange={startDateChange} />
           {' 配送时间'}
-          <DatePicker date={distribute_date} onChange={distributeDateChange} />
+          <DatePicker date={delivery_date} onChange={deliveryDateChange} />
           <Select className="space"/>
           <Select className="space"/>
           <Select className="space"/>
@@ -47,9 +47,9 @@ class FilterHeader extends Component {
 }
 FilterHeader.propTypes = {
   start_date: PropTypes.string.isRequired,
-  distribute_date: PropTypes.string.isRequired,
+  delivery_date: PropTypes.string.isRequired,
   startDateChange: PropTypes.func.isRequired,
-  distributeDateChange: PropTypes.func.isRequired
+  deliveryDateChange: PropTypes.func.isRequired
 }
 
 class ManagePannel extends Component {
@@ -60,8 +60,8 @@ class ManagePannel extends Component {
     };
   }
   render(){
-    var {filter, startDateChange, distributeDateChange} = this.props;
-    filter = { ...filter, ...{startDateChange, distributeDateChange} };
+    var {filter, startDateChange, deliveryDateChange} = this.props;
+    filter = { ...filter, ...{startDateChange, deliveryDateChange} };
     return (
       <div className="order-manage">
 
@@ -87,7 +87,7 @@ class ManagePannel extends Component {
                   <th>总金额</th>
                   <th>订单状态</th>
                   <th>配送站</th>
-                  <th>送达时间</th>
+                  <th>配送时间</th>
                   <th>是否提交</th>
                   <th>是否处理</th>
                   <th>所属城市</th>

@@ -1,0 +1,28 @@
+
+var MyMap = function(){
+  this.callback = null;
+  this.d = $.Deferred();
+}
+
+MyMap.prototype._initialize = function() {
+  var container = document.createElement('div');
+  container.style.display = 'none';
+  var id = 'bmap' + new Date().getTime();
+  container.setAttribute('id', id);
+  document.body.appendChild(container);
+  var mp = new BMap.Map(id);
+  this.d.resolve(mp);
+};
+   
+MyMap.prototype.create = function(callback) {  
+  window._bmap_callback = this._initialize.bind(this);
+
+  var script = document.createElement("script");
+  script.src = "http://api.map.baidu.com/api?v=2.0&ak=dxF5GZW6CHlR4GCQ9kKynOcc&callback=_bmap_callback";//此为v2.0版本的引用方式  
+  // http://api.map.baidu.com/api?v=1.4&ak=您的密钥&callback=initialize"; //此为v1.4版本及以前版本的引用方式  
+  document.body.appendChild(script);
+
+  this.d.done(callback);
+}
+
+export default new MyMap();

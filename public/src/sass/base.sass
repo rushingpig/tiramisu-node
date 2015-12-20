@@ -36,7 +36,7 @@ a
   @extend .no-text-deco
   &:hover
     @extend .no-text-deco
-    color: $theme-color
+    color: $theme-font-color
 
 /**************************/
 /********* 修饰类 **********/
@@ -96,13 +96,17 @@ a
     right: 5px
     top: 9px
     cursor: pointer
-
+hr.dotted
+  border: none
+  border-bottom: 1px dotted rgba(0, 0, 0, 0.2)
 .form-inline
   .form-control.input-date
     width: 95px
   .form-select.form-control
     min-width: 146px
 
+.error,.error:focus, .error:active, .error:hover
+  border-color: #FF6C60 !important
 .btn
   &.btn-theme
     color: #fff

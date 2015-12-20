@@ -1,14 +1,14 @@
 import { combineReducers } from 'redux';
 import { area } from './area_select';
-import { DISTRIBUTE_TYPE_CHANGE } from '../actions/order_manage_add';
+import { GOT_ORDER_SRCS, GOT_DELIVERY_STATIONS} from '../actions/order_manage_add';
 import { map } from '../utils/index';
 import { 
-  DISTRIBUTE_TO_HOME,
+  DELIVERY_TO_HOME,
+  DELIVERY_TIME_MAP,
   pay_status
 } from '../config/app.config';
 
 var initial_state = {
-  distribute_type: DISTRIBUTE_TO_HOME,
   // owner_name: '',
   // owner_mobile: '',
   // recipient_name: '', //下单人姓名
@@ -25,12 +25,27 @@ var initial_state = {
   // invoice: '',
 
   all_pay_status: map(pay_status, (text, id) => ({id, text})),
+  all_delivery_time: DELIVERY_TIME_MAP.map(n => ({id: n, text: n})),
+  all_order_srcs: [],
+  delivery_stations: [],
 }
 
 function addForm(state = initial_state, action) {
   switch(action.type) {
-    case DISTRIBUTE_TYPE_CHANGE:
-      return {...state, ...{ distribute_type: action.method }};
+    case GOT_ORDER_SRCS:
+      var l1 = [], l2 = [];
+      //level最多为2级
+      action.data.forEach(n => {
+        n.text = n.name;  //转换
+        if(n.level == 1){
+          l1.push(n);
+        }else{
+          l2.push(n);
+        }
+      })
+      return {...state, ...{all_order_srcs: !l2.length ? [l1] : [l1, l2]} }
+    case GOT_DELIVERY_STATIONS:
+      return {...state, ...{delivery_stations: map(action.data, (text, id) => ({id, text}))} }
     default:
       return state;
   }

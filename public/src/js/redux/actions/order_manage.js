@@ -12,7 +12,7 @@ export function startDateChange(date){
   }
 }
 
-export function distributeDateChange(date){
+export function deliveryDateChange(date){
   return {
     type: DISTRIBUTE_DATE_CHANGE,
     date

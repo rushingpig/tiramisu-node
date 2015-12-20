@@ -6,7 +6,7 @@ var _now = dateFormat(new Date(), 'yyyy-MM-dd');
 var initial_state = {
   filter: {
     start_date: _now,
-    distribute_date: _now,
+    delivery_date: _now,
   }
 }
 
@@ -15,7 +15,7 @@ function filter(state = initial_state.filter, action){
     case START_DATE_CHANGE:
       return {...state, ...{start_date: action.date}};
     case DISTRIBUTE_DATE_CHANGE:
-      return {...state, ...{distribute_date: action.date}};
+      return {...state, ...{delivery_date: action.date}};
     default:
       return state
   }

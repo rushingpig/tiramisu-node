@@ -14,7 +14,7 @@ function config_index() {
         config, fileStats,
         tiramisu_env = process.env.NODE_ENV;
 
-    if (!tiramisu_env || 'development' === tiramisu_env) {
+    if (!tiramisu_env || 'development' === tiramisu_env || 'dev' === tiramisu_env) {
         try {
             fileStats = fs.statSync(localConfigFilePath);
         } catch (err) {

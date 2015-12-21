@@ -8,16 +8,9 @@
 "use strict";
 module.exports = {
     isEmptyArray : function(array){
-        if(!Array.isArray(array) || !array || array.length === 0){
-            return true;
-        }
-        return false;
+        return !Array.isArray(array) || !array || array.length === 0;
     },
     isEmptyObject : function(object){
-        if(!object || this.isEmptyArray(Object.keys(object))){
-            return true;
-        }
-        return false;
+        return !object || this.isEmptyArray(Object.keys(object));
     },
-
 };

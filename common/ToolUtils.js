@@ -7,8 +7,14 @@
  */
 "use strict";
 module.exports = {
-    isEmptyArray : (array)=>{
+    isEmptyArray : function(array){
         if(!Array.isArray(array) || !array || array.length === 0){
+            return true;
+        }
+        return false;
+    },
+    isEmptyObject : function(object){
+        if(!object || this.isEmptyArray(Object.keys(object))){
             return true;
         }
         return false;

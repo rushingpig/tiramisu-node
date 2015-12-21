@@ -31,7 +31,10 @@ a.get('/province/:provinceId/cities',addressService.getCities);
 //a.get(/^\/city\/(\d+)\/districts$/,addressService.getDistricts);
 a.get('/city/:cityId/districts',addressService.getDistricts);
 a.get('/stations',deliveryService.getDeliveryStationList);
-a.get('/srcs',orderService.getOrderSrcList);
+a.get('/order/srcs',orderService.getOrderSrcList);
+a.post('/order/add',orderService.addOrder);
+a.get('/pay/modes',orderService.getPayModeList);
+a.get('/district/:districtId/shops',orderService.getShopList);
 //=====================router for business end======================
 
 

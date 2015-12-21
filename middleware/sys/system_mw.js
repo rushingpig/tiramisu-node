@@ -7,7 +7,8 @@
  */
 "use strict";
 var clone = require('clone');
-var res_obj = require('../../util/res_obj');
+var res_obj = require('../../util/res_obj'),
+    toolUtils = require('../../common/ToolUtils');
 
 function SystemMiddleware(type) {
     this.type = type;
@@ -35,9 +36,24 @@ SystemMiddleware.prototype = {
             res.api = api(res);
             next();
         } else {
-            throw new Error('The res instance should not be empty...');
+            next(new Error('The res instance should not be empty...'));
         }
     },
+    debugReqAndResParams: function (req, res, next) {
+        let tiramisu_env = process.env.NODE_ENV;
+        if (!tiramisu_env || 'dev' === tiramisu_env || 'development' === tiramisu_env) {
+            console.log('******************** 请⃝求⃝参⃝数⃝ **********************');
+            let requestMethod = req.method.toLowerCase();
+            if ('get' === requestMethod) {
+                let query_or_params = toolUtils.isEmptyObject(req.query) ? req.params : req.query;
+                console.log('query/params -> \n', query_or_params);
+            } else {
+                console.log('body -> \n', JSON.stringify(req.body, null, 2));
+            }
+            console.log('********************************************************');
+        }
+        next();
+    }
 };
 /**
  * <b>
@@ -62,11 +78,11 @@ function api(res) {
                 temp = clone(res_obj.OK);
                 temp.data = data;
                 return res.json(temp);
-            } else if(res_tpl){
+            } else if (res_tpl) {
                 temp = clone(res_tpl);
                 temp.data = data || {};
                 return res.json(temp);
-            }else{
+            } else {
                 temp = clone(res_obj.OK);
                 temp.data = data || {};
                 return res.json(temp);

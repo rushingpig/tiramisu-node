@@ -38,7 +38,7 @@ BaseDao.update = function(sql,params){
             if(err){
                 reject(err);
             }else{
-                resolve(result.changedRows);
+                resolve(results.affectedRows);
             }
         });
     });
@@ -49,13 +49,18 @@ BaseDao.insert = (sql,params) => {
             if(err){
                 reject(err);
             }else{
-                resolve(result.affectedRows);
+                resolve(results.insertId);
             }
         });
     });
 };
 BaseDao.delete = function(sql,params){
     return BaseDao.insert(sql,params);
+};
+
+BaseDao.del_flag = {
+    SHOW : 1,
+    HIDE : 0
 };
 
 

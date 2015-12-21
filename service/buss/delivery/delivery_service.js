@@ -21,6 +21,7 @@ function DeliveryService(){
  * @param next
  */
 DeliveryService.prototype.getDeliveryStationList = (req,res,next)=>{
+
     systemUtils.wrapService(next,deliveryDao.findAllStations().then(results=>{
         if(toolUils.isEmptyArray(results)){
             res.api(res_obj.NO_MORE_RESULTS);

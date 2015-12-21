@@ -1,16 +1,17 @@
 /*
+ Navicat Premium Data Transfer
 
  Source Server         : self
  Source Server Type    : MySQL
  Source Server Version : 50626
  Source Host           : localhost
- Source Database       : tiramisu
+ Source Database       : test
 
  Target Server Type    : MySQL
  Target Server Version : 50626
  File Encoding         : utf-8
 
- Date: 12/17/2015 10:32:27 AM
+ Date: 12/21/2015 11:12:22 AM
 */
 
 SET NAMES utf8;
@@ -54,7 +55,7 @@ CREATE TABLE `buss_delivery_station` (
 --  Records of `buss_delivery_station`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_delivery_station` VALUES ('2', '440307', '龙岗配送中心', null, null, '1', '2015-12-17 09:21:07', null, null, '0');
+INSERT INTO `buss_delivery_station` VALUES ('1', '440307', '龙岗配送中心', null, null, '1', '2015-12-17 09:21:07', null, null, '0');
 COMMIT;
 
 -- ----------------------------
@@ -62,15 +63,17 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `buss_order`;
 CREATE TABLE `buss_order` (
-  `id` varchar(32) NOT NULL COMMENT '订单号',
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '订单号',
   `recipient_id` int(11) NOT NULL COMMENT '收货人id',
   `delivery_id` int(11) NOT NULL COMMENT '配送站id',
   `src_id` int(11) unsigned NOT NULL COMMENT '订单来源id',
-  `status` enum('CANCEL','UNTREATED','STATION','INLINE','DELIVERY','COMPLETED','EXCEPTION') NOT NULL DEFAULT 'UNTREATED' COMMENT '取消，未处理，分配配送站，生产中，配送员配送中，已完成，异常',
   `shop_id` int(10) unsigned DEFAULT NULL COMMENT '如果delivery_type为''TAKETHEIR'' 时为门店ID，否则为空',
+  `pay_modes_id` int(10) unsigned DEFAULT NULL,
+  `status` enum('CANCEL','UNTREATED','STATION','INLINE','DELIVERY','COMPLETED','EXCEPTION') NOT NULL DEFAULT 'UNTREATED' COMMENT '取消，未处理，分配配送站，生产中，配送员配送中，已完成，异常',
   `pay_status` enum('COD','REFUNDING','REFUNDED','PAYED') NOT NULL DEFAULT 'PAYED' COMMENT '货到付款，退款中，已退款，已付款',
-  `is_submit` tinyint(1) NOT NULL COMMENT '是否提交（0：false，1：true）',
-  `is_deal` tinyint(1) NOT NULL COMMENT '是否处理（0：false，1：true）',
+  `is_submit` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否提交（0：false，1：true）',
+  `is_deal` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否处理（0：false，1：true）',
+  `delivery_time` varchar(255) DEFAULT NULL,
   `cancel_reason` varchar(255) DEFAULT NULL COMMENT '取消理由',
   `remarks` varchar(255) DEFAULT NULL COMMENT '备注',
   `invoice` varchar(255) DEFAULT NULL COMMENT '发票的相关信息',
@@ -120,7 +123,7 @@ CREATE TABLE `buss_order_product` (
   `custom_name` varchar(255) DEFAULT NULL COMMENT '自定义名称',
   `custom_desc` varchar(255) DEFAULT NULL COMMENT '自定义描述',
   PRIMARY KEY (`order_id`,`product_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单--产品中间表\n';
 
 -- ----------------------------
 --  Table structure for `buss_order_src`
@@ -128,6 +131,8 @@ CREATE TABLE `buss_order_product` (
 DROP TABLE IF EXISTS `buss_order_src`;
 CREATE TABLE `buss_order_src` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '父级ID',
+  `level` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '层级',
   `name` varchar(100) DEFAULT NULL COMMENT '来源名称',
   `sort` tinyint(1) DEFAULT '0' COMMENT '排序规则',
   `created_by` int(11) DEFAULT NULL COMMENT '创建人',
@@ -136,13 +141,13 @@ CREATE TABLE `buss_order_src` (
   `updated_date` datetime DEFAULT NULL,
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '删除标志（0：不显示；1：显示）',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='订单来源';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='订单来源';
 
 -- ----------------------------
 --  Records of `buss_order_src`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_order_src` VALUES ('1', '幸福商城', '0', null, null, null, null, '1');
+INSERT INTO `buss_order_src` VALUES ('1', '0', '1', '幸福商城', '0', '1', '2015-12-21 11:03:03', null, null, '1'), ('2', '1', '2', '官网', '0', '1', '2015-12-21 11:03:28', null, null, '1'), ('3', '0', '1', '第三方预约', '0', '1', '2015-12-21 11:03:51', null, null, '1');
 COMMIT;
 
 -- ----------------------------
@@ -158,7 +163,14 @@ CREATE TABLE `buss_pay_modes` (
   `updated_date` datetime DEFAULT NULL COMMENT '更新时间',
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '删除标志',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='支付方式';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='支付方式';
+
+-- ----------------------------
+--  Records of `buss_pay_modes`
+-- ----------------------------
+BEGIN;
+INSERT INTO `buss_pay_modes` VALUES ('1', '支付宝', '1', '2015-12-18 12:52:51', null, null, '1'), ('2', '财付通', '1', '2015-12-18 12:53:11', null, null, '1');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `buss_product`
@@ -229,7 +241,14 @@ CREATE TABLE `buss_shop` (
   `created_date` datetime DEFAULT NULL COMMENT '创建时间',
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '软删除/是否显示（0：不显示；1：显示）',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='店铺信息';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='店铺信息';
+
+-- ----------------------------
+--  Records of `buss_shop`
+-- ----------------------------
+BEGIN;
+INSERT INTO `buss_shop` VALUES ('1', '440307', '龙岗区龙岗店', '龙岗店', '8:00~23:00', null, null, null, '1', '2015-12-21 10:15:44', '1');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `dict_regionalism`

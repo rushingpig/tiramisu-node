@@ -13,7 +13,7 @@ var res_obj = require('../../../util/res_obj'),
     orderDao = dao.order;
 
 function OrderService(){
-    
+
 }
 /**
  * get all delivery station list
@@ -86,6 +86,7 @@ OrderService.prototype.addOrder = (req,res,next) =>{
             invoice : invoice,
             delivery_time : delivery_time,
             created_date : new Date(),
+            // TODO: the 1 hack should be removed before going into production
             created_by : req.userId || 1,
         };
         return orderDao.insertOrder(orderObj);

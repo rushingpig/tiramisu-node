@@ -17,6 +17,7 @@ function _end_callback(resolve, reject){
   };
 }
 
+//基本封装
 export function get(url, data){
   return new Promise(function(resolve, reject){
     req.get(url)
@@ -33,4 +34,40 @@ export function post(url, data){
       .set('X-Requested-With', 'XMLHttpRequest')
       .end(_end_callback(resolve, reject));
   });
+}
+
+//最简封装
+export function GET(url, query_data, action_type){
+  return (dispatch) => {
+    return get(url, query_data)
+      .done(function(data){
+        dispatch({
+          type: action_type,
+          data
+        })
+      })
+  }
+}
+
+export function POST(url, query_data, action_type){
+  return (dispatch) => {
+    return post(url, query_data)
+      .done(function(data){
+        dispatch({
+          type: action_type,
+          data
+        })
+      })
+  }
+}
+
+export function TEST(data, signal, time){
+  return (dispatch) => {
+    setTimeout(function(){
+      dispatch({
+        type: signal,
+        data
+      });
+    }, time || 400);
+  }
 }

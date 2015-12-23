@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux';
 import { area } from './area_select';
-import { GOT_ORDER_SRCS, GOT_DELIVERY_STATIONS} from '../actions/order_manage_add';
+import { GOT_ORDER_SRCS, GOT_DELIVERY_STATIONS, GOT_PAY_MODES,
+  SAVE_ORDER_INFO_ING, SAVE_ORDER_INFO_SUCCESS, SAVE_ORDER_INFO_FAIL} from '../actions/order_manage_add';
+import { GOT_CATEGORIES, SEARCH_PRODUCTS } from '../actions/order_products';
 import { map } from '../utils/index';
 import { 
   DELIVERY_TO_HOME,
@@ -28,6 +30,11 @@ var initial_state = {
   all_delivery_time: DELIVERY_TIME_MAP.map(n => ({id: n, text: n})),
   all_order_srcs: [],
   delivery_stations: [],
+  all_pay_modes: [],
+
+  save_ing: false,
+  save_success: true,
+  submitting: false,
 }
 
 function addForm(state = initial_state, action) {
@@ -46,6 +53,33 @@ function addForm(state = initial_state, action) {
       return {...state, ...{all_order_srcs: !l2.length ? [l1] : [l1, l2]} }
     case GOT_DELIVERY_STATIONS:
       return {...state, ...{delivery_stations: map(action.data, (text, id) => ({id, text}))} }
+    case GOT_PAY_MODES:
+      return {...state, ...{all_pay_modes: map(action.data, (text, id) => ({id, text}))}}
+    case SAVE_ORDER_INFO_ING:
+      return {...state, ...{save_ing: true}}
+    case SAVE_ORDER_INFO_SUCCESS:
+      return {...state, ...{save_success: true, save_ing: false}}
+    case SAVE_ORDER_INFO_FAIL:
+      return {...state, ...{save_success: false, save_ing: false}}
+    default:
+      return state;
+  }
+}
+
+//正在选择的商品
+var products_choosing_state = {
+  all_categories: [],
+  search_results: {
+    total: 0,
+    list: []
+  },
+};
+function products_choosing(state = products_choosing_state, action){
+  switch(action.type){
+    case GOT_CATEGORIES:
+      return {...state, ...{all_categories: map(action.data, (text, id) => ({id, text}))}};
+    case SEARCH_PRODUCTS:
+      return {...state, ...{search_results: action.data}};
     default:
       return state;
   }
@@ -54,6 +88,9 @@ function addForm(state = initial_state, action) {
 const orderAddReducer = combineReducers({
   area,
   addForm,
+  products: combineReducers({
+    products_choosing,
+  }),
 })
 
 export default orderAddReducer

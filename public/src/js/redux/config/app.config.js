@@ -5,8 +5,8 @@ export default {
   success_code: '0000',
   SELECT_DEFAULT_VALUE: '-1',
 
-  DELIVERY_TO_HOME: 'TAKETHEIR', //配送上门
-  DELIVERY_TO_STORE: 'DELIVERY', //门店自提
+  DELIVERY_TO_HOME: 'DELIVERY', //配送上门
+  DELIVERY_TO_STORE: 'TAKETHEIR', //门店自提
   DELIVERY_TIME_MAP: [
     '09:00～10:00',
     '09:30～10:30',

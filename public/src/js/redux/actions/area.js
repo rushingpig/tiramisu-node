@@ -10,7 +10,7 @@ export const GOT_DISTRICTS = 'GOT_DISTRICTS';
 export const GOT_AREA_FAIL = 'GOT_AREA_FAIL';
 
 export function getProvinces(){
-  return _resolve(Url.provinces, GOT_PROVINCES);
+  return _resolve(Url.provinces.toString(), GOT_PROVINCES);
   // return {
   //   type: GOT_PROVINCES,
   //   data: {1: '广东省', 2: '湖北省', 3: '湖南省'}

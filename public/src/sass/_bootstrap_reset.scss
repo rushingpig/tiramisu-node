@@ -126,7 +126,9 @@
 
 
 /*modal*/
-
+.modal-dialog {
+    z-index: 1500;
+}
 .modal-content {
     box-shadow: none;
     border: none;
@@ -135,8 +137,9 @@
 }
 
 .modal-header {
-    background: #65CEA7;
-    color: #fff;
+    // background: #65CEA7;
+    background: $theme-color;
+    color: $theme-black;
     border-radius: 0;
     -webkit-border-radius: 0;
     border: none;
@@ -158,6 +161,9 @@
 
 /*form elements*/
 
+.form-group {
+    margin-bottom: 8px;
+}
 .form-group label {
     font-weight: normal;
 }
@@ -224,4 +230,7 @@
 .table > thead > tr > td {
     white-space: nowrap;
     font-size: 14px;
+}
+.table > tbody + tbody{
+    border-top: none;
 }

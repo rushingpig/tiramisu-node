@@ -67,7 +67,7 @@
 
 	var _reactRedux = __webpack_require__(212);
 
-	var _storesConfigureStore = __webpack_require__(289);
+	var _storesConfigureStore = __webpack_require__(295);
 
 	var _storesConfigureStore2 = _interopRequireDefault(_storesConfigureStore);
 
@@ -19362,8 +19362,8 @@
 	  success_code: '0000',
 	  SELECT_DEFAULT_VALUE: '-1',
 
-	  DELIVERY_TO_HOME: 'TAKETHEIR', //配送上门
-	  DELIVERY_TO_STORE: 'DELIVERY', //门店自提
+	  DELIVERY_TO_HOME: 'DELIVERY', //配送上门
+	  DELIVERY_TO_STORE: 'TAKETHEIR', //门店自提
 	  DELIVERY_TIME_MAP: ['09:00～10:00', '09:30～10:30', '10:00～11:00', '10:30～11:30', '11:00～12:00', '11:30～12:30', '12:00～13:00', '12:30～13:30', '13:00～14:00', '13:30～14:30', '14:00～15:00', '14:30～15:30', '15:00～16:00', '15:30～16:30', '16:00～17:00', '16:30～17:30', '17:00～18:00', '17:30～18:30', '18:00～19:00', '18:30～19:30', '19:00～20:00', '20:30～21:30', '21:00～22:00', '21:30～22:30', '22:00～23:00'],
 
 	  pay_status: {
@@ -25908,7 +25908,7 @@
 	    dispatch({
 	      type: LOGIN_START
 	    });
-	    return (0, _utilsRequest.post)(_configUrl2['default'].login, { username: username, password: password }).done(function (json) {
+	    return (0, _utilsRequest.post)(_configUrl2['default'].login.toString(), { username: username, password: password }).done(function (json) {
 	      dispatch({
 	        type: LOGIN_SUCCESS
 	      });
@@ -25946,6 +25946,9 @@
 	});
 	exports.get = get;
 	exports.post = post;
+	exports.GET = GET;
+	exports.POST = POST;
+	exports.TEST = TEST;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -25976,6 +25979,8 @@
 	  };
 	}
 
+	//基本封装
+
 	function get(url, data) {
 	  return new _utilsPromise2['default'](function (resolve, reject) {
 	    _superagent2['default'].get(url).query(data).set('X-Requested-With', 'XMLHttpRequest').end(_end_callback(resolve, reject));
@@ -25986,6 +25991,41 @@
 	  return new _utilsPromise2['default'](function (resolve, reject) {
 	    _superagent2['default'].post(url).send(data).set('X-Requested-With', 'XMLHttpRequest').end(_end_callback(resolve, reject));
 	  });
+	}
+
+	//最简封装
+
+	function GET(url, query_data, action_type) {
+	  return function (dispatch) {
+	    return get(url, query_data).done(function (data) {
+	      dispatch({
+	        type: action_type,
+	        data: data
+	      });
+	    });
+	  };
+	}
+
+	function POST(url, query_data, action_type) {
+	  return function (dispatch) {
+	    return post(url, query_data).done(function (data) {
+	      dispatch({
+	        type: action_type,
+	        data: data
+	      });
+	    });
+	  };
+	}
+
+	function TEST(data, signal, time) {
+	  return function (dispatch) {
+	    setTimeout(function () {
+	      dispatch({
+	        type: signal,
+	        data: data
+	      });
+	    }, time || 400);
+	  };
 	}
 
 /***/ },
@@ -27434,11 +27474,18 @@
 	  /*********************************/
 	  var url = {
 	    login: '/login',
+
 	    provinces: '/provinces',
 	    cities: '/province/:provinceId/cities',
 	    districts: '/city/:cityId/districts',
 	    delivery_stations: '/stations',
-	    order_srcs: '/srcs'
+	    order_srcs: '/order/srcs',
+	    order_add: '/order/add',
+	    pay_modes: '/pay/modes',
+
+	    //产品
+	    categories: '/product/categories',
+	    products: '/products'
 	  };
 
 	  for (var a in url) {
@@ -28601,35 +28648,31 @@
 
 	var _reactRedux = __webpack_require__(212);
 
-	var _reduxForm = __webpack_require__(244);
+	var _redux = __webpack_require__(219);
 
-	// import { bindActionCreators } from 'redux';
-
-	var _actionsArea = __webpack_require__(286);
+	var _actionsArea = __webpack_require__(244);
 
 	var AreaActions = _interopRequireWildcard(_actionsArea);
 
-	var _actionsOrder_manage_add = __webpack_require__(287);
+	var _actionsOrder_manage_add = __webpack_require__(245);
 
 	var OrderAddActions = _interopRequireWildcard(_actionsOrder_manage_add);
-
-	var _utilsMyMap = __webpack_require__(288);
-
-	var _utilsMyMap2 = _interopRequireDefault(_utilsMyMap);
 
 	var _commonDatepicker = __webpack_require__(240);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonSelect = __webpack_require__(241);
+	var _commonAlert = __webpack_require__(246);
 
-	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+	var _commonAlert2 = _interopRequireDefault(_commonAlert);
 
-	var _commonPagination = __webpack_require__(242);
+	var _manage_add_form = __webpack_require__(247);
 
-	var _commonPagination2 = _interopRequireDefault(_commonPagination);
+	var _manage_add_form2 = _interopRequireDefault(_manage_add_form);
 
-	var _configAppConfig = __webpack_require__(157);
+	var _manage_add_products = __webpack_require__(291);
+
+	var _manage_add_products2 = _interopRequireDefault(_manage_add_products);
 
 	var TopHeader = (function (_Component) {
 	  _inherits(TopHeader, _Component);
@@ -28672,6 +28715,420 @@
 	  return TopHeader;
 	})(_react.Component);
 
+	var ManageAddPannel = (function (_Component2) {
+	  _inherits(ManageAddPannel, _Component2);
+
+	  function ManageAddPannel() {
+	    _classCallCheck(this, ManageAddPannel);
+
+	    _get(Object.getPrototypeOf(ManageAddPannel.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(ManageAddPannel, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var addForm = _props.addForm;
+	      var area = _props.area;
+	      var dispatch = _props.dispatch;
+	      var save_ing = _props.save_ing;
+	      var save_success = _props.save_success;
+	      var submitting = _props.submitting;
+	      var products = _props.products;
+
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'order-manage' },
+	        _react2['default'].createElement(TopHeader, null),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'panel' },
+	          _react2['default'].createElement(
+	            'header',
+	            { className: 'panel-heading' },
+	            '订单详情'
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'panel-body' },
+	            _react2['default'].createElement(_manage_add_form2['default'], {
+	              ref: 'ManageAddForm',
+	              'form-data': addForm,
+	              area: area,
+	              actions: _extends({}, (0, _redux.bindActionCreators)(AreaActions, dispatch), (0, _redux.bindActionCreators)(OrderAddActions, dispatch)) }),
+	            _react2['default'].createElement('hr', { className: 'dotted' }),
+	            _react2['default'].createElement(_manage_add_products2['default'], _extends({ dispatch: dispatch }, products)),
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'form-group' },
+	              save_success != undefined && !save_success ? _react2['default'].createElement(
+	                _commonAlert2['default'],
+	                { type: 'danger' },
+	                '保存信息失败'
+	              ) : null,
+	              _react2['default'].createElement(
+	                'button',
+	                {
+	                  onClick: this.handleSave.bind(this),
+	                  disabled: save_ing,
+	                  'data-submitting': save_ing,
+	                  className: 'btn btn-theme btn-sm' },
+	                '保存信息'
+	              ),
+	              '　　',
+	              _react2['default'].createElement(
+	                'button',
+	                { disabled: submitting, 'data-submitting': submitting, className: 'btn btn-theme btn-sm' },
+	                '保存'
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'handleSave',
+	    value: function handleSave() {
+	      this.props.foo();
+	      // this.refs.ManageAddForm.props.handleSubmit(this.mergeState);
+	    }
+	  }, {
+	    key: 'mergeState',
+	    value: function mergeState(data) {
+	      var _this = this;
+
+	      //redux-form的缘故，这里必须异步，否则errors为空对象
+	      setTimeout(function () {
+	        var errors = _this.refs.ManageAddForm.props.errors;
+	        var _props2 = _this.props;
+	        var dispatch = _props2.dispatch;
+	        var saveOrderInfo = _props2.saveOrderInfo;
+
+	        if (!Object.keys(errors).length) {
+	          data.delivery_id = 1;
+	          data.delivery_time = data.delivery_date + ' ' + data.delivery_hours;
+	          delete data.delivery_date;
+	          delete data.delivery_hours;
+	          dispatch(saveOrderInfo(data)); //这个地方就只能手动dispatch了
+	        }
+	      }, 0);
+	    }
+	  }]);
+
+	  return ManageAddPannel;
+	})(_react.Component);
+
+	ManageAddPannel.PropTypes = {
+	  saveOrderInfo: _react.PropTypes.func.isRequired
+	};
+
+	function mapStateToProps(_ref) {
+	  var orderManageAdd = _ref.orderManageAdd;
+
+	  return orderManageAdd;
+	}
+	function mapDispatchToProps(dispatch) {
+	  var actions = (0, _redux.bindActionCreators)(OrderAddActions, dispatch);
+	  actions.dispatch = dispatch; //不绑定的话，dispatch传不到 ManageAddPannel了，(￣◇￣;)
+	  return actions;
+	}
+
+	//bindActionCreators: dispatch(action) --> 自动加上dispatch --> reducer
+	//redux-thunk       : dispatch(action) --> reducer         --> 异步代码执行，thunk 提供dispatch
+
+	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ManageAddPannel);
+	module.exports = exports['default'];
+
+/***/ },
+/* 244 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.getProvinces = getProvinces;
+	exports.provinceReset = provinceReset;
+	exports.getCities = getCities;
+	exports.cityReset = cityReset;
+	exports.getDistricts = getDistricts;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _utilsRequest = __webpack_require__(230);
+
+	//Promise
+
+	var _configUrl = __webpack_require__(235);
+
+	var _configUrl2 = _interopRequireDefault(_configUrl);
+
+	var GOT_PROVINCES = 'GOT_PROVINCES';
+	exports.GOT_PROVINCES = GOT_PROVINCES;
+	var PROVINCE_RESET = 'PROVINCE_RESET';
+	exports.PROVINCE_RESET = PROVINCE_RESET;
+	var GOT_CITIES = 'GOT_CITIES';
+	exports.GOT_CITIES = GOT_CITIES;
+	var CITY_RESET = 'CITY_RESET';
+	exports.CITY_RESET = CITY_RESET;
+	var GOT_DISTRICTS = 'GOT_DISTRICTS';
+	exports.GOT_DISTRICTS = GOT_DISTRICTS;
+	var GOT_AREA_FAIL = 'GOT_AREA_FAIL';
+
+	exports.GOT_AREA_FAIL = GOT_AREA_FAIL;
+
+	function getProvinces() {
+	  return _resolve(_configUrl2['default'].provinces.toString(), GOT_PROVINCES);
+	  // return {
+	  //   type: GOT_PROVINCES,
+	  //   data: {1: '广东省', 2: '湖北省', 3: '湖南省'}
+	  // }
+	}
+
+	function provinceReset() {
+	  return {
+	    type: PROVINCE_RESET
+	  };
+	}
+
+	function getCities(province_id) {
+	  return _resolve(_configUrl2['default'].cities.toString(province_id), GOT_CITIES);
+	  // return {
+	  //   type: GOT_CITIES,
+	  //   data: {1: '深圳市', 2: '武汉市', 3: '长沙市'}
+	  // }
+	}
+
+	function cityReset() {
+	  return {
+	    type: CITY_RESET
+	  };
+	}
+
+	function getDistricts(city_id) {
+	  return _resolve(_configUrl2['default'].districts.toString(city_id), GOT_DISTRICTS);
+	  // return {
+	  //   type: GOT_DISTRICTS,
+	  //   data: {1: '南山区', 2: '宝安区', 3: '福田区'}
+	  // }
+	}
+
+	function _resolve(url, signal) {
+	  return function (dispatch) {
+	    return (0, _utilsRequest.get)(url).done(function (json) {
+	      dispatch({
+	        type: signal,
+	        data: json
+	      });
+	    }).fail(function (msg) {
+	      dispatch({
+	        type: GOT_AREA_FAIL,
+	        msg: msg
+	      });
+	    });
+	  };
+	}
+
+/***/ },
+/* 245 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.getOrderSrcs = getOrderSrcs;
+	exports.foo = foo;
+	exports.getDeliveryStations = getDeliveryStations;
+	exports.getPayModes = getPayModes;
+	exports.saveOrderInfo = saveOrderInfo;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _utilsRequest = __webpack_require__(230);
+
+	//Promise
+
+	var _configUrl = __webpack_require__(235);
+
+	var _configUrl2 = _interopRequireDefault(_configUrl);
+
+	var GOT_ORDER_SRCS = 'GOT_ORDER_SRCS';
+	exports.GOT_ORDER_SRCS = GOT_ORDER_SRCS;
+
+	function getOrderSrcs() {
+	  return (0, _utilsRequest.GET)(_configUrl2['default'].order_srcs.toString(), null, GOT_ORDER_SRCS);
+	  // return TEST({
+	  //   type: GOT_ORDER_SRCS,
+	  //   data: [
+	  //     {id: 1, name: 'A1', level: 1},
+	  //     {id: 2, name: 'A2', level: 1},
+	  //     {id: 3, name: 'A3', level: 1},
+	  //     {id: 4, name: 'B1', level: 2, parent_id: 1},
+	  //     {id: 5, name: 'B2', level: 2, parent_id: 2}
+	  //   ]
+	  // });
+	}
+
+	function foo() {
+	  return {
+	    TYPE: 'XXXXXXXXXX'
+	  };
+	}
+
+	var GOT_DELIVERY_STATIONS = 'GOT_DELIVERY_CENTER';
+	exports.GOT_DELIVERY_STATIONS = GOT_DELIVERY_STATIONS;
+
+	function getDeliveryStations() {
+	  return (0, _utilsRequest.GET)(_configUrl2['default'].delivery_stations.toString(), null, GOT_DELIVERY_STATIONS);
+	}
+
+	var GOT_PAY_MODES = 'GOT_PAY_MODES';
+	exports.GOT_PAY_MODES = GOT_PAY_MODES;
+
+	function getPayModes() {
+	  return (0, _utilsRequest.GET)(_configUrl2['default'].pay_modes.toString(), null, GOT_PAY_MODES);
+	}
+
+	var SAVE_ORDER_INFO_ING = 'SAVE_ORDER_INFO_ING';
+	exports.SAVE_ORDER_INFO_ING = SAVE_ORDER_INFO_ING;
+	var SAVE_ORDER_INFO_SUCCESS = 'SAVE_ORDER_INFO_SUCCESS';
+	exports.SAVE_ORDER_INFO_SUCCESS = SAVE_ORDER_INFO_SUCCESS;
+	var SAVE_ORDER_INFO_FAIL = 'SAVE_ORDER_INFO_FAIL';
+	exports.SAVE_ORDER_INFO_FAIL = SAVE_ORDER_INFO_FAIL;
+
+	function saveOrderInfo(data) {
+	  return function (dispatch) {
+	    dispatch({
+	      type: SAVE_ORDER_INFO_ING
+	    });
+	    (0, _utilsRequest.post)(_configUrl2['default'].order_add.toString(), data).done(function () {
+	      dispatch({
+	        type: SAVE_ORDER_INFO_SUCCESS
+	      });
+	    }).fail(function () {
+	      dispatch({
+	        type: SAVE_ORDER_INFO_FAIL
+	      });
+	    });
+	  };
+	}
+
+/***/ },
+/* 246 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var Alert = (function (_Component) {
+	  _inherits(Alert, _Component);
+
+	  function Alert() {
+	    _classCallCheck(this, Alert);
+
+	    _get(Object.getPrototypeOf(Alert.prototype), "constructor", this).apply(this, arguments);
+	  }
+
+	  _createClass(Alert, [{
+	    key: "render",
+	    value: function render() {
+	      var type = this.props.type;
+
+	      return _react2["default"].createElement(
+	        "div",
+	        { className: "alert alert-block alert-" + type + " fade in" },
+	        _react2["default"].createElement(
+	          "button",
+	          { type: "button", className: "close close-sm", "data-dismiss": "alert" },
+	          _react2["default"].createElement("i", { className: "fa fa-times" })
+	        ),
+	        this.props.children
+	      );
+	    }
+	  }]);
+
+	  return Alert;
+	})(_react.Component);
+
+	exports["default"] = Alert;
+
+	Alert.PropTypes = {
+	  type: _react.PropTypes.string.isRequired
+	};
+	module.exports = exports["default"];
+
+/***/ },
+/* 247 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(154);
+
+	var _reduxForm = __webpack_require__(248);
+
+	var _utilsMyMap = __webpack_require__(290);
+
+	var _utilsMyMap2 = _interopRequireDefault(_utilsMyMap);
+
+	var _commonDatepicker = __webpack_require__(240);
+
+	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
+
+	var _commonSelect = __webpack_require__(241);
+
+	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+
+	var _commonPagination = __webpack_require__(242);
+
+	var _commonPagination2 = _interopRequireDefault(_commonPagination);
+
+	var _commonAlert = __webpack_require__(246);
+
+	var _commonAlert2 = _interopRequireDefault(_commonAlert);
+
+	var _configAppConfig = __webpack_require__(157);
+
 	var validate = function validate(values, _ref) {
 	  var form = _ref.form;
 
@@ -28684,6 +29141,7 @@
 	  function _v_s(key) {
 	    if (form[key] && form[key].touched && (!values[key] || values[key] == _configAppConfig.SELECT_DEFAULT_VALUE)) errors[key] = msg;
 	  }
+
 	  _v('owner_name');
 	  _v('owner_mobile');
 	  _v('recipient_name');
@@ -28693,7 +29151,7 @@
 	  _v('delivery_date');
 
 	  _v_s('regionalism_id');
-	  _v_s('delivery_id');
+	  // _v_s('delivery_id');
 	  _v_s('src_id');
 	  _v_s('pay_modes_id');
 	  _v_s('pay_status');
@@ -28702,26 +29160,24 @@
 	  return errors;
 	};
 
-	var ManageAddPannel = (function (_Component2) {
-	  _inherits(ManageAddPannel, _Component2);
+	var ManageAddForm = (function (_Component) {
+	  _inherits(ManageAddForm, _Component);
 
-	  function ManageAddPannel(props) {
-	    _classCallCheck(this, ManageAddPannel);
+	  function ManageAddForm(props) {
+	    _classCallCheck(this, ManageAddForm);
 
-	    _get(Object.getPrototypeOf(ManageAddPannel.prototype), 'constructor', this).call(this, props);
+	    _get(Object.getPrototypeOf(ManageAddForm.prototype), 'constructor', this).call(this, props);
 	    this.state = {
 	      invoices: [{ id: _configAppConfig.INVOICE.NO, text: '不需要' }, { id: _configAppConfig.INVOICE.YES, text: '需要' }],
 	      selected_order_src_level1_id: _configAppConfig.SELECT_DEFAULT_VALUE
 	    };
 	  }
 
-	  _createClass(ManageAddPannel, [{
+	  _createClass(ManageAddForm, [{
 	    key: 'render',
 	    value: function render() {
 	      var _props = this.props;
 	      var handleSubmit = _props.handleSubmit;
-	      var submitting = _props.submitting;
-	      var handleSaveInfo = _props.handleSaveInfo;
 	      var _props$fields = _props.fields;
 	      var delivery_type = _props$fields.delivery_type;
 	      var owner_name = _props$fields.owner_name;
@@ -28750,11 +29206,12 @@
 	      var //配送时段：几点到几点
 	      remarks = _props$fields.remarks;
 	      var invoice = _props$fields.invoice;
-	      var _props$addForm = this.props.addForm;
-	      var all_delivery_time = _props$addForm.all_delivery_time;
-	      var all_pay_status = _props$addForm.all_pay_status;
-	      var all_order_srcs = _props$addForm.all_order_srcs;
-	      var delivery_stations = _props$addForm.delivery_stations;
+	      var _props$formData = this.props['form-data'];
+	      var all_delivery_time = _props$formData.all_delivery_time;
+	      var all_pay_status = _props$formData.all_pay_status;
+	      var all_order_srcs = _props$formData.all_order_srcs;
+	      var delivery_stations = _props$formData.delivery_stations;
+	      var all_pay_modes = _props$formData.all_pay_modes;
 	      var _props$area = this.props.area;
 	      var provinces = _props$area.provinces;
 	      var cities = _props$area.cities;
@@ -28768,394 +29225,198 @@
 	      }) : [];
 
 	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'order-manage' },
-	        _react2['default'].createElement(TopHeader, null),
+	        'form',
+	        null,
 	        _react2['default'].createElement(
 	          'div',
-	          { className: 'panel' },
+	          { className: 'form-group form-inline' },
 	          _react2['default'].createElement(
-	            'header',
-	            { className: 'panel-heading' },
-	            '订单详情'
+	            'label',
+	            { className: 'control-label' },
+	            '　配送方式：'
 	          ),
 	          _react2['default'].createElement(
-	            'div',
-	            { className: 'panel-body' },
-	            _react2['default'].createElement(
-	              'form',
-	              null,
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  { className: 'control-label' },
-	                  '　配送方式：'
-	                ),
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  _react2['default'].createElement('input', _extends({ type: 'radio'
-	                  }, delivery_type, {
-	                    value: _configAppConfig.DELIVERY_TO_HOME,
-	                    checked: delivery_type.value == _configAppConfig.DELIVERY_TO_HOME })),
-	                  ' 陪送上门'
-	                ),
-	                '　',
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  _react2['default'].createElement('input', _extends({ type: 'radio'
-	                  }, delivery_type, {
-	                    value: _configAppConfig.DELIVERY_TO_STORE,
-	                    checked: delivery_type.value == _configAppConfig.DELIVERY_TO_STORE })),
-	                  ' 门店自提'
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '下单人姓名：'
-	                ),
-	                _react2['default'].createElement('input', _extends({}, owner_name, { className: 'form-control input-sm ' + owner_name.error, type: 'text' }))
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '下单人手机：'
-	                ),
-	                _react2['default'].createElement('input', _extends({}, owner_mobile, { className: 'form-control input-sm ' + owner_mobile.error, type: 'text' })),
-	                '　',
-	                _react2['default'].createElement(
-	                  'button',
-	                  { className: 'btn btn-default btn-sm' },
-	                  '查询历史订单'
-	                ),
-	                ' ',
-	                _react2['default'].createElement(
-	                  'button',
-	                  { className: 'btn btn-default btn-sm' },
-	                  '拨号'
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '收货人姓名：'
-	                ),
-	                _react2['default'].createElement('input', _extends({}, recipient_name, { className: 'form-control input-sm ' + recipient_name.error, type: 'text' }))
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '收货人手机：'
-	                ),
-	                _react2['default'].createElement('input', _extends({}, recipient_mobile, { className: 'form-control input-sm ' + recipient_mobile.error, type: 'text' }))
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? '收货人地址：' : '　选择分店：'
-	                ),
-	                _react2['default'].createElement(_commonSelect2['default'], { ref: 'province', options: provinces, onChange: this.onProvinceChange.bind(this) }),
-	                ' ',
-	                _react2['default'].createElement(_commonSelect2['default'], { ref: 'city', options: cities, onChange: this.onCityChange.bind(this) }),
-	                ' ',
-	                _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'district', options: districts }, regionalism_id, { className: '' + regionalism_id.error })),
-	                ' ',
-	                _react2['default'].createElement('input', _extends({ ref: 'recipient_address' }, recipient_address, { className: 'form-control input-sm ' + recipient_address.error, type: 'text' }))
-	              ),
-	              delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '标志性建筑：'
-	                ),
-	                _react2['default'].createElement('input', _extends({}, recipient_landmark, { className: 'form-control input-sm ' + recipient_landmark.error, type: 'text' }))
-	              ) : null,
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '　配送中心：'
-	                ),
-	                _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: delivery_stations, className: 'form-select ' + delivery_id.error }))
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '　订单来源：'
-	                ),
-	                all_order_srcs.length == 1 //2级
-	                ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, { options: all_order_srcs[0], key: 'order_srcs_level1', className: 'form-select ' + src_id.error })) : [_react2['default'].createElement(_commonSelect2['default'], { options: all_order_srcs[0], onChange: this.orderSrcsLevel1Change.bind(this), key: 'order_srcs_level1', className: 'form-select' }), ' ', order_srcs_level2.length ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, { options: order_srcs_level2, key: 'order_srcs_level2', className: 'form-select ' + src_id.error })) : null]
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '　支付方式：'
-	                ),
-	                _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_modes_id, { options: [], className: 'form-select ' + pay_modes_id.error }))
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '　支付状态：'
-	                ),
-	                _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_status, { options: all_pay_status, className: 'form-select ' + pay_status.error }))
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '　配送时间：'
-	                ),
-	                _react2['default'].createElement(_commonDatepicker2['default'], { 'redux-form': delivery_date, className: '' + delivery_date.error }),
-	                ' ',
-	                _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_hours, { options: all_delivery_time, className: '' + delivery_hours.error }))
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '　　　备注：'
-	                ),
-	                _react2['default'].createElement('textarea', _extends({}, remarks, { className: 'form-control input-sm', rows: '2', cols: '40' })),
-	                '　　',
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '发票备注：'
-	                ),
-	                _react2['default'].createElement(_commonSelect2['default'], _extends({}, invoice, { options: invoices, className: '' + invoice.error, 'no-default': 'true' }))
-	              )
-	            ),
-	            _react2['default'].createElement('hr', { className: 'dotted' }),
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'form-group' },
-	              '选择产品：',
-	              _react2['default'].createElement(
-	                'button',
-	                { className: 'btn btn-sm btn-theme' },
-	                '添加'
-	              )
-	            ),
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'table-responsive' },
-	              _react2['default'].createElement(
-	                'table',
-	                { className: 'table text-center' },
-	                _react2['default'].createElement(
-	                  'thead',
-	                  null,
-	                  _react2['default'].createElement(
-	                    'tr',
-	                    null,
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '产品名称'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '规格'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '原价'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '数量'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '实际售价'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '应收金额'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '巧克力牌'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '祝福贺卡'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '产品图册'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '自定义名称'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '自定义描述'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '操作'
-	                    )
-	                  )
-	                ),
-	                _react2['default'].createElement(
-	                  'tbody',
-	                  null,
-	                  _react2['default'].createElement(
-	                    'tr',
-	                    null,
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '自由拼'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '约2磅'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '138'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '1'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '69'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '0'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '妈妈生日快乐'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '生日快乐'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      _react2['default'].createElement('input', { type: 'checkbox' })
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '单恋黑森林，榴莲香雪，梨子沙滩，夏日鲜果'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '2磅1/4，方形'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      { className: 'nowrap' },
-	                      _react2['default'].createElement(
-	                        'a',
-	                        { href: 'javascript:;' },
-	                        '[编辑]'
-	                      ),
-	                      ' ',
-	                      _react2['default'].createElement(
-	                        'a',
-	                        { href: 'javascript:;' },
-	                        '[删除]'
-	                      )
-	                    )
-	                  )
-	                )
-	              )
-	            ),
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'form-group' },
-	              _react2['default'].createElement(
-	                'button',
-	                { onClick: handleSubmit(this.mergeState), disabled: submitting, className: 'btn btn-theme btn-sm' },
-	                '保存信息'
-	              ),
-	              '　　　',
-	              _react2['default'].createElement(
-	                'button',
-	                { className: 'btn btn-theme btn-sm' },
-	                '保存'
-	              )
-	            )
+	            'label',
+	            null,
+	            _react2['default'].createElement('input', _extends({ type: 'radio'
+	            }, delivery_type, {
+	              value: _configAppConfig.DELIVERY_TO_HOME,
+	              checked: delivery_type.value == _configAppConfig.DELIVERY_TO_HOME })),
+	            ' 配送上门'
+	          ),
+	          '　',
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            _react2['default'].createElement('input', _extends({ type: 'radio'
+	            }, delivery_type, {
+	              value: _configAppConfig.DELIVERY_TO_STORE,
+	              checked: delivery_type.value == _configAppConfig.DELIVERY_TO_STORE })),
+	            ' 门店自提'
 	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '下单人姓名：'
+	          ),
+	          _react2['default'].createElement('input', _extends({}, owner_name, { className: 'form-control input-sm ' + owner_name.error, type: 'text' }))
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '下单人手机：'
+	          ),
+	          _react2['default'].createElement('input', _extends({}, owner_mobile, { className: 'form-control input-sm ' + owner_mobile.error, type: 'text' })),
+	          '　',
+	          _react2['default'].createElement(
+	            'button',
+	            { className: 'btn btn-default btn-sm' },
+	            '查询历史订单'
+	          ),
+	          ' ',
+	          _react2['default'].createElement(
+	            'button',
+	            { className: 'btn btn-default btn-sm' },
+	            '拨号'
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '收货人姓名：'
+	          ),
+	          _react2['default'].createElement('input', _extends({}, recipient_name, { className: 'form-control input-sm ' + recipient_name.error, type: 'text' }))
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '收货人手机：'
+	          ),
+	          _react2['default'].createElement('input', _extends({}, recipient_mobile, { className: 'form-control input-sm ' + recipient_mobile.error, type: 'text' }))
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? '收货人地址：' : '　选择分店：'
+	          ),
+	          _react2['default'].createElement(_commonSelect2['default'], { ref: 'province', options: provinces, onChange: this.onProvinceChange.bind(this) }),
+	          ' ',
+	          _react2['default'].createElement(_commonSelect2['default'], { ref: 'city', options: cities, onChange: this.onCityChange.bind(this) }),
+	          ' ',
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'district', options: districts }, regionalism_id, { className: '' + regionalism_id.error })),
+	          ' ',
+	          _react2['default'].createElement('input', _extends({ ref: 'recipient_address' }, recipient_address, { className: 'form-control input-sm ' + recipient_address.error, type: 'text' }))
+	        ),
+	        delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '标志性建筑：'
+	          ),
+	          _react2['default'].createElement('input', _extends({}, recipient_landmark, { className: 'form-control input-sm ' + recipient_landmark.error, type: 'text' }))
+	        ) : null,
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　配送中心：'
+	          ),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: delivery_stations, className: 'form-select ' + delivery_id.error }))
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　订单来源：'
+	          ),
+	          all_order_srcs.length == 1 //2级
+	          ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, { options: all_order_srcs[0], key: 'order_srcs_level1', className: 'form-select ' + src_id.error })) : [order_srcs_level2.length ? _react2['default'].createElement(_commonSelect2['default'], { options: all_order_srcs[0], onChange: this.orderSrcsLevel1Change.bind(this), key: 'order_srcs_level1', className: 'form-select' }) : _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, { options: all_order_srcs[0], onChange: this.orderSrcsLevel1Change.bind(this), key: 'order_srcs_level1', className: 'form-select' })), ' ', order_srcs_level2.length ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, { options: order_srcs_level2, key: 'order_srcs_level2', className: 'form-select ' + src_id.error })) : null]
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　支付方式：'
+	          ),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_modes_id, { options: all_pay_modes, className: 'form-select ' + pay_modes_id.error }))
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　支付状态：'
+	          ),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_status, { options: all_pay_status, className: 'form-select ' + pay_status.error }))
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　配送时间：'
+	          ),
+	          _react2['default'].createElement(_commonDatepicker2['default'], { 'redux-form': delivery_date, className: '' + delivery_date.error }),
+	          ' ',
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_hours, { options: all_delivery_time, className: '' + delivery_hours.error }))
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　　　备注：'
+	          ),
+	          _react2['default'].createElement('textarea', _extends({}, remarks, { className: 'form-control input-sm', rows: '2', cols: '40' })),
+	          '　　',
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '发票备注：'
+	          ),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, invoice, { options: invoices, className: '' + invoice.error, 'no-default': 'true' }))
 	        )
 	      );
 	    }
 	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      var _props2 = this.props;
-	      var getProvinces = _props2.getProvinces;
-	      var getOrderSrcs = _props2.getOrderSrcs;
-	      var getDeliveryStations = _props2.getDeliveryStations;
+	      var _props$actions = this.props.actions;
+	      var getProvinces = _props$actions.getProvinces;
+	      var getOrderSrcs = _props$actions.getOrderSrcs;
+	      var getDeliveryStations = _props$actions.getDeliveryStations;
+	      var getPayModes = _props$actions.getPayModes;
 
 	      getProvinces();
-	      getOrderSrcs(); //有问题
+	      getOrderSrcs();
+	      getPayModes();
 
 	      var self = this;
 
@@ -29178,11 +29439,13 @@
 	              var localSearch = new BMap.LocalSearch(map);
 	              localSearch.setSearchCompleteCallback(function (searchResult) {
 	                var poi = searchResult.getPoi(0);
-	                console.log(poi.point.lng + "," + poi.point.lat);
-	                getDeliveryStations({
-	                  lng: poi.point.lng,
-	                  lat: poi.point.lat
-	                });
+	                if (poi) {
+	                  console.log(poi.point.lng + "," + poi.point.lat);
+	                  getDeliveryStations({
+	                    lng: poi.point.lng,
+	                    lat: poi.point.lat
+	                  });
+	                }
 	              });
 	              localSearch.search(district + detail);
 	            } else {
@@ -29212,17 +29475,41 @@
 	      this.setState({ selected_order_src_level1_id: e.target.value });
 	    }
 	  }, {
-	    key: 'mergeState',
-	    value: function mergeState(data) {
-	      console.log(data);
-	      return data;
+	    key: 'addProducts',
+	    value: function addProducts() {
+	      this.refs.productsModal.show();
 	    }
 	  }]);
 
-	  return ManageAddPannel;
+	  return ManageAddForm;
 	})(_react.Component);
 
-	ManageAddPannel = (0, _reduxForm.reduxForm)({
+	ManageAddForm.PropTypes = {
+	  form: _react.PropTypes.shape({
+	    all_delivery_time: _react.PropTypes.array.isRequired,
+	    all_pay_status: _react.PropTypes.array.isRequired,
+	    all_order_srcs: _react.PropTypes.array.isRequired,
+	    delivery_stations: _react.PropTypes.array.isRequired,
+	    all_pay_modes: _react.PropTypes.array.isRequired,
+	    save_ing: _react.PropTypes.bool.isRequired,
+	    save_success: _react.PropTypes.bool.isRequired
+	  }).isRequired,
+	  area: _react.PropTypes.shape({
+	    provinces: _react.PropTypes.array.isRequired,
+	    cities: _react.PropTypes.array.isRequired,
+	    districts: _react.PropTypes.array.isRequired
+	  }).isRequired,
+
+	  actions: _react.PropTypes.shape({
+	    getProvinces: _react.PropTypes.func.isRequired,
+	    getOrderSrcs: _react.PropTypes.func.isRequired,
+	    getDeliveryStations: _react.PropTypes.func.isRequired,
+	    getPayModes: _react.PropTypes.func.isRequired,
+	    saveOrderInfo: _react.PropTypes.func.isRequired
+	  }).isRequired
+	};
+
+	ManageAddForm = (0, _reduxForm.reduxForm)({
 	  form: 'add_order', //表单命名空间
 	  fields: ['delivery_type', 'owner_name', 'owner_mobile', 'recipient_name', //下单人姓名
 	  'recipient_mobile', 'recipient_address', //收货人详细地址----》送货上门
@@ -29243,19 +29530,15 @@
 	      invoice: _configAppConfig.INVOICE.NO
 	    }
 	  };
-	})(ManageAddPannel);
+	})(ManageAddForm);
 
-	function mapStateToProps(_ref2) {
-	  var orderManageAdd = _ref2.orderManageAdd;
-
-	  return orderManageAdd;
-	}
-
-	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, _extends({}, AreaActions, OrderAddActions))(ManageAddPannel);
+	exports['default'] = ManageAddForm;
 	module.exports = exports['default'];
 
+	// submitting,
+
 /***/ },
-/* 244 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29270,7 +29553,7 @@
 
 	var _reactRedux = __webpack_require__(212);
 
-	var _createAll2 = __webpack_require__(245);
+	var _createAll2 = __webpack_require__(249);
 
 	var _createAll3 = _interopRequireDefault(_createAll2);
 
@@ -29320,7 +29603,7 @@
 	exports.untouchWithKey = untouchWithKey;
 
 /***/ },
-/* 245 */
+/* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29335,35 +29618,35 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _reducer = __webpack_require__(246);
+	var _reducer = __webpack_require__(250);
 
 	var _reducer2 = _interopRequireDefault(_reducer);
 
-	var _createReduxForm = __webpack_require__(255);
+	var _createReduxForm = __webpack_require__(259);
 
 	var _createReduxForm2 = _interopRequireDefault(_createReduxForm);
 
-	var _mapValues = __webpack_require__(248);
+	var _mapValues = __webpack_require__(252);
 
 	var _mapValues2 = _interopRequireDefault(_mapValues);
 
-	var _bindActionData = __webpack_require__(262);
+	var _bindActionData = __webpack_require__(266);
 
 	var _bindActionData2 = _interopRequireDefault(_bindActionData);
 
-	var _actions = __webpack_require__(261);
+	var _actions = __webpack_require__(265);
 
 	var actions = _interopRequireWildcard(_actions);
 
-	var _actionTypes = __webpack_require__(247);
+	var _actionTypes = __webpack_require__(251);
 
 	var actionTypes = _interopRequireWildcard(_actionTypes);
 
-	var _createPropTypes = __webpack_require__(285);
+	var _createPropTypes = __webpack_require__(289);
 
 	var _createPropTypes2 = _interopRequireDefault(_createPropTypes);
 
-	var _getValuesFromState = __webpack_require__(251);
+	var _getValuesFromState = __webpack_require__(255);
 
 	var _getValuesFromState2 = _interopRequireDefault(_getValuesFromState);
 
@@ -29461,7 +29744,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 246 */
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29476,33 +29759,33 @@
 
 	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-	var _actionTypes = __webpack_require__(247);
+	var _actionTypes = __webpack_require__(251);
 
-	var _mapValues = __webpack_require__(248);
+	var _mapValues = __webpack_require__(252);
 
 	var _mapValues2 = _interopRequireDefault(_mapValues);
 
-	var _read = __webpack_require__(249);
+	var _read = __webpack_require__(253);
 
 	var _read2 = _interopRequireDefault(_read);
 
-	var _write = __webpack_require__(250);
+	var _write = __webpack_require__(254);
 
 	var _write2 = _interopRequireDefault(_write);
 
-	var _getValuesFromState = __webpack_require__(251);
+	var _getValuesFromState = __webpack_require__(255);
 
 	var _getValuesFromState2 = _interopRequireDefault(_getValuesFromState);
 
-	var _initializeState = __webpack_require__(252);
+	var _initializeState = __webpack_require__(256);
 
 	var _initializeState2 = _interopRequireDefault(_initializeState);
 
-	var _resetState = __webpack_require__(253);
+	var _resetState = __webpack_require__(257);
 
 	var _resetState2 = _interopRequireDefault(_resetState);
 
-	var _setErrors = __webpack_require__(254);
+	var _setErrors = __webpack_require__(258);
 
 	var _setErrors2 = _interopRequireDefault(_setErrors);
 
@@ -29764,7 +30047,7 @@
 	exports['default'] = decorate(formReducer);
 
 /***/ },
-/* 247 */
+/* 251 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -29802,7 +30085,7 @@
 	exports.UNTOUCH = UNTOUCH;
 
 /***/ },
-/* 248 */
+/* 252 */
 /***/ function(module, exports) {
 
 	/**
@@ -29827,7 +30110,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 249 */
+/* 253 */
 /***/ function(module, exports) {
 
 	/**
@@ -29898,7 +30181,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 250 */
+/* 254 */
 /***/ function(module, exports) {
 
 	/**
@@ -30020,7 +30303,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 251 */
+/* 255 */
 /***/ function(module, exports) {
 
 	/**
@@ -30060,7 +30343,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 252 */
+/* 256 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -30153,7 +30436,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 253 */
+/* 257 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -30193,7 +30476,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 254 */
+/* 258 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -30282,7 +30565,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 255 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30297,7 +30580,7 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _createReduxFormConnector = __webpack_require__(256);
+	var _createReduxFormConnector = __webpack_require__(260);
 
 	var _createReduxFormConnector2 = _interopRequireDefault(_createReduxFormConnector);
 
@@ -30346,7 +30629,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 256 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30361,15 +30644,15 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _reactLazyCache = __webpack_require__(257);
+	var _reactLazyCache = __webpack_require__(261);
 
 	var _reactLazyCache2 = _interopRequireDefault(_reactLazyCache);
 
-	var _getDisplayName = __webpack_require__(259);
+	var _getDisplayName = __webpack_require__(263);
 
 	var _getDisplayName2 = _interopRequireDefault(_getDisplayName);
 
-	var _createHigherOrderComponent = __webpack_require__(260);
+	var _createHigherOrderComponent = __webpack_require__(264);
 
 	var _createHigherOrderComponent2 = _interopRequireDefault(_createHigherOrderComponent);
 
@@ -30449,7 +30732,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 257 */
+/* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30458,7 +30741,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _lazyCache = __webpack_require__(258);
+	var _lazyCache = __webpack_require__(262);
 
 	var _lazyCache2 = _interopRequireDefault(_lazyCache);
 
@@ -30466,7 +30749,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 258 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30532,7 +30815,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 259 */
+/* 263 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -30547,7 +30830,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 260 */
+/* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30566,57 +30849,57 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _actions = __webpack_require__(261);
+	var _actions = __webpack_require__(265);
 
 	var importedActions = _interopRequireWildcard(_actions);
 
-	var _getDisplayName = __webpack_require__(259);
+	var _getDisplayName = __webpack_require__(263);
 
 	var _getDisplayName2 = _interopRequireDefault(_getDisplayName);
 
-	var _reducer = __webpack_require__(246);
+	var _reducer = __webpack_require__(250);
 
 	var _deepEqual = __webpack_require__(172);
 
 	var _deepEqual2 = _interopRequireDefault(_deepEqual);
 
-	var _bindActionData = __webpack_require__(262);
+	var _bindActionData = __webpack_require__(266);
 
 	var _bindActionData2 = _interopRequireDefault(_bindActionData);
 
-	var _getValues = __webpack_require__(263);
+	var _getValues = __webpack_require__(267);
 
 	var _getValues2 = _interopRequireDefault(_getValues);
 
-	var _isValid = __webpack_require__(264);
+	var _isValid = __webpack_require__(268);
 
 	var _isValid2 = _interopRequireDefault(_isValid);
 
-	var _readFields = __webpack_require__(265);
+	var _readFields = __webpack_require__(269);
 
 	var _readFields2 = _interopRequireDefault(_readFields);
 
-	var _handleSubmit2 = __webpack_require__(279);
+	var _handleSubmit2 = __webpack_require__(283);
 
 	var _handleSubmit3 = _interopRequireDefault(_handleSubmit2);
 
-	var _asyncValidation = __webpack_require__(280);
+	var _asyncValidation = __webpack_require__(284);
 
 	var _asyncValidation2 = _interopRequireDefault(_asyncValidation);
 
-	var _eventsSilenceEvents = __webpack_require__(281);
+	var _eventsSilenceEvents = __webpack_require__(285);
 
 	var _eventsSilenceEvents2 = _interopRequireDefault(_eventsSilenceEvents);
 
-	var _eventsSilenceEvent = __webpack_require__(282);
+	var _eventsSilenceEvent = __webpack_require__(286);
 
 	var _eventsSilenceEvent2 = _interopRequireDefault(_eventsSilenceEvent);
 
-	var _wrapMapDispatchToProps = __webpack_require__(283);
+	var _wrapMapDispatchToProps = __webpack_require__(287);
 
 	var _wrapMapDispatchToProps2 = _interopRequireDefault(_wrapMapDispatchToProps);
 
-	var _wrapMapStateToProps = __webpack_require__(284);
+	var _wrapMapStateToProps = __webpack_require__(288);
 
 	var _wrapMapStateToProps2 = _interopRequireDefault(_wrapMapStateToProps);
 
@@ -30890,14 +31173,14 @@
 	// contains dispatch
 
 /***/ },
-/* 261 */
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _actionTypes = __webpack_require__(247);
+	var _actionTypes = __webpack_require__(251);
 
 	var addArrayValue = function addArrayValue(path, value, index) {
 	  return { type: _actionTypes.ADD_ARRAY_VALUE, path: path, value: value, index: index };
@@ -30986,7 +31269,7 @@
 	exports.untouch = untouch;
 
 /***/ },
-/* 262 */
+/* 266 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30999,7 +31282,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _mapValues = __webpack_require__(248);
+	var _mapValues = __webpack_require__(252);
 
 	var _mapValues2 = _interopRequireDefault(_mapValues);
 
@@ -31024,7 +31307,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 263 */
+/* 267 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -31086,7 +31369,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 264 */
+/* 268 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -31111,7 +31394,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 265 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31122,19 +31405,19 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _readField = __webpack_require__(266);
+	var _readField = __webpack_require__(270);
 
 	var _readField2 = _interopRequireDefault(_readField);
 
-	var _write = __webpack_require__(250);
+	var _write = __webpack_require__(254);
 
 	var _write2 = _interopRequireDefault(_write);
 
-	var _getValues = __webpack_require__(263);
+	var _getValues = __webpack_require__(267);
 
 	var _getValues2 = _interopRequireDefault(_getValues);
 
-	var _removeField = __webpack_require__(278);
+	var _removeField = __webpack_require__(282);
 
 	var _removeField2 = _interopRequireDefault(_removeField);
 
@@ -31183,7 +31466,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 266 */
+/* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31192,35 +31475,35 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _eventsCreateOnBlur = __webpack_require__(267);
+	var _eventsCreateOnBlur = __webpack_require__(271);
 
 	var _eventsCreateOnBlur2 = _interopRequireDefault(_eventsCreateOnBlur);
 
-	var _eventsCreateOnChange = __webpack_require__(270);
+	var _eventsCreateOnChange = __webpack_require__(274);
 
 	var _eventsCreateOnChange2 = _interopRequireDefault(_eventsCreateOnChange);
 
-	var _eventsCreateOnDragStart = __webpack_require__(271);
+	var _eventsCreateOnDragStart = __webpack_require__(275);
 
 	var _eventsCreateOnDragStart2 = _interopRequireDefault(_eventsCreateOnDragStart);
 
-	var _eventsCreateOnDrop = __webpack_require__(272);
+	var _eventsCreateOnDrop = __webpack_require__(276);
 
 	var _eventsCreateOnDrop2 = _interopRequireDefault(_eventsCreateOnDrop);
 
-	var _eventsCreateOnFocus = __webpack_require__(273);
+	var _eventsCreateOnFocus = __webpack_require__(277);
 
 	var _eventsCreateOnFocus2 = _interopRequireDefault(_eventsCreateOnFocus);
 
-	var _silencePromise = __webpack_require__(274);
+	var _silencePromise = __webpack_require__(278);
 
 	var _silencePromise2 = _interopRequireDefault(_silencePromise);
 
-	var _read = __webpack_require__(249);
+	var _read = __webpack_require__(253);
 
 	var _read2 = _interopRequireDefault(_read);
 
-	var _updateField = __webpack_require__(276);
+	var _updateField = __webpack_require__(280);
 
 	var _updateField2 = _interopRequireDefault(_updateField);
 
@@ -31356,7 +31639,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 267 */
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31365,7 +31648,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _getValue = __webpack_require__(268);
+	var _getValue = __webpack_require__(272);
 
 	var _getValue2 = _interopRequireDefault(_getValue);
 
@@ -31382,7 +31665,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 268 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31391,7 +31674,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _isEvent = __webpack_require__(269);
+	var _isEvent = __webpack_require__(273);
 
 	var _isEvent2 = _interopRequireDefault(_isEvent);
 
@@ -31443,7 +31726,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 269 */
+/* 273 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -31457,7 +31740,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 270 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31466,7 +31749,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _getValue = __webpack_require__(268);
+	var _getValue = __webpack_require__(272);
 
 	var _getValue2 = _interopRequireDefault(_getValue);
 
@@ -31479,7 +31762,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 271 */
+/* 275 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -31496,14 +31779,14 @@
 	exports['default'] = createOnDragStart;
 
 /***/ },
-/* 272 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _createOnDragStart = __webpack_require__(271);
+	var _createOnDragStart = __webpack_require__(275);
 
 	var createOnDrop = function createOnDrop(name, change) {
 	  return function (event) {
@@ -31514,7 +31797,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 273 */
+/* 277 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -31529,7 +31812,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 274 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31538,7 +31821,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _isPromise = __webpack_require__(275);
+	var _isPromise = __webpack_require__(279);
 
 	var _isPromise2 = _interopRequireDefault(_isPromise);
 
@@ -31554,7 +31837,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 275 */
+/* 279 */
 /***/ function(module, exports) {
 
 	module.exports = isPromise;
@@ -31565,7 +31848,7 @@
 
 
 /***/ },
-/* 276 */
+/* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31576,11 +31859,11 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _isPristine = __webpack_require__(277);
+	var _isPristine = __webpack_require__(281);
 
 	var _isPristine2 = _interopRequireDefault(_isPristine);
 
-	var _isValid = __webpack_require__(264);
+	var _isValid = __webpack_require__(268);
 
 	var _isValid2 = _interopRequireDefault(_isValid);
 
@@ -31632,7 +31915,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 277 */
+/* 281 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -31673,7 +31956,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 278 */
+/* 282 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -31754,7 +32037,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 279 */
+/* 283 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31763,11 +32046,11 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _isPromise = __webpack_require__(275);
+	var _isPromise = __webpack_require__(279);
 
 	var _isPromise2 = _interopRequireDefault(_isPromise);
 
-	var _isValid = __webpack_require__(264);
+	var _isValid = __webpack_require__(268);
 
 	var _isValid2 = _interopRequireDefault(_isValid);
 
@@ -31815,7 +32098,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 280 */
+/* 284 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31824,11 +32107,11 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _isPromise = __webpack_require__(275);
+	var _isPromise = __webpack_require__(279);
 
 	var _isPromise2 = _interopRequireDefault(_isPromise);
 
-	var _isValid = __webpack_require__(264);
+	var _isValid = __webpack_require__(268);
 
 	var _isValid2 = _interopRequireDefault(_isValid);
 
@@ -31858,7 +32141,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 281 */
+/* 285 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31867,7 +32150,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _silenceEvent = __webpack_require__(282);
+	var _silenceEvent = __webpack_require__(286);
 
 	var _silenceEvent2 = _interopRequireDefault(_silenceEvent);
 
@@ -31885,7 +32168,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 282 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31894,7 +32177,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _isEvent = __webpack_require__(269);
+	var _isEvent = __webpack_require__(273);
 
 	var _isEvent2 = _interopRequireDefault(_isEvent);
 
@@ -31910,7 +32193,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 283 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31954,7 +32237,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 284 */
+/* 288 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -31992,7 +32275,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 285 */
+/* 289 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -32038,158 +32321,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 286 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports.getProvinces = getProvinces;
-	exports.provinceReset = provinceReset;
-	exports.getCities = getCities;
-	exports.cityReset = cityReset;
-	exports.getDistricts = getDistricts;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _utilsRequest = __webpack_require__(230);
-
-	//Promise
-
-	var _configUrl = __webpack_require__(235);
-
-	var _configUrl2 = _interopRequireDefault(_configUrl);
-
-	var GOT_PROVINCES = 'GOT_PROVINCES';
-	exports.GOT_PROVINCES = GOT_PROVINCES;
-	var PROVINCE_RESET = 'PROVINCE_RESET';
-	exports.PROVINCE_RESET = PROVINCE_RESET;
-	var GOT_CITIES = 'GOT_CITIES';
-	exports.GOT_CITIES = GOT_CITIES;
-	var CITY_RESET = 'CITY_RESET';
-	exports.CITY_RESET = CITY_RESET;
-	var GOT_DISTRICTS = 'GOT_DISTRICTS';
-	exports.GOT_DISTRICTS = GOT_DISTRICTS;
-	var GOT_AREA_FAIL = 'GOT_AREA_FAIL';
-
-	exports.GOT_AREA_FAIL = GOT_AREA_FAIL;
-
-	function getProvinces() {
-	  return _resolve(_configUrl2['default'].provinces, GOT_PROVINCES);
-	  // return {
-	  //   type: GOT_PROVINCES,
-	  //   data: {1: '广东省', 2: '湖北省', 3: '湖南省'}
-	  // }
-	}
-
-	function provinceReset() {
-	  return {
-	    type: PROVINCE_RESET
-	  };
-	}
-
-	function getCities(province_id) {
-	  return _resolve(_configUrl2['default'].cities.toString(province_id), GOT_CITIES);
-	  // return {
-	  //   type: GOT_CITIES,
-	  //   data: {1: '深圳市', 2: '武汉市', 3: '长沙市'}
-	  // }
-	}
-
-	function cityReset() {
-	  return {
-	    type: CITY_RESET
-	  };
-	}
-
-	function getDistricts(city_id) {
-	  return _resolve(_configUrl2['default'].districts.toString(city_id), GOT_DISTRICTS);
-	  // return {
-	  //   type: GOT_DISTRICTS,
-	  //   data: {1: '南山区', 2: '宝安区', 3: '福田区'}
-	  // }
-	}
-
-	function _resolve(url, signal) {
-	  return function (dispatch) {
-	    return (0, _utilsRequest.get)(url).done(function (json) {
-	      dispatch({
-	        type: signal,
-	        data: json
-	      });
-	    }).fail(function (msg) {
-	      dispatch({
-	        type: GOT_AREA_FAIL,
-	        msg: msg
-	      });
-	    });
-	  };
-	}
-
-/***/ },
-/* 287 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports.handleSaveInfo = handleSaveInfo;
-	exports.getOrderSrcs = getOrderSrcs;
-	exports.getDeliveryStations = getDeliveryStations;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _utilsRequest = __webpack_require__(230);
-
-	//Promise
-
-	var _configUrl = __webpack_require__(235);
-
-	var _configUrl2 = _interopRequireDefault(_configUrl);
-
-	function handleSaveInfo(data) {
-	  debugger;
-	  console.log(data);
-	}
-
-	var GOT_ORDER_SRCS = 'GOT_ORDER_SRCS';
-	exports.GOT_ORDER_SRCS = GOT_ORDER_SRCS;
-
-	function getOrderSrcs() {
-	  return function (dispatch) {
-	    return (0, _utilsRequest.get)(_configUrl2['default'].order_srcs).done(function (data) {
-	      // dispatch({
-	      //   type: GOT_ORDER_SRCS,
-	      //   data
-	      // })
-	      dispatch({
-	        type: GOT_ORDER_SRCS,
-	        data: [{ id: 1, name: 'A1', level: 1 }, { id: 2, name: 'A2', level: 1 }, { id: 3, name: 'A3', level: 1 }, { id: 4, name: 'B1', level: 2, parent_id: 1 }, { id: 5, name: 'B2', level: 2, parent_id: 2 }]
-	      });
-	    });
-	  };
-	}
-
-	var GOT_DELIVERY_STATIONS = 'GOT_DELIVERY_CENTER';
-	exports.GOT_DELIVERY_STATIONS = GOT_DELIVERY_STATIONS;
-
-	function getDeliveryStations() {
-	  return function (dispatch) {
-	    return (0, _utilsRequest.get)(_configUrl2['default'].delivery_stations).done(function (data) {
-	      dispatch({
-	        type: GOT_DELIVERY_STATIONS,
-	        data: data
-	      });
-	    });
-	  };
-	}
-
-/***/ },
-/* 288 */
+/* 290 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -32228,7 +32360,844 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 289 */
+/* 291 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(154);
+
+	var _manage_add_products_modal = __webpack_require__(292);
+
+	var _manage_add_products_modal2 = _interopRequireDefault(_manage_add_products_modal);
+
+	var ManageAddProducts = (function (_Component) {
+	  _inherits(ManageAddProducts, _Component);
+
+	  function ManageAddProducts() {
+	    _classCallCheck(this, ManageAddProducts);
+
+	    _get(Object.getPrototypeOf(ManageAddProducts.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(ManageAddProducts, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var products_choosing = _props.products_choosing;
+	      var dispatch = _props.dispatch;
+
+	      return _react2['default'].createElement(
+	        'div',
+	        null,
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group' },
+	          '选择产品：',
+	          _react2['default'].createElement(
+	            'button',
+	            { onClick: this.addProducts.bind(this), className: 'btn btn-sm btn-theme' },
+	            '添加'
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'table-responsive' },
+	          _react2['default'].createElement(
+	            'table',
+	            { className: 'table text-center' },
+	            _react2['default'].createElement(
+	              'thead',
+	              null,
+	              _react2['default'].createElement(
+	                'tr',
+	                null,
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '产品名称'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '规格'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '原价'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '数量'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '实际售价'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '应收金额'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '巧克力牌'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '祝福贺卡'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '产品图册'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '自定义名称'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '自定义描述'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '操作'
+	                )
+	              )
+	            ),
+	            _react2['default'].createElement(
+	              'tbody',
+	              null,
+	              _react2['default'].createElement(
+	                'tr',
+	                null,
+	                _react2['default'].createElement(
+	                  'td',
+	                  null,
+	                  '自由拼'
+	                ),
+	                _react2['default'].createElement(
+	                  'td',
+	                  null,
+	                  '约2磅'
+	                ),
+	                _react2['default'].createElement(
+	                  'td',
+	                  null,
+	                  '138'
+	                ),
+	                _react2['default'].createElement(
+	                  'td',
+	                  null,
+	                  '1'
+	                ),
+	                _react2['default'].createElement(
+	                  'td',
+	                  null,
+	                  '69'
+	                ),
+	                _react2['default'].createElement(
+	                  'td',
+	                  null,
+	                  '0'
+	                ),
+	                _react2['default'].createElement(
+	                  'td',
+	                  null,
+	                  '妈妈生日快乐'
+	                ),
+	                _react2['default'].createElement(
+	                  'td',
+	                  null,
+	                  '生日快乐'
+	                ),
+	                _react2['default'].createElement(
+	                  'td',
+	                  null,
+	                  _react2['default'].createElement('input', { type: 'checkbox' })
+	                ),
+	                _react2['default'].createElement(
+	                  'td',
+	                  null,
+	                  '单恋黑森林，榴莲香雪，梨子沙滩，夏日鲜果'
+	                ),
+	                _react2['default'].createElement(
+	                  'td',
+	                  null,
+	                  '2磅1/4，方形'
+	                ),
+	                _react2['default'].createElement(
+	                  'td',
+	                  { className: 'nowrap' },
+	                  _react2['default'].createElement(
+	                    'a',
+	                    { href: 'javascript:;' },
+	                    '[编辑]'
+	                  ),
+	                  ' ',
+	                  _react2['default'].createElement(
+	                    'a',
+	                    { href: 'javascript:;' },
+	                    '[删除]'
+	                  )
+	                )
+	              )
+	            )
+	          )
+	        ),
+	        _react2['default'].createElement(_manage_add_products_modal2['default'], _extends({ ref: 'productsModal' }, products_choosing, { dispatch: dispatch }))
+	      );
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {}
+	  }, {
+	    key: 'addProducts',
+	    value: function addProducts() {
+	      //这里注意了
+	      this.refs.productsModal.show();
+	    }
+	  }]);
+
+	  return ManageAddProducts;
+	})(_react.Component);
+
+	exports['default'] = ManageAddProducts;
+
+	ManageAddProducts.PropTypes = {
+	  products_choosing: _react.PropTypes.object.isRequired,
+	  dispatch: _react.PropTypes.func.isRequired
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 292 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _commonSelect = __webpack_require__(241);
+
+	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+
+	var _commonNumberPicker = __webpack_require__(293);
+
+	var _commonNumberPicker2 = _interopRequireDefault(_commonNumberPicker);
+
+	var _commonPagination = __webpack_require__(242);
+
+	var _commonPagination2 = _interopRequireDefault(_commonPagination);
+
+	var _actionsOrder_products = __webpack_require__(294);
+
+	var OrderProductsActions = _interopRequireWildcard(_actionsOrder_products);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var ProductsModal = (function (_Component) {
+	  _inherits(ProductsModal, _Component);
+
+	  function ProductsModal(props) {
+	    _classCallCheck(this, ProductsModal);
+
+	    _get(Object.getPrototypeOf(ProductsModal.prototype), 'constructor', this).call(this, props);
+	    this.show = this.show.bind(this);
+	    this.hide = this.hide.bind(this);
+	    this.state = {
+	      sku_name: '',
+	      category_id: _configAppConfig.SELECT_DEFAULT_VALUE,
+	      page_no: 0,
+	      page_size: 8
+	    };
+	  }
+
+	  _createClass(ProductsModal, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var all_categories = _props.all_categories;
+	      var _props$search_results = _props.search_results;
+	      var total = _props$search_results.total;
+	      var list = _props$search_results.list;
+
+	      var s = this.state;
+	      var product_list = list.map(function (n, i) {
+	        return _react2['default'].createElement(ProductSet, { data: n, key: i });
+	      });
+	      return _react2['default'].createElement(
+	        'div',
+	        { ref: 'modal', 'aria-hidden': 'false', 'aria-labelledby': 'myModalLabel', role: 'dialog', className: 'modal fade' },
+	        _react2['default'].createElement('div', { className: 'modal-backdrop fade' }),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'modal-dialog modal-lg' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'modal-content' },
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'modal-header' },
+	              _react2['default'].createElement(
+	                'button',
+	                { 'aria-hidden': 'true', 'data-dismiss': 'modal', className: 'close', type: 'button' },
+	                '×'
+	              ),
+	              _react2['default'].createElement(
+	                'h4',
+	                { className: 'modal-title' },
+	                '选择产品'
+	              )
+	            ),
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'modal-body' },
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement('input', { value: s.sku_name, onChange: this.handleSkuName.bind(this), className: 'form-control input-sm', placeholder: '输入产品名称' }),
+	                ' ',
+	                _react2['default'].createElement(_commonSelect2['default'], { value: s.category_id, onChange: this.onCategoryChange.bind(this), options: all_categories, 'default-text': '选择产品分类' }),
+	                ' ',
+	                _react2['default'].createElement(
+	                  'button',
+	                  { onClick: this.search.bind(this), className: 'btn btn-sm btn-default' },
+	                  _react2['default'].createElement('i', { className: 'fa fa-search' }),
+	                  ' 查询'
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'table-responsive' },
+	                _react2['default'].createElement(
+	                  'table',
+	                  { className: 'table table-hover table-click text-center' },
+	                  _react2['default'].createElement(
+	                    'thead',
+	                    null,
+	                    _react2['default'].createElement(
+	                      'tr',
+	                      null,
+	                      _react2['default'].createElement('th', null),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '产品名称'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '规格'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '产品类型名称'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '所属网站'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '价格'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '是否本站产品'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '是否配送上门'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '管理操作'
+	                      )
+	                    )
+	                  ),
+	                  product_list
+	                )
+	              ),
+	              _react2['default'].createElement(_commonPagination2['default'], {
+	                current_page: s.page_no,
+	                total_count: total,
+	                perpage_count: s.page_size,
+	                onPageChange: this.onPageChange.bind(this)
+	              }),
+	              _react2['default'].createElement('hr', { className: 'dotted' }),
+	              _react2['default'].createElement(
+	                'div',
+	                null,
+	                '产品管理 >> 选择列表'
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'table-responsive' },
+	                _react2['default'].createElement(
+	                  'table',
+	                  { className: 'table table-hover text-center' },
+	                  _react2['default'].createElement(
+	                    'thead',
+	                    null,
+	                    _react2['default'].createElement(
+	                      'tr',
+	                      null,
+	                      _react2['default'].createElement('th', null),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '产品名称'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '规格'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '产品类型名称'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '所属网站'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '价格'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '数量'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '是否本站'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '是否配送'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '管理操作'
+	                      )
+	                    )
+	                  ),
+	                  _react2['default'].createElement('tbody', null)
+	                )
+	              )
+	            ),
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'modal-footer' },
+	              _react2['default'].createElement(
+	                'button',
+	                { type: 'button', className: 'btn btn-default', 'data-dismiss': 'modal' },
+	                '取消'
+	              ),
+	              _react2['default'].createElement(
+	                'button',
+	                { type: 'button', className: 'btn btn-theme' },
+	                '确定'
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'handleSkuName',
+	    value: function handleSkuName(e) {
+	      this.setState({ sku_name: e.target.value });
+	    }
+	  }, {
+	    key: 'onCategoryChange',
+	    value: function onCategoryChange(e) {
+	      this.setState({ category_id: e.target.value });
+	    }
+	  }, {
+	    key: 'search',
+	    value: function search() {
+	      var _state = this.state;
+	      var sku_name = _state.sku_name;
+	      var category_id = _state.category_id;
+	      var page_no = _state.page_no;
+	      var page_size = _state.page_size;
+
+	      this.props.dispatch(OrderProductsActions.searchProducts({
+	        sku_name: sku_name, page_no: page_no, page_size: page_size,
+	        category_id: category_id == _configAppConfig.SELECT_DEFAULT_VALUE ? undefined : category_id
+	      }));
+	    }
+	  }, {
+	    key: 'onPageChange',
+	    value: function onPageChange(page) {
+	      this.setState({ page_no: page });
+	    }
+	  }, {
+	    key: 'show',
+	    value: function show() {
+	      this.props.dispatch(OrderProductsActions.getCategories());
+	      $(this.refs.modal).modal('show');
+	    }
+	  }, {
+	    key: 'hide',
+	    value: function hide() {
+	      $(this.refs.modal).modal('hide');
+	    }
+	  }]);
+
+	  return ProductsModal;
+	})(_react.Component);
+
+	exports['default'] = ProductsModal;
+
+	ProductsModal.PropTypes = {
+	  dispatch: _react.PropTypes.func.isRequired,
+	  all_categories: _react.PropTypes.array.isRequired,
+	  search_results: _react.PropTypes.array.isRequired
+	};
+
+	var ProductSet = (function (_Component2) {
+	  _inherits(ProductSet, _Component2);
+
+	  function ProductSet(props) {
+	    _classCallCheck(this, ProductSet);
+
+	    _get(Object.getPrototypeOf(ProductSet.prototype), 'constructor', this).call(this, props);
+	    this.toggle = this.toggle.bind(this);
+	    this.state = {
+	      active: false
+	    };
+	  }
+
+	  _createClass(ProductSet, [{
+	    key: 'render',
+	    value: function render() {
+	      var _this = this;
+
+	      var data = this.props.data;
+	      var yes_or_no = this.yes_or_no;
+	      var choose = this.choose;
+	      var active = this.state.active;
+
+	      //is_local_site, is_delivery : "1" / "0"
+	      var content = [];
+	      data.forEach(function (n, i) {
+	        var name = n.name;
+	        var size = n.size;
+	        var website = n.website;
+	        var price = n.price;
+	        var is_local_site = n.is_local_site;
+	        var is_delivery = n.is_delivery;
+	        var _n$skus = n.skus;
+	        var skus = _n$skus === undefined ? [] : _n$skus;
+
+	        var head = _react2['default'].createElement(
+	          'tr',
+	          { key: i, className: "clickable", onClick: _this.toggle },
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            _react2['default'].createElement('input', { className: 'fade', type: 'checkbox', checked: n.check, disabled: true })
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            name
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            size
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            '蛋糕配件'
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            website
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            '￥',
+	            price
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            'yes_or_no(is_local_site)'
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            'yes_or_no(is_delivery)'
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            _react2['default'].createElement(
+	              'a',
+	              { onClick: choose.bind(_this, n), href: 'javascript:;' },
+	              '[选择]'
+	            )
+	          )
+	        );
+
+	        var body = n.skus.map(function (n, i) {
+	          _react2['default'].createElement(
+	            'tr',
+	            { key: i, className: active ? "" : "hidden", onClick: this.toggle },
+	            _react2['default'].createElement(
+	              'td',
+	              null,
+	              _react2['default'].createElement('input', { type: 'checkbox', checked: n.check, disabled: true })
+	            ),
+	            _react2['default'].createElement('td', { colSpan: '3' }),
+	            _react2['default'].createElement(
+	              'td',
+	              null,
+	              website
+	            ),
+	            _react2['default'].createElement(
+	              'td',
+	              null,
+	              '￥',
+	              price
+	            ),
+	            _react2['default'].createElement(
+	              'td',
+	              null,
+	              'yes_or_no(is_local_site)'
+	            ),
+	            _react2['default'].createElement(
+	              'td',
+	              null,
+	              'yes_or_no(is_delivery)'
+	            ),
+	            _react2['default'].createElement(
+	              'td',
+	              null,
+	              _react2['default'].createElement(
+	                'a',
+	                { onClick: choose.bind(this, n), href: 'javascript:;' },
+	                '[选择]'
+	              )
+	            )
+	          );
+	        });
+
+	        content.concat(head, body);
+	      });
+	      return _react2['default'].createElement(
+	        'tbody',
+	        null,
+	        content
+	      );
+	    }
+	  }, {
+	    key: 'yes_or_no',
+	    value: function yes_or_no(d) {
+	      return d == 1 ? '是' : '否';
+	    }
+	  }, {
+	    key: 'toggle',
+	    value: function toggle() {
+	      this.setState({ active: !this.state.active });
+	    }
+	  }]);
+
+	  return ProductSet;
+	})(_react.Component);
+
+	ProductSet.PropTypes = {
+	  data: _react.PropTypes.array.isRequired
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 293 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var NumberPicker = _react2['default'].createClass({
+	  displayName: 'NumberPicker',
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      step: 1,
+	      value: 1,
+	      'lower_limit': 1,
+	      'upper_limit': 100000
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      value: this.props.value
+	    };
+	  },
+	  componentDidMount: function componentDidMount() {},
+	  render: function render() {
+	    return _react2['default'].createElement(
+	      'div',
+	      { className: 'number-picker form-inline' },
+	      _react2['default'].createElement(
+	        'a',
+	        { onClick: this.minus, href: 'javascript:;' },
+	        _react2['default'].createElement('i', { className: 'fa fa-minus' })
+	      ),
+	      _react2['default'].createElement('input', { value: this.state.value, onChange: this.input, className: 'form-control input-sm' }),
+	      _react2['default'].createElement(
+	        'a',
+	        { onClick: this.add, href: 'javascript:;' },
+	        _react2['default'].createElement('i', { className: 'fa fa-plus' })
+	      )
+	    );
+	  },
+	  minus: function minus() {
+	    var value = parseInt(this.state.value) || this.props.lower_limit;
+	    var _props = this.props;
+	    var step = _props.step;
+	    var lower_limit = _props.lower_limit;
+
+	    this.setState({ value: value - step >= lower_limit ? value - step : value });
+	  },
+	  add: function add() {
+	    var value = parseInt(this.state.value) || this.props.lower_limit;
+	    var _props2 = this.props;
+	    var step = _props2.step;
+	    var upper_limit = _props2.upper_limit;
+
+	    this.setState({ value: value + step <= upper_limit ? value + step : value });
+	  },
+	  input: function input(e) {
+	    var v = e.target.value.replace(/[^\d]/g, '');
+	    console.log(v);
+	    if (v > this.props.upper_limit) {
+	      v = v.substring(0, v.length - 1);
+	    }
+	    this.setState({ value: v });
+	  }
+	});
+
+	exports['default'] = NumberPicker;
+	module.exports = exports['default'];
+
+/***/ },
+/* 294 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.getCategories = getCategories;
+	exports.searchProducts = searchProducts;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _utilsRequest = __webpack_require__(230);
+
+	//Promise
+
+	var _configUrl = __webpack_require__(235);
+
+	var _configUrl2 = _interopRequireDefault(_configUrl);
+
+	var GOT_CATEGORIES = 'GOT_CATEGORIES';
+	exports.GOT_CATEGORIES = GOT_CATEGORIES;
+
+	function getCategories() {
+	  // return GET(Url.categories.toString(), null, GOT_CATEGORIES);
+	  return (0, _utilsRequest.TEST)({ 1: '11111', 2: '2222' }, GOT_CATEGORIES);
+	}
+
+	var SEARCH_PRODUCTS = 'SEARCH_PRODUCTS';
+	exports.SEARCH_PRODUCTS = SEARCH_PRODUCTS;
+
+	function searchProducts(query_data) {
+	  return (0, _utilsRequest.GET)(_configUrl2['default'].products.toString(), query_data, SEARCH_PRODUCTS);
+	}
+
+/***/ },
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32241,15 +33210,15 @@
 
 	var _redux = __webpack_require__(219);
 
-	var _reduxLogger = __webpack_require__(290);
+	var _reduxLogger = __webpack_require__(296);
 
 	var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
 
-	var _reduxThunk = __webpack_require__(291);
+	var _reduxThunk = __webpack_require__(297);
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-	var _reducersIndex = __webpack_require__(292);
+	var _reducersIndex = __webpack_require__(298);
 
 	var _reducersIndex2 = _interopRequireDefault(_reducersIndex);
 
@@ -32257,7 +33226,11 @@
 	  //生产环境不需要logger
 	  var createStoreWithMiddleware = (0, _redux.applyMiddleware)(_reduxThunk2['default'])(_redux.createStore);
 	} else {
-	  var createStoreWithMiddleware = (0, _redux.applyMiddleware)(_reduxThunk2['default'], (0, _reduxLogger2['default'])())(_redux.createStore);
+	  var createStoreWithMiddleware = (0, _redux.compose)((0, _redux.applyMiddleware)(_reduxThunk2['default']),
+	  // createLogger()
+	  window.devToolsExtension ? window.devToolsExtension() : function (f) {
+	    return f;
+	  })(_redux.createStore);
 	}
 
 	exports['default'] = function () {
@@ -32267,7 +33240,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 290 */
+/* 296 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -32412,7 +33385,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 291 */
+/* 297 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -32434,7 +33407,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 292 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32447,17 +33420,17 @@
 
 	var _redux = __webpack_require__(219);
 
-	var _reduxForm = __webpack_require__(244);
+	var _reduxForm = __webpack_require__(248);
 
-	var _login = __webpack_require__(293);
+	var _login = __webpack_require__(299);
 
 	var _login2 = _interopRequireDefault(_login);
 
-	var _order_manage = __webpack_require__(294);
+	var _order_manage = __webpack_require__(300);
 
 	var _order_manage2 = _interopRequireDefault(_order_manage);
 
-	var _order_manage_add = __webpack_require__(295);
+	var _order_manage_add = __webpack_require__(301);
 
 	var _order_manage_add2 = _interopRequireDefault(_order_manage_add);
 
@@ -32472,7 +33445,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 293 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32530,7 +33503,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 294 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32574,7 +33547,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 295 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32587,9 +33560,11 @@
 
 	var _redux = __webpack_require__(219);
 
-	var _area_select = __webpack_require__(296);
+	var _area_select = __webpack_require__(302);
 
-	var _actionsOrder_manage_add = __webpack_require__(287);
+	var _actionsOrder_manage_add = __webpack_require__(245);
+
+	var _actionsOrder_products = __webpack_require__(294);
 
 	var _utilsIndex = __webpack_require__(160);
 
@@ -32618,7 +33593,12 @@
 	    return { id: n, text: n };
 	  }),
 	  all_order_srcs: [],
-	  delivery_stations: []
+	  delivery_stations: [],
+	  all_pay_modes: [],
+
+	  save_ing: false,
+	  save_success: true,
+	  submitting: false
 	};
 
 	function addForm(state, action) {
@@ -32642,6 +33622,39 @@
 	      return _extends({}, state, { delivery_stations: (0, _utilsIndex.map)(action.data, function (text, id) {
 	          return { id: id, text: text };
 	        }) });
+	    case _actionsOrder_manage_add.GOT_PAY_MODES:
+	      return _extends({}, state, { all_pay_modes: (0, _utilsIndex.map)(action.data, function (text, id) {
+	          return { id: id, text: text };
+	        }) });
+	    case _actionsOrder_manage_add.SAVE_ORDER_INFO_ING:
+	      return _extends({}, state, { save_ing: true });
+	    case _actionsOrder_manage_add.SAVE_ORDER_INFO_SUCCESS:
+	      return _extends({}, state, { save_success: true, save_ing: false });
+	    case _actionsOrder_manage_add.SAVE_ORDER_INFO_FAIL:
+	      return _extends({}, state, { save_success: false, save_ing: false });
+	    default:
+	      return state;
+	  }
+	}
+
+	//正在选择的商品
+	var products_choosing_state = {
+	  all_categories: [],
+	  search_results: {
+	    total: 0,
+	    list: []
+	  }
+	};
+	function products_choosing(state, action) {
+	  if (state === undefined) state = products_choosing_state;
+
+	  switch (action.type) {
+	    case _actionsOrder_products.GOT_CATEGORIES:
+	      return _extends({}, state, { all_categories: (0, _utilsIndex.map)(action.data, function (text, id) {
+	          return { id: id, text: text };
+	        }) });
+	    case _actionsOrder_products.SEARCH_PRODUCTS:
+	      return _extends({}, state, { search_results: action.data });
 	    default:
 	      return state;
 	  }
@@ -32649,14 +33662,17 @@
 
 	var orderAddReducer = (0, _redux.combineReducers)({
 	  area: _area_select.area,
-	  addForm: addForm
+	  addForm: addForm,
+	  products: (0, _redux.combineReducers)({
+	    products_choosing: products_choosing
+	  })
 	});
 
 	exports['default'] = orderAddReducer;
 	module.exports = exports['default'];
 
 /***/ },
-/* 296 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32671,7 +33687,7 @@
 
 	var _redux = __webpack_require__(219);
 
-	var _actionsArea = __webpack_require__(286);
+	var _actionsArea = __webpack_require__(244);
 
 	var _utilsIndex = __webpack_require__(160);
 

@@ -27,11 +27,18 @@ const URL = (function(){
   /*********************************/
   var url = {
     login: '/login',
+
     provinces: '/provinces',
     cities: '/province/:provinceId/cities',
     districts: '/city/:cityId/districts',
     delivery_stations: '/stations',
-    order_srcs: '/srcs',
+    order_srcs: '/order/srcs',
+    order_add: '/order/add',
+    pay_modes: '/pay/modes',
+
+    //产品
+    categories: '/product/categories',
+    products: '/products',
   };
 
   for(var a in url){

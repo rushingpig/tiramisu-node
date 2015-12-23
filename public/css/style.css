@@ -2536,6 +2536,68 @@ tbody.collapse.in {
   border-bottom-right-radius: 3px;
   border-top-right-radius: 3px; }
 
+.alert {
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+  border-radius: 4px; }
+  .alert h4 {
+    margin-top: 0;
+    color: inherit; }
+  .alert .alert-link {
+    font-weight: bold; }
+  .alert > p,
+  .alert > ul {
+    margin-bottom: 0; }
+  .alert > p + p {
+    margin-top: 5px; }
+
+.alert-dismissable,
+.alert-dismissible {
+  padding-right: 35px; }
+  .alert-dismissable .close,
+  .alert-dismissible .close {
+    position: relative;
+    top: -2px;
+    right: -21px;
+    color: inherit; }
+
+.alert-success {
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
+  color: #3c763d; }
+  .alert-success hr {
+    border-top-color: #c9e2b3; }
+  .alert-success .alert-link {
+    color: #2b542c; }
+
+.alert-info {
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+  color: #31708f; }
+  .alert-info hr {
+    border-top-color: #a6e1ec; }
+  .alert-info .alert-link {
+    color: #245269; }
+
+.alert-warning {
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+  color: #8a6d3b; }
+  .alert-warning hr {
+    border-top-color: #f7e1b5; }
+  .alert-warning .alert-link {
+    color: #66512c; }
+
+.alert-danger {
+  background-color: #f2dede;
+  border-color: #ebccd1;
+  color: #a94442; }
+  .alert-danger hr {
+    border-top-color: #e4b9c0; }
+  .alert-danger .alert-link {
+    color: #843534; }
+
 .panel {
   margin-bottom: 20px;
   background-color: #fff;
@@ -3114,6 +3176,9 @@ button.close {
   color: #FFFFFF; }
 
 /*modal*/
+.modal-dialog {
+  z-index: 1500; }
+
 .modal-content {
   box-shadow: none;
   border: none;
@@ -3121,8 +3186,8 @@ button.close {
   -webkit-border-radius: 0; }
 
 .modal-header {
-  background: #65CEA7;
-  color: #fff;
+  background: #fcdfb3;
+  color: #4A4947;
   border-radius: 0;
   -webkit-border-radius: 0;
   border: none; }
@@ -3139,6 +3204,9 @@ button.close {
   box-shadow: none; }
 
 /*form elements*/
+.form-group {
+  margin-bottom: 8px; }
+
 .form-group label {
   font-weight: normal; }
 
@@ -3196,6 +3264,9 @@ button.close {
   white-space: nowrap;
   font-size: 14px; }
 
+.table > tbody + tbody {
+  border-top: none; }
+
 .h100, html, body, body > section, #app-container, .right-side {
   height: 100%; }
 
@@ -3216,8 +3287,11 @@ button.close {
   text-overflow: ellipsis;
   white-space: nowrap; }
 
-.inline-block, .order-manage .address-all, .order-manage .bordered {
+.inline-block, .number-picker a, .order-manage .address-all, .order-manage .bordered {
   display: inline-block; }
+
+.tc, .number-picker, .number-picker input {
+  text-align: center; }
 
 /**************************/
 /********* 实体类 **********/
@@ -3250,7 +3324,7 @@ a:hover {
 /**************************/
 /********* 修饰类 **********/
 /**************************/
-.inline-block, .order-manage .address-all, .order-manage .bordered {
+.inline-block, .number-picker a, .order-manage .address-all, .order-manage .bordered {
   display: inline-block !important; }
 
 .space {
@@ -3331,6 +3405,43 @@ hr.dotted {
   color: #fff;
   background-color: #cab986;
   border-color: #c6b27c; }
+
+.btn.btn-theme[disabled]:hover {
+  background-color: #D2C398; }
+
+.btn[data-submitting=true], .btn[data-submitting=true]:hover, .btn[data-submitting=true]:active, .btn[data-submitting=true]:focus {
+  color: transparent; }
+
+.btn[data-submitting=true] {
+  position: relative; }
+  .btn[data-submitting=true]:after {
+    font-size: 12px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -5px;
+    margin-top: -9px;
+    color: #fff;
+    content: '\f01e';
+    font-family: FontAwesome;
+    -webkit-animation: fa-spin 2s infinite linear;
+            animation: fa-spin 2s infinite linear; }
+
+.number-picker a {
+  padding: 6px;
+  cursor: pointer; }
+
+.number-picker input {
+  width: 40px !important;
+  padding-right: 3px;
+  padding-left: 3px; }
+
+.table tbody tr.clickable {
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none; }
 
 .left-side {
   position: fixed;

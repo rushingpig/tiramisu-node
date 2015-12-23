@@ -13,7 +13,7 @@ export function login(username, password){
     dispatch({
       type: LOGIN_START
     });
-    return post(Url.login, {username, password})
+    return post(Url.login.toString(), {username, password})
       .done(function(json){
         dispatch({
           type: LOGIN_SUCCESS

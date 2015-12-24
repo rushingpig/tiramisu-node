@@ -23,10 +23,22 @@ module.exports = {
      * @param id
      * @param date
      */
-    getOrderId : (id,date)=>{
+    getShowOrderId : (id,date)=>{
         if(!Number.isInteger(id)){
             throw new Error('the id must be an integer...');
         }
         return dateUtils.format(date,'YYYYMMDD') + id.toString();
     },
+    /**
+     * get the order id in db by the display order id
+     * @param showOrderId
+     * @returns {string}
+     */
+    getDBOrderId : (showOrderId) => {
+        if(!showOrderId || typeof showOrderId !== 'string'){
+            throw new Error('the order id for display must be an valid string...');
+        }
+        return showOrderId.substring(8);
+    },
 };
+

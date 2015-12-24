@@ -11,7 +11,7 @@
  Target Server Version : 50626
  File Encoding         : utf-8
 
- Date: 12/21/2015 11:12:22 AM
+ Date: 12/24/2015 10:12:08 AM
 */
 
 SET NAMES utf8;
@@ -69,7 +69,7 @@ CREATE TABLE `buss_order` (
   `src_id` int(11) unsigned NOT NULL COMMENT '订单来源id',
   `shop_id` int(10) unsigned DEFAULT NULL COMMENT '如果delivery_type为''TAKETHEIR'' 时为门店ID，否则为空',
   `pay_modes_id` int(10) unsigned DEFAULT NULL,
-  `status` enum('CANCEL','UNTREATED','STATION','INLINE','DELIVERY','COMPLETED','EXCEPTION') NOT NULL DEFAULT 'UNTREATED' COMMENT '取消，未处理，分配配送站，生产中，配送员配送中，已完成，异常',
+  `status` enum('CANCEL','UNTREATED','STATION','CONVERT','INLINE','DELIVERY','COMPLETED','EXCEPTION') NOT NULL DEFAULT 'UNTREATED' COMMENT '取消，未处理，分配配送站，生产中，配送员配送中，已完成，异常',
   `pay_status` enum('COD','REFUNDING','REFUNDED','PAYED') NOT NULL DEFAULT 'PAYED' COMMENT '货到付款，退款中，已退款，已付款',
   `is_submit` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否提交（0：false，1：true）',
   `is_deal` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否处理（0：false，1：true）',
@@ -82,7 +82,9 @@ CREATE TABLE `buss_order` (
   `updated_by` varchar(255) DEFAULT NULL COMMENT '记录更新操作者',
   `updated_date` datetime DEFAULT NULL COMMENT '记录更新时间',
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
-  PRIMARY KEY (`id`)
+  `merchant_id` int(11) DEFAULT NULL COMMENT '商户订单',
+  PRIMARY KEY (`id`),
+  KEY `IDX_STATUS` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单详情表';
 
 -- ----------------------------
@@ -109,21 +111,27 @@ CREATE TABLE `buss_order_history` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单详情历史记录表';
 
 -- ----------------------------
---  Table structure for `buss_order_product`
+--  Table structure for `buss_order_sku`
 -- ----------------------------
-DROP TABLE IF EXISTS `buss_order_product`;
-CREATE TABLE `buss_order_product` (
+DROP TABLE IF EXISTS `buss_order_sku`;
+CREATE TABLE `buss_order_sku` (
   `order_id` varchar(36) NOT NULL,
-  `product_id` int(10) unsigned NOT NULL COMMENT '产品ID',
-  `size` int(11) unsigned NOT NULL COMMENT '产品规格',
+  `sku_id` int(10) unsigned NOT NULL COMMENT '产品ID',
   `num` int(11) NOT NULL DEFAULT '0' COMMENT '产品数量',
   `choco_board` varchar(255) DEFAULT NULL COMMENT '巧克力牌上文字内容',
   `greeting_card` varchar(255) DEFAULT NULL COMMENT '祝福贺卡上的问题内容',
   `atlas` tinyint(1) DEFAULT NULL COMMENT '是否需要产品图册（0：false；1：true）',
   `custom_name` varchar(255) DEFAULT NULL COMMENT '自定义名称',
   `custom_desc` varchar(255) DEFAULT NULL COMMENT '自定义描述',
-  PRIMARY KEY (`order_id`,`product_id`)
+  PRIMARY KEY (`order_id`,`sku_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单--产品中间表\n';
+
+-- ----------------------------
+--  Records of `buss_order_sku`
+-- ----------------------------
+BEGIN;
+INSERT INTO `buss_order_sku` VALUES ('10000001', '1', '2', '生日快乐', '生日快乐', '0', null, null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `buss_order_src`
@@ -141,13 +149,13 @@ CREATE TABLE `buss_order_src` (
   `updated_date` datetime DEFAULT NULL,
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '删除标志（0：不显示；1：显示）',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='订单来源';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='订单来源';
 
 -- ----------------------------
 --  Records of `buss_order_src`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_order_src` VALUES ('1', '0', '1', '幸福商城', '0', '1', '2015-12-21 11:03:03', null, null, '1'), ('2', '1', '2', '官网', '0', '1', '2015-12-21 11:03:28', null, null, '1'), ('3', '0', '1', '第三方预约', '0', '1', '2015-12-21 11:03:51', null, null, '1');
+INSERT INTO `buss_order_src` VALUES ('1', '0', '1', '幸福商城', '0', '1', '2015-12-21 11:03:03', null, null, '1'), ('2', '1', '2', '官网', '0', '1', '2015-12-21 11:03:28', null, null, '1'), ('3', '0', '1', '第三方预约', '0', '1', '2015-12-21 11:03:51', null, null, '1'), ('4', '1', '2', '秒杀', '0', '1', '2015-12-21 11:44:56', null, null, '1');
 COMMIT;
 
 -- ----------------------------
@@ -178,16 +186,18 @@ COMMIT;
 DROP TABLE IF EXISTS `buss_product`;
 CREATE TABLE `buss_product` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `sku_id` int(10) unsigned DEFAULT NULL,
   `name` varchar(50) NOT NULL,
-  `price` int(11) DEFAULT NULL,
-  `sales` int(11) DEFAULT NULL,
   `category_id` int(10) unsigned DEFAULT NULL,
-  `src_id` int(10) unsigned DEFAULT NULL,
-  `is_local_site` tinyint(1) DEFAULT NULL,
-  `is_delivery` tinyint(1) DEFAULT NULL,
-  `size` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='产品实体';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='产品实体';
+
+-- ----------------------------
+--  Records of `buss_product`
+-- ----------------------------
+BEGIN;
+INSERT INTO `buss_product` VALUES ('1', null, '榴芒双拼', '1');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `buss_product_category`
@@ -204,7 +214,31 @@ CREATE TABLE `buss_product_category` (
   `updated_date` datetime DEFAULT NULL COMMENT '更新时间',
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '删除标志',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='产品分类表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='产品分类表';
+
+-- ----------------------------
+--  Records of `buss_product_category`
+-- ----------------------------
+BEGIN;
+INSERT INTO `buss_product_category` VALUES ('1', '0', '鲜果蛋糕', '0', '1', '2015-12-21 11:15:57', null, null, '1'), ('2', '1', '超级芒果', '0', '1', '2015-12-24 10:07:43', null, null, '1'), ('3', '0', '芝士蛋糕', '0', '1', '2015-12-24 10:08:08', null, null, '1');
+COMMIT;
+
+-- ----------------------------
+--  Table structure for `buss_product_sku`
+-- ----------------------------
+DROP TABLE IF EXISTS `buss_product_sku`;
+CREATE TABLE `buss_product_sku` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `product_id` int(10) unsigned DEFAULT NULL,
+  `size` varchar(255) DEFAULT NULL COMMENT '规格',
+  `website` varchar(255) DEFAULT NULL COMMENT '网站来源',
+  `price` int(8) DEFAULT '0' COMMENT '产品的价格（单位：分）',
+  `is_local_site` tinyint(1) DEFAULT '1' COMMENT '是否本网站',
+  `is_delivery` tinyint(1) DEFAULT '1' COMMENT '是否配送上门',
+  PRIMARY KEY (`id`),
+  KEY `IDX_PRODUCT` (`product_id`) USING BTREE,
+  CONSTRAINT `FK_PRODUCT` FOREIGN KEY (`product_id`) REFERENCES `buss_product` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='产品的各种附加属性';
 
 -- ----------------------------
 --  Table structure for `buss_recipient`

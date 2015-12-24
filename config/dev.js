@@ -34,16 +34,6 @@ var exp_router_options = {
     mergeParams:false,
     strict:false
 };
-//  session lifecycle
-//  TODO add this property to current object
-var session_options = function(){
-    let baseTime = 10000;
-    return {
-        baseTime : baseTime,
-        cookieMaxAge : baseTime,  //  unit ms
-        expires : false //new Date(Date.now() + baseTime)
-    };
-};
 //  the table list in database  ->  tiramisu
 var tables = {
     sys_user : 'sys_user',

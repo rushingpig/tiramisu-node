@@ -12,4 +12,5 @@ module.exports = {
     address : require('./sys/address_dao'),
     delivery : require('./buss/delivery/delivery_dao'),
     order : require('./buss/order/order_dao'),
+    product : require('./buss/product/product_dao'),
 }

@@ -32,7 +32,7 @@ function localStrategy(req,username, password, done) {
     });
 }
 /**
- * just for session
+ * just for session of the config is true
  * @param user
  * @param done
  */

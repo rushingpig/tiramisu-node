@@ -12,6 +12,7 @@ const service = {
     address : require('./sys/address_service'),
     delivery : require('./buss/delivery/delivery_service'),
     order : require('./buss/order/order_service'),
+    product : require('./buss/product/product_service'),
 };
 
 module.exports = service;

@@ -14,7 +14,8 @@ var paymentRouter = require('./payment');
 var service = require('../../service'),
     addressService = service.address,
     deliveryService = service.delivery,
-    orderService = service.order;
+    orderService = service.order,
+    productService = service.product;
 
 var v = express.Router(config.exp_router_options);
 var a = express.Router(config.exp_router_options);
@@ -35,6 +36,8 @@ a.get('/order/srcs',orderService.getOrderSrcList);
 a.post('/order/add',orderService.addOrder);
 a.get('/pay/modes',orderService.getPayModeList);
 a.get('/district/:districtId/shops',orderService.getShopList);
+a.put('/order/:orderId');
+a.get('/product/categories',productService.getCategories);
 //=====================router for business end======================
 
 

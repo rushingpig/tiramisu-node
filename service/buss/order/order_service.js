@@ -9,6 +9,8 @@
 var res_obj = require('../../../util/res_obj'),
     systemUtils = require('../../../common/SystemUtils'),
     toolUils = require('../../../common/ToolUtils'),
+    schema = require('../../../schema'),
+    addOrder = schema.addOrder,
     dao = require('../../../dao'),
     orderDao = dao.order;
 
@@ -37,18 +39,7 @@ OrderService.prototype.getOrderSrcList = (req,res,next)=>{
  * @param next
  */
 OrderService.prototype.addOrder = (req,res,next) =>{
-    req.checkBody('delivery_type','invalid delivery_type').notEmpty();
-    req.checkBody('owner_name').notEmpty();
-    req.checkBody('owner_mobile').notEmpty().isMobilePhone('zh-CN');
-    req.checkBody('recipient_name').notEmpty();
-    req.checkBody('recipient_mobile').notEmpty();
-    req.checkBody('regionalism_id').notEmpty().isInt();
-    req.checkBody('recipient_address').notEmpty();
-    req.checkBody('delivery_id').notEmpty().isInt();
-    req.checkBody('src_id').notEmpty().isInt();
-    req.checkBody('pay_modes_id').notEmpty().isInt();
-    req.checkBody('pay_status').notEmpty();
-    req.checkBody('delivery_time').notEmpty();
+    req.checkBody(addOrder);
     let errors = req.validationErrors();
     if (errors) {
         console.log(errors);
@@ -70,7 +61,12 @@ OrderService.prototype.addOrder = (req,res,next) =>{
         delivery_time = req.body.delivery_time,
         invoice = req.body.invoice,
         remarks = req.body.remarks;
-    let promise = OrderService.prototype.addRecipient(regionalism_id,recipient_name,recipient_mobile,recipient_landmark,delivery_type,recipient_address).then((recipientId)=>{
+    let promise = OrderService.prototype.addRecipient(regionalism_id,
+        recipient_name,
+        recipient_mobile,
+        recipient_landmark,
+        delivery_type,
+        recipient_address).then((recipientId)=>{
         if(!recipientId){
             res.api(res_obj.FAIL,null);
             return;
@@ -100,8 +96,16 @@ OrderService.prototype.addOrder = (req,res,next) =>{
         }
     });
     systemUtils.wrapService(next,promise);
+};
+/**
+ * edit the order
+ * @param req
+ * @param res
+ * @param next
+ */
+OrderService.prototype.editOrder = (req,res,next)=>{
 
-}
+};
 /**
  * add a recipient record
  * @param regionalism_id

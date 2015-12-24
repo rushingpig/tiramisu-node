@@ -13,28 +13,29 @@ function OrderDao(){
     this.baseColumns = ['id','name'];
     this.base_insert_sql = 'insert into ?? set ?';
     this.base_select_sql = 'select ?? from ?? where 1=1 and del_flag = ? ';
+    this.base_update_sql = 'update ?? set ?';
 }
 /**
- * 获取所有的订单来源
+ * get the order sources
  */
 OrderDao.prototype.findAllOrderSrc = function(){
     let params = [['id','name','parent_id','level'],tables.buss_order_src,del_flag.SHOW];
     return baseDao.select(this.base_select_sql,params);
 };
 /**
- * 新增订单
+ * new order
  */
 OrderDao.prototype.insertOrder = function(orderObj){
     return baseDao.insert(this.base_insert_sql,[tables.buss_order,orderObj]);
 };
 /**
- * 新增 收/取 货人信息
+ * new recipient record
  */
 OrderDao.prototype.insertRecipient = function(recipientObj){
     return baseDao.insert(this.base_insert_sql,[tables.buss_recipient,recipientObj]);
 };
 /**
- * 获取支付方式
+ * get the pay modes
  * @type {OrderDao}
  */
 OrderDao.prototype.findAllPayModes = function(){
@@ -42,7 +43,7 @@ OrderDao.prototype.findAllPayModes = function(){
     return baseDao.select(this.base_select_sql,params);
 };
 /**
- * 根据行政区域获取分店列表
+ * get the shops by regionalismId
  * @param regionalismId
  */
 OrderDao.prototype.findShopByRegionId = function(districtId){
@@ -50,4 +51,14 @@ OrderDao.prototype.findShopByRegionId = function(districtId){
     let params = [this.baseColumns,tables.buss_shop,del_flag.SHOW,districtId];
     return baseDao.select(sql,params);
 };
+/**
+ * update the order info
+ * @param orderObj
+ */
+OrderDao.prototype.updateOrder = function(orderObj){
+    return baseDao.update(this.base_update_sql,[tables.buss_order,orderObj]);
+};
+
+
+
 module.exports = new OrderDao();

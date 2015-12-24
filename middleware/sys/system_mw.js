@@ -42,7 +42,7 @@ SystemMiddleware.prototype = {
     debugReqAndResParams: function (req, res, next) {
         let tiramisu_env = process.env.NODE_ENV;
         if (!tiramisu_env || 'dev' === tiramisu_env || 'development' === tiramisu_env) {
-            console.log('******************** 请⃝求⃝参⃝数⃝ **********************');
+            console.log('******************** 请༗求༗参༗数༗ **********************');
             let requestMethod = req.method.toLowerCase();
             if ('get' === requestMethod) {
                 let query_or_params = toolUtils.isEmptyObject(req.query) ? req.params : req.query;
@@ -50,7 +50,7 @@ SystemMiddleware.prototype = {
             } else {
                 console.log('body -> \n', JSON.stringify(req.body, null, 2));
             }
-            console.log('********************************************************');
+            console.log('********************************************************\n');
         }
         next();
     }
@@ -70,7 +70,12 @@ SystemMiddleware.prototype = {
  */
 function api(res) {
     return (res_tpl, data)=> {
-        let temp = {};
+        let temp = {
+            code : '',
+            msg  : '',
+            data : {},
+            desc : ''
+        };
         try {
             // one valid argument
             if (data === undefined && res_tpl) {

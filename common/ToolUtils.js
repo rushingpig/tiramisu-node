@@ -13,4 +13,5 @@ module.exports = {
     isEmptyObject : function(object){
         return !object || this.isEmptyArray(Object.keys(object));
     },
+
 };

@@ -33,4 +33,8 @@ LogHelper.prototype.getLogger = function(loggerName,level){
     return logger;
 };
 
+LogHelper.systemLog = function(){
+    return new LogHelper().getLogger('tiramisu');
+};
+
 module.exports = LogHelper;

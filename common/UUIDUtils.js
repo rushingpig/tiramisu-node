@@ -40,7 +40,7 @@ UUIDUtils.uuidv4 = function(options){
  * @param offset    (Number) Starting index in buffer at which to begin writing. Default: 0
  */
 UUIDUtils.parse = function(id,buffer,offset){
-    return uuid,parse(id,buffer,offse);
+    return uuid.parse(id,buffer,offse);
 };
 /**
  * unparse UUIDs

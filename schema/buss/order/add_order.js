@@ -54,5 +54,9 @@ module.exports = {
     'delivery_time': {
         optional : false,
         notEmpty: true
+    },
+    'total_amount': {
+        optional : false,
+        notEmpty: true
     }
 }

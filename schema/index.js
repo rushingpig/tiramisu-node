@@ -9,4 +9,6 @@
 module.exports = {
     addOrder : require('./buss/order/add_order'),
     addProduct : require('./buss/product/add_product'),
+    getOrder : require('./buss/order/get_order'),
+    listOrder : require('./buss/order/list_order'),
 };

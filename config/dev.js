@@ -36,24 +36,26 @@ var exp_router_options = {
 };
 //  the table list in database  ->  tiramisu
 var tables = {
+//================Sys=================
     sys_user : 'sys_user',
     sys_role : 'sys_role',
     sys_menu : 'sys_menu',
     sys_user_role : 'sys_user_role',
     sys_role_menu : 'sys_role_menu',
-//==================================
+//=================Buss=================
     buss_city : 'buss_city',
     buss_delivery_station : 'buss_delivery_station',
     buss_order :'buss_order',
     buss_order_history : 'buss_order_history',
-    buss_order_product : 'buss_order_product',
+    buss_order_sku : 'buss_order_sku',
     buss_order_src : 'buss_order_src',
     buss_pay_modes : 'buss_pay_modes',
     buss_product : 'buss_product',
     buss_product_category : 'buss_product_category',
     buss_recipient : 'buss_recipient',
     buss_shop : 'buss_shop',
-//====================================
+    buss_product_sku : 'buss_product_sku',
+//=================Dict===================
     dict_regionalism : 'dict_regionalism',
 };
 //  mysql config options
@@ -80,7 +82,7 @@ var mysql_options = {
 var exclude_paths = ['/','/v1/a/login'];
 
 var log4js_options = {
-    reloadSecs: 300 ,   // the
+    reloadSecs: 3000 ,   // the interval to reload the log4js config file
     cwd : './log/'
 };
 

@@ -9,21 +9,27 @@
 var res_obj = require('../../../util/res_obj'),
     systemUtils = require('../../../common/SystemUtils'),
     toolUils = require('../../../common/ToolUtils'),
+    TiramisuError = require('../../../error/tiramisu_error'),
     schema = require('../../../schema'),
     dao = require('../../../dao'),
     productDao = dao.product;
 
-function ProductService(){
-    
+function ProductService() {
+
 }
-ProductService.prototype.getCategories = (req,res,next)=>{
-    let promise = productDao.findAllCatetories().then((results)=>{
-        if(toolUils.isEmptyArray(results)){
-            res.api(res_obj.NO_MORE_RESULTS,null);
-            return;
+/**
+ * get all of the product categories
+ * @param req
+ * @param res
+ * @param next
+ */
+ProductService.prototype.getCategories = (req, res, next)=> {
+    let promise = productDao.findAllCatetories().then((results)=> {
+        if (toolUils.isEmptyArray(results)) {
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
         let data = [];
-        results.forEach((curr)=>{
+        results.forEach((curr)=> {
             let obj = {};
             obj.id = curr.id;
             obj.name = curr.name;
@@ -32,7 +38,61 @@ ProductService.prototype.getCategories = (req,res,next)=>{
         });
         res.api(data);
     });
-    systemUtils.wrapService(next,promise);
+    systemUtils.wrapService(res,next, promise);
+};
+/**
+ * get the product list based on the query term
+ * @param req
+ * @param res
+ * @param next
+ */
+ProductService.prototype.listProducts = (req, res, next) => {
+    let product_name = req.query.name,
+        category_id = req.query.category_id,
+        page_no = req.query.page_no,
+        page_size = req.query.page_size;
+    let res_data = {
+        list: []
+    }, temp_obj = {};
+    let promise = productDao.findProductsCount(product_name, category_id, page_no, page_size).then((data)=> {
+        if (toolUils.isEmptyArray(data.results)) {
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        let preSql = data.sql, preParams = data.params;
+        res_data.total = data.results[0].total;
+        return productDao.findProducts(preSql, preParams);
+    }).then((_re)=> {
+        if (toolUils.isEmptyArray(_re)) {
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        _re.forEach((curr)=> {
+            let key = curr.product_id + curr.size;
+            if (!temp_obj.hasOwnProperty(key)) {
+                temp_obj[key] = {
+                    category_name: curr.category_name,
+                    name: curr.name,
+                    original_price: curr.original_price,
+                    product_id: curr.product_id,
+                    size: curr.size,
+                    skus: []
+                };
+            }
+            let sku_obj = {
+                discount_price: curr.price,
+                is_delivery: curr.is_delivery,
+                is_local_site: curr.is_local_site,
+                sku_id: curr.id,
+                website: curr.website
+            };
+            temp_obj[key].skus.push(sku_obj);
+        });
+        for (let o in temp_obj) {
+            res_data.list.push(temp_obj[o]);
+        }
+        res.api(res_data);
+    });
+    systemUtils.wrapService(res,next, promise);
 };
 
 module.exports = new ProductService();
+

@@ -11,7 +11,7 @@
  Target Server Version : 50626
  File Encoding         : utf-8
 
- Date: 12/24/2015 10:12:08 AM
+ Date: 12/29/2015 13:55:57 PM
 */
 
 SET NAMES utf8;
@@ -69,6 +69,8 @@ CREATE TABLE `buss_order` (
   `src_id` int(11) unsigned NOT NULL COMMENT '订单来源id',
   `shop_id` int(10) unsigned DEFAULT NULL COMMENT '如果delivery_type为''TAKETHEIR'' 时为门店ID，否则为空',
   `pay_modes_id` int(10) unsigned DEFAULT NULL,
+  `owner_name` varchar(255) DEFAULT NULL COMMENT '下单人姓名',
+  `owner_mobile` varchar(255) DEFAULT NULL COMMENT '下单人手机',
   `status` enum('CANCEL','UNTREATED','STATION','CONVERT','INLINE','DELIVERY','COMPLETED','EXCEPTION') NOT NULL DEFAULT 'UNTREATED' COMMENT '取消，未处理，分配配送站，生产中，配送员配送中，已完成，异常',
   `pay_status` enum('COD','REFUNDING','REFUNDED','PAYED') NOT NULL DEFAULT 'PAYED' COMMENT '货到付款，退款中，已退款，已付款',
   `is_submit` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否提交（0：false，1：true）',
@@ -83,9 +85,17 @@ CREATE TABLE `buss_order` (
   `updated_date` datetime DEFAULT NULL COMMENT '记录更新时间',
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
   `merchant_id` int(11) DEFAULT NULL COMMENT '商户订单',
+  `total_amount` int(10) unsigned DEFAULT NULL COMMENT '应收金额',
   PRIMARY KEY (`id`),
   KEY `IDX_STATUS` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单详情表';
+) ENGINE=InnoDB AUTO_INCREMENT=10000000 DEFAULT CHARSET=utf8 COMMENT='订单详情表';
+
+-- ----------------------------
+--  Records of `buss_order`
+-- ----------------------------
+BEGIN;
+INSERT INTO `buss_order` VALUES ('10000001', '1', '1', '1', '1', '1', null, null, 'UNTREATED', 'PAYED', '0', '0', '2015-12-29 09:00~10:00', null, null, null, '1', '2015-12-29 09:36:58', null, null, '1', null, '1000');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `buss_order_history`
@@ -115,22 +125,24 @@ CREATE TABLE `buss_order_history` (
 -- ----------------------------
 DROP TABLE IF EXISTS `buss_order_sku`;
 CREATE TABLE `buss_order_sku` (
-  `order_id` varchar(36) NOT NULL,
+  `order_id` int(10) unsigned NOT NULL,
   `sku_id` int(10) unsigned NOT NULL COMMENT '产品ID',
-  `num` int(11) NOT NULL DEFAULT '0' COMMENT '产品数量',
+  `num` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '产品数量',
   `choco_board` varchar(255) DEFAULT NULL COMMENT '巧克力牌上文字内容',
   `greeting_card` varchar(255) DEFAULT NULL COMMENT '祝福贺卡上的问题内容',
   `atlas` tinyint(1) DEFAULT NULL COMMENT '是否需要产品图册（0：false；1：true）',
   `custom_name` varchar(255) DEFAULT NULL COMMENT '自定义名称',
   `custom_desc` varchar(255) DEFAULT NULL COMMENT '自定义描述',
-  PRIMARY KEY (`order_id`,`sku_id`)
+  `discount_price` int(10) unsigned DEFAULT NULL COMMENT '提交订单时客服可能手动更改应收金额',
+  PRIMARY KEY (`order_id`,`sku_id`),
+  CONSTRAINT `FK_ORDERID` FOREIGN KEY (`order_id`) REFERENCES `buss_order` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单--产品中间表\n';
 
 -- ----------------------------
 --  Records of `buss_order_sku`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_order_sku` VALUES ('10000001', '1', '2', '生日快乐', '生日快乐', '0', null, null);
+INSERT INTO `buss_order_sku` VALUES ('10000001', '1', '2', '生日快乐', '生日快乐', '0', null, null, '1000'), ('10000001', '2', '3', '生日快乐', '生日快乐', '0', null, null, '2000');
 COMMIT;
 
 -- ----------------------------
@@ -186,17 +198,18 @@ COMMIT;
 DROP TABLE IF EXISTS `buss_product`;
 CREATE TABLE `buss_product` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `sku_id` int(10) unsigned DEFAULT NULL,
   `name` varchar(50) NOT NULL,
   `category_id` int(10) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='产品实体';
+  `original_price` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_NAME` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='产品实体';
 
 -- ----------------------------
 --  Records of `buss_product`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_product` VALUES ('1', null, '榴芒双拼', '1');
+INSERT INTO `buss_product` VALUES ('1', '榴芒双拼', '1', '1000'), ('2', '芒果茫茫', '1', '1200');
 COMMIT;
 
 -- ----------------------------
@@ -235,10 +248,26 @@ CREATE TABLE `buss_product_sku` (
   `price` int(8) DEFAULT '0' COMMENT '产品的价格（单位：分）',
   `is_local_site` tinyint(1) DEFAULT '1' COMMENT '是否本网站',
   `is_delivery` tinyint(1) DEFAULT '1' COMMENT '是否配送上门',
+  `discount_price` int(10) unsigned DEFAULT NULL COMMENT '实际售价',
+  `amount` int(10) unsigned DEFAULT NULL,
+  `sort` int(11) DEFAULT '0',
+  `created_by` int(10) unsigned DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `updated_by` int(11) DEFAULT NULL,
+  `updated_date` datetime DEFAULT NULL,
+  `del_flag` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `IDX_PRODUCT_SIZE_WEBSITE` (`product_id`,`size`,`website`) USING BTREE,
   KEY `IDX_PRODUCT` (`product_id`) USING BTREE,
   CONSTRAINT `FK_PRODUCT` FOREIGN KEY (`product_id`) REFERENCES `buss_product` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='产品的各种附加属性';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='产品的各种附加属性';
+
+-- ----------------------------
+--  Records of `buss_product_sku`
+-- ----------------------------
+BEGIN;
+INSERT INTO `buss_product_sku` VALUES ('1', '1', '1磅', '美团', '800', '0', '0', null, null, '3', null, null, null, null, null), ('2', '1', '2磅', '大众', '700', '0', '0', null, null, '2', null, null, null, null, null), ('3', '1', '1磅', '大众', '600', '0', '0', null, null, '0', null, null, null, null, null), ('4', '2', '1磅', '美团', '500', '0', '0', null, null, '1', null, null, null, null, null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `buss_recipient`
@@ -256,7 +285,14 @@ CREATE TABLE `buss_recipient` (
   `created_date` datetime DEFAULT NULL COMMENT '创建时间',
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '删除标志',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='收货人信息和收件方式';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='收货人信息和收件方式';
+
+-- ----------------------------
+--  Records of `buss_recipient`
+-- ----------------------------
+BEGIN;
+INSERT INTO `buss_recipient` VALUES ('1', '110105', '朱正林', '13480801761', '查尔顿', 'DELIVERY', '高新南四道', '1', '2015-12-29 09:57:43', '1');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `buss_shop`

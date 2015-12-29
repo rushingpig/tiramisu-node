@@ -6,16 +6,23 @@
  * @version: v0.0.1
  */
 "use strict";
-var dateUtils = require('./DateUtils');
+var dateUtils = require('./DateUtils'),
+    TiramisuError = require('../error/tiramisu_error'),
+    toolUtils = require('./ToolUtils'),
+    IncomingMessage = require('http').InIncomingMessage;
 module.exports = {
     /**
      * wrap the service promise for catch error
      * @param next
      * @param promise
      */
-    wrapService : (next,promise)=> {
+    wrapService : (res,next,promise)=> {
         promise.catch((err)=> {
-            next(err);
+            if(err instanceof TiramisuError){
+                res.api(err.getResObj(),null);
+            }else{
+                next(err);
+            }
         });
     },
     /**
@@ -39,6 +46,28 @@ module.exports = {
             throw new Error('the order id for display must be an valid string...');
         }
         return showOrderId.substring(8);
+    },
+    assembleInsertObj : (req,obj) =>{
+        if(!(req instanceof IncomingMessage)){
+            throw new Error('the req must be the instance of IncomingMessage...');
+        }
+        if(toolUtils.isEmptyObject(obj)){
+            throw new Error('the obj param should be an instance of object and has it\'s own property...');
+        }
+        obj.created_by = req.userId;
+        obj.created_date = new Date();
+        return obj;
+    },
+    assembleUpdateObj : (req,obj) => {
+        if(!(req instanceof IncomingMessage)){
+            throw new Error('the req must be the instance of IncomingMessage...');
+        }
+        if(toolUtils.isEmptyObject(obj)){
+            throw new Error('the obj param should be an instance of object and has it\'s own property...');
+        }
+        obj.updated_by = req.userId;
+        obj.updated_date = new Date();
+        return obj;
     },
 };
 

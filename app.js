@@ -19,6 +19,7 @@ var middleware = require('./middleware');
 var LogHelper = require('./common/LogHelper');
 //  init the log4js config
 new LogHelper(log4js).config();
+//global.loog = LogHelper.getLogger('tiramisu');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -74,7 +75,7 @@ if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
         res.status(err.status || 500);
         res.render('error', {
-            message: err.message,
+            message: err,
             error: err
         });
     });
@@ -91,7 +92,7 @@ if (app.get('env') === 'dev') {
 app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
-        message: err.message,
+        message: err,
         error: {}
     });
 });

@@ -55,6 +55,7 @@ var tables = {
     buss_recipient : 'buss_recipient',
     buss_shop : 'buss_shop',
     buss_product_sku : 'buss_product_sku',
+    buss_order_fulltext : 'buss_order_fulltext',
 //=================Dict===================
     dict_regionalism : 'dict_regionalism',
 };

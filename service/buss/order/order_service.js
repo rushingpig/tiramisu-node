@@ -1,5 +1,5 @@
 /**
- * @des    :
+ * @des    : the service module of the order
  * @author : pigo.can
  * @date   : 15/12/17 上午9:39
  * @email  : zhenglin.zhu@xfxb.net
@@ -8,11 +8,14 @@
 "use strict";
 var res_obj = require('../../../util/res_obj'),
     systemUtils = require('../../../common/SystemUtils'),
-    toolUils = require('../../../common/ToolUtils'),
+    toolUtils = require('../../../common/ToolUtils'),
+    dateUtils = require('../../../common/DateUtils'),
     TiramisuError = require('../../../error/tiramisu_error'),
+    Constant = require('../../../common/Constant'),
     schema = require('../../../schema'),
     addOrder = schema.addOrder,
     getOrder = schema.getOrder,
+    editOrder = schema.editOrder,
     listOrder = schema.listOrder,
     del_flag = require('../../../dao/base_dao').del_flag,
     dao = require('../../../dao'),
@@ -29,7 +32,7 @@ function OrderService() {
  */
 OrderService.prototype.getOrderSrcList = (req, res, next)=> {
     systemUtils.wrapService(res,next, orderDao.findAllOrderSrc().then(results=> {
-        if (toolUils.isEmptyArray(results)) {
+        if (toolUtils.isEmptyArray(results)) {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
         res.api(results);
@@ -63,7 +66,11 @@ OrderService.prototype.addOrder = (req, res, next) => {
         delivery_time = req.body.delivery_time,
         invoice = req.body.invoice,
         remarks = req.body.remarks,
-        total_amount = req.body.total_amount;
+        total_amount = req.body.total_amount,
+        total_original_price = req.body.total_original_price,
+        total_discount_price = req.body.total_discount_price,
+        products = req.body.products;
+
 
 
     let promise = OrderService.prototype.addRecipient(req,
@@ -88,17 +95,17 @@ OrderService.prototype.addOrder = (req, res, next) => {
                 remarks: remarks,
                 invoice: invoice,
                 delivery_time: delivery_time,
-                created_date: new Date(),
                 total_amount : total_amount,
-                // TODO: the 1 hack should be removed before going into production
-                created_by: req.userId || 1,
+                total_original_price : total_original_price,
+                total_discount_price : total_discount_price
             };
+            orderObj = systemUtils.assembleInsertObj(req,orderObj);
             return orderDao.insertOrder(orderObj);
         }).then((orderId) => {
             if (!orderId) {
                 throw new TiramisuError(res_obj.FAIL);
             }
-            let products = req.body.products,params = [];
+            let params = [];
             products.forEach((curr)=>{
                 let arr = [];
                 arr.push(orderId);
@@ -112,7 +119,18 @@ OrderService.prototype.addOrder = (req, res, next) => {
                 arr.push(curr.discount_price);
                 params.push(arr);
             });
-            return orderDao.batchInsertOrderSku(params);
+            let order_fulltext_obj = {
+                order_id : orderId,
+                owner_name : systemUtils.encodeForFulltext(owner_name),
+                owner_mobile : owner_mobile,
+                recipient_name : systemUtils.encodeForFulltext(recipient_name),
+                recipient_mobile : recipient_mobile,
+                recipient_address : systemUtils.encodeForFulltext(recipient_address),
+                landmark : systemUtils.encodeForFulltext(recipient_landmark)
+            };
+            return orderDao.insertOrderFulltext(order_fulltext_obj).then(()=>{
+                return orderDao.batchInsertOrderSku(params);
+            });
         }).then((_re)=>{
             if(!_re){
                 throw new TiramisuError(res_obj.NO_MORE_RESULTS);
@@ -135,9 +153,9 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
         return;
     }
 
-    let orderId = req.params.orderId;
+    let orderId = systemUtils.getDBOrderId(req.params.orderId);
     let promise = orderDao.findOrderById(orderId).then((results)=>{
-        if(toolUils.isEmptyArray(results)){
+        if(toolUtils.isEmptyArray(results)){
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
         let data = {
@@ -156,6 +174,12 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
             data.recipient_name = curr.recipient_name;
             data.remarks = curr.remarks;
             data.src_id = curr.src_id;
+            data.province_id = curr.province_id;
+            data.province_name = curr.province_name;
+            data.city_id = curr.city_id;
+            data.city_name = curr.city_name;
+            data.district_id = curr.district_id;
+            data.district_name = curr.district_name;
 
             let product_obj = {
                 choco_board : curr.choco_board,
@@ -181,7 +205,62 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
  * @param next
  */
 OrderService.prototype.editOrder = (req, res, next)=> {
+    req.checkParams('orderId').notEmpty();
+    req.checkBody(editOrder);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,null);
+        return;
+    }
+    let orderId = req.params.orderId,
+        recipient_id = req.body.recipient_id,
+        delivery_type = req.body.delivery_type,
+        owner_name = req.body.owner_name,
+        owner_mobile = req.body.owner_mobile,
+        recipient_name = req.body.recipient_name,
+        recipient_mobile = req.body.recipient_mobile,
+        regionalism_id = req.body.regionalism_id,
+        recipient_address = req.body.recipient_address,
+        recipient_landmark = req.body.recipient_landmark,
+        delivery_id = req.body.delivery_id,
+        src_id = req.body.src_id,
+        pay_modes_id = req.body.pay_modes_id,
+        pay_status = req.body.pay_status,
+        delivery_time = req.body.delivery_time,
+        invoice = req.body.invoice,
+        remarks = req.body.remarks,
+        total_amount = req.body.total_amount,
+        total_original_price = req.body.total_original_price,
+        total_discount_price = req.body.total_discount_price,
+        products = req.body.products;
 
+    let recipient_obj = {
+            regionalism_id: regionalism_id,
+            name: recipient_name,
+            mobile: recipient_mobile,
+            landmark: recipient_landmark,
+            delivery_type: delivery_type,
+            address: recipient_address,
+            del_flag: del_flag.SHOW
+    };
+    let order_obj = {
+        recipient_id: recipient_id,
+        delivery_id: delivery_id,
+        src_id: src_id,
+        pay_status: pay_status,
+        owner_name : owner_name,
+        owner_mobile : owner_mobile,
+        remarks: remarks,
+        invoice: invoice,
+        delivery_time: delivery_time,
+        total_amount : total_amount,
+        total_original_price : total_original_price,
+        total_discount_price : total_discount_price
+    };
+    let promise = orderDao.editOrder(order_obj,orderId,recipient_obj,recipient_id,products).then(()=>{
+        res.api();
+    });
+    systemUtils.wrapService(res,next,promise);
 };
 /**
  * add a recipient record
@@ -214,7 +293,7 @@ OrderService.prototype.addRecipient = function (req,regionalism_id, name, mobile
  */
 OrderService.prototype.getPayModeList = (req, res, next) => {
     let promise = orderDao.findAllPayModes().then((results)=> {
-        if (toolUils.isEmptyArray(results)) {
+        if (toolUtils.isEmptyArray(results)) {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
         let data = {};
@@ -240,7 +319,7 @@ OrderService.prototype.getShopList = (req, res, next)=> {
     }
     let districtId = req.params.districtId;
     let promise = orderDao.findShopByRegionId(districtId).then((results)=> {
-        if (toolUils.isEmptyArray(results)) {
+        if (toolUtils.isEmptyArray(results)) {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
         let data = {};
@@ -268,9 +347,56 @@ OrderService.prototype.listOrders = (req,res,next) => {
         end_time = req.query.end_time,
         is_deal = req.query.is_deal,
         is_submit = req.query.is_submit,
-        keywords = req.query.keywords,
+        keywords = systemUtils.encodeForFulltext(req.query.keywords || ''),
         src_id = req.query.src_id,
-        status = req.query.status;
+        status = req.query.status,
+        page_no = req.query.page_no,
+        page_size = req.query.page_size;
+    let promise = orderDao.findOrderList(begin_time,end_time,is_deal,is_submit,keywords,src_id,status,page_no,page_size).then((resObj)=>{
+        if(!(resObj.result && resObj._result)){
+            throw new TiramisuError(res_obj.FAIL);
+        }else if(toolUtils.isEmptyArray(resObj._result)){
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        let data = {
+            list : [],
+            total : resObj.result[0].total
+        };
+        for(let curr of resObj._result){
+            let delivery_adds = curr.merger_name.split(',');
+            delivery_adds.shift();
+
+            let list_obj = {
+                cancel_reason : curr.cancel_reason,
+                city : curr.merger_name.split(',')[2],
+                created_by : curr.created_by,
+                created_date : curr.created_date,
+                delivery_name : delivery_adds.join(','),
+                delivery_time : curr.delivery_time,
+                delivery_type : Constant.DTD[curr.delivery_type],
+                discount_price : curr.discount_price,
+                is_deal : Constant.YESORNOD[curr.is_deal],
+                is_submit : Constant.YESORNOD[curr.is_submit],
+                merchant_id : curr.merchant_id,
+                order_id : systemUtils.getShowOrderId(curr.id,curr.created_date),
+                original_price : curr.original_price,
+                owner_mobile : curr.owner_mobile,
+                owner_name : curr.owner_name,
+                pay_status : Constant.PSD[curr.pay_status],
+                recipient_address : curr.address,
+                recipient_mobile : curr.recipient_mobile,
+                recipient_name : curr.recipient_name,
+                remarks : curr.remarks,
+                src_name : curr.src_name,
+                status : Constant.OSD[curr.status],
+                updated_by : curr.updated_by,
+                updated_date : curr.updated_date
+            };
+            data.list.push(list_obj);
+        }
+        res.api(data);
+    });
+    systemUtils.wrapService(res,next,promise);
 };
 
 module.exports = new OrderService();

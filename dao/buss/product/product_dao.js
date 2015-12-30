@@ -55,11 +55,42 @@ ProductDao.prototype.findProductsCount = function(product_name,category_id,page_
             return data;
         });
 };
+/**
+ * find the product list
+ * @param preSql
+ * @param preParams
+ */
 ProductDao.prototype.findProducts = function(preSql,preParams){
     let sql = "select t.name,t.category_name,t.original_price,bps2.* from (";
     sql += preSql;
     sql += ")t left join  buss_product_sku bps2 on t.id = bps2.product_id and t.size = bps2.size order by bps2.sort asc";
     return baseDao.select(sql,preParams);
+};
+/**
+ * find the products under the order id
+ * @param orderId
+ */
+ProductDao.prototype.findProductsByOrderId = function(orderId){
+    let columns = [
+        'bp.name',
+        'bp.original_price',
+        'bps.size',
+        'bos.num',
+        'bos.discount_price',
+        'bos.amount',
+        'bos.choco_board',
+        'bos.greeting_card',
+        'bos.custom_name',
+        'bos.custom_desc',
+        'if(bos.atlas=0,\'不需要\',\'需要\') as atlas'
+    ].join(','),params = [];
+    let sql = "select "+columns+" from ?? bos";
+    sql += " left join buss_order bo on bos.order_id = bo.id";
+    sql += " left join buss_product_sku bps on bps.id = bos.sku_id";
+    sql += " left join buss_product bp on bp.id = bps.product_id";
+    sql += " where bos.order_id = ?"
+    params.push(tables.buss_order_sku,orderId);
+    return baseDao.select(sql,params);
 };
 
 module.exports = new ProductDao();

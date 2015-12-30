@@ -32,9 +32,16 @@ LogHelper.prototype.getLogger = function(loggerName,level){
     logger.setLevel(level || this.log4js.levels.INFO);
     return logger;
 };
-
+/**
+ * get the log instance for system
+ * @returns {Logger}
+ */
+var syslog = new LogHelper().getLogger('tiramisu')
 LogHelper.systemLog = function(){
-    return new LogHelper().getLogger('tiramisu');
+    if(!syslog){
+        syslog = new LogHelper().getLogger('tiramisu');
+    }
+    return syslog;
 };
 
 module.exports = LogHelper;

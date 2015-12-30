@@ -11,7 +11,7 @@ var util = require('util'),
 
 function TiramisuError(res_obj,filename,lineNumber){
     this.res_obj = res_obj;
-    Error.call(msg,filename,lineNumber);
+    Error.call(res_obj.msg,filename,lineNumber);
 }
 util.inherits(TiramisuError,Error);
 

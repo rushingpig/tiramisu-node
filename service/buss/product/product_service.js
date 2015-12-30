@@ -8,7 +8,7 @@
 "use strict";
 var res_obj = require('../../../util/res_obj'),
     systemUtils = require('../../../common/SystemUtils'),
-    toolUils = require('../../../common/ToolUtils'),
+    toolUtils = require('../../../common/ToolUtils'),
     TiramisuError = require('../../../error/tiramisu_error'),
     schema = require('../../../schema'),
     dao = require('../../../dao'),
@@ -25,7 +25,7 @@ function ProductService() {
  */
 ProductService.prototype.getCategories = (req, res, next)=> {
     let promise = productDao.findAllCatetories().then((results)=> {
-        if (toolUils.isEmptyArray(results)) {
+        if (toolUtils.isEmptyArray(results)) {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
         let data = [];
@@ -55,7 +55,7 @@ ProductService.prototype.listProducts = (req, res, next) => {
         list: []
     }, temp_obj = {};
     let promise = productDao.findProductsCount(product_name, category_id, page_no, page_size).then((data)=> {
-        if (toolUils.isEmptyArray(data.results)) {
+        if (toolUtils.isEmptyArray(data.results)) {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
         let preSql = data.sql, preParams = data.params;
@@ -92,6 +92,28 @@ ProductService.prototype.listProducts = (req, res, next) => {
         res.api(res_data);
     });
     systemUtils.wrapService(res,next, promise);
+};
+/**
+ * get the product list of the special order id
+ * @param req
+ * @param res
+ * @param next
+ */
+ProductService.prototype.listOrderProducts = (req,res,next)=>{
+    req.checkParams('orderId').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,null);
+        return;
+    }
+    let orderId = req.params.orderId;
+    let promise = productDao.findProductsByOrderId(orderId).then((results)=>{
+        if(toolUtils.isEmptyArray(results)){
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        res.api(results);
+    });
+    systemUtils.wrapService(res,next,promise);
 };
 
 module.exports = new ProductService();

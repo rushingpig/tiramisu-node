@@ -27,20 +27,41 @@ router.use('/a',a);
 
 
 //=====================router for business begin====================
+
+//*********************
+//******** GET ********
+//*********************
 a.get('/provinces',addressService.getProvinces);
 a.get('/province/:provinceId/cities',addressService.getCities);
 //a.get(/^\/city\/(\d+)\/districts$/,addressService.getDistricts);
 a.get('/city/:cityId/districts',addressService.getDistricts);
 a.get('/stations',deliveryService.getDeliveryStationList);
 a.get('/order/srcs',orderService.getOrderSrcList);
-a.post('/order',orderService.addOrder);
 a.get('/pay/modes',orderService.getPayModeList);
 a.get('/district/:districtId/shops',orderService.getShopList);
-a.put('/order/:orderId',orderService.editOrder);
 a.get('/product/categories',productService.getCategories);
 a.get('/products',productService.listProducts);
 a.get('/order/:orderId',orderService.getOrderDetail);
 a.get('/orders',orderService.listOrders);
+a.get('/order/:orderId/products',productService.listOrderProducts);
+//**********************
+//******** POST ********
+//**********************
+
+a.post('/order',orderService.addOrder);
+
+//*********************
+//******** PUT ********
+//*********************
+
+a.put('/order/:orderId',orderService.editOrder);
+
+//************************
+//******** DELETE ********
+//************************
+
+
+
 //=====================router for business end======================
 
 

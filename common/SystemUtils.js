@@ -9,7 +9,8 @@
 var dateUtils = require('./DateUtils'),
     TiramisuError = require('../error/tiramisu_error'),
     toolUtils = require('./ToolUtils'),
-    IncomingMessage = require('http').InIncomingMessage;
+    IncomingMessage = require('http').IncomingMessage,
+    logger = require('./LogHelper').systemLog();
 module.exports = {
     /**
      * wrap the service promise for catch error
@@ -49,12 +50,14 @@ module.exports = {
     },
     assembleInsertObj : (req,obj) =>{
         if(!(req instanceof IncomingMessage)){
+            logger.error('the req must be the instance of IncomingMessage...');
             throw new Error('the req must be the instance of IncomingMessage...');
         }
         if(toolUtils.isEmptyObject(obj)){
+            logger.error('the obj param should be an instance of object and has it\'s own property...');
             throw new Error('the obj param should be an instance of object and has it\'s own property...');
         }
-        obj.created_by = req.userId;
+        obj.created_by = req.userId || 1;   //TODO it should not be null in the production environment
         obj.created_date = new Date();
         return obj;
     },
@@ -69,5 +72,17 @@ module.exports = {
         obj.updated_date = new Date();
         return obj;
     },
+    encodeForFulltext : (obj) => {
+        let str = '';
+        if(!obj || typeof obj !== 'string' || obj.length === 0){
+            logger.error('the object to be encode is not valid string ...');
+        }else{
+            for(let i = 0;i < obj.length;i++){
+                str += (encodeURIComponent(obj.charAt(i)).replace(/%/g,'')+' ');
+            }
+        }
+        return str;
+    },
 };
+
 

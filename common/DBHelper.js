@@ -28,8 +28,8 @@ DBHelper.countSql = function(sql){
  */
 DBHelper.paginate = function(sql,page_no,page_size){
     if(!(Number.isInteger(parseInt(page_no)) && Number.isInteger(parseInt(page_size)))){
-        logger.info('the input param page_no ['+page_no+'],page_size ['+page_size +'] is not available...');
-        return '';
+        logger.warn('the input param page_no ['+page_no+'],page_size ['+page_size +'] is not available...');
+        return sql+' limit 0,20';
     }
     page_no = page_no - 1;
     return sql + ' limit '+page_no+','+page_size;

@@ -1,17 +1,9 @@
-var path = require('path');
 var webpack = require('webpack');
+var baseConfig = require('./webpack.base.config');
+var assign = require('object-assign');
 
-console.log(path.join(__dirname, '../'));
-module.exports = {
+module.exports = assign({
   devtool: 'source-map',
-  entry: [
-    path.join(__dirname, './index.js')
-  ],
-  output: {
-    path: path.join(__dirname, '../'),
-    filename: 'app.js',
-    publicPath: "http://localhost:3000/"
-  },
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': '"development"'
@@ -28,4 +20,4 @@ module.exports = {
       }
     ]
   }
-}
+}, baseConfig);   //baseConfig放后面

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {render} from 'react-dom';
-import config from '../config/app.config';
+import config from 'config/app.config';
 import Nav from './nav';
 import Header from './header';
 import Login from './login';

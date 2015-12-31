@@ -1,16 +1,22 @@
 import React, {Component, PropTypes} from 'react';
+import { render } from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as OrderManageActions from '../../actions/order_manage';
-import DatePicker from '../common/datepicker';
-import Select from '../common/select';
-import Pagination from '../common/pagination';
+import * as OrderManageActions from 'actions/order_manage';
+import DatePicker from 'common/datepicker';
+import Select from 'common/select';
+import Pagination from 'common/pagination';
+import Config from 'config/app.config';
+import history from 'history_instance';
+
+import ManageDetailModal from './manage_detail_modal';
+import ManageAlterStationModal from './manage_alter_station_modal';
 
 class TopHeader extends Component {
   render(){
     return (
       <div className="clearfix top-header">
-        <button className="btn btn-theme pull-left">添加订单</button>
+        <button onClick={this.addOrder.bind(this)} className="btn btn-theme pull-left">添加订单</button>
         <div className="pull-right line-router">
           <span className="node">总订单页面</span>
           <span>{'　/　'}</span>
@@ -18,6 +24,9 @@ class TopHeader extends Component {
         </div>
       </div>
     )
+  }
+  addOrder(){
+    history.replace('/om/index/add');
   }
 }
 
@@ -32,13 +41,14 @@ class FilterHeader extends Component {
             <i className="fa fa-search"></i>
           </div>
           {' 开始时间'}
-          <DatePicker date={start_date} onChange={startDateChange} />
+          <DatePicker date={start_date} onChange={startDateChange} className="short-input" />
           {' 配送时间'}
-          <DatePicker date={delivery_date} onChange={deliveryDateChange} />
-          <Select className="space"/>
-          <Select className="space"/>
-          <Select className="space"/>
-          <Select className="space"/>
+          <DatePicker date={delivery_date} onChange={deliveryDateChange} className="short-input" />
+          <Select default-text="是否提交" className="space"/>
+          <Select default-text="是否处理" className="space"/>
+          <Select default-text="订单来源" className="space"/>
+          <Select default-text="选择城市" className="space"/>
+          <Select default-text="订单状态" className="space"/>
           <button className="btn btn-theme btn-sm"><i className="fa fa-search"></i></button>
         </div>
       </div>
@@ -55,18 +65,57 @@ FilterHeader.propTypes = {
 class ManagePannel extends Component {
   constructor(props){
     super(props);
-    this.state = {
-      current_page: 2
-    };
   }
   render(){
-    var {filter, startDateChange, deliveryDateChange} = this.props;
-    filter = { ...filter, ...{startDateChange, deliveryDateChange} };
+    var { filter, startDateChange, deliveryDateChange } = this.props;
+    var { total, list } = this.props.orders;
+
+    var content = list.map((n, i) => {
+      return (
+        <tr key={i}>
+          <td>
+            <a href="javascript:;">[编辑]</a><br/>
+            <a onClick={this.viewDetail.bind(this, n)} href="javascript:;">[查看]</a><br/>
+            <a onClick={this.alterStation.bind(this, n)} href="javascript:;" className="nowrap">[修改配送]</a>
+          </td>
+          <td>{n.merchant_id}</td>
+          <td>{n.order_id}</td>
+          <td>{n.owner_name}<br />{n.owner_mobile}</td>
+          <td><div className="time">{n.created_date}</div></td>
+          <td className="text-left">
+            姓名：{n.recipient_name}<br />
+            电话：{n.recipient_mobile}<br />
+            <div className="address-detail-td">
+              <span className="inline-block">地址：</span><span className="address-all">{n.recipient_address}</span>
+            </div>
+            建筑：todo
+          </td>
+          <td>{n.delivery_date}</td>
+          <td className="nowrap">todo<br /><span className="bordered">todo</span></td>
+          <td><strong className="strong">{Config.pay_status[n.pay_status]}</strong></td>
+          <td className="nowrap">
+            总金额：todo <br />
+            应收：todo
+          </td>
+          <td><div className="bg-success round">{n.status}</div></td>
+          <td>todo</td>
+          <td><div className="time">{n.delivery_time}</div></td>
+          <td>{n.is_submit == '1' ? '是' : '否'}</td>
+          <td>{n.is_deal == '1' ? '是' : '否'}</td>
+          <td>{n.city}</td>
+          <td>{n.cancel_reason}</td>
+          <td><div className="remark-in-table">{n.remarks}</div></td>
+          <td>{n.created_by}</td>
+          <td>{n.updated_by}</td>
+          <td><div className="time">{n.updated_date}<br/><a href="#">操作记录</a></div></td>
+        </tr>
+      )
+    })
     return (
       <div className="order-manage">
 
         <TopHeader />
-        <FilterHeader {...filter} />
+        <FilterHeader {...{...filter, startDateChange, deliveryDateChange}} />
 
         <div className="panel">
           <header className="panel-heading">订单列表</header>
@@ -99,61 +148,41 @@ class ManagePannel extends Component {
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                  <td></td>
-                  <td>700025</td>
-                  <td>2342342343242424</td>
-                  <td>蝴蝶<br />11122223333</td>
-                  <td><div className="time">2015-12-10<br />10:10:05</div></td>
-                  <td className="text-left">
-                    姓名：蝴蝶<br />
-                    电话：11122223333<br />
-                    <div className="address-detail-td">
-                      <span className="inline-block">地址：</span><span className="address-all">广东省深圳市福田区xxxxxxxxx</span>
-                    </div>
-                    建筑：中兴通讯
-                  </td>
-                  <td>陪送上门</td>
-                  <td className="nowrap">第三方预约<br /><span className="bordered">大众点评网</span></td>
-                  <td><strong className="strong">货到付款</strong></td>
-                  <td className="nowrap">
-                    总金额：xxxx <br />
-                    应收：xxxx
-                  </td>
-                  <td><div className="bg-success round">已分配<br />配送站</div></td>
-                  <td>车公庙配送中心</td>
-                  <td><div className="time">2015-12-10<br />10:10:10</div></td>
-                  <td>是</td>
-                  <td>是</td>
-                  <td>深圳</td>
-                  <td></td>
-                  <td><div className="remark-in-table">车公庙车公庙车公庙车公庙车公庙车公庙</div></td>
-                  <td>蝴蝶</td>
-                  <td>蝴蝶</td>
-                  <td><div className="time">2015-12-10<br/>10:10:05<br/><a href="#">操作记录</a></div></td>
-                </tr>
+                {content}
                 </tbody>
               </table>
             </div>
           </div>
 
            <Pagination 
-              current_page={this.state.current_page} 
-              total_count={25} 
-              perpage_count={10} 
+              current_page={0} 
+              total_count={total} 
+              perpage_count={8} 
               onPageChange={this.onPageChange}
             />
         </div>
+
+        <div ref="modal-wrap"></div>
       </div>
     )
   }
   onPageChange(page){
     this.setState({current_page: page});
   }
+  componentDidMount() {
+    var { getOrderList } = this.props;
+    getOrderList();
+  }
+  viewDetail(n){
+    render(<ManageDetailModal data={n} data-id={new Date().getTime()} />, this.refs['modal-wrap']);
+  }
+  alterStation(n){
+    render(<ManageAlterStationModal data={n} data-id={new Date().getTime()} />, this.refs['modal-wrap'])
+  }
 }
 
-function mapStateToProps(state){
-  return state.orderManage;
+function mapStateToProps({orderManage}){
+  return orderManage;
 }
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */

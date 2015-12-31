@@ -1,6 +1,6 @@
 import req from 'superagent';
-import Promise from '../utils/promise';
-import config from '../config/app.config';
+import Promise from './promise';
+import config from 'config/app.config';
 
 function _end_callback(resolve, reject){
   return function(err, res){
@@ -63,11 +63,13 @@ export function POST(url, query_data, action_type){
 
 export function TEST(data, signal, time){
   return (dispatch) => {
-    setTimeout(function(){
-      dispatch({
-        type: signal,
-        data
-      });
-    }, time || 400);
+    return new Promise(function(resolve, reject){
+      setTimeout(function(){
+        resolve(dispatch({
+          type: signal,
+          data
+        }));
+      }, time || 200);
+    })
   }
 }

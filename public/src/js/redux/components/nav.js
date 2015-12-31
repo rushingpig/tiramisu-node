@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import nav_config from '../config/nav.config';
-import Util from '../utils/index';
+import nav_config from 'config/nav.config';
+import Util from 'utils/index';
 import {Link} from 'react-router';
 
 // class MenuItem extend Component {
@@ -20,11 +20,14 @@ import {Link} from 'react-router';
 export default class Nav extends Component {
   render(){
     var current_path = location.pathname;
+    var check_active = function(link, path){
+      return link == path || path.startsWith(link); //页面子页面（没在导航菜单中显示的）
+    };
     var treeDOM = nav_config.map(firstLevelItem => {
       var active;
       if (Util.core.isArray(firstLevelItem.link)) { //有二级菜单
         let secondLevels = firstLevelItem.link.map(secondLevelItem => {
-            var a = secondLevelItem.link == current_path;
+            var a = check_active(secondLevelItem.link, current_path);
             a && (active = true);
             return (
               <li key={secondLevelItem.key} className={a ? 'active' : ''}>
@@ -48,7 +51,7 @@ export default class Nav extends Component {
         )
       } else { //只有一级菜单
         return (
-          <li key={firstLevelItem.key} className="menu-list" className={firstLevelItem.link == current_path ? 'active' : ''}>
+          <li key={firstLevelItem.key} className="menu-list" className={check_active(firstLevelItem.link, current_path) ? 'active' : ''}>
             <Link to={firstLevelItem.link} clasName="menu-1">
               {firstLevelItem.name}
             </Link>

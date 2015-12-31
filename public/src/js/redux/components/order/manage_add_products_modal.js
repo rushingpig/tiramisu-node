@@ -1,15 +1,17 @@
 import React, { Component, PropTypes } from 'react';
-import Select from '../common/select';
-import NumberPicker from '../common/numberPicker';
-import Pagination from '../common/pagination';
-import * as OrderProductsActions from '../../actions/order_products';
-import { SELECT_DEFAULT_VALUE } from '../../config/app.config';
+import Select from 'common/select';
+import NumberPicker from 'common/numberPicker';
+import Pagination from 'common/pagination';
+import * as OrderProductsActions from 'actions/order_products';
+import { SELECT_DEFAULT_VALUE } from 'config/app.config';
+import { toFixed } from 'utils/index';
 
 export default class ProductsModal extends Component {
   constructor(props){
     super(props);
     this.show = this.show.bind(this);
     this.hide = this.hide.bind(this);
+    this.onCancel = this.onCancel.bind(this);
     this.state = {
       sku_name: '',
       category_id: SELECT_DEFAULT_VALUE,
@@ -18,10 +20,13 @@ export default class ProductsModal extends Component {
     }
   }
   render(){
-    var { all_categories, search_results: { total, list} } = this.props;
+    var { all_categories, search_results: { total, list}, selected_list, dispatch } = this.props;
     var s = this.state;
     var product_list = list.map(function(n, i){
-      return <ProductSet data={n} key={i} />;
+      return <ProductSet data={n} key={i} dispatch={dispatch} />;
+    });
+    var selected_list = selected_list.map(function(n, i){
+      return <ProductSelectedRow data={n} key={n.sku_id} dispatch={dispatch} />;
     });
     return (
     <div ref="modal" aria-hidden="false" aria-labelledby="myModalLabel" role="dialog" className="modal fade" >
@@ -29,7 +34,7 @@ export default class ProductsModal extends Component {
       <div className="modal-dialog modal-lg">
         <div className="modal-content">
           <div className="modal-header">
-            <button aria-hidden="true" data-dismiss="modal" className="close" type="button">×</button>
+            <button onClick={this.onCancel} aria-hidden="true" data-dismiss="modal" className="close" type="button">×</button>
             <h4 className="modal-title">选择产品</h4>
           </div>
           <div className="modal-body">
@@ -73,7 +78,6 @@ export default class ProductsModal extends Component {
               <table className="table table-hover text-center">
                 <thead>
                 <tr>
-                  <th></th>
                   <th>产品名称</th>
                   <th>规格</th>
                   <th>产品类型名称</th>
@@ -86,14 +90,14 @@ export default class ProductsModal extends Component {
                 </tr>
                 </thead>
                 <tbody>
-                
+                  { selected_list }
                 </tbody>
               </table>
             </div>
           </div>
           <div className="modal-footer">
-            <button type="button" className="btn btn-default" data-dismiss="modal">取消</button>
-            <button type="button" className="btn btn-theme">确定</button>
+            <button onClick={this.onCancel} type="button" className="btn btn-default" data-dismiss="modal">取消</button>
+            <button onClick={this.onConfirm.bind(this)} type="button" className="btn btn-theme">确定</button>
           </div>
         </div>
       </div>
@@ -117,6 +121,13 @@ export default class ProductsModal extends Component {
   }
   onPageChange(page){
     this.setState({ page_no: page })
+  }
+  onCancel(){
+    this.props.dispatch(OrderProductsActions.cancelAllSelectedProducts());
+  }
+  onConfirm(){
+    this.props.dispatch(OrderProductsActions.confirmAllSelectedProducts());
+    this.hide();
   }
   show(){
     this.props.dispatch(OrderProductsActions.getCategories());
@@ -142,44 +153,46 @@ class ProductSet extends Component {
     }
   }
   render(){
-    var { data } = this.props;
     var { yes_or_no, choose } = this;
     var { active } = this.state;
     //is_local_site, is_delivery : "1" / "0"
-    var content = [];
-    data.forEach((n, i) => {
-      let { name, size, website, price, is_local_site, is_delivery,    skus = [] } = n;
-      let head = (
-        <tr key={i} className={"clickable"} onClick={this.toggle} >
-          <td><input className="fade" type="checkbox" checked={n.check} disabled /></td>
-          <td>{name}</td>
-          <td>{size}</td>
-          <td>蛋糕配件</td>
-          <td>{website}</td>
-          <td>￥{price}</td>
-          <td>yes_or_no(is_local_site)</td>
-          <td>yes_or_no(is_delivery)</td>
-          <td><a onClick={choose.bind(this, n)} href="javascript:;">[选择]</a></td>
-        </tr>
-      );
+    var { product_id, name, size, category_name, original_price, skus } = this.props.data;
+    var hasOthers = skus.length != 1;
 
-      let body = n.skus.map(function(n, i){
-        <tr key={i} className={active ? "" : "hidden"} onClick={this.toggle} >
-          <td><input type="checkbox" checked={n.check} disabled /></td>
+    var head = (
+      <tr key={skus[0].sku_id} className={hasOthers ? "clickable" : ""} onClick={hasOthers ? this.toggle : null} >
+        <td><input type="checkbox" checked={skus[0].checked} disabled /></td>
+        <td>{name}</td>
+        <td>{size}</td>
+        <td>{category_name}</td>
+        <td>{skus[0].website}</td>
+        <td>￥{ toFixed(skus[0].discount_price / 100, 2) }</td>
+        <td>{yes_or_no(skus[0].is_local_site)}</td>
+        <td>{yes_or_no(skus[0].is_delivery)}</td>
+        <td><a onClick={choose.bind(this, skus[0])} href="javascript:;">[选择]</a></td>
+      </tr>
+    );
+
+    var body = skus.map((n, i) => {
+      if(i == 0){  //滤出第一个
+        return null;
+      }
+      return (
+        <tr key={n.sku_id} className={active ? "" : "hidden"}>
+          <td><input type="checkbox" checked={n.checked} disabled /></td>
           <td colSpan="3"></td>
-          <td>{website}</td>
-          <td>￥{price}</td>
-          <td>yes_or_no(is_local_site)</td>
-          <td>yes_or_no(is_delivery)</td>
+          <td>{n.website}</td>
+          <td>￥{ toFixed(n.discount_price / 100, 2) }</td>
+          <td>{yes_or_no(n.is_local_site)}</td>
+          <td>{yes_or_no(n.is_delivery)}</td>
           <td><a onClick={choose.bind(this, n)} href="javascript:;">[选择]</a></td>
         </tr>
-      });
+      )
+    });
 
-      content.concat(head, body);
-    })
     return (
       <tbody>
-        {content}
+        {[head, body]}
       </tbody>
     )
   }
@@ -189,7 +202,49 @@ class ProductSet extends Component {
   toggle(){
     this.setState({active: !this.state.active})
   }
+  choose(sku, e){
+    //整合数据
+    var copy = {...this.props.data, ...sku};
+    delete copy.skus;
+    this.props.dispatch(OrderProductsActions.selectProduct(copy));
+    e.stopPropagation();
+  }
 }
 ProductSet.PropTypes = {
-  data: PropTypes.array.isRequired
+  data: PropTypes.array.isRequired,
+  dispatch: PropTypes.func.isRequired,
+}
+
+class ProductSelectedRow extends Component {
+  yes_or_no(d){
+    return d == 1 ? '是' : '否';
+  }
+  render(){
+    var { data } = this.props;
+    var { yes_or_no } = this;
+    return (
+      <tr>
+        <td>{data.name}</td>
+        <td>{data.size}</td>
+        <td>{data.category_name}</td>
+        <td>{data.website}</td>
+        <td>￥{toFixed(data.discount_price / 100, 2)}</td>
+        <td><NumberPicker value={data.num} onChange={this.onNumChange.bind(this)} /></td>
+        <td>{yes_or_no(data.is_local_site)}</td>
+        <td>{yes_or_no(data.is_delivery)}</td>
+        <td><a onClick={this.delete.bind(this)} href="javascript:;">[删除]</a></td>
+      </tr>
+    )
+  }
+  onNumChange(num){
+    var { data: { sku_id }, dispatch } = this.props;
+    dispatch(OrderProductsActions.changeProductNum(sku_id, num));
+  }
+  delete(){
+    this.props.dispatch(OrderProductsActions.deleteProduct(this.props.data));
+  }
+}
+ProductSelectedRow.PropTypes = {
+  data: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
 }

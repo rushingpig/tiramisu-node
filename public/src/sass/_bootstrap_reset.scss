@@ -167,7 +167,9 @@
 .form-group label {
     font-weight: normal;
 }
-
+.strong-label label {
+    font-weight: bold;
+}
 .form-control {
     box-shadow: none;
 }

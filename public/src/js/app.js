@@ -34,7 +34,7 @@
 /******/ 	__webpack_require__.c = installedModules;
 
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
+/******/ 	__webpack_require__.p = "http://localhost:3000/";
 
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
@@ -65,20 +65,15 @@
 
 	var _containersApp2 = _interopRequireDefault(_containersApp);
 
-	var _reactRedux = __webpack_require__(212);
+	var _reactRedux = __webpack_require__(213);
 
-	var _storesConfigureStore = __webpack_require__(295);
+	var _storesConfigureStore = __webpack_require__(299);
 
 	var _storesConfigureStore2 = _interopRequireDefault(_storesConfigureStore);
 
-	var store = (0, _storesConfigureStore2['default'])();
-	if (false) {
-	  window.store = store;
-	}
-
 	(0, _reactDom.render)(_react2['default'].createElement(
 	  _reactRedux.Provider,
-	  { store: store },
+	  { store: _storesConfigureStore2['default'] },
 	  _react2['default'].createElement(_containersApp2['default'], null)
 	), document.getElementById('app'));
 
@@ -19029,19 +19024,19 @@
 
 	var _componentsBody = __webpack_require__(156);
 
-	var _componentsOrderManage = __webpack_require__(238);
+	var _componentsOrderManage = __webpack_require__(239);
 
 	var _componentsOrderManage2 = _interopRequireDefault(_componentsOrderManage);
 
-	var _componentsOrderManage_add = __webpack_require__(243);
+	var _componentsOrderManage_order_detail_pannel = __webpack_require__(246);
 
-	var _componentsOrderManage_add2 = _interopRequireDefault(_componentsOrderManage_add);
+	var _componentsOrderManage_order_detail_pannel2 = _interopRequireDefault(_componentsOrderManage_order_detail_pannel);
 
-	var _history = __webpack_require__(236);
+	var _history = __webpack_require__(237);
 
 	var _history2 = _interopRequireDefault(_history);
 
-	var _reactRouter = __webpack_require__(161);
+	var _reactRouter = __webpack_require__(162);
 
 	var App = (function (_Component) {
 	  _inherits(App, _Component);
@@ -19062,7 +19057,8 @@
 	          _reactRouter.Route,
 	          { path: '/', component: _componentsBody.Entry },
 	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/index', component: _componentsOrderManage2['default'] }),
-	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/index/add', component: _componentsOrderManage_add2['default'] }),
+	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/index/add', component: _componentsOrderManage_order_detail_pannel2['default'] }),
+	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/index/:id', component: _componentsOrderManage_order_detail_pannel2['default'] }),
 	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/refund', component: _componentsBody.Om2 }),
 	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/winning', component: _componentsBody.Om4 }),
 	          _react2['default'].createElement(_reactRouter.Route, { path: '*', component: _componentsBody.NoPage })
@@ -19111,11 +19107,11 @@
 
 	var _nav2 = _interopRequireDefault(_nav);
 
-	var _header = __webpack_require__(210);
+	var _header = __webpack_require__(211);
 
 	var _header2 = _interopRequireDefault(_header);
 
-	var _login = __webpack_require__(211);
+	var _login = __webpack_require__(212);
 
 	var _login2 = _interopRequireDefault(_login);
 
@@ -19412,7 +19408,7 @@
 
 	var _utilsIndex2 = _interopRequireDefault(_utilsIndex);
 
-	var _reactRouter = __webpack_require__(161);
+	var _reactRouter = __webpack_require__(162);
 
 	// class MenuItem extend Component {
 	//   render(){
@@ -19441,12 +19437,15 @@
 	    key: 'render',
 	    value: function render() {
 	      var current_path = location.pathname;
+	      var check_active = function check_active(link, path) {
+	        return link == path || path.startsWith(link); //页面子页面（没在导航菜单中显示的）
+	      };
 	      var treeDOM = _configNavConfig2['default'].map(function (firstLevelItem) {
 	        var active;
 	        if (_utilsIndex2['default'].core.isArray(firstLevelItem.link)) {
 	          //有二级菜单
 	          var secondLevels = firstLevelItem.link.map(function (secondLevelItem) {
-	            var a = secondLevelItem.link == current_path;
+	            var a = check_active(secondLevelItem.link, current_path);
 	            a && (active = true);
 	            return _react2['default'].createElement(
 	              'li',
@@ -19486,7 +19485,7 @@
 	          //只有一级菜单
 	          return _react2['default'].createElement(
 	            'li',
-	            { key: firstLevelItem.key, className: 'menu-list', className: firstLevelItem.link == current_path ? 'active' : '' },
+	            { key: firstLevelItem.key, className: 'menu-list', className: check_active(firstLevelItem.link, current_path) ? 'active' : '' },
 	            _react2['default'].createElement(
 	              _reactRouter.Link,
 	              { to: firstLevelItem.link, clasName: 'menu-1' },
@@ -19604,13 +19603,20 @@
 
 /***/ },
 /* 160 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _noty = __webpack_require__(161);
+
+	var _noty2 = _interopRequireDefault(_noty);
+
 	function core_isFunction(arg) {
 	  return typeof arg === 'function';
 	}
@@ -19748,6 +19754,16 @@
 	  return res;
 	}
 
+	function toFixed(target, digit) {
+	  var t = parseFloat(target);
+	  digit = typeof digit == 'undefined' ? 2 : digit; //默认2位
+	  if (isNaN(t)) {
+	    return '';
+	  } else {
+	    return Number(t.toFixed(digit));
+	  }
+	}
+
 	exports['default'] = {
 	  core: {
 	    isArray: core_isArray
@@ -19766,12 +19782,44 @@
 	  //对象、数组
 	  mapValues: mapValues,
 	  each: each,
-	  map: map
-	};
+	  map: map,
+
+	  toFixed: toFixed,
+
+	  noty: _noty2['default'] };
 	module.exports = exports['default'];
+	//提示信息小窗口：param：（type， text);
 
 /***/ },
 /* 161 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports['default'] = Noty;
+
+	function Noty(type, text) {
+	  window.noty ? window.noty({
+	    layout: 'topRight',
+	    theme: 'relax',
+	    type: type, //alert, warning, success, error, infomation
+	    text: text,
+	    animation: {
+	      open: 'animated bounceInRight', // Animate.css class names
+	      close: 'animated bounceOutRight' }
+	  }) : // Animate.css class names
+	  // easing: 'swing', // unavailable - no need
+	  // speed: 500 // unavailable - no need
+	  alert(text);
+	}
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* components */
@@ -19781,19 +19829,19 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _Router2 = __webpack_require__(162);
+	var _Router2 = __webpack_require__(163);
 
 	var _Router3 = _interopRequireDefault(_Router2);
 
 	exports.Router = _Router3['default'];
 
-	var _Link2 = __webpack_require__(198);
+	var _Link2 = __webpack_require__(199);
 
 	var _Link3 = _interopRequireDefault(_Link2);
 
 	exports.Link = _Link3['default'];
 
-	var _IndexLink2 = __webpack_require__(199);
+	var _IndexLink2 = __webpack_require__(200);
 
 	var _IndexLink3 = _interopRequireDefault(_IndexLink2);
 
@@ -19801,25 +19849,25 @@
 
 	/* components (configuration) */
 
-	var _IndexRedirect2 = __webpack_require__(200);
+	var _IndexRedirect2 = __webpack_require__(201);
 
 	var _IndexRedirect3 = _interopRequireDefault(_IndexRedirect2);
 
 	exports.IndexRedirect = _IndexRedirect3['default'];
 
-	var _IndexRoute2 = __webpack_require__(202);
+	var _IndexRoute2 = __webpack_require__(203);
 
 	var _IndexRoute3 = _interopRequireDefault(_IndexRoute2);
 
 	exports.IndexRoute = _IndexRoute3['default'];
 
-	var _Redirect2 = __webpack_require__(201);
+	var _Redirect2 = __webpack_require__(202);
 
 	var _Redirect3 = _interopRequireDefault(_Redirect2);
 
 	exports.Redirect = _Redirect3['default'];
 
-	var _Route2 = __webpack_require__(203);
+	var _Route2 = __webpack_require__(204);
 
 	var _Route3 = _interopRequireDefault(_Route2);
 
@@ -19827,19 +19875,19 @@
 
 	/* mixins */
 
-	var _History2 = __webpack_require__(204);
+	var _History2 = __webpack_require__(205);
 
 	var _History3 = _interopRequireDefault(_History2);
 
 	exports.History = _History3['default'];
 
-	var _Lifecycle2 = __webpack_require__(205);
+	var _Lifecycle2 = __webpack_require__(206);
 
 	var _Lifecycle3 = _interopRequireDefault(_Lifecycle2);
 
 	exports.Lifecycle = _Lifecycle3['default'];
 
-	var _RouteContext2 = __webpack_require__(206);
+	var _RouteContext2 = __webpack_require__(207);
 
 	var _RouteContext3 = _interopRequireDefault(_RouteContext2);
 
@@ -19847,29 +19895,29 @@
 
 	/* utils */
 
-	var _useRoutes2 = __webpack_require__(185);
+	var _useRoutes2 = __webpack_require__(186);
 
 	var _useRoutes3 = _interopRequireDefault(_useRoutes2);
 
 	exports.useRoutes = _useRoutes3['default'];
 
-	var _RouteUtils = __webpack_require__(181);
+	var _RouteUtils = __webpack_require__(182);
 
 	exports.createRoutes = _RouteUtils.createRoutes;
 
-	var _RoutingContext2 = __webpack_require__(182);
+	var _RoutingContext2 = __webpack_require__(183);
 
 	var _RoutingContext3 = _interopRequireDefault(_RoutingContext2);
 
 	exports.RoutingContext = _RoutingContext3['default'];
 
-	var _PropTypes2 = __webpack_require__(197);
+	var _PropTypes2 = __webpack_require__(198);
 
 	var _PropTypes3 = _interopRequireDefault(_PropTypes2);
 
 	exports.PropTypes = _PropTypes3['default'];
 
-	var _match2 = __webpack_require__(207);
+	var _match2 = __webpack_require__(208);
 
 	var _match3 = _interopRequireDefault(_match2);
 
@@ -19880,7 +19928,7 @@
 	exports['default'] = _Router4['default'];
 
 /***/ },
-/* 162 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -19897,7 +19945,7 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _warning = __webpack_require__(163);
+	var _warning = __webpack_require__(164);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
@@ -19905,21 +19953,21 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _historyLibCreateHashHistory = __webpack_require__(164);
+	var _historyLibCreateHashHistory = __webpack_require__(165);
 
 	var _historyLibCreateHashHistory2 = _interopRequireDefault(_historyLibCreateHashHistory);
 
-	var _RouteUtils = __webpack_require__(181);
+	var _RouteUtils = __webpack_require__(182);
 
-	var _RoutingContext = __webpack_require__(182);
+	var _RoutingContext = __webpack_require__(183);
 
 	var _RoutingContext2 = _interopRequireDefault(_RoutingContext);
 
-	var _useRoutes = __webpack_require__(185);
+	var _useRoutes = __webpack_require__(186);
 
 	var _useRoutes2 = _interopRequireDefault(_useRoutes);
 
-	var _PropTypes = __webpack_require__(197);
+	var _PropTypes = __webpack_require__(198);
 
 	var _React$PropTypes = _react2['default'].PropTypes;
 	var func = _React$PropTypes.func;
@@ -20050,7 +20098,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 163 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20116,7 +20164,7 @@
 
 
 /***/ },
-/* 164 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20127,23 +20175,23 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _warning = __webpack_require__(163);
+	var _warning = __webpack_require__(164);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
-	var _invariant = __webpack_require__(165);
+	var _invariant = __webpack_require__(166);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
-	var _Actions = __webpack_require__(166);
+	var _Actions = __webpack_require__(167);
 
-	var _ExecutionEnvironment = __webpack_require__(167);
+	var _ExecutionEnvironment = __webpack_require__(168);
 
-	var _DOMUtils = __webpack_require__(168);
+	var _DOMUtils = __webpack_require__(169);
 
-	var _DOMStateStorage = __webpack_require__(169);
+	var _DOMStateStorage = __webpack_require__(170);
 
-	var _createDOMHistory = __webpack_require__(170);
+	var _createDOMHistory = __webpack_require__(171);
 
 	var _createDOMHistory2 = _interopRequireDefault(_createDOMHistory);
 
@@ -20346,7 +20394,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 165 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20403,7 +20451,7 @@
 
 
 /***/ },
-/* 166 */
+/* 167 */
 /***/ function(module, exports) {
 
 	/**
@@ -20439,7 +20487,7 @@
 	};
 
 /***/ },
-/* 167 */
+/* 168 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -20449,7 +20497,7 @@
 	exports.canUseDOM = canUseDOM;
 
 /***/ },
-/* 168 */
+/* 169 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -20529,7 +20577,7 @@
 	}
 
 /***/ },
-/* 169 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*eslint-disable no-empty */
@@ -20541,7 +20589,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _warning = __webpack_require__(163);
+	var _warning = __webpack_require__(164);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
@@ -20602,7 +20650,7 @@
 	}
 
 /***/ },
-/* 170 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20613,15 +20661,15 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _invariant = __webpack_require__(165);
+	var _invariant = __webpack_require__(166);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
-	var _ExecutionEnvironment = __webpack_require__(167);
+	var _ExecutionEnvironment = __webpack_require__(168);
 
-	var _DOMUtils = __webpack_require__(168);
+	var _DOMUtils = __webpack_require__(169);
 
-	var _createHistory = __webpack_require__(171);
+	var _createHistory = __webpack_require__(172);
 
 	var _createHistory2 = _interopRequireDefault(_createHistory);
 
@@ -20647,7 +20695,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 171 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20658,23 +20706,23 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _deepEqual = __webpack_require__(172);
+	var _deepEqual = __webpack_require__(173);
 
 	var _deepEqual2 = _interopRequireDefault(_deepEqual);
 
-	var _AsyncUtils = __webpack_require__(175);
+	var _AsyncUtils = __webpack_require__(176);
 
-	var _Actions = __webpack_require__(166);
+	var _Actions = __webpack_require__(167);
 
-	var _createLocation2 = __webpack_require__(176);
+	var _createLocation2 = __webpack_require__(177);
 
 	var _createLocation3 = _interopRequireDefault(_createLocation2);
 
-	var _runTransitionHook = __webpack_require__(179);
+	var _runTransitionHook = __webpack_require__(180);
 
 	var _runTransitionHook2 = _interopRequireDefault(_runTransitionHook);
 
-	var _deprecate = __webpack_require__(180);
+	var _deprecate = __webpack_require__(181);
 
 	var _deprecate2 = _interopRequireDefault(_deprecate);
 
@@ -20922,12 +20970,12 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 172 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var pSlice = Array.prototype.slice;
-	var objectKeys = __webpack_require__(173);
-	var isArguments = __webpack_require__(174);
+	var objectKeys = __webpack_require__(174);
+	var isArguments = __webpack_require__(175);
 
 	var deepEqual = module.exports = function (actual, expected, opts) {
 	  if (!opts) opts = {};
@@ -21022,7 +21070,7 @@
 
 
 /***/ },
-/* 173 */
+/* 174 */
 /***/ function(module, exports) {
 
 	exports = module.exports = typeof Object.keys === 'function'
@@ -21037,7 +21085,7 @@
 
 
 /***/ },
-/* 174 */
+/* 175 */
 /***/ function(module, exports) {
 
 	var supportsArgumentsClass = (function(){
@@ -21063,7 +21111,7 @@
 
 
 /***/ },
-/* 175 */
+/* 176 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -21094,7 +21142,7 @@
 	}
 
 /***/ },
-/* 176 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21103,9 +21151,9 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _Actions = __webpack_require__(166);
+	var _Actions = __webpack_require__(167);
 
-	var _parsePath = __webpack_require__(177);
+	var _parsePath = __webpack_require__(178);
 
 	var _parsePath2 = _interopRequireDefault(_parsePath);
 
@@ -21135,7 +21183,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 177 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21144,11 +21192,11 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _warning = __webpack_require__(163);
+	var _warning = __webpack_require__(164);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
-	var _extractPath = __webpack_require__(178);
+	var _extractPath = __webpack_require__(179);
 
 	var _extractPath2 = _interopRequireDefault(_extractPath);
 
@@ -21184,7 +21232,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 178 */
+/* 179 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -21202,7 +21250,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 179 */
+/* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21211,7 +21259,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _warning = __webpack_require__(163);
+	var _warning = __webpack_require__(164);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
@@ -21231,7 +21279,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 180 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21240,7 +21288,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _warning = __webpack_require__(163);
+	var _warning = __webpack_require__(164);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
@@ -21255,7 +21303,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 181 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21275,7 +21323,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _warning = __webpack_require__(163);
+	var _warning = __webpack_require__(164);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
@@ -21374,7 +21422,7 @@
 	}
 
 /***/ },
-/* 182 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21389,7 +21437,7 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _invariant = __webpack_require__(165);
+	var _invariant = __webpack_require__(166);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
@@ -21397,9 +21445,9 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _RouteUtils = __webpack_require__(181);
+	var _RouteUtils = __webpack_require__(182);
 
-	var _getRouteParams = __webpack_require__(183);
+	var _getRouteParams = __webpack_require__(184);
 
 	var _getRouteParams2 = _interopRequireDefault(_getRouteParams);
 
@@ -21519,14 +21567,14 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 183 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _PatternUtils = __webpack_require__(184);
+	var _PatternUtils = __webpack_require__(185);
 
 	/**
 	 * Extracts an object of params the given route cares about from
@@ -21548,7 +21596,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 184 */
+/* 185 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21562,7 +21610,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _invariant = __webpack_require__(165);
+	var _invariant = __webpack_require__(166);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
@@ -21780,7 +21828,7 @@
 	}
 
 /***/ },
-/* 185 */
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21793,31 +21841,31 @@
 
 	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-	var _warning = __webpack_require__(163);
+	var _warning = __webpack_require__(164);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
-	var _historyLibActions = __webpack_require__(166);
+	var _historyLibActions = __webpack_require__(167);
 
-	var _historyLibUseQueries = __webpack_require__(186);
+	var _historyLibUseQueries = __webpack_require__(187);
 
 	var _historyLibUseQueries2 = _interopRequireDefault(_historyLibUseQueries);
 
-	var _computeChangedRoutes2 = __webpack_require__(191);
+	var _computeChangedRoutes2 = __webpack_require__(192);
 
 	var _computeChangedRoutes3 = _interopRequireDefault(_computeChangedRoutes2);
 
-	var _TransitionUtils = __webpack_require__(192);
+	var _TransitionUtils = __webpack_require__(193);
 
-	var _isActive2 = __webpack_require__(194);
+	var _isActive2 = __webpack_require__(195);
 
 	var _isActive3 = _interopRequireDefault(_isActive2);
 
-	var _getComponents = __webpack_require__(195);
+	var _getComponents = __webpack_require__(196);
 
 	var _getComponents2 = _interopRequireDefault(_getComponents);
 
-	var _matchRoutes = __webpack_require__(196);
+	var _matchRoutes = __webpack_require__(197);
 
 	var _matchRoutes2 = _interopRequireDefault(_matchRoutes);
 
@@ -22076,7 +22124,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 186 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22089,15 +22137,15 @@
 
 	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-	var _qs = __webpack_require__(187);
+	var _qs = __webpack_require__(188);
 
 	var _qs2 = _interopRequireDefault(_qs);
 
-	var _runTransitionHook = __webpack_require__(179);
+	var _runTransitionHook = __webpack_require__(180);
 
 	var _runTransitionHook2 = _interopRequireDefault(_runTransitionHook);
 
-	var _parsePath = __webpack_require__(177);
+	var _parsePath = __webpack_require__(178);
 
 	var _parsePath2 = _interopRequireDefault(_parsePath);
 
@@ -22196,13 +22244,13 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 187 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Load modules
 
-	var Stringify = __webpack_require__(188);
-	var Parse = __webpack_require__(190);
+	var Stringify = __webpack_require__(189);
+	var Parse = __webpack_require__(191);
 
 
 	// Declare internals
@@ -22217,12 +22265,12 @@
 
 
 /***/ },
-/* 188 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Load modules
 
-	var Utils = __webpack_require__(189);
+	var Utils = __webpack_require__(190);
 
 
 	// Declare internals
@@ -22344,7 +22392,7 @@
 
 
 /***/ },
-/* 189 */
+/* 190 */
 /***/ function(module, exports) {
 
 	// Load modules
@@ -22540,12 +22588,12 @@
 
 
 /***/ },
-/* 190 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Load modules
 
-	var Utils = __webpack_require__(189);
+	var Utils = __webpack_require__(190);
 
 
 	// Declare internals
@@ -22732,14 +22780,14 @@
 
 
 /***/ },
-/* 191 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _PatternUtils = __webpack_require__(184);
+	var _PatternUtils = __webpack_require__(185);
 
 	function routeParamsChanged(route, prevState, nextState) {
 	  if (!route.path) return false;
@@ -22793,7 +22841,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 192 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22802,7 +22850,7 @@
 	exports.runEnterHooks = runEnterHooks;
 	exports.runLeaveHooks = runLeaveHooks;
 
-	var _AsyncUtils = __webpack_require__(193);
+	var _AsyncUtils = __webpack_require__(194);
 
 	function createEnterHook(hook, route) {
 	  return function (a, b, callback) {
@@ -22870,7 +22918,7 @@
 	}
 
 /***/ },
-/* 193 */
+/* 194 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -22933,14 +22981,14 @@
 	}
 
 /***/ },
-/* 194 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _PatternUtils = __webpack_require__(184);
+	var _PatternUtils = __webpack_require__(185);
 
 	function deepEqual(a, b) {
 	  if (a == b) return true;
@@ -23061,14 +23109,14 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 195 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _AsyncUtils = __webpack_require__(193);
+	var _AsyncUtils = __webpack_require__(194);
 
 	function getComponentsForRoute(location, route, callback) {
 	  if (route.component || route.components) {
@@ -23099,7 +23147,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 196 */
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23108,15 +23156,15 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _warning = __webpack_require__(163);
+	var _warning = __webpack_require__(164);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
-	var _AsyncUtils = __webpack_require__(193);
+	var _AsyncUtils = __webpack_require__(194);
 
-	var _PatternUtils = __webpack_require__(184);
+	var _PatternUtils = __webpack_require__(185);
 
-	var _RouteUtils = __webpack_require__(181);
+	var _RouteUtils = __webpack_require__(182);
 
 	function getChildRoutes(route, location, callback) {
 	  if (route.childRoutes) {
@@ -23292,7 +23340,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 197 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23350,7 +23398,7 @@
 	};
 
 /***/ },
-/* 198 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23518,7 +23566,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 199 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23537,7 +23585,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _Link = __webpack_require__(198);
+	var _Link = __webpack_require__(199);
 
 	var _Link2 = _interopRequireDefault(_Link);
 
@@ -23565,7 +23613,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 200 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23578,11 +23626,11 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _warning = __webpack_require__(163);
+	var _warning = __webpack_require__(164);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
-	var _invariant = __webpack_require__(165);
+	var _invariant = __webpack_require__(166);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
@@ -23590,11 +23638,11 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _Redirect = __webpack_require__(201);
+	var _Redirect = __webpack_require__(202);
 
 	var _Redirect2 = _interopRequireDefault(_Redirect);
 
-	var _PropTypes = __webpack_require__(197);
+	var _PropTypes = __webpack_require__(198);
 
 	var _React$PropTypes = _react2['default'].PropTypes;
 	var string = _React$PropTypes.string;
@@ -23643,7 +23691,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 201 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23656,7 +23704,7 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _invariant = __webpack_require__(165);
+	var _invariant = __webpack_require__(166);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
@@ -23664,11 +23712,11 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _RouteUtils = __webpack_require__(181);
+	var _RouteUtils = __webpack_require__(182);
 
-	var _PatternUtils = __webpack_require__(184);
+	var _PatternUtils = __webpack_require__(185);
 
-	var _PropTypes = __webpack_require__(197);
+	var _PropTypes = __webpack_require__(198);
 
 	var _React$PropTypes = _react2['default'].PropTypes;
 	var string = _React$PropTypes.string;
@@ -23755,7 +23803,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 202 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23768,11 +23816,11 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _warning = __webpack_require__(163);
+	var _warning = __webpack_require__(164);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
-	var _invariant = __webpack_require__(165);
+	var _invariant = __webpack_require__(166);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
@@ -23780,9 +23828,9 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _RouteUtils = __webpack_require__(181);
+	var _RouteUtils = __webpack_require__(182);
 
-	var _PropTypes = __webpack_require__(197);
+	var _PropTypes = __webpack_require__(198);
 
 	var func = _react2['default'].PropTypes.func;
 
@@ -23830,7 +23878,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 203 */
+/* 204 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23843,7 +23891,7 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _invariant = __webpack_require__(165);
+	var _invariant = __webpack_require__(166);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
@@ -23851,9 +23899,9 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _RouteUtils = __webpack_require__(181);
+	var _RouteUtils = __webpack_require__(182);
 
-	var _PropTypes = __webpack_require__(197);
+	var _PropTypes = __webpack_require__(198);
 
 	var _React$PropTypes = _react2['default'].PropTypes;
 	var string = _React$PropTypes.string;
@@ -23902,14 +23950,14 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 204 */
+/* 205 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _PropTypes = __webpack_require__(197);
+	var _PropTypes = __webpack_require__(198);
 
 	/**
 	 * A mixin that adds the "history" instance variable to components.
@@ -23930,7 +23978,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 205 */
+/* 206 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23943,7 +23991,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _invariant = __webpack_require__(165);
+	var _invariant = __webpack_require__(166);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
@@ -23999,7 +24047,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 206 */
+/* 207 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24042,7 +24090,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 207 */
+/* 208 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24053,21 +24101,21 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _invariant = __webpack_require__(165);
+	var _invariant = __webpack_require__(166);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
-	var _historyLibCreateMemoryHistory = __webpack_require__(208);
+	var _historyLibCreateMemoryHistory = __webpack_require__(209);
 
 	var _historyLibCreateMemoryHistory2 = _interopRequireDefault(_historyLibCreateMemoryHistory);
 
-	var _historyLibUseBasename = __webpack_require__(209);
+	var _historyLibUseBasename = __webpack_require__(210);
 
 	var _historyLibUseBasename2 = _interopRequireDefault(_historyLibUseBasename);
 
-	var _RouteUtils = __webpack_require__(181);
+	var _RouteUtils = __webpack_require__(182);
 
-	var _useRoutes = __webpack_require__(185);
+	var _useRoutes = __webpack_require__(186);
 
 	var _useRoutes2 = _interopRequireDefault(_useRoutes);
 
@@ -24110,7 +24158,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 208 */
+/* 209 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24121,13 +24169,13 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _invariant = __webpack_require__(165);
+	var _invariant = __webpack_require__(166);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
-	var _Actions = __webpack_require__(166);
+	var _Actions = __webpack_require__(167);
 
-	var _createHistory = __webpack_require__(171);
+	var _createHistory = __webpack_require__(172);
 
 	var _createHistory2 = _interopRequireDefault(_createHistory);
 
@@ -24257,7 +24305,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 209 */
+/* 210 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24270,17 +24318,17 @@
 
 	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-	var _ExecutionEnvironment = __webpack_require__(167);
+	var _ExecutionEnvironment = __webpack_require__(168);
 
-	var _runTransitionHook = __webpack_require__(179);
+	var _runTransitionHook = __webpack_require__(180);
 
 	var _runTransitionHook2 = _interopRequireDefault(_runTransitionHook);
 
-	var _extractPath = __webpack_require__(178);
+	var _extractPath = __webpack_require__(179);
 
 	var _extractPath2 = _interopRequireDefault(_extractPath);
 
-	var _parsePath = __webpack_require__(177);
+	var _parsePath = __webpack_require__(178);
 
 	var _parsePath2 = _interopRequireDefault(_parsePath);
 
@@ -24391,7 +24439,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 210 */
+/* 211 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24569,7 +24617,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 211 */
+/* 212 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24592,11 +24640,11 @@
 
 	var _configAppConfig2 = _interopRequireDefault(_configAppConfig);
 
-	var _reactRedux = __webpack_require__(212);
+	var _reactRedux = __webpack_require__(213);
 
-	var _actionsLogin = __webpack_require__(229);
+	var _actionsLogin = __webpack_require__(230);
 
-	var _history = __webpack_require__(236);
+	var _history = __webpack_require__(237);
 
 	var _history2 = _interopRequireDefault(_history);
 
@@ -24778,7 +24826,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 212 */
+/* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24787,16 +24835,16 @@
 
 	function _interopRequire(obj) { return obj && obj.__esModule ? obj['default'] : obj; }
 
-	var _componentsProvider = __webpack_require__(213);
+	var _componentsProvider = __webpack_require__(214);
 
 	exports.Provider = _interopRequire(_componentsProvider);
 
-	var _componentsConnect = __webpack_require__(215);
+	var _componentsConnect = __webpack_require__(216);
 
 	exports.connect = _interopRequire(_componentsConnect);
 
 /***/ },
-/* 213 */
+/* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24811,7 +24859,7 @@
 
 	var _react = __webpack_require__(2);
 
-	var _utilsStoreShape = __webpack_require__(214);
+	var _utilsStoreShape = __webpack_require__(215);
 
 	var _utilsStoreShape2 = _interopRequireDefault(_utilsStoreShape);
 
@@ -24870,7 +24918,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 214 */
+/* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24887,7 +24935,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 215 */
+/* 216 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24908,27 +24956,27 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _utilsStoreShape = __webpack_require__(214);
+	var _utilsStoreShape = __webpack_require__(215);
 
 	var _utilsStoreShape2 = _interopRequireDefault(_utilsStoreShape);
 
-	var _utilsShallowEqual = __webpack_require__(216);
+	var _utilsShallowEqual = __webpack_require__(217);
 
 	var _utilsShallowEqual2 = _interopRequireDefault(_utilsShallowEqual);
 
-	var _utilsIsPlainObject = __webpack_require__(217);
+	var _utilsIsPlainObject = __webpack_require__(218);
 
 	var _utilsIsPlainObject2 = _interopRequireDefault(_utilsIsPlainObject);
 
-	var _utilsWrapActionCreators = __webpack_require__(218);
+	var _utilsWrapActionCreators = __webpack_require__(219);
 
 	var _utilsWrapActionCreators2 = _interopRequireDefault(_utilsWrapActionCreators);
 
-	var _hoistNonReactStatics = __webpack_require__(228);
+	var _hoistNonReactStatics = __webpack_require__(229);
 
 	var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
 
-	var _invariant = __webpack_require__(165);
+	var _invariant = __webpack_require__(166);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
@@ -25156,7 +25204,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 216 */
+/* 217 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -25190,7 +25238,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 217 */
+/* 218 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -25225,7 +25273,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 218 */
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -25233,7 +25281,7 @@
 	exports.__esModule = true;
 	exports['default'] = wrapActionCreators;
 
-	var _redux = __webpack_require__(219);
+	var _redux = __webpack_require__(220);
 
 	function wrapActionCreators(actionCreators) {
 	  return function (dispatch) {
@@ -25244,7 +25292,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 219 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -25253,23 +25301,23 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _createStore = __webpack_require__(220);
+	var _createStore = __webpack_require__(221);
 
 	var _createStore2 = _interopRequireDefault(_createStore);
 
-	var _utilsCombineReducers = __webpack_require__(222);
+	var _utilsCombineReducers = __webpack_require__(223);
 
 	var _utilsCombineReducers2 = _interopRequireDefault(_utilsCombineReducers);
 
-	var _utilsBindActionCreators = __webpack_require__(225);
+	var _utilsBindActionCreators = __webpack_require__(226);
 
 	var _utilsBindActionCreators2 = _interopRequireDefault(_utilsBindActionCreators);
 
-	var _utilsApplyMiddleware = __webpack_require__(226);
+	var _utilsApplyMiddleware = __webpack_require__(227);
 
 	var _utilsApplyMiddleware2 = _interopRequireDefault(_utilsApplyMiddleware);
 
-	var _utilsCompose = __webpack_require__(227);
+	var _utilsCompose = __webpack_require__(228);
 
 	var _utilsCompose2 = _interopRequireDefault(_utilsCompose);
 
@@ -25280,7 +25328,7 @@
 	exports.compose = _utilsCompose2['default'];
 
 /***/ },
-/* 220 */
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -25290,7 +25338,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _utilsIsPlainObject = __webpack_require__(221);
+	var _utilsIsPlainObject = __webpack_require__(222);
 
 	var _utilsIsPlainObject2 = _interopRequireDefault(_utilsIsPlainObject);
 
@@ -25448,7 +25496,7 @@
 	}
 
 /***/ },
-/* 221 */
+/* 222 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -25483,7 +25531,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 222 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -25493,17 +25541,17 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _createStore = __webpack_require__(220);
+	var _createStore = __webpack_require__(221);
 
-	var _utilsIsPlainObject = __webpack_require__(221);
+	var _utilsIsPlainObject = __webpack_require__(222);
 
 	var _utilsIsPlainObject2 = _interopRequireDefault(_utilsIsPlainObject);
 
-	var _utilsMapValues = __webpack_require__(223);
+	var _utilsMapValues = __webpack_require__(224);
 
 	var _utilsMapValues2 = _interopRequireDefault(_utilsMapValues);
 
-	var _utilsPick = __webpack_require__(224);
+	var _utilsPick = __webpack_require__(225);
 
 	var _utilsPick2 = _interopRequireDefault(_utilsPick);
 
@@ -25619,7 +25667,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 223 */
+/* 224 */
 /***/ function(module, exports) {
 
 	/**
@@ -25644,7 +25692,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 224 */
+/* 225 */
 /***/ function(module, exports) {
 
 	/**
@@ -25671,7 +25719,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 225 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -25681,7 +25729,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _utilsMapValues = __webpack_require__(223);
+	var _utilsMapValues = __webpack_require__(224);
 
 	var _utilsMapValues2 = _interopRequireDefault(_utilsMapValues);
 
@@ -25731,7 +25779,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 226 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -25744,7 +25792,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _compose = __webpack_require__(227);
+	var _compose = __webpack_require__(228);
 
 	var _compose2 = _interopRequireDefault(_compose);
 
@@ -25797,7 +25845,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 227 */
+/* 228 */
 /***/ function(module, exports) {
 
 	/**
@@ -25827,7 +25875,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 228 */
+/* 229 */
 /***/ function(module, exports) {
 
 	/**
@@ -25869,7 +25917,7 @@
 
 
 /***/ },
-/* 229 */
+/* 230 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -25883,11 +25931,11 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _utilsRequest = __webpack_require__(230);
+	var _utilsRequest = __webpack_require__(231);
 
 	//Promise
 
-	var _configUrl = __webpack_require__(235);
+	var _configUrl = __webpack_require__(236);
 
 	var _configUrl2 = _interopRequireDefault(_configUrl);
 
@@ -25936,7 +25984,7 @@
 	}
 
 /***/ },
-/* 230 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -25952,13 +26000,13 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _superagent = __webpack_require__(231);
+	var _superagent = __webpack_require__(232);
 
 	var _superagent2 = _interopRequireDefault(_superagent);
 
-	var _utilsPromise = __webpack_require__(234);
+	var _promise = __webpack_require__(235);
 
-	var _utilsPromise2 = _interopRequireDefault(_utilsPromise);
+	var _promise2 = _interopRequireDefault(_promise);
 
 	var _configAppConfig = __webpack_require__(157);
 
@@ -25982,13 +26030,13 @@
 	//基本封装
 
 	function get(url, data) {
-	  return new _utilsPromise2['default'](function (resolve, reject) {
+	  return new _promise2['default'](function (resolve, reject) {
 	    _superagent2['default'].get(url).query(data).set('X-Requested-With', 'XMLHttpRequest').end(_end_callback(resolve, reject));
 	  });
 	}
 
 	function post(url, data) {
-	  return new _utilsPromise2['default'](function (resolve, reject) {
+	  return new _promise2['default'](function (resolve, reject) {
 	    _superagent2['default'].post(url).send(data).set('X-Requested-With', 'XMLHttpRequest').end(_end_callback(resolve, reject));
 	  });
 	}
@@ -26019,25 +26067,27 @@
 
 	function TEST(data, signal, time) {
 	  return function (dispatch) {
-	    setTimeout(function () {
-	      dispatch({
-	        type: signal,
-	        data: data
-	      });
-	    }, time || 400);
+	    return new _promise2['default'](function (resolve, reject) {
+	      setTimeout(function () {
+	        resolve(dispatch({
+	          type: signal,
+	          data: data
+	        }));
+	      }, time || 200);
+	    });
 	  };
 	}
 
 /***/ },
-/* 231 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Module dependencies.
 	 */
 
-	var Emitter = __webpack_require__(232);
-	var reduce = __webpack_require__(233);
+	var Emitter = __webpack_require__(233);
+	var reduce = __webpack_require__(234);
 
 	/**
 	 * Root reference for iframes.
@@ -27216,7 +27266,7 @@
 
 
 /***/ },
-/* 232 */
+/* 233 */
 /***/ function(module, exports) {
 
 	
@@ -27386,7 +27436,7 @@
 
 
 /***/ },
-/* 233 */
+/* 234 */
 /***/ function(module, exports) {
 
 	
@@ -27415,7 +27465,7 @@
 	};
 
 /***/ },
-/* 234 */
+/* 235 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -27436,7 +27486,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 235 */
+/* 236 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27475,6 +27525,8 @@
 	  var url = {
 	    login: '/login',
 
+	    //订单
+	    orders: '/orders',
 	    provinces: '/provinces',
 	    cities: '/province/:provinceId/cities',
 	    districts: '/city/:cityId/districts',
@@ -27498,7 +27550,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 236 */
+/* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27509,7 +27561,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _historyLibCreateBrowserHistory = __webpack_require__(237);
+	var _historyLibCreateBrowserHistory = __webpack_require__(238);
 
 	var _historyLibCreateBrowserHistory2 = _interopRequireDefault(_historyLibCreateBrowserHistory);
 
@@ -27517,7 +27569,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 237 */
+/* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27528,19 +27580,19 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _invariant = __webpack_require__(165);
+	var _invariant = __webpack_require__(166);
 
 	var _invariant2 = _interopRequireDefault(_invariant);
 
-	var _Actions = __webpack_require__(166);
+	var _Actions = __webpack_require__(167);
 
-	var _ExecutionEnvironment = __webpack_require__(167);
+	var _ExecutionEnvironment = __webpack_require__(168);
 
-	var _DOMUtils = __webpack_require__(168);
+	var _DOMUtils = __webpack_require__(169);
 
-	var _DOMStateStorage = __webpack_require__(169);
+	var _DOMStateStorage = __webpack_require__(170);
 
-	var _createDOMHistory = __webpack_require__(170);
+	var _createDOMHistory = __webpack_require__(171);
 
 	var _createDOMHistory2 = _interopRequireDefault(_createDOMHistory);
 
@@ -27694,7 +27746,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 238 */
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27721,25 +27773,43 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reactRedux = __webpack_require__(212);
+	var _reactDom = __webpack_require__(154);
 
-	var _redux = __webpack_require__(219);
+	var _reactRedux = __webpack_require__(213);
 
-	var _actionsOrder_manage = __webpack_require__(239);
+	var _redux = __webpack_require__(220);
+
+	var _actionsOrder_manage = __webpack_require__(240);
 
 	var OrderManageActions = _interopRequireWildcard(_actionsOrder_manage);
 
-	var _commonDatepicker = __webpack_require__(240);
+	var _commonDatepicker = __webpack_require__(241);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonSelect = __webpack_require__(241);
+	var _commonSelect = __webpack_require__(242);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonPagination = __webpack_require__(242);
+	var _commonPagination = __webpack_require__(243);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _configAppConfig2 = _interopRequireDefault(_configAppConfig);
+
+	var _history_instance = __webpack_require__(237);
+
+	var _history_instance2 = _interopRequireDefault(_history_instance);
+
+	var _manage_detail_modal = __webpack_require__(244);
+
+	var _manage_detail_modal2 = _interopRequireDefault(_manage_detail_modal);
+
+	var _manage_alter_station_modal = __webpack_require__(245);
+
+	var _manage_alter_station_modal2 = _interopRequireDefault(_manage_alter_station_modal);
 
 	var TopHeader = (function (_Component) {
 	  _inherits(TopHeader, _Component);
@@ -27758,7 +27828,7 @@
 	        { className: 'clearfix top-header' },
 	        _react2['default'].createElement(
 	          'button',
-	          { className: 'btn btn-theme pull-left' },
+	          { onClick: this.addOrder.bind(this), className: 'btn btn-theme pull-left' },
 	          '添加订单'
 	        ),
 	        _react2['default'].createElement(
@@ -27781,6 +27851,11 @@
 	          )
 	        )
 	      );
+	    }
+	  }, {
+	    key: 'addOrder',
+	    value: function addOrder() {
+	      _history_instance2['default'].replace('/om/index/add');
 	    }
 	  }]);
 
@@ -27818,13 +27893,14 @@
 	            _react2['default'].createElement('i', { className: 'fa fa-search' })
 	          ),
 	          ' 开始时间',
-	          _react2['default'].createElement(_commonDatepicker2['default'], { date: start_date, onChange: startDateChange }),
+	          _react2['default'].createElement(_commonDatepicker2['default'], { date: start_date, onChange: startDateChange, className: 'short-input' }),
 	          ' 配送时间',
-	          _react2['default'].createElement(_commonDatepicker2['default'], { date: delivery_date, onChange: deliveryDateChange }),
-	          _react2['default'].createElement(_commonSelect2['default'], { className: 'space' }),
-	          _react2['default'].createElement(_commonSelect2['default'], { className: 'space' }),
-	          _react2['default'].createElement(_commonSelect2['default'], { className: 'space' }),
-	          _react2['default'].createElement(_commonSelect2['default'], { className: 'space' }),
+	          _react2['default'].createElement(_commonDatepicker2['default'], { date: delivery_date, onChange: deliveryDateChange, className: 'short-input' }),
+	          _react2['default'].createElement(_commonSelect2['default'], { 'default-text': '是否提交', className: 'space' }),
+	          _react2['default'].createElement(_commonSelect2['default'], { 'default-text': '是否处理', className: 'space' }),
+	          _react2['default'].createElement(_commonSelect2['default'], { 'default-text': '订单来源', className: 'space' }),
+	          _react2['default'].createElement(_commonSelect2['default'], { 'default-text': '选择城市', className: 'space' }),
+	          _react2['default'].createElement(_commonSelect2['default'], { 'default-text': '订单状态', className: 'space' }),
 	          _react2['default'].createElement(
 	            'button',
 	            { className: 'btn btn-theme btn-sm' },
@@ -27852,25 +27928,213 @@
 	    _classCallCheck(this, ManagePannel);
 
 	    _get(Object.getPrototypeOf(ManagePannel.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      current_page: 2
-	    };
 	  }
 
 	  _createClass(ManagePannel, [{
 	    key: 'render',
 	    value: function render() {
+	      var _this = this;
+
 	      var _props2 = this.props;
 	      var filter = _props2.filter;
 	      var startDateChange = _props2.startDateChange;
 	      var deliveryDateChange = _props2.deliveryDateChange;
+	      var _props$orders = this.props.orders;
+	      var total = _props$orders.total;
+	      var list = _props$orders.list;
 
-	      filter = _extends({}, filter, { startDateChange: startDateChange, deliveryDateChange: deliveryDateChange });
+	      var content = list.map(function (n, i) {
+	        return _react2['default'].createElement(
+	          'tr',
+	          { key: i },
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            _react2['default'].createElement(
+	              'a',
+	              { href: 'javascript:;' },
+	              '[编辑]'
+	            ),
+	            _react2['default'].createElement('br', null),
+	            _react2['default'].createElement(
+	              'a',
+	              { onClick: _this.viewDetail.bind(_this, n), href: 'javascript:;' },
+	              '[查看]'
+	            ),
+	            _react2['default'].createElement('br', null),
+	            _react2['default'].createElement(
+	              'a',
+	              { onClick: _this.alterStation.bind(_this, n), href: 'javascript:;', className: 'nowrap' },
+	              '[修改配送]'
+	            )
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.merchant_id
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.order_id
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.owner_name,
+	            _react2['default'].createElement('br', null),
+	            n.owner_mobile
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'time' },
+	              n.created_date
+	            )
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            { className: 'text-left' },
+	            '姓名：',
+	            n.recipient_name,
+	            _react2['default'].createElement('br', null),
+	            '电话：',
+	            n.recipient_mobile,
+	            _react2['default'].createElement('br', null),
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'address-detail-td' },
+	              _react2['default'].createElement(
+	                'span',
+	                { className: 'inline-block' },
+	                '地址：'
+	              ),
+	              _react2['default'].createElement(
+	                'span',
+	                { className: 'address-all' },
+	                n.recipient_address
+	              )
+	            ),
+	            '建筑：todo'
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.delivery_date
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            { className: 'nowrap' },
+	            'todo',
+	            _react2['default'].createElement('br', null),
+	            _react2['default'].createElement(
+	              'span',
+	              { className: 'bordered' },
+	              'todo'
+	            )
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            _react2['default'].createElement(
+	              'strong',
+	              { className: 'strong' },
+	              _configAppConfig2['default'].pay_status[n.pay_status]
+	            )
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            { className: 'nowrap' },
+	            '总金额：todo ',
+	            _react2['default'].createElement('br', null),
+	            '应收：todo'
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'bg-success round' },
+	              n.status
+	            )
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            'todo'
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'time' },
+	              n.delivery_time
+	            )
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.is_submit == '1' ? '是' : '否'
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.is_deal == '1' ? '是' : '否'
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.city
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.cancel_reason
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'remark-in-table' },
+	              n.remarks
+	            )
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.created_by
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.updated_by
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'time' },
+	              n.updated_date,
+	              _react2['default'].createElement('br', null),
+	              _react2['default'].createElement(
+	                'a',
+	                { href: '#' },
+	                '操作记录'
+	              )
+	            )
+	          )
+	        );
+	      });
 	      return _react2['default'].createElement(
 	        'div',
 	        { className: 'order-manage' },
 	        _react2['default'].createElement(TopHeader, null),
-	        _react2['default'].createElement(FilterHeader, filter),
+	        _react2['default'].createElement(FilterHeader, _extends({}, filter, { startDateChange: startDateChange, deliveryDateChange: deliveryDateChange })),
 	        _react2['default'].createElement(
 	          'div',
 	          { className: 'panel' },
@@ -28004,184 +28268,19 @@
 	                _react2['default'].createElement(
 	                  'tbody',
 	                  null,
-	                  _react2['default'].createElement(
-	                    'tr',
-	                    null,
-	                    _react2['default'].createElement('td', null),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '700025'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '2342342343242424'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '蝴蝶',
-	                      _react2['default'].createElement('br', null),
-	                      '11122223333'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      _react2['default'].createElement(
-	                        'div',
-	                        { className: 'time' },
-	                        '2015-12-10',
-	                        _react2['default'].createElement('br', null),
-	                        '10:10:05'
-	                      )
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      { className: 'text-left' },
-	                      '姓名：蝴蝶',
-	                      _react2['default'].createElement('br', null),
-	                      '电话：11122223333',
-	                      _react2['default'].createElement('br', null),
-	                      _react2['default'].createElement(
-	                        'div',
-	                        { className: 'address-detail-td' },
-	                        _react2['default'].createElement(
-	                          'span',
-	                          { className: 'inline-block' },
-	                          '地址：'
-	                        ),
-	                        _react2['default'].createElement(
-	                          'span',
-	                          { className: 'address-all' },
-	                          '广东省深圳市福田区xxxxxxxxx'
-	                        )
-	                      ),
-	                      '建筑：中兴通讯'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '陪送上门'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      { className: 'nowrap' },
-	                      '第三方预约',
-	                      _react2['default'].createElement('br', null),
-	                      _react2['default'].createElement(
-	                        'span',
-	                        { className: 'bordered' },
-	                        '大众点评网'
-	                      )
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      _react2['default'].createElement(
-	                        'strong',
-	                        { className: 'strong' },
-	                        '货到付款'
-	                      )
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      { className: 'nowrap' },
-	                      '总金额：xxxx ',
-	                      _react2['default'].createElement('br', null),
-	                      '应收：xxxx'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      _react2['default'].createElement(
-	                        'div',
-	                        { className: 'bg-success round' },
-	                        '已分配',
-	                        _react2['default'].createElement('br', null),
-	                        '配送站'
-	                      )
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '车公庙配送中心'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      _react2['default'].createElement(
-	                        'div',
-	                        { className: 'time' },
-	                        '2015-12-10',
-	                        _react2['default'].createElement('br', null),
-	                        '10:10:10'
-	                      )
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '是'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '是'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '深圳'
-	                    ),
-	                    _react2['default'].createElement('td', null),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      _react2['default'].createElement(
-	                        'div',
-	                        { className: 'remark-in-table' },
-	                        '车公庙车公庙车公庙车公庙车公庙车公庙'
-	                      )
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '蝴蝶'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      '蝴蝶'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'td',
-	                      null,
-	                      _react2['default'].createElement(
-	                        'div',
-	                        { className: 'time' },
-	                        '2015-12-10',
-	                        _react2['default'].createElement('br', null),
-	                        '10:10:05',
-	                        _react2['default'].createElement('br', null),
-	                        _react2['default'].createElement(
-	                          'a',
-	                          { href: '#' },
-	                          '操作记录'
-	                        )
-	                      )
-	                    )
-	                  )
+	                  content
 	                )
 	              )
 	            )
 	          ),
 	          _react2['default'].createElement(_commonPagination2['default'], {
-	            current_page: this.state.current_page,
-	            total_count: 25,
-	            perpage_count: 10,
+	            current_page: 0,
+	            total_count: total,
+	            perpage_count: 8,
 	            onPageChange: this.onPageChange
 	          })
-	        )
+	        ),
+	        _react2['default'].createElement('div', { ref: 'modal-wrap' })
 	      );
 	    }
 	  }, {
@@ -28189,13 +28288,32 @@
 	    value: function onPageChange(page) {
 	      this.setState({ current_page: page });
 	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var getOrderList = this.props.getOrderList;
+
+	      getOrderList();
+	    }
+	  }, {
+	    key: 'viewDetail',
+	    value: function viewDetail(n) {
+	      (0, _reactDom.render)(_react2['default'].createElement(_manage_detail_modal2['default'], { data: n, 'data-id': new Date().getTime() }), this.refs['modal-wrap']);
+	    }
+	  }, {
+	    key: 'alterStation',
+	    value: function alterStation(n) {
+	      (0, _reactDom.render)(_react2['default'].createElement(_manage_alter_station_modal2['default'], { data: n, 'data-id': new Date().getTime() }), this.refs['modal-wrap']);
+	    }
 	  }]);
 
 	  return ManagePannel;
 	})(_react.Component);
 
-	function mapStateToProps(state) {
-	  return state.orderManage;
+	function mapStateToProps(_ref) {
+	  var orderManage = _ref.orderManage;
+
+	  return orderManage;
 	}
 
 	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
@@ -28208,7 +28326,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 239 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -28218,14 +28336,15 @@
 	});
 	exports.startDateChange = startDateChange;
 	exports.deliveryDateChange = deliveryDateChange;
+	exports.getOrderList = getOrderList;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _utilsRequest = __webpack_require__(230);
+	var _utilsRequest = __webpack_require__(231);
 
 	//Promise
 
-	var _configUrl = __webpack_require__(235);
+	var _configUrl = __webpack_require__(236);
 
 	var _configUrl2 = _interopRequireDefault(_configUrl);
 
@@ -28249,8 +28368,44 @@
 	  };
 	}
 
+	var GET_ORDER_LIST = 'GET_ORDER_LIST';
+	exports.GET_ORDER_LIST = GET_ORDER_LIST;
+
+	function getOrderList() {
+	  // return GET(Url.orders.toString(), null, GET_ORDER_LIST);
+	  return (0, _utilsRequest.TEST)({
+	    total: 1,
+	    list: [{
+	      'cancel_reason': '取消理由xxxx',
+	      'city': '城市xxx',
+	      'created_by': '创建人xx',
+	      'created_date': '下单时间xx',
+	      'delivery_name': '配送站名称xx',
+	      'delivery_time': '配送时间xx',
+	      'delivery_type': '配送方式xx',
+	      'discount_price': '实际售价xx',
+	      'is_deal': '0',
+	      'is_submit': '1',
+	      'merchant_id': '22222',
+	      'order_id': '11111',
+	      'original_price': '4444',
+	      'owner_mobile': '下单人手机xx',
+	      'owner_name': '下单人姓名xx',
+	      'pay_status': 'PAYED',
+	      'recipient_address': '收货人地址xxxx',
+	      'recipient_mobile': '收货人手机xxx',
+	      'recipient_name': '收货人姓名xxx',
+	      'remarks': '备注xxxx',
+	      'src_name': '订单来源xxx',
+	      'status': '订单状态xxx',
+	      'updated_by': '最后操作人xxx',
+	      'updated_date': '最后操作时间eeee'
+	    }]
+	  }, GET_ORDER_LIST);
+	}
+
 /***/ },
-/* 240 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -28280,22 +28435,42 @@
 	  },
 	  getInitialState: function getInitialState() {
 	    return {
-	      date: ''
+	      date: this.props['redux-form'].value
 	    };
 	  },
-	  // componentWillReceiveProps: function(nextProps) {
-	  //   if (nextProps.date != this.props.date) {
-	  //     this.setState({
-	  //       date: nextProps.date,
-	  //     }, function() {
-	  //       $(this.refs.date).data('datepicker').update();
-	  //     });
-	  //   }
-	  // },
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+	    if (nextProps['redux-form'].value != this.props['redux-form'].value) {
+	      $((function () {
+	        this.setState({
+	          date: nextProps['redux-form'].value
+	        }, function () {
+	          this.initDatePicker().update();
+	        });
+	      }).bind(this));
+	    }
+	  },
 	  componentDidMount: function componentDidMount() {
+	    // $(function(){
+	    //   var dom_date = this.refs.date,
+	    //     $date = $(dom_date).datepicker({
+	    //       format: 'yyyy-mm-dd',
+	    //     }).on('changeDate', function(e) {
+	    //       setTimeout(function(){
+	    //         dom_date.value = e.target.value;
+	    //         dom_date.focus();
+	    //       })
+	    //       $date.data('datepicker').hide();
+	    //     });
+	    // }.bind(this));
 	    $((function () {
-	      var dom_date = this.refs.date,
-	          $date = $(dom_date).datepicker({
+	      this.initDatePicker();
+	    }).bind(this));
+	  },
+	  initDatePicker: function initDatePicker() {
+	    var dom_date = this.refs.date;
+	    var $date = $(dom_date).data('datepicker');
+	    if (!$date) {
+	      $date = $(dom_date).datepicker({
 	        format: 'yyyy-mm-dd'
 	      }).on('changeDate', (function (e) {
 	        this.setState({ date: e.target.value }, function () {
@@ -28306,13 +28481,15 @@
 	          }, 0);
 	        });
 	      }).bind(this));
-	    }).bind(this));
+	    }
+	    return $date;
 	  },
 	  render: function render() {
+	    //redux-from 中包含value
 	    return _react2['default'].createElement(
 	      'div',
 	      { style: { 'display': 'inline-block' } },
-	      _react2['default'].createElement('input', _extends({ ref: 'date' }, this.props['redux-form'], { value: this.state.value, className: 'form-control input-sm ' + this.props.className }))
+	      _react2['default'].createElement('input', _extends({ ref: 'date' }, this.props['redux-form'], { value: this.state.date, className: 'form-control input-sm ' + this.props.className }))
 	    );
 	  }
 	});
@@ -28325,7 +28502,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 241 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -28369,7 +28546,7 @@
 	module.exports = Select;
 
 /***/ },
-/* 242 */
+/* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -28617,7 +28794,546 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 243 */
+/* 244 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var DetailModal = (function (_Component) {
+	  _inherits(DetailModal, _Component);
+
+	  function DetailModal(props) {
+	    _classCallCheck(this, DetailModal);
+
+	    _get(Object.getPrototypeOf(DetailModal.prototype), 'constructor', this).call(this, props);
+	    this.show = this.show.bind(this);
+	    this.hide = this.hide.bind(this);
+	  }
+
+	  // DetailModal.PropTypes = {
+	  //   dispatch: PropTypes.func.isRequired,
+	  // }
+
+	  _createClass(DetailModal, [{
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      if (nextProps['data-id'] != this.props['data-id']) {
+	        this.show();
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return _react2['default'].createElement(
+	        'div',
+	        { ref: 'modal', 'aria-hidden': 'false', 'aria-labelledby': 'myModalLabel', role: 'dialog', className: 'modal fade' },
+	        _react2['default'].createElement('div', { className: 'modal-backdrop fade' }),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'modal-dialog modal-lg' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'modal-content' },
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'modal-header' },
+	              _react2['default'].createElement(
+	                'button',
+	                { onClick: this.onCancel, 'aria-hidden': 'true', 'data-dismiss': 'modal', className: 'close', type: 'button' },
+	                '×'
+	              ),
+	              _react2['default'].createElement(
+	                'h4',
+	                { className: 'modal-title' },
+	                '查看订单信息'
+	              )
+	            ),
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'modal-body strong-label' },
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '　配送方式：'
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'gray' },
+	                  '配送上门'
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '下单人信息：'
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'gray' },
+	                  '蝴蝶　　15299998888'
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '收货人信息：'
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'gray' },
+	                  '蝴蝶　　15299998888'
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '收货人地址：'
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'gray' },
+	                  '广东省深圳市南山区xxxxx'
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '标志性建筑：'
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'gray' },
+	                  '中兴通讯'
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  { className: 'inline-block' },
+	                  '　支付方式：',
+	                  _react2['default'].createElement('br', null),
+	                  ' ',
+	                  _react2['default'].createElement('br', null),
+	                  ' ',
+	                  _react2['default'].createElement('br', null)
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'inline-block gray' },
+	                  '第三方支付',
+	                  _react2['default'].createElement('br', null),
+	                  '团购密码 xxxxxx',
+	                  _react2['default'].createElement('br', null),
+	                  '已付款'
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '　配送时间：'
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'gray' },
+	                  '中兴通讯'
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '　　　备注：'
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'gray' },
+	                  '中兴通讯'
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '　产品信息：'
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'table-responsive' },
+	                _react2['default'].createElement(
+	                  'table',
+	                  { className: 'table table-hover table-click text-center' },
+	                  _react2['default'].createElement(
+	                    'thead',
+	                    null,
+	                    _react2['default'].createElement(
+	                      'tr',
+	                      null,
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '产品名称'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '货品数量信息'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '金额'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '应收金额'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '巧克力牌'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '祝福贺卡'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '产品图册'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '自定义名称'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '自定义描述'
+	                      )
+	                    )
+	                  ),
+	                  _react2['default'].createElement(
+	                    'tbody',
+	                    null,
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      '自由拼'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      { className: 'text-left' },
+	                      '规格：约2磅',
+	                      _react2['default'].createElement('br', null),
+	                      '数量：1'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      { className: 'text-left' },
+	                      '原价：￥138',
+	                      _react2['default'].createElement('br', null),
+	                      '实际售价：￥69'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      '￥0'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      '妈妈生日快乐'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      '生日快乐'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      _react2['default'].createElement('input', { checked: true, disabled: true, type: 'checkbox' })
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      '单恋黑森林，榴莲香雪'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'td',
+	                      null,
+	                      '2磅1/4，方形'
+	                    )
+	                  )
+	                )
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.show();
+	    }
+	  }, {
+	    key: 'show',
+	    value: function show() {
+	      $(this.refs.modal).modal('show');
+	    }
+	  }, {
+	    key: 'hide',
+	    value: function hide() {
+	      $(this.refs.modal).modal('hide');
+	    }
+	  }]);
+
+	  return DetailModal;
+	})(_react.Component);
+
+	exports['default'] = DetailModal;
+	module.exports = exports['default'];
+
+/***/ },
+/* 245 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _commonDatepicker = __webpack_require__(241);
+
+	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
+
+	var _commonSelect = __webpack_require__(242);
+
+	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+
+	var AlterStationModal = (function (_Component) {
+	  _inherits(AlterStationModal, _Component);
+
+	  function AlterStationModal(props) {
+	    _classCallCheck(this, AlterStationModal);
+
+	    _get(Object.getPrototypeOf(AlterStationModal.prototype), 'constructor', this).call(this, props);
+	    this.show = this.show.bind(this);
+	    this.hide = this.hide.bind(this);
+	  }
+
+	  // DetailModal.PropTypes = {
+	  //   dispatch: PropTypes.func.isRequired,
+	  // }
+
+	  _createClass(AlterStationModal, [{
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      if (nextProps['data-id'] != this.props['data-id']) {
+	        this.show();
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return _react2['default'].createElement(
+	        'div',
+	        { ref: 'modal', 'aria-hidden': 'false', 'aria-labelledby': 'myModalLabel', role: 'dialog', className: 'modal fade' },
+	        _react2['default'].createElement('div', { className: 'modal-backdrop fade' }),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'modal-dialog' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'modal-content' },
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'modal-header' },
+	              _react2['default'].createElement(
+	                'button',
+	                { onClick: this.hide, 'aria-hidden': 'true', 'data-dismiss': 'modal', className: 'close', type: 'button' },
+	                '×'
+	              ),
+	              _react2['default'].createElement(
+	                'h4',
+	                { className: 'modal-title' },
+	                '修改配送'
+	              )
+	            ),
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'modal-body strong-label' },
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'gray' },
+	                  '订单尚未生产，可直接更改！'
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '　　配送方式：'
+	                ),
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  _react2['default'].createElement('input', { type: 'radio', checked: true, name: 'delivery_type' }),
+	                  ' 配送上门'
+	                ),
+	                '　',
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  _react2['default'].createElement('input', { type: 'radio', checked: false, name: 'delivery_type' }),
+	                  ' 门店自提'
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '　　配送时间：'
+	                ),
+	                _react2['default'].createElement(_commonDatepicker2['default'], null),
+	                ' ',
+	                _react2['default'].createElement(_commonSelect2['default'], { options: [], className: 'input-sm' })
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '修改配送地址：'
+	                ),
+	                _react2['default'].createElement(_commonSelect2['default'], { options: [], className: 'input-sm' }),
+	                ' ',
+	                _react2['default'].createElement('input', { className: 'form-control input-sm' })
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '修改配送时间：'
+	                ),
+	                _react2['default'].createElement(_commonSelect2['default'], { options: [], className: 'input-sm' })
+	              )
+	            ),
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'modal-footer' },
+	              _react2['default'].createElement(
+	                'button',
+	                { onClick: this.onCancel, type: 'button', className: 'btn btn-default', 'data-dismiss': 'modal' },
+	                '取消'
+	              ),
+	              _react2['default'].createElement(
+	                'button',
+	                { onClick: this.onConfirm, type: 'button', className: 'btn btn-theme' },
+	                '确定'
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.show();
+	    }
+	  }, {
+	    key: 'show',
+	    value: function show() {
+	      $(this.refs.modal).modal('show');
+	    }
+	  }, {
+	    key: 'hide',
+	    value: function hide() {
+	      $(this.refs.modal).modal('hide');
+	    }
+	  }]);
+
+	  return AlterStationModal;
+	})(_react.Component);
+
+	exports['default'] = AlterStationModal;
+	module.exports = exports['default'];
+
+/***/ },
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -28646,33 +29362,33 @@
 
 	var _reactDom = __webpack_require__(154);
 
-	var _reactRedux = __webpack_require__(212);
+	var _reactRedux = __webpack_require__(213);
 
-	var _redux = __webpack_require__(219);
+	var _redux = __webpack_require__(220);
 
-	var _actionsArea = __webpack_require__(244);
+	var _actionsArea = __webpack_require__(247);
 
 	var AreaActions = _interopRequireWildcard(_actionsArea);
 
-	var _actionsOrder_manage_add = __webpack_require__(245);
+	var _actionsOrder_manage_form = __webpack_require__(248);
 
-	var OrderAddActions = _interopRequireWildcard(_actionsOrder_manage_add);
+	var OrderFormActions = _interopRequireWildcard(_actionsOrder_manage_form);
 
-	var _commonDatepicker = __webpack_require__(240);
+	var _commonDatepicker = __webpack_require__(241);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonAlert = __webpack_require__(246);
+	var _commonAlert = __webpack_require__(291);
 
 	var _commonAlert2 = _interopRequireDefault(_commonAlert);
 
-	var _manage_add_form = __webpack_require__(247);
+	var _manage_order_form = __webpack_require__(292);
 
-	var _manage_add_form2 = _interopRequireDefault(_manage_add_form);
+	var _manage_order_form2 = _interopRequireDefault(_manage_order_form);
 
-	var _manage_add_products = __webpack_require__(291);
+	var _manage_order_products = __webpack_require__(295);
 
-	var _manage_add_products2 = _interopRequireDefault(_manage_add_products);
+	var _manage_order_products2 = _interopRequireDefault(_manage_order_products);
 
 	var TopHeader = (function (_Component) {
 	  _inherits(TopHeader, _Component);
@@ -28705,7 +29421,7 @@
 	          _react2['default'].createElement(
 	            'span',
 	            { className: 'node active' },
-	            '添加订单'
+	            '编辑订单'
 	          )
 	        )
 	      );
@@ -28715,26 +29431,24 @@
 	  return TopHeader;
 	})(_react.Component);
 
-	var ManageAddPannel = (function (_Component2) {
-	  _inherits(ManageAddPannel, _Component2);
+	var ManageOrderDetailPannel = (function (_Component2) {
+	  _inherits(ManageOrderDetailPannel, _Component2);
 
-	  function ManageAddPannel() {
-	    _classCallCheck(this, ManageAddPannel);
+	  function ManageOrderDetailPannel() {
+	    _classCallCheck(this, ManageOrderDetailPannel);
 
-	    _get(Object.getPrototypeOf(ManageAddPannel.prototype), 'constructor', this).apply(this, arguments);
+	    _get(Object.getPrototypeOf(ManageOrderDetailPannel.prototype), 'constructor', this).apply(this, arguments);
 	  }
 
-	  _createClass(ManageAddPannel, [{
+	  _createClass(ManageOrderDetailPannel, [{
 	    key: 'render',
 	    value: function render() {
 	      var _props = this.props;
-	      var addForm = _props.addForm;
+	      var mainForm = _props.mainForm;
 	      var area = _props.area;
 	      var dispatch = _props.dispatch;
-	      var save_ing = _props.save_ing;
-	      var save_success = _props.save_success;
-	      var submitting = _props.submitting;
 	      var products = _props.products;
+	      var params = _props.params;
 
 	      return _react2['default'].createElement(
 	        'div',
@@ -28751,96 +29465,58 @@
 	          _react2['default'].createElement(
 	            'div',
 	            { className: 'panel-body' },
-	            _react2['default'].createElement(_manage_add_form2['default'], {
-	              ref: 'ManageAddForm',
-	              'form-data': addForm,
-	              area: area,
-	              actions: _extends({}, (0, _redux.bindActionCreators)(AreaActions, dispatch), (0, _redux.bindActionCreators)(OrderAddActions, dispatch)) }),
-	            _react2['default'].createElement('hr', { className: 'dotted' }),
-	            _react2['default'].createElement(_manage_add_products2['default'], _extends({ dispatch: dispatch }, products)),
 	            _react2['default'].createElement(
-	              'div',
-	              { className: 'form-group' },
-	              save_success != undefined && !save_success ? _react2['default'].createElement(
-	                _commonAlert2['default'],
-	                { type: 'danger' },
-	                '保存信息失败'
-	              ) : null,
-	              _react2['default'].createElement(
-	                'button',
-	                {
-	                  onClick: this.handleSave.bind(this),
-	                  disabled: save_ing,
-	                  'data-submitting': save_ing,
-	                  className: 'btn btn-theme btn-sm' },
-	                '保存信息'
-	              ),
-	              '　　',
-	              _react2['default'].createElement(
-	                'button',
-	                { disabled: submitting, 'data-submitting': submitting, className: 'btn btn-theme btn-sm' },
-	                '保存'
-	              )
+	              _manage_order_form2['default'],
+	              {
+	                'form-data': mainForm,
+	                area: area,
+	                editable: !!(params && params.id),
+	                actions: _extends({}, (0, _redux.bindActionCreators)(AreaActions, dispatch), (0, _redux.bindActionCreators)(OrderFormActions, dispatch)) },
+	              _react2['default'].createElement(_manage_order_products2['default'], _extends({ dispatch: dispatch }, products))
 	            )
 	          )
 	        )
 	      );
 	    }
 	  }, {
-	    key: 'handleSave',
-	    value: function handleSave() {
-	      this.props.foo();
-	      // this.refs.ManageAddForm.props.handleSubmit(this.mergeState);
-	    }
-	  }, {
-	    key: 'mergeState',
-	    value: function mergeState(data) {
-	      var _this = this;
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      //有params则表示是编辑订单
+	      var params = this.props.params;
 
-	      //redux-form的缘故，这里必须异步，否则errors为空对象
-	      setTimeout(function () {
-	        var errors = _this.refs.ManageAddForm.props.errors;
-	        var _props2 = _this.props;
-	        var dispatch = _props2.dispatch;
-	        var saveOrderInfo = _props2.saveOrderInfo;
-
-	        if (!Object.keys(errors).length) {
-	          data.delivery_id = 1;
-	          data.delivery_time = data.delivery_date + ' ' + data.delivery_hours;
-	          delete data.delivery_date;
-	          delete data.delivery_hours;
-	          dispatch(saveOrderInfo(data)); //这个地方就只能手动dispatch了
-	        }
-	      }, 0);
+	      if (params && params.id) {
+	        console.log('params-->id-->' + params.id);
+	        this.props.getOrderById(params.id);
+	      }
 	    }
 	  }]);
 
-	  return ManageAddPannel;
+	  return ManageOrderDetailPannel;
 	})(_react.Component);
 
-	ManageAddPannel.PropTypes = {
+	ManageOrderDetailPannel.PropTypes = {
 	  saveOrderInfo: _react.PropTypes.func.isRequired
 	};
 
 	function mapStateToProps(_ref) {
-	  var orderManageAdd = _ref.orderManageAdd;
+	  var orderManageForm = _ref.orderManageForm;
 
-	  return orderManageAdd;
+	  return orderManageForm;
 	}
 	function mapDispatchToProps(dispatch) {
-	  var actions = (0, _redux.bindActionCreators)(OrderAddActions, dispatch);
-	  actions.dispatch = dispatch; //不绑定的话，dispatch传不到 ManageAddPannel了，(￣◇￣;)
+	  var actions = (0, _redux.bindActionCreators)(OrderFormActions, dispatch);
+	  actions.dispatch = dispatch; //不绑定的话，dispatch传不到 ManageOrderDetailPannel了，(￣◇￣;)
 	  return actions;
 	}
 
 	//bindActionCreators: dispatch(action) --> 自动加上dispatch --> reducer
 	//redux-thunk       : dispatch(action) --> reducer         --> 异步代码执行，thunk 提供dispatch
 
-	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ManageAddPannel);
+	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ManageOrderDetailPannel);
 	module.exports = exports['default'];
 
 /***/ },
-/* 244 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -28856,11 +29532,11 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _utilsRequest = __webpack_require__(230);
+	var _utilsRequest = __webpack_require__(231);
 
 	//Promise
 
-	var _configUrl = __webpack_require__(235);
+	var _configUrl = __webpack_require__(236);
 
 	var _configUrl2 = _interopRequireDefault(_configUrl);
 
@@ -28931,7 +29607,7 @@
 	}
 
 /***/ },
-/* 245 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -28939,21 +29615,29 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	exports.getOrderSrcs = getOrderSrcs;
-	exports.foo = foo;
 	exports.getDeliveryStations = getDeliveryStations;
 	exports.getPayModes = getPayModes;
+	exports.productAttrChange = productAttrChange;
 	exports.saveOrderInfo = saveOrderInfo;
+	exports.getOrderById = getOrderById;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _utilsRequest = __webpack_require__(230);
+	var _utilsRequest = __webpack_require__(231);
 
 	//Promise
 
-	var _configUrl = __webpack_require__(235);
+	var _configUrl = __webpack_require__(236);
 
 	var _configUrl2 = _interopRequireDefault(_configUrl);
+
+	var _reduxForm = __webpack_require__(249);
+
+	var _actionsArea = __webpack_require__(247);
 
 	var GOT_ORDER_SRCS = 'GOT_ORDER_SRCS';
 	exports.GOT_ORDER_SRCS = GOT_ORDER_SRCS;
@@ -28972,12 +29656,6 @@
 	  // });
 	}
 
-	function foo() {
-	  return {
-	    TYPE: 'XXXXXXXXXX'
-	  };
-	}
-
 	var GOT_DELIVERY_STATIONS = 'GOT_DELIVERY_CENTER';
 	exports.GOT_DELIVERY_STATIONS = GOT_DELIVERY_STATIONS;
 
@@ -28992,19 +29670,38 @@
 	  return (0, _utilsRequest.GET)(_configUrl2['default'].pay_modes.toString(), null, GOT_PAY_MODES);
 	}
 
+	//
+	var CONFIRM_PRODUCT_ATTR_CHANGE = 'CONFIRM_PRODUCT_ATTR_CHANGE';
+	exports.CONFIRM_PRODUCT_ATTR_CHANGE = CONFIRM_PRODUCT_ATTR_CHANGE;
+
+	function productAttrChange(data) {
+	  return {
+	    type: CONFIRM_PRODUCT_ATTR_CHANGE,
+	    data: data
+	  };
+	}
+
 	var SAVE_ORDER_INFO_ING = 'SAVE_ORDER_INFO_ING';
 	exports.SAVE_ORDER_INFO_ING = SAVE_ORDER_INFO_ING;
 	var SAVE_ORDER_INFO_SUCCESS = 'SAVE_ORDER_INFO_SUCCESS';
 	exports.SAVE_ORDER_INFO_SUCCESS = SAVE_ORDER_INFO_SUCCESS;
 	var SAVE_ORDER_INFO_FAIL = 'SAVE_ORDER_INFO_FAIL';
+
 	exports.SAVE_ORDER_INFO_FAIL = SAVE_ORDER_INFO_FAIL;
 
-	function saveOrderInfo(data) {
-	  return function (dispatch) {
+	function saveOrderInfo(form_data) {
+	  //若是异步的话，那么该函数必须也返回一个函数
+	  return function (dispatch, getState) {
+	    var products = getState().orderManageForm.products.confirm_list,
+	        total_amount = products.reduce(function (p, n) {
+	      return p + n.discount_price * 100;
+	    }, 0);
+	    form_data.total_amount = total_amount / 100;
+	    var data = _extends({}, form_data, { products: products });
 	    dispatch({
 	      type: SAVE_ORDER_INFO_ING
 	    });
-	    (0, _utilsRequest.post)(_configUrl2['default'].order_add.toString(), data).done(function () {
+	    return (0, _utilsRequest.post)(_configUrl2['default'].order_add.toString(), data).done(function () {
 	      dispatch({
 	        type: SAVE_ORDER_INFO_SUCCESS
 	      });
@@ -29016,529 +29713,64 @@
 	  };
 	}
 
-/***/ },
-/* 246 */
-/***/ function(module, exports, __webpack_require__) {
+	var GOT_ORDER_BY_ID = 'GOT_ORDER_BY_ID';
+	exports.GOT_ORDER_BY_ID = GOT_ORDER_BY_ID;
 
-	"use strict";
+	function getOrderById(id) {
+	  return function (dispatch) {
+	    dispatch({
+	      type: GOT_ORDER_BY_ID,
+	      data: {
+	        "pay_status": "PAYED",
+	        "owner_mobile": "13399998888",
+	        "recipient_mobile": "13399998888",
+	        "invoice": 0,
+	        "delivery_id": 1,
+	        "owner_name": "www",
+	        "delivery_type": "DELIVERY",
+	        "recipient_address": "xxxx街",
+	        "remarks": "ceec",
+	        "amount": 180,
+	        "src_id": "2",
+	        "regionalism_id": "110101",
+	        //todo{
+	        "province_id": "110000",
+	        "province_name": "北京市",
+	        "city_id": "110100",
+	        "city_name": "北京市",
+	        "regionalism_name": "东城区",
+	        //}
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var Alert = (function (_Component) {
-	  _inherits(Alert, _Component);
-
-	  function Alert() {
-	    _classCallCheck(this, Alert);
-
-	    _get(Object.getPrototypeOf(Alert.prototype), "constructor", this).apply(this, arguments);
-	  }
-
-	  _createClass(Alert, [{
-	    key: "render",
-	    value: function render() {
-	      var type = this.props.type;
-
-	      return _react2["default"].createElement(
-	        "div",
-	        { className: "alert alert-block alert-" + type + " fade in" },
-	        _react2["default"].createElement(
-	          "button",
-	          { type: "button", className: "close close-sm", "data-dismiss": "alert" },
-	          _react2["default"].createElement("i", { className: "fa fa-times" })
-	        ),
-	        this.props.children
-	      );
-	    }
-	  }]);
-
-	  return Alert;
-	})(_react.Component);
-
-	exports["default"] = Alert;
-
-	Alert.PropTypes = {
-	  type: _react.PropTypes.string.isRequired
-	};
-	module.exports = exports["default"];
-
-/***/ },
-/* 247 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(154);
-
-	var _reduxForm = __webpack_require__(248);
-
-	var _utilsMyMap = __webpack_require__(290);
-
-	var _utilsMyMap2 = _interopRequireDefault(_utilsMyMap);
-
-	var _commonDatepicker = __webpack_require__(240);
-
-	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
-
-	var _commonSelect = __webpack_require__(241);
-
-	var _commonSelect2 = _interopRequireDefault(_commonSelect);
-
-	var _commonPagination = __webpack_require__(242);
-
-	var _commonPagination2 = _interopRequireDefault(_commonPagination);
-
-	var _commonAlert = __webpack_require__(246);
-
-	var _commonAlert2 = _interopRequireDefault(_commonAlert);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var validate = function validate(values, _ref) {
-	  var form = _ref.form;
-
-	  var errors = {};
-	  var msg = 'error';
-	  function _v(key) {
-	    // touched 为true 表示用户点击处理过
-	    if (form[key] && form[key].touched && !values[key]) errors[key] = msg;
-	  }
-	  function _v_s(key) {
-	    if (form[key] && form[key].touched && (!values[key] || values[key] == _configAppConfig.SELECT_DEFAULT_VALUE)) errors[key] = msg;
-	  }
-
-	  _v('owner_name');
-	  _v('owner_mobile');
-	  _v('recipient_name');
-	  _v('recipient_mobile');
-	  _v('recipient_address');
-	  _v('recipient_landmark');
-	  _v('delivery_date');
-
-	  _v_s('regionalism_id');
-	  // _v_s('delivery_id');
-	  _v_s('src_id');
-	  _v_s('pay_modes_id');
-	  _v_s('pay_status');
-	  _v_s('delivery_hours');
-	  console.log(errors);
-	  return errors;
-	};
-
-	var ManageAddForm = (function (_Component) {
-	  _inherits(ManageAddForm, _Component);
-
-	  function ManageAddForm(props) {
-	    _classCallCheck(this, ManageAddForm);
-
-	    _get(Object.getPrototypeOf(ManageAddForm.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      invoices: [{ id: _configAppConfig.INVOICE.NO, text: '不需要' }, { id: _configAppConfig.INVOICE.YES, text: '需要' }],
-	      selected_order_src_level1_id: _configAppConfig.SELECT_DEFAULT_VALUE
-	    };
-	  }
-
-	  _createClass(ManageAddForm, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var handleSubmit = _props.handleSubmit;
-	      var _props$fields = _props.fields;
-	      var delivery_type = _props$fields.delivery_type;
-	      var owner_name = _props$fields.owner_name;
-	      var owner_mobile = _props$fields.owner_mobile;
-	      var recipient_name = _props$fields.recipient_name;
-	      var //下单人姓名
-	      recipient_mobile = _props$fields.recipient_mobile;
-	      var recipient_address = _props$fields.recipient_address;
-	      var //收货人详细地址----》送货上门
-	      regionalism_id = _props$fields.regionalism_id;
-	      var //分店ID ----》自取
-	      recipient_landmark = _props$fields.recipient_landmark;
-	      var //标志性建筑
-	      delivery_id = _props$fields.delivery_id;
-	      var //配送中心
-	      src_id = _props$fields.src_id;
-	      var //订单来源
-	      pay_modes_id = _props$fields.pay_modes_id;
-	      var //支付方式
-	      pay_status = _props$fields.pay_status;
-	      var
-	      // delivery_time, //总配送时间：delivery_date + delivery_time
-	      delivery_date = _props$fields.delivery_date;
-	      var //配送日期
-	      delivery_hours = _props$fields.delivery_hours;
-	      var //配送时段：几点到几点
-	      remarks = _props$fields.remarks;
-	      var invoice = _props$fields.invoice;
-	      var _props$formData = this.props['form-data'];
-	      var all_delivery_time = _props$formData.all_delivery_time;
-	      var all_pay_status = _props$formData.all_pay_status;
-	      var all_order_srcs = _props$formData.all_order_srcs;
-	      var delivery_stations = _props$formData.delivery_stations;
-	      var all_pay_modes = _props$formData.all_pay_modes;
-	      var _props$area = this.props.area;
-	      var provinces = _props$area.provinces;
-	      var cities = _props$area.cities;
-	      var districts = _props$area.districts;
-	      var _state = this.state;
-	      var invoices = _state.invoices;
-	      var selected_order_src_level1_id = _state.selected_order_src_level1_id;
-
-	      var order_srcs_level2 = all_order_srcs.length > 1 ? all_order_srcs[1].filter(function (n) {
-	        return n.parent_id == selected_order_src_level1_id;
-	      }) : [];
-
-	      return _react2['default'].createElement(
-	        'form',
-	        null,
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            { className: 'control-label' },
-	            '　配送方式：'
-	          ),
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            _react2['default'].createElement('input', _extends({ type: 'radio'
-	            }, delivery_type, {
-	              value: _configAppConfig.DELIVERY_TO_HOME,
-	              checked: delivery_type.value == _configAppConfig.DELIVERY_TO_HOME })),
-	            ' 配送上门'
-	          ),
-	          '　',
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            _react2['default'].createElement('input', _extends({ type: 'radio'
-	            }, delivery_type, {
-	              value: _configAppConfig.DELIVERY_TO_STORE,
-	              checked: delivery_type.value == _configAppConfig.DELIVERY_TO_STORE })),
-	            ' 门店自提'
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '下单人姓名：'
-	          ),
-	          _react2['default'].createElement('input', _extends({}, owner_name, { className: 'form-control input-sm ' + owner_name.error, type: 'text' }))
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '下单人手机：'
-	          ),
-	          _react2['default'].createElement('input', _extends({}, owner_mobile, { className: 'form-control input-sm ' + owner_mobile.error, type: 'text' })),
-	          '　',
-	          _react2['default'].createElement(
-	            'button',
-	            { className: 'btn btn-default btn-sm' },
-	            '查询历史订单'
-	          ),
-	          ' ',
-	          _react2['default'].createElement(
-	            'button',
-	            { className: 'btn btn-default btn-sm' },
-	            '拨号'
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '收货人姓名：'
-	          ),
-	          _react2['default'].createElement('input', _extends({}, recipient_name, { className: 'form-control input-sm ' + recipient_name.error, type: 'text' }))
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '收货人手机：'
-	          ),
-	          _react2['default'].createElement('input', _extends({}, recipient_mobile, { className: 'form-control input-sm ' + recipient_mobile.error, type: 'text' }))
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? '收货人地址：' : '　选择分店：'
-	          ),
-	          _react2['default'].createElement(_commonSelect2['default'], { ref: 'province', options: provinces, onChange: this.onProvinceChange.bind(this) }),
-	          ' ',
-	          _react2['default'].createElement(_commonSelect2['default'], { ref: 'city', options: cities, onChange: this.onCityChange.bind(this) }),
-	          ' ',
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'district', options: districts }, regionalism_id, { className: '' + regionalism_id.error })),
-	          ' ',
-	          _react2['default'].createElement('input', _extends({ ref: 'recipient_address' }, recipient_address, { className: 'form-control input-sm ' + recipient_address.error, type: 'text' }))
-	        ),
-	        delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '标志性建筑：'
-	          ),
-	          _react2['default'].createElement('input', _extends({}, recipient_landmark, { className: 'form-control input-sm ' + recipient_landmark.error, type: 'text' }))
-	        ) : null,
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　配送中心：'
-	          ),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: delivery_stations, className: 'form-select ' + delivery_id.error }))
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　订单来源：'
-	          ),
-	          all_order_srcs.length == 1 //2级
-	          ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, { options: all_order_srcs[0], key: 'order_srcs_level1', className: 'form-select ' + src_id.error })) : [order_srcs_level2.length ? _react2['default'].createElement(_commonSelect2['default'], { options: all_order_srcs[0], onChange: this.orderSrcsLevel1Change.bind(this), key: 'order_srcs_level1', className: 'form-select' }) : _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, { options: all_order_srcs[0], onChange: this.orderSrcsLevel1Change.bind(this), key: 'order_srcs_level1', className: 'form-select' })), ' ', order_srcs_level2.length ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, { options: order_srcs_level2, key: 'order_srcs_level2', className: 'form-select ' + src_id.error })) : null]
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　支付方式：'
-	          ),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_modes_id, { options: all_pay_modes, className: 'form-select ' + pay_modes_id.error }))
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　支付状态：'
-	          ),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_status, { options: all_pay_status, className: 'form-select ' + pay_status.error }))
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　配送时间：'
-	          ),
-	          _react2['default'].createElement(_commonDatepicker2['default'], { 'redux-form': delivery_date, className: '' + delivery_date.error }),
-	          ' ',
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_hours, { options: all_delivery_time, className: '' + delivery_hours.error }))
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　　　备注：'
-	          ),
-	          _react2['default'].createElement('textarea', _extends({}, remarks, { className: 'form-control input-sm', rows: '2', cols: '40' })),
-	          '　　',
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '发票备注：'
-	          ),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, invoice, { options: invoices, className: '' + invoice.error, 'no-default': 'true' }))
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      var _props$actions = this.props.actions;
-	      var getProvinces = _props$actions.getProvinces;
-	      var getOrderSrcs = _props$actions.getOrderSrcs;
-	      var getDeliveryStations = _props$actions.getDeliveryStations;
-	      var getPayModes = _props$actions.getPayModes;
-
-	      getProvinces();
-	      getOrderSrcs();
-	      getPayModes();
-
-	      var self = this;
-
-	      //初始化地图
-	      _utilsMyMap2['default'].create(function (map) {
-	        self._bmap = map;
-	      });
-
-	      $(this.refs.recipient_address).on('blur', function (e) {
-	        var detail = e.target.value;
-	        if (detail) {
-	          var province = $((0, _reactDom.findDOMNode)(self.refs.province)).find('option:selected').text();
-	          var city = $((0, _reactDom.findDOMNode)(self.refs.city)).find('option:selected').text();
-	          var district = $((0, _reactDom.findDOMNode)(self.refs.district)).find('option:selected').text();
-	          var default_text = self.refs.province.props['default-text'];
-	          if (province != default_text && city != default_text && district != default_text) {
-	            if (BMap) {
-	              var map = self._bmap;
-	              map.centerAndZoom(city);
-	              var localSearch = new BMap.LocalSearch(map);
-	              localSearch.setSearchCompleteCallback(function (searchResult) {
-	                var poi = searchResult.getPoi(0);
-	                if (poi) {
-	                  console.log(poi.point.lng + "," + poi.point.lat);
-	                  getDeliveryStations({
-	                    lng: poi.point.lng,
-	                    lat: poi.point.lat
-	                  });
-	                }
-	              });
-	              localSearch.search(district + detail);
-	            } else {
-	              alert('地图服务加载失败，请好后再试');
-	            }
-	          }
-	        }
-	      });
-	    }
-	  }, {
-	    key: 'onProvinceChange',
-	    value: function onProvinceChange(e) {
-	      var value = e.target.value;
-
-	      value != this.refs.province.props['default-value'] ? this.props.getCities(value) : this.props.provinceReset();
-	    }
-	  }, {
-	    key: 'onCityChange',
-	    value: function onCityChange(e) {
-	      var value = e.target.value;
-
-	      value != this.refs.city.props['default-value'] ? this.props.getDistricts(value) : this.props.cityReset();
-	    }
-	  }, {
-	    key: 'orderSrcsLevel1Change',
-	    value: function orderSrcsLevel1Change(e) {
-	      this.setState({ selected_order_src_level1_id: e.target.value });
-	    }
-	  }, {
-	    key: 'addProducts',
-	    value: function addProducts() {
-	      this.refs.productsModal.show();
-	    }
-	  }]);
-
-	  return ManageAddForm;
-	})(_react.Component);
-
-	ManageAddForm.PropTypes = {
-	  form: _react.PropTypes.shape({
-	    all_delivery_time: _react.PropTypes.array.isRequired,
-	    all_pay_status: _react.PropTypes.array.isRequired,
-	    all_order_srcs: _react.PropTypes.array.isRequired,
-	    delivery_stations: _react.PropTypes.array.isRequired,
-	    all_pay_modes: _react.PropTypes.array.isRequired,
-	    save_ing: _react.PropTypes.bool.isRequired,
-	    save_success: _react.PropTypes.bool.isRequired
-	  }).isRequired,
-	  area: _react.PropTypes.shape({
-	    provinces: _react.PropTypes.array.isRequired,
-	    cities: _react.PropTypes.array.isRequired,
-	    districts: _react.PropTypes.array.isRequired
-	  }).isRequired,
-
-	  actions: _react.PropTypes.shape({
-	    getProvinces: _react.PropTypes.func.isRequired,
-	    getOrderSrcs: _react.PropTypes.func.isRequired,
-	    getDeliveryStations: _react.PropTypes.func.isRequired,
-	    getPayModes: _react.PropTypes.func.isRequired,
-	    saveOrderInfo: _react.PropTypes.func.isRequired
-	  }).isRequired
-	};
-
-	ManageAddForm = (0, _reduxForm.reduxForm)({
-	  form: 'add_order', //表单命名空间
-	  fields: ['delivery_type', 'owner_name', 'owner_mobile', 'recipient_name', //下单人姓名
-	  'recipient_mobile', 'recipient_address', //收货人详细地址----》送货上门
-	  'regionalism_id', //分店ID ----》自取
-	  'recipient_landmark', //标志性建筑
-	  'delivery_id', //配送中心
-	  'src_id', //订单来源
-	  'pay_modes_id', 'pay_status',
-	  // 'delivery_time',
-	  'delivery_date', 'delivery_hours', 'remarks', 'invoice'],
-	  validate: validate,
-	  touchOnBlur: true
-	}, function (state) {
-	  return {
-	    //赋初始值
-	    initialValues: {
-	      delivery_type: _configAppConfig.DELIVERY_TO_HOME,
-	      invoice: _configAppConfig.INVOICE.NO
-	    }
+	        "recipient_landmark": "xxxx建筑物",
+	        "delivery_time": "2015-12-24 13:00～14:00",
+	        "recipient_name": "www",
+	        "pay_modes_id": "2",
+	        "products": [{
+	          "website": "website2",
+	          "name": "zhang",
+	          "size": "zhang1",
+	          "sku_id": 22,
+	          "discount_price": 180,
+	          "product_id": 1,
+	          "num": 1,
+	          "original_price": 20000,
+	          "is_local_site": "0",
+	          "is_delivery": "1",
+	          "category_name": "类型1",
+	          "choco_board": "巧克力牌xxx",
+	          "greeting_card": "祝福语xxx",
+	          "atlas": true,
+	          "custom_name": "自定义名称xxx",
+	          "custom_desc": "自定义描述xxx",
+	          "amount": 180
+	        }]
+	      }
+	    });
 	  };
-	})(ManageAddForm);
-
-	exports['default'] = ManageAddForm;
-	module.exports = exports['default'];
-
-	// submitting,
+	}
 
 /***/ },
-/* 248 */
+/* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29551,9 +29783,9 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reactRedux = __webpack_require__(212);
+	var _reactRedux = __webpack_require__(213);
 
-	var _createAll2 = __webpack_require__(249);
+	var _createAll2 = __webpack_require__(250);
 
 	var _createAll3 = _interopRequireDefault(_createAll2);
 
@@ -29603,7 +29835,7 @@
 	exports.untouchWithKey = untouchWithKey;
 
 /***/ },
-/* 249 */
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29618,35 +29850,35 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _reducer = __webpack_require__(250);
+	var _reducer = __webpack_require__(251);
 
 	var _reducer2 = _interopRequireDefault(_reducer);
 
-	var _createReduxForm = __webpack_require__(259);
+	var _createReduxForm = __webpack_require__(260);
 
 	var _createReduxForm2 = _interopRequireDefault(_createReduxForm);
 
-	var _mapValues = __webpack_require__(252);
+	var _mapValues = __webpack_require__(253);
 
 	var _mapValues2 = _interopRequireDefault(_mapValues);
 
-	var _bindActionData = __webpack_require__(266);
+	var _bindActionData = __webpack_require__(267);
 
 	var _bindActionData2 = _interopRequireDefault(_bindActionData);
 
-	var _actions = __webpack_require__(265);
+	var _actions = __webpack_require__(266);
 
 	var actions = _interopRequireWildcard(_actions);
 
-	var _actionTypes = __webpack_require__(251);
+	var _actionTypes = __webpack_require__(252);
 
 	var actionTypes = _interopRequireWildcard(_actionTypes);
 
-	var _createPropTypes = __webpack_require__(289);
+	var _createPropTypes = __webpack_require__(290);
 
 	var _createPropTypes2 = _interopRequireDefault(_createPropTypes);
 
-	var _getValuesFromState = __webpack_require__(255);
+	var _getValuesFromState = __webpack_require__(256);
 
 	var _getValuesFromState2 = _interopRequireDefault(_getValuesFromState);
 
@@ -29744,7 +29976,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 250 */
+/* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29759,33 +29991,33 @@
 
 	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-	var _actionTypes = __webpack_require__(251);
+	var _actionTypes = __webpack_require__(252);
 
-	var _mapValues = __webpack_require__(252);
+	var _mapValues = __webpack_require__(253);
 
 	var _mapValues2 = _interopRequireDefault(_mapValues);
 
-	var _read = __webpack_require__(253);
+	var _read = __webpack_require__(254);
 
 	var _read2 = _interopRequireDefault(_read);
 
-	var _write = __webpack_require__(254);
+	var _write = __webpack_require__(255);
 
 	var _write2 = _interopRequireDefault(_write);
 
-	var _getValuesFromState = __webpack_require__(255);
+	var _getValuesFromState = __webpack_require__(256);
 
 	var _getValuesFromState2 = _interopRequireDefault(_getValuesFromState);
 
-	var _initializeState = __webpack_require__(256);
+	var _initializeState = __webpack_require__(257);
 
 	var _initializeState2 = _interopRequireDefault(_initializeState);
 
-	var _resetState = __webpack_require__(257);
+	var _resetState = __webpack_require__(258);
 
 	var _resetState2 = _interopRequireDefault(_resetState);
 
-	var _setErrors = __webpack_require__(258);
+	var _setErrors = __webpack_require__(259);
 
 	var _setErrors2 = _interopRequireDefault(_setErrors);
 
@@ -30047,7 +30279,7 @@
 	exports['default'] = decorate(formReducer);
 
 /***/ },
-/* 251 */
+/* 252 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -30085,7 +30317,7 @@
 	exports.UNTOUCH = UNTOUCH;
 
 /***/ },
-/* 252 */
+/* 253 */
 /***/ function(module, exports) {
 
 	/**
@@ -30110,7 +30342,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 253 */
+/* 254 */
 /***/ function(module, exports) {
 
 	/**
@@ -30181,7 +30413,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 254 */
+/* 255 */
 /***/ function(module, exports) {
 
 	/**
@@ -30303,7 +30535,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 255 */
+/* 256 */
 /***/ function(module, exports) {
 
 	/**
@@ -30343,7 +30575,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 256 */
+/* 257 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -30436,7 +30668,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 257 */
+/* 258 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -30476,7 +30708,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 258 */
+/* 259 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -30565,7 +30797,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 259 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30580,11 +30812,11 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _createReduxFormConnector = __webpack_require__(260);
+	var _createReduxFormConnector = __webpack_require__(261);
 
 	var _createReduxFormConnector2 = _interopRequireDefault(_createReduxFormConnector);
 
-	var _hoistNonReactStatics = __webpack_require__(228);
+	var _hoistNonReactStatics = __webpack_require__(229);
 
 	var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
 
@@ -30629,7 +30861,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 260 */
+/* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30644,15 +30876,15 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _reactLazyCache = __webpack_require__(261);
+	var _reactLazyCache = __webpack_require__(262);
 
 	var _reactLazyCache2 = _interopRequireDefault(_reactLazyCache);
 
-	var _getDisplayName = __webpack_require__(263);
+	var _getDisplayName = __webpack_require__(264);
 
 	var _getDisplayName2 = _interopRequireDefault(_getDisplayName);
 
-	var _createHigherOrderComponent = __webpack_require__(264);
+	var _createHigherOrderComponent = __webpack_require__(265);
 
 	var _createHigherOrderComponent2 = _interopRequireDefault(_createHigherOrderComponent);
 
@@ -30732,7 +30964,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 261 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30741,7 +30973,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _lazyCache = __webpack_require__(262);
+	var _lazyCache = __webpack_require__(263);
 
 	var _lazyCache2 = _interopRequireDefault(_lazyCache);
 
@@ -30749,7 +30981,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 262 */
+/* 263 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30759,7 +30991,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _deepEqual = __webpack_require__(172);
+	var _deepEqual = __webpack_require__(173);
 
 	var _deepEqual2 = _interopRequireDefault(_deepEqual);
 
@@ -30815,7 +31047,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 263 */
+/* 264 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -30830,7 +31062,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 264 */
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30849,57 +31081,57 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _actions = __webpack_require__(265);
+	var _actions = __webpack_require__(266);
 
 	var importedActions = _interopRequireWildcard(_actions);
 
-	var _getDisplayName = __webpack_require__(263);
+	var _getDisplayName = __webpack_require__(264);
 
 	var _getDisplayName2 = _interopRequireDefault(_getDisplayName);
 
-	var _reducer = __webpack_require__(250);
+	var _reducer = __webpack_require__(251);
 
-	var _deepEqual = __webpack_require__(172);
+	var _deepEqual = __webpack_require__(173);
 
 	var _deepEqual2 = _interopRequireDefault(_deepEqual);
 
-	var _bindActionData = __webpack_require__(266);
+	var _bindActionData = __webpack_require__(267);
 
 	var _bindActionData2 = _interopRequireDefault(_bindActionData);
 
-	var _getValues = __webpack_require__(267);
+	var _getValues = __webpack_require__(268);
 
 	var _getValues2 = _interopRequireDefault(_getValues);
 
-	var _isValid = __webpack_require__(268);
+	var _isValid = __webpack_require__(269);
 
 	var _isValid2 = _interopRequireDefault(_isValid);
 
-	var _readFields = __webpack_require__(269);
+	var _readFields = __webpack_require__(270);
 
 	var _readFields2 = _interopRequireDefault(_readFields);
 
-	var _handleSubmit2 = __webpack_require__(283);
+	var _handleSubmit2 = __webpack_require__(284);
 
 	var _handleSubmit3 = _interopRequireDefault(_handleSubmit2);
 
-	var _asyncValidation = __webpack_require__(284);
+	var _asyncValidation = __webpack_require__(285);
 
 	var _asyncValidation2 = _interopRequireDefault(_asyncValidation);
 
-	var _eventsSilenceEvents = __webpack_require__(285);
+	var _eventsSilenceEvents = __webpack_require__(286);
 
 	var _eventsSilenceEvents2 = _interopRequireDefault(_eventsSilenceEvents);
 
-	var _eventsSilenceEvent = __webpack_require__(286);
+	var _eventsSilenceEvent = __webpack_require__(287);
 
 	var _eventsSilenceEvent2 = _interopRequireDefault(_eventsSilenceEvent);
 
-	var _wrapMapDispatchToProps = __webpack_require__(287);
+	var _wrapMapDispatchToProps = __webpack_require__(288);
 
 	var _wrapMapDispatchToProps2 = _interopRequireDefault(_wrapMapDispatchToProps);
 
-	var _wrapMapStateToProps = __webpack_require__(288);
+	var _wrapMapStateToProps = __webpack_require__(289);
 
 	var _wrapMapStateToProps2 = _interopRequireDefault(_wrapMapStateToProps);
 
@@ -31173,14 +31405,14 @@
 	// contains dispatch
 
 /***/ },
-/* 265 */
+/* 266 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _actionTypes = __webpack_require__(251);
+	var _actionTypes = __webpack_require__(252);
 
 	var addArrayValue = function addArrayValue(path, value, index) {
 	  return { type: _actionTypes.ADD_ARRAY_VALUE, path: path, value: value, index: index };
@@ -31269,7 +31501,7 @@
 	exports.untouch = untouch;
 
 /***/ },
-/* 266 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31282,7 +31514,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _mapValues = __webpack_require__(252);
+	var _mapValues = __webpack_require__(253);
 
 	var _mapValues2 = _interopRequireDefault(_mapValues);
 
@@ -31307,7 +31539,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 267 */
+/* 268 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -31369,7 +31601,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 268 */
+/* 269 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -31394,7 +31626,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 269 */
+/* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31405,19 +31637,19 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _readField = __webpack_require__(270);
+	var _readField = __webpack_require__(271);
 
 	var _readField2 = _interopRequireDefault(_readField);
 
-	var _write = __webpack_require__(254);
+	var _write = __webpack_require__(255);
 
 	var _write2 = _interopRequireDefault(_write);
 
-	var _getValues = __webpack_require__(267);
+	var _getValues = __webpack_require__(268);
 
 	var _getValues2 = _interopRequireDefault(_getValues);
 
-	var _removeField = __webpack_require__(282);
+	var _removeField = __webpack_require__(283);
 
 	var _removeField2 = _interopRequireDefault(_removeField);
 
@@ -31466,7 +31698,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 270 */
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31475,35 +31707,35 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _eventsCreateOnBlur = __webpack_require__(271);
+	var _eventsCreateOnBlur = __webpack_require__(272);
 
 	var _eventsCreateOnBlur2 = _interopRequireDefault(_eventsCreateOnBlur);
 
-	var _eventsCreateOnChange = __webpack_require__(274);
+	var _eventsCreateOnChange = __webpack_require__(275);
 
 	var _eventsCreateOnChange2 = _interopRequireDefault(_eventsCreateOnChange);
 
-	var _eventsCreateOnDragStart = __webpack_require__(275);
+	var _eventsCreateOnDragStart = __webpack_require__(276);
 
 	var _eventsCreateOnDragStart2 = _interopRequireDefault(_eventsCreateOnDragStart);
 
-	var _eventsCreateOnDrop = __webpack_require__(276);
+	var _eventsCreateOnDrop = __webpack_require__(277);
 
 	var _eventsCreateOnDrop2 = _interopRequireDefault(_eventsCreateOnDrop);
 
-	var _eventsCreateOnFocus = __webpack_require__(277);
+	var _eventsCreateOnFocus = __webpack_require__(278);
 
 	var _eventsCreateOnFocus2 = _interopRequireDefault(_eventsCreateOnFocus);
 
-	var _silencePromise = __webpack_require__(278);
+	var _silencePromise = __webpack_require__(279);
 
 	var _silencePromise2 = _interopRequireDefault(_silencePromise);
 
-	var _read = __webpack_require__(253);
+	var _read = __webpack_require__(254);
 
 	var _read2 = _interopRequireDefault(_read);
 
-	var _updateField = __webpack_require__(280);
+	var _updateField = __webpack_require__(281);
 
 	var _updateField2 = _interopRequireDefault(_updateField);
 
@@ -31639,7 +31871,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 271 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31648,7 +31880,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _getValue = __webpack_require__(272);
+	var _getValue = __webpack_require__(273);
 
 	var _getValue2 = _interopRequireDefault(_getValue);
 
@@ -31665,7 +31897,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 272 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31674,7 +31906,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _isEvent = __webpack_require__(273);
+	var _isEvent = __webpack_require__(274);
 
 	var _isEvent2 = _interopRequireDefault(_isEvent);
 
@@ -31726,7 +31958,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 273 */
+/* 274 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -31740,7 +31972,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 274 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31749,7 +31981,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _getValue = __webpack_require__(272);
+	var _getValue = __webpack_require__(273);
 
 	var _getValue2 = _interopRequireDefault(_getValue);
 
@@ -31762,7 +31994,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 275 */
+/* 276 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -31779,14 +32011,14 @@
 	exports['default'] = createOnDragStart;
 
 /***/ },
-/* 276 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _createOnDragStart = __webpack_require__(275);
+	var _createOnDragStart = __webpack_require__(276);
 
 	var createOnDrop = function createOnDrop(name, change) {
 	  return function (event) {
@@ -31797,7 +32029,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 277 */
+/* 278 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -31812,7 +32044,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 278 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31821,7 +32053,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _isPromise = __webpack_require__(279);
+	var _isPromise = __webpack_require__(280);
 
 	var _isPromise2 = _interopRequireDefault(_isPromise);
 
@@ -31837,7 +32069,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 279 */
+/* 280 */
 /***/ function(module, exports) {
 
 	module.exports = isPromise;
@@ -31848,7 +32080,7 @@
 
 
 /***/ },
-/* 280 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31859,11 +32091,11 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _isPristine = __webpack_require__(281);
+	var _isPristine = __webpack_require__(282);
 
 	var _isPristine2 = _interopRequireDefault(_isPristine);
 
-	var _isValid = __webpack_require__(268);
+	var _isValid = __webpack_require__(269);
 
 	var _isValid2 = _interopRequireDefault(_isValid);
 
@@ -31915,7 +32147,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 281 */
+/* 282 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -31956,7 +32188,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 282 */
+/* 283 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -32037,7 +32269,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 283 */
+/* 284 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32046,11 +32278,11 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _isPromise = __webpack_require__(279);
+	var _isPromise = __webpack_require__(280);
 
 	var _isPromise2 = _interopRequireDefault(_isPromise);
 
-	var _isValid = __webpack_require__(268);
+	var _isValid = __webpack_require__(269);
 
 	var _isValid2 = _interopRequireDefault(_isValid);
 
@@ -32098,7 +32330,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 284 */
+/* 285 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32107,11 +32339,11 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _isPromise = __webpack_require__(279);
+	var _isPromise = __webpack_require__(280);
 
 	var _isPromise2 = _interopRequireDefault(_isPromise);
 
-	var _isValid = __webpack_require__(268);
+	var _isValid = __webpack_require__(269);
 
 	var _isValid2 = _interopRequireDefault(_isValid);
 
@@ -32141,7 +32373,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 285 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32150,7 +32382,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _silenceEvent = __webpack_require__(286);
+	var _silenceEvent = __webpack_require__(287);
 
 	var _silenceEvent2 = _interopRequireDefault(_silenceEvent);
 
@@ -32168,7 +32400,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 286 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32177,7 +32409,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _isEvent = __webpack_require__(273);
+	var _isEvent = __webpack_require__(274);
 
 	var _isEvent2 = _interopRequireDefault(_isEvent);
 
@@ -32193,7 +32425,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 287 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32202,7 +32434,7 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var _redux = __webpack_require__(219);
+	var _redux = __webpack_require__(220);
 
 	var wrapMapDispatchToProps = function wrapMapDispatchToProps(mapDispatchToProps, actionCreators) {
 	  if (mapDispatchToProps) {
@@ -32237,7 +32469,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 288 */
+/* 289 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -32275,7 +32507,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 289 */
+/* 290 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -32321,7 +32553,620 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 290 */
+/* 291 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var Alert = (function (_Component) {
+	  _inherits(Alert, _Component);
+
+	  function Alert() {
+	    _classCallCheck(this, Alert);
+
+	    _get(Object.getPrototypeOf(Alert.prototype), "constructor", this).apply(this, arguments);
+	  }
+
+	  _createClass(Alert, [{
+	    key: "render",
+	    value: function render() {
+	      var type = this.props.type;
+
+	      return _react2["default"].createElement(
+	        "div",
+	        { className: "alert alert-block alert-" + type + " fade in" },
+	        _react2["default"].createElement(
+	          "button",
+	          { type: "button", className: "close close-sm", "data-dismiss": "alert" },
+	          _react2["default"].createElement("i", { className: "fa fa-times" })
+	        ),
+	        this.props.children
+	      );
+	    }
+	  }]);
+
+	  return Alert;
+	})(_react.Component);
+
+	exports["default"] = Alert;
+
+	Alert.PropTypes = {
+	  type: _react.PropTypes.string.isRequired
+	};
+	module.exports = exports["default"];
+
+/***/ },
+/* 292 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(154);
+
+	var _reduxForm = __webpack_require__(249);
+
+	var _utilsMyMap = __webpack_require__(293);
+
+	var _utilsMyMap2 = _interopRequireDefault(_utilsMyMap);
+
+	var _commonDatepicker = __webpack_require__(241);
+
+	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
+
+	var _commonSelect = __webpack_require__(242);
+
+	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+
+	var _commonPagination = __webpack_require__(243);
+
+	var _commonPagination2 = _interopRequireDefault(_commonPagination);
+
+	var _utilsLazy_load = __webpack_require__(294);
+
+	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var _utilsIndex2 = _interopRequireDefault(_utilsIndex);
+
+	var _history_instance = __webpack_require__(237);
+
+	var _history_instance2 = _interopRequireDefault(_history_instance);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var validate = function validate(values, _ref) {
+	  var form = _ref.form;
+
+	  var errors = {};
+	  var msg = 'error';
+	  function _v(key) {
+	    // touched 为true 表示用户点击处理过
+	    if (form[key] && form[key].touched && !values[key]) errors[key] = msg;
+	  }
+	  function _v_s(key) {
+	    if (form[key] && form[key].touched && (!values[key] || values[key] == _configAppConfig.SELECT_DEFAULT_VALUE)) errors[key] = msg;
+	  }
+
+	  _v('owner_name');
+	  _v('owner_mobile');
+	  _v('recipient_name');
+	  _v('recipient_mobile');
+	  _v('recipient_address');
+	  _v('recipient_landmark');
+	  _v('delivery_date');
+
+	  _v_s('regionalism_id');
+	  // _v_s('delivery_id');
+	  _v_s('src_id');
+	  _v_s('pay_modes_id');
+	  _v_s('pay_status');
+	  _v_s('delivery_hours');
+	  console.log(errors);
+	  return errors;
+	};
+
+	var ManageAddForm = (function (_Component) {
+	  _inherits(ManageAddForm, _Component);
+
+	  function ManageAddForm(props) {
+	    _classCallCheck(this, ManageAddForm);
+
+	    _get(Object.getPrototypeOf(ManageAddForm.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      invoices: [{ id: _configAppConfig.INVOICE.NO, text: '不需要' }, { id: _configAppConfig.INVOICE.YES, text: '需要' }],
+	      selected_order_src_level1_id: _configAppConfig.SELECT_DEFAULT_VALUE
+	    };
+	    this.handleSave = this.handleSave.bind(this);
+	  }
+
+	  _createClass(ManageAddForm, [{
+	    key: 'render',
+	    value: function render() {
+	      var _this = this;
+
+	      var _props = this.props;
+	      var editable = _props.editable;
+	      var // 表明是否是处于编辑状态
+	      handleSubmit = _props.handleSubmit;
+	      var _props$fields = _props.fields;
+	      var delivery_type = _props$fields.delivery_type;
+	      var owner_name = _props$fields.owner_name;
+	      var owner_mobile = _props$fields.owner_mobile;
+	      var recipient_name = _props$fields.recipient_name;
+	      var //下单人姓名
+	      recipient_mobile = _props$fields.recipient_mobile;
+	      var recipient_address = _props$fields.recipient_address;
+	      var //收货人详细地址----》送货上门
+	      province_id = _props$fields.province_id;
+	      var city_id = _props$fields.city_id;
+	      var regionalism_id = _props$fields.regionalism_id;
+	      var //分店ID ----》自取
+	      recipient_landmark = _props$fields.recipient_landmark;
+	      var //标志性建筑
+	      delivery_id = _props$fields.delivery_id;
+	      var //配送中心
+	      src_id = _props$fields.src_id;
+	      var //订单来源
+	      pay_modes_id = _props$fields.pay_modes_id;
+	      var //支付方式
+	      pay_status = _props$fields.pay_status;
+	      var
+	      // delivery_time, //总配送时间：delivery_date + delivery_time
+	      delivery_date = _props$fields.delivery_date;
+	      var //配送日期
+	      delivery_hours = _props$fields.delivery_hours;
+	      var //配送时段：几点到几点
+	      remarks = _props$fields.remarks;
+	      var invoice = _props$fields.invoice;
+	      var _props$formData = this.props['form-data'];
+	      var save_ing = _props$formData.save_ing;
+	      var save_success = _props$formData.save_success;
+	      var all_delivery_time = _props$formData.all_delivery_time;
+	      var all_pay_status = _props$formData.all_pay_status;
+	      var all_order_srcs = _props$formData.all_order_srcs;
+	      var delivery_stations = _props$formData.delivery_stations;
+	      var all_pay_modes = _props$formData.all_pay_modes;
+	      var _props$area = this.props.area;
+	      var provinces = _props$area.provinces;
+	      var cities = _props$area.cities;
+	      var districts = _props$area.districts;
+	      var _state = this.state;
+	      var invoices = _state.invoices;
+	      var selected_order_src_level1_id = _state.selected_order_src_level1_id;
+
+	      //{{表单处于编辑状态时的额外处理
+	      if (editable && !this.editable_initial) {
+	        if (src_id.value && all_order_srcs[1]) {
+	          //表明表单数据已准备完毕
+	          this.editable_initial = true; //初始化就只能一次
+	          all_order_srcs[1].forEach(function (n) {
+	            if (n.id == src_id.value) {
+	              selected_order_src_level1_id = n.parent_id;
+	              _this.state.selected_order_src_level1_id = n.parent_id;
+	            }
+	          });
+	        }
+	      }
+	      //}}
+
+	      var order_srcs_level2 = all_order_srcs.length > 1 ? all_order_srcs[1].filter(function (n) {
+	        return n.parent_id == selected_order_src_level1_id;
+	      }) : [];
+
+	      return _react2['default'].createElement(
+	        'div',
+	        null,
+	        _react2['default'].createElement(
+	          'form',
+	          null,
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            _react2['default'].createElement(
+	              'label',
+	              { className: 'control-label' },
+	              '　配送方式：'
+	            ),
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              _react2['default'].createElement('input', _extends({ type: 'radio'
+	              }, delivery_type, {
+	                value: _configAppConfig.DELIVERY_TO_HOME,
+	                checked: delivery_type.value == _configAppConfig.DELIVERY_TO_HOME })),
+	              ' 配送上门'
+	            ),
+	            '　',
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              _react2['default'].createElement('input', _extends({ type: 'radio'
+	              }, delivery_type, {
+	                value: _configAppConfig.DELIVERY_TO_STORE,
+	                checked: delivery_type.value == _configAppConfig.DELIVERY_TO_STORE })),
+	              ' 门店自提'
+	            )
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '下单人姓名：'
+	            ),
+	            _react2['default'].createElement('input', _extends({}, owner_name, { className: 'form-control input-sm ' + owner_name.error, type: 'text' }))
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '下单人手机：'
+	            ),
+	            _react2['default'].createElement('input', _extends({}, owner_mobile, { className: 'form-control input-sm ' + owner_mobile.error, type: 'text' })),
+	            '　',
+	            _react2['default'].createElement(
+	              'button',
+	              { className: 'btn btn-default btn-sm' },
+	              '查询历史订单'
+	            ),
+	            ' ',
+	            _react2['default'].createElement(
+	              'button',
+	              { className: 'btn btn-default btn-sm' },
+	              '拨号'
+	            )
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '收货人姓名：'
+	            ),
+	            _react2['default'].createElement('input', _extends({}, recipient_name, { className: 'form-control input-sm ' + recipient_name.error, type: 'text' }))
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '收货人手机：'
+	            ),
+	            _react2['default'].createElement('input', _extends({}, recipient_mobile, { className: 'form-control input-sm ' + recipient_mobile.error, type: 'text' }))
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? '收货人地址：' : '　选择分店：'
+	            ),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'province', options: provinces }, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange) })),
+	            ' ',
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'city', options: cities }, city_id, { onChange: this.onCityChange.bind(this, city_id.onChange) })),
+	            ' ',
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'district', options: districts }, regionalism_id, { className: '' + regionalism_id.error })),
+	            ' ',
+	            _react2['default'].createElement('input', _extends({ ref: 'recipient_address' }, recipient_address, { className: 'form-control input-sm ' + recipient_address.error, type: 'text' }))
+	          ),
+	          delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '标志性建筑：'
+	            ),
+	            _react2['default'].createElement('input', _extends({}, recipient_landmark, { className: 'form-control input-sm ' + recipient_landmark.error, type: 'text' }))
+	          ) : null,
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '　配送中心：'
+	            ),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: delivery_stations, className: 'form-select ' + delivery_id.error }))
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '　订单来源：'
+	            ),
+	            all_order_srcs.length == 1 //2级
+	            ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, { options: all_order_srcs[0], key: 'order_srcs_level1', className: 'form-select ' + src_id.error })) : [order_srcs_level2.length ? _react2['default'].createElement(_commonSelect2['default'], { value: selected_order_src_level1_id, options: all_order_srcs[0], onChange: this.orderSrcsLevel1Change.bind(this), key: 'order_srcs_level1', className: 'form-select' }) : _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, { value: selected_order_src_level1_id, options: all_order_srcs[0], onChange: this.orderSrcsLevel1Change.bind(this), key: 'order_srcs_level1', className: 'form-select' })), ' ', order_srcs_level2.length ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, { options: order_srcs_level2, key: 'order_srcs_level2', className: 'form-select ' + src_id.error })) : null]
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '　支付方式：'
+	            ),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_modes_id, { options: all_pay_modes, className: 'form-select ' + pay_modes_id.error }))
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '　支付状态：'
+	            ),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_status, { options: all_pay_status, className: 'form-select ' + pay_status.error }))
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '　配送时间：'
+	            ),
+	            _react2['default'].createElement(_commonDatepicker2['default'], { 'redux-form': delivery_date, className: '' + delivery_date.error }),
+	            ' ',
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_hours, { options: all_delivery_time, className: '' + delivery_hours.error }))
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '　　　备注：'
+	            ),
+	            _react2['default'].createElement('textarea', _extends({}, remarks, { className: 'form-control input-sm', rows: '2', cols: '40' })),
+	            '　　',
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '发票备注：'
+	            ),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, invoice, { options: invoices, className: '' + invoice.error, 'no-default': 'true' }))
+	          )
+	        ),
+	        _react2['default'].createElement('hr', { className: 'dotted' }),
+	        this.props.children,
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group' },
+	          _react2['default'].createElement(
+	            'button',
+	            {
+	              onClick: handleSubmit(this.handleSave),
+	              disabled: save_ing,
+	              'data-submitting': save_ing,
+	              className: 'btn btn-theme btn-sm' },
+	            '保存信息'
+	          ),
+	          '　　',
+	          _react2['default'].createElement(
+	            'button',
+	            { disabled: save_ing, className: 'btn btn-theme btn-sm' },
+	            '保存'
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'handleSave',
+	    value: function handleSave(form_data) {
+	      var _this2 = this;
+
+	      var _props2 = this.props;
+	      var dispatch = _props2.dispatch;
+	      var saveOrderInfo = _props2.actions.saveOrderInfo;
+
+	      //redux-form的缘故，这里必须异步，否则errors为空对象
+	      setTimeout(function () {
+	        var _props3 = _this2.props;
+	        var errors = _props3.errors;
+	        var dispatch = _props3.dispatch;
+	        var saveOrderInfo = _props3.actions.saveOrderInfo;
+
+	        if (!Object.keys(errors).length) {
+	          form_data.delivery_id = 1;
+	          form_data.delivery_time = form_data.delivery_date + ' ' + form_data.delivery_hours;
+	          delete form_data.delivery_date;
+	          delete form_data.delivery_hours;
+
+	          dispatch(saveOrderInfo(form_data)).done(function () {
+	            _utilsIndex2['default'].noty('success', '保存成功');
+	            _history_instance2['default'].replace('/om/index');
+	          }).fail(function () {
+	            _utilsIndex2['default'].noty('error', '保存异常');
+	          });
+	        }
+	      }, 0);
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var _props$actions = this.props.actions;
+	      var getProvinces = _props$actions.getProvinces;
+	      var getOrderSrcs = _props$actions.getOrderSrcs;
+	      var getDeliveryStations = _props$actions.getDeliveryStations;
+	      var getPayModes = _props$actions.getPayModes;
+
+	      getProvinces();
+	      getOrderSrcs();
+	      getPayModes();
+
+	      var self = this;
+
+	      //初始化地图
+	      _utilsMyMap2['default'].create(function (map) {
+	        self._bmap = map;
+	      });
+
+	      $(this.refs.recipient_address).on('blur', function (e) {
+	        var detail = e.target.value;
+	        if (detail) {
+	          var province = $((0, _reactDom.findDOMNode)(self.refs.province)).find('option:selected').text();
+	          var city = $((0, _reactDom.findDOMNode)(self.refs.city)).find('option:selected').text();
+	          var district = $((0, _reactDom.findDOMNode)(self.refs.district)).find('option:selected').text();
+	          var default_text = self.refs.province.props['default-text'];
+	          if (province != default_text && city != default_text && district != default_text) {
+	            if (BMap) {
+	              var map = self._bmap;
+	              map.centerAndZoom(city);
+	              var localSearch = new BMap.LocalSearch(map);
+	              localSearch.setSearchCompleteCallback(function (searchResult) {
+	                var poi = searchResult.getPoi(0);
+	                if (poi) {
+	                  console.log(poi.point.lng + "," + poi.point.lat);
+	                  getDeliveryStations({
+	                    lng: poi.point.lng,
+	                    lat: poi.point.lat
+	                  });
+	                }
+	              });
+	              localSearch.search(district + detail);
+	            } else {
+	              alert('地图服务加载失败，请好后再试');
+	            }
+	          }
+	        }
+	      });
+
+	      // $(findDOMNode(this.refs.province)).on('change', this.onProvinceChange.bind(this));
+	      // $(findDOMNode(this.refs.city)).on('change', this.onCityChange.bind(this));
+
+	      (0, _utilsLazy_load2['default'])('noty');
+	    }
+	  }, {
+	    key: 'onProvinceChange',
+	    value: function onProvinceChange(callback, e) {
+	      var value = e.target.value;
+
+	      this.props.actions.provinceReset();
+	      if (value != this.refs.province.props['default-value']) this.props.actions.getCities(value);
+	      callback(e);
+	    }
+	  }, {
+	    key: 'onCityChange',
+	    value: function onCityChange(callback, e) {
+	      var value = e.target.value;
+
+	      this.props.actions.cityReset();
+	      if (value != this.refs.city.props['default-value']) this.props.actions.getDistricts(value);
+	      callback(e);
+	    }
+	  }, {
+	    key: 'orderSrcsLevel1Change',
+	    value: function orderSrcsLevel1Change(e) {
+	      this.setState({ selected_order_src_level1_id: e.target.value });
+	    }
+	  }, {
+	    key: 'addProducts',
+	    value: function addProducts() {
+	      this.refs.productsModal.show();
+	    }
+	  }]);
+
+	  return ManageAddForm;
+	})(_react.Component);
+
+	ManageAddForm.PropTypes = {
+	  form: _react.PropTypes.shape({
+	    all_delivery_time: _react.PropTypes.array.isRequired,
+	    all_pay_status: _react.PropTypes.array.isRequired,
+	    all_order_srcs: _react.PropTypes.array.isRequired,
+	    delivery_stations: _react.PropTypes.array.isRequired,
+	    all_pay_modes: _react.PropTypes.array.isRequired,
+	    save_ing: _react.PropTypes.bool.isRequired,
+	    save_success: _react.PropTypes.bool.isRequired
+	  }).isRequired,
+	  area: _react.PropTypes.shape({
+	    provinces: _react.PropTypes.array.isRequired,
+	    cities: _react.PropTypes.array.isRequired,
+	    districts: _react.PropTypes.array.isRequired
+	  }).isRequired,
+
+	  actions: _react.PropTypes.shape({
+	    getProvinces: _react.PropTypes.func.isRequired,
+	    getOrderSrcs: _react.PropTypes.func.isRequired,
+	    getDeliveryStations: _react.PropTypes.func.isRequired,
+	    getPayModes: _react.PropTypes.func.isRequired,
+	    saveOrderInfo: _react.PropTypes.func.isRequired
+	  }).isRequired
+	};
+
+	ManageAddForm = (0, _reduxForm.reduxForm)({
+	  form: 'add_order', //表单命名空间
+	  fields: ['delivery_type', 'owner_name', 'owner_mobile', 'recipient_name', //下单人姓名
+	  'recipient_mobile', 'recipient_address', //收货人详细地址----》送货上门
+	  'province_id', 'city_id', 'regionalism_id', //分店ID ----》自取
+	  'recipient_landmark', //标志性建筑
+	  'delivery_id', //配送中心
+	  'src_id', //订单来源
+	  'pay_modes_id', 'pay_status',
+	  // 'delivery_time',
+	  'delivery_date', 'delivery_hours', 'remarks', 'invoice'],
+	  validate: validate,
+	  touchOnBlur: true
+	}, function (state) {
+	  return {
+	    //赋初始值
+	    initialValues: state.orderManageForm.mainForm.data
+	  };
+	})(ManageAddForm);
+
+	exports['default'] = ManageAddForm;
+	module.exports = exports['default'];
+
+/***/ },
+/* 293 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -32360,7 +33205,43 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 291 */
+/* 294 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports['default'] = LazyLoad;
+	var root = window.xfxb.root;
+	var config = {
+	  noty: {
+	    css: 'http://cdn.bootcss.com/animate.css/3.2.3/animate.min.css',
+	    js: root + 'lib/jquery.noty.packaged.min.js'
+	  }
+	};
+
+	function LazyLoad(name) {
+	  var plugin = config[name];
+	  if (plugin) {
+	    setTimeout(function () {
+	      if (plugin.css) {
+	        $('head').append('<link rel="stylesheet" href="' + plugin.css + '">');
+	      }
+	      if (plugin.js) {
+	        $('body').append('<script src="' + plugin.js + '"></script>');
+	      }
+	    }, 200);
+	  } else {
+	    console.warn('lazy load "' + name + '" fail');
+	  }
+	}
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32375,6 +33256,8 @@
 
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -32387,9 +33270,15 @@
 
 	var _reactDom = __webpack_require__(154);
 
-	var _manage_add_products_modal = __webpack_require__(292);
+	var _manage_add_products_modal = __webpack_require__(296);
 
 	var _manage_add_products_modal2 = _interopRequireDefault(_manage_add_products_modal);
+
+	var _actionsOrder_products = __webpack_require__(298);
+
+	var _actionsOrder_manage_form = __webpack_require__(248);
+
+	var OrderManageFormActions = _interopRequireWildcard(_actionsOrder_manage_form);
 
 	var ManageAddProducts = (function (_Component) {
 	  _inherits(ManageAddProducts, _Component);
@@ -32404,9 +33293,12 @@
 	    key: 'render',
 	    value: function render() {
 	      var _props = this.props;
-	      var products_choosing = _props.products_choosing;
+	      var confirm_list = _props.confirm_list;
 	      var dispatch = _props.dispatch;
 
+	      var list = confirm_list.map(function (n) {
+	        return _react2['default'].createElement(AddedProductsRow, { key: n.sku_id, data: n, dispatch: dispatch });
+	      });
 	      return _react2['default'].createElement(
 	        'div',
 	        null,
@@ -32497,93 +33389,16 @@
 	            _react2['default'].createElement(
 	              'tbody',
 	              null,
-	              _react2['default'].createElement(
-	                'tr',
-	                null,
-	                _react2['default'].createElement(
-	                  'td',
-	                  null,
-	                  '自由拼'
-	                ),
-	                _react2['default'].createElement(
-	                  'td',
-	                  null,
-	                  '约2磅'
-	                ),
-	                _react2['default'].createElement(
-	                  'td',
-	                  null,
-	                  '138'
-	                ),
-	                _react2['default'].createElement(
-	                  'td',
-	                  null,
-	                  '1'
-	                ),
-	                _react2['default'].createElement(
-	                  'td',
-	                  null,
-	                  '69'
-	                ),
-	                _react2['default'].createElement(
-	                  'td',
-	                  null,
-	                  '0'
-	                ),
-	                _react2['default'].createElement(
-	                  'td',
-	                  null,
-	                  '妈妈生日快乐'
-	                ),
-	                _react2['default'].createElement(
-	                  'td',
-	                  null,
-	                  '生日快乐'
-	                ),
-	                _react2['default'].createElement(
-	                  'td',
-	                  null,
-	                  _react2['default'].createElement('input', { type: 'checkbox' })
-	                ),
-	                _react2['default'].createElement(
-	                  'td',
-	                  null,
-	                  '单恋黑森林，榴莲香雪，梨子沙滩，夏日鲜果'
-	                ),
-	                _react2['default'].createElement(
-	                  'td',
-	                  null,
-	                  '2磅1/4，方形'
-	                ),
-	                _react2['default'].createElement(
-	                  'td',
-	                  { className: 'nowrap' },
-	                  _react2['default'].createElement(
-	                    'a',
-	                    { href: 'javascript:;' },
-	                    '[编辑]'
-	                  ),
-	                  ' ',
-	                  _react2['default'].createElement(
-	                    'a',
-	                    { href: 'javascript:;' },
-	                    '[删除]'
-	                  )
-	                )
-	              )
+	              list
 	            )
 	          )
 	        ),
-	        _react2['default'].createElement(_manage_add_products_modal2['default'], _extends({ ref: 'productsModal' }, products_choosing, { dispatch: dispatch }))
+	        _react2['default'].createElement(_manage_add_products_modal2['default'], _extends({ ref: 'productsModal' }, this.props))
 	      );
 	    }
 	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {}
-	  }, {
 	    key: 'addProducts',
 	    value: function addProducts() {
-	      //这里注意了
 	      this.refs.productsModal.show();
 	    }
 	  }]);
@@ -32597,10 +33412,153 @@
 	  products_choosing: _react.PropTypes.object.isRequired,
 	  dispatch: _react.PropTypes.func.isRequired
 	};
+
+	var AddedProductsRow = _react2['default'].createClass({
+	  displayName: 'AddedProductsRow',
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      editable: false,
+	      edit_input_classname: 'product-editable-form'
+	    };
+	  },
+	  render: function render() {
+	    var handleChange = this.handleChange;
+	    var _state = this.state;
+	    var editable = _state.editable;
+	    var edit_input_classname = _state.edit_input_classname;
+	    var _props$data = this.props.data;
+	    var sku_id = _props$data.sku_id;
+	    var name = _props$data.name;
+	    var size = _props$data.size;
+	    var original_price = _props$data.original_price;
+	    var num = _props$data.num;
+	    var discount_price = _props$data.discount_price;
+	    var amount = _props$data.amount;
+	    var choco_board = _props$data.choco_board;
+	    var greeting_card = _props$data.greeting_card;
+	    var atlas = _props$data.atlas;
+	    var custom_name = _props$data.custom_name;
+	    var custom_desc = _props$data.custom_desc;
+
+	    return _react2['default'].createElement(
+	      'tr',
+	      { className: 'form-inline' },
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        name
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        size
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        original_price / 100
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        num
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        editable ? _react2['default'].createElement('input', { value: discount_price, onChange: handleChange.bind(this, 'discount_price'), className: edit_input_classname, style: { width: 50 }, type: 'text' }) : discount_price
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        '0'
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        editable ? _react2['default'].createElement('textarea', { value: choco_board, onChange: handleChange.bind(this, 'choco_board'), className: edit_input_classname, rows: '2', cols: '15' }) : choco_board
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        editable ? _react2['default'].createElement('textarea', { value: greeting_card, onChange: handleChange.bind(this, 'greeting_card'), className: edit_input_classname, rows: '2', cols: '15' }) : greeting_card
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        _react2['default'].createElement('input', { checked: atlas, onChange: handleChange.bind(this, 'atlas'), disabled: !editable, className: edit_input_classname, type: 'checkbox' })
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        editable ? _react2['default'].createElement('textarea', { value: custom_name, onChange: handleChange.bind(this, 'custom_name'), className: edit_input_classname, rows: '2', cols: '15' }) : custom_name
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        editable ? _react2['default'].createElement('textarea', { value: custom_desc, onChange: handleChange.bind(this, 'custom_desc'), className: edit_input_classname, rows: '2', cols: '15' }) : custom_desc
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        { className: 'nowrap' },
+	        _react2['default'].createElement(
+	          'a',
+	          { onClick: this.edit.bind(this, true), href: 'javascript:;' },
+	          '[编辑]'
+	        ),
+	        ' ',
+	        _react2['default'].createElement(
+	          'a',
+	          { onClick: this['delete'].bind(this, this.props.data), href: 'javascript:;' },
+	          '[删除]'
+	        )
+	      )
+	    );
+	  },
+	  handleChange: function handleChange(attr_name, e) {
+	    this.props.dispatch(OrderManageFormActions.productAttrChange({
+	      sku_id: this.props.data.sku_id,
+	      attr: {
+	        name: attr_name,
+	        value: typeof e.target.checked == 'undefined' ? e.target.value : e.target.checked
+	      }
+	    }));
+	  },
+	  edit: function edit(editable) {
+	    this.setState({ editable: !!editable });
+	  },
+	  'delete': function _delete(data) {
+	    this.props.dispatch((0, _actionsOrder_products.deleteConfirmProduct)(data));
+	  },
+	  componentDidMount: function componentDidMount() {
+	    var self = this;
+	    $('#app').on('click', this._close_edit);
+	  },
+	  _close_edit: function _close_edit(e) {
+	    if (!$(e.target).hasClass(this.state.edit_input_classname)) {
+	      this.edit(false);
+	    }
+	  },
+	  componentWillUnmount: function componentWillUnmount() {
+	    $('#app').off('click', this._close_edit);
+	  }
+	});
+
+	AddedProductsRow.PropTypes = {
+	  dispatch: _react.PropTypes.func.isRequired,
+	  data: _react.PropTypes.shape({
+	    name: _react.PropTypes.string.isRequired,
+	    size: _react.PropTypes.string.isRequired,
+	    original_price: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
+	    num: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
+	    discount_price: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number])
+	  })
+	};
 	module.exports = exports['default'];
 
 /***/ },
-/* 292 */
+/* 296 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32608,6 +33566,8 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -32625,23 +33585,25 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _commonSelect = __webpack_require__(241);
+	var _commonSelect = __webpack_require__(242);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonNumberPicker = __webpack_require__(293);
+	var _commonNumberPicker = __webpack_require__(297);
 
 	var _commonNumberPicker2 = _interopRequireDefault(_commonNumberPicker);
 
-	var _commonPagination = __webpack_require__(242);
+	var _commonPagination = __webpack_require__(243);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _actionsOrder_products = __webpack_require__(294);
+	var _actionsOrder_products = __webpack_require__(298);
 
 	var OrderProductsActions = _interopRequireWildcard(_actionsOrder_products);
 
 	var _configAppConfig = __webpack_require__(157);
+
+	var _utilsIndex = __webpack_require__(160);
 
 	var ProductsModal = (function (_Component) {
 	  _inherits(ProductsModal, _Component);
@@ -32652,6 +33614,7 @@
 	    _get(Object.getPrototypeOf(ProductsModal.prototype), 'constructor', this).call(this, props);
 	    this.show = this.show.bind(this);
 	    this.hide = this.hide.bind(this);
+	    this.onCancel = this.onCancel.bind(this);
 	    this.state = {
 	      sku_name: '',
 	      category_id: _configAppConfig.SELECT_DEFAULT_VALUE,
@@ -32668,10 +33631,15 @@
 	      var _props$search_results = _props.search_results;
 	      var total = _props$search_results.total;
 	      var list = _props$search_results.list;
+	      var selected_list = _props.selected_list;
+	      var dispatch = _props.dispatch;
 
 	      var s = this.state;
 	      var product_list = list.map(function (n, i) {
-	        return _react2['default'].createElement(ProductSet, { data: n, key: i });
+	        return _react2['default'].createElement(ProductSet, { data: n, key: i, dispatch: dispatch });
+	      });
+	      var selected_list = selected_list.map(function (n, i) {
+	        return _react2['default'].createElement(ProductSelectedRow, { data: n, key: n.sku_id, dispatch: dispatch });
 	      });
 	      return _react2['default'].createElement(
 	        'div',
@@ -32688,7 +33656,7 @@
 	              { className: 'modal-header' },
 	              _react2['default'].createElement(
 	                'button',
-	                { 'aria-hidden': 'true', 'data-dismiss': 'modal', className: 'close', type: 'button' },
+	                { onClick: this.onCancel, 'aria-hidden': 'true', 'data-dismiss': 'modal', className: 'close', type: 'button' },
 	                '×'
 	              ),
 	              _react2['default'].createElement(
@@ -32796,7 +33764,6 @@
 	                    _react2['default'].createElement(
 	                      'tr',
 	                      null,
-	                      _react2['default'].createElement('th', null),
 	                      _react2['default'].createElement(
 	                        'th',
 	                        null,
@@ -32844,7 +33811,11 @@
 	                      )
 	                    )
 	                  ),
-	                  _react2['default'].createElement('tbody', null)
+	                  _react2['default'].createElement(
+	                    'tbody',
+	                    null,
+	                    selected_list
+	                  )
 	                )
 	              )
 	            ),
@@ -32853,12 +33824,12 @@
 	              { className: 'modal-footer' },
 	              _react2['default'].createElement(
 	                'button',
-	                { type: 'button', className: 'btn btn-default', 'data-dismiss': 'modal' },
+	                { onClick: this.onCancel, type: 'button', className: 'btn btn-default', 'data-dismiss': 'modal' },
 	                '取消'
 	              ),
 	              _react2['default'].createElement(
 	                'button',
-	                { type: 'button', className: 'btn btn-theme' },
+	                { onClick: this.onConfirm.bind(this), type: 'button', className: 'btn btn-theme' },
 	                '确定'
 	              )
 	            )
@@ -32894,6 +33865,17 @@
 	    key: 'onPageChange',
 	    value: function onPageChange(page) {
 	      this.setState({ page_no: page });
+	    }
+	  }, {
+	    key: 'onCancel',
+	    value: function onCancel() {
+	      this.props.dispatch(OrderProductsActions.cancelAllSelectedProducts());
+	    }
+	  }, {
+	    key: 'onConfirm',
+	    value: function onConfirm() {
+	      this.props.dispatch(OrderProductsActions.confirmAllSelectedProducts());
+	      this.hide();
 	    }
 	  }, {
 	    key: 'show',
@@ -32937,66 +33919,110 @@
 	    value: function render() {
 	      var _this = this;
 
-	      var data = this.props.data;
 	      var yes_or_no = this.yes_or_no;
 	      var choose = this.choose;
 	      var active = this.state.active;
 
 	      //is_local_site, is_delivery : "1" / "0"
-	      var content = [];
-	      data.forEach(function (n, i) {
-	        var name = n.name;
-	        var size = n.size;
-	        var website = n.website;
-	        var price = n.price;
-	        var is_local_site = n.is_local_site;
-	        var is_delivery = n.is_delivery;
-	        var _n$skus = n.skus;
-	        var skus = _n$skus === undefined ? [] : _n$skus;
+	      var _props$data = this.props.data;
+	      var product_id = _props$data.product_id;
+	      var name = _props$data.name;
+	      var size = _props$data.size;
+	      var category_name = _props$data.category_name;
+	      var original_price = _props$data.original_price;
+	      var skus = _props$data.skus;
 
-	        var head = _react2['default'].createElement(
+	      var hasOthers = skus.length != 1;
+
+	      var head = _react2['default'].createElement(
+	        'tr',
+	        { key: skus[0].sku_id, className: hasOthers ? "clickable" : "", onClick: hasOthers ? this.toggle : null },
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement('input', { type: 'checkbox', checked: skus[0].checked, disabled: true })
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          name
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          size
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          category_name
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          skus[0].website
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          '￥',
+	          (0, _utilsIndex.toFixed)(skus[0].discount_price / 100, 2)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          yes_or_no(skus[0].is_local_site)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          yes_or_no(skus[0].is_delivery)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'a',
+	            { onClick: choose.bind(this, skus[0]), href: 'javascript:;' },
+	            '[选择]'
+	          )
+	        )
+	      );
+
+	      var body = skus.map(function (n, i) {
+	        if (i == 0) {
+	          //滤出第一个
+	          return null;
+	        }
+	        return _react2['default'].createElement(
 	          'tr',
-	          { key: i, className: "clickable", onClick: _this.toggle },
+	          { key: n.sku_id, className: active ? "" : "hidden" },
 	          _react2['default'].createElement(
 	            'td',
 	            null,
-	            _react2['default'].createElement('input', { className: 'fade', type: 'checkbox', checked: n.check, disabled: true })
+	            _react2['default'].createElement('input', { type: 'checkbox', checked: n.checked, disabled: true })
 	          ),
+	          _react2['default'].createElement('td', { colSpan: '3' }),
 	          _react2['default'].createElement(
 	            'td',
 	            null,
-	            name
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            size
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            '蛋糕配件'
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            website
+	            n.website
 	          ),
 	          _react2['default'].createElement(
 	            'td',
 	            null,
 	            '￥',
-	            price
+	            (0, _utilsIndex.toFixed)(n.discount_price / 100, 2)
 	          ),
 	          _react2['default'].createElement(
 	            'td',
 	            null,
-	            'yes_or_no(is_local_site)'
+	            yes_or_no(n.is_local_site)
 	          ),
 	          _react2['default'].createElement(
 	            'td',
 	            null,
-	            'yes_or_no(is_delivery)'
+	            yes_or_no(n.is_delivery)
 	          ),
 	          _react2['default'].createElement(
 	            'td',
@@ -33008,56 +34034,12 @@
 	            )
 	          )
 	        );
-
-	        var body = n.skus.map(function (n, i) {
-	          _react2['default'].createElement(
-	            'tr',
-	            { key: i, className: active ? "" : "hidden", onClick: this.toggle },
-	            _react2['default'].createElement(
-	              'td',
-	              null,
-	              _react2['default'].createElement('input', { type: 'checkbox', checked: n.check, disabled: true })
-	            ),
-	            _react2['default'].createElement('td', { colSpan: '3' }),
-	            _react2['default'].createElement(
-	              'td',
-	              null,
-	              website
-	            ),
-	            _react2['default'].createElement(
-	              'td',
-	              null,
-	              '￥',
-	              price
-	            ),
-	            _react2['default'].createElement(
-	              'td',
-	              null,
-	              'yes_or_no(is_local_site)'
-	            ),
-	            _react2['default'].createElement(
-	              'td',
-	              null,
-	              'yes_or_no(is_delivery)'
-	            ),
-	            _react2['default'].createElement(
-	              'td',
-	              null,
-	              _react2['default'].createElement(
-	                'a',
-	                { onClick: choose.bind(this, n), href: 'javascript:;' },
-	                '[选择]'
-	              )
-	            )
-	          );
-	        });
-
-	        content.concat(head, body);
 	      });
+
 	      return _react2['default'].createElement(
 	        'tbody',
 	        null,
-	        content
+	        [head, body]
 	      );
 	    }
 	  }, {
@@ -33070,18 +34052,127 @@
 	    value: function toggle() {
 	      this.setState({ active: !this.state.active });
 	    }
+	  }, {
+	    key: 'choose',
+	    value: function choose(sku, e) {
+	      //整合数据
+	      var copy = _extends({}, this.props.data, sku);
+	      delete copy.skus;
+	      this.props.dispatch(OrderProductsActions.selectProduct(copy));
+	      e.stopPropagation();
+	    }
 	  }]);
 
 	  return ProductSet;
 	})(_react.Component);
 
 	ProductSet.PropTypes = {
-	  data: _react.PropTypes.array.isRequired
+	  data: _react.PropTypes.array.isRequired,
+	  dispatch: _react.PropTypes.func.isRequired
+	};
+
+	var ProductSelectedRow = (function (_Component3) {
+	  _inherits(ProductSelectedRow, _Component3);
+
+	  function ProductSelectedRow() {
+	    _classCallCheck(this, ProductSelectedRow);
+
+	    _get(Object.getPrototypeOf(ProductSelectedRow.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(ProductSelectedRow, [{
+	    key: 'yes_or_no',
+	    value: function yes_or_no(d) {
+	      return d == 1 ? '是' : '否';
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var data = this.props.data;
+	      var yes_or_no = this.yes_or_no;
+
+	      return _react2['default'].createElement(
+	        'tr',
+	        null,
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          data.name
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          data.size
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          data.category_name
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          data.website
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          '￥',
+	          (0, _utilsIndex.toFixed)(data.discount_price / 100, 2)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(_commonNumberPicker2['default'], { value: data.num, onChange: this.onNumChange.bind(this) })
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          yes_or_no(data.is_local_site)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          yes_or_no(data.is_delivery)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'a',
+	            { onClick: this['delete'].bind(this), href: 'javascript:;' },
+	            '[删除]'
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'onNumChange',
+	    value: function onNumChange(num) {
+	      var _props2 = this.props;
+	      var sku_id = _props2.data.sku_id;
+	      var dispatch = _props2.dispatch;
+
+	      dispatch(OrderProductsActions.changeProductNum(sku_id, num));
+	    }
+	  }, {
+	    key: 'delete',
+	    value: function _delete() {
+	      this.props.dispatch(OrderProductsActions.deleteProduct(this.props.data));
+	    }
+	  }]);
+
+	  return ProductSelectedRow;
+	})(_react.Component);
+
+	ProductSelectedRow.PropTypes = {
+	  data: _react.PropTypes.object.isRequired,
+	  dispatch: _react.PropTypes.func.isRequired
 	};
 	module.exports = exports['default'];
 
 /***/ },
-/* 293 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33136,7 +34227,10 @@
 	    var step = _props.step;
 	    var lower_limit = _props.lower_limit;
 
-	    this.setState({ value: value - step >= lower_limit ? value - step : value });
+	    value = value - step >= lower_limit ? value - step : value;
+	    this.setState({ value: value }, function () {
+	      this.props.onChange(value);
+	    });
 	  },
 	  add: function add() {
 	    var value = parseInt(this.state.value) || this.props.lower_limit;
@@ -33144,7 +34238,10 @@
 	    var step = _props2.step;
 	    var upper_limit = _props2.upper_limit;
 
-	    this.setState({ value: value + step <= upper_limit ? value + step : value });
+	    value = value + step <= upper_limit ? value + step : value;
+	    this.setState({ value: value }, function () {
+	      this.props.onChange(value);
+	    });
 	  },
 	  input: function input(e) {
 	    var v = e.target.value.replace(/[^\d]/g, '');
@@ -33160,7 +34257,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 294 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33170,14 +34267,20 @@
 	});
 	exports.getCategories = getCategories;
 	exports.searchProducts = searchProducts;
+	exports.selectProduct = selectProduct;
+	exports.changeProductNum = changeProductNum;
+	exports.deleteProduct = deleteProduct;
+	exports.confirmAllSelectedProducts = confirmAllSelectedProducts;
+	exports.cancelAllSelectedProducts = cancelAllSelectedProducts;
+	exports.deleteConfirmProduct = deleteConfirmProduct;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _utilsRequest = __webpack_require__(230);
+	var _utilsRequest = __webpack_require__(231);
 
 	//Promise
 
-	var _configUrl = __webpack_require__(235);
+	var _configUrl = __webpack_require__(236);
 
 	var _configUrl2 = _interopRequireDefault(_configUrl);
 
@@ -33193,11 +34296,108 @@
 	exports.SEARCH_PRODUCTS = SEARCH_PRODUCTS;
 
 	function searchProducts(query_data) {
-	  return (0, _utilsRequest.GET)(_configUrl2['default'].products.toString(), query_data, SEARCH_PRODUCTS);
+	  // return GET(Url.products.toString(), query_data, SEARCH_PRODUCTS);
+	  return (0, _utilsRequest.TEST)({
+	    list: [{
+	      product_id: 1,
+	      name: "zhang",
+	      size: "zhang1",
+	      category_name: "类型1",
+	      original_price: 20000,
+
+	      skus: [{
+	        sku_id: 22,
+	        website: "website2",
+	        discount_price: 18000,
+	        is_local_site: "0",
+	        is_delivery: "1"
+	      }, {
+	        sku_id: 23,
+	        website: "website2",
+	        discount_price: 19000,
+	        is_local_site: "1",
+	        is_delivery: "0"
+	      }]
+	    }, {
+	      product_id: 2,
+	      name: "li",
+	      size: "li3",
+	      category_name: "类型3",
+	      original_price: 20000,
+
+	      skus: [{
+	        sku_id: 24,
+	        website: "website3",
+	        discount_price: 30000,
+	        is_local_site: "1",
+	        is_delivery: "1"
+	      }]
+	    }],
+	    total: 2
+	  }, SEARCH_PRODUCTS);
+	}
+
+	var SELECT_PRODUCT = 'SELECT_PRODUCT';
+	exports.SELECT_PRODUCT = SELECT_PRODUCT;
+
+	function selectProduct(sku_info) {
+	  return {
+	    type: SELECT_PRODUCT,
+	    data: sku_info
+	  };
+	}
+
+	var CHANGE_PRODUCT_NUM = 'CHANGE_PRODUCT_NUM';
+	exports.CHANGE_PRODUCT_NUM = CHANGE_PRODUCT_NUM;
+
+	function changeProductNum(sku_id, num) {
+	  return {
+	    type: CHANGE_PRODUCT_NUM,
+	    sku_id: sku_id,
+	    num: num
+	  };
+	}
+
+	var DELETE_SELECTED_PRODUCT = 'DELETE_SELECTED_PRODUCT';
+	exports.DELETE_SELECTED_PRODUCT = DELETE_SELECTED_PRODUCT;
+
+	function deleteProduct(sku_info) {
+	  return {
+	    type: DELETE_SELECTED_PRODUCT,
+	    data: sku_info
+	  };
+	}
+
+	var CONFIRM_ALL_SELECTED_PRODUCTS = 'CONFIRM_ALL_SELECTED_PRODUCTS';
+	exports.CONFIRM_ALL_SELECTED_PRODUCTS = CONFIRM_ALL_SELECTED_PRODUCTS;
+
+	function confirmAllSelectedProducts() {
+	  return {
+	    type: CONFIRM_ALL_SELECTED_PRODUCTS
+	  };
+	}
+
+	var CANCEL_ALL_SELECTED_PRODUCTS = 'CANCEL_ALL_SELECTED_PRODUCTS';
+	exports.CANCEL_ALL_SELECTED_PRODUCTS = CANCEL_ALL_SELECTED_PRODUCTS;
+
+	function cancelAllSelectedProducts() {
+	  return {
+	    type: CANCEL_ALL_SELECTED_PRODUCTS
+	  };
+	}
+
+	var DELETE_CONFIRM_PRODUCT = 'DELETE_CONFIRM_PRODUCT';
+	exports.DELETE_CONFIRM_PRODUCT = DELETE_CONFIRM_PRODUCT;
+
+	function deleteConfirmProduct(sku_info) {
+	  return {
+	    type: DELETE_CONFIRM_PRODUCT,
+	    data: sku_info
+	  };
 	}
 
 /***/ },
-/* 295 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33208,17 +34408,17 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _redux = __webpack_require__(219);
+	var _redux = __webpack_require__(220);
 
-	var _reduxLogger = __webpack_require__(296);
+	var _reduxLogger = __webpack_require__(300);
 
 	var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
 
-	var _reduxThunk = __webpack_require__(297);
+	var _reduxThunk = __webpack_require__(301);
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-	var _reducersIndex = __webpack_require__(298);
+	var _reducersIndex = __webpack_require__(302);
 
 	var _reducersIndex2 = _interopRequireDefault(_reducersIndex);
 
@@ -33226,21 +34426,21 @@
 	  //生产环境不需要logger
 	  var createStoreWithMiddleware = (0, _redux.applyMiddleware)(_reduxThunk2['default'])(_redux.createStore);
 	} else {
-	  var createStoreWithMiddleware = (0, _redux.compose)((0, _redux.applyMiddleware)(_reduxThunk2['default']),
-	  // createLogger()
-	  window.devToolsExtension ? window.devToolsExtension() : function (f) {
+	  var createStoreWithMiddleware = (0, _redux.compose)((0, _redux.applyMiddleware)(_reduxThunk2['default'], (0, _reduxLogger2['default'])()), window.devToolsExtension ? window.devToolsExtension() : function (f) {
 	    return f;
 	  })(_redux.createStore);
 	}
 
-	exports['default'] = function () {
-	  return createStoreWithMiddleware(_reducersIndex2['default']);
-	};
+	var store = createStoreWithMiddleware(_reducersIndex2['default']);
 
+	if (false) {
+	  window.store = store;
+	}
+	exports['default'] = store;
 	module.exports = exports['default'];
 
 /***/ },
-/* 296 */
+/* 300 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -33385,7 +34585,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 297 */
+/* 301 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -33407,7 +34607,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 298 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33418,26 +34618,26 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _redux = __webpack_require__(219);
+	var _redux = __webpack_require__(220);
 
-	var _reduxForm = __webpack_require__(248);
+	var _reduxForm = __webpack_require__(249);
 
-	var _login = __webpack_require__(299);
+	var _login = __webpack_require__(303);
 
 	var _login2 = _interopRequireDefault(_login);
 
-	var _order_manage = __webpack_require__(300);
+	var _order_manage = __webpack_require__(304);
 
 	var _order_manage2 = _interopRequireDefault(_order_manage);
 
-	var _order_manage_add = __webpack_require__(301);
+	var _order_manage_form = __webpack_require__(305);
 
-	var _order_manage_add2 = _interopRequireDefault(_order_manage_add);
+	var _order_manage_form2 = _interopRequireDefault(_order_manage_form);
 
 	var rootReducer = (0, _redux.combineReducers)({
 	  login: _login2['default'],
 	  orderManage: _order_manage2['default'],
-	  orderManageAdd: _order_manage_add2['default'],
+	  orderManageForm: _order_manage_form2['default'],
 	  form: _reduxForm.reducer
 	});
 
@@ -33445,7 +34645,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 299 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33456,9 +34656,9 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var _redux = __webpack_require__(219);
+	var _redux = __webpack_require__(220);
 
-	var _actionsLogin = __webpack_require__(229);
+	var _actionsLogin = __webpack_require__(230);
 
 	var initial_state = {
 	  login_ing: false,
@@ -33503,7 +34703,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 300 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33516,9 +34716,9 @@
 
 	var _utilsIndex = __webpack_require__(160);
 
-	var _redux = __webpack_require__(219);
+	var _redux = __webpack_require__(220);
 
-	var _actionsOrder_manage = __webpack_require__(239);
+	var _actionsOrder_manage = __webpack_require__(240);
 
 	var _now = (0, _utilsIndex.dateFormat)(new Date(), 'yyyy-MM-dd');
 	var initial_state = {
@@ -33541,13 +34741,29 @@
 	  }
 	}
 
+	var orders_state = {
+	  total: 0,
+	  list: []
+	};
+	function orders(state, action) {
+	  if (state === undefined) state = orders_state;
+
+	  switch (action.type) {
+	    case _actionsOrder_manage.GET_ORDER_LIST:
+	      return _extends({}, state, action.data);
+	    default:
+	      return state;
+	  }
+	}
+
 	exports['default'] = (0, _redux.combineReducers)({
-	  filter: filter
+	  filter: filter,
+	  orders: orders
 	});
 	module.exports = exports['default'];
 
 /***/ },
-/* 301 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33558,34 +34774,37 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var _redux = __webpack_require__(219);
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _area_select = __webpack_require__(302);
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-	var _actionsOrder_manage_add = __webpack_require__(245);
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
 
-	var _actionsOrder_products = __webpack_require__(294);
+	var _redux = __webpack_require__(220);
+
+	var _area_select = __webpack_require__(306);
+
+	var _actionsOrder_manage_form = __webpack_require__(248);
+
+	var _actionsOrder_products = __webpack_require__(298);
+
+	var _actionsArea = __webpack_require__(247);
+
+	var AreaActions = _interopRequireWildcard(_actionsArea);
 
 	var _utilsIndex = __webpack_require__(160);
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var initial_state = {
-	  // owner_name: '',
-	  // owner_mobile: '',
-	  // recipient_name: '', //下单人姓名
-	  // recipient_mobile: '',
-	  // recipient_address: '', //收货人详细地址----》送货上门
-	  // regionalism_id: '',    //分店ID ----》自取
-	  // recipient_landmark: '', //标志性建筑
-	  // delivery_id: '',     //配送中心
-	  // src_id: '',          //订单来源
-	  // pay_modes_id: '',
-	  // pay_status: null,
-	  // delivery_time: '',
-	  // remarks: '',
-	  // invoice: '',
+	var _clone = __webpack_require__(307);
 
+	var _clone2 = _interopRequireDefault(_clone);
+
+	var _storesConfigureStore = __webpack_require__(299);
+
+	var _storesConfigureStore2 = _interopRequireDefault(_storesConfigureStore);
+
+	var initial_state = {
 	  all_pay_status: (0, _utilsIndex.map)(_configAppConfig.pay_status, function (text, id) {
 	    return { id: id, text: text };
 	  }),
@@ -33598,14 +34817,20 @@
 
 	  save_ing: false,
 	  save_success: true,
-	  submitting: false
+	  submitting: false,
+
+	  //edit data from server
+	  data: {
+	    delivery_type: _configAppConfig.DELIVERY_TO_HOME,
+	    invoice: _configAppConfig.INVOICE.NO
+	  }
 	};
 
-	function addForm(state, action) {
+	function mainForm(state, action) {
 	  if (state === undefined) state = initial_state;
 
 	  switch (action.type) {
-	    case _actionsOrder_manage_add.GOT_ORDER_SRCS:
+	    case _actionsOrder_manage_form.GOT_ORDER_SRCS:
 	      var l1 = [],
 	          l2 = [];
 	      //level最多为2级
@@ -33618,20 +34843,37 @@
 	        }
 	      });
 	      return _extends({}, state, { all_order_srcs: !l2.length ? [l1] : [l1, l2] });
-	    case _actionsOrder_manage_add.GOT_DELIVERY_STATIONS:
+	    case _actionsOrder_manage_form.GOT_DELIVERY_STATIONS:
 	      return _extends({}, state, { delivery_stations: (0, _utilsIndex.map)(action.data, function (text, id) {
 	          return { id: id, text: text };
 	        }) });
-	    case _actionsOrder_manage_add.GOT_PAY_MODES:
+	    case _actionsOrder_manage_form.GOT_PAY_MODES:
 	      return _extends({}, state, { all_pay_modes: (0, _utilsIndex.map)(action.data, function (text, id) {
 	          return { id: id, text: text };
 	        }) });
-	    case _actionsOrder_manage_add.SAVE_ORDER_INFO_ING:
+
+	    case _actionsOrder_manage_form.SAVE_ORDER_INFO_ING:
 	      return _extends({}, state, { save_ing: true });
-	    case _actionsOrder_manage_add.SAVE_ORDER_INFO_SUCCESS:
+	    case _actionsOrder_manage_form.SAVE_ORDER_INFO_SUCCESS:
 	      return _extends({}, state, { save_success: true, save_ing: false });
-	    case _actionsOrder_manage_add.SAVE_ORDER_INFO_FAIL:
+	    case _actionsOrder_manage_form.SAVE_ORDER_INFO_FAIL:
 	      return _extends({}, state, { save_success: false, save_ing: false });
+
+	    case _actionsOrder_manage_form.GOT_ORDER_BY_ID:
+	      return (function () {
+	        var data = action.data;
+
+	        var tmp = data.delivery_time.split(' ');
+	        data.delivery_date = tmp[0];
+	        data.delivery_hours = tmp[1];
+
+	        //
+	        _storesConfigureStore2['default'].dispatch(AreaActions.getCities(data.province_id));
+	        _storesConfigureStore2['default'].dispatch(AreaActions.getDistricts(data.city_id));
+
+	        return _extends({}, state, { data: data });
+	      })();
+
 	    default:
 	      return state;
 	  }
@@ -33643,18 +34885,127 @@
 	  search_results: {
 	    total: 0,
 	    list: []
-	  }
-	};
+	  },
+	  selected_list: [], //modal 里面的 选择列表
+	  confirm_list: [] };
+	//modal 里面确认后，主面板的已选产品列表
 	function products_choosing(state, action) {
 	  if (state === undefined) state = products_choosing_state;
 
+	  var sku_id, new_selected_list;
 	  switch (action.type) {
 	    case _actionsOrder_products.GOT_CATEGORIES:
 	      return _extends({}, state, { all_categories: (0, _utilsIndex.map)(action.data, function (text, id) {
 	          return { id: id, text: text };
 	        }) });
 	    case _actionsOrder_products.SEARCH_PRODUCTS:
+	      //如果检索到已被选商品，那么则要标明已被勾选
+	      state.selected_list.forEach(function (n) {
+	        for (var i = 0, len = action.data.list.length; i < len; i++) {
+	          for (var j = 0, jlen = action.data.list[i].skus.length; j < jlen; j++) {
+	            if (action.data.list[i].skus[j].sku_id == n.sku_id) {
+	              action.data.list[i].skus[j].checked = true;
+	            }
+	          }
+	        }
+	      });
 	      return _extends({}, state, { search_results: action.data });
+	    case _actionsOrder_products.SELECT_PRODUCT:
+	      sku_id = action.data.sku_id;
+	      if (state.selected_list.some(function (n) {
+	        return n.sku_id == sku_id;
+	      })) {
+	        return state;
+	      }
+	      /*****  这个地方已突变，应该使用 immutablejs *****/
+	      state.search_results.list.forEach(function (n) {
+	        n.skus.forEach(function (m) {
+	          if (m.sku_id == sku_id) {
+	            m.checked = !m.checked;
+	          }
+	        });
+	      });
+	      action.data.num = 1; //默认1
+	      return _extends({}, state, { selected_list: [].concat(_toConsumableArray(state.selected_list), [action.data]) });
+	    case _actionsOrder_products.DELETE_SELECTED_PRODUCT:
+	      sku_id = action.data.sku_id;
+	      state.search_results.list.forEach(function (n) {
+	        n.skus.forEach(function (m) {
+	          if (m.sku_id == sku_id) {
+	            m.checked = false;
+	          }
+	        });
+	      });
+	      new_selected_list = [].concat(_toConsumableArray(state.selected_list)).filter(function (n) {
+	        return n.sku_id != sku_id;
+	      });
+	      return _extends({}, state, { selected_list: new_selected_list });
+	    case _actionsOrder_products.CHANGE_PRODUCT_NUM:
+	      var num = action.num;
+
+	      sku_id = action.sku_id;
+	      new_selected_list = (0, _clone2['default'])(state.selected_list);
+	      new_selected_list.forEach(function (n) {
+	        if (n.sku_id == sku_id) {
+	          n.num = num;
+	        }
+	      });
+	      return _extends({}, state, { selected_list: new_selected_list });
+
+	    case _actionsOrder_products.CONFIRM_ALL_SELECTED_PRODUCTS:
+	      return (function () {
+	        var base = {
+	          discount_price: 0,
+	          choco_board: '巧克力牌xxx', //巧克力牌
+	          greeting_card: '祝福语xxx', //祝福语
+	          atlas: true, //产品图册
+	          custom_name: '自定义名称xxx', //自定义名称
+	          custom_desc: '自定义描述xxx' };
+	        //自定义描述
+	        var confirm_list = state.selected_list.map(function (n) {
+	          var new_item = _extends({}, n, base);
+	          new_item.discount_price = n.discount_price / 100 || 0;
+	          new_item.amount = n.discount_price * n.num / 100;
+	          return new_item;
+	        });
+	        return _extends({}, state, { confirm_list: confirm_list });
+	      })();
+
+	    case _actionsOrder_products.CANCEL_ALL_SELECTED_PRODUCTS:
+	      return _extends({}, state, { selected_list: [].concat(_toConsumableArray((0, _clone2['default'])(state.confirm_list))) });
+
+	    case _actionsOrder_manage_form.CONFIRM_PRODUCT_ATTR_CHANGE:
+	      sku_id = action.data.sku_id;
+	      //突变
+	      state.confirm_list.forEach(function (n) {
+	        if (n.sku_id == sku_id) {
+	          n[action.data.attr.name] = action.data.attr.value;
+	        }
+	      });
+	      return _extends({}, state);
+
+	    case _actionsOrder_products.DELETE_CONFIRM_PRODUCT:
+	      sku_id = action.data.sku_id;
+	      // 突变
+	      state.search_results.list.forEach(function (n) {
+	        n.skus.forEach(function (m) {
+	          if (m.sku_id == sku_id) {
+	            m.checked = false;
+	          }
+	        });
+	      });
+	      var new_confirm_list = (0, _clone2['default'])(state.confirm_list);
+	      new_confirm_list.splice(new_confirm_list.findIndex(function (n) {
+	        return n.sku_id == sku_id;
+	      }), 1);
+	      new_selected_list = (0, _clone2['default'])(state.selected_list);
+	      new_selected_list.splice(new_selected_list.findIndex(function (n) {
+	        return n.sku_id == sku_id;
+	      }), 1);
+	      return _extends({}, state, { confirm_list: new_confirm_list, selected_list: new_selected_list });
+
+	    case _actionsOrder_manage_form.GOT_ORDER_BY_ID:
+	      return _extends({}, state, { confirm_list: action.data.products, selected_list: action.data.products });
 	    default:
 	      return state;
 	  }
@@ -33662,17 +35013,15 @@
 
 	var orderAddReducer = (0, _redux.combineReducers)({
 	  area: _area_select.area,
-	  addForm: addForm,
-	  products: (0, _redux.combineReducers)({
-	    products_choosing: products_choosing
-	  })
+	  mainForm: mainForm,
+	  products: products_choosing
 	});
 
 	exports['default'] = orderAddReducer;
 	module.exports = exports['default'];
 
 /***/ },
-/* 302 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33685,9 +35034,9 @@
 
 	exports.area = area;
 
-	var _redux = __webpack_require__(219);
+	var _redux = __webpack_require__(220);
 
-	var _actionsArea = __webpack_require__(244);
+	var _actionsArea = __webpack_require__(247);
 
 	var _utilsIndex = __webpack_require__(160);
 
@@ -33711,11 +35060,11 @@
 
 	  switch (action.type) {
 	    case _actionsArea.GOT_PROVINCES:
-	      return _extends({}, state, { provinces: _t(action.data), cities: [], districts: [] });
+	      return _extends({}, state, { provinces: _t(action.data) });
 	    case _actionsArea.PROVINCE_RESET:
 	      return _extends({}, state, { cities: [], districts: [] });
 	    case _actionsArea.GOT_CITIES:
-	      return _extends({}, state, { cities: _t(action.data), districts: [] });
+	      return _extends({}, state, { cities: _t(action.data) });
 	    case _actionsArea.CITY_RESET:
 	      return _extends({}, state, { districts: [] });
 	    case _actionsArea.GOT_DISTRICTS:
@@ -33724,6 +35073,1953 @@
 	      return state;
 	  }
 	}
+
+/***/ },
+/* 307 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var clone = (function() {
+	'use strict';
+
+	/**
+	 * Clones (copies) an Object using deep copying.
+	 *
+	 * This function supports circular references by default, but if you are certain
+	 * there are no circular references in your object, you can save some CPU time
+	 * by calling clone(obj, false).
+	 *
+	 * Caution: if `circular` is false and `parent` contains circular references,
+	 * your program may enter an infinite loop and crash.
+	 *
+	 * @param `parent` - the object to be cloned
+	 * @param `circular` - set to true if the object to be cloned may contain
+	 *    circular references. (optional - true by default)
+	 * @param `depth` - set to a number if the object is only to be cloned to
+	 *    a particular depth. (optional - defaults to Infinity)
+	 * @param `prototype` - sets the prototype to be used when cloning an object.
+	 *    (optional - defaults to parent prototype).
+	*/
+	function clone(parent, circular, depth, prototype) {
+	  var filter;
+	  if (typeof circular === 'object') {
+	    depth = circular.depth;
+	    prototype = circular.prototype;
+	    filter = circular.filter;
+	    circular = circular.circular
+	  }
+	  // maintain two arrays for circular references, where corresponding parents
+	  // and children have the same index
+	  var allParents = [];
+	  var allChildren = [];
+
+	  var useBuffer = typeof Buffer != 'undefined';
+
+	  if (typeof circular == 'undefined')
+	    circular = true;
+
+	  if (typeof depth == 'undefined')
+	    depth = Infinity;
+
+	  // recurse this function so we don't reset allParents and allChildren
+	  function _clone(parent, depth) {
+	    // cloning null always returns null
+	    if (parent === null)
+	      return null;
+
+	    if (depth == 0)
+	      return parent;
+
+	    var child;
+	    var proto;
+	    if (typeof parent != 'object') {
+	      return parent;
+	    }
+
+	    if (clone.__isArray(parent)) {
+	      child = [];
+	    } else if (clone.__isRegExp(parent)) {
+	      child = new RegExp(parent.source, __getRegExpFlags(parent));
+	      if (parent.lastIndex) child.lastIndex = parent.lastIndex;
+	    } else if (clone.__isDate(parent)) {
+	      child = new Date(parent.getTime());
+	    } else if (useBuffer && Buffer.isBuffer(parent)) {
+	      child = new Buffer(parent.length);
+	      parent.copy(child);
+	      return child;
+	    } else {
+	      if (typeof prototype == 'undefined') {
+	        proto = Object.getPrototypeOf(parent);
+	        child = Object.create(proto);
+	      }
+	      else {
+	        child = Object.create(prototype);
+	        proto = prototype;
+	      }
+	    }
+
+	    if (circular) {
+	      var index = allParents.indexOf(parent);
+
+	      if (index != -1) {
+	        return allChildren[index];
+	      }
+	      allParents.push(parent);
+	      allChildren.push(child);
+	    }
+
+	    for (var i in parent) {
+	      var attrs;
+	      if (proto) {
+	        attrs = Object.getOwnPropertyDescriptor(proto, i);
+	      }
+
+	      if (attrs && attrs.set == null) {
+	        continue;
+	      }
+	      child[i] = _clone(parent[i], depth - 1);
+	    }
+
+	    return child;
+	  }
+
+	  return _clone(parent, depth);
+	}
+
+	/**
+	 * Simple flat clone using prototype, accepts only objects, usefull for property
+	 * override on FLAT configuration object (no nested props).
+	 *
+	 * USE WITH CAUTION! This may not behave as you wish if you do not know how this
+	 * works.
+	 */
+	clone.clonePrototype = function clonePrototype(parent) {
+	  if (parent === null)
+	    return null;
+
+	  var c = function () {};
+	  c.prototype = parent;
+	  return new c();
+	};
+
+	// private utility functions
+
+	function __objToStr(o) {
+	  return Object.prototype.toString.call(o);
+	};
+	clone.__objToStr = __objToStr;
+
+	function __isDate(o) {
+	  return typeof o === 'object' && __objToStr(o) === '[object Date]';
+	};
+	clone.__isDate = __isDate;
+
+	function __isArray(o) {
+	  return typeof o === 'object' && __objToStr(o) === '[object Array]';
+	};
+	clone.__isArray = __isArray;
+
+	function __isRegExp(o) {
+	  return typeof o === 'object' && __objToStr(o) === '[object RegExp]';
+	};
+	clone.__isRegExp = __isRegExp;
+
+	function __getRegExpFlags(re) {
+	  var flags = '';
+	  if (re.global) flags += 'g';
+	  if (re.ignoreCase) flags += 'i';
+	  if (re.multiline) flags += 'm';
+	  return flags;
+	};
+	clone.__getRegExpFlags = __getRegExpFlags;
+
+	return clone;
+	})();
+
+	if (typeof module === 'object' && module.exports) {
+	  module.exports = clone;
+	}
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(308).Buffer))
+
+/***/ },
+/* 308 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
+	 * The buffer module from node.js, for the browser.
+	 *
+	 * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+	 * @license  MIT
+	 */
+	/* eslint-disable no-proto */
+
+	var base64 = __webpack_require__(309)
+	var ieee754 = __webpack_require__(310)
+	var isArray = __webpack_require__(311)
+
+	exports.Buffer = Buffer
+	exports.SlowBuffer = SlowBuffer
+	exports.INSPECT_MAX_BYTES = 50
+	Buffer.poolSize = 8192 // not used by this implementation
+
+	var rootParent = {}
+
+	/**
+	 * If `Buffer.TYPED_ARRAY_SUPPORT`:
+	 *   === true    Use Uint8Array implementation (fastest)
+	 *   === false   Use Object implementation (most compatible, even IE6)
+	 *
+	 * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
+	 * Opera 11.6+, iOS 4.2+.
+	 *
+	 * Due to various browser bugs, sometimes the Object implementation will be used even
+	 * when the browser supports typed arrays.
+	 *
+	 * Note:
+	 *
+	 *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
+	 *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
+	 *
+	 *   - Safari 5-7 lacks support for changing the `Object.prototype.constructor` property
+	 *     on objects.
+	 *
+	 *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
+	 *
+	 *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
+	 *     incorrect length in some situations.
+
+	 * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
+	 * get the Object implementation, which is slower but behaves correctly.
+	 */
+	Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined
+	  ? global.TYPED_ARRAY_SUPPORT
+	  : typedArraySupport()
+
+	function typedArraySupport () {
+	  function Bar () {}
+	  try {
+	    var arr = new Uint8Array(1)
+	    arr.foo = function () { return 42 }
+	    arr.constructor = Bar
+	    return arr.foo() === 42 && // typed array instances can be augmented
+	        arr.constructor === Bar && // constructor can be set
+	        typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
+	        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
+	  } catch (e) {
+	    return false
+	  }
+	}
+
+	function kMaxLength () {
+	  return Buffer.TYPED_ARRAY_SUPPORT
+	    ? 0x7fffffff
+	    : 0x3fffffff
+	}
+
+	/**
+	 * Class: Buffer
+	 * =============
+	 *
+	 * The Buffer constructor returns instances of `Uint8Array` that are augmented
+	 * with function properties for all the node `Buffer` API functions. We use
+	 * `Uint8Array` so that square bracket notation works as expected -- it returns
+	 * a single octet.
+	 *
+	 * By augmenting the instances, we can avoid modifying the `Uint8Array`
+	 * prototype.
+	 */
+	function Buffer (arg) {
+	  if (!(this instanceof Buffer)) {
+	    // Avoid going through an ArgumentsAdaptorTrampoline in the common case.
+	    if (arguments.length > 1) return new Buffer(arg, arguments[1])
+	    return new Buffer(arg)
+	  }
+
+	  this.length = 0
+	  this.parent = undefined
+
+	  // Common case.
+	  if (typeof arg === 'number') {
+	    return fromNumber(this, arg)
+	  }
+
+	  // Slightly less common case.
+	  if (typeof arg === 'string') {
+	    return fromString(this, arg, arguments.length > 1 ? arguments[1] : 'utf8')
+	  }
+
+	  // Unusual.
+	  return fromObject(this, arg)
+	}
+
+	function fromNumber (that, length) {
+	  that = allocate(that, length < 0 ? 0 : checked(length) | 0)
+	  if (!Buffer.TYPED_ARRAY_SUPPORT) {
+	    for (var i = 0; i < length; i++) {
+	      that[i] = 0
+	    }
+	  }
+	  return that
+	}
+
+	function fromString (that, string, encoding) {
+	  if (typeof encoding !== 'string' || encoding === '') encoding = 'utf8'
+
+	  // Assumption: byteLength() return value is always < kMaxLength.
+	  var length = byteLength(string, encoding) | 0
+	  that = allocate(that, length)
+
+	  that.write(string, encoding)
+	  return that
+	}
+
+	function fromObject (that, object) {
+	  if (Buffer.isBuffer(object)) return fromBuffer(that, object)
+
+	  if (isArray(object)) return fromArray(that, object)
+
+	  if (object == null) {
+	    throw new TypeError('must start with number, buffer, array or string')
+	  }
+
+	  if (typeof ArrayBuffer !== 'undefined') {
+	    if (object.buffer instanceof ArrayBuffer) {
+	      return fromTypedArray(that, object)
+	    }
+	    if (object instanceof ArrayBuffer) {
+	      return fromArrayBuffer(that, object)
+	    }
+	  }
+
+	  if (object.length) return fromArrayLike(that, object)
+
+	  return fromJsonObject(that, object)
+	}
+
+	function fromBuffer (that, buffer) {
+	  var length = checked(buffer.length) | 0
+	  that = allocate(that, length)
+	  buffer.copy(that, 0, 0, length)
+	  return that
+	}
+
+	function fromArray (that, array) {
+	  var length = checked(array.length) | 0
+	  that = allocate(that, length)
+	  for (var i = 0; i < length; i += 1) {
+	    that[i] = array[i] & 255
+	  }
+	  return that
+	}
+
+	// Duplicate of fromArray() to keep fromArray() monomorphic.
+	function fromTypedArray (that, array) {
+	  var length = checked(array.length) | 0
+	  that = allocate(that, length)
+	  // Truncating the elements is probably not what people expect from typed
+	  // arrays with BYTES_PER_ELEMENT > 1 but it's compatible with the behavior
+	  // of the old Buffer constructor.
+	  for (var i = 0; i < length; i += 1) {
+	    that[i] = array[i] & 255
+	  }
+	  return that
+	}
+
+	function fromArrayBuffer (that, array) {
+	  if (Buffer.TYPED_ARRAY_SUPPORT) {
+	    // Return an augmented `Uint8Array` instance, for best performance
+	    array.byteLength
+	    that = Buffer._augment(new Uint8Array(array))
+	  } else {
+	    // Fallback: Return an object instance of the Buffer class
+	    that = fromTypedArray(that, new Uint8Array(array))
+	  }
+	  return that
+	}
+
+	function fromArrayLike (that, array) {
+	  var length = checked(array.length) | 0
+	  that = allocate(that, length)
+	  for (var i = 0; i < length; i += 1) {
+	    that[i] = array[i] & 255
+	  }
+	  return that
+	}
+
+	// Deserialize { type: 'Buffer', data: [1,2,3,...] } into a Buffer object.
+	// Returns a zero-length buffer for inputs that don't conform to the spec.
+	function fromJsonObject (that, object) {
+	  var array
+	  var length = 0
+
+	  if (object.type === 'Buffer' && isArray(object.data)) {
+	    array = object.data
+	    length = checked(array.length) | 0
+	  }
+	  that = allocate(that, length)
+
+	  for (var i = 0; i < length; i += 1) {
+	    that[i] = array[i] & 255
+	  }
+	  return that
+	}
+
+	if (Buffer.TYPED_ARRAY_SUPPORT) {
+	  Buffer.prototype.__proto__ = Uint8Array.prototype
+	  Buffer.__proto__ = Uint8Array
+	}
+
+	function allocate (that, length) {
+	  if (Buffer.TYPED_ARRAY_SUPPORT) {
+	    // Return an augmented `Uint8Array` instance, for best performance
+	    that = Buffer._augment(new Uint8Array(length))
+	    that.__proto__ = Buffer.prototype
+	  } else {
+	    // Fallback: Return an object instance of the Buffer class
+	    that.length = length
+	    that._isBuffer = true
+	  }
+
+	  var fromPool = length !== 0 && length <= Buffer.poolSize >>> 1
+	  if (fromPool) that.parent = rootParent
+
+	  return that
+	}
+
+	function checked (length) {
+	  // Note: cannot use `length < kMaxLength` here because that fails when
+	  // length is NaN (which is otherwise coerced to zero.)
+	  if (length >= kMaxLength()) {
+	    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
+	                         'size: 0x' + kMaxLength().toString(16) + ' bytes')
+	  }
+	  return length | 0
+	}
+
+	function SlowBuffer (subject, encoding) {
+	  if (!(this instanceof SlowBuffer)) return new SlowBuffer(subject, encoding)
+
+	  var buf = new Buffer(subject, encoding)
+	  delete buf.parent
+	  return buf
+	}
+
+	Buffer.isBuffer = function isBuffer (b) {
+	  return !!(b != null && b._isBuffer)
+	}
+
+	Buffer.compare = function compare (a, b) {
+	  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
+	    throw new TypeError('Arguments must be Buffers')
+	  }
+
+	  if (a === b) return 0
+
+	  var x = a.length
+	  var y = b.length
+
+	  var i = 0
+	  var len = Math.min(x, y)
+	  while (i < len) {
+	    if (a[i] !== b[i]) break
+
+	    ++i
+	  }
+
+	  if (i !== len) {
+	    x = a[i]
+	    y = b[i]
+	  }
+
+	  if (x < y) return -1
+	  if (y < x) return 1
+	  return 0
+	}
+
+	Buffer.isEncoding = function isEncoding (encoding) {
+	  switch (String(encoding).toLowerCase()) {
+	    case 'hex':
+	    case 'utf8':
+	    case 'utf-8':
+	    case 'ascii':
+	    case 'binary':
+	    case 'base64':
+	    case 'raw':
+	    case 'ucs2':
+	    case 'ucs-2':
+	    case 'utf16le':
+	    case 'utf-16le':
+	      return true
+	    default:
+	      return false
+	  }
+	}
+
+	Buffer.concat = function concat (list, length) {
+	  if (!isArray(list)) throw new TypeError('list argument must be an Array of Buffers.')
+
+	  if (list.length === 0) {
+	    return new Buffer(0)
+	  }
+
+	  var i
+	  if (length === undefined) {
+	    length = 0
+	    for (i = 0; i < list.length; i++) {
+	      length += list[i].length
+	    }
+	  }
+
+	  var buf = new Buffer(length)
+	  var pos = 0
+	  for (i = 0; i < list.length; i++) {
+	    var item = list[i]
+	    item.copy(buf, pos)
+	    pos += item.length
+	  }
+	  return buf
+	}
+
+	function byteLength (string, encoding) {
+	  if (typeof string !== 'string') string = '' + string
+
+	  var len = string.length
+	  if (len === 0) return 0
+
+	  // Use a for loop to avoid recursion
+	  var loweredCase = false
+	  for (;;) {
+	    switch (encoding) {
+	      case 'ascii':
+	      case 'binary':
+	      // Deprecated
+	      case 'raw':
+	      case 'raws':
+	        return len
+	      case 'utf8':
+	      case 'utf-8':
+	        return utf8ToBytes(string).length
+	      case 'ucs2':
+	      case 'ucs-2':
+	      case 'utf16le':
+	      case 'utf-16le':
+	        return len * 2
+	      case 'hex':
+	        return len >>> 1
+	      case 'base64':
+	        return base64ToBytes(string).length
+	      default:
+	        if (loweredCase) return utf8ToBytes(string).length // assume utf8
+	        encoding = ('' + encoding).toLowerCase()
+	        loweredCase = true
+	    }
+	  }
+	}
+	Buffer.byteLength = byteLength
+
+	// pre-set for values that may exist in the future
+	Buffer.prototype.length = undefined
+	Buffer.prototype.parent = undefined
+
+	function slowToString (encoding, start, end) {
+	  var loweredCase = false
+
+	  start = start | 0
+	  end = end === undefined || end === Infinity ? this.length : end | 0
+
+	  if (!encoding) encoding = 'utf8'
+	  if (start < 0) start = 0
+	  if (end > this.length) end = this.length
+	  if (end <= start) return ''
+
+	  while (true) {
+	    switch (encoding) {
+	      case 'hex':
+	        return hexSlice(this, start, end)
+
+	      case 'utf8':
+	      case 'utf-8':
+	        return utf8Slice(this, start, end)
+
+	      case 'ascii':
+	        return asciiSlice(this, start, end)
+
+	      case 'binary':
+	        return binarySlice(this, start, end)
+
+	      case 'base64':
+	        return base64Slice(this, start, end)
+
+	      case 'ucs2':
+	      case 'ucs-2':
+	      case 'utf16le':
+	      case 'utf-16le':
+	        return utf16leSlice(this, start, end)
+
+	      default:
+	        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+	        encoding = (encoding + '').toLowerCase()
+	        loweredCase = true
+	    }
+	  }
+	}
+
+	Buffer.prototype.toString = function toString () {
+	  var length = this.length | 0
+	  if (length === 0) return ''
+	  if (arguments.length === 0) return utf8Slice(this, 0, length)
+	  return slowToString.apply(this, arguments)
+	}
+
+	Buffer.prototype.equals = function equals (b) {
+	  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
+	  if (this === b) return true
+	  return Buffer.compare(this, b) === 0
+	}
+
+	Buffer.prototype.inspect = function inspect () {
+	  var str = ''
+	  var max = exports.INSPECT_MAX_BYTES
+	  if (this.length > 0) {
+	    str = this.toString('hex', 0, max).match(/.{2}/g).join(' ')
+	    if (this.length > max) str += ' ... '
+	  }
+	  return '<Buffer ' + str + '>'
+	}
+
+	Buffer.prototype.compare = function compare (b) {
+	  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
+	  if (this === b) return 0
+	  return Buffer.compare(this, b)
+	}
+
+	Buffer.prototype.indexOf = function indexOf (val, byteOffset) {
+	  if (byteOffset > 0x7fffffff) byteOffset = 0x7fffffff
+	  else if (byteOffset < -0x80000000) byteOffset = -0x80000000
+	  byteOffset >>= 0
+
+	  if (this.length === 0) return -1
+	  if (byteOffset >= this.length) return -1
+
+	  // Negative offsets start from the end of the buffer
+	  if (byteOffset < 0) byteOffset = Math.max(this.length + byteOffset, 0)
+
+	  if (typeof val === 'string') {
+	    if (val.length === 0) return -1 // special case: looking for empty string always fails
+	    return String.prototype.indexOf.call(this, val, byteOffset)
+	  }
+	  if (Buffer.isBuffer(val)) {
+	    return arrayIndexOf(this, val, byteOffset)
+	  }
+	  if (typeof val === 'number') {
+	    if (Buffer.TYPED_ARRAY_SUPPORT && Uint8Array.prototype.indexOf === 'function') {
+	      return Uint8Array.prototype.indexOf.call(this, val, byteOffset)
+	    }
+	    return arrayIndexOf(this, [ val ], byteOffset)
+	  }
+
+	  function arrayIndexOf (arr, val, byteOffset) {
+	    var foundIndex = -1
+	    for (var i = 0; byteOffset + i < arr.length; i++) {
+	      if (arr[byteOffset + i] === val[foundIndex === -1 ? 0 : i - foundIndex]) {
+	        if (foundIndex === -1) foundIndex = i
+	        if (i - foundIndex + 1 === val.length) return byteOffset + foundIndex
+	      } else {
+	        foundIndex = -1
+	      }
+	    }
+	    return -1
+	  }
+
+	  throw new TypeError('val must be string, number or Buffer')
+	}
+
+	// `get` is deprecated
+	Buffer.prototype.get = function get (offset) {
+	  console.log('.get() is deprecated. Access using array indexes instead.')
+	  return this.readUInt8(offset)
+	}
+
+	// `set` is deprecated
+	Buffer.prototype.set = function set (v, offset) {
+	  console.log('.set() is deprecated. Access using array indexes instead.')
+	  return this.writeUInt8(v, offset)
+	}
+
+	function hexWrite (buf, string, offset, length) {
+	  offset = Number(offset) || 0
+	  var remaining = buf.length - offset
+	  if (!length) {
+	    length = remaining
+	  } else {
+	    length = Number(length)
+	    if (length > remaining) {
+	      length = remaining
+	    }
+	  }
+
+	  // must be an even number of digits
+	  var strLen = string.length
+	  if (strLen % 2 !== 0) throw new Error('Invalid hex string')
+
+	  if (length > strLen / 2) {
+	    length = strLen / 2
+	  }
+	  for (var i = 0; i < length; i++) {
+	    var parsed = parseInt(string.substr(i * 2, 2), 16)
+	    if (isNaN(parsed)) throw new Error('Invalid hex string')
+	    buf[offset + i] = parsed
+	  }
+	  return i
+	}
+
+	function utf8Write (buf, string, offset, length) {
+	  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
+	}
+
+	function asciiWrite (buf, string, offset, length) {
+	  return blitBuffer(asciiToBytes(string), buf, offset, length)
+	}
+
+	function binaryWrite (buf, string, offset, length) {
+	  return asciiWrite(buf, string, offset, length)
+	}
+
+	function base64Write (buf, string, offset, length) {
+	  return blitBuffer(base64ToBytes(string), buf, offset, length)
+	}
+
+	function ucs2Write (buf, string, offset, length) {
+	  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
+	}
+
+	Buffer.prototype.write = function write (string, offset, length, encoding) {
+	  // Buffer#write(string)
+	  if (offset === undefined) {
+	    encoding = 'utf8'
+	    length = this.length
+	    offset = 0
+	  // Buffer#write(string, encoding)
+	  } else if (length === undefined && typeof offset === 'string') {
+	    encoding = offset
+	    length = this.length
+	    offset = 0
+	  // Buffer#write(string, offset[, length][, encoding])
+	  } else if (isFinite(offset)) {
+	    offset = offset | 0
+	    if (isFinite(length)) {
+	      length = length | 0
+	      if (encoding === undefined) encoding = 'utf8'
+	    } else {
+	      encoding = length
+	      length = undefined
+	    }
+	  // legacy write(string, encoding, offset, length) - remove in v0.13
+	  } else {
+	    var swap = encoding
+	    encoding = offset
+	    offset = length | 0
+	    length = swap
+	  }
+
+	  var remaining = this.length - offset
+	  if (length === undefined || length > remaining) length = remaining
+
+	  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
+	    throw new RangeError('attempt to write outside buffer bounds')
+	  }
+
+	  if (!encoding) encoding = 'utf8'
+
+	  var loweredCase = false
+	  for (;;) {
+	    switch (encoding) {
+	      case 'hex':
+	        return hexWrite(this, string, offset, length)
+
+	      case 'utf8':
+	      case 'utf-8':
+	        return utf8Write(this, string, offset, length)
+
+	      case 'ascii':
+	        return asciiWrite(this, string, offset, length)
+
+	      case 'binary':
+	        return binaryWrite(this, string, offset, length)
+
+	      case 'base64':
+	        // Warning: maxLength not taken into account in base64Write
+	        return base64Write(this, string, offset, length)
+
+	      case 'ucs2':
+	      case 'ucs-2':
+	      case 'utf16le':
+	      case 'utf-16le':
+	        return ucs2Write(this, string, offset, length)
+
+	      default:
+	        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+	        encoding = ('' + encoding).toLowerCase()
+	        loweredCase = true
+	    }
+	  }
+	}
+
+	Buffer.prototype.toJSON = function toJSON () {
+	  return {
+	    type: 'Buffer',
+	    data: Array.prototype.slice.call(this._arr || this, 0)
+	  }
+	}
+
+	function base64Slice (buf, start, end) {
+	  if (start === 0 && end === buf.length) {
+	    return base64.fromByteArray(buf)
+	  } else {
+	    return base64.fromByteArray(buf.slice(start, end))
+	  }
+	}
+
+	function utf8Slice (buf, start, end) {
+	  end = Math.min(buf.length, end)
+	  var res = []
+
+	  var i = start
+	  while (i < end) {
+	    var firstByte = buf[i]
+	    var codePoint = null
+	    var bytesPerSequence = (firstByte > 0xEF) ? 4
+	      : (firstByte > 0xDF) ? 3
+	      : (firstByte > 0xBF) ? 2
+	      : 1
+
+	    if (i + bytesPerSequence <= end) {
+	      var secondByte, thirdByte, fourthByte, tempCodePoint
+
+	      switch (bytesPerSequence) {
+	        case 1:
+	          if (firstByte < 0x80) {
+	            codePoint = firstByte
+	          }
+	          break
+	        case 2:
+	          secondByte = buf[i + 1]
+	          if ((secondByte & 0xC0) === 0x80) {
+	            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F)
+	            if (tempCodePoint > 0x7F) {
+	              codePoint = tempCodePoint
+	            }
+	          }
+	          break
+	        case 3:
+	          secondByte = buf[i + 1]
+	          thirdByte = buf[i + 2]
+	          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
+	            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F)
+	            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
+	              codePoint = tempCodePoint
+	            }
+	          }
+	          break
+	        case 4:
+	          secondByte = buf[i + 1]
+	          thirdByte = buf[i + 2]
+	          fourthByte = buf[i + 3]
+	          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
+	            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F)
+	            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
+	              codePoint = tempCodePoint
+	            }
+	          }
+	      }
+	    }
+
+	    if (codePoint === null) {
+	      // we did not generate a valid codePoint so insert a
+	      // replacement char (U+FFFD) and advance only 1 byte
+	      codePoint = 0xFFFD
+	      bytesPerSequence = 1
+	    } else if (codePoint > 0xFFFF) {
+	      // encode to utf16 (surrogate pair dance)
+	      codePoint -= 0x10000
+	      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
+	      codePoint = 0xDC00 | codePoint & 0x3FF
+	    }
+
+	    res.push(codePoint)
+	    i += bytesPerSequence
+	  }
+
+	  return decodeCodePointsArray(res)
+	}
+
+	// Based on http://stackoverflow.com/a/22747272/680742, the browser with
+	// the lowest limit is Chrome, with 0x10000 args.
+	// We go 1 magnitude less, for safety
+	var MAX_ARGUMENTS_LENGTH = 0x1000
+
+	function decodeCodePointsArray (codePoints) {
+	  var len = codePoints.length
+	  if (len <= MAX_ARGUMENTS_LENGTH) {
+	    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
+	  }
+
+	  // Decode in chunks to avoid "call stack size exceeded".
+	  var res = ''
+	  var i = 0
+	  while (i < len) {
+	    res += String.fromCharCode.apply(
+	      String,
+	      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
+	    )
+	  }
+	  return res
+	}
+
+	function asciiSlice (buf, start, end) {
+	  var ret = ''
+	  end = Math.min(buf.length, end)
+
+	  for (var i = start; i < end; i++) {
+	    ret += String.fromCharCode(buf[i] & 0x7F)
+	  }
+	  return ret
+	}
+
+	function binarySlice (buf, start, end) {
+	  var ret = ''
+	  end = Math.min(buf.length, end)
+
+	  for (var i = start; i < end; i++) {
+	    ret += String.fromCharCode(buf[i])
+	  }
+	  return ret
+	}
+
+	function hexSlice (buf, start, end) {
+	  var len = buf.length
+
+	  if (!start || start < 0) start = 0
+	  if (!end || end < 0 || end > len) end = len
+
+	  var out = ''
+	  for (var i = start; i < end; i++) {
+	    out += toHex(buf[i])
+	  }
+	  return out
+	}
+
+	function utf16leSlice (buf, start, end) {
+	  var bytes = buf.slice(start, end)
+	  var res = ''
+	  for (var i = 0; i < bytes.length; i += 2) {
+	    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256)
+	  }
+	  return res
+	}
+
+	Buffer.prototype.slice = function slice (start, end) {
+	  var len = this.length
+	  start = ~~start
+	  end = end === undefined ? len : ~~end
+
+	  if (start < 0) {
+	    start += len
+	    if (start < 0) start = 0
+	  } else if (start > len) {
+	    start = len
+	  }
+
+	  if (end < 0) {
+	    end += len
+	    if (end < 0) end = 0
+	  } else if (end > len) {
+	    end = len
+	  }
+
+	  if (end < start) end = start
+
+	  var newBuf
+	  if (Buffer.TYPED_ARRAY_SUPPORT) {
+	    newBuf = Buffer._augment(this.subarray(start, end))
+	  } else {
+	    var sliceLen = end - start
+	    newBuf = new Buffer(sliceLen, undefined)
+	    for (var i = 0; i < sliceLen; i++) {
+	      newBuf[i] = this[i + start]
+	    }
+	  }
+
+	  if (newBuf.length) newBuf.parent = this.parent || this
+
+	  return newBuf
+	}
+
+	/*
+	 * Need to make sure that buffer isn't trying to write out of bounds.
+	 */
+	function checkOffset (offset, ext, length) {
+	  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
+	  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
+	}
+
+	Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
+	  offset = offset | 0
+	  byteLength = byteLength | 0
+	  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+	  var val = this[offset]
+	  var mul = 1
+	  var i = 0
+	  while (++i < byteLength && (mul *= 0x100)) {
+	    val += this[offset + i] * mul
+	  }
+
+	  return val
+	}
+
+	Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
+	  offset = offset | 0
+	  byteLength = byteLength | 0
+	  if (!noAssert) {
+	    checkOffset(offset, byteLength, this.length)
+	  }
+
+	  var val = this[offset + --byteLength]
+	  var mul = 1
+	  while (byteLength > 0 && (mul *= 0x100)) {
+	    val += this[offset + --byteLength] * mul
+	  }
+
+	  return val
+	}
+
+	Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
+	  if (!noAssert) checkOffset(offset, 1, this.length)
+	  return this[offset]
+	}
+
+	Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
+	  if (!noAssert) checkOffset(offset, 2, this.length)
+	  return this[offset] | (this[offset + 1] << 8)
+	}
+
+	Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
+	  if (!noAssert) checkOffset(offset, 2, this.length)
+	  return (this[offset] << 8) | this[offset + 1]
+	}
+
+	Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
+	  if (!noAssert) checkOffset(offset, 4, this.length)
+
+	  return ((this[offset]) |
+	      (this[offset + 1] << 8) |
+	      (this[offset + 2] << 16)) +
+	      (this[offset + 3] * 0x1000000)
+	}
+
+	Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
+	  if (!noAssert) checkOffset(offset, 4, this.length)
+
+	  return (this[offset] * 0x1000000) +
+	    ((this[offset + 1] << 16) |
+	    (this[offset + 2] << 8) |
+	    this[offset + 3])
+	}
+
+	Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
+	  offset = offset | 0
+	  byteLength = byteLength | 0
+	  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+	  var val = this[offset]
+	  var mul = 1
+	  var i = 0
+	  while (++i < byteLength && (mul *= 0x100)) {
+	    val += this[offset + i] * mul
+	  }
+	  mul *= 0x80
+
+	  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+	  return val
+	}
+
+	Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
+	  offset = offset | 0
+	  byteLength = byteLength | 0
+	  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+	  var i = byteLength
+	  var mul = 1
+	  var val = this[offset + --i]
+	  while (i > 0 && (mul *= 0x100)) {
+	    val += this[offset + --i] * mul
+	  }
+	  mul *= 0x80
+
+	  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+	  return val
+	}
+
+	Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
+	  if (!noAssert) checkOffset(offset, 1, this.length)
+	  if (!(this[offset] & 0x80)) return (this[offset])
+	  return ((0xff - this[offset] + 1) * -1)
+	}
+
+	Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
+	  if (!noAssert) checkOffset(offset, 2, this.length)
+	  var val = this[offset] | (this[offset + 1] << 8)
+	  return (val & 0x8000) ? val | 0xFFFF0000 : val
+	}
+
+	Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
+	  if (!noAssert) checkOffset(offset, 2, this.length)
+	  var val = this[offset + 1] | (this[offset] << 8)
+	  return (val & 0x8000) ? val | 0xFFFF0000 : val
+	}
+
+	Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
+	  if (!noAssert) checkOffset(offset, 4, this.length)
+
+	  return (this[offset]) |
+	    (this[offset + 1] << 8) |
+	    (this[offset + 2] << 16) |
+	    (this[offset + 3] << 24)
+	}
+
+	Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
+	  if (!noAssert) checkOffset(offset, 4, this.length)
+
+	  return (this[offset] << 24) |
+	    (this[offset + 1] << 16) |
+	    (this[offset + 2] << 8) |
+	    (this[offset + 3])
+	}
+
+	Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
+	  if (!noAssert) checkOffset(offset, 4, this.length)
+	  return ieee754.read(this, offset, true, 23, 4)
+	}
+
+	Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
+	  if (!noAssert) checkOffset(offset, 4, this.length)
+	  return ieee754.read(this, offset, false, 23, 4)
+	}
+
+	Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
+	  if (!noAssert) checkOffset(offset, 8, this.length)
+	  return ieee754.read(this, offset, true, 52, 8)
+	}
+
+	Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
+	  if (!noAssert) checkOffset(offset, 8, this.length)
+	  return ieee754.read(this, offset, false, 52, 8)
+	}
+
+	function checkInt (buf, value, offset, ext, max, min) {
+	  if (!Buffer.isBuffer(buf)) throw new TypeError('buffer must be a Buffer instance')
+	  if (value > max || value < min) throw new RangeError('value is out of bounds')
+	  if (offset + ext > buf.length) throw new RangeError('index out of range')
+	}
+
+	Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
+	  value = +value
+	  offset = offset | 0
+	  byteLength = byteLength | 0
+	  if (!noAssert) checkInt(this, value, offset, byteLength, Math.pow(2, 8 * byteLength), 0)
+
+	  var mul = 1
+	  var i = 0
+	  this[offset] = value & 0xFF
+	  while (++i < byteLength && (mul *= 0x100)) {
+	    this[offset + i] = (value / mul) & 0xFF
+	  }
+
+	  return offset + byteLength
+	}
+
+	Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
+	  value = +value
+	  offset = offset | 0
+	  byteLength = byteLength | 0
+	  if (!noAssert) checkInt(this, value, offset, byteLength, Math.pow(2, 8 * byteLength), 0)
+
+	  var i = byteLength - 1
+	  var mul = 1
+	  this[offset + i] = value & 0xFF
+	  while (--i >= 0 && (mul *= 0x100)) {
+	    this[offset + i] = (value / mul) & 0xFF
+	  }
+
+	  return offset + byteLength
+	}
+
+	Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
+	  value = +value
+	  offset = offset | 0
+	  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
+	  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+	  this[offset] = (value & 0xff)
+	  return offset + 1
+	}
+
+	function objectWriteUInt16 (buf, value, offset, littleEndian) {
+	  if (value < 0) value = 0xffff + value + 1
+	  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; i++) {
+	    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
+	      (littleEndian ? i : 1 - i) * 8
+	  }
+	}
+
+	Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
+	  value = +value
+	  offset = offset | 0
+	  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+	  if (Buffer.TYPED_ARRAY_SUPPORT) {
+	    this[offset] = (value & 0xff)
+	    this[offset + 1] = (value >>> 8)
+	  } else {
+	    objectWriteUInt16(this, value, offset, true)
+	  }
+	  return offset + 2
+	}
+
+	Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
+	  value = +value
+	  offset = offset | 0
+	  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+	  if (Buffer.TYPED_ARRAY_SUPPORT) {
+	    this[offset] = (value >>> 8)
+	    this[offset + 1] = (value & 0xff)
+	  } else {
+	    objectWriteUInt16(this, value, offset, false)
+	  }
+	  return offset + 2
+	}
+
+	function objectWriteUInt32 (buf, value, offset, littleEndian) {
+	  if (value < 0) value = 0xffffffff + value + 1
+	  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; i++) {
+	    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
+	  }
+	}
+
+	Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
+	  value = +value
+	  offset = offset | 0
+	  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+	  if (Buffer.TYPED_ARRAY_SUPPORT) {
+	    this[offset + 3] = (value >>> 24)
+	    this[offset + 2] = (value >>> 16)
+	    this[offset + 1] = (value >>> 8)
+	    this[offset] = (value & 0xff)
+	  } else {
+	    objectWriteUInt32(this, value, offset, true)
+	  }
+	  return offset + 4
+	}
+
+	Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
+	  value = +value
+	  offset = offset | 0
+	  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+	  if (Buffer.TYPED_ARRAY_SUPPORT) {
+	    this[offset] = (value >>> 24)
+	    this[offset + 1] = (value >>> 16)
+	    this[offset + 2] = (value >>> 8)
+	    this[offset + 3] = (value & 0xff)
+	  } else {
+	    objectWriteUInt32(this, value, offset, false)
+	  }
+	  return offset + 4
+	}
+
+	Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
+	  value = +value
+	  offset = offset | 0
+	  if (!noAssert) {
+	    var limit = Math.pow(2, 8 * byteLength - 1)
+
+	    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+	  }
+
+	  var i = 0
+	  var mul = 1
+	  var sub = value < 0 ? 1 : 0
+	  this[offset] = value & 0xFF
+	  while (++i < byteLength && (mul *= 0x100)) {
+	    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+	  }
+
+	  return offset + byteLength
+	}
+
+	Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
+	  value = +value
+	  offset = offset | 0
+	  if (!noAssert) {
+	    var limit = Math.pow(2, 8 * byteLength - 1)
+
+	    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+	  }
+
+	  var i = byteLength - 1
+	  var mul = 1
+	  var sub = value < 0 ? 1 : 0
+	  this[offset + i] = value & 0xFF
+	  while (--i >= 0 && (mul *= 0x100)) {
+	    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+	  }
+
+	  return offset + byteLength
+	}
+
+	Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
+	  value = +value
+	  offset = offset | 0
+	  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
+	  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+	  if (value < 0) value = 0xff + value + 1
+	  this[offset] = (value & 0xff)
+	  return offset + 1
+	}
+
+	Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
+	  value = +value
+	  offset = offset | 0
+	  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+	  if (Buffer.TYPED_ARRAY_SUPPORT) {
+	    this[offset] = (value & 0xff)
+	    this[offset + 1] = (value >>> 8)
+	  } else {
+	    objectWriteUInt16(this, value, offset, true)
+	  }
+	  return offset + 2
+	}
+
+	Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
+	  value = +value
+	  offset = offset | 0
+	  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+	  if (Buffer.TYPED_ARRAY_SUPPORT) {
+	    this[offset] = (value >>> 8)
+	    this[offset + 1] = (value & 0xff)
+	  } else {
+	    objectWriteUInt16(this, value, offset, false)
+	  }
+	  return offset + 2
+	}
+
+	Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
+	  value = +value
+	  offset = offset | 0
+	  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+	  if (Buffer.TYPED_ARRAY_SUPPORT) {
+	    this[offset] = (value & 0xff)
+	    this[offset + 1] = (value >>> 8)
+	    this[offset + 2] = (value >>> 16)
+	    this[offset + 3] = (value >>> 24)
+	  } else {
+	    objectWriteUInt32(this, value, offset, true)
+	  }
+	  return offset + 4
+	}
+
+	Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
+	  value = +value
+	  offset = offset | 0
+	  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+	  if (value < 0) value = 0xffffffff + value + 1
+	  if (Buffer.TYPED_ARRAY_SUPPORT) {
+	    this[offset] = (value >>> 24)
+	    this[offset + 1] = (value >>> 16)
+	    this[offset + 2] = (value >>> 8)
+	    this[offset + 3] = (value & 0xff)
+	  } else {
+	    objectWriteUInt32(this, value, offset, false)
+	  }
+	  return offset + 4
+	}
+
+	function checkIEEE754 (buf, value, offset, ext, max, min) {
+	  if (value > max || value < min) throw new RangeError('value is out of bounds')
+	  if (offset + ext > buf.length) throw new RangeError('index out of range')
+	  if (offset < 0) throw new RangeError('index out of range')
+	}
+
+	function writeFloat (buf, value, offset, littleEndian, noAssert) {
+	  if (!noAssert) {
+	    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
+	  }
+	  ieee754.write(buf, value, offset, littleEndian, 23, 4)
+	  return offset + 4
+	}
+
+	Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
+	  return writeFloat(this, value, offset, true, noAssert)
+	}
+
+	Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
+	  return writeFloat(this, value, offset, false, noAssert)
+	}
+
+	function writeDouble (buf, value, offset, littleEndian, noAssert) {
+	  if (!noAssert) {
+	    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
+	  }
+	  ieee754.write(buf, value, offset, littleEndian, 52, 8)
+	  return offset + 8
+	}
+
+	Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
+	  return writeDouble(this, value, offset, true, noAssert)
+	}
+
+	Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
+	  return writeDouble(this, value, offset, false, noAssert)
+	}
+
+	// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
+	Buffer.prototype.copy = function copy (target, targetStart, start, end) {
+	  if (!start) start = 0
+	  if (!end && end !== 0) end = this.length
+	  if (targetStart >= target.length) targetStart = target.length
+	  if (!targetStart) targetStart = 0
+	  if (end > 0 && end < start) end = start
+
+	  // Copy 0 bytes; we're done
+	  if (end === start) return 0
+	  if (target.length === 0 || this.length === 0) return 0
+
+	  // Fatal error conditions
+	  if (targetStart < 0) {
+	    throw new RangeError('targetStart out of bounds')
+	  }
+	  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
+	  if (end < 0) throw new RangeError('sourceEnd out of bounds')
+
+	  // Are we oob?
+	  if (end > this.length) end = this.length
+	  if (target.length - targetStart < end - start) {
+	    end = target.length - targetStart + start
+	  }
+
+	  var len = end - start
+	  var i
+
+	  if (this === target && start < targetStart && targetStart < end) {
+	    // descending copy from end
+	    for (i = len - 1; i >= 0; i--) {
+	      target[i + targetStart] = this[i + start]
+	    }
+	  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
+	    // ascending copy from start
+	    for (i = 0; i < len; i++) {
+	      target[i + targetStart] = this[i + start]
+	    }
+	  } else {
+	    target._set(this.subarray(start, start + len), targetStart)
+	  }
+
+	  return len
+	}
+
+	// fill(value, start=0, end=buffer.length)
+	Buffer.prototype.fill = function fill (value, start, end) {
+	  if (!value) value = 0
+	  if (!start) start = 0
+	  if (!end) end = this.length
+
+	  if (end < start) throw new RangeError('end < start')
+
+	  // Fill 0 bytes; we're done
+	  if (end === start) return
+	  if (this.length === 0) return
+
+	  if (start < 0 || start >= this.length) throw new RangeError('start out of bounds')
+	  if (end < 0 || end > this.length) throw new RangeError('end out of bounds')
+
+	  var i
+	  if (typeof value === 'number') {
+	    for (i = start; i < end; i++) {
+	      this[i] = value
+	    }
+	  } else {
+	    var bytes = utf8ToBytes(value.toString())
+	    var len = bytes.length
+	    for (i = start; i < end; i++) {
+	      this[i] = bytes[i % len]
+	    }
+	  }
+
+	  return this
+	}
+
+	/**
+	 * Creates a new `ArrayBuffer` with the *copied* memory of the buffer instance.
+	 * Added in Node 0.12. Only available in browsers that support ArrayBuffer.
+	 */
+	Buffer.prototype.toArrayBuffer = function toArrayBuffer () {
+	  if (typeof Uint8Array !== 'undefined') {
+	    if (Buffer.TYPED_ARRAY_SUPPORT) {
+	      return (new Buffer(this)).buffer
+	    } else {
+	      var buf = new Uint8Array(this.length)
+	      for (var i = 0, len = buf.length; i < len; i += 1) {
+	        buf[i] = this[i]
+	      }
+	      return buf.buffer
+	    }
+	  } else {
+	    throw new TypeError('Buffer.toArrayBuffer not supported in this browser')
+	  }
+	}
+
+	// HELPER FUNCTIONS
+	// ================
+
+	var BP = Buffer.prototype
+
+	/**
+	 * Augment a Uint8Array *instance* (not the Uint8Array class!) with Buffer methods
+	 */
+	Buffer._augment = function _augment (arr) {
+	  arr.constructor = Buffer
+	  arr._isBuffer = true
+
+	  // save reference to original Uint8Array set method before overwriting
+	  arr._set = arr.set
+
+	  // deprecated
+	  arr.get = BP.get
+	  arr.set = BP.set
+
+	  arr.write = BP.write
+	  arr.toString = BP.toString
+	  arr.toLocaleString = BP.toString
+	  arr.toJSON = BP.toJSON
+	  arr.equals = BP.equals
+	  arr.compare = BP.compare
+	  arr.indexOf = BP.indexOf
+	  arr.copy = BP.copy
+	  arr.slice = BP.slice
+	  arr.readUIntLE = BP.readUIntLE
+	  arr.readUIntBE = BP.readUIntBE
+	  arr.readUInt8 = BP.readUInt8
+	  arr.readUInt16LE = BP.readUInt16LE
+	  arr.readUInt16BE = BP.readUInt16BE
+	  arr.readUInt32LE = BP.readUInt32LE
+	  arr.readUInt32BE = BP.readUInt32BE
+	  arr.readIntLE = BP.readIntLE
+	  arr.readIntBE = BP.readIntBE
+	  arr.readInt8 = BP.readInt8
+	  arr.readInt16LE = BP.readInt16LE
+	  arr.readInt16BE = BP.readInt16BE
+	  arr.readInt32LE = BP.readInt32LE
+	  arr.readInt32BE = BP.readInt32BE
+	  arr.readFloatLE = BP.readFloatLE
+	  arr.readFloatBE = BP.readFloatBE
+	  arr.readDoubleLE = BP.readDoubleLE
+	  arr.readDoubleBE = BP.readDoubleBE
+	  arr.writeUInt8 = BP.writeUInt8
+	  arr.writeUIntLE = BP.writeUIntLE
+	  arr.writeUIntBE = BP.writeUIntBE
+	  arr.writeUInt16LE = BP.writeUInt16LE
+	  arr.writeUInt16BE = BP.writeUInt16BE
+	  arr.writeUInt32LE = BP.writeUInt32LE
+	  arr.writeUInt32BE = BP.writeUInt32BE
+	  arr.writeIntLE = BP.writeIntLE
+	  arr.writeIntBE = BP.writeIntBE
+	  arr.writeInt8 = BP.writeInt8
+	  arr.writeInt16LE = BP.writeInt16LE
+	  arr.writeInt16BE = BP.writeInt16BE
+	  arr.writeInt32LE = BP.writeInt32LE
+	  arr.writeInt32BE = BP.writeInt32BE
+	  arr.writeFloatLE = BP.writeFloatLE
+	  arr.writeFloatBE = BP.writeFloatBE
+	  arr.writeDoubleLE = BP.writeDoubleLE
+	  arr.writeDoubleBE = BP.writeDoubleBE
+	  arr.fill = BP.fill
+	  arr.inspect = BP.inspect
+	  arr.toArrayBuffer = BP.toArrayBuffer
+
+	  return arr
+	}
+
+	var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
+
+	function base64clean (str) {
+	  // Node strips out invalid characters like \n and \t from the string, base64-js does not
+	  str = stringtrim(str).replace(INVALID_BASE64_RE, '')
+	  // Node converts strings with length < 2 to ''
+	  if (str.length < 2) return ''
+	  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
+	  while (str.length % 4 !== 0) {
+	    str = str + '='
+	  }
+	  return str
+	}
+
+	function stringtrim (str) {
+	  if (str.trim) return str.trim()
+	  return str.replace(/^\s+|\s+$/g, '')
+	}
+
+	function toHex (n) {
+	  if (n < 16) return '0' + n.toString(16)
+	  return n.toString(16)
+	}
+
+	function utf8ToBytes (string, units) {
+	  units = units || Infinity
+	  var codePoint
+	  var length = string.length
+	  var leadSurrogate = null
+	  var bytes = []
+
+	  for (var i = 0; i < length; i++) {
+	    codePoint = string.charCodeAt(i)
+
+	    // is surrogate component
+	    if (codePoint > 0xD7FF && codePoint < 0xE000) {
+	      // last char was a lead
+	      if (!leadSurrogate) {
+	        // no lead yet
+	        if (codePoint > 0xDBFF) {
+	          // unexpected trail
+	          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+	          continue
+	        } else if (i + 1 === length) {
+	          // unpaired lead
+	          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+	          continue
+	        }
+
+	        // valid lead
+	        leadSurrogate = codePoint
+
+	        continue
+	      }
+
+	      // 2 leads in a row
+	      if (codePoint < 0xDC00) {
+	        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+	        leadSurrogate = codePoint
+	        continue
+	      }
+
+	      // valid surrogate pair
+	      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
+	    } else if (leadSurrogate) {
+	      // valid bmp char, but last char was a lead
+	      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+	    }
+
+	    leadSurrogate = null
+
+	    // encode utf8
+	    if (codePoint < 0x80) {
+	      if ((units -= 1) < 0) break
+	      bytes.push(codePoint)
+	    } else if (codePoint < 0x800) {
+	      if ((units -= 2) < 0) break
+	      bytes.push(
+	        codePoint >> 0x6 | 0xC0,
+	        codePoint & 0x3F | 0x80
+	      )
+	    } else if (codePoint < 0x10000) {
+	      if ((units -= 3) < 0) break
+	      bytes.push(
+	        codePoint >> 0xC | 0xE0,
+	        codePoint >> 0x6 & 0x3F | 0x80,
+	        codePoint & 0x3F | 0x80
+	      )
+	    } else if (codePoint < 0x110000) {
+	      if ((units -= 4) < 0) break
+	      bytes.push(
+	        codePoint >> 0x12 | 0xF0,
+	        codePoint >> 0xC & 0x3F | 0x80,
+	        codePoint >> 0x6 & 0x3F | 0x80,
+	        codePoint & 0x3F | 0x80
+	      )
+	    } else {
+	      throw new Error('Invalid code point')
+	    }
+	  }
+
+	  return bytes
+	}
+
+	function asciiToBytes (str) {
+	  var byteArray = []
+	  for (var i = 0; i < str.length; i++) {
+	    // Node's code seems to be doing this and not & 0x7F..
+	    byteArray.push(str.charCodeAt(i) & 0xFF)
+	  }
+	  return byteArray
+	}
+
+	function utf16leToBytes (str, units) {
+	  var c, hi, lo
+	  var byteArray = []
+	  for (var i = 0; i < str.length; i++) {
+	    if ((units -= 2) < 0) break
+
+	    c = str.charCodeAt(i)
+	    hi = c >> 8
+	    lo = c % 256
+	    byteArray.push(lo)
+	    byteArray.push(hi)
+	  }
+
+	  return byteArray
+	}
+
+	function base64ToBytes (str) {
+	  return base64.toByteArray(base64clean(str))
+	}
+
+	function blitBuffer (src, dst, offset, length) {
+	  for (var i = 0; i < length; i++) {
+	    if ((i + offset >= dst.length) || (i >= src.length)) break
+	    dst[i + offset] = src[i]
+	  }
+	  return i
+	}
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(308).Buffer, (function() { return this; }())))
+
+/***/ },
+/* 309 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+	;(function (exports) {
+		'use strict';
+
+	  var Arr = (typeof Uint8Array !== 'undefined')
+	    ? Uint8Array
+	    : Array
+
+		var PLUS   = '+'.charCodeAt(0)
+		var SLASH  = '/'.charCodeAt(0)
+		var NUMBER = '0'.charCodeAt(0)
+		var LOWER  = 'a'.charCodeAt(0)
+		var UPPER  = 'A'.charCodeAt(0)
+		var PLUS_URL_SAFE = '-'.charCodeAt(0)
+		var SLASH_URL_SAFE = '_'.charCodeAt(0)
+
+		function decode (elt) {
+			var code = elt.charCodeAt(0)
+			if (code === PLUS ||
+			    code === PLUS_URL_SAFE)
+				return 62 // '+'
+			if (code === SLASH ||
+			    code === SLASH_URL_SAFE)
+				return 63 // '/'
+			if (code < NUMBER)
+				return -1 //no match
+			if (code < NUMBER + 10)
+				return code - NUMBER + 26 + 26
+			if (code < UPPER + 26)
+				return code - UPPER
+			if (code < LOWER + 26)
+				return code - LOWER + 26
+		}
+
+		function b64ToByteArray (b64) {
+			var i, j, l, tmp, placeHolders, arr
+
+			if (b64.length % 4 > 0) {
+				throw new Error('Invalid string. Length must be a multiple of 4')
+			}
+
+			// the number of equal signs (place holders)
+			// if there are two placeholders, than the two characters before it
+			// represent one byte
+			// if there is only one, then the three characters before it represent 2 bytes
+			// this is just a cheap hack to not do indexOf twice
+			var len = b64.length
+			placeHolders = '=' === b64.charAt(len - 2) ? 2 : '=' === b64.charAt(len - 1) ? 1 : 0
+
+			// base64 is 4/3 + up to two characters of the original data
+			arr = new Arr(b64.length * 3 / 4 - placeHolders)
+
+			// if there are placeholders, only get up to the last complete 4 chars
+			l = placeHolders > 0 ? b64.length - 4 : b64.length
+
+			var L = 0
+
+			function push (v) {
+				arr[L++] = v
+			}
+
+			for (i = 0, j = 0; i < l; i += 4, j += 3) {
+				tmp = (decode(b64.charAt(i)) << 18) | (decode(b64.charAt(i + 1)) << 12) | (decode(b64.charAt(i + 2)) << 6) | decode(b64.charAt(i + 3))
+				push((tmp & 0xFF0000) >> 16)
+				push((tmp & 0xFF00) >> 8)
+				push(tmp & 0xFF)
+			}
+
+			if (placeHolders === 2) {
+				tmp = (decode(b64.charAt(i)) << 2) | (decode(b64.charAt(i + 1)) >> 4)
+				push(tmp & 0xFF)
+			} else if (placeHolders === 1) {
+				tmp = (decode(b64.charAt(i)) << 10) | (decode(b64.charAt(i + 1)) << 4) | (decode(b64.charAt(i + 2)) >> 2)
+				push((tmp >> 8) & 0xFF)
+				push(tmp & 0xFF)
+			}
+
+			return arr
+		}
+
+		function uint8ToBase64 (uint8) {
+			var i,
+				extraBytes = uint8.length % 3, // if we have 1 byte left, pad 2 bytes
+				output = "",
+				temp, length
+
+			function encode (num) {
+				return lookup.charAt(num)
+			}
+
+			function tripletToBase64 (num) {
+				return encode(num >> 18 & 0x3F) + encode(num >> 12 & 0x3F) + encode(num >> 6 & 0x3F) + encode(num & 0x3F)
+			}
+
+			// go through the array every three bytes, we'll deal with trailing stuff later
+			for (i = 0, length = uint8.length - extraBytes; i < length; i += 3) {
+				temp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+				output += tripletToBase64(temp)
+			}
+
+			// pad the end with zeros, but make sure to not forget the extra bytes
+			switch (extraBytes) {
+				case 1:
+					temp = uint8[uint8.length - 1]
+					output += encode(temp >> 2)
+					output += encode((temp << 4) & 0x3F)
+					output += '=='
+					break
+				case 2:
+					temp = (uint8[uint8.length - 2] << 8) + (uint8[uint8.length - 1])
+					output += encode(temp >> 10)
+					output += encode((temp >> 4) & 0x3F)
+					output += encode((temp << 2) & 0x3F)
+					output += '='
+					break
+			}
+
+			return output
+		}
+
+		exports.toByteArray = b64ToByteArray
+		exports.fromByteArray = uint8ToBase64
+	}( false ? (this.base64js = {}) : exports))
+
+
+/***/ },
+/* 310 */
+/***/ function(module, exports) {
+
+	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+	  var e, m
+	  var eLen = nBytes * 8 - mLen - 1
+	  var eMax = (1 << eLen) - 1
+	  var eBias = eMax >> 1
+	  var nBits = -7
+	  var i = isLE ? (nBytes - 1) : 0
+	  var d = isLE ? -1 : 1
+	  var s = buffer[offset + i]
+
+	  i += d
+
+	  e = s & ((1 << (-nBits)) - 1)
+	  s >>= (-nBits)
+	  nBits += eLen
+	  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+	  m = e & ((1 << (-nBits)) - 1)
+	  e >>= (-nBits)
+	  nBits += mLen
+	  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+	  if (e === 0) {
+	    e = 1 - eBias
+	  } else if (e === eMax) {
+	    return m ? NaN : ((s ? -1 : 1) * Infinity)
+	  } else {
+	    m = m + Math.pow(2, mLen)
+	    e = e - eBias
+	  }
+	  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+	}
+
+	exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+	  var e, m, c
+	  var eLen = nBytes * 8 - mLen - 1
+	  var eMax = (1 << eLen) - 1
+	  var eBias = eMax >> 1
+	  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+	  var i = isLE ? 0 : (nBytes - 1)
+	  var d = isLE ? 1 : -1
+	  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+
+	  value = Math.abs(value)
+
+	  if (isNaN(value) || value === Infinity) {
+	    m = isNaN(value) ? 1 : 0
+	    e = eMax
+	  } else {
+	    e = Math.floor(Math.log(value) / Math.LN2)
+	    if (value * (c = Math.pow(2, -e)) < 1) {
+	      e--
+	      c *= 2
+	    }
+	    if (e + eBias >= 1) {
+	      value += rt / c
+	    } else {
+	      value += rt * Math.pow(2, 1 - eBias)
+	    }
+	    if (value * c >= 2) {
+	      e++
+	      c /= 2
+	    }
+
+	    if (e + eBias >= eMax) {
+	      m = 0
+	      e = eMax
+	    } else if (e + eBias >= 1) {
+	      m = (value * c - 1) * Math.pow(2, mLen)
+	      e = e + eBias
+	    } else {
+	      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+	      e = 0
+	    }
+	  }
+
+	  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+	  e = (e << mLen) | m
+	  eLen += mLen
+	  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+	  buffer[offset + i - d] |= s * 128
+	}
+
+
+/***/ },
+/* 311 */
+/***/ function(module, exports) {
+
+	module.exports = Array.isArray || function (arr) {
+	  return Object.prototype.toString.call(arr) == '[object Array]';
+	};
+
 
 /***/ }
 /******/ ]);

@@ -1,14 +1,8 @@
-var path = require('path');
 var webpack = require('webpack');
+var baseConfig = require('./webpack.base.config');
+var assign = require('object-assign');
 
-module.exports = {
-  entry: [
-    path.join(__dirname, './index.js')
-  ],
-  output: {
-    path: path.join(__dirname, '../'),
-    filename: 'app.js'
-  },
+module.exports = assign({
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': '"production"'
@@ -24,4 +18,4 @@ module.exports = {
       }
     ]
   }
-}
+}, baseConfig);   //baseConfig 一定放后面

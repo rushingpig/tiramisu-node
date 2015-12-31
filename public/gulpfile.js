@@ -158,9 +158,9 @@ gulp.task("webpack-dev-server", function(callback) {
   webpack_dev_config.entry.unshift(
     "webpack-dev-server/client?http://localhost:" + port,
     'webpack/hot/only-dev-server');
-
   new WebpackDevServer(webpack(webpack_dev_config), {
     hot: true,
+    // inline: true,
     // noInfo: true,
     stats: { colors: true },
     colors: true,

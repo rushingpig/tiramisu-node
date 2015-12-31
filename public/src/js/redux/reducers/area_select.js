@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import { GOT_PROVINCES, GOT_CITIES, GOT_DISTRICTS, 
-  PROVINCE_RESET, CITY_RESET } from '../actions/area';
-import { map } from '../utils/index';
+  PROVINCE_RESET, CITY_RESET } from 'actions/area';
+import { map } from 'utils/index';
 
 var initial_state = {
   provinces: [],
@@ -21,15 +21,15 @@ function _t(data){
 export function area(state = initial_state, action){
   switch (action.type) {
     case GOT_PROVINCES:
-      return {...state, ...{provinces: _t(action.data), cities: [], districts: []} };
+      return {...state, provinces: _t(action.data) };
     case PROVINCE_RESET:
-      return {...state, ...{cities: [], districts: []} };
+      return {...state, cities: [], districts: [] };
     case GOT_CITIES:
-      return {...state, ...{cities: _t(action.data), districts: []} };
+      return {...state, cities: _t(action.data) };
     case CITY_RESET:
-      return {...state, ...{districts: []}}
+      return {...state, districts: []}
     case GOT_DISTRICTS:
-      return {...state, ...{districts: _t(action.data)} };
+      return {...state, districts: _t(action.data) };
     default:
       return state
   }

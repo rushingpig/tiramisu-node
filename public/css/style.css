@@ -3210,6 +3210,9 @@ button.close {
 .form-group label {
   font-weight: normal; }
 
+.strong-label label {
+  font-weight: bold; }
+
 .form-control {
   box-shadow: none; }
 
@@ -3348,6 +3351,9 @@ a:hover {
 .nowrap {
   white-space: nowrap; }
 
+.gray {
+  color: #9C9A9A !important; }
+
 /**************************/
 /********* 组件类 **********/
 /**************************/
@@ -3365,6 +3371,9 @@ a:hover {
     border-bottom: none;
     color: #D8A85F;
     cursor: default; }
+
+.form-control.short-input {
+  width: 85px; }
 
 .search-input {
   position: relative; }

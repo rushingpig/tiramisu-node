@@ -1,8 +1,8 @@
 import React from 'react';
 import {render, findDOMNode} from 'react-dom';
-import config from '../config/app.config';
+import config from 'config/app.config';
 import {connect} from 'react-redux';
-import {login, usernameChange, passwordChange} from '../actions/login';
+import {login, usernameChange, passwordChange} from 'actions/login';
 import history from '../history';
 
 var Login = React.createClass({

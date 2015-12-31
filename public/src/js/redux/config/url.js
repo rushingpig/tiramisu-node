@@ -28,6 +28,8 @@ const URL = (function(){
   var url = {
     login: '/login',
 
+    //订单
+    orders: '/orders',
     provinces: '/provinces',
     cities: '/province/:provinceId/cities',
     districts: '/city/:cityId/districts',

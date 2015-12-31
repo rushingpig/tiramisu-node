@@ -29,12 +29,18 @@ var NumberPicker = React.createClass({
   minus: function(){
     var value = parseInt(this.state.value) || this.props.lower_limit;
     var { step, lower_limit } = this.props;
-    this.setState({value: value - step >= lower_limit ? value - step : value});
+    value = value - step >= lower_limit ? value - step : value;
+    this.setState({value: value}, function(){
+      this.props.onChange(value);
+    });
   },
   add: function(){
     var value = parseInt(this.state.value) || this.props.lower_limit;
     var { step, upper_limit } = this.props;
-    this.setState({value: value + step <= upper_limit ? value + step : value});
+    value = value + step <= upper_limit ? value + step : value;
+    this.setState({value: value}, function(){
+      this.props.onChange(value);
+    });
   },
   input: function(e){
     var v = e.target.value.replace(/[^\d]/g, '');

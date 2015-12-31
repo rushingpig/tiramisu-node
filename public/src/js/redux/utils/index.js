@@ -1,3 +1,5 @@
+import noty from './_noty';
+
 function core_isFunction(arg) {
   return typeof arg === 'function';
 }
@@ -133,6 +135,16 @@ function map(target, cb) {
 }
 
 
+function toFixed(target, digit){
+  var t = parseFloat(target);
+  digit = typeof digit == 'undefined' ? 2 : digit; //默认2位
+  if(isNaN(t)){
+    return '';
+  }else{
+    return Number(t.toFixed(digit));
+  }
+}
+
 export default {
   core: {
     isArray: core_isArray,
@@ -152,4 +164,8 @@ export default {
   mapValues,
   each,
   map,
+
+  toFixed,
+
+  noty,          //提示信息小窗口：param：（type， text);
 };

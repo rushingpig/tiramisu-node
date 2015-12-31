@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {dateFormat} from '../utils/index';
+import {dateFormat} from 'utils/index';
 
 class Header extends Component {
   constructor(props){

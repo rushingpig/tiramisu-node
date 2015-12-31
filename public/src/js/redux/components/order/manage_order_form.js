@@ -2,14 +2,16 @@ import React, {Component, PropTypes} from 'react';
 import {findDOMNode} from 'react-dom';
 import { reduxForm } from 'redux-form';
 
-import MyMap from '../../utils/MyMap';
-import DatePicker from '../common/datepicker';
-import Select from '../common/select';
-import Pagination from '../common/pagination';
-import Alert from '../common/alert';
+import MyMap from 'utils/MyMap';
+import DatePicker from 'common/datepicker';
+import Select from 'common/select';
+import Pagination from 'common/pagination';
+import LazyLoad from 'utils/lazy_load';
+import Utils from 'utils/index';
+import history from 'history_instance';
 
 import { DELIVERY_TO_HOME, DELIVERY_TO_STORE,
-  SELECT_DEFAULT_VALUE, INVOICE } from '../../config/app.config';
+  SELECT_DEFAULT_VALUE, INVOICE } from 'config/app.config';
 
 const validate = (values, {form}) => {
   const errors = {};
@@ -48,12 +50,13 @@ class ManageAddForm extends Component {
     this.state = {
       invoices: [{id: INVOICE.NO, text: '不需要'}, {id: INVOICE.YES, text: '需要'}],
       selected_order_src_level1_id: SELECT_DEFAULT_VALUE,
-    }
+    };
+    this.handleSave = this.handleSave.bind(this);
   }
   render(){
     var {
+      editable,  // 表明是否是处于编辑状态
       handleSubmit,
-      // submitting,
       fields: {
         delivery_type,
         owner_name,
@@ -61,6 +64,8 @@ class ManageAddForm extends Component {
         recipient_name, //下单人姓名
         recipient_mobile,
         recipient_address, //收货人详细地址----》送货上门
+        province_id,
+        city_id,
         regionalism_id,    //分店ID ----》自取
         recipient_landmark, //标志性建筑
         delivery_id,     //配送中心
@@ -74,15 +79,33 @@ class ManageAddForm extends Component {
         invoice,
       }
     } = this.props;
-    var {all_delivery_time, all_pay_status, all_order_srcs, delivery_stations, all_pay_modes} = this.props['form-data'];
+    var { save_ing, save_success, 
+      all_delivery_time, all_pay_status, all_order_srcs, 
+      delivery_stations, all_pay_modes} = this.props['form-data'];
     var {provinces, cities, districts} = this.props.area;
     var {invoices, selected_order_src_level1_id} = this.state;
+
+    
+    //{{表单处于编辑状态时的额外处理
+    if(editable && !this.editable_initial){
+      if(src_id.value && all_order_srcs[1]){   //表明表单数据已准备完毕
+        this.editable_initial = true;   //初始化就只能一次
+        all_order_srcs[1].forEach(n => {
+          if(n.id == src_id.value){
+            selected_order_src_level1_id = n.parent_id;
+            this.state.selected_order_src_level1_id = n.parent_id;
+          }
+        })
+      }
+    }
+    //}}
 
     var order_srcs_level2 = all_order_srcs.length > 1
       ? all_order_srcs[1].filter(n => n.parent_id == selected_order_src_level1_id)
       : [];
 
     return (
+    <div>
       <form>
         <div className="form-group form-inline">
           <label className="control-label">{'　配送方式：'}</label>
@@ -118,8 +141,8 @@ class ManageAddForm extends Component {
         </div>
         <div className="form-group form-inline">
           <label>{delivery_type.value == DELIVERY_TO_HOME ? '收货人地址：' : '　选择分店：'}</label>
-          <Select ref="province" options={provinces} onChange={this.onProvinceChange.bind(this)} />{' '}
-          <Select ref="city" options={cities} onChange={this.onCityChange.bind(this)} />{' '}
+          <Select ref="province" options={provinces} {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} />{' '}
+          <Select ref="city" options={cities} {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} />{' '}
           <Select ref="district" options={districts} {...regionalism_id} className={`${regionalism_id.error}`} />{' '}
           <input ref="recipient_address" {...recipient_address} className={`form-control input-sm ${recipient_address.error}`} type="text" />
         </div>
@@ -142,8 +165,8 @@ class ManageAddForm extends Component {
             ? <Select {...src_id} options={all_order_srcs[0]} key="order_srcs_level1" className={`form-select ${src_id.error}`} />
             : [
                 (order_srcs_level2.length 
-                  ? <Select options={all_order_srcs[0]} onChange={this.orderSrcsLevel1Change.bind(this)} key="order_srcs_level1" className="form-select" />
-                  : <Select {...src_id} options={all_order_srcs[0]} onChange={this.orderSrcsLevel1Change.bind(this)} key="order_srcs_level1" className="form-select" />),
+                  ? <Select value={selected_order_src_level1_id} options={all_order_srcs[0]} onChange={this.orderSrcsLevel1Change.bind(this)} key="order_srcs_level1" className="form-select" />
+                  : <Select {...src_id} value={selected_order_src_level1_id} options={all_order_srcs[0]} onChange={this.orderSrcsLevel1Change.bind(this)} key="order_srcs_level1" className="form-select" />),
                 ' ',
                 (order_srcs_level2.length ? <Select {...src_id} options={order_srcs_level2} key="order_srcs_level2" className={`form-select ${src_id.error}`} />  : null)
               ]
@@ -170,7 +193,40 @@ class ManageAddForm extends Component {
           <Select {...invoice} options={invoices} className={`${invoice.error}`} no-default="true" />
         </div>
       </form>
+      <hr className="dotted" />
+      {this.props.children}
+      <div className="form-group">
+        <button 
+            onClick={handleSubmit(this.handleSave)} 
+            disabled={save_ing} 
+            data-submitting={save_ing} 
+            className="btn btn-theme btn-sm">保存信息</button>
+        {'　　'}
+        <button disabled={save_ing} className="btn btn-theme btn-sm">保存</button>
+      </div>
+    </div>
     )
+  }
+  handleSave(form_data){
+    var { dispatch, actions: {saveOrderInfo} } = this.props;
+    
+    //redux-form的缘故，这里必须异步，否则errors为空对象
+    setTimeout(() => {
+      var { errors, dispatch, actions: {saveOrderInfo} } = this.props;
+      if(!Object.keys(errors).length){
+        form_data.delivery_id = 1;
+        form_data.delivery_time = form_data.delivery_date + ' ' + form_data.delivery_hours;
+        delete form_data.delivery_date;
+        delete form_data.delivery_hours;
+
+        dispatch(saveOrderInfo(form_data)).done(function(){
+          Utils.noty('success', '保存成功');
+          history.replace('/om/index');
+        }).fail(function(){
+          Utils.noty('error', '保存异常');
+        });
+      }
+    }, 0);
   }
   componentDidMount(){
     var {getProvinces, getOrderSrcs, getDeliveryStations, getPayModes} = this.props.actions;
@@ -214,18 +270,25 @@ class ManageAddForm extends Component {
         }
       }
     });
+    
+    // $(findDOMNode(this.refs.province)).on('change', this.onProvinceChange.bind(this));
+    // $(findDOMNode(this.refs.city)).on('change', this.onCityChange.bind(this));
+
+    LazyLoad('noty');
   }
-  onProvinceChange(e){
+  onProvinceChange(callback, e){
     var {value} = e.target;
-    value != this.refs.province.props['default-value']
-      ? this.props.getCities(value)
-      : this.props.provinceReset();
+    this.props.actions.provinceReset();
+    if(value != this.refs.province.props['default-value'])
+      this.props.actions.getCities(value);
+    callback(e);
   }
-  onCityChange(e){
+  onCityChange(callback, e){
     var {value} = e.target;
-    value != this.refs.city.props['default-value']
-      ? this.props.getDistricts(value)
-      : this.props.cityReset();
+    this.props.actions.cityReset();
+    if(value != this.refs.city.props['default-value'])
+      this.props.actions.getDistricts(value);
+    callback(e);
   }
   orderSrcsLevel1Change(e){
     this.setState({selected_order_src_level1_id: e.target.value})
@@ -269,6 +332,8 @@ ManageAddForm = reduxForm({
     'recipient_name', //下单人姓名
     'recipient_mobile',
     'recipient_address', //收货人详细地址----》送货上门
+    'province_id',
+    'city_id',
     'regionalism_id',    //分店ID ----》自取
     'recipient_landmark', //标志性建筑
     'delivery_id',     //配送中心
@@ -285,10 +350,7 @@ ManageAddForm = reduxForm({
   touchOnBlur: true
 }, state => ({
   //赋初始值
-  initialValues: {
-    delivery_type: DELIVERY_TO_HOME,
-    invoice: INVOICE.NO,
-  }
+  initialValues: state.orderManageForm.mainForm.data
 }))( ManageAddForm );
 
 export default ManageAddForm;

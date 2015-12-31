@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import createLogger from 'redux-logger';
 import thunk from 'redux-thunk';
-import rootReducer from '../reducers/index';
+import rootReducer from 'reducers/index';
 
 if(process.env.NODE_ENV == 'production'){
   //生产环境不需要logger
@@ -12,12 +12,15 @@ if(process.env.NODE_ENV == 'production'){
   var createStoreWithMiddleware = compose(
     applyMiddleware(
       thunk,
-      // createLogger()
+      createLogger()
     ),
     window.devToolsExtension ? window.devToolsExtension() : f => f
   )(createStore);
 }
 
-export default function(){
-  return createStoreWithMiddleware(rootReducer);
+const store = createStoreWithMiddleware(rootReducer);
+
+if(process.env.NODE_ENV != 'production'){
+  window.store = store;
 }
+export default store;

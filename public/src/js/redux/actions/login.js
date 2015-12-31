@@ -1,5 +1,5 @@
-import {get, post} from '../utils/request'; //Promise
-import Url from '../config/url';
+import {get, post} from 'utils/request'; //Promise
+import Url from 'config/url';
 
 
 export const LOGIN_START = 'LOGIN_START';

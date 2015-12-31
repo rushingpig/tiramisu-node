@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import { LOGIN_START, LOGIN_SUCCESS, LOGIN_FAIL,
  USERNAME_CHANGE, PASSWORD_CHANGE }
-  from '../actions/login';
+  from 'actions/login';
 
 var initial_state = {
   login_ing: false,

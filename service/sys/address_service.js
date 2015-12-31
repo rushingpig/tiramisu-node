@@ -20,7 +20,7 @@ function AddressService() {
  * @param next
  */
 AddressService.prototype.getProvinces = (req, res, next)=> {
-    systemUtils.wrapService(next, addressDao.findAllProvinces().then((results)=> {
+    systemUtils.wrapService(res,next, addressDao.findAllProvinces().then((results)=> {
         let data = {};
         if (!results || results.length === 0) {
             res.api(res_obj.NO_MORE_RESULTS, null);
@@ -40,7 +40,7 @@ AddressService.prototype.getProvinces = (req, res, next)=> {
  */
 AddressService.prototype.getCities = (req, res, next)=> {
     let provinceId = req.params.provinceId;
-    systemUtils.wrapService(next, addressDao.findCitiesByProvinceId(provinceId).then((results)=> {
+    systemUtils.wrapService(res,next, addressDao.findCitiesByProvinceId(provinceId).then((results)=> {
             let data = {};
             if (!results || results.length == 0) {
                 res.api(res_obj.NO_MORE_RESULTS, null);
@@ -67,7 +67,7 @@ AddressService.prototype.getDistricts = (req, res, next)=> {
         return;
     }
     let cityId = req.params.cityId;
-    systemUtils.wrapService(next, addressDao.findDistrictsByCityId(cityId).then((results)=> {
+    systemUtils.wrapService(res,next, addressDao.findDistrictsByCityId(cityId).then((results)=> {
             let data = {};
             if (!results || results.length == 0) {
                 res.api(res_obj.NO_MORE_RESULTS, null);

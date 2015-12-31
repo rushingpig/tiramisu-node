@@ -21,11 +21,11 @@ AddressDao.prototype.findAllProvinces = function(){
 };
 AddressDao.prototype.findCitiesByProvinceId = function(provinceId){
     let sql = this.baseSql + ' and parent_id = ?';
-    return baseDao.select(sql,[this.baseColumns,2,,del_flag.SHOW,provinceId]);
+    return baseDao.select(sql,[this.baseColumns,2,del_flag.SHOW,provinceId]);
 };
 AddressDao.prototype.findDistrictsByCityId = function(cityId){
     let sql = this.baseSql + ' and parent_id = ?';
-    return baseDao.select(sql,[this.baseColumns,3,,del_flag.SHOW,cityId]);
+    return baseDao.select(sql,[this.baseColumns,3,del_flag.SHOW,cityId]);
 };
 
 

@@ -65,6 +65,4 @@ DBHelper.genInSql = function(params){
     sql += ")";
     return sql;
 };
-
-console.log(DBHelper.genInSql([1,2,3]));
 module.exports = DBHelper;

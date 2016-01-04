@@ -18,6 +18,7 @@ var res_obj = require('../../../util/res_obj'),
     editOrder = schema.editOrder,
     listOrder = schema.listOrder,
     exchangeOrder = schema.exchangeOrder,
+    printApply = schema.printApply,
     del_flag = require('../../../dao/base_dao').del_flag,
     dao = require('../../../dao'),
     orderDao = dao.order;
@@ -367,7 +368,8 @@ OrderService.prototype.listOrders = (req,res,next) => {
         }
         let data = {
             list : [],
-            total : resObj.result[0].total
+            total : resObj.result[0].total,
+            page_no : query_data.page_no
         };
         for(let curr of resObj._result){
             let delivery_adds = curr.merger_name.split(',');
@@ -386,6 +388,7 @@ OrderService.prototype.listOrders = (req,res,next) => {
                 is_submit : Constant.YESORNOD[curr.is_submit],
                 merchant_id : curr.merchant_id,
                 coupon : curr.coupon,
+                is_print : curr.is_print,
                 order_id : systemUtils.getShowOrderId(curr.id,curr.created_date),
                 original_price : curr.original_price,
                 owner_mobile : curr.owner_mobile,
@@ -429,6 +432,33 @@ OrderService.prototype.exchageOrders = (req,res,next)=>{
             }
             res.api();
         });
+    systemUtils.wrapService(res,next,promise);
+};
+/**
+ * apply for print the order once again
+ * @param req
+ * @param res
+ * @param next
+ */
+OrderService.prototype.applyForRePrint = (req,res,next) => {
+    req.checkBody(printApply);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,null);
+        return;
+    }
+    let print_apply_obj = {
+        applicant_mobile : req.body.applicant_mobile,
+        director_mobile : req.body.director_mobile,
+        order_id : req.body.order_id,
+        reason : req.body.reason
+    };
+    let promise = orderDao.insertPrintApply(systemUtils.assembleInsertObj(req,print_apply_obj)).then((result)=>{
+        if(!Number.isInteger(result) || parseInt(result) === 0){
+            throw new TiramisuError(res_obj.FAIL);
+        };
+        res.api();
+    });
     systemUtils.wrapService(res,next,promise);
 };
 

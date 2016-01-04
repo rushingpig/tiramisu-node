@@ -210,8 +210,11 @@ let columns = [
         case constant.OSR.DELIVERY_EXCHANGE :
             sql += " order by bo.delivery_time asc";
             break;
-        case constant.OSR.DELIVERY_LIST :
+        case constant.OSR.RECEIVE_LIST :
             sql += " order by bo.delivery_time acs,bo.`status` asc";
+            break;
+        case constant.OSR.DELIVER_LIST :
+            sql += " order by bo.is_print asc,bo.delivery_time asc"
             break;
         default :
             // do nothing && order by with the db self
@@ -331,6 +334,12 @@ OrderDao.prototype.updateOrderStatus = function(order_ids){
     params.push({status:constant.OS.CONVERT});
     return baseDao.update(sql,params);
 };
-
+/**
+ * insert a record for order print apply
+ * @param print_apply_obj
+ */
+OrderDao.prototype.insertPrintApply = function(print_apply_obj){
+    return baseDao.insert(this.base_insert_sql,[tables.buss_print_apply,print_apply_obj]);
+};
 module.exports = new OrderDao();
 

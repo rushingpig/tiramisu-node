@@ -67,7 +67,17 @@ Constant.PSD = {
 Constant.OSR = {
     LIST : 'LIST',  // 订单列表
     DELIVERY_EXCHANGE : 'DELIVERY_EXCHANGE',    // 订单转送单
-    DELIVERY_LIST : 'DELIVERY_LIST'     // 配送管理列表
+    DELIVER_LIST : 'DELIVERY_LIST',      // 送货单管理列表
+    RECEIVE_LIST : 'RECEIVE_LIST'     // 配送管理列表
+};
+/**
+ * the order print apply status
+ * @type {{}}
+ */
+Constant.OPS = {
+    UNCHECKED : 'UNCHECKED',    //  未审核
+    CHECKED : 'CHECKED',    // 审核通过
+    CHECKFAILED : 'CHECKFAILED' // 审核不通过
 };
 
 

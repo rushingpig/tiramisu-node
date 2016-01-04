@@ -11,7 +11,7 @@
  Target Server Version : 50626
  File Encoding         : utf-8
 
- Date: 01/04/2016 11:35:20 AM
+ Date: 01/04/2016 18:52:37 PM
 */
 
 SET NAMES utf8;
@@ -89,6 +89,7 @@ CREATE TABLE `buss_order` (
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
   `merchant_id` int(11) DEFAULT NULL COMMENT '商户订单',
   `coupon` varchar(50) DEFAULT NULL COMMENT '团购券号',
+  `is_print` tinyint(1) DEFAULT '0' COMMENT '0:打印，1:未打印',
   PRIMARY KEY (`id`),
   KEY `IDX_STATUS` (`status`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10000003 DEFAULT CHARSET=utf8 COMMENT='订单详情表';
@@ -97,7 +98,7 @@ CREATE TABLE `buss_order` (
 --  Records of `buss_order`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_order` VALUES ('10000001', '1', '1', '1', '1', '1', null, null, 'COMPLETED', 'PAYED', '0', '0', '2015-12-29 09:00~10:00', null, null, null, '1000', null, null, '1', '2015-12-29 09:36:58', null, null, '1', null, null), ('10000002', '1', '1', '1', '1', '1', null, null, 'DELIVERY', 'COD', '0', '0', '2015-12-29 08:00~10:00', null, null, null, null, null, null, '1', '2016-01-04 11:23:18', null, null, '1', null, null);
+INSERT INTO `buss_order` VALUES ('10000001', '1', '1', '1', '1', '1', null, null, 'INLINE', 'PAYED', '0', '0', '2015-12-29 09:00~10:00', null, null, null, '1000', null, null, '1', '2015-12-29 09:36:58', null, null, '1', null, null, '0'), ('10000002', '1', '1', '1', '1', '1', null, null, 'INLINE', 'COD', '0', '0', '2015-12-29 08:00~10:00', null, null, null, null, null, null, '1', '2016-01-04 11:23:18', null, null, '1', null, null, '0');
 COMMIT;
 
 -- ----------------------------
@@ -226,6 +227,24 @@ CREATE TABLE `buss_pay_modes` (
 BEGIN;
 INSERT INTO `buss_pay_modes` VALUES ('1', '支付宝', '1', '2015-12-18 12:52:51', null, null, '1'), ('2', '财付通', '1', '2015-12-18 12:53:11', null, null, '1');
 COMMIT;
+
+-- ----------------------------
+--  Table structure for `buss_print_apply`
+-- ----------------------------
+DROP TABLE IF EXISTS `buss_print_apply`;
+CREATE TABLE `buss_print_apply` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `order_id` int(10) unsigned NOT NULL,
+  `reason` varchar(255) DEFAULT NULL,
+  `applicant_mobile` varchar(255) NOT NULL COMMENT '申请人手机',
+  `director_mobile` varchar(255) NOT NULL COMMENT '主管手机',
+  `status` enum('UNCHECKED','CHECKED','CHECKFAILED') NOT NULL DEFAULT 'UNCHECKED' COMMENT '''待审核'',''审核通过'',''审核不通过''',
+  `created_by` int(11) unsigned DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `updated_by` int(11) unsigned DEFAULT NULL,
+  `updated_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='申请重新打印订单表';
 
 -- ----------------------------
 --  Table structure for `buss_product`

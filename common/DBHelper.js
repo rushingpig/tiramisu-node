@@ -32,7 +32,12 @@ DBHelper.paginate = function(sql,page_no,page_size){
         logger.warn('the input param page_no ['+page_no+'],page_size ['+page_size +'] is not available...');
         return sql+' limit 0,20';
     }
-    page_no = page_no - 1;
+    if(parseInt(page_no) <= 0){
+        page_no = 0;
+    }
+    if(parseInt(page_size) <= 0 || parseInt(page_size) >= Number.MAX_SAFE_INTEGER){
+        page_size = 20;
+    }
     return sql + ' limit '+page_no+','+page_size;
 };
 /**

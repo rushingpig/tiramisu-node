@@ -49,6 +49,7 @@ a.get('/order/:orderId/products',productService.listOrderProducts);
 //**********************
 
 a.post('/order',orderService.addOrder);
+a.post('/order/print/apply',orderService.applyForRePrint);
 
 //*********************
 //******** PUT ********

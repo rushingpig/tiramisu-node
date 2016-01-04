@@ -52,7 +52,8 @@ ProductService.prototype.listProducts = (req, res, next) => {
         page_no = req.query.page_no,
         page_size = req.query.page_size;
     let res_data = {
-        list: []
+        list: [],
+        page_no : page_no
     }, temp_obj = {};
     let promise = productDao.findProductsCount(product_name, category_id, page_no, page_size).then((data)=> {
         if (toolUtils.isEmptyArray(data.results)) {

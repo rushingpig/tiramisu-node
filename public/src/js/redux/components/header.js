@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
 import {dateFormat} from 'utils/index';
+import cookie from 'utils/cookie';
+import { NAV_COLLAPSED_CLASS, NAV_COLLAPSED_COOKIE, 
+  NAV_COLLAPSED_COOKIE_NO, NAV_COLLAPSED_COOKIE_YES } from 'config/app.config';
 
 class Header extends Component {
   constructor(props){
@@ -19,7 +22,6 @@ class Header extends Component {
         <div className="menu-right">
           <ul className="notification-menu" id="notification-menu">
             <li className="timer">
-              <i className="fa fa-calendar"></i>
               {this.state.time + '  星期' + this.state.weekday[this.state.day]}
             </li>
             <li className={this.state.usermenu_open ? 'open' : ''}>
@@ -42,14 +44,16 @@ class Header extends Component {
   }
   handleNavCollapse(){
     var $app = $('#app-container');
-    var c = 'left-side-collapsed';
+    var c = NAV_COLLAPSED_CLASS;
     if($app.hasClass(c)){
       $app.removeClass(c);
+      cookie.set(NAV_COLLAPSED_COOKIE, NAV_COLLAPSED_COOKIE_NO);
     }else{
       $app.addClass(c);
       $app.find('.sub-menu-list').each(function(){
         this.style.display = '';
       });
+      cookie.set(NAV_COLLAPSED_COOKIE, NAV_COLLAPSED_COOKIE_YES);
     }
   }
   showUserMenu(){

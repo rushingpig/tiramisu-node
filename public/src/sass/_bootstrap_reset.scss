@@ -110,6 +110,14 @@
     border-color: #EFF2F7;
     cursor: not-allowed;
 }
+.pagination > .active > a, .pagination > .active > a:hover, .pagination > .active > a:focus, .pagination > .active > span, .pagination > .active > span:hover, .pagination > .active > span:focus {
+    z-index: 3;
+    color: #fff;
+    background-color: $pagination-color;
+    border-color: $pagination-color;
+    cursor: default;
+    outline: 0;
+}
 /*button*/
 
 .btn-primary {

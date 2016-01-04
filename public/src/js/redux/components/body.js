@@ -4,6 +4,9 @@ import config from 'config/app.config';
 import Nav from './nav';
 import Header from './header';
 import Login from './login';
+import cookie from 'utils/cookie';
+import { NAV_COLLAPSED_CLASS, NAV_COLLAPSED_COOKIE, 
+  NAV_COLLAPSED_COOKIE_NO, NAV_COLLAPSED_COOKIE_YES } from 'config/app.config';
 
 export class Entry extends Component {
   render(){
@@ -15,8 +18,12 @@ export class Entry extends Component {
 
 export class Main extends Component {
   render(){
+    var c = '';
+    if(cookie.get(NAV_COLLAPSED_COOKIE) == NAV_COLLAPSED_COOKIE_YES){
+      c = NAV_COLLAPSED_CLASS;
+    }
     return (
-      <div id="app-container" className="sticky-header">
+      <div id="app-container" className={`sticky-header ${c}`}>
         <div className="left-side">
           <div className="logo text-center">
             <a href="#"><img src={config.root + "images/logo.png"} alt="" /></a>

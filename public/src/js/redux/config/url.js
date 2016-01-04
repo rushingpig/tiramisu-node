@@ -9,7 +9,7 @@ SiteUrl.prototype._url_base = ajax;
 
 /*
  * 无参数： 直接返回相应url
- * 有参数： 将参数解析到url并返回
+ * 有参数： 将参数解析到url并返回(注意是按顺序解析)
  */
 SiteUrl.prototype.toString = function(){
   var u = this.url;
@@ -30,12 +30,13 @@ const URL = (function(){
 
     //订单
     orders: '/orders',
+    order_add: '/order',
+    orders_detail: '/order/:orderId',
     provinces: '/provinces',
     cities: '/province/:provinceId/cities',
     districts: '/city/:cityId/districts',
     delivery_stations: '/stations',
     order_srcs: '/order/srcs',
-    order_add: '/order/add',
     pay_modes: '/pay/modes',
 
     //产品

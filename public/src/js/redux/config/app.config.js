@@ -4,6 +4,10 @@ export default {
 
   success_code: '0000',
   SELECT_DEFAULT_VALUE: '-1',
+  NAV_COLLAPSED_CLASS: 'left-side-collapsed',
+  NAV_COLLAPSED_COOKIE: 'nav_collapsed_cookie', //保证菜单状态不随页面刷新而变化
+  NAV_COLLAPSED_COOKIE_NO: 'no',
+  NAV_COLLAPSED_COOKIE_YES: 'yes',
 
   DELIVERY_TO_HOME: 'DELIVERY', //配送上门
   DELIVERY_TO_STORE: 'TAKETHEIR', //门店自提

@@ -73,15 +73,17 @@ export default class DetailModal extends Component {
                 </tr>
                 </thead>
                 <tbody>
-                  <td>自由拼</td>
-                  <td className="text-left">规格：约2磅<br/>数量：1</td>
-                  <td className="text-left">原价：￥138<br/>实际售价：￥69</td>
-                  <td>￥0</td>
-                  <td>妈妈生日快乐</td>
-                  <td>生日快乐</td>
-                  <td><input checked={true} disabled type="checkbox" /></td>
-                  <td>单恋黑森林，榴莲香雪</td>
-                  <td>2磅1/4，方形</td>
+                  <tr>
+                    <td>自由拼</td>
+                    <td className="text-left">规格：约2磅<br/>数量：1</td>
+                    <td className="text-left">原价：￥138<br/>实际售价：￥69</td>
+                    <td>￥0</td>
+                    <td>妈妈生日快乐</td>
+                    <td>生日快乐</td>
+                    <td><input checked={true} disabled type="checkbox" /></td>
+                    <td>单恋黑森林，榴莲香雪</td>
+                    <td>2磅1/4，方形</td>
+                  </tr>
                 </tbody>
               </table>
             </div>

@@ -6,6 +6,7 @@ import { GOT_ORDER_SRCS, GOT_DELIVERY_STATIONS, GOT_PAY_MODES,
 import { GOT_CATEGORIES, SEARCH_PRODUCTS, SELECT_PRODUCT, 
   CONFIRM_ALL_SELECTED_PRODUCTS, DELETE_SELECTED_PRODUCT, 
   CANCEL_ALL_SELECTED_PRODUCTS, CHANGE_PRODUCT_NUM, DELETE_CONFIRM_PRODUCT } from 'actions/order_products';
+import { UPDATE_PATH } from 'redux-simple-router';
 import * as AreaActions from 'actions/area';
 import { map } from 'utils/index';
 import { 
@@ -37,6 +38,8 @@ var initial_state = {
 
 function mainForm(state = initial_state, action) {
   switch(action.type) {
+    case UPDATE_PATH:
+      return initial_state;
     case GOT_ORDER_SRCS:
       let l1 = [], l2 = [];
       //level最多为2级
@@ -48,18 +51,18 @@ function mainForm(state = initial_state, action) {
           l2.push(n);
         }
       })
-      return {...state, ...{all_order_srcs: !l2.length ? [l1] : [l1, l2]} }
+      return {...state, all_order_srcs: !l2.length ? [l1] : [l1, l2] }
     case GOT_DELIVERY_STATIONS:
-      return {...state, ...{delivery_stations: map(action.data, (text, id) => ({id, text}))} }
+      return {...state, delivery_stations: map(action.data, (text, id) => ({id, text})) }
     case GOT_PAY_MODES:
-      return {...state, ...{all_pay_modes: map(action.data, (text, id) => ({id, text}))}}
+      return {...state, all_pay_modes: map(action.data, (text, id) => ({id, text})) }
 
     case SAVE_ORDER_INFO_ING:
-      return {...state, ...{save_ing: true}}
+      return {...state, save_ing: true }
     case SAVE_ORDER_INFO_SUCCESS:
-      return {...state, ...{save_success: true, save_ing: false}}
+      return {...state, save_success: true, save_ing: false }
     case SAVE_ORDER_INFO_FAIL:
-      return {...state, ...{save_success: false, save_ing: false}}
+      return {...state, save_success: false, save_ing: false }
 
     case GOT_ORDER_BY_ID:
       return (function(){
@@ -93,6 +96,8 @@ var products_choosing_state = {
 function products_choosing(state = products_choosing_state, action){
   var sku_id, new_selected_list;
   switch(action.type){
+    case UPDATE_PATH:
+      return products_choosing_state;
     case GOT_CATEGORIES:
       return {...state, all_categories: map(action.data, (text, id) => ({id, text}))};
     case SEARCH_PRODUCTS:

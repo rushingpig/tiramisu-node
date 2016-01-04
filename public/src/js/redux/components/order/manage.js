@@ -62,54 +62,87 @@ FilterHeader.propTypes = {
   deliveryDateChange: PropTypes.func.isRequired
 }
 
+class OrderRow extends Component {
+  render(){
+    var { props } = this;
+    return (
+      <tr className={props.selected_order_id == props.order_id ? 'active' : ''} onClick={this.clickHandler.bind(this)}>
+        <td>
+          <a href="javascript:;">[编辑]</a><br/>
+          <a onClick={function(){props.viewDetail(props)}} href="javascript:;">[查看]</a><br/>
+          <a onClick={function(){props.alterStation(props)}} href="javascript:;" className="nowrap">[修改配送]</a>
+        </td>
+        <td>{props.merchant_id}</td>
+        <td>{props.order_id}</td>
+        <td>{props.owner_name}<br />{props.owner_mobile}</td>
+        <td><div className="time">{props.created_date}</div></td>
+        <td className="text-left">
+          姓名：{props.recipient_name}<br />
+          电话：{props.recipient_mobile}<br />
+          <div className="address-detail-td">
+            <span className="inline-block">地址：</span><span className="address-all">{props.recipient_address}</span>
+          </div>
+          建筑：todo
+        </td>
+        <td>{props.delivery_date}</td>
+        <td className="nowrap">todo<br /><span className="bordered">todo</span></td>
+        <td><strong className="strong">{Config.pay_status[props.pay_status]}</strong></td>
+        <td className="nowrap">
+          总金额：todo <br />
+          应收：todo
+        </td>
+        <td><div className="bg-success round">{props.status}</div></td>
+        <td>todo</td>
+        <td><div className="time">{props.delivery_time}</div></td>
+        <td>{props.is_submit == '1' ? '是' : '否'}</td>
+        <td>{props.is_deal == '1' ? '是' : '否'}</td>
+        <td>{props.city}</td>
+        <td>{props.cancel_reason}</td>
+        <td><div className="remark-in-table">{props.remarks}</div></td>
+        <td>{props.created_by}</td>
+        <td>{props.updated_by}</td>
+        <td><div className="time">{props.updated_date}<br/><a href="#">操作记录</a></div></td>
+      </tr>
+    )
+  }
+  clickHandler(){
+    this.props.checkOrder(this.props.order_id);
+  }
+}
+
+function ProductRow(product){
+  return (
+    <tr>
+      <td>{product.product_name}</td>
+      <td>￥{product.original_price / 100}</td>
+      <td>{product.size}</td>
+      <td>{product.num}</td>
+      <td>￥{product.discount_price / 100}</td>
+      <td>{product.choco_board}</td>
+      <td>{product.greeting_card}</td>
+      <td>{product.atlas}</td>
+      <td>{product.custom_name}</td>
+      <td>{product.custom_desc}</td>
+    </tr>
+  )
+}
+
 class ManagePannel extends Component {
   constructor(props){
     super(props);
+    this.viewDetail = this.viewDetail.bind(this);
+    this.alterStation = this.alterStation.bind(this);
   }
   render(){
-    var { filter, startDateChange, deliveryDateChange } = this.props;
-    var { total, list } = this.props.orders;
+    var { filter, startDateChange, deliveryDateChange, checkOrder } = this.props;
+    var { total, list, check_order_info, selected_order_id } = this.props.orders;
+    var { viewDetail, alterStation } = this;
 
     var content = list.map((n, i) => {
-      return (
-        <tr key={i}>
-          <td>
-            <a href="javascript:;">[编辑]</a><br/>
-            <a onClick={this.viewDetail.bind(this, n)} href="javascript:;">[查看]</a><br/>
-            <a onClick={this.alterStation.bind(this, n)} href="javascript:;" className="nowrap">[修改配送]</a>
-          </td>
-          <td>{n.merchant_id}</td>
-          <td>{n.order_id}</td>
-          <td>{n.owner_name}<br />{n.owner_mobile}</td>
-          <td><div className="time">{n.created_date}</div></td>
-          <td className="text-left">
-            姓名：{n.recipient_name}<br />
-            电话：{n.recipient_mobile}<br />
-            <div className="address-detail-td">
-              <span className="inline-block">地址：</span><span className="address-all">{n.recipient_address}</span>
-            </div>
-            建筑：todo
-          </td>
-          <td>{n.delivery_date}</td>
-          <td className="nowrap">todo<br /><span className="bordered">todo</span></td>
-          <td><strong className="strong">{Config.pay_status[n.pay_status]}</strong></td>
-          <td className="nowrap">
-            总金额：todo <br />
-            应收：todo
-          </td>
-          <td><div className="bg-success round">{n.status}</div></td>
-          <td>todo</td>
-          <td><div className="time">{n.delivery_time}</div></td>
-          <td>{n.is_submit == '1' ? '是' : '否'}</td>
-          <td>{n.is_deal == '1' ? '是' : '否'}</td>
-          <td>{n.city}</td>
-          <td>{n.cancel_reason}</td>
-          <td><div className="remark-in-table">{n.remarks}</div></td>
-          <td>{n.created_by}</td>
-          <td>{n.updated_by}</td>
-          <td><div className="time">{n.updated_date}<br/><a href="#">操作记录</a></div></td>
-        </tr>
-      )
+      return <OrderRow key={n.order_id} {...{...n, selected_order_id, viewDetail, alterStation, checkOrder}} />;
+    })
+    var products = check_order_info && check_order_info.products.map(function(n){
+      return ProductRow(n);
     })
     return (
       <div className="order-manage">
@@ -121,7 +154,7 @@ class ManagePannel extends Component {
           <header className="panel-heading">订单列表</header>
           <div className="panel-body">
             <div className="table-responsive">
-              <table className="table text-center">
+              <table className="table table-hover text-center">
                 <thead>
                 <tr>
                   <th>操作管理</th>
@@ -161,6 +194,35 @@ class ManagePannel extends Component {
               onPageChange={this.onPageChange}
             />
         </div>
+
+        { check_order_info
+          ? <div className="panel">
+              <div className="panel-body">
+                <div>订单管理 >> 产品详情</div>
+                <div className="table-responsive">
+                  <table className="table text-center">
+                    <thead>
+                    <tr>
+                      <th>产品名称</th>
+                      <th>原价</th>
+                      <th>规格</th>
+                      <th>数量</th>
+                      <th>实际售价</th>
+                      <th>巧克力牌</th>
+                      <th>祝福贺卡</th>
+                      <th>产品图册</th>
+                      <th>自由拼名称</th>
+                      <th>自由拼描述</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                      {products}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          : null }
 
         <div ref="modal-wrap"></div>
       </div>

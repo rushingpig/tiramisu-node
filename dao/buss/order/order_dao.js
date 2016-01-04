@@ -106,6 +106,7 @@ OrderDao.prototype.findOrderById = function(orderId){
         'bos.greeting_card',
         'bos.custom_name',
         'bos.custom_desc',
+        'bos.atlas',
         'dr.name as district_name',
         'dr.id as district_id',
         'dr2.name as city_name',
@@ -213,7 +214,7 @@ let columns = [
             sql += " order by bo.delivery_time acs,bo.`status` asc";
             break;
         default :
-            // do nothing.order by the db self
+            // do nothing && order by with the db self
     }
 
     let countSql = dbHelper.countSql(sql);
@@ -300,7 +301,12 @@ OrderDao.prototype.editOrder = function(order_obj,order_id,recipient_obj,recipie
 
     });
 };
-
+/**
+ * update the recipient info
+ * @param recipient_obj
+ * @param recipient_id
+ * @returns {Promise|Promise.<T>|MPromise}
+ */
 OrderDao.prototype.updateRecipient = function(recipient_obj,recipient_id){
     let sql = this.base_update_sql + " where id = ?",
         params = [tables.buss_recipient,recipient_obj,recipient_id];
@@ -314,7 +320,17 @@ OrderDao.prototype.updateRecipient = function(recipient_obj,recipient_id){
         });
     });
 };
-
+/**
+ * update the special orders status
+ * @param order_ids
+ */
+OrderDao.prototype.updateOrderStatus = function(order_ids){
+    let sql = this.base_update_sql + " where id in " + dbHelper.genInSql(order_ids);
+    let params = [];
+    params.push(tables.buss_order);
+    params.push({status:constant.OS.CONVERT});
+    return baseDao.update(sql,params);
+};
 
 module.exports = new OrderDao();
 

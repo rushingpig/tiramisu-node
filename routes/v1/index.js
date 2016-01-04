@@ -55,6 +55,7 @@ a.post('/order',orderService.addOrder);
 //*********************
 
 a.put('/order/:orderId',orderService.editOrder);
+a.put('/orders/exchange',orderService.exchageOrders);
 
 //************************
 //******** DELETE ********

@@ -34,7 +34,7 @@ app.set('view engine', '.hbs');
 app.use(log4js.connectLogger(logger, { level: 'auto' ,format:':method :status ✪ :url ✪  [:response-time ms]'}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(validator());
+app.use(validator(config.exp_validator_custom));
 app.use(cookieParser());
 app.use(middleware.system.wrapperResponse);
 app.use('/v1/a/*',middleware.system.debugReqAndResParams);

@@ -34,6 +34,19 @@ var exp_router_options = {
     mergeParams:false,
     strict:false
 };
+const exp_validator_custom = {
+    customValidators: {
+        isArray: function(value) {
+            return value && Array.isArray(value);
+        },
+        gte: function(param, num) {
+            return param >= num;
+        },
+        isOrderId : function(orderId) {
+            return typeof orderId === 'string' && orderId.substring(8) && !isNaN(parseInt(orderId.substring(8)))
+        },
+    }
+};
 //  the table list in database  ->  tiramisu
 var tables = {
 //================Sys=================
@@ -97,6 +110,7 @@ module .exports = {
     exp_static_options : exp_static_options,
     exp_session_options : exp_session_options,
     exp_router_options : exp_router_options,
+    exp_validator_custom : exp_validator_custom,
     tables : tables,
     ping_xx: ping_xx,
     login_required: login_required,

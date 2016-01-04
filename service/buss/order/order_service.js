@@ -17,6 +17,7 @@ var res_obj = require('../../../util/res_obj'),
     getOrder = schema.getOrder,
     editOrder = schema.editOrder,
     listOrder = schema.listOrder,
+    exchangeOrder = schema.exchangeOrder,
     del_flag = require('../../../dao/base_dao').del_flag,
     dao = require('../../../dao'),
     orderDao = dao.order;
@@ -189,7 +190,9 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
                 greeting_card : curr.greeting_card,
                 num : curr.num,
                 original_price : curr.original_price,
-                product_name : curr.product_name
+                product_name : curr.product_name,
+                atlas : curr.atlas,
+                size : curr.size
             };
             data.products.push(product_obj);
         }
@@ -205,14 +208,14 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
  * @param next
  */
 OrderService.prototype.editOrder = (req, res, next)=> {
-    req.checkParams('orderId').notEmpty();
+    req.checkParams('orderId').notEmpty().isOrderId();
     req.checkBody(editOrder);
     let errors = req.validationErrors();
     if (errors) {
         res.api(res_obj.INVALID_PARAMS,null);
         return;
     }
-    let orderId = req.params.orderId,
+    let orderId = systemUtils.getDBOrderId(req.params.orderId),
         recipient_id = req.body.recipient_id,
         delivery_type = req.body.delivery_type,
         owner_name = req.body.owner_name,
@@ -401,6 +404,31 @@ OrderService.prototype.listOrders = (req,res,next) => {
         }
         res.api(data);
     });
+    systemUtils.wrapService(res,next,promise);
+};
+/**
+ * exchange the status for the choosed orders
+ * @param req
+ * @param res
+ * @param next
+ */
+OrderService.prototype.exchageOrders = (req,res,next)=>{
+    req.checkBody(exchangeOrder);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,null);
+        return;
+    }
+    let orderIds = [];
+    req.body.order_ids.forEach((curr)=>{
+        orderIds.push(systemUtils.getDBOrderId(curr));
+    });
+    let promise = orderDao.updateOrderStatus(orderIds).then((results)=>{
+            if(!Number.isInteger(results)){
+                throw new TiramisuError(res_obj.FAIL);
+            }
+            res.api();
+        });
     systemUtils.wrapService(res,next,promise);
 };
 

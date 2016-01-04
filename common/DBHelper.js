@@ -6,7 +6,8 @@
  * @version: v0.0.1
  */
 "use strict";
-var logger = require('./LogHelper').systemLog();
+var logger = require('./LogHelper').systemLog(),
+    toolUtils = require('./ToolUtils');
 
 function DBHelper(){
 }
@@ -43,5 +44,27 @@ DBHelper.removeOrders = function(sql){
     let reg_text = /order\s*by[\w|\W|\s|\S][^\)]*$/ig;
     return sql.replace(reg_text,'');
 };
+/**
+ * gen the in sql statement
+ * <li>
+ *     [1,2,3] ==> ('1','2','3')
+ * </li>
+ * @param params
+ * @returns {string}
+ */
+DBHelper.genInSql = function(params){
+    let sql = "(";
+    if(toolUtils.isEmptyArray(params)){
+        logger.warn('the input params [',params,'] to be gen in sql is not valid ...');
+    }else{
+        params.forEach((curr)=>{
+            sql += "'"+curr+"',";
+        });
+        sql = sql.substring(0,sql.length - 1);
+    }
+    sql += ")";
+    return sql;
+};
 
+console.log(DBHelper.genInSql([1,2,3]));
 module.exports = DBHelper;

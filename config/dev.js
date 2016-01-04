@@ -69,6 +69,7 @@ var tables = {
     buss_shop : 'buss_shop',
     buss_product_sku : 'buss_product_sku',
     buss_order_fulltext : 'buss_order_fulltext',
+    buss_print_apply : 'buss_print_apply',
 //=================Dict===================
     dict_regionalism : 'dict_regionalism',
 };

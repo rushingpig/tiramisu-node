@@ -21,7 +21,7 @@ function config_index() {
             console.log('*************** there is no file local.js,will load the special config file **************');
         }finally{
             if(fileStats && fileStats.isFile()){
-                config = require('./local');
+                config = Object.assign(require('./dev'),require('./local'));
             }else{
                 config = require('./dev');
             }
@@ -38,3 +38,4 @@ function config_index() {
 }
 
 config_index();
+

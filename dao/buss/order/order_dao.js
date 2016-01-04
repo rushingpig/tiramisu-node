@@ -11,6 +11,7 @@ var baseDao = require('../../base_dao'),
     toolUtils = require('../../../common/ToolUtils'),
     dbHelper = require('../../../common/DbHelper'),
     logger = require('../../../common/LogHelper').systemLog(),
+    constant = require('../../../common/Constant'),
     del_flag = baseDao.del_flag,
     tables = require('../../../config').tables;
 function OrderDao(){
@@ -136,7 +137,7 @@ OrderDao.prototype.findOrderById = function(orderId){
  * @param src_id
  * @param status
  */
-OrderDao.prototype.findOrderList = function(begin_time,end_time,is_deal,is_submit,keywords,src_id,status,page_no,page_size){
+OrderDao.prototype.findOrderList = function(query_data){
 let columns = [
     'bo.id',
     'bo.merchant_id',
@@ -149,8 +150,10 @@ let columns = [
     'bo.is_submit',
     'bo.cancel_reason',
     'bo.remarks',
-    'bo.original_price',
-    'bo.discount_price',
+    'bo.total_original_price',
+    'bo.total_discount_price',
+    'bo.coupon',
+    'bo.`status`',
     'br.delivery_type',
     'br.address',
     'br.landmark',
@@ -163,42 +166,59 @@ let columns = [
     let params = [];
     let sql = "select "+columns+" from ?? bo";
     params.push(tables.buss_order);
-    if(keywords){
+    if(query_data.keywords){
         sql += " inner join buss_order_fulltext bof on match(bof.show_order_id,bof.landmark,bof.owner_mobile,bof.owner_name,bof.recipient_name,bof.recipient_address,bof.recipient_mobile) against(? IN BOOLEAN MODE) and bof.order_id = bo.id"
-        params.push('+'+keywords+'*');
+        params.push('+'+query_data.keywords+'*');
     }
     sql += " left join buss_recipient br on bo.recipient_id = br.id";
+    if(query_data.city_id){
+        sql += " and br.regionalism_id = ?";
+        params.push(query_data.city_id);
+    }
     sql += " left join buss_order_src bos on bo.src_id = bos.id";
     sql += " left join dict_regionalism dr on br.regionalism_id = dr.id";
     sql += " left join sys_user su1 on su1.id = bo.created_by";
     sql += " left join sys_user su2 on su2.id = bo.updated_by";
-    sql += " where 1=1"
-    if(begin_time){
+    sql += " where 1=1";
+    if(query_data.begin_time){
         sql += " and bo.created_date > ?";
-        params.push(begin_time);
+        params.push(query_data.begin_time);
     }
-    if(end_time){
+    if(query_data.end_time){
         sql += " and bo.delivery_time < ?";
-        params.push(end_time);
+        params.push(query_data.end_time);
     }
-    if(is_deal){
+    if(query_data.is_deal){
         sql += " and bo.is_deal > 0";
     }
-    if(is_submit){
+    if(query_data.is_submit){
         sql += " and bo.is_submit > 0"
     }
-    if(src_id){
+    if(query_data.src_id){
         sql += " and src_id = ?";
-        params.push(src_id);
+        params.push(query_data.src_id);
     }
-    if(status){
+    if(query_data.status){
         sql += " and bo.status = ?";
-        params.push(status);
+        params.push(query_data.status);
     }
-    sql += " order by bo.created_date desc";
+    switch (query_data.order_sorted_rules){
+        case constant.OSR.LIST:
+            sql += " order by bo.created_date desc";
+            break;
+        case constant.OSR.DELIVERY_EXCHANGE :
+            sql += " order by bo.delivery_time asc";
+            break;
+        case constant.OSR.DELIVERY_LIST :
+            sql += " order by bo.delivery_time acs,bo.`status` asc";
+            break;
+        default :
+            // do nothing.order by the db self
+    }
+
     let countSql = dbHelper.countSql(sql);
     return baseDao.select(countSql,params).then((result)=>{
-        return baseDao.select(dbHelper.paginate(sql,page_no,page_size),params).then((_result)=>{
+        return baseDao.select(dbHelper.paginate(sql,query_data.page_no,query_data.page_size),params).then((_result)=>{
             return {
                 result : result,
                 _result : _result

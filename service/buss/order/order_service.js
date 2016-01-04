@@ -343,16 +343,20 @@ OrderService.prototype.listOrders = (req,res,next) => {
         res.api(res_obj.INVALID_PARAMS,null);
         return;
     }
-    let begin_time = req.query.begin_time,
-        end_time = req.query.end_time,
-        is_deal = req.query.is_deal,
-        is_submit = req.query.is_submit,
-        keywords = systemUtils.encodeForFulltext(req.query.keywords || ''),
-        src_id = req.query.src_id,
-        status = req.query.status,
-        page_no = req.query.page_no,
-        page_size = req.query.page_size;
-    let promise = orderDao.findOrderList(begin_time,end_time,is_deal,is_submit,keywords,src_id,status,page_no,page_size).then((resObj)=>{
+    let query_data = {
+        begin_time : req.query.begin_time,
+        end_time : req.query.end_time,
+        is_deal : req.query.is_deal,
+        is_submit : req.query.is_submit,
+        keywords : systemUtils.encodeForFulltext(req.query.keywords || ''),
+        src_id : req.query.src_id,
+        status : req.query.status,
+        city_id : req.query.city_id,
+        page_no : req.query.page_no,
+        page_size : req.query.page_size,
+        order_sorted_rules : Constant.OSR.LIST
+    };
+    let promise = orderDao.findOrderList(query_data).then((resObj)=>{
         if(!(resObj.result && resObj._result)){
             throw new TiramisuError(res_obj.FAIL);
         }else if(toolUtils.isEmptyArray(resObj._result)){
@@ -378,6 +382,7 @@ OrderService.prototype.listOrders = (req,res,next) => {
                 is_deal : Constant.YESORNOD[curr.is_deal],
                 is_submit : Constant.YESORNOD[curr.is_submit],
                 merchant_id : curr.merchant_id,
+                coupon : curr.coupon,
                 order_id : systemUtils.getShowOrderId(curr.id,curr.created_date),
                 original_price : curr.original_price,
                 owner_mobile : curr.owner_mobile,

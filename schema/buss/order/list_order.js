@@ -33,5 +33,9 @@ module.exports = {
     },
     'status': {
         optional : true
+    },
+    'city_id': {
+        optional : true,
+        isInt : true
     }
 };

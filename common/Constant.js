@@ -59,7 +59,16 @@ Constant.PSD = {
     'REFUNDING' : '退款中',
     'REFUNDED' : '退款完成',
     'PAYED' : '已付款'
-},
+};
+/**
+ * the order sorted rules
+ * @type {{}}
+ */
+Constant.OSR = {
+    LIST : 'LIST',  // 订单列表
+    DELIVERY_EXCHANGE : 'DELIVERY_EXCHANGE',    // 订单转送单
+    DELIVERY_LIST : 'DELIVERY_LIST'     // 配送管理列表
+};
 
 
 

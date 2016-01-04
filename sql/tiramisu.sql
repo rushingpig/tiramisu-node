@@ -11,7 +11,7 @@
  Target Server Version : 50626
  File Encoding         : utf-8
 
- Date: 12/30/2015 18:51:55 PM
+ Date: 01/04/2016 11:35:20 AM
 */
 
 SET NAMES utf8;
@@ -71,7 +71,7 @@ CREATE TABLE `buss_order` (
   `pay_modes_id` int(10) unsigned DEFAULT NULL,
   `owner_name` varchar(255) DEFAULT NULL COMMENT '下单人姓名',
   `owner_mobile` varchar(255) DEFAULT NULL COMMENT '下单人手机',
-  `status` enum('CANCEL','UNTREATED','STATION','CONVERT','INLINE','DELIVERY','COMPLETED','EXCEPTION') NOT NULL DEFAULT 'UNTREATED' COMMENT '取消，未处理，分配配送站，生产中，配送员配送中，已完成，异常',
+  `status` enum('CANCEL','UNTREATED','STATION','CONVERT','INLINE','DELIVERY','COMPLETED','EXCEPTION') NOT NULL DEFAULT 'UNTREATED' COMMENT '取消，未处理，分配配送站，已转换，生产中，配送员配送中，已完成，异常',
   `pay_status` enum('COD','REFUNDING','REFUNDED','PAYED') NOT NULL DEFAULT 'PAYED' COMMENT '货到付款，退款中，已退款，已付款',
   `is_submit` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否提交（0：false，1：true）',
   `is_deal` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否处理（0：false，1：true）',
@@ -88,15 +88,16 @@ CREATE TABLE `buss_order` (
   `updated_date` datetime DEFAULT NULL COMMENT '记录更新时间',
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
   `merchant_id` int(11) DEFAULT NULL COMMENT '商户订单',
+  `coupon` varchar(50) DEFAULT NULL COMMENT '团购券号',
   PRIMARY KEY (`id`),
   KEY `IDX_STATUS` (`status`)
-) ENGINE=InnoDB AUTO_INCREMENT=10000002 DEFAULT CHARSET=utf8 COMMENT='订单详情表';
+) ENGINE=InnoDB AUTO_INCREMENT=10000003 DEFAULT CHARSET=utf8 COMMENT='订单详情表';
 
 -- ----------------------------
 --  Records of `buss_order`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_order` VALUES ('10000001', '1', '1', '1', '1', '1', null, null, 'UNTREATED', 'PAYED', '0', '0', '2015-12-29 09:00~10:00', null, null, null, '1000', null, null, '1', '2015-12-29 09:36:58', null, null, '1', null);
+INSERT INTO `buss_order` VALUES ('10000001', '1', '1', '1', '1', '1', null, null, 'COMPLETED', 'PAYED', '0', '0', '2015-12-29 09:00~10:00', null, null, null, '1000', null, null, '1', '2015-12-29 09:36:58', null, null, '1', null, null), ('10000002', '1', '1', '1', '1', '1', null, null, 'DELIVERY', 'COD', '0', '0', '2015-12-29 08:00~10:00', null, null, null, null, null, null, '1', '2016-01-04 11:23:18', null, null, '1', null, null);
 COMMIT;
 
 -- ----------------------------

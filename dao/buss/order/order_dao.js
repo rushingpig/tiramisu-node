@@ -147,7 +147,7 @@ let columns = [
     'bo.merchant_id',
     'bo.owner_name',
     'bo.owner_mobile',
-    'bo.created_date',
+    'bo.created_time',
     'bo.pay_status',
     'bo.delivery_time',
     'bo.is_deal',
@@ -165,7 +165,7 @@ let columns = [
     'bos.merge_name as src_name',
     'su1.name as created_by',
     'su2.name as updated_by',
-    'bo.updated_date'
+    'bo.updated_time'
 ].join(',');
     let params = [];
     let sql = "select "+columns+" from ?? bo";

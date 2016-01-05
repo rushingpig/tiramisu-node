@@ -11,7 +11,7 @@
  Target Server Version : 50626
  File Encoding         : utf-8
 
- Date: 01/04/2016 18:52:37 PM
+ Date: 01/05/2016 12:11:04 PM
 */
 
 SET NAMES utf8;
@@ -26,9 +26,9 @@ CREATE TABLE `buss_city` (
   `name` varchar(255) DEFAULT NULL,
   `sort` tinyint(4) DEFAULT NULL,
   `created_by` int(11) DEFAULT NULL,
-  `created_date` datetime DEFAULT NULL,
+  `created_time` datetime DEFAULT NULL,
   `updated_by` int(11) DEFAULT NULL,
-  `updated_date` datetime DEFAULT NULL,
+  `updated_time` datetime DEFAULT NULL,
   `del_flag` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='营业城市\n';
@@ -44,9 +44,9 @@ CREATE TABLE `buss_delivery_station` (
   `address` varchar(255) DEFAULT NULL,
   `remarks` varchar(255) DEFAULT NULL,
   `created_by` int(255) DEFAULT NULL,
-  `created_date` datetime DEFAULT NULL,
+  `created_time` datetime DEFAULT NULL,
   `updated_by` int(11) DEFAULT NULL,
-  `updated_date` datetime DEFAULT NULL,
+  `updated_time` datetime DEFAULT NULL,
   `del_flag` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='配送站';
@@ -83,9 +83,9 @@ CREATE TABLE `buss_order` (
   `total_original_price` int(10) unsigned DEFAULT NULL COMMENT '该订单所有商品原价',
   `total_discount_price` int(10) unsigned DEFAULT NULL COMMENT '该订单所有商品实际售价',
   `created_by` varchar(255) NOT NULL COMMENT '创建人',
-  `created_date` datetime NOT NULL COMMENT '创建时间',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
   `updated_by` varchar(255) DEFAULT NULL COMMENT '记录更新操作者',
-  `updated_date` datetime DEFAULT NULL COMMENT '记录更新时间',
+  `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
   `merchant_id` int(11) DEFAULT NULL COMMENT '商户订单',
   `coupon` varchar(50) DEFAULT NULL COMMENT '团购券号',
@@ -116,7 +116,7 @@ CREATE TABLE `buss_order_fulltext` (
   `show_order_id` varchar(16) DEFAULT NULL,
   PRIMARY KEY (`order_id`),
   FULLTEXT KEY `IDX_FT` (`owner_name`,`owner_mobile`,`recipient_name`,`recipient_mobile`,`recipient_address`,`landmark`,`show_order_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='供订单全文搜索';
 
 -- ----------------------------
 --  Records of `buss_order_fulltext`
@@ -141,9 +141,9 @@ CREATE TABLE `buss_order_history` (
   `cancel_reason` varchar(255) DEFAULT NULL COMMENT '取消理由',
   `remarks` varchar(255) DEFAULT NULL COMMENT '备注',
   `created_by` varchar(255) NOT NULL COMMENT '创建人',
-  `created_date` datetime NOT NULL COMMENT '创建时间',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
   `updated_by` varchar(255) DEFAULT NULL COMMENT '记录更新操作者',
-  `updated_date` datetime DEFAULT NULL COMMENT '记录更新时间',
+  `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单详情历史记录表';
@@ -165,9 +165,9 @@ CREATE TABLE `buss_order_sku` (
   `amount` int(10) unsigned DEFAULT NULL COMMENT '应收金额',
   `del_flag` tinyint(1) DEFAULT '1',
   `created_by` int(10) unsigned DEFAULT NULL,
-  `created_date` datetime DEFAULT NULL,
+  `created_time` datetime DEFAULT NULL,
   `updated_by` int(10) unsigned DEFAULT NULL,
-  `updated_date` datetime DEFAULT NULL,
+  `updated_time` datetime DEFAULT NULL,
   PRIMARY KEY (`order_id`,`sku_id`),
   CONSTRAINT `FK_ORDERID` FOREIGN KEY (`order_id`) REFERENCES `buss_order` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单--产品中间表\n';
@@ -176,7 +176,7 @@ CREATE TABLE `buss_order_sku` (
 --  Records of `buss_order_sku`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_order_sku` VALUES ('10000001', '1', '2', '生日快乐', '生日快乐', '0', null, null, '1000', null, '1', null, null, null, null), ('10000001', '2', '3', '生日快乐', '生日快乐', '0', null, null, '2000', null, '1', null, null, null, null);
+INSERT INTO `buss_order_sku` VALUES ('10000002', '1', '2', '生日快乐', '生日快乐', '0', null, null, '1000', null, '1', null, null, null, null), ('10000002', '2', '3', '生日快乐', '生日快乐', '0', null, null, '2000', null, '1', null, null, null, null);
 COMMIT;
 
 -- ----------------------------
@@ -191,9 +191,9 @@ CREATE TABLE `buss_order_src` (
   `name` varchar(100) DEFAULT NULL COMMENT '来源名称',
   `sort` tinyint(1) DEFAULT '0' COMMENT '排序规则',
   `created_by` int(11) DEFAULT NULL COMMENT '创建人',
-  `created_date` datetime DEFAULT NULL COMMENT '创建时间',
+  `created_time` datetime DEFAULT NULL COMMENT '创建时间',
   `updated_by` int(11) DEFAULT NULL,
-  `updated_date` datetime DEFAULT NULL,
+  `updated_time` datetime DEFAULT NULL,
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '删除标志（0：不显示；1：显示）',
   `merge_name` varchar(255) DEFAULT NULL COMMENT '合并后的名称，用“，”分隔',
   PRIMARY KEY (`id`)
@@ -214,9 +214,9 @@ CREATE TABLE `buss_pay_modes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) DEFAULT NULL COMMENT '支付方式',
   `created_by` int(11) DEFAULT NULL COMMENT '创建人',
-  `created_date` datetime DEFAULT NULL COMMENT '创建时间',
+  `created_time` datetime DEFAULT NULL COMMENT '创建时间',
   `updated_by` int(11) DEFAULT NULL COMMENT '更新人',
-  `updated_date` datetime DEFAULT NULL COMMENT '更新时间',
+  `updated_time` datetime DEFAULT NULL COMMENT '更新时间',
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '删除标志',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='支付方式';
@@ -234,16 +234,22 @@ COMMIT;
 DROP TABLE IF EXISTS `buss_print_apply`;
 CREATE TABLE `buss_print_apply` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `order_id` int(10) unsigned NOT NULL,
-  `reason` varchar(255) DEFAULT NULL,
+  `order_id` int(10) unsigned NOT NULL COMMENT '订单号',
+  `reason` varchar(255) DEFAULT NULL COMMENT '申请理由',
   `applicant_mobile` varchar(255) NOT NULL COMMENT '申请人手机',
   `director_mobile` varchar(255) NOT NULL COMMENT '主管手机',
   `status` enum('UNCHECKED','CHECKED','CHECKFAILED') NOT NULL DEFAULT 'UNCHECKED' COMMENT '''待审核'',''审核通过'',''审核不通过''',
-  `created_by` int(11) unsigned DEFAULT NULL,
-  `created_date` datetime DEFAULT NULL,
-  `updated_by` int(11) unsigned DEFAULT NULL,
-  `updated_date` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `check_ opinion` varchar(100) DEFAULT NULL COMMENT '审核意见',
+  `validate_code` varchar(6) DEFAULT NULL COMMENT '短信验证码',
+  `is_reprint` tinyint(1) DEFAULT '0' COMMENT '是否已经重新打印',
+  `reprint_time` datetime DEFAULT NULL COMMENT '重新打印时间',
+  `created_by` int(11) unsigned NOT NULL COMMENT '申请人',
+  `created_time` datetime DEFAULT NULL,
+  `updated_by` int(11) unsigned DEFAULT NULL COMMENT '审核人',
+  `updated_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_ORDERID` (`order_id`),
+  KEY `IDX_QUERY` (`status`,`is_reprint`,`created_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='申请重新打印订单表';
 
 -- ----------------------------
@@ -276,9 +282,9 @@ CREATE TABLE `buss_product_category` (
   `name` varchar(20) NOT NULL COMMENT '产品分类名称',
   `sort` tinyint(1) NOT NULL DEFAULT '0' COMMENT '排序权重',
   `created_by` int(10) unsigned NOT NULL COMMENT '创建人',
-  `created_date` datetime NOT NULL COMMENT '创建时间',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
   `updated_by` int(10) unsigned DEFAULT NULL COMMENT '更新者',
-  `updated_date` datetime DEFAULT NULL COMMENT '更新时间',
+  `updated_time` datetime DEFAULT NULL COMMENT '更新时间',
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '删除标志',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='产品分类表';
@@ -305,9 +311,9 @@ CREATE TABLE `buss_product_sku` (
   `discount_price` int(10) unsigned DEFAULT NULL COMMENT '实际售价',
   `sort` int(11) DEFAULT '0',
   `created_by` int(10) unsigned DEFAULT NULL,
-  `created_date` datetime DEFAULT NULL,
+  `created_time` datetime DEFAULT NULL,
   `updated_by` int(11) DEFAULT NULL,
-  `updated_date` datetime DEFAULT NULL,
+  `updated_time` datetime DEFAULT NULL,
   `del_flag` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `IDX_PRODUCT_SIZE_WEBSITE` (`product_id`,`size`,`website`) USING BTREE,
@@ -335,7 +341,7 @@ CREATE TABLE `buss_recipient` (
   `delivery_type` enum('TAKETHEIR','DELIVERY') DEFAULT 'DELIVERY' COMMENT '''门店自提'',''送货上门''',
   `address` varchar(255) DEFAULT NULL COMMENT '收货人地址 / 门店地址',
   `created_by` varchar(255) DEFAULT NULL COMMENT '创建人',
-  `created_date` datetime DEFAULT NULL COMMENT '创建时间',
+  `created_time` datetime DEFAULT NULL COMMENT '创建时间',
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '删除标志',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='收货人信息和收件方式';
@@ -361,7 +367,7 @@ CREATE TABLE `buss_shop` (
   `longitude` double(6,0) DEFAULT NULL COMMENT '经度',
   `latitude` double(6,0) DEFAULT NULL COMMENT '纬度',
   `created_by` varchar(255) DEFAULT NULL COMMENT '创建人',
-  `created_date` datetime DEFAULT NULL COMMENT '创建时间',
+  `created_time` datetime DEFAULT NULL COMMENT '创建时间',
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '软删除/是否显示（0：不显示；1：显示）',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='店铺信息';
@@ -391,7 +397,7 @@ CREATE TABLE `dict_regionalism` (
   `pinying` varchar(255) DEFAULT NULL,
   `del_flag` tinyint(1) DEFAULT '0' COMMENT '是否激活（0：false，1：true）',
   `updated_by` int(10) unsigned DEFAULT NULL,
-  `updated_date` datetime DEFAULT NULL,
+  `updated_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX_NAME` (`name`),
   KEY `IDX_PARENTID` (`parent_id`)
@@ -427,9 +433,9 @@ CREATE TABLE `sys_menu` (
   `is_show` char(1) NOT NULL COMMENT '是否在菜单中显示',
   `permission` varchar(200) DEFAULT NULL COMMENT '权限标识',
   `created_by` varchar(64) NOT NULL COMMENT '创建者',
-  `created_date` datetime NOT NULL COMMENT '创建时间',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
   `updated_by` varchar(64) NOT NULL COMMENT '更新者',
-  `updated_date` datetime NOT NULL COMMENT '更新时间',
+  `updated_time` datetime NOT NULL COMMENT '更新时间',
   `remarks` varchar(255) DEFAULT NULL COMMENT '备注信息',
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '删除标记',
   PRIMARY KEY (`id`),
@@ -451,7 +457,7 @@ CREATE TABLE `sys_op_logs` (
   `request_uri` varchar(255) DEFAULT NULL COMMENT '操作请求的uri',
   `exception` varchar(255) DEFAULT NULL COMMENT '操作捕获到的异常',
   `created_by` varchar(255) NOT NULL COMMENT '操作人',
-  `created_date` datetime NOT NULL COMMENT '操作时间',
+  `created_time` datetime NOT NULL COMMENT '操作时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统业务操作日志';
 
@@ -469,9 +475,9 @@ CREATE TABLE `sys_role` (
   `is_sys` varchar(64) DEFAULT NULL COMMENT '是否系统数据',
   `useable` varchar(64) DEFAULT NULL COMMENT '是否可用',
   `created_by` varchar(64) NOT NULL COMMENT '创建者',
-  `created_date` datetime NOT NULL COMMENT '创建时间',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
   `updated_by` varchar(15) NOT NULL COMMENT '更新者',
-  `updated_date` datetime NOT NULL COMMENT '更新时间',
+  `updated_time` datetime NOT NULL COMMENT '更新时间',
   `remarks` varchar(255) DEFAULT NULL COMMENT '备注信息',
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '删除标记',
   PRIMARY KEY (`id`),
@@ -509,15 +515,15 @@ CREATE TABLE `sys_user` (
   `login_date` datetime DEFAULT NULL COMMENT '最后登陆时间',
   `login_flag` varchar(64) DEFAULT NULL COMMENT '是否可登录',
   `created_by` varchar(64) NOT NULL COMMENT '创建者',
-  `created_date` datetime NOT NULL COMMENT '创建时间',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
   `updated_by` varchar(64) NOT NULL COMMENT '更新者',
-  `updated_date` datetime NOT NULL COMMENT '更新时间',
+  `updated_time` datetime NOT NULL COMMENT '更新时间',
   `remarks` varchar(255) DEFAULT NULL COMMENT '备注信息',
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '删除标记',
   PRIMARY KEY (`id`),
   KEY `sys_user_office_id` (`office_id`),
   KEY `sys_user_login_name` (`username`),
-  KEY `sys_user_update_date` (`updated_date`),
+  KEY `sys_user_update_date` (`updated_time`),
   KEY `sys_user_del_flag` (`del_flag`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='用户表';
 

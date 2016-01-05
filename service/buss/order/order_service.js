@@ -184,7 +184,7 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
             data.city_name = curr.city_name;
             data.regionalism_id = curr.regionalism_id;
             data.regionalism_name = curr.regionalism_name;
-            data.status = curr.status;
+            data.pay_status = curr.pay_status;
             data.recipient_mobile = curr.recipient_mobile;
             data.landmark = curr.landmark;
 

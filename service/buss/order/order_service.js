@@ -208,37 +208,38 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
  * @param res
  * @param next
  */
-OrderService.prototype.editOrder = (req, res, next)=> {
-    req.checkParams('orderId').notEmpty().isOrderId();
-    req.checkBody(editOrder);
-    let errors = req.validationErrors();
-    if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
-        return;
-    }
-    let orderId = systemUtils.getDBOrderId(req.params.orderId),
-        recipient_id = req.body.recipient_id,
-        delivery_type = req.body.delivery_type,
-        owner_name = req.body.owner_name,
-        owner_mobile = req.body.owner_mobile,
-        recipient_name = req.body.recipient_name,
-        recipient_mobile = req.body.recipient_mobile,
-        regionalism_id = req.body.regionalism_id,
-        recipient_address = req.body.recipient_address,
-        recipient_landmark = req.body.recipient_landmark,
-        delivery_id = req.body.delivery_id,
-        src_id = req.body.src_id,
-        pay_modes_id = req.body.pay_modes_id,
-        pay_status = req.body.pay_status,
-        delivery_time = req.body.delivery_time,
-        invoice = req.body.invoice,
-        remarks = req.body.remarks,
-        total_amount = req.body.total_amount,
-        total_original_price = req.body.total_original_price,
-        total_discount_price = req.body.total_discount_price,
-        products = req.body.products;
+OrderService.prototype.editOrder = function(is_submit){
+    return (req, res, next)=> {
+        req.checkParams('orderId').notEmpty().isOrderId();
+        req.checkBody(editOrder);
+        let errors = req.validationErrors();
+        if (errors) {
+            res.api(res_obj.INVALID_PARAMS,null);
+            return;
+        }
+        let orderId = systemUtils.getDBOrderId(req.params.orderId),
+            recipient_id = req.body.recipient_id,
+            delivery_type = req.body.delivery_type,
+            owner_name = req.body.owner_name,
+            owner_mobile = req.body.owner_mobile,
+            recipient_name = req.body.recipient_name,
+            recipient_mobile = req.body.recipient_mobile,
+            regionalism_id = req.body.regionalism_id,
+            recipient_address = req.body.recipient_address,
+            recipient_landmark = req.body.recipient_landmark,
+            delivery_id = req.body.delivery_id,
+            src_id = req.body.src_id,
+            pay_modes_id = req.body.pay_modes_id,
+            pay_status = req.body.pay_status,
+            delivery_time = req.body.delivery_time,
+            invoice = req.body.invoice,
+            remarks = req.body.remarks,
+            total_amount = req.body.total_amount,
+            total_original_price = req.body.total_original_price,
+            total_discount_price = req.body.total_discount_price,
+            products = req.body.products;
 
-    let recipient_obj = {
+        let recipient_obj = {
             regionalism_id: regionalism_id,
             name: recipient_name,
             mobile: recipient_mobile,
@@ -246,25 +247,31 @@ OrderService.prototype.editOrder = (req, res, next)=> {
             delivery_type: delivery_type,
             address: recipient_address,
             del_flag: del_flag.SHOW
-    };
-    let order_obj = {
-        recipient_id: recipient_id,
-        delivery_id: delivery_id,
-        src_id: src_id,
-        pay_status: pay_status,
-        owner_name : owner_name,
-        owner_mobile : owner_mobile,
-        remarks: remarks,
-        invoice: invoice,
-        delivery_time: delivery_time,
-        total_amount : total_amount,
-        total_original_price : total_original_price,
-        total_discount_price : total_discount_price
-    };
-    let promise = orderDao.editOrder(order_obj,orderId,recipient_obj,recipient_id,products).then(()=>{
-        res.api();
-    });
-    systemUtils.wrapService(res,next,promise);
+        };
+        let order_obj = {
+            recipient_id: recipient_id,
+            delivery_id: delivery_id,
+            src_id: src_id,
+            pay_status: pay_status,
+            owner_name : owner_name,
+            owner_mobile : owner_mobile,
+            remarks: remarks,
+            invoice: invoice,
+            delivery_time: delivery_time,
+            total_amount : total_amount,
+            total_original_price : total_original_price,
+            total_discount_price : total_discount_price
+        };
+        if(is_submit){
+            order_obj.status = Constant.OS.STATION;
+        }else{
+            order_obj.status = Constant.OS.UNTREATED;
+        }
+        let promise = orderDao.editOrder(order_obj,orderId,recipient_obj,recipient_id,products).then(()=>{
+            res.api();
+        });
+        systemUtils.wrapService(res,next,promise);
+    }
 };
 /**
  * add a recipient record
@@ -456,7 +463,7 @@ OrderService.prototype.applyForRePrint = (req,res,next) => {
     let promise = orderDao.insertPrintApply(systemUtils.assembleInsertObj(req,print_apply_obj)).then((result)=>{
         if(!Number.isInteger(result) || parseInt(result) === 0){
             throw new TiramisuError(res_obj.FAIL);
-        };
+        }
         res.api();
     });
     systemUtils.wrapService(res,next,promise);

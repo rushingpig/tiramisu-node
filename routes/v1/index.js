@@ -55,7 +55,8 @@ a.post('/order/print/apply',orderService.applyForRePrint);
 //******** PUT ********
 //*********************
 
-a.put('/order/:orderId',orderService.editOrder);
+a.put('/order/:orderId',orderService.editOrder(false));     // 保存
+a.put('/order/:order/submit',orderService.editOrder(true)); // 提交
 a.put('/orders/exchange',orderService.exchageOrders);
 
 //************************

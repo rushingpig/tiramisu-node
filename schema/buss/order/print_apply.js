@@ -8,23 +8,19 @@
 "use strict";
 module.exports = {
     'applicant_mobile' : {
-        optional : false,
         isMobilePhone: {
             options: ['zh-CN']
         }
     },
     'director_mobile' : {
-        optional : false,
         isMobilePhone: {
             options: ['zh-CN']
         }
     },
     'order_id' : {
-        optional : false,
         notEmpty : true
     },
     'reason' : {
-        optional : false,
         notEmpty : true
     }
 };

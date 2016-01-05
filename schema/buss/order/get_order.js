@@ -8,7 +8,6 @@
 "use strict";
 module.exports = {
     'orderId' : {
-        optional : false,
         notEmpty : true,
         isInt : true
     },

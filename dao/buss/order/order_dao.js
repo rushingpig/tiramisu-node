@@ -208,7 +208,7 @@ let columns = [
     }
     switch (query_data.order_sorted_rules){
         case constant.OSR.LIST:
-            sql += " order by bo.created_date desc";
+            sql += " order by bo.created_time desc";
             break;
         case constant.OSR.DELIVERY_EXCHANGE :
             sql += " order by bo.delivery_time asc";
@@ -217,7 +217,7 @@ let columns = [
             sql += " order by bo.delivery_time acs,bo.`status` asc";
             break;
         case constant.OSR.DELIVER_LIST :
-            sql += " order by bo.is_print asc,bo.delivery_time asc"
+            sql += " order by bo.is_print asc,bo.delivery_time asc";
             break;
         default :
             // do nothing && order by with the db self

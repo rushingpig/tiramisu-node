@@ -8,7 +8,6 @@
 "use strict";
 module.exports = {
     'order_ids' : {
-        optional : false,
         isArray : true
     },
 };

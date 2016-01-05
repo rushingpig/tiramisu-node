@@ -38,7 +38,7 @@ DBHelper.paginate = function(sql,page_no,page_size){
     if(parseInt(page_size) <= 0 || parseInt(page_size) >= Number.MAX_SAFE_INTEGER){
         page_size = 20;
     }
-    return sql + ' limit '+page_no+','+page_size;
+    return sql + ' limit '+(page_no*page_size+1)+','+page_size;
 };
 /**
  * remove the order by sub statement at the end of the sql

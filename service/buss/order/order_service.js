@@ -186,21 +186,22 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
             data.regionalism_name = curr.regionalism_name;
             data.pay_status = curr.pay_status;
             data.recipient_mobile = curr.recipient_mobile;
-            data.recipient_landmark = curr.recipient_landmark;
-
-            let product_obj = {
-                choco_board : curr.choco_board,
-                custom_desc : curr.custom_desc,
-                custom_name : curr.custom_name,
-                discount_price : curr.discount_price,
-                greeting_card : curr.greeting_card,
-                num : curr.num,
-                original_price : curr.original_price,
-                product_name : curr.product_name,
-                atlas : curr.atlas,
-                size : curr.size
-            };
-            data.products.push(product_obj);
+            data.recipient_landmark = curr.landmark;
+            if(curr.sku_id){
+                let product_obj = {
+                    choco_board : curr.choco_board,
+                    custom_desc : curr.custom_desc,
+                    custom_name : curr.custom_name,
+                    discount_price : curr.discount_price,
+                    greeting_card : curr.greeting_card,
+                    num : curr.num,
+                    original_price : curr.original_price,
+                    product_name : curr.product_name,
+                    atlas : curr.atlas,
+                    size : curr.size
+                };
+                data.products.push(product_obj);
+            }
         }
         res.api(data);
     });

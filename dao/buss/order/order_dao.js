@@ -103,6 +103,7 @@ OrderDao.prototype.findOrderById = function(orderId){
         'bos.num',
         'bps.size',
         'bps.price',
+        'bos.sku_id',
         'bos.discount_price',
         'bos.choco_board',
         'bos.greeting_card',

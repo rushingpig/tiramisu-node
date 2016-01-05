@@ -186,7 +186,7 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
             data.regionalism_name = curr.regionalism_name;
             data.pay_status = curr.pay_status;
             data.recipient_mobile = curr.recipient_mobile;
-            data.landmark = curr.landmark;
+            data.recipient_landmark = curr.recipient_landmark;
 
             let product_obj = {
                 choco_board : curr.choco_board,

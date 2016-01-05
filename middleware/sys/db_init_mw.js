@@ -29,7 +29,7 @@ function loadSQL(){
 
 
 DBInitMiddleware.initdb = ()=>{
-    if(process.env.tiramisu_env !== 'production'){
+    if(!(process.env.NODE_ENV === 'dev' && process.env.NODE_ENV === 'production')){
         pool.getConnection((err,conn)=> {
             conn.query(loadSQL(), (err)=> {
                 if (err) {

@@ -51,31 +51,10 @@ export class NoPage extends Component {
     )
   }
 }
-export class Om1 extends Component {
+export class ComingSoon extends Component {
   render(){
     return (
-      <h1><center>订单管理</center></h1>
-    )
-  }
-}
-export class Om2 extends Component {
-  render(){
-    return (
-      <h1><center>退款管理</center></h1>
-    )
-  }
-}
-export class Om3 extends Component {
-  render(){
-    return (
-      <h1><center>发票管理</center></h1>
-    )
-  }
-}
-export class Om4 extends Component {
-  render(){
-    return (
-      <h1><center>中奖管理</center></h1>
+      <h1><center><i>Coming Soon !</i></center></h1>
     )
   }
 }

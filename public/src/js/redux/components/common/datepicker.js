@@ -14,7 +14,7 @@ var DatePicker = React.createClass({
     }
   },
   componentWillReceiveProps: function(nextProps) {
-    if (nextProps['redux-form'].value != this.props['redux-form'].value) {
+    if (nextProps['redux-form'].value && (nextProps['redux-form'].value != this.props['redux-form'].value)) {
       $(function(){
         this.setState({
           date: nextProps['redux-form'].value,
@@ -42,18 +42,18 @@ var DatePicker = React.createClass({
     }.bind(this));
   },
   initDatePicker: function(){
-    var dom_date = this.refs.date;
-    var $date = $(dom_date).data('datepicker');
+    var $dom_date = $(this.refs.date);
+    var $date = $dom_date.data('datepicker');
     if(!$date){
-      $date = $(dom_date).datepicker({
+      $date = $dom_date.datepicker({
         format: 'yyyy-mm-dd',
       }).on('changeDate', function(e) {
         this.setState({date: e.target.value}, function(){
-          setTimeout(function(){
-            dom_date.focus();
-            dom_date.blur();
+          // setTimeout(function(){
+            $dom_date.focus();
+            $dom_date.blur();
             $date.data('datepicker').hide();
-          }, 0);
+          // }, 0);
         });
       }.bind(this));
     }
@@ -63,7 +63,9 @@ var DatePicker = React.createClass({
     //redux-from 中包含value
     return (
       <div style={{'display': 'inline-block'}}>
-        <input ref="date" {...this.props['redux-form']} value={this.state.date} className={`form-control input-sm ${this.props.className}`} />
+        <input ref="date" {...this.props['redux-form']}
+           value={this.state.date} 
+           className={`form-control input-sm ${this.props.className}`} />
       </div>
     );
   }

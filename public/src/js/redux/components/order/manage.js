@@ -68,14 +68,14 @@ class OrderRow extends Component {
     return (
       <tr className={props.selected_order_id == props.order_id ? 'active' : ''} onClick={this.clickHandler.bind(this)}>
         <td>
-          <a href="javascript:;">[编辑]</a><br/>
-          <a onClick={function(){props.viewDetail(props)}} href="javascript:;">[查看]</a><br/>
-          <a onClick={function(){props.alterStation(props)}} href="javascript:;" className="nowrap">[修改配送]</a>
+          <a onClick={this.editHandler.bind(this)} href="javascript:;">[编辑]</a><br/>
+          <a onClick={this.viewDetail.bind(this)} href="javascript:;">[查看]</a><br/>
+          <a onClick={this.alterStation.bind(this)} href="javascript:;" className="nowrap">[修改配送]</a>
         </td>
         <td>{props.merchant_id}</td>
         <td>{props.order_id}</td>
         <td>{props.owner_name}<br />{props.owner_mobile}</td>
-        <td><div className="time">{props.created_date}</div></td>
+        <td><div className="time">{props.created_time}</div></td>
         <td className="text-left">
           姓名：{props.recipient_name}<br />
           电话：{props.recipient_mobile}<br />
@@ -108,6 +108,18 @@ class OrderRow extends Component {
   clickHandler(){
     this.props.checkOrder(this.props.order_id);
   }
+  editHandler(e){
+    history.replace('/om/index/' + this.props.order_id);
+    e.stopPropagation();
+  }
+  viewDetail(e){
+    this.props.viewDetail(this.props);
+    e.stopPropagation();
+  }
+  alterStation(e){
+    this.props.alterStation(this.props);
+    e.stopPropagation();
+  }
 }
 
 function ProductRow(product){
@@ -132,10 +144,13 @@ class ManagePannel extends Component {
     super(props);
     this.viewDetail = this.viewDetail.bind(this);
     this.alterStation = this.alterStation.bind(this);
+    this.state = {
+      page_size: 8,
+    }
   }
   render(){
     var { filter, startDateChange, deliveryDateChange, checkOrder } = this.props;
-    var { total, list, check_order_info, selected_order_id } = this.props.orders;
+    var { page_no, total, list, check_order_info, selected_order_id } = this.props.orders;
     var { viewDetail, alterStation } = this;
 
     var content = list.map((n, i) => {
@@ -188,9 +203,9 @@ class ManagePannel extends Component {
           </div>
 
            <Pagination 
-              current_page={0} 
+              page_no={page_no} 
               total_count={total} 
-              perpage_count={8} 
+              page_size={this.state.page_size} 
               onPageChange={this.onPageChange}
             />
         </div>
@@ -229,11 +244,11 @@ class ManagePannel extends Component {
     )
   }
   onPageChange(page){
-    this.setState({current_page: page});
+    this.setState({page_no: page});
   }
   componentDidMount() {
-    var { getOrderList } = this.props;
-    getOrderList();
+    var { getOrderList, orders } = this.props;
+    getOrderList({page_no: orders.page_no, page_size: this.state.page_size});
   }
   viewDetail(n){
     render(<ManageDetailModal data={n} data-id={new Date().getTime()} />, this.refs['modal-wrap']);

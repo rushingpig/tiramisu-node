@@ -9,7 +9,8 @@ export default function Noty(type, text){
         close: 'animated bounceOutRight', // Animate.css class names
         // easing: 'swing', // unavailable - no need
         // speed: 500 // unavailable - no need
-    }
+    },
+    timeout: type === 'success' && 2500
   })
   : alert(text);
 }

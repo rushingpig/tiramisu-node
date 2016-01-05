@@ -83,6 +83,9 @@ if (app.get('env') === 'development') {
 
 if (app.get('env') === 'dev') {
     app.use(function (err, req, res, next) {
+        if(err){
+          console.error(err);
+        }
         res.renders('index',{isLogin : req.session.user ? true : false});
     });
 }

@@ -23,6 +23,7 @@ function filter(state = initial_state.filter, action){
 }
 
 var orders_state = {
+  page_no: 0,
   total: 0,
   list: [],
   selected_order_id: undefined,

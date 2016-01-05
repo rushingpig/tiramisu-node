@@ -19067,8 +19067,9 @@
 	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/index', component: _componentsOrderManage2['default'] }),
 	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/index/add', component: _componentsOrderManage_order_detail_pannel2['default'] }),
 	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/index/:id', component: _componentsOrderManage_order_detail_pannel2['default'] }),
-	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/refund', component: _componentsBody.Om2 }),
-	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/winning', component: _componentsBody.Om4 }),
+	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/refund', component: _componentsBody.ComingSoon }),
+	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/invoice', component: _componentsBody.ComingSoon }),
+	          _react2['default'].createElement(_reactRouter.Route, { path: 'om/winning', component: _componentsBody.ComingSoon }),
 	          _react2['default'].createElement(_reactRouter.Route, { path: '*', component: _componentsBody.NoPage })
 	        )
 	      );
@@ -19242,16 +19243,16 @@
 
 	exports.NoPage = NoPage;
 
-	var Om1 = (function (_Component4) {
-	  _inherits(Om1, _Component4);
+	var ComingSoon = (function (_Component4) {
+	  _inherits(ComingSoon, _Component4);
 
-	  function Om1() {
-	    _classCallCheck(this, Om1);
+	  function ComingSoon() {
+	    _classCallCheck(this, ComingSoon);
 
-	    _get(Object.getPrototypeOf(Om1.prototype), 'constructor', this).apply(this, arguments);
+	    _get(Object.getPrototypeOf(ComingSoon.prototype), 'constructor', this).apply(this, arguments);
 	  }
 
-	  _createClass(Om1, [{
+	  _createClass(ComingSoon, [{
 	    key: 'render',
 	    value: function render() {
 	      return _react2['default'].createElement(
@@ -19260,103 +19261,20 @@
 	        _react2['default'].createElement(
 	          'center',
 	          null,
-	          '订单管理'
+	          _react2['default'].createElement(
+	            'i',
+	            null,
+	            'Coming Soon !'
+	          )
 	        )
 	      );
 	    }
 	  }]);
 
-	  return Om1;
+	  return ComingSoon;
 	})(_react.Component);
 
-	exports.Om1 = Om1;
-
-	var Om2 = (function (_Component5) {
-	  _inherits(Om2, _Component5);
-
-	  function Om2() {
-	    _classCallCheck(this, Om2);
-
-	    _get(Object.getPrototypeOf(Om2.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(Om2, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2['default'].createElement(
-	        'h1',
-	        null,
-	        _react2['default'].createElement(
-	          'center',
-	          null,
-	          '退款管理'
-	        )
-	      );
-	    }
-	  }]);
-
-	  return Om2;
-	})(_react.Component);
-
-	exports.Om2 = Om2;
-
-	var Om3 = (function (_Component6) {
-	  _inherits(Om3, _Component6);
-
-	  function Om3() {
-	    _classCallCheck(this, Om3);
-
-	    _get(Object.getPrototypeOf(Om3.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(Om3, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2['default'].createElement(
-	        'h1',
-	        null,
-	        _react2['default'].createElement(
-	          'center',
-	          null,
-	          '发票管理'
-	        )
-	      );
-	    }
-	  }]);
-
-	  return Om3;
-	})(_react.Component);
-
-	exports.Om3 = Om3;
-
-	var Om4 = (function (_Component7) {
-	  _inherits(Om4, _Component7);
-
-	  function Om4() {
-	    _classCallCheck(this, Om4);
-
-	    _get(Object.getPrototypeOf(Om4.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(Om4, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2['default'].createElement(
-	        'h1',
-	        null,
-	        _react2['default'].createElement(
-	          'center',
-	          null,
-	          '中奖管理'
-	        )
-	      );
-	    }
-	  }]);
-
-	  return Om4;
-	})(_react.Component);
-
-	exports.Om4 = Om4;
+	exports.ComingSoon = ComingSoon;
 
 /***/ },
 /* 157 */
@@ -19829,11 +19747,12 @@
 	    text: text,
 	    animation: {
 	      open: 'animated bounceInRight', // Animate.css class names
-	      close: 'animated bounceOutRight' }
-	  }) : // Animate.css class names
-	  // easing: 'swing', // unavailable - no need
-	  // speed: 500 // unavailable - no need
-	  alert(text);
+	      close: 'animated bounceOutRight' },
+	    // Animate.css class names
+	    // easing: 'swing', // unavailable - no need
+	    // speed: 500 // unavailable - no need
+	    timeout: type === 'success' && 2500
+	  }) : alert(text);
 	}
 
 	module.exports = exports['default'];
@@ -26123,8 +26042,10 @@
 	});
 	exports.get = get;
 	exports.post = post;
+	exports.put = put;
 	exports.GET = GET;
 	exports.POST = POST;
+	exports.PUT = PUT;
 	exports.TEST = TEST;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -26170,6 +26091,12 @@
 	  });
 	}
 
+	function put(url, data) {
+	  return new _promise2['default'](function (resolve, reject) {
+	    _superagent2['default'].put(url).send(data).set('X-Requested-With', 'XMLHttpRequest').end(_end_callback(resolve, reject));
+	  });
+	}
+
 	//最简封装
 
 	function GET(url, query_data, action_type) {
@@ -26186,6 +26113,17 @@
 	function POST(url, query_data, action_type) {
 	  return function (dispatch) {
 	    return post(url, query_data).done(function (data) {
+	      dispatch({
+	        type: action_type,
+	        data: data
+	      });
+	    });
+	  };
+	}
+
+	function PUT(url, query_data, action_type) {
+	  return function (dispatch) {
+	    return put(url, query_data).done(function (data) {
 	      dispatch({
 	        type: action_type,
 	        data: data
@@ -27657,7 +27595,9 @@
 	    //订单
 	    orders: '/orders',
 	    order_add: '/order',
-	    orders_detail: '/order/:orderId',
+	    order_detail: '/order/:orderId',
+	    save_order: '/order/:orderId',
+	    submit_order: '/order/:orderId/submit',
 	    provinces: '/provinces',
 	    cities: '/province/:provinceId/cities',
 	    districts: '/city/:cityId/districts',
@@ -28073,23 +28013,19 @@
 	          null,
 	          _react2['default'].createElement(
 	            'a',
-	            { href: 'javascript:;' },
+	            { onClick: this.editHandler.bind(this), href: 'javascript:;' },
 	            '[编辑]'
 	          ),
 	          _react2['default'].createElement('br', null),
 	          _react2['default'].createElement(
 	            'a',
-	            { onClick: function () {
-	                props.viewDetail(props);
-	              }, href: 'javascript:;' },
+	            { onClick: this.viewDetail.bind(this), href: 'javascript:;' },
 	            '[查看]'
 	          ),
 	          _react2['default'].createElement('br', null),
 	          _react2['default'].createElement(
 	            'a',
-	            { onClick: function () {
-	                props.alterStation(props);
-	              }, href: 'javascript:;', className: 'nowrap' },
+	            { onClick: this.alterStation.bind(this), href: 'javascript:;', className: 'nowrap' },
 	            '[修改配送]'
 	          )
 	        ),
@@ -28116,7 +28052,7 @@
 	          _react2['default'].createElement(
 	            'div',
 	            { className: 'time' },
-	            props.created_date
+	            props.created_time
 	          )
 	        ),
 	        _react2['default'].createElement(
@@ -28260,6 +28196,24 @@
 	    value: function clickHandler() {
 	      this.props.checkOrder(this.props.order_id);
 	    }
+	  }, {
+	    key: 'editHandler',
+	    value: function editHandler(e) {
+	      _history_instance2['default'].replace('/om/index/' + this.props.order_id);
+	      e.stopPropagation();
+	    }
+	  }, {
+	    key: 'viewDetail',
+	    value: function viewDetail(e) {
+	      this.props.viewDetail(this.props);
+	      e.stopPropagation();
+	    }
+	  }, {
+	    key: 'alterStation',
+	    value: function alterStation(e) {
+	      this.props.alterStation(this.props);
+	      e.stopPropagation();
+	    }
 	  }]);
 
 	  return OrderRow;
@@ -28333,6 +28287,9 @@
 	    _get(Object.getPrototypeOf(ManagePannel.prototype), 'constructor', this).call(this, props);
 	    this.viewDetail = this.viewDetail.bind(this);
 	    this.alterStation = this.alterStation.bind(this);
+	    this.state = {
+	      page_size: 8
+	    };
 	  }
 
 	  _createClass(ManagePannel, [{
@@ -28344,6 +28301,7 @@
 	      var deliveryDateChange = _props2.deliveryDateChange;
 	      var checkOrder = _props2.checkOrder;
 	      var _props$orders = this.props.orders;
+	      var page_no = _props$orders.page_no;
 	      var total = _props$orders.total;
 	      var list = _props$orders.list;
 	      var check_order_info = _props$orders.check_order_info;
@@ -28501,9 +28459,9 @@
 	            )
 	          ),
 	          _react2['default'].createElement(_commonPagination2['default'], {
-	            current_page: 0,
+	            page_no: page_no,
 	            total_count: total,
-	            perpage_count: 8,
+	            page_size: this.state.page_size,
 	            onPageChange: this.onPageChange
 	          })
 	        ),
@@ -28597,14 +28555,16 @@
 	  }, {
 	    key: 'onPageChange',
 	    value: function onPageChange(page) {
-	      this.setState({ current_page: page });
+	      this.setState({ page_no: page });
 	    }
 	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      var getOrderList = this.props.getOrderList;
+	      var _props3 = this.props;
+	      var getOrderList = _props3.getOrderList;
+	      var orders = _props3.orders;
 
-	      getOrderList();
+	      getOrderList({ page_no: orders.page_no, page_size: this.state.page_size });
 	    }
 	  }, {
 	    key: 'viewDetail',
@@ -28683,15 +28643,15 @@
 	var GET_ORDER_LIST = 'GET_ORDER_LIST';
 	exports.GET_ORDER_LIST = GET_ORDER_LIST;
 
-	function getOrderList() {
-	  return (0, _utilsRequest.GET)(_configUrl2['default'].orders.toString(), null, GET_ORDER_LIST);
+	function getOrderList(data) {
+	  return (0, _utilsRequest.GET)(_configUrl2['default'].orders.toString(), data, GET_ORDER_LIST);
 	  // return TEST({
 	  //   total: 1,
 	  //   list: [{
 	  //     'cancel_reason':  '取消理由xxxx',   
 	  //     'city':  '城市xxx',   
 	  //     'created_by':  '创建人xx',  
-	  //     'created_date':  '下单时间xx', 
+	  //     'created_time':  '下单时间xx', 
 	  //     'delivery_name': '配送站名称xx',  
 	  //     'delivery_time': '配送时间xx',   
 	  //     'delivery_type': '配送方式xx',   
@@ -28727,7 +28687,7 @@
 	      type: CHECK_ORDER,
 	      selected_order_id: id
 	    });
-	    return (0, _utilsRequest.GET)(_configUrl2['default'].orders_detail.toString(id), null, GET_ORDER_DETAIL_PRODUCTS)(dispatch);
+	    return (0, _utilsRequest.GET)(_configUrl2['default'].order_detail.toString(id), null, GET_ORDER_DETAIL_PRODUCTS)(dispatch);
 	  };
 	  // return TEST({
 	  //   'city_id': '市IDXX',
@@ -28791,7 +28751,7 @@
 	    };
 	  },
 	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-	    if (nextProps['redux-form'].value != this.props['redux-form'].value) {
+	    if (nextProps['redux-form'].value && nextProps['redux-form'].value != this.props['redux-form'].value) {
 	      $((function () {
 	        this.setState({
 	          date: nextProps['redux-form'].value
@@ -28819,18 +28779,18 @@
 	    }).bind(this));
 	  },
 	  initDatePicker: function initDatePicker() {
-	    var dom_date = this.refs.date;
-	    var $date = $(dom_date).data('datepicker');
+	    var $dom_date = $(this.refs.date);
+	    var $date = $dom_date.data('datepicker');
 	    if (!$date) {
-	      $date = $(dom_date).datepicker({
+	      $date = $dom_date.datepicker({
 	        format: 'yyyy-mm-dd'
 	      }).on('changeDate', (function (e) {
 	        this.setState({ date: e.target.value }, function () {
-	          setTimeout(function () {
-	            dom_date.focus();
-	            dom_date.blur();
-	            $date.data('datepicker').hide();
-	          }, 0);
+	          // setTimeout(function(){
+	          $dom_date.focus();
+	          $dom_date.blur();
+	          $date.data('datepicker').hide();
+	          // }, 0);
 	        });
 	      }).bind(this));
 	    }
@@ -28841,7 +28801,9 @@
 	    return _react2['default'].createElement(
 	      'div',
 	      { style: { 'display': 'inline-block' } },
-	      _react2['default'].createElement('input', _extends({ ref: 'date' }, this.props['redux-form'], { value: this.state.date, className: 'form-control input-sm ' + this.props.className }))
+	      _react2['default'].createElement('input', _extends({ ref: 'date' }, this.props['redux-form'], {
+	        value: this.state.date,
+	        className: 'form-control input-sm ' + this.props.className }))
 	    );
 	  }
 	});
@@ -28920,9 +28882,9 @@
 	        return {
 	            random_btn_active: true,
 	            random_btn_show: true,
-	            perpage_count: 20, //每页显示20条
+	            page_size: 20, //每页显示20条
 	            total_count: 0,
-	            current_page: 0,
+	            page_no: 0,
 	            page_num_show: 10, //分页的页码，显示10个
 	            onPageChange: null //,
 	            //onPageChangeBefore: null
@@ -28930,13 +28892,13 @@
 	    },
 	    _calc_pages: function _calc_pages() {
 	        var total_count = this.props.total_count;
-	        var perpage_count = this.props.perpage_count;
-	        var current_page = this.props.current_page;
+	        var page_size = this.props.page_size;
+	        var page_no = this.props.page_no;
 
 	        if (total_count < 0 || total_count == Infinity) {
 	            var total_pages = -1;
 	        } else {
-	            var total_pages = Math.ceil(total_count / perpage_count);
+	            var total_pages = Math.ceil(total_count / page_size);
 	        }
 	        this.total_pages = total_pages;
 
@@ -28948,7 +28910,7 @@
 	        } else {
 	            var pagesOfpage = Math.ceil(total_pages / page_num_show);
 	        }
-	        var cpageOfPage = Math.floor(current_page / page_num_show);
+	        var cpageOfPage = Math.floor(page_no / page_num_show);
 	        var long_prev = cpageOfPage > 0;
 	        var long_next = cpageOfPage < pagesOfpage - 1 || pagesOfpage == -1;
 
@@ -28960,7 +28922,7 @@
 	        }
 
 	        return {
-	            "current_page": current_page,
+	            "page_no": page_no,
 	            "total_pages": total_pages,
 
 	            "start": page_num_start,
@@ -28977,7 +28939,7 @@
 	            this.props.onPageChange(page);
 	            /*
 	            this.setState({
-	                current_page: page
+	                page_no: page
 	            }, function(){
 	                this.props.onPageChange(page);
 	            });
@@ -28985,32 +28947,32 @@
 	        }
 	    },
 	    _prevPage: function _prevPage() {
-	        if (this.props.current_page > 0) {
-	            this._selectPage(this.props.current_page - 1);
+	        if (this.props.page_no > 0) {
+	            this._selectPage(this.props.page_no - 1);
 	        }
 	    },
 	    _nextPage: function _nextPage() {
 	        var total_pages = this.total_pages;
-	        if (total_pages == -1 || this.props.current_page < total_pages - 1) {
-	            this._selectPage(this.props.current_page + 1);
+	        if (total_pages == -1 || this.props.page_no < total_pages - 1) {
+	            this._selectPage(this.props.page_no + 1);
 	        }
 	    },
 	    _longJumpPre: function _longJumpPre() {
 	        var pn = this.props.page_num_show;
-	        var page = Math.floor(this.props.current_page / pn) * pn - 1;
+	        var page = Math.floor(this.props.page_no / pn) * pn - 1;
 	        this._selectPage(page);
 	    },
 	    _longJumpNext: function _longJumpNext() {
 	        var pn = this.props.page_num_show;
-	        var page = Math.floor(this.props.current_page / pn + 1) * pn;
+	        var page = Math.floor(this.props.page_no / pn + 1) * pn;
 	        this._selectPage(page);
 	    },
 	    render: function render() {
 	        var page_info = this._calc_pages();
 	        var total_pages = page_info.total_pages;
 
-	        var preDisabledCls = page_info.current_page > 0 ? "" : " disabled",
-	            nextDisabledCls = total_pages == -1 || page_info.current_page < total_pages - 1 ? "" : " disabled";
+	        var preDisabledCls = page_info.page_no > 0 ? "" : " disabled",
+	            nextDisabledCls = total_pages == -1 || page_info.page_no < total_pages - 1 ? "" : " disabled";
 
 	        var longNextStyle = { display: 'none' },
 	            longPreStyle = { display: 'none' };
@@ -29029,7 +28991,7 @@
 
 	        var page_numbers = [];
 	        for (var n = page_info.start; n < page_info.end && this.props.random_btn_show; n++) {
-	            var actived = n == page_info.current_page;
+	            var actived = n == page_info.page_no;
 	            var classnames = 'paginate_button';
 	            if (this.props.random_btn_active) {
 	                classnames += actived ? ' active' : '';
@@ -29827,6 +29789,7 @@
 	                'form-data': mainForm,
 	                area: area,
 	                editable: !!(params && params.id),
+	                order_id: params.id,
 	                actions: _extends({}, (0, _redux.bindActionCreators)(AreaActions, dispatch), (0, _redux.bindActionCreators)(OrderFormActions, dispatch)) },
 	              _react2['default'].createElement(_manage_order_products2['default'], _extends({ dispatch: dispatch }, products))
 	            )
@@ -29841,7 +29804,6 @@
 	      var params = this.props.params;
 
 	      if (params && params.id) {
-	        console.log('params-->id-->' + params.id);
 	        this.props.getOrderById(params.id);
 	      }
 	    }
@@ -29851,7 +29813,7 @@
 	})(_react.Component);
 
 	ManageOrderDetailPannel.PropTypes = {
-	  saveOrderInfo: _react.PropTypes.func.isRequired
+	  createOrder: _react.PropTypes.func.isRequired
 	};
 
 	function mapStateToProps(_ref) {
@@ -29978,8 +29940,10 @@
 	exports.getDeliveryStations = getDeliveryStations;
 	exports.getPayModes = getPayModes;
 	exports.productAttrChange = productAttrChange;
-	exports.saveOrderInfo = saveOrderInfo;
+	exports.createOrder = createOrder;
+	exports.saveOrder = saveOrder;
 	exports.getOrderById = getOrderById;
+	exports.submitOrder = submitOrder;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -30037,6 +30001,17 @@
 	  };
 	}
 
+	function _getFormData(form_data, getState) {
+	  var products = getState().orderManageForm.products.confirm_list;
+	  var total_amount = products.reduce(function (p, n) {
+	    return p + n.discount_price * 100;
+	  }, 0);
+	  return _extends({}, form_data, {
+	    total_amount: total_amount / 100,
+	    products: products
+	  });
+	}
+
 	var SAVE_ORDER_INFO_ING = 'SAVE_ORDER_INFO_ING';
 	exports.SAVE_ORDER_INFO_ING = SAVE_ORDER_INFO_ING;
 	var SAVE_ORDER_INFO_SUCCESS = 'SAVE_ORDER_INFO_SUCCESS';
@@ -30045,15 +30020,10 @@
 
 	exports.SAVE_ORDER_INFO_FAIL = SAVE_ORDER_INFO_FAIL;
 
-	function saveOrderInfo(form_data) {
+	function createOrder(form_data) {
 	  //若是异步的话，那么该函数必须也返回一个函数
 	  return function (dispatch, getState) {
-	    var products = getState().orderManageForm.products.confirm_list,
-	        total_amount = products.reduce(function (p, n) {
-	      return p + n.discount_price * 100;
-	    }, 0);
-	    form_data.total_amount = total_amount / 100;
-	    var data = _extends({}, form_data, { products: products });
+	    var data = _getFormData(form_data, getState);
 	    dispatch({
 	      type: SAVE_ORDER_INFO_ING
 	    });
@@ -30069,58 +30039,107 @@
 	  };
 	}
 
+	//保存和创建的逻辑大体一致，就是url不同
+
+	function saveOrder(form_data) {
+	  //若是异步的话，那么该函数必须也返回一个函数
+	  return function (dispatch, getState) {
+	    var data = _getFormData(form_data, getState);
+	    dispatch({
+	      type: SAVE_ORDER_INFO_ING
+	    });
+	    if (!form_data.order_id) {
+	      throw Error('order_id should not be undefined');
+	    }
+	    return (0, _utilsRequest.put)(_configUrl2['default'].save_order.toString(form_data.order_id), data).done(function () {
+	      dispatch({
+	        type: SAVE_ORDER_INFO_SUCCESS
+	      });
+	    }).fail(function () {
+	      dispatch({
+	        type: SAVE_ORDER_INFO_FAIL
+	      });
+	    });
+	  };
+	}
+
 	var GOT_ORDER_BY_ID = 'GOT_ORDER_BY_ID';
 	exports.GOT_ORDER_BY_ID = GOT_ORDER_BY_ID;
 
 	function getOrderById(id) {
-	  return function (dispatch) {
-	    dispatch({
-	      type: GOT_ORDER_BY_ID,
-	      data: {
-	        "pay_status": "PAYED",
-	        "owner_mobile": "13399998888",
-	        "recipient_mobile": "13399998888",
-	        "invoice": 0,
-	        "delivery_id": 1,
-	        "owner_name": "www",
-	        "delivery_type": "DELIVERY",
-	        "recipient_address": "xxxx街",
-	        "remarks": "ceec",
-	        "amount": 180,
-	        "src_id": "2",
-	        "regionalism_id": "110101",
-	        //todo{
-	        "province_id": "110000",
-	        "province_name": "北京市",
-	        "city_id": "110100",
-	        "city_name": "北京市",
-	        "regionalism_name": "东城区",
-	        //}
+	  return (0, _utilsRequest.GET)(_configUrl2['default'].order_detail.toString(id), null, GOT_ORDER_BY_ID);
+	  // return dispatch => {
+	  //   dispatch({
+	  //     type: GOT_ORDER_BY_ID,
+	  //     data: {
+	  //       "pay_status": "PAYED",
+	  //       "owner_mobile": "13399998888",
+	  //       "recipient_mobile": "13399998888",
+	  //       "invoice": 0,
+	  //       "delivery_id": 1,
+	  //       "owner_name": "www",
+	  //       "delivery_type": "DELIVERY",
+	  //       "recipient_address": "xxxx街",
+	  //       "remarks": "ceec",
+	  //       "amount": 180,
+	  //       "src_id": "2",
+	  //       "regionalism_id": "110101",
+	  //       //todo{
+	  //       "province_id": "110000",
+	  //       "province_name": "北京市",
+	  //       "city_id": "110100",
+	  //       "city_name": "北京市",
+	  //       "regionalism_name": "东城区",
+	  //       //}
 
-	        "recipient_landmark": "xxxx建筑物",
-	        "delivery_time": "2015-12-24 13:00～14:00",
-	        "recipient_name": "www",
-	        "pay_modes_id": "2",
-	        "products": [{
-	          "website": "website2",
-	          "name": "zhang",
-	          "size": "zhang1",
-	          "sku_id": 22,
-	          "discount_price": 180,
-	          "product_id": 1,
-	          "num": 1,
-	          "original_price": 20000,
-	          "is_local_site": "0",
-	          "is_delivery": "1",
-	          "category_name": "类型1",
-	          "choco_board": "巧克力牌xxx",
-	          "greeting_card": "祝福语xxx",
-	          "atlas": true,
-	          "custom_name": "自定义名称xxx",
-	          "custom_desc": "自定义描述xxx",
-	          "amount": 180
-	        }]
-	      }
+	  //       "recipient_landmark": "xxxx建筑物",
+	  //       "delivery_time": "2015-12-24 13:00～14:00",
+	  //       "recipient_name": "www",
+	  //       "pay_modes_id": "2",
+	  //       "products": [{
+	  //         "website": "website2",
+	  //         "name": "zhang",
+	  //         "size": "zhang1",
+	  //         "sku_id": 22,
+	  //         "discount_price": 180,
+	  //         "product_id": 1,
+	  //         "num": 1,
+	  //         "original_price": 20000,
+	  //         "is_local_site": "0",
+	  //         "is_delivery": "1",
+	  //         "category_name": "类型1",
+	  //         "choco_board": "巧克力牌xxx",
+	  //         "greeting_card": "祝福语xxx",
+	  //         "atlas": true,
+	  //         "custom_name": "自定义名称xxx",
+	  //         "custom_desc": "自定义描述xxx",
+	  //         "amount": 180
+	  //       }]
+	  //     }
+	  //   });
+	  // }
+	}
+
+	var SUBMIT_ING = 'SUBMIT_ING';
+	exports.SUBMIT_ING = SUBMIT_ING;
+	var SUBMIT_COMPLETE = 'SUBMIT_COMPLETE';
+
+	exports.SUBMIT_COMPLETE = SUBMIT_COMPLETE;
+
+	function submitOrder(form_data) {
+	  //若是异步的话，那么该函数必须也返回一个函数
+	  return function (dispatch, getState) {
+	    var data = _getFormData(form_data, getState);
+	    dispatch({
+	      type: SUBMIT_ING
+	    });
+	    if (!form_data.order_id) {
+	      throw Error('order_id should not be undefined');
+	    }
+	    return (0, _utilsRequest.put)(_configUrl2['default'].submit_order.toString(form_data.order_id), data).always(function () {
+	      dispatch({
+	        type: SUBMIT_COMPLETE
+	      });
 	    });
 	  };
 	}
@@ -33071,7 +33090,7 @@
 	      invoices: [{ id: _configAppConfig.INVOICE.NO, text: '不需要' }, { id: _configAppConfig.INVOICE.YES, text: '需要' }],
 	      selected_order_src_level1_id: _configAppConfig.SELECT_DEFAULT_VALUE
 	    };
-	    this.handleSave = this.handleSave.bind(this);
+	    this._check = this._check.bind(this);
 	  }
 
 	  _createClass(ManageAddForm, [{
@@ -33116,6 +33135,7 @@
 	      var _props$formData = this.props['form-data'];
 	      var save_ing = _props$formData.save_ing;
 	      var save_success = _props$formData.save_success;
+	      var submit_ing = _props$formData.submit_ing;
 	      var all_delivery_time = _props$formData.all_delivery_time;
 	      var all_pay_status = _props$formData.all_pay_status;
 	      var all_order_srcs = _props$formData.all_order_srcs;
@@ -33336,39 +33356,45 @@
 	        _react2['default'].createElement(
 	          'div',
 	          { className: 'form-group' },
-	          _react2['default'].createElement(
+	          editable ? [_react2['default'].createElement(
 	            'button',
 	            {
-	              onClick: handleSubmit(this.handleSave),
+	              onClick: handleSubmit(this._check.bind(this, this.handleSaveOrder)),
 	              disabled: save_ing,
 	              'data-submitting': save_ing,
 	              className: 'btn btn-theme btn-sm' },
 	            '保存信息'
-	          ),
-	          '　　',
-	          _react2['default'].createElement(
+	          ), '　　', _react2['default'].createElement(
 	            'button',
-	            { disabled: save_ing, className: 'btn btn-theme btn-sm' },
+	            {
+	              onClick: handleSubmit(this._check.bind(this, this.handleSubmitOrder)),
+	              disabled: save_ing, className: 'btn btn-theme btn-sm' },
 	            '保存'
+	          )] : _react2['default'].createElement(
+	            'button',
+	            {
+	              onClick: handleSubmit(this._check.bind(this, this.handleCreateOrder)),
+	              disabled: save_ing,
+	              'data-submitting': save_ing,
+	              className: 'btn btn-theme btn-sm' },
+	            '生成新订单'
 	          )
 	        )
 	      );
 	    }
 	  }, {
-	    key: 'handleSave',
-	    value: function handleSave(form_data) {
+	    key: '_check',
+	    value: function _check(callback, form_data) {
 	      var _this2 = this;
 
-	      var _props2 = this.props;
-	      var dispatch = _props2.dispatch;
-	      var saveOrderInfo = _props2.actions.saveOrderInfo;
+	      var dispatch = this.props.dispatch;
 
 	      //redux-form的缘故，这里必须异步，否则errors为空对象
 	      setTimeout(function () {
-	        var _props3 = _this2.props;
-	        var errors = _props3.errors;
-	        var dispatch = _props3.dispatch;
-	        var saveOrderInfo = _props3.actions.saveOrderInfo;
+	        var _props2 = _this2.props;
+	        var errors = _props2.errors;
+	        var dispatch = _props2.dispatch;
+	        var createOrder = _props2.actions.createOrder;
 
 	        if (!Object.keys(errors).length) {
 	          form_data.delivery_id = 1;
@@ -33376,14 +33402,40 @@
 	          delete form_data.delivery_date;
 	          delete form_data.delivery_hours;
 
-	          dispatch(saveOrderInfo(form_data)).done(function () {
-	            _utilsIndex2['default'].noty('success', '保存成功');
-	            _history_instance2['default'].replace('/om/index');
-	          }).fail(function () {
-	            _utilsIndex2['default'].noty('error', '保存异常');
-	          });
+	          callback.call(_this2, dispatch, form_data);
+	        } else {
+	          _utilsIndex2['default'].noty('warning', '请填写完整');
 	        }
 	      }, 0);
+	    }
+	  }, {
+	    key: 'handleCreateOrder',
+	    value: function handleCreateOrder(dispatch, form_data) {
+	      dispatch(this.props.actions.createOrder(form_data)).done(function () {
+	        _utilsIndex2['default'].noty('success', '保存成功');
+	        _history_instance2['default'].replace('/om/index');
+	      }).fail(function () {
+	        _utilsIndex2['default'].noty('error', '保存异常');
+	      });
+	    }
+	  }, {
+	    key: 'handleSaveOrder',
+	    value: function handleSaveOrder(dispatch, form_data) {
+	      form_data.order_id = this.props.order_id;
+	      dispatch(this.props.actions.saveOrder(form_data)).fail(function () {
+	        _utilsIndex2['default'].noty('error', '保存异常');
+	      });
+	    }
+	  }, {
+	    key: 'handleSubmitOrder',
+	    value: function handleSubmitOrder(dispatch, form_data) {
+	      form_data.order_id = this.props.order_id;
+	      dispatch(this.props.actions.submitOrder(form_data)).done(function () {
+	        _utilsIndex2['default'].noty('success', '已成功提交！');
+	        _history_instance2['default'].replace('/om/index');
+	      }).fail(function () {
+	        _utilsIndex2['default'].noty('error', '操作异常');
+	      });
 	    }
 	  }, {
 	    key: 'componentDidMount',
@@ -33429,7 +33481,7 @@
 	              });
 	              localSearch.search(district + detail);
 	            } else {
-	              alert('地图服务加载失败，请好后再试');
+	              alert('地图服务加载失败，请稍后再试');
 	            }
 	          }
 	        }
@@ -33494,8 +33546,11 @@
 	    getOrderSrcs: _react.PropTypes.func.isRequired,
 	    getDeliveryStations: _react.PropTypes.func.isRequired,
 	    getPayModes: _react.PropTypes.func.isRequired,
-	    saveOrderInfo: _react.PropTypes.func.isRequired
-	  }).isRequired
+	    createOrder: _react.PropTypes.func.isRequired
+	  }).isRequired,
+
+	  editable: _react.PropTypes.bool.isRequired,
+	  order_id: _react.PropTypes.any.isRequired
 	};
 
 	ManageAddForm = (0, _reduxForm.reduxForm)({
@@ -33579,19 +33634,21 @@
 	};
 
 	function LazyLoad(name) {
-	  var plugin = config[name];
-	  if (plugin) {
-	    setTimeout(function () {
-	      if (plugin.css) {
-	        $('head').append('<link rel="stylesheet" href="' + plugin.css + '">');
-	      }
-	      if (plugin.js) {
-	        $('body').append('<script src="' + plugin.js + '"></script>');
-	      }
-	    }, 200);
-	  } else {
-	    console.warn('lazy load "' + name + '" fail');
-	  }
+	  $(function () {
+	    var plugin = config[name];
+	    if (plugin) {
+	      setTimeout(function () {
+	        if (plugin.css) {
+	          $('head').append('<link rel="stylesheet" href="' + plugin.css + '">');
+	        }
+	        if (plugin.js) {
+	          $('body').append('<script src="' + plugin.js + '"></script>');
+	        }
+	      }, 200);
+	    } else {
+	      console.warn('lazy load "' + name + '" fail');
+	    }
+	  });
 	}
 
 	module.exports = exports['default'];
@@ -34097,9 +34154,9 @@
 	                )
 	              ),
 	              _react2['default'].createElement(_commonPagination2['default'], {
-	                current_page: s.page_no,
+	                page_no: s.page_no,
 	                total_count: total,
-	                perpage_count: s.page_size,
+	                page_size: s.page_size,
 	                onPageChange: this.onPageChange.bind(this)
 	              }),
 	              _react2['default'].createElement('hr', { className: 'dotted' }),
@@ -35101,6 +35158,7 @@
 	}
 
 	var orders_state = {
+	  page_no: 0,
 	  total: 0,
 	  list: [],
 	  selected_order_id: undefined,
@@ -35185,7 +35243,7 @@
 
 	  save_ing: false,
 	  save_success: true,
-	  submitting: false,
+	  submit_ing: false,
 
 	  //edit data from server
 	  data: {
@@ -35228,6 +35286,11 @@
 	      return _extends({}, state, { save_success: true, save_ing: false });
 	    case _actionsOrder_manage_form.SAVE_ORDER_INFO_FAIL:
 	      return _extends({}, state, { save_success: false, save_ing: false });
+
+	    case _actionsOrder_manage_form.SUBMIT_ORDER_ING:
+	      return _extends({}, state, { submit_ing: true });
+	    case _actionsOrder_manage_form.SUBMIT_ORDER_COMPLETE:
+	      return _extends({}, state, { submit_ing: true });
 
 	    case _actionsOrder_manage_form.GOT_ORDER_BY_ID:
 	      return (function () {

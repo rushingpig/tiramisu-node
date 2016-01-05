@@ -25,10 +25,10 @@ module.exports = {
     'recipient_address': {
         notEmpty: true
     },
-    'delivery_id': {
-        notEmpty: true,
-        isInt : true
-    },
+    //'delivery_id': {
+        //notEmpty: true,
+        //isInt : true
+    //},
     'src_id': {
         notEmpty: true,
         isInt : true

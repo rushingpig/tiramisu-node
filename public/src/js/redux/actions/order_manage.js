@@ -20,15 +20,15 @@ export function deliveryDateChange(date){
 }
 
 export const GET_ORDER_LIST = 'GET_ORDER_LIST';
-export function getOrderList(){
-  return GET(Url.orders.toString(), null, GET_ORDER_LIST);
+export function getOrderList(data){
+  return GET(Url.orders.toString(), data, GET_ORDER_LIST);
   // return TEST({
   //   total: 1,
   //   list: [{
   //     'cancel_reason':  '取消理由xxxx',    
   //     'city':  '城市xxx',    
   //     'created_by':  '创建人xx',   
-  //     'created_date':  '下单时间xx',  
+  //     'created_time':  '下单时间xx',  
   //     'delivery_name': '配送站名称xx',   
   //     'delivery_time': '配送时间xx',    
   //     'delivery_type': '配送方式xx',    
@@ -61,7 +61,7 @@ export function checkOrder(id){
       type: CHECK_ORDER,
       selected_order_id: id
     })
-    return GET(Url.orders_detail.toString(id), null, GET_ORDER_DETAIL_PRODUCTS)(dispatch);
+    return GET(Url.order_detail.toString(id), null, GET_ORDER_DETAIL_PRODUCTS)(dispatch);
   }
   // return TEST({
   //   'city_id': '市IDXX',

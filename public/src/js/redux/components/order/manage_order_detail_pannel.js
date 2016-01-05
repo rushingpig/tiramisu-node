@@ -39,6 +39,7 @@ class ManageOrderDetailPannel extends Component {
               form-data={mainForm}
               area={area} 
               editable={!!(params && params.id)}
+              order_id={params.id}
               actions={{...bindActionCreators(AreaActions, dispatch), ...bindActionCreators(OrderFormActions, dispatch)}}>
                 <ManageOrderProducts dispatch={dispatch} {...products} />
             </ManageOrderForm>
@@ -51,14 +52,13 @@ class ManageOrderDetailPannel extends Component {
     //有params则表示是编辑订单
     var { params } = this.props;
     if(params && params.id){
-      console.log('params-->id-->' + params.id);
       this.props.getOrderById(params.id);
     }
   }
 }
 
 ManageOrderDetailPannel.PropTypes = {
-  saveOrderInfo: PropTypes.func.isRequired
+  createOrder: PropTypes.func.isRequired
 };
 
 function mapStateToProps({orderManageForm}){

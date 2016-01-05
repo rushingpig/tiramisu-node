@@ -2,7 +2,8 @@ import { combineReducers } from 'redux';
 import { area } from './area_select';
 import { GOT_ORDER_SRCS, GOT_DELIVERY_STATIONS, GOT_PAY_MODES,
   SAVE_ORDER_INFO_ING, SAVE_ORDER_INFO_SUCCESS, SAVE_ORDER_INFO_FAIL,
-  CONFIRM_PRODUCT_ATTR_CHANGE, GOT_ORDER_BY_ID } from 'actions/order_manage_form';
+  CONFIRM_PRODUCT_ATTR_CHANGE,
+  GOT_ORDER_BY_ID, SUBMIT_ORDER_ING, SUBMIT_ORDER_COMPLETE } from 'actions/order_manage_form';
 import { GOT_CATEGORIES, SEARCH_PRODUCTS, SELECT_PRODUCT, 
   CONFIRM_ALL_SELECTED_PRODUCTS, DELETE_SELECTED_PRODUCT, 
   CANCEL_ALL_SELECTED_PRODUCTS, CHANGE_PRODUCT_NUM, DELETE_CONFIRM_PRODUCT } from 'actions/order_products';
@@ -27,7 +28,7 @@ var initial_state = {
 
   save_ing: false,
   save_success: true,
-  submitting: false,
+  submit_ing: false,
 
   //edit data from server
   data: {
@@ -63,6 +64,11 @@ function mainForm(state = initial_state, action) {
       return {...state, save_success: true, save_ing: false }
     case SAVE_ORDER_INFO_FAIL:
       return {...state, save_success: false, save_ing: false }
+
+    case SUBMIT_ORDER_ING:
+      return {...state, submit_ing: true}
+    case SUBMIT_ORDER_COMPLETE:
+      return {...state, submit_ing: true}
 
     case GOT_ORDER_BY_ID:
       return (function(){

@@ -5,9 +5,9 @@ var Pagination = React.createClass({
     return {
       random_btn_active: true,
       random_btn_show: true,
-      perpage_count: 20,//每页显示20条
+      page_size: 20,//每页显示20条
       total_count: 0,
-      current_page: 0,
+      page_no: 0,
       page_num_show: 10, //分页的页码，显示10个
       onPageChange: null//,
       //onPageChangeBefore: null
@@ -15,13 +15,13 @@ var Pagination = React.createClass({
   },
   _calc_pages: function(){
     var total_count = this.props.total_count;
-    var perpage_count = this.props.perpage_count;
-    var current_page = this.props.current_page;
+    var page_size = this.props.page_size;
+    var page_no = this.props.page_no;
 
     if (total_count < 0 || total_count == Infinity){
         var total_pages = -1;
     } else {
-        var total_pages = Math.ceil(total_count / perpage_count);
+        var total_pages = Math.ceil(total_count / page_size);
     }
     this.total_pages = total_pages;
 
@@ -32,7 +32,7 @@ var Pagination = React.createClass({
     } else {
         var pagesOfpage = Math.ceil(total_pages / page_num_show);
     }
-    var cpageOfPage = Math.floor(current_page / page_num_show);
+    var cpageOfPage = Math.floor(page_no / page_num_show);
     var long_prev = cpageOfPage > 0;
     var long_next = cpageOfPage < pagesOfpage - 1 || pagesOfpage == -1;
 
@@ -44,7 +44,7 @@ var Pagination = React.createClass({
     }
 
     return {
-      "current_page": current_page,
+      "page_no": page_no,
       "total_pages": total_pages,
 
       "start": page_num_start,
@@ -61,7 +61,7 @@ var Pagination = React.createClass({
         this.props.onPageChange(page);
         /*
         this.setState({
-            current_page: page
+            page_no: page
         }, function(){
             this.props.onPageChange(page);
         });
@@ -69,32 +69,32 @@ var Pagination = React.createClass({
     }
   },
   _prevPage: function(){
-    if (this.props.current_page > 0){
-        this._selectPage(this.props.current_page - 1);
+    if (this.props.page_no > 0){
+        this._selectPage(this.props.page_no - 1);
     }
   },
   _nextPage: function(){
     var total_pages = this.total_pages;
-    if (total_pages == -1  || this.props.current_page < total_pages-1){
-        this._selectPage(this.props.current_page + 1);
+    if (total_pages == -1  || this.props.page_no < total_pages-1){
+        this._selectPage(this.props.page_no + 1);
     }
   },
   _longJumpPre: function(){
     var pn = this.props.page_num_show;
-    var page = Math.floor(this.props.current_page / pn) * pn - 1;
+    var page = Math.floor(this.props.page_no / pn) * pn - 1;
     this._selectPage(page);
   },
   _longJumpNext: function(){
     var pn = this.props.page_num_show;
-    var page = Math.floor(this.props.current_page / pn + 1) * pn;
+    var page = Math.floor(this.props.page_no / pn + 1) * pn;
     this._selectPage(page);
   },
   render: function(){
     var page_info = this._calc_pages();
     var total_pages = page_info.total_pages;
 
-    var preDisabledCls = page_info.current_page > 0 ? "" : " disabled",
-        nextDisabledCls = (total_pages==-1 || page_info.current_page < total_pages-1) ? "" : " disabled";
+    var preDisabledCls = page_info.page_no > 0 ? "" : " disabled",
+        nextDisabledCls = (total_pages==-1 || page_info.page_no < total_pages-1) ? "" : " disabled";
 
     var longNextStyle = {display: 'none'},
         longPreStyle = {display: 'none'};
@@ -112,7 +112,7 @@ var Pagination = React.createClass({
 
     var page_numbers = [];
     for(var n = page_info.start; n < page_info.end && this.props.random_btn_show; n++){
-        var actived = n == page_info.current_page;
+        var actived = n == page_info.page_no;
         var classnames = 'paginate_button';
         if (this.props.random_btn_active) {
              classnames += actived ? ' active' : '';

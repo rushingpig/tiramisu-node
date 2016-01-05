@@ -51,7 +51,7 @@ class ManageAddForm extends Component {
       invoices: [{id: INVOICE.NO, text: '不需要'}, {id: INVOICE.YES, text: '需要'}],
       selected_order_src_level1_id: SELECT_DEFAULT_VALUE,
     };
-    this.handleSave = this.handleSave.bind(this);
+    this._check = this._check.bind(this);
   }
   render(){
     var {
@@ -79,7 +79,7 @@ class ManageAddForm extends Component {
         invoice,
       }
     } = this.props;
-    var { save_ing, save_success, 
+    var { save_ing, save_success, submit_ing, 
       all_delivery_time, all_pay_status, all_order_srcs, 
       delivery_stations, all_pay_modes} = this.props['form-data'];
     var {provinces, cities, districts} = this.props.area;
@@ -196,37 +196,69 @@ class ManageAddForm extends Component {
       <hr className="dotted" />
       {this.props.children}
       <div className="form-group">
-        <button 
-            onClick={handleSubmit(this.handleSave)} 
-            disabled={save_ing} 
-            data-submitting={save_ing} 
-            className="btn btn-theme btn-sm">保存信息</button>
-        {'　　'}
-        <button disabled={save_ing} className="btn btn-theme btn-sm">保存</button>
+        {
+          editable
+          ? [
+              <button 
+                  onClick={handleSubmit(this._check.bind(this, this.handleSaveOrder))} 
+                  disabled={save_ing} 
+                  data-submitting={save_ing} 
+                  className="btn btn-theme btn-sm">保存信息</button>,
+              '　　',
+              <button
+                  onClick={handleSubmit(this._check.bind(this, this.handleSubmitOrder))}
+                  disabled={save_ing} className="btn btn-theme btn-sm">保存</button>
+            ]
+          : <button 
+                onClick={handleSubmit(this._check.bind(this, this.handleCreateOrder))} 
+                disabled={save_ing} 
+                data-submitting={save_ing} 
+                className="btn btn-theme btn-sm">生成新订单</button>
+        }
       </div>
     </div>
     )
   }
-  handleSave(form_data){
-    var { dispatch, actions: {saveOrderInfo} } = this.props;
+  _check(callback, form_data){
+    var { dispatch } = this.props;
     
     //redux-form的缘故，这里必须异步，否则errors为空对象
     setTimeout(() => {
-      var { errors, dispatch, actions: {saveOrderInfo} } = this.props;
+      var { errors, dispatch, actions: {createOrder} } = this.props;
       if(!Object.keys(errors).length){
         form_data.delivery_id = 1;
         form_data.delivery_time = form_data.delivery_date + ' ' + form_data.delivery_hours;
         delete form_data.delivery_date;
         delete form_data.delivery_hours;
 
-        dispatch(saveOrderInfo(form_data)).done(function(){
-          Utils.noty('success', '保存成功');
-          history.replace('/om/index');
-        }).fail(function(){
-          Utils.noty('error', '保存异常');
-        });
+        callback.call(this, dispatch, form_data);
+      }else{
+        Utils.noty('warning', '请填写完整');
       }
     }, 0);
+  }
+  handleCreateOrder(dispatch, form_data){
+    dispatch(this.props.actions.createOrder(form_data)).done(function(){
+      Utils.noty('success', '保存成功');
+      history.replace('/om/index');
+    }).fail(function(){
+      Utils.noty('error', '保存异常');
+    });
+  }
+  handleSaveOrder(dispatch, form_data){
+    form_data.order_id = this.props.order_id;
+    dispatch(this.props.actions.saveOrder(form_data)).fail(function(){
+      Utils.noty('error', '保存异常');
+    });
+  }
+  handleSubmitOrder(dispatch, form_data){
+    form_data.order_id = this.props.order_id;
+    dispatch(this.props.actions.submitOrder(form_data)).done(function(){
+      Utils.noty('success', '已成功提交！');
+      history.replace('/om/index');
+    }).fail(function(){
+      Utils.noty('error', '操作异常');
+    });
   }
   componentDidMount(){
     var {getProvinces, getOrderSrcs, getDeliveryStations, getPayModes} = this.props.actions;
@@ -265,7 +297,7 @@ class ManageAddForm extends Component {
             });
             localSearch.search(district + detail);
           }else{
-            alert('地图服务加载失败，请好后再试');
+            alert('地图服务加载失败，请稍后再试');
           }
         }
       }
@@ -319,8 +351,11 @@ ManageAddForm.PropTypes = {
     getOrderSrcs: PropTypes.func.isRequired,
     getDeliveryStations: PropTypes.func.isRequired,
     getPayModes: PropTypes.func.isRequired,
-    saveOrderInfo: PropTypes.func.isRequired,
-  }).isRequired
+    createOrder: PropTypes.func.isRequired,
+  }).isRequired,
+
+  editable: PropTypes.bool.isRequired,
+  order_id: PropTypes.any.isRequired,
 }
 
 ManageAddForm = reduxForm({

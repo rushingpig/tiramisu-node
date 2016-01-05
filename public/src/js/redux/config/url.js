@@ -31,7 +31,9 @@ const URL = (function(){
     //订单
     orders: '/orders',
     order_add: '/order',
-    orders_detail: '/order/:orderId',
+    order_detail: '/order/:orderId',
+    save_order: '/order/:orderId',
+    submit_order: '/order/:orderId/submit',
     provinces: '/provinces',
     cities: '/province/:provinceId/cities',
     districts: '/city/:cityId/districts',

@@ -88,6 +88,7 @@ OrderDao.prototype.findOrderById = function(orderId){
         'br.`name` as recipient_name',
         'br.mobile as recipient_mobile',
         'br.address as recipient_address',
+        'br.landmark',
         'bds.id as delivery_id',
         'bds.name as delivery_name',
         'bpm.id as pay_modes_id',
@@ -96,6 +97,7 @@ OrderDao.prototype.findOrderById = function(orderId){
         'bo.delivery_time',
         'bo.src_id',
         'bo.remarks',
+        'bo.status',
         'bp.`name` as product_name',
         'bp.original_price',
         'bos.num',
@@ -107,8 +109,8 @@ OrderDao.prototype.findOrderById = function(orderId){
         'bos.custom_name',
         'bos.custom_desc',
         'bos.atlas',
-        'dr.name as district_name',
-        'dr.id as district_id',
+        'dr.name as regionalism_name',
+        'dr.id as regionalism_id',
         'dr2.name as city_name',
         'dr2.id as city_id',
         'dr3.name as province_name',
@@ -119,8 +121,8 @@ OrderDao.prototype.findOrderById = function(orderId){
     sql += " left join buss_pay_modes bpm on bo.pay_modes_id = bpm.id";
     sql += " left join buss_delivery_station bds on bo.delivery_id = bds.id";
     sql += " left join dict_regionalism dr on br.regionalism_id = dr.id";
-    sql += " inner join dict_regionalism dr2 on dr.parent_id = dr2.id"
-    sql += " inner join dict_regionalism dr3 on dr2.parent_id = dr3.id"
+    sql += " inner join dict_regionalism dr2 on dr.parent_id = dr2.id";
+    sql += " inner join dict_regionalism dr3 on dr2.parent_id = dr3.id";
     sql += " left join buss_order_sku bos on bo.id = bos.order_id";
     sql += " left join buss_product_sku bps on bos.sku_id = bps.id";
     sql += " left join buss_product bp on bps.product_id = bp.id";

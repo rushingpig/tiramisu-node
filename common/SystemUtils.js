@@ -58,7 +58,7 @@ module.exports = {
             throw new Error('the obj param should be an instance of object and has it\'s own property...');
         }
         obj.created_by = req.userId || 1;   //TODO it should not be null in the production environment
-        obj.created_date = new Date();
+        obj.created_time = new Date();
         return obj;
     },
     assembleUpdateObj : (req,obj) => {
@@ -69,7 +69,7 @@ module.exports = {
             throw new Error('the obj param should be an instance of object and has it\'s own property...');
         }
         obj.updated_by = req.userId;
-        obj.updated_date = new Date();
+        obj.updated_time = new Date();
         return obj;
     },
     encodeForFulltext : (obj) => {

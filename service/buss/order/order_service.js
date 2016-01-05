@@ -89,11 +89,13 @@ OrderService.prototype.addOrder = (req, res, next) => {
                 recipient_id: recipientId,
                 delivery_id: delivery_id,
                 src_id: src_id,
+                pay_modes_id : pay_modes_id,
                 pay_status: pay_status,
                 owner_name : owner_name,
                 owner_mobile : owner_mobile,
                 is_submit: 0,
                 is_deal: 0,
+                status : Constant.OS.STATION,
                 remarks: remarks,
                 invoice: invoice,
                 delivery_time: delivery_time,
@@ -180,8 +182,11 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
             data.province_name = curr.province_name;
             data.city_id = curr.city_id;
             data.city_name = curr.city_name;
-            data.district_id = curr.district_id;
-            data.district_name = curr.district_name;
+            data.regionalism_id = curr.regionalism_id;
+            data.regionalism_name = curr.regionalism_name;
+            data.status = curr.status;
+            data.recipient_mobile = curr.recipient_mobile;
+            data.landmark = curr.landmark;
 
             let product_obj = {
                 choco_board : curr.choco_board,
@@ -386,7 +391,7 @@ OrderService.prototype.listOrders = (req,res,next) => {
                 cancel_reason : curr.cancel_reason,
                 city : curr.merger_name.split(',')[2],
                 created_by : curr.created_by,
-                created_date : curr.created_date,
+                created_time : curr.created_time,
                 delivery_name : delivery_adds.join(','),
                 delivery_time : curr.delivery_time,
                 delivery_type : Constant.DTD[curr.delivery_type],
@@ -396,7 +401,7 @@ OrderService.prototype.listOrders = (req,res,next) => {
                 merchant_id : curr.merchant_id,
                 coupon : curr.coupon,
                 is_print : curr.is_print,
-                order_id : systemUtils.getShowOrderId(curr.id,curr.created_date),
+                order_id : systemUtils.getShowOrderId(curr.id,curr.created_time),
                 original_price : curr.original_price,
                 owner_mobile : curr.owner_mobile,
                 owner_name : curr.owner_name,
@@ -408,7 +413,7 @@ OrderService.prototype.listOrders = (req,res,next) => {
                 src_name : curr.src_name,
                 status : Constant.OSD[curr.status],
                 updated_by : curr.updated_by,
-                updated_date : curr.updated_date
+                updated_time : curr.updated_time
             };
             data.list.push(list_obj);
         }

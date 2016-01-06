@@ -44,12 +44,15 @@ a.get('/products',productService.listProducts);
 a.get('/order/:orderId',orderService.getOrderDetail);
 a.get('/orders',orderService.listOrders);
 a.get('/order/:orderId/products',productService.listOrderProducts);
+
+a.get('/order/reprint/applies',deliveryService.listReprintApplies);
 //**********************
 //******** POST ********
 //**********************
 
 a.post('/order',orderService.addOrder);
-a.post('/order/print/apply',orderService.applyForRePrint);
+
+a.post('/order/reprint/apply',deliveryService.applyForRePrint);
 
 //*********************
 //******** PUT ********
@@ -57,7 +60,10 @@ a.post('/order/print/apply',orderService.applyForRePrint);
 
 a.put('/order/:orderId',orderService.editOrder(false));     // 保存
 a.put('/order/:order/submit',orderService.editOrder(true)); // 提交
-a.put('/orders/exchange',orderService.exchageOrders);
+a.put('/orders/exchange',deliveryService.exchageOrders);
+a.put('/order/reprint/apply/:apply_id',deliveryService.auditReprintApply);
+a.put('/order/:orderId/signin',deliveryService.signinOrder);
+a.put('/order/:orderId/unsignin',deliveryService.unsigninOrder);
 
 //************************
 //******** DELETE ********

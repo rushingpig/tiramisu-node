@@ -104,7 +104,7 @@ ProductService.prototype.listOrderProducts = (req,res,next)=>{
     req.checkParams('orderId').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
+        res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
     let orderId = req.params.orderId;

@@ -69,29 +69,27 @@ SystemMiddleware.prototype = {
  * @returns {Function}
  */
 function api(res) {
-    return (res_tpl, data)=> {
+    return function(res_tpl, data,err){     // in order to use arguments,do not use [=>] to instead of [function] keyword
         let temp = {
             code : '',
             msg  : '',
             data : {},
-            desc : ''
+            err : ''
         };
         try {
-            // one valid argument
-            if (data === undefined && res_tpl) {
-                data = res_tpl;
+            if(data === undefined){
                 temp = clone(res_obj.OK);
-                temp.data = data;
-                return res.json(temp);
-            } else if (res_tpl) {
+                temp.data = res_tpl || {};
+            }else if(err === undefined && arguments.length === 2){
+                temp = clone(res_tpl);
+                temp.data = {};
+                temp.err = data || '';
+            }else{
                 temp = clone(res_tpl);
                 temp.data = data || {};
-                return res.json(temp);
-            } else {
-                temp = clone(res_obj.OK);
-                temp.data = data || {};
-                return res.json(temp);
+                temp.err = err || '';
             }
+            return res.json(temp);
         } catch (err) {
             temp = clone(res_obj.FAIL);
             temp.data = {};

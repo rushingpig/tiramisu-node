@@ -5,13 +5,13 @@
  Source Server Type    : MySQL
  Source Server Version : 50626
  Source Host           : localhost
- Source Database       : test
+ Source Database       : tiramisu
 
  Target Server Type    : MySQL
  Target Server Version : 50626
  File Encoding         : utf-8
 
- Date: 01/05/2016 12:11:04 PM
+ Date: 01/05/2016 18:30:31 PM
 */
 
 SET NAMES utf8;
@@ -31,7 +31,7 @@ CREATE TABLE `buss_city` (
   `updated_time` datetime DEFAULT NULL,
   `del_flag` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='营业城市\n';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='营业城市\n';
 
 -- ----------------------------
 --  Table structure for `buss_delivery_station`
@@ -49,7 +49,7 @@ CREATE TABLE `buss_delivery_station` (
   `updated_time` datetime DEFAULT NULL,
   `del_flag` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='配送站';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='配送站';
 
 -- ----------------------------
 --  Records of `buss_delivery_station`
@@ -92,13 +92,13 @@ CREATE TABLE `buss_order` (
   `is_print` tinyint(1) DEFAULT '0' COMMENT '0:打印，1:未打印',
   PRIMARY KEY (`id`),
   KEY `IDX_STATUS` (`status`)
-) ENGINE=InnoDB AUTO_INCREMENT=10000003 DEFAULT CHARSET=utf8 COMMENT='订单详情表';
+) ENGINE=InnoDB AUTO_INCREMENT=10000004 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单详情表';
 
 -- ----------------------------
 --  Records of `buss_order`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_order` VALUES ('10000001', '1', '1', '1', '1', '1', null, null, 'INLINE', 'PAYED', '0', '0', '2015-12-29 09:00~10:00', null, null, null, '1000', null, null, '1', '2015-12-29 09:36:58', null, null, '1', null, null, '0'), ('10000002', '1', '1', '1', '1', '1', null, null, 'INLINE', 'COD', '0', '0', '2015-12-29 08:00~10:00', null, null, null, null, null, null, '1', '2016-01-04 11:23:18', null, null, '1', null, null, '0');
+INSERT INTO `buss_order` VALUES ('10000001', '1', '1', '1', '1', '1', null, null, 'INLINE', 'PAYED', '0', '0', '2015-12-29 09:00~10:00', null, null, null, '1000', null, null, '1', '2015-12-29 09:36:58', null, null, '1', null, null, '0'), ('10000002', '1', '1', '1', '1', '1', null, null, 'INLINE', 'COD', '0', '0', '2015-12-29 08:00~10:00', null, null, null, null, null, null, '1', '2016-01-04 11:23:18', null, null, '1', null, null, '0'), ('10000003', '3', '1', '5', null, '1', '张三', '13309098877', 'STATION', 'COD', '0', '0', '2015-12-29 10:30～11:30', null, '测试备注', '1', '3000', null, null, '1', '2016-01-05 14:12:51', null, null, '1', null, null, '0');
 COMMIT;
 
 -- ----------------------------
@@ -116,13 +116,13 @@ CREATE TABLE `buss_order_fulltext` (
   `show_order_id` varchar(16) DEFAULT NULL,
   PRIMARY KEY (`order_id`),
   FULLTEXT KEY `IDX_FT` (`owner_name`,`owner_mobile`,`recipient_name`,`recipient_mobile`,`recipient_address`,`landmark`,`show_order_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='供订单全文搜索';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='供订单全文搜索';
 
 -- ----------------------------
 --  Records of `buss_order_fulltext`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_order_fulltext` VALUES ('10000001', 'ASD3 23DG 23DA', '13480801761', '熊 博', null, '查 尔 顿 酒 店', '技 术 园', '2015123010000001');
+INSERT INTO `buss_order_fulltext` VALUES ('10000001', 'ASD3 23DG 23DA', '13480801761', '熊 博', null, '查 尔 顿 酒 店', '技 术 园', '2015123010000001'), ('10000003', 'E5BCA0 E4B889 ', '13309098877', 'E69CB1 E6ADA3 E69E97 ', '13480801761', 'E9AB98 E696B0 E58D97 E59B9B E98193 ', 'E69FA5 E5B094 E9A1BF ', null);
 COMMIT;
 
 -- ----------------------------
@@ -146,7 +146,7 @@ CREATE TABLE `buss_order_history` (
   `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单详情历史记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单详情历史记录表';
 
 -- ----------------------------
 --  Table structure for `buss_order_sku`
@@ -170,7 +170,7 @@ CREATE TABLE `buss_order_sku` (
   `updated_time` datetime DEFAULT NULL,
   PRIMARY KEY (`order_id`,`sku_id`),
   CONSTRAINT `FK_ORDERID` FOREIGN KEY (`order_id`) REFERENCES `buss_order` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单--产品中间表\n';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单--产品中间表\n';
 
 -- ----------------------------
 --  Records of `buss_order_sku`
@@ -197,7 +197,7 @@ CREATE TABLE `buss_order_src` (
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '删除标志（0：不显示；1：显示）',
   `merge_name` varchar(255) DEFAULT NULL COMMENT '合并后的名称，用“，”分隔',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='订单来源';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单来源';
 
 -- ----------------------------
 --  Records of `buss_order_src`
@@ -219,7 +219,7 @@ CREATE TABLE `buss_pay_modes` (
   `updated_time` datetime DEFAULT NULL COMMENT '更新时间',
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '删除标志',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='支付方式';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='支付方式';
 
 -- ----------------------------
 --  Records of `buss_pay_modes`
@@ -235,11 +235,12 @@ DROP TABLE IF EXISTS `buss_print_apply`;
 CREATE TABLE `buss_print_apply` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `order_id` int(10) unsigned NOT NULL COMMENT '订单号',
+  `show_order_id` varchar(16) DEFAULT NULL COMMENT '供展示用的订单号',
   `reason` varchar(255) DEFAULT NULL COMMENT '申请理由',
   `applicant_mobile` varchar(255) NOT NULL COMMENT '申请人手机',
   `director_mobile` varchar(255) NOT NULL COMMENT '主管手机',
-  `status` enum('UNCHECKED','CHECKED','CHECKFAILED') NOT NULL DEFAULT 'UNCHECKED' COMMENT '''待审核'',''审核通过'',''审核不通过''',
-  `check_ opinion` varchar(100) DEFAULT NULL COMMENT '审核意见',
+  `status` enum('UNAUDIT','AUDITED','AUDITFAILED') NOT NULL DEFAULT 'UNAUDIT' COMMENT '''待审核'',''审核通过'',''审核不通过''',
+  `audit_opinion` varchar(100) DEFAULT NULL COMMENT '审核意见',
   `validate_code` varchar(6) DEFAULT NULL COMMENT '短信验证码',
   `is_reprint` tinyint(1) DEFAULT '0' COMMENT '是否已经重新打印',
   `reprint_time` datetime DEFAULT NULL COMMENT '重新打印时间',
@@ -250,7 +251,14 @@ CREATE TABLE `buss_print_apply` (
   PRIMARY KEY (`id`),
   KEY `IDX_ORDERID` (`order_id`),
   KEY `IDX_QUERY` (`status`,`is_reprint`,`created_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='申请重新打印订单表';
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='申请重新打印订单表';
+
+-- ----------------------------
+--  Records of `buss_print_apply`
+-- ----------------------------
+BEGIN;
+INSERT INTO `buss_print_apply` VALUES ('7', '11223344', '2015122211223344', '手抖了', '13480801761', '13523535353', 'UNAUDIT', null, null, '0', null, '1', '2016-01-05 18:29:43', null, null);
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `buss_product`
@@ -263,7 +271,7 @@ CREATE TABLE `buss_product` (
   `original_price` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX_NAME` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='产品实体';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='产品实体';
 
 -- ----------------------------
 --  Records of `buss_product`
@@ -287,7 +295,7 @@ CREATE TABLE `buss_product_category` (
   `updated_time` datetime DEFAULT NULL COMMENT '更新时间',
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '删除标志',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='产品分类表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='产品分类表';
 
 -- ----------------------------
 --  Records of `buss_product_category`
@@ -316,10 +324,10 @@ CREATE TABLE `buss_product_sku` (
   `updated_time` datetime DEFAULT NULL,
   `del_flag` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `IDX_PRODUCT_SIZE_WEBSITE` (`product_id`,`size`,`website`) USING BTREE,
-  KEY `IDX_PRODUCT` (`product_id`) USING BTREE,
+  UNIQUE KEY `IDX_PRODUCT_SIZE_WEBSITE` (`product_id`,`size`,`website`),
+  KEY `IDX_PRODUCT` (`product_id`),
   CONSTRAINT `FK_PRODUCT` FOREIGN KEY (`product_id`) REFERENCES `buss_product` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='产品的各种附加属性';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='产品的各种附加属性';
 
 -- ----------------------------
 --  Records of `buss_product_sku`
@@ -344,13 +352,13 @@ CREATE TABLE `buss_recipient` (
   `created_time` datetime DEFAULT NULL COMMENT '创建时间',
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '删除标志',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='收货人信息和收件方式';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='收货人信息和收件方式';
 
 -- ----------------------------
 --  Records of `buss_recipient`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_recipient` VALUES ('1', '110105', '朱正林', '13480801761', '查尔顿', 'DELIVERY', '高新南四道', '1', '2015-12-29 09:57:43', '1');
+INSERT INTO `buss_recipient` VALUES ('1', '110105', '朱正林', '13480801761', '查尔顿', 'DELIVERY', '高新南四道', '1', '2015-12-29 09:57:43', '1'), ('2', null, null, null, null, 'DELIVERY', null, '1', '2016-01-05 13:49:16', '1'), ('3', '110105', '朱正林', '13480801761', '查尔顿', 'DELIVERY', '高新南四道', '1', '2016-01-05 14:12:51', '1');
 COMMIT;
 
 -- ----------------------------
@@ -370,7 +378,7 @@ CREATE TABLE `buss_shop` (
   `created_time` datetime DEFAULT NULL COMMENT '创建时间',
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '软删除/是否显示（0：不显示；1：显示）',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='店铺信息';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='店铺信息';
 
 -- ----------------------------
 --  Records of `buss_shop`
@@ -401,7 +409,7 @@ CREATE TABLE `dict_regionalism` (
   PRIMARY KEY (`id`),
   KEY `IDX_NAME` (`name`),
   KEY `IDX_PARENTID` (`parent_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=900001 DEFAULT CHARSET=utf8 COMMENT='行政区域的划分\n';
+) ENGINE=InnoDB AUTO_INCREMENT=900001 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='行政区域的划分\n';
 
 -- ----------------------------
 --  Records of `dict_regionalism`
@@ -459,7 +467,7 @@ CREATE TABLE `sys_op_logs` (
   `created_by` varchar(255) NOT NULL COMMENT '操作人',
   `created_time` datetime NOT NULL COMMENT '操作时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统业务操作日志';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统业务操作日志';
 
 -- ----------------------------
 --  Table structure for `sys_role`

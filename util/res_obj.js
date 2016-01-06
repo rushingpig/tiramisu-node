@@ -20,6 +20,10 @@ module.exports = {
         code : '1001',
         msg : '长时间未操作,请重新登录...'
     },
+    INVALID_UPDATE_ID : {
+        code : '9996',
+        msg : '指定的更新记录无效...'
+    },
     INVALID_PARAMS : {
         code : '9997',
         msg : '非法请求参数...'
@@ -30,8 +34,12 @@ module.exports = {
     },
     FAIL : {
         code : '9999',
-        msg  : '服务器开小差了...',
+        msg  : '服务器开小差了...'
     },
+    GET_LOST : {
+        code : '404',
+        msg : '迷路了,换条道吧...'
+    }
 
 };
 

@@ -18,7 +18,10 @@ module.exports = {
         }
     },
     'order_id' : {
-        notEmpty : true
+        notEmpty : true,
+        isLength : {
+            options : [16]
+        }
     },
     'reason' : {
         notEmpty : true

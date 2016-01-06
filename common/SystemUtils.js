@@ -10,7 +10,8 @@ var dateUtils = require('./DateUtils'),
     TiramisuError = require('../error/tiramisu_error'),
     toolUtils = require('./ToolUtils'),
     IncomingMessage = require('http').IncomingMessage,
-    logger = require('./LogHelper').systemLog();
+    logger = require('./LogHelper').systemLog(),
+    res_obj = require('../util/res_obj');
 module.exports = {
     /**
      * wrap the service promise for catch error
@@ -20,6 +21,9 @@ module.exports = {
     wrapService : (res,next,promise)=> {
         promise.catch((err)=> {
             if(err instanceof TiramisuError){
+                if(err.getResObj() === res_obj.FAIL){
+                    res.status(500);
+                }
                 res.api(err.getResObj(),null);
             }else{
                 next(err);
@@ -43,15 +47,16 @@ module.exports = {
      * @returns {string}
      */
     getDBOrderId : (showOrderId) => {
-        if(!showOrderId || typeof showOrderId !== 'string'){
-            throw new Error('the order id for display must be an valid string...');
+        if(!showOrderId || typeof showOrderId !== 'string' || showOrderId.length < 16){
+            logger.error('the order_id [',showOrderId,'] to be convert into db order_id is not valid...')
+            throw new Error('the order_id ['+showOrderId+'] for display to convert must be an valid string...');
         }
         return showOrderId.substring(8);
     },
     assembleInsertObj : (req,obj) =>{
         if(!(req instanceof IncomingMessage)){
-            logger.error('the req must be the instance of IncomingMessage...');
-            throw new Error('the req must be the instance of IncomingMessage...');
+            logger.error('the req object['+req+'must be the instance of IncomingMessage...');
+            throw new Error('the req object['+req+'must be the instance of IncomingMessage...');
         }
         if(toolUtils.isEmptyObject(obj)){
             logger.error('the obj param should be an instance of object and has it\'s own property...');
@@ -63,13 +68,26 @@ module.exports = {
     },
     assembleUpdateObj : (req,obj) => {
         if(!(req instanceof IncomingMessage)){
-            throw new Error('the req must be the instance of IncomingMessage...');
+            logger.error('the req object['+req+'must be the instance of IncomingMessage...');
+            throw new Error('the req object['+req+'must be the instance of IncomingMessage...');
         }
         if(toolUtils.isEmptyObject(obj)){
             throw new Error('the obj param should be an instance of object and has it\'s own property...');
         }
         obj.updated_by = req.userId;
         obj.updated_time = new Date();
+        return obj;
+    },
+    assemblePaginationObj : (req,obj) => {
+        if(!(req instanceof IncomingMessage)){
+            logger.error('the req object['+req+'must be the instance of IncomingMessage...');
+            throw new Error('the req object['+req+'must be the instance of IncomingMessage...');
+        }
+        if(toolUtils.isEmptyObject(obj)){
+            throw new Error('the obj param should be an instance of object and has it\'s own property...');
+        }
+        obj.page_no = req.query.page_no;
+        obj.page_size = req.query.page_size;
         return obj;
     },
     encodeForFulltext : (obj) => {
@@ -83,6 +101,12 @@ module.exports = {
         }
         return str;
     },
+    genValidateCode : (code_length) => {
+        code_length = code_length || 6;
+        let code = Math.floor(Math.random()*Math.pow(10,code_length));
+        for(let i = 0;i < code_length - code.toString().length;i++){
+            code = code.toString() + '0';
+        }
+        return code;
+    },
 };
-
-

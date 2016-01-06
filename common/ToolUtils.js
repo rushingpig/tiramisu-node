@@ -13,5 +13,8 @@ module.exports = {
     isEmptyObject : function(object){
         return !object || this.isEmptyArray(Object.keys(object));
     },
+    isInt : function(param){
+        return /^[0-9]+$/g.test(param) && Number.isInteger(parseInt(param));
+    }
 
 };

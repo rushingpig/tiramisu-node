@@ -13,5 +13,9 @@ module.exports = {
     listOrder : require('./buss/order/list_order'),
     editOrder : require('./buss/order/edit_order'),
     exchangeOrder : require('./buss/order/exchange_order'),
-    printApply : require('./buss/order/print_apply'),
+    printApply : require('./buss/delivery/print_apply'),
+    reprintApplies : require('./buss/delivery/list_reprint_applies'),
+    auditApply : require('./buss/delivery/audit_apply'),
+    signinOrder : require('./buss/delivery/signin_order'),
+    unsigninOrder : require('./buss/delivery/unsignin_order'),
 };

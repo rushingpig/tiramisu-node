@@ -60,8 +60,9 @@ OrderDao.prototype.findShopByRegionId = function(districtId){
  * update the order info
  * @param orderObj
  */
-OrderDao.prototype.updateOrder = function(orderObj){
-    return baseDao.update(this.base_update_sql,[tables.buss_order,orderObj]);
+OrderDao.prototype.updateOrder = function(orderObj,order_id){
+    let sql = this.base_update_sql + " where id = ?";
+    return baseDao.update(sql,[tables.buss_order,orderObj,order_id]);
 };
 /**
  * new order-sku record
@@ -185,12 +186,12 @@ let columns = [
     sql += " left join sys_user su2 on su2.id = bo.updated_by";
     sql += " where 1=1";
     if(query_data.begin_time){
-        sql += " and bo.created_date > ?";
-        params.push(query_data.begin_time);
+        sql += " and bo.delivery_time >= ?";
+        params.push(query_data.begin_time + ' 00:00~00:00');
     }
     if(query_data.end_time){
-        sql += " and bo.delivery_time < ?";
-        params.push(query_data.end_time);
+        sql += " and bo.delivery_time <= ?";
+        params.push(query_data.end_time+' 24:00~24:00');
     }
     if(query_data.is_deal){
         sql += " and bo.is_deal > 0";
@@ -326,23 +327,6 @@ OrderDao.prototype.updateRecipient = function(recipient_obj,recipient_id){
         });
     });
 };
-/**
- * update the special orders status
- * @param order_ids
- */
-OrderDao.prototype.updateOrderStatus = function(order_ids){
-    let sql = this.base_update_sql + " where id in " + dbHelper.genInSql(order_ids);
-    let params = [];
-    params.push(tables.buss_order);
-    params.push({status:constant.OS.CONVERT});
-    return baseDao.update(sql,params);
-};
-/**
- * insert a record for order print apply
- * @param print_apply_obj
- */
-OrderDao.prototype.insertPrintApply = function(print_apply_obj){
-    return baseDao.insert(this.base_insert_sql,[tables.buss_print_apply,print_apply_obj]);
-};
+
 module.exports = new OrderDao();
 

@@ -50,7 +50,7 @@ OrderService.prototype.addOrder = (req, res, next) => {
     req.checkBody(addOrder);
     let errors = req.validationErrors();
     if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
+        res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
     let delivery_type = req.body.delivery_type,
@@ -153,7 +153,7 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
     req.checkParams(getOrder);
     let errors = req.validationErrors();
     if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
+        res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
 
@@ -189,6 +189,7 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
             data.recipient_landmark = curr.landmark;
             if(curr.sku_id){
                 let product_obj = {
+                    sku_id : curr.sku_id,
                     choco_board : curr.choco_board,
                     custom_desc : curr.custom_desc,
                     custom_name : curr.custom_name,
@@ -220,7 +221,7 @@ OrderService.prototype.editOrder = function(is_submit){
         req.checkBody(editOrder);
         let errors = req.validationErrors();
         if (errors) {
-            res.api(res_obj.INVALID_PARAMS,null);
+            res.api(res_obj.INVALID_PARAMS,errors);
             return;
         }
         let orderId = systemUtils.getDBOrderId(req.params.orderId),
@@ -331,7 +332,7 @@ OrderService.prototype.getShopList = (req, res, next)=> {
     req.checkParams('districtId').notEmpty().isInt();
     let errors = req.validationErrors();
     if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
+        res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
     let districtId = req.params.districtId;
@@ -357,7 +358,7 @@ OrderService.prototype.listOrders = (req,res,next) => {
     req.checkQuery(listOrder);
     let errors = req.validationErrors();
     if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
+        res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
     let query_data = {
@@ -369,11 +370,9 @@ OrderService.prototype.listOrders = (req,res,next) => {
         src_id : req.query.src_id,
         status : req.query.status,
         city_id : req.query.city_id,
-        page_no : req.query.page_no,
-        page_size : req.query.page_size,
         order_sorted_rules : Constant.OSR.LIST
     };
-    let promise = orderDao.findOrderList(query_data).then((resObj)=>{
+    let promise = orderDao.findOrderList(systemUtils.assemblePaginationObj(req,query_data)).then((resObj)=>{
         if(!(resObj.result && resObj._result)){
             throw new TiramisuError(res_obj.FAIL);
         }else if(toolUtils.isEmptyArray(resObj._result)){
@@ -382,7 +381,7 @@ OrderService.prototype.listOrders = (req,res,next) => {
         let data = {
             list : [],
             total : resObj.result[0].total,
-            page_no : query_data.page_no
+            page_no : req.query.page_no
         };
         for(let curr of resObj._result){
             let delivery_adds = curr.merger_name.split(',');
@@ -422,57 +421,6 @@ OrderService.prototype.listOrders = (req,res,next) => {
     });
     systemUtils.wrapService(res,next,promise);
 };
-/**
- * exchange the status for the choosed orders
- * @param req
- * @param res
- * @param next
- */
-OrderService.prototype.exchageOrders = (req,res,next)=>{
-    req.checkBody(exchangeOrder);
-    let errors = req.validationErrors();
-    if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
-        return;
-    }
-    let orderIds = [];
-    req.body.order_ids.forEach((curr)=>{
-        orderIds.push(systemUtils.getDBOrderId(curr));
-    });
-    let promise = orderDao.updateOrderStatus(orderIds).then((results)=>{
-            if(!Number.isInteger(results)){
-                throw new TiramisuError(res_obj.FAIL);
-            }
-            res.api();
-        });
-    systemUtils.wrapService(res,next,promise);
-};
-/**
- * apply for print the order once again
- * @param req
- * @param res
- * @param next
- */
-OrderService.prototype.applyForRePrint = (req,res,next) => {
-    req.checkBody(printApply);
-    let errors = req.validationErrors();
-    if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
-        return;
-    }
-    let print_apply_obj = {
-        applicant_mobile : req.body.applicant_mobile,
-        director_mobile : req.body.director_mobile,
-        order_id : req.body.order_id,
-        reason : req.body.reason
-    };
-    let promise = orderDao.insertPrintApply(systemUtils.assembleInsertObj(req,print_apply_obj)).then((result)=>{
-        if(!Number.isInteger(result) || parseInt(result) === 0){
-            throw new TiramisuError(res_obj.FAIL);
-        }
-        res.api();
-    });
-    systemUtils.wrapService(res,next,promise);
-};
+
 
 module.exports = new OrderService();

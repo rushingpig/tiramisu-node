@@ -22,7 +22,12 @@ function BaseDao() {
         console.log('Waiting for available connection slot');
     });
 }
-
+/**
+ *
+ * @param sql
+ * @param params
+ * @returns {Promise}
+ */
 BaseDao.select = function (sql, params) {
     return new Promise((resolve, reject) => {
         pool.query(sql, params, (err, results, fields) => {
@@ -34,6 +39,12 @@ BaseDao.select = function (sql, params) {
         });
     });
 };
+/**
+ *
+ * @param sql
+ * @param params
+ * @returns {Promise}
+ */
 BaseDao.update = function (sql, params) {
     return new Promise((resolve, reject) => {
         pool.query(sql, params, (err, results, fields) => {
@@ -45,13 +56,24 @@ BaseDao.update = function (sql, params) {
         });
     });
 };
-BaseDao.insert = (sql, params) => {
+/**
+ *
+ * @param sql
+ * @param params
+ * @param noInsertId
+ * @returns {Promise}
+ */
+BaseDao.insert = (sql, params,noInsertId) => {
     return new Promise((resolve, reject) => {
         pool.query(sql, params, (err, results, fields) => {
             if (err) {
                 reject(err);
             } else {
-                resolve(results.insertId);
+                if(noInsertId){
+                    resolve(results.affectedRows);
+                }else{
+                    resolve(results.insertId);
+                }
             }
         });
     });

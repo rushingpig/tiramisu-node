@@ -1,3 +1,6 @@
+var LogHelper = require('./common/LogHelper');
+//  init the log4js config
+new LogHelper(log4js).config();
 var config = require('./config');
 var express = require('express');
 var path = require('path');
@@ -11,14 +14,13 @@ var exphbs = require('express-handlebars');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var validator = require('express-validator');
+var res_obj = require('./util/res_obj');
 
 var app = express();
 var v1Router = require('./routes/v1');
 var router = require('./routes');
 var middleware = require('./middleware');
-var LogHelper = require('./common/LogHelper');
-//  init the log4js config
-new LogHelper(log4js).config();
+
 //global.loog = LogHelper.getLogger('tiramisu');
 
 // view engine setup
@@ -27,7 +29,6 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.engine('.hbs', exphbs({defaultLayout: 'single', extname: '.hbs'}));
 app.set('view engine', '.hbs');
-
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
@@ -69,6 +70,16 @@ app.use(function (req, res, next) {
 
 // error handlers
 
+// all ajax request error handler
+app.use('/v1/a/*',(err,req,res,next)=>{
+    if(err.status === 404){
+        res.status(err.status);
+        res.api(res_obj.GET_LOST,null);
+    }else{
+        res.status(500).api(res_obj.FAIL,err.message);
+    }
+});
+
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
@@ -92,12 +103,8 @@ if (app.get('env') === 'dev') {
 
 // production error handler
 // no stacktraces leaked to user
+// for the for-end framework
 app.use(function (err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err,
-        error: {}
-    });
+    res.renders('index',{isLogin : req.session.user ? true : false});
 });
-
 module.exports = app;

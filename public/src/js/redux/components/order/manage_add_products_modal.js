@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import Select from 'common/select';
-import NumberPicker from 'common/numberPicker';
+import NumberPicker from 'common/number_picker';
 import Pagination from 'common/pagination';
 import * as OrderProductsActions from 'actions/order_products';
 import { SELECT_DEFAULT_VALUE } from 'config/app.config';

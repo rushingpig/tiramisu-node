@@ -3,6 +3,7 @@ import {render} from 'react-dom';
 import {Entry, ComingSoon, NoPage} from '../components/body';
 import OrderPannel from '../components/order/manage';
 import OrderDetailPannel from '../components/order/manage_order_detail_pannel';
+import DeliveryChangePannel from '../components/delivery/change';
 import history from 'history_instance';
 import {Router, Route, IndexRoute} from 'react-router';
 
@@ -11,12 +12,23 @@ export default class App extends Component {
     return (
       <Router history={history}>
         <Route path="/" component={Entry}>
-          <Route path="om/index" component={OrderPannel} />
-          <Route path="om/index/add" component={OrderDetailPannel} />
-          <Route path="om/index/:id" component={OrderDetailPannel} />
-          <Route path="om/refund" component={ComingSoon} />
-          <Route path="om/invoice" component={ComingSoon} />
-          <Route path="om/winning" component={ComingSoon} />
+
+          <Route path="om">
+            <Route path="index" component={OrderPannel} />
+            <Route path="index/add" component={OrderDetailPannel} />
+            <Route path="index/:id" component={OrderDetailPannel} />
+            <Route path="refund" component={ComingSoon} />
+            <Route path="invoice" component={ComingSoon} />
+            <Route path="winning" component={ComingSoon} />
+          </Route>
+
+          <Route path="dm">
+            <Route path="process" component={DeliveryChangePannel} />
+            <Route path="delivery" component={ComingSoon} />
+            <Route path="distribute" component={ComingSoon} />
+            <Route path="review" component={ComingSoon} />
+          </Route>
+
           <Route path="*" component={NoPage}/>
         </Route>
       </Router>

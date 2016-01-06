@@ -1,27 +1,35 @@
 import React, {Component, PropTypes} from 'react';
-import { render } from 'react-dom';
+import { render, findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { reduxForm } from 'redux-form';
+
+import * as AreaActions from 'actions/area';
 import * as OrderManageActions from 'actions/order_manage';
+import { getOrderSrcs } from 'actions/order_manage_form';
+
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import Pagination from 'common/pagination';
 import Config from 'config/app.config';
 import history from 'history_instance';
+import LineRouter from 'common/line_router';
+import SearchInput from 'common/search_input';
+import { get_table_empty } from 'common/loading';
 
+import OrderProductsDetail from 'common/order_products_detail';
 import ManageDetailModal from './manage_detail_modal';
 import ManageAlterStationModal from './manage_alter_station_modal';
+import OrderSrcsSelects from 'common/order_srcs_selects';
 
 class TopHeader extends Component {
   render(){
     return (
       <div className="clearfix top-header">
         <button onClick={this.addOrder.bind(this)} className="btn btn-theme pull-left">添加订单</button>
-        <div className="pull-right line-router">
-          <span className="node">总订单页面</span>
-          <span>{'　/　'}</span>
-          <span className="node active">处理页面</span>
-        </div>
+        <LineRouter 
+          routes={[{name: '总订单页面', link: '/om/index'}, {name: '处理页面', link: ''}]}
+          className="pull-right" />
       </div>
     )
   }
@@ -31,36 +39,96 @@ class TopHeader extends Component {
 }
 
 class FilterHeader extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      submit_opts: [{id: 1, text: '已提交'}, {id: 0, text: '未提交'}],
+      deal_opts: [{id: 1, text: '已处理'}, {id: 0, text: '未处理'}],
+      selected_order_src_level1_id: Config.SELECT_DEFAULT_VALUE,
+      search_ing: false,
+    }
+  }
   render(){
-    var { start_date, delivery_date, startDateChange, deliveryDateChange } = this.props;
+    var { 
+      fields: {
+        keywords,
+        begin_time,
+        end_time,
+        is_submit,
+        is_deal,
+        src_id,
+        province_id,
+        city_id,
+        status,
+      },
+      provinces,
+      cities,
+      all_order_srcs,
+      all_order_status,
+    } = this.props;
+    var { search_ing } = this.state;
+
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <div className="search-input inline-block">
-            <input className="form-control input-sm" placeholder="关键字" />
-            <i className="fa fa-search"></i>
-          </div>
+          <input {...keywords} className="form-control input-sm" placeholder="关键字" />
           {' 开始时间'}
-          <DatePicker date={start_date} onChange={startDateChange} className="short-input" />
+          <DatePicker redux-form={begin_time} className="short-input" />
           {' 配送时间'}
-          <DatePicker date={delivery_date} onChange={deliveryDateChange} className="short-input" />
-          <Select default-text="是否提交" className="space"/>
-          <Select default-text="是否处理" className="space"/>
-          <Select default-text="订单来源" className="space"/>
-          <Select default-text="选择城市" className="space"/>
-          <Select default-text="订单状态" className="space"/>
-          <button className="btn btn-theme btn-sm"><i className="fa fa-search"></i></button>
+          <DatePicker redux-form={end_time} className="short-input" />
+          <Select {...is_submit} options={this.state.submit_opts} default-text="是否提交" className="space"/>
+          <Select {...is_deal} options={this.state.deal_opts} default-text="是否处理" className="space"/>
+          <OrderSrcsSelects {...{all_order_srcs, src_id}} />
+          <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space"/>
+          <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space"/>
+          <Select {...status} options={all_order_status} default-text="订单状态" className="space"/>
+          <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-sm"><i className="fa fa-search"></i></button>
         </div>
       </div>
     )
   }
+  componentDidMount(){
+    setTimeout(()=>{
+      var { getProvinces, getOrderSrcs } = this.props.actions;
+      getProvinces();
+      getOrderSrcs();
+    },0)
+  }
+  onProvinceChange(callback, e){
+    var {value} = e.target;
+    this.props.actions.provinceReset();
+    if(value != this.refs.province.props['default-value'])
+      var $city = $(findDOMNode(this.refs.city));
+      this.props.actions.getCities(value).done(() => {
+        $city.trigger('focus'); //聚焦已使city_id的值更新
+      });
+    callback(e);
+  }
+  search(){
+    this.setState({search_ing: true});
+    this.props.actions.getOrderList({page_no: 0, page_size: this.props.page_size})
+      .always(()=>{
+        this.setState({search_ing: false});
+      });
+  }
 }
 FilterHeader.propTypes = {
-  start_date: PropTypes.string.isRequired,
-  delivery_date: PropTypes.string.isRequired,
-  startDateChange: PropTypes.func.isRequired,
-  deliveryDateChange: PropTypes.func.isRequired
+  actions: PropTypes.object.isRequired,
 }
+FilterHeader = reduxForm({
+  form: 'order_manage_filter',
+  fields: [
+    'keywords',
+    'begin_time',
+    'end_time',
+    'is_submit',
+    'is_deal',
+    'src_id',
+    'province_id',
+    'city_id',
+    'status',
+  ]
+})( FilterHeader );
 
 class OrderRow extends Component {
   render(){
@@ -122,23 +190,6 @@ class OrderRow extends Component {
   }
 }
 
-function ProductRow(product){
-  return (
-    <tr>
-      <td>{product.product_name}</td>
-      <td>￥{product.original_price / 100}</td>
-      <td>{product.size}</td>
-      <td>{product.num}</td>
-      <td>￥{product.discount_price / 100}</td>
-      <td>{product.choco_board}</td>
-      <td>{product.greeting_card}</td>
-      <td>{product.atlas}</td>
-      <td>{product.custom_name}</td>
-      <td>{product.custom_desc}</td>
-    </tr>
-  )
-}
-
 class ManagePannel extends Component {
   constructor(props){
     super(props);
@@ -149,21 +200,20 @@ class ManagePannel extends Component {
     }
   }
   render(){
-    var { filter, startDateChange, deliveryDateChange, checkOrder } = this.props;
+    var { filter, area, checkOrder, dispatch, getOrderList } = this.props;
     var { page_no, total, list, check_order_info, selected_order_id } = this.props.orders;
     var { viewDetail, alterStation } = this;
 
     var content = list.map((n, i) => {
       return <OrderRow key={n.order_id} {...{...n, selected_order_id, viewDetail, alterStation, checkOrder}} />;
     })
-    var products = check_order_info && check_order_info.products.map(function(n){
-      return ProductRow(n);
-    })
     return (
       <div className="order-manage">
 
         <TopHeader />
-        <FilterHeader {...{...filter, startDateChange, deliveryDateChange}} />
+        <FilterHeader {...{...filter, ...area}}
+           actions={{...bindActionCreators({...AreaActions, getOrderSrcs}, dispatch), getOrderList}}
+           page_size={this.state.page_size} />
 
         <div className="panel">
           <header className="panel-heading">订单列表</header>
@@ -196,7 +246,7 @@ class ManagePannel extends Component {
                 </tr>
                 </thead>
                 <tbody>
-                {content}
+                {content.length ? content : get_table_empty()}
                 </tbody>
               </table>
             </div>
@@ -211,32 +261,7 @@ class ManagePannel extends Component {
         </div>
 
         { check_order_info
-          ? <div className="panel">
-              <div className="panel-body">
-                <div>订单管理 >> 产品详情</div>
-                <div className="table-responsive">
-                  <table className="table text-center">
-                    <thead>
-                    <tr>
-                      <th>产品名称</th>
-                      <th>原价</th>
-                      <th>规格</th>
-                      <th>数量</th>
-                      <th>实际售价</th>
-                      <th>巧克力牌</th>
-                      <th>祝福贺卡</th>
-                      <th>产品图册</th>
-                      <th>自由拼名称</th>
-                      <th>自由拼描述</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                      {products}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
+          ? <OrderProductsDetail products={check_order_info.products} />
           : null }
 
         <div ref="modal-wrap"></div>
@@ -264,7 +289,9 @@ function mapStateToProps({orderManage}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  return bindActionCreators(OrderManageActions, dispatch);
+  var actions = bindActionCreators(OrderManageActions, dispatch);
+  actions.dispatch = dispatch;
+  return actions;
 }
 
 // export default connect(mapStateToProps, OrderManageActions)(ManagePannel);

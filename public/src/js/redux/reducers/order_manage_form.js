@@ -211,7 +211,7 @@ function products_choosing(state = products_choosing_state, action){
 }
 
 const orderAddReducer = combineReducers({
-  area,
+  area: area(true),
   mainForm,
   products: products_choosing
 })

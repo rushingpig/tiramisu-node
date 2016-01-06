@@ -19,21 +19,23 @@ function _t(data){
   })
 }
 
-export function area(state = initial_state, action){
-  switch (action.type) {
-    case UPDATE_PATH:
-      return initial_state;
-    case GOT_PROVINCES:
-      return {...state, provinces: _t(action.data) };
-    case PROVINCE_RESET:
-      return {...state, cities: [], districts: [] };
-    case GOT_CITIES:
-      return {...state, cities: _t(action.data) };
-    case CITY_RESET:
-      return {...state, districts: []}
-    case GOT_DISTRICTS:
-      return {...state, districts: _t(action.data) };
-    default:
-      return state
-  }
+export function area(if_reset){
+  return function area(state = initial_state, action){
+    switch (action.type) {
+      case UPDATE_PATH:
+        return if_reset ? initial_state : state;
+      case GOT_PROVINCES:
+        return {...state, provinces: _t(action.data) };
+      case PROVINCE_RESET:
+        return {...state, cities: [], districts: [] };
+      case GOT_CITIES:
+        return {...state, cities: _t(action.data) };
+      case CITY_RESET:
+        return {...state, districts: []}
+      case GOT_DISTRICTS:
+        return {...state, districts: _t(action.data) };
+      default:
+        return state
+    }
+  };
 }

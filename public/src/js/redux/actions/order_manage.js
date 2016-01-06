@@ -1,27 +1,14 @@
 import { GET, TEST } from 'utils/request'; //Promise
 import Url from 'config/url';
-
-
-export const START_DATE_CHANGE = 'START_DATE_CHANGE';
-export const DISTRIBUTE_DATE_CHANGE = 'DISTRIBUTE_DATE_CHANGE';
-
-export function startDateChange(date){
-  return {
-    type: START_DATE_CHANGE,
-    date
-  }
-}
-
-export function deliveryDateChange(date){
-  return {
-    type: DISTRIBUTE_DATE_CHANGE,
-    date
-  }
-}
+import { getValues } from 'redux-form';
 
 export const GET_ORDER_LIST = 'GET_ORDER_LIST';
 export function getOrderList(data){
-  return GET(Url.orders.toString(), data, GET_ORDER_LIST);
+  return (dispatch, getState) => {
+    var filter_data = getValues(getState().form.order_manage_filter);
+    debugger;
+    return GET(Url.orders.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch);
+  }
   // return TEST({
   //   total: 1,
   //   list: [{

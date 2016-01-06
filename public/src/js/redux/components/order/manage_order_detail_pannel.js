@@ -8,6 +8,7 @@ import * as OrderFormActions from 'actions/order_manage_form';
 
 import DatePicker from 'common/datepicker';
 import Alert from 'common/alert';
+import LineRouter from 'common/line_router';
 
 import ManageOrderForm from './manage_order_form';
 import ManageOrderProducts from './manage_order_products';
@@ -16,11 +17,9 @@ class TopHeader extends Component {
   render(){
     return (
       <div className="clearfix top-header">
-        <div className="pull-right line-router">
-          <span className="node">总订单页面</span>
-          <span>{'　/　'}</span>
-          <span className="node active">编辑订单</span>
-        </div>
+        <LineRouter 
+          routes={[{name: '总订单页面', link: '/om/index'}, {name: '编辑订单', link: ''}]}
+          className="pull-right" />
       </div>
     )
   }

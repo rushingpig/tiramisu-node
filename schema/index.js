@@ -18,4 +18,5 @@ module.exports = {
     auditApply : require('./buss/delivery/audit_apply'),
     signinOrder : require('./buss/delivery/signin_order'),
     unsigninOrder : require('./buss/delivery/unsignin_order'),
+    deliveryman : require('./buss/delivery/deliveryman'),
 };

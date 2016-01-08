@@ -57,12 +57,12 @@ DBHelper.removeOrders = function(sql){
  * @param params
  * @returns {string}
  */
-DBHelper.genInSql = function(params){
+DBHelper.genInSql = function(paramsArray){
     let sql = "(";
-    if(toolUtils.isEmptyArray(params)){
-        logger.warn('the input params [',params,'] to be gen in sql is not valid ...');
+    if(toolUtils.isEmptyArray(paramsArray)){
+        logger.warn('the input params [',paramsArray,'] to be gen in sql is not valid ...');
     }else{
-        params.forEach((curr)=>{
+        paramsArray.forEach((curr)=>{
             sql += "'"+curr+"',";
         });
         sql = sql.substring(0,sql.length - 1);

@@ -20,6 +20,10 @@ module.exports = {
         code : '1001',
         msg : '长时间未操作,请重新登录...'
     },
+    OPTION_EXPIRED : {
+        code : '9995',
+        msg : '啊哈,有人捷足先登了,重新获取最新记录吧...'
+    },
     INVALID_UPDATE_ID : {
         code : '9996',
         msg : '指定的更新记录无效...'

@@ -2,7 +2,7 @@
  * @des    : wrap the response of express (an instance of http.ServerResponse)
  * @author : pigo.can
  * @date   : 15/12/9 下午1:17
- * @email  : rushingpig@163.com
+ * @email  : zhenglin.zhu@xfxb.net
  * @version: v1.0
  */
 "use strict";

@@ -11,6 +11,7 @@ var baseDao = require('../../base_dao'),
     tables = require('../../../config').tables,
     toolUtils = require('../../../common/ToolUtils'),
     dbHelper = require('../../../common/DBHelper'),
+    constant = require('../../../common/Constant'),
     systemUtils = require('../../../common/SystemUtils');
 function DeliveryDao(){
     this.baseColumns = ['id','name'];
@@ -106,5 +107,40 @@ DeliveryDao.prototype.findReprintApplies = function(query_obj){
 DeliveryDao.prototype.updateReprintApply = function(update_obj,apply_id){
     let sql = this.base_update_sql + " where id = ? and status = 'UNAUDIT'";    //avoid concurrency to update twice
     return baseDao.update(sql,[tables.buss_print_apply,update_obj,apply_id]);
+};
+/**
+ * update the order record to allocated deliveryman
+ * @param order_ids
+ * @param update_obj
+ * @returns {Promise}
+ */
+DeliveryDao.prototype.updateOrderWithDeliveryman = function(order_ids,update_obj){
+
+    let sql = this.base_update_sql + " where id in " + dbHelper.genInSql(order_ids);
+    return baseDao.update(sql,[tables.buss_order,update_obj]);
+};
+/**
+ * find the deliverymans list by the login user of the station
+ * @param userId
+ */
+DeliveryDao.prototype.findDeliverymansByStation = function(userId){
+    let columns = [
+        'su.id as deliveryman_id',
+        'su.name as deliveryman_name',
+        'su.mobile as deliveryman_mobile'
+    ].join(','),params = [];
+    let sql = "select "+columns+" from ?? su";
+    params.push(tables.sys_user);
+    sql += " inner join ?? sur on su.id = sur.user_id";
+    params.push(tables.sys_user_role);
+    sql += " inner join ?? sr on sr.id = sur.role_id";
+    params.push(tables.sys_role);
+    sql += " left join ?? srs on sur.role_id = srs.role_id";
+    params.push(tables.sys_role_station);
+    sql += " where 1=1 and su.station_id = srs.station_id and su.id = ?";
+    params.push(userId);
+
+    return baseDao.select(sql,params);
+
 };
 module.exports = new DeliveryDao();

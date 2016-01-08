@@ -46,7 +46,7 @@ DeliveryService.prototype.getDeliveryStationList = (req,res,next)=>{
  * @param next
  */
 DeliveryService.prototype.exchageOrders = (req,res,next)=>{
-    req.checkBody(exchangeOrder);
+    req.checkBody(schema.exchangeOrder);
     let errors = req.validationErrors();
     if (errors) {
         res.api(res_obj.INVALID_PARAMS,errors);
@@ -57,8 +57,8 @@ DeliveryService.prototype.exchageOrders = (req,res,next)=>{
         orderIds.push(systemUtils.getDBOrderId(curr));
     });
     let promise = deliveryDao.updateOrderStatus(orderIds).then((results)=>{
-        if(!Number.isInteger(results)){
-            throw new TiramisuError(res_obj.FAIL);
+        if(parseInt(results) <= 0){
+            throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
         }
         res.api();
     });
@@ -211,11 +211,68 @@ DeliveryService.prototype.unsigninOrder = (req,res,next)=>{
         unsignin_reason : req.body.unsignin_reason,
         status : Constant.OS.EXCEPTION
     };
-    let promise = orderDao.updateOrder(systemUtils.assembleUpdateObj(req,update_obj),systemUtils.getDBOrderId(req.params.orderId)).then((result)=>{
+    let promise = orderDao.findVersionInfoById(orderId).then((_res)=>{
+        if(toolUtils.isEmptyArray(_res)){
+            throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
+        }else if(updated_time !== _res[0].updated_time){
+            throw new TiramisuError(res_obj.OPTION_EXPIRED);
+        }
+        return orderDao.updateOrder(systemUtils.assembleUpdateObj(req,update_obj),systemUtils.getDBOrderId(req.params.orderId));
+    }).then((result)=>{
         if(parseInt(result) <= 0){
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
         }
         res.api();
+    });
+    systemUtils.wrapService(res,next,promise);
+};
+/**
+ * allocate deliverymans
+ * @param req
+ * @param res
+ * @param next
+ */
+DeliveryService.prototype.allocateDeliveryman = (req,res,next)=>{
+    req.checkBody(schema.deliveryman);
+
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let update_obj = {
+        status : Constant.OS.DELIVERY,
+        deliveryman_id : req.body.deliveryman_id
+    };
+    let orderIds = [];
+    req.body.order_ids.forEach((curr)=>{
+        orderIds.push(systemUtils.getDBOrderId(curr));
+    });
+    let promise = deliveryDao.updateOrderWithDeliveryman(orderIds,systemUtils.assembleUpdateObj(req,update_obj)).then((result)=>{
+        if(parseInt(result) <= 0){
+            throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
+        }
+        res.api();
+    });
+    systemUtils.wrapService(res,next,promise);
+};
+/**
+ * get the deliverymans of the station
+ * @param req
+ * @param res
+ * @param next
+ */
+DeliveryService.prototype.listDeliverymans = (req,res,next)=>{
+    let currentUserId = req.session.user.id;
+    if(!currentUserId){
+        res.api(res_obj.SESSION_TIME_OUT,null);
+        return;
+    }
+    let promise = deliveryDao.findDeliverymansByStation(currentUserId).then((results)=>{
+        if(toolUtils.isEmptyArray(results)){
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        res.api(results);
     });
     systemUtils.wrapService(res,next,promise);
 };

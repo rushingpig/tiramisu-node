@@ -62,7 +62,7 @@ module.exports = {
             logger.error('the obj param should be an instance of object and has it\'s own property...');
             throw new Error('the obj param should be an instance of object and has it\'s own property...');
         }
-        obj.created_by = req.userId || 1;   //TODO it should not be null in the production environment
+        obj.created_by = req.session.user.id || 1;   //TODO it should not be null in the production environment
         obj.created_time = new Date();
         return obj;
     },
@@ -74,8 +74,9 @@ module.exports = {
         if(toolUtils.isEmptyObject(obj)){
             throw new Error('the obj param should be an instance of object and has it\'s own property...');
         }
-        obj.updated_by = req.userId;
+        obj.updated_by = req.session.user.id;
         obj.updated_time = new Date();
+        // the updated_time is update by db self ==> on update CURRENT_TIMESTAMP
         return obj;
     },
     assemblePaginationObj : (req,obj) => {

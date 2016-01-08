@@ -63,7 +63,7 @@ ProductService.prototype.listProducts = (req, res, next) => {
         res_data.total = data.results[0].total;
         return productDao.findProducts(preSql, preParams);
     }).then((_re)=> {
-        if (toolUils.isEmptyArray(_re)) {
+        if (toolUtils.isEmptyArray(_re)) {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
         _re.forEach((curr)=> {

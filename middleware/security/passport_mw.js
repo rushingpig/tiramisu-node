@@ -18,8 +18,7 @@ function localStrategy(req,username, password, done) {
         return done(null,false,{msg : '请输入有效的用户名和密码'});
     }
     let db_password = crypto.md5(password.toString().trim());
-    userService.getUserInfo(username,db_password).then(
-        (user)=>{
+    userService.getUserInfo(username,db_password).then((user)=>{
             if(!user){
                 return done(null,false,{msg:"用户名或错误,请确认后重新输入..."})
             }
@@ -54,7 +53,7 @@ function authenticate(passport){
             if(err){
                 res.api(res_obj.FAIL,null);
             }else if(msg && !user){
-                res.api(res_obj.INVALID_USERNAME_OR_PASSWORD,null);
+                res.api(res_obj.INVALID_USERNAME_OR_PASSWORD,msg);
             }else{
                 res.api();
             }

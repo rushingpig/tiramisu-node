@@ -43,5 +43,10 @@ module.exports = {
     },
     'page_size' : {
         isInt : true
-    }
+    },
+    'owner_mobile': {
+        isMobilePhone: {
+            options: ['zh-CN']
+        }
+    },
 };

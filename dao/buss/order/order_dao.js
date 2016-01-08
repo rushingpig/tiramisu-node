@@ -41,7 +41,7 @@ OrderDao.prototype.insertRecipient = function(recipientObj){
 };
 /**
  * get the pay modes
- * @type {OrderDao}
+ * @returns {Promise}
  */
 OrderDao.prototype.findAllPayModes = function(){
     let params = [this.baseColumns,tables.buss_pay_modes,del_flag.SHOW];
@@ -49,7 +49,7 @@ OrderDao.prototype.findAllPayModes = function(){
 };
 /**
  * get the shops by regionalismId
- * @param regionalismId
+ * @param districtId
  */
 OrderDao.prototype.findShopByRegionId = function(districtId){
     let sql = this.base_select_sql + ' and regionalism_id = ?';
@@ -59,6 +59,7 @@ OrderDao.prototype.findShopByRegionId = function(districtId){
 /**
  * update the order info
  * @param orderObj
+ * @param order_id
  */
 OrderDao.prototype.updateOrder = function(orderObj,order_id){
     let sql = this.base_update_sql + " where id = ?";
@@ -119,28 +120,30 @@ OrderDao.prototype.findOrderById = function(orderId){
         'dr3.id as province_id'
     ].join(',');
     let sql = "select "+columns+" from ?? bo";
-    sql += " left join buss_recipient br on bo.recipient_id = br.id";
-    sql += " left join buss_pay_modes bpm on bo.pay_modes_id = bpm.id";
-    sql += " left join buss_delivery_station bds on bo.delivery_id = bds.id";
-    sql += " left join dict_regionalism dr on br.regionalism_id = dr.id";
-    sql += " inner join dict_regionalism dr2 on dr.parent_id = dr2.id";
-    sql += " inner join dict_regionalism dr3 on dr2.parent_id = dr3.id";
-    sql += " left join buss_order_sku bos on bo.id = bos.order_id";
-    sql += " left join buss_product_sku bps on bos.sku_id = bps.id";
-    sql += " left join buss_product bp on bps.product_id = bp.id";
+    sql += " left join ?? br on bo.recipient_id = br.id";
+    params.push(tables.buss_recipient);
+    sql += " left join ?? bpm on bo.pay_modes_id = bpm.id";
+    params.push(tables.buss_pay_modes);
+    sql += " left join ?? bds on bo.delivery_id = bds.id";
+    params.push(tables.buss_delivery_station);
+    sql += " left join ?? dr on br.regionalism_id = dr.id";
+    params.push(tables.dict_regionalism);
+    sql += " inner join ?? dr2 on dr.parent_id = dr2.id";
+    params.push(tables.dict_regionalism);
+    sql += " inner join ?? dr3 on dr2.parent_id = dr3.id";
+    params.push( tables.dict_regionalism);
+    sql += " left join ?? bos on bo.id = bos.order_id";
+    params.push( tables.buss_order_sku);
+    sql += " left join ?? bps on bos.sku_id = bps.id";
+    params.push( tables.buss_product_sku);
+    sql += " left join ?? bp on bps.product_id = bp.id";
+    params.push( tables.buss_product);
     sql += " where 1=1 and bo.id = ?";
     let params = [tables.buss_order,orderId];
     return baseDao.select(sql,params);
 };
 /**
  * query for the order list by the given terms
- * @param begin_time
- * @param end_time
- * @param is_deal
- * @param is_submit
- * @param keywords
- * @param src_id
- * @param status
  */
 OrderDao.prototype.findOrderList = function(query_data){
 let columns = [
@@ -172,19 +175,29 @@ let columns = [
     let sql = "select "+columns+" from ?? bo";
     params.push(tables.buss_order);
     if(query_data.keywords){
-        sql += " inner join buss_order_fulltext bof on match(bof.show_order_id,bof.landmark,bof.owner_mobile,bof.owner_name,bof.recipient_name,bof.recipient_address,bof.recipient_mobile) against(? IN BOOLEAN MODE) and bof.order_id = bo.id"
+        sql += " inner join ?? bof on match(bof.show_order_id,bof.landmark,bof.owner_mobile,bof.owner_name,bof.recipient_name,bof.recipient_address,bof.recipient_mobile) against(? IN BOOLEAN MODE) and bof.order_id = bo.id";
+        params.push(tables.buss_order_fulltext);
         params.push('+'+query_data.keywords+'*');
     }
-    sql += " left join buss_recipient br on bo.recipient_id = br.id";
+    sql += " left join ?? br on bo.recipient_id = br.id";
+    params.push(tables.buss_recipient);
     if(query_data.city_id){
         sql += " and br.regionalism_id = ?";
         params.push(query_data.city_id);
     }
-    sql += " left join buss_order_src bos on bo.src_id = bos.id";
-    sql += " left join dict_regionalism dr on br.regionalism_id = dr.id";
-    sql += " left join sys_user su1 on su1.id = bo.created_by";
-    sql += " left join sys_user su2 on su2.id = bo.updated_by";
+    sql += " left join ?? bos on bo.src_id = bos.id";
+    params.push(tables.buss_order_src);
+    sql += " left join ?? dr on br.regionalism_id = dr.id";
+    params.push(tables.dict_regionalism);
+    sql += " left join ?? su1 on su1.id = bo.created_by";
+    params.push(tables.sys_user);
+    sql += " left join ?? su2 on su2.id = bo.updated_by";
+    params.push(tables.sys_user);
     sql += " where 1=1";
+    if(query_data.owner_mobile){
+        sql += " and bo.owner_mobile = ?";
+        params.push(query_data.owner_mobile);
+    }
     if(query_data.begin_time){
         sql += " and bo.delivery_time >= ?";
         params.push(query_data.begin_time + ' 00:00~00:00');
@@ -326,6 +339,16 @@ OrderDao.prototype.updateRecipient = function(recipient_obj,recipient_id){
             return trans;
         });
     });
+};
+/**
+ * find order status and updated_time to control concurrency
+ * @param order_id
+ * @returns {Promise}
+ */
+OrderDao.prototype.findVersionInfoById = function(order_id){
+    let sql = this.base_select_sql + " and id = ?";
+    let columns = ['status','updated_time'];
+    return baseDao.select(sql,[columns,tables.buss_order,order_id]);
 };
 
 module.exports = new OrderDao();

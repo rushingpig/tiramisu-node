@@ -225,6 +225,7 @@ OrderService.prototype.editOrder = function(is_submit){
             return;
         }
         let orderId = systemUtils.getDBOrderId(req.params.orderId),
+            updated_time = req.body.updated_time,
             recipient_id = req.body.recipient_id,
             delivery_type = req.body.delivery_type,
             owner_name = req.body.owner_name,
@@ -274,9 +275,17 @@ OrderService.prototype.editOrder = function(is_submit){
         }else{
             order_obj.status = Constant.OS.UNTREATED;
         }
-        let promise = orderDao.editOrder(order_obj,orderId,recipient_obj,recipient_id,products).then(()=>{
+        let promise = orderDao.findVersionInfoById(orderId).then((_res)=>{
+            if(toolUtils.isEmptyArray(_res)){
+                throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
+            }else if(updated_time !== _res[0].updated_time){
+                throw new TiramisuError(res_obj.OPTION_EXPIRED);
+            }
+            return orderDao.editOrder(order_obj,orderId,recipient_obj,recipient_id,products);
+        }).then(()=>{
             res.api();
         });
+
         systemUtils.wrapService(res,next,promise);
     }
 };
@@ -370,7 +379,8 @@ OrderService.prototype.listOrders = (req,res,next) => {
         src_id : req.query.src_id,
         status : req.query.status,
         city_id : req.query.city_id,
-        order_sorted_rules : Constant.OSR.LIST
+        order_sorted_rules : Constant.OSR.LIST,
+        owner_mobile : req.query.owner_mobile
     };
     let promise = orderDao.findOrderList(systemUtils.assemblePaginationObj(req,query_data)).then((resObj)=>{
         if(!(resObj.result && resObj._result)){

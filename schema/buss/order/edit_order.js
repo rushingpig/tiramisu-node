@@ -58,5 +58,8 @@ module.exports = {
     },
     'total_amount': {
         notEmpty: true
+    },
+    'updated_time' : {
+        isDate : true
     }
-}
+};

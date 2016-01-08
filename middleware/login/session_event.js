@@ -22,7 +22,6 @@ se.on('fill',function(req,user){
         throw new Error('illegal arguments...');
     }
     req.session.user = user;
-    req.userId = user.id;
 });
 
 module.exports = se;

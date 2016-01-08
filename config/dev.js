@@ -55,6 +55,7 @@ var tables = {
     sys_menu : 'sys_menu',
     sys_user_role : 'sys_user_role',
     sys_role_menu : 'sys_role_menu',
+    sys_role_station : 'sys_role_station',
 //=================Buss=================
     buss_city : 'buss_city',
     buss_delivery_station : 'buss_delivery_station',

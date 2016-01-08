@@ -46,6 +46,7 @@ a.get('/orders',orderService.listOrders);
 a.get('/order/:orderId/products',productService.listOrderProducts);
 
 a.get('/order/reprint/applies',deliveryService.listReprintApplies);
+a.get('/delivery/deliverymans',deliveryService.listDeliverymans);
 //**********************
 //******** POST ********
 //**********************
@@ -64,6 +65,7 @@ a.put('/orders/exchange',deliveryService.exchageOrders);
 a.put('/order/reprint/apply/:apply_id',deliveryService.auditReprintApply);
 a.put('/order/:orderId/signin',deliveryService.signinOrder);
 a.put('/order/:orderId/unsignin',deliveryService.unsigninOrder);
+a.put('/delivery/deliveryman',deliveryService.allocateDeliveryman);
 
 //************************
 //******** DELETE ********

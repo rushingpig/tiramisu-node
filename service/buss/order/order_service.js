@@ -101,7 +101,8 @@ OrderService.prototype.addOrder = (req, res, next) => {
                 delivery_time: delivery_time,
                 total_amount : total_amount,
                 total_original_price : total_original_price,
-                total_discount_price : total_discount_price
+                total_discount_price : total_discount_price,
+                submit_time : new Date()
             };
             orderObj = systemUtils.assembleInsertObj(req,orderObj);
             return orderDao.insertOrder(orderObj);
@@ -137,7 +138,7 @@ OrderService.prototype.addOrder = (req, res, next) => {
             });
         }).then((_re)=>{
             if(!_re){
-                throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+                throw new TiramisuError(res_obj.FAIL);
             }
             res.api();
         });
@@ -272,6 +273,7 @@ OrderService.prototype.editOrder = function(is_submit){
         };
         if(is_submit){
             order_obj.status = Constant.OS.STATION;
+            order_obj.submit_time = new Date();
         }else{
             order_obj.status = Constant.OS.UNTREATED;
         }
@@ -423,7 +425,8 @@ OrderService.prototype.listOrders = (req,res,next) => {
                 src_name : curr.src_name,
                 status : Constant.OSD[curr.status],
                 updated_by : curr.updated_by,
-                updated_time : curr.updated_time
+                updated_time : curr.updated_time,
+                submit_time : curr.submit_time
             };
             data.list.push(list_obj);
         }

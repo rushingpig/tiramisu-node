@@ -162,6 +162,7 @@ let columns = [
     'bo.total_discount_price',
     'bo.coupon',
     'bo.`status`',
+    'bo.submit_time',
     'br.delivery_type',
     'br.address',
     'br.landmark',

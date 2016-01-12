@@ -1,0 +1,6 @@
+test
+--reporter spec
+--recursive
+--growl
+-t 10000
+-u bdd

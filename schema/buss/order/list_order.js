@@ -39,12 +39,13 @@ module.exports = {
         isInt : true
     },
     'page_no' : {
-        isInt : true,
+        isInt : true
     },
     'page_size' : {
         isInt : true
     },
     'owner_mobile': {
+        optional : true,
         isMobilePhone: {
             options: ['zh-CN']
         }

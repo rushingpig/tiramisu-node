@@ -90,7 +90,7 @@ var mysql_options = {
     supportBigNumbers : true,
     multipleStatements : true,  //  if in the production recommend to be false
     dateStrings     : true, //  Force date types (TIMESTAMP, DATETIME, DATE) to be returned as strings rather then inflated into JavaScript Date objects.
-    debug           : false, //  when in production or test environment ,it should be set to false. it just be used in dev
+    debug           : false //  when in production or test environment ,it should be set to false. it just be used in dev
 
 };
 

@@ -15,7 +15,8 @@ var service = require('../../service'),
     addressService = service.address,
     deliveryService = service.delivery,
     orderService = service.order,
-    productService = service.product;
+    productService = service.product,
+    Constant = require('../../common/Constant');
 
 var v = express.Router(config.exp_router_options);
 var a = express.Router(config.exp_router_options);
@@ -42,9 +43,13 @@ a.get('/district/:districtId/shops',orderService.getShopList);
 a.get('/product/categories',productService.getCategories);
 a.get('/products',productService.listProducts);
 a.get('/order/:orderId',orderService.getOrderDetail);
-a.get('/orders',orderService.listOrders);
+a.get('/orders',orderService.listOrders(Constant.OSR.LIST));
 a.get('/order/:orderId/products',productService.listOrderProducts);
+a.get('/order/:orderId/history',orderService.history);
 
+a.get('/orders/exchange',orderService.listOrders(Constant.OSR.DELIVERY_EXCHANGE));
+a.get('/orders/delivery',orderService.listOrders(Constant.OSR.DELIVER_LIST));
+a.get('/orders/signin',orderService.listOrders(Constant.OSR.RECEIVE_LIST));
 a.get('/order/reprint/applies',deliveryService.listReprintApplies);
 a.get('/delivery/deliverymans',deliveryService.listDeliverymans);
 //**********************
@@ -60,7 +65,7 @@ a.post('/order/reprint/apply',deliveryService.applyForRePrint);
 //*********************
 
 a.put('/order/:orderId',orderService.editOrder(false));     // 保存
-a.put('/order/:order/submit',orderService.editOrder(true)); // 提交
+a.put('/order/:orderId/submit',orderService.editOrder(true)); // 提交
 a.put('/orders/exchange',deliveryService.exchageOrders);
 a.put('/order/reprint/apply/:apply_id',deliveryService.auditReprintApply);
 a.put('/order/:orderId/signin',deliveryService.signinOrder);

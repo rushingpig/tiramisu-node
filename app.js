@@ -1,3 +1,4 @@
+"use strict";
 var LogHelper = require('./common/LogHelper');
 //  init the log4js config
 new LogHelper(log4js).config();
@@ -76,7 +77,11 @@ app.use('/v1/a/*',(err,req,res,next)=>{
         res.status(err.status);
         res.api(res_obj.GET_LOST,null);
     }else{
-        res.status(500).api(res_obj.FAIL,err.message);
+        // do not use res.api();when the body is not json object,then an error will occur result in the function api has not been binding to res
+        res.status(500);
+        let resObj = res_obj.FAIL;
+        resObj.err = err.message;
+        res.json(resObj);
     }
 });
 

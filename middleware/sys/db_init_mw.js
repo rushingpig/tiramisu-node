@@ -19,7 +19,7 @@ function DBInitMiddleware(){
  */
 function loadSQL(){
     let filePath = path.join(__dirname,'../../sql/tiramisu.sql');
-    var sql = fs.readFileSync(filePath,{
+    let sql = fs.readFileSync(filePath,{
         flag : 'rs',
         encoding : 'utf-8'
     });
@@ -46,6 +46,6 @@ DBInitMiddleware.initdb = ()=>{
         });
     }
     return;
-}
+};
 
 module.exports = DBInitMiddleware;

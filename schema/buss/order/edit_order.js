@@ -34,6 +34,9 @@ module.exports = {
         notEmpty: true,
         isInt : true
     },
+    'delivery_name' : {
+        notEmpty : true
+    },
     'recipient_address': {
         notEmpty: true
     },

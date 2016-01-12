@@ -39,11 +39,11 @@ export default class ProductsModal extends Component {
           </div>
           <div className="modal-body">
             <div className="form-group form-inline">
-              <input value={s.sku_name} onChange={this.handleSkuName.bind(this)} className="form-control input-sm" placeholder="输入产品名称" />
+              <input value={s.sku_name} onChange={this.handleSkuName.bind(this)} className="form-control input-xs" placeholder="输入产品名称" />
               {' '}
               <Select value={s.category_id} onChange={this.onCategoryChange.bind(this)} options={all_categories} default-text="选择产品分类" />
               {' '}
-              <button onClick={this.search.bind(this)} className="btn btn-sm btn-default"><i className="fa fa-search"></i>{' 查询'}</button>
+              <button onClick={this.search.bind(this)} className="btn btn-xs btn-default"><i className="fa fa-search"></i>{' 查询'}</button>
             </div>
             <div className="table-responsive">
               <table className="table table-hover table-click text-center">
@@ -96,8 +96,8 @@ export default class ProductsModal extends Component {
             </div>
           </div>
           <div className="modal-footer">
-            <button onClick={this.onCancel} type="button" className="btn btn-default" data-dismiss="modal">取消</button>
-            <button onClick={this.onConfirm.bind(this)} type="button" className="btn btn-theme">确定</button>
+            <button onClick={this.onCancel} type="button" className="btn btn-sm btn-default" data-dismiss="modal">取消</button>
+            <button onClick={this.onConfirm.bind(this)} type="button" className="btn btn-sm btn-theme">确定</button>
           </div>
         </div>
       </div>

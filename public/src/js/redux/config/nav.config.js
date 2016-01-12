@@ -31,10 +31,10 @@ export default [
   "short_name": "送货",
   "icon": "truck",
   "link": [{
-      "key": "dm_process",
-      "name": "订单转送货单",
+      "key": "dm_change",
+      "name": "订单转送单",
       "icon": "",
-      "link": "/dm/process"
+      "link": "/dm/change"
   }, {
       "key": "dm_refund",
       "name": "送货单管理",

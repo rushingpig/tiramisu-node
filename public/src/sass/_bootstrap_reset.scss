@@ -29,9 +29,9 @@
 
 /*dropdown select bg*/
 
-.dropdown-menu {
-    box-shadow: none;
-}
+// .dropdown-menu {
+//     box-shadow: none;
+// }
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
     background-color: #424F63;
     color: #FFFFFF;
@@ -130,6 +130,12 @@
     background-color: #374152;
     border-color: #2e3644;
     color: #FFFFFF;
+}
+
+button, .btn:focus, .btn.focus, .btn:active:focus, .btn:active.focus, .btn.active:focus, .btn.active.focus{
+    outline: none;
+    // outline: 5px auto -webkit-focus-ring-color;
+    // outline-offset: -2px;
 }
 
 
@@ -243,4 +249,24 @@
 }
 .table > tbody + tbody{
     border-top: none;
+}
+
+.input-xs, .input-group-xs > .form-control, .input-group-xs > .input-group-addon, .input-group-xs > .input-group-btn > .btn{
+    height: 27px;
+    padding: 5px;
+    line-height: initial;
+}
+.input-group-addon{
+    font-size: 12px;
+}
+select.input-xs, .input-group-xs > select.form-control, .input-group-xs > select.input-group-addon, .input-group-xs > .input-group-btn > select.btn {
+    height: 27px;
+    line-height: 27px;
+}
+.btn-xs {
+    padding: 4px 6px;
+    line-height: inherit;
+}
+.form-control {
+    font-size: 12px;
 }

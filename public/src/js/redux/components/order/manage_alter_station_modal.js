@@ -35,21 +35,21 @@ export default class AlterStationModal extends Component {
             <div className="form-group form-inline">
               <label>{'　　配送时间：'}</label>
               <DatePicker />{' '}
-              <Select options={[]} className="input-sm" />
+              <Select options={[]} className="input-xs" />
             </div>
             <div className="form-group form-inline">
               <label>{'修改配送地址：'}</label>
-              <Select options={[]} className="input-sm" />{' '}
-              <input className="form-control input-sm" />
+              <Select options={[]} className="input-xs" />{' '}
+              <input className="form-control input-xs" />
             </div>
             <div className="form-group form-inline">
               <label>{'修改配送时间：'}</label>
-              <Select options={[]} className="input-sm" />
+              <Select options={[]} className="input-xs" />
             </div>
           </div>
           <div className="modal-footer">
-            <button onClick={this.onCancel} type="button" className="btn btn-default" data-dismiss="modal">取消</button>
-            <button onClick={this.onConfirm} type="button" className="btn btn-theme">确定</button>
+            <button onClick={this.onCancel} type="button" className="btn btn-sm btn-default" data-dismiss="modal">取消</button>
+            <button onClick={this.onConfirm} type="button" className="btn btn-sm btn-theme">确定</button>
           </div>
         </div>
       </div>

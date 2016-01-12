@@ -1,4 +1,6 @@
 import React, { Component, PropTypes } from 'react';
+import { DELIVERY_MAP, pay_status } from 'config/app.config';
+import { get_table_empty } from 'common/loading';
 
 export default class DetailModal extends Component {
   constructor(props){
@@ -6,53 +8,69 @@ export default class DetailModal extends Component {
     this.show = this.show.bind(this);
     this.hide = this.hide.bind(this);
   }
-  componentWillReceiveProps(nextProps){
-    if(nextProps['data-id'] != this.props['data-id']){
-      this.show();
-    }
-  }
+  // componentWillReceiveProps(nextProps){
+  //   if(nextProps['data-id'] != this.props['data-id']){
+  //     this.show();
+  //   }
+  // }
   render(){
+    var { data, products = [] } = this.props;
+    var products = products.map( n => {
+      return (
+        <tr key={n.sku_id}>
+          <td>{n.product_name}</td>
+          <td className="text-left">规格：{n.size}<br/>数量：{n.num}</td>
+          <td className="text-left">原价：￥{n.original_price / 100}<br/>实际售价：￥{n.discount_price / 100}</td>
+          <td>￥{n.amount}</td>
+          <td>{n.choco_board}</td>
+          <td>{n.greeting_card}</td>
+          <td><input checked={n.atlas} disabled type="checkbox" /></td>
+          <td>{n.custom_name}</td>
+          <td>{n.custom_desc}</td>
+        </tr>
+      )
+    })
     return (
     <div ref="modal" aria-hidden="false" aria-labelledby="myModalLabel" role="dialog" className="modal fade" >
       <div className="modal-backdrop fade"></div>
       <div className="modal-dialog modal-lg">
         <div className="modal-content">
           <div className="modal-header">
-            <button onClick={this.onCancel} aria-hidden="true" data-dismiss="modal" className="close" type="button">×</button>
+            <button aria-hidden="true" data-dismiss="modal" className="close" type="button">×</button>
             <h4 className="modal-title">查看订单信息</h4>
           </div>
           <div className="modal-body strong-label">
             <div className="form-group form-inline">
               <label>{'　配送方式：'}</label>
-              <span className="gray">配送上门</span>
+              <span className="gray">{ DELIVERY_MAP[data.pay_modes_id] }</span>
             </div>
             <div className="form-group form-inline">
               <label>{'下单人信息：'}</label>
-              <span className="gray">{'蝴蝶　　15299998888'}</span>
+              <span className="gray">{`${data.owner_name}　${data.owner_mobile}`}</span>
             </div>
             <div className="form-group form-inline">
               <label>{'收货人信息：'}</label>
-              <span className="gray">{'蝴蝶　　15299998888'}</span>
+              <span className="gray">{`${data.recipient_name}　${data.recipient_mobile}`}</span>
             </div>
             <div className="form-group form-inline">
               <label>{'收货人地址：'}</label>
-              <span className="gray">广东省深圳市南山区xxxxx</span>
+              <span className="gray">{data.province_name + data.city_name + data.recipient_address}</span>
             </div>
             <div className="form-group form-inline">
               <label>{'标志性建筑：'}</label>
-              <span className="gray">中兴通讯</span>
+              <span className="gray">{data.recipient_landmark}</span>
             </div>
             <div className="form-group form-inline">
               <label className="inline-block">{'　支付方式：'}<br/>{' '}<br/>{' '}<br/></label>
-              <span className="inline-block gray">第三方支付<br/>团购密码 xxxxxx<br/>已付款</span>
+              <span className="inline-block gray">第三方支付(todo)<br/>团购密码 xxxxxx(todo)<br/>{pay_status[data.pay_status]}</span>
             </div>
             <div className="form-group form-inline">
               <label>{'　配送时间：'}</label>
-              <span className="gray">中兴通讯</span>
+              <span className="gray">{data.delivery_time}</span>
             </div>
             <div className="form-group form-inline">
               <label>{'　　　备注：'}</label>
-              <span className="gray">中兴通讯</span>
+              <span className="gray">{data.remarks}</span>
             </div>
             <div className="form-group form-inline">
               <label>{'　产品信息：'}</label>
@@ -73,17 +91,7 @@ export default class DetailModal extends Component {
                 </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>自由拼</td>
-                    <td className="text-left">规格：约2磅<br/>数量：1</td>
-                    <td className="text-left">原价：￥138<br/>实际售价：￥69</td>
-                    <td>￥0</td>
-                    <td>妈妈生日快乐</td>
-                    <td>生日快乐</td>
-                    <td><input checked={true} disabled type="checkbox" /></td>
-                    <td>单恋黑森林，榴莲香雪</td>
-                    <td>2磅1/4，方形</td>
-                  </tr>
+                  { products.length ? products : get_table_empty() }
                 </tbody>
               </table>
             </div>
@@ -93,9 +101,9 @@ export default class DetailModal extends Component {
     </div>
     )
   }
-  componentDidMount(){
-    this.show();
-  }
+  // componentDidMount(){
+  //   this.show();
+  // }
   show(){
     $(this.refs.modal).modal('show');
   }
@@ -104,6 +112,6 @@ export default class DetailModal extends Component {
   }
 }
 
-// DetailModal.PropTypes = {
-//   dispatch: PropTypes.func.isRequired,
-// }
+DetailModal.PropTypes = {
+  data: PropTypes.object.isRequired,
+}

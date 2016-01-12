@@ -76,7 +76,7 @@ var Login = React.createClass({
     dispatch(login(username, password)).done(function(){
       window.xfxb.login = true;
       //登录后，直接定位到所在url
-      history.replace(location.pathname + location.search);
+      history.push(location.pathname + location.search);
     });
     // render(AppRouter, document.getElementById('app'));
     // this.refs.me.style.display = 'none';

@@ -2,17 +2,24 @@ import React, {Component, PropTypes} from 'react';
 import { render } from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as OrderManageActions from 'actions/order_manage';
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import Pagination from 'common/pagination';
-
-import Config from 'config/app.config';
-import history from 'history_instance';
+import StdModal from 'common/std_modal';
 import LineRouter from 'common/line_router';
-import OrderProductsDetail from 'common/order_products_detail';
 
-// import ManageDetailModal from './manage_detail_modal';
+import { noty } from 'utils/index';
+import { DELIVERY_MAP } from 'config/app.config';
+import history from 'history_instance';
+import LazyLoad from 'utils/lazy_load';
+
+import OrderProductsDetail from 'common/order_products_detail';
+import OrderDetailModal from 'common/order_detail_modal';
+
+import * as OrderActions from 'actions/orders';
+import * as ChangeActions from 'actions/delivery_change';
+
+// import ManageDetailModal from 'common/order_detail_modal';
 // import ManageAlterStationModal from './manage_alter_station_modal';
 
 class TopHeader extends Component {
@@ -20,7 +27,7 @@ class TopHeader extends Component {
     return (
       <div className="clearfix top-header">
         <LineRouter 
-          routes={[{name: '送货单管理', link: '/dm/process'}, {name: '订单转送货单列表', link: ''}]} />
+          routes={[{name: '送货单管理', link: '/dm/change'}, {name: '订单转送货单列表', link: ''}]} />
       </div>
     )
   }
@@ -28,44 +35,38 @@ class TopHeader extends Component {
 
 class FilterHeader extends Component {
   render(){
-    var { start_date, delivery_date, startDateChange, deliveryDateChange } = this.props;
+    var { start_date, delivery_date, changeHandler } = this.props;
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <div className="search-input inline-block">
-            <input className="form-control input-sm" placeholder="关键字" />
-            <i className="fa fa-search"></i>
-          </div>
+          <input className="form-control input-xs" placeholder="关键字" />
           {' 开始时间'}
-          <DatePicker date={start_date} onChange={startDateChange} className="short-input" />
+          <DatePicker date={start_date} className="short-input" />
           {' 配送时间'}
-          <DatePicker date={delivery_date} onChange={deliveryDateChange} className="short-input" />
+          <DatePicker date={delivery_date} className="short-input" />
           <Select default-text="选择配送中心" className="space"/>
           <Select default-text="所属省份" className="space"/>
           <Select default-text="所属城市" className="space"/>
 
-          <button className="btn btn-theme btn-sm">转换</button>
+          <button onClick={changeHandler} className="btn btn-theme btn-xs">转换</button>
         </div>
       </div>
     )
   }
 }
-// FilterHeader.propTypes = {
-//   start_date: PropTypes.string.isRequired,
-//   delivery_date: PropTypes.string.isRequired,
-//   startDateChange: PropTypes.func.isRequired,
-//   deliveryDateChange: PropTypes.func.isRequired
-// }
+FilterHeader.propTypes = {
+  changeHandler: PropTypes.func.isRequired,
+}
 
 class OrderRow extends Component {
   render(){
     var { props } = this;
     return (
-      <tr className={props.selected_order_id == props.order_id ? 'active' : ''}>
+      <tr onClick={this.clickHandler.bind(this)} className={props.active_order_id == props.order_id ? 'active' : ''}>
         <td>
-          <input type="checkbox" />
+          <input onChange={this.checkOrderHandler.bind(this)} checked={props.checked} type="checkbox" />
         </td>
-        <td>{props.delivery_date}</td>
+        <td>{props.delivery_time}</td>
         <td>{props.owner_name}<br />{props.owner_mobile}</td>
         <td className="text-left">
           姓名：{props.recipient_name}<br />
@@ -73,21 +74,25 @@ class OrderRow extends Component {
           <div className="address-detail-td">
             <span className="inline-block">地址：</span><span className="address-all">{props.recipient_address}</span>
           </div>
-          建筑：todo
+          建筑：{props.recipient_landmark}
         </td>
+        <td>{props.coupon}</td>
         <td>todo</td>
-        <td>todo</td>
-        <td className="nowrap">todo</td>
-        <td>todo</td>
+        <td><a onClick={props.viewOrderDetail} href="javascript:;">{props.order_id}</a></td>
+        <td>{DELIVERY_MAP[props.pay_modes_id]}</td>
         <td><div className="remark-in-table">{props.remarks}</div></td>
         <td>{props.updated_by}</td>
         <td><div className="time">{props.updated_date}</div></td>
       </tr>
     )
   }
-  // clickHandler(){
-  //   this.props.checkOrder(this.props.order_id);
-  // }
+  checkOrderHandler(e){
+    var { order_id, checkOrderHandler } = this.props;
+    checkOrderHandler(order_id, e.target.checked);
+  }
+  clickHandler(){
+    this.props.activeOrderHandler(this.props.order_id);
+  }
 }
 
 class DeliverChangePannel extends Component {
@@ -96,20 +101,24 @@ class DeliverChangePannel extends Component {
     this.state = {
       page_size: 8,
     }
+    this.checkOrderHandler = this.checkOrderHandler.bind(this);
+    this.activeOrderHandler = this.activeOrderHandler.bind(this);
+    this.changeHandler = this.changeHandler.bind(this);
+    this.viewOrderDetail = this.viewOrderDetail.bind(this);
   }
   render(){
-    var { filter, startDateChange, deliveryDateChange, checkOrder } = this.props;
-    var { page_no, total, list, check_order_info, selected_order_id } = this.props.orders;
-    var { viewDetail, alterStation } = this;
+    var { filter, exchangeOrders } = this.props;
+    var { page_no, total, list, check_order_info, active_order_id, change_submitting } = this.props.orders;
+    var { checkOrderHandler, viewOrderDetail, activeOrderHandler } = this;
 
     var content = list.map((n, i) => {
-      return <OrderRow key={n.order_id} {...{...n, selected_order_id, viewDetail, checkOrder}} />;
+      return <OrderRow key={n.order_id} {...{...n, active_order_id, activeOrderHandler, checkOrderHandler, viewOrderDetail}} />;
     })
     return (
       <div className="order-manage">
 
         <TopHeader />
-        <FilterHeader {...{...filter, startDateChange, deliveryDateChange}} />
+        <FilterHeader {...filter} changeHandler={this.changeHandler} />
 
         <div className="panel">
           <header className="panel-heading">送货列表</header>
@@ -118,7 +127,7 @@ class DeliverChangePannel extends Component {
               <table className="table table-hover text-center">
                 <thead>
                 <tr>
-                  <th><input type="checkbox" /></th>
+                  <th><input onChange={this.checkAll.bind(this)} type="checkbox" /></th>
                   <th>送达时间</th>
                   <th>下单人</th>
                   <th>收货人</th>
@@ -147,19 +156,47 @@ class DeliverChangePannel extends Component {
         </div>
 
         { check_order_info
-          ? <OrderProductsDetail products={check_order_info.products} />
+          ? <div className="panel">
+              <div className="panel-body">
+                <div>订单产品详情</div>
+                <OrderProductsDetail products={check_order_info.products} />
+              </div>
+            </div>
           : null }
 
-        <div ref="modal-wrap"></div>
+        <ChangeModal {...{exchangeOrders, change_submitting}} data={list} ref="changeModal" />
+        <OrderDetailModal ref="detail_modal" data={check_order_info || {}} />
       </div>
     )
+  }
+  changeHandler(){
+    if(this.props.orders.list.filter(n => n.checked).length){
+      this.refs.changeModal.show();
+    }else{
+      noty('warning', '请先选择需要转换的订单！');
+    }
+  }
+  activeOrderHandler(order_id){
+    if(this.props.orders.active_order_id != order_id)
+      this.props.activeOrder(order_id);
+  }
+  checkOrderHandler(order_id, checked){
+    this.props.checkOrder(order_id, checked);
+  }
+  checkAll(e){
+    this.props.checkAllOrders(e.target.checked);
+  }
+  viewOrderDetail(){
+    this.refs.detail_modal.show();
   }
   onPageChange(page){
     this.setState({page_no: page});
   }
   componentDidMount() {
-    // var { getOrderList, orders } = this.props;
-    // getOrderList({page_no: orders.page_no, page_size: this.state.page_size});
+    var { getOrderList, orders } = this.props;
+    getOrderList({page_no: orders.page_no, page_size: this.state.page_size});
+
+    LazyLoad('noty');
   }
 }
 
@@ -169,7 +206,56 @@ function mapStateToProps({deliveryChange}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  return bindActionCreators(OrderManageActions, dispatch);
+  return bindActionCreators({...OrderActions, ...ChangeActions}, dispatch);
 }
 
-export default connect(mapStateToProps, OrderManageActions)(DeliverChangePannel);
+export default connect(mapStateToProps, mapDispatchToProps)(DeliverChangePannel);
+
+
+/***************   *******   *****************/
+/***************   子模态框   *****************/
+/***************   *******   *****************/
+
+class ChangeModal extends Component {
+  componentWillReceiveProps(nextProps){
+    if(nextProps['data-id'] != this.props['data-id']){
+      this.show();
+    }
+  }
+  render(){
+    var list = this.props.data;
+    var num = list.filter(n => n.checked).length;
+    return (
+      <StdModal onConfirm={this.onConfirm.bind(this)} submitting={this.props.change_submitting} ref="modal" title="批量转换操作">
+        <center><h5>您已同时勾选<span className="strong font-lg">{' ' + num + ' '}</span>个订单</h5></center>
+        <center><h5>进行转换</h5></center>
+      </StdModal>
+    )
+  }
+  show(){
+    this.refs.modal.show();
+  }
+  hide(){
+    this.refs.modal.hide();
+  }
+  onConfirm(){
+    var { exchangeOrders, data } = this.props;
+    var order_ids = [];
+    data.forEach(n => {
+      if(n.checked)
+        order_ids.push(n.order_id);
+    });
+    exchangeOrders(order_ids).done(function(){
+      this.hide();
+      noty('success', '转换成功！')
+    }.bind(this)).fail(() => {
+      noty('error', '转换异常')
+    })
+  }
+};
+
+ChangeModal.PropTypes = {
+  data: PropTypes.array.isRequired,
+  exchangeOrders: PropTypes.func.isRequired,
+  change_submitting: PropTypes.bool.isRequired,
+}

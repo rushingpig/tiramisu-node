@@ -1,22 +1,14 @@
 import { dateFormat } from 'utils/index';
 import { combineReducers } from 'redux';
-import { GET_ORDER_LIST, START_DATE_CHANGE, DISTRIBUTE_DATE_CHANGE,
-  CHECK_ORDER, GET_ORDER_DETAIL_PRODUCTS } from 'actions/order_manage';
+import * as OrderActions from 'actions/orders';
+import * as ChangeActions from 'actions/delivery_change';
 
-var _now = dateFormat(new Date(), 'yyyy-MM-dd');
-var initial_state = {
-  filter: {
-    start_date: _now,
-    delivery_date: _now,
-  },
+var filter_state = {
+  search_ing: false,
 }
 
-function filter(state = initial_state.filter, action){
+function filter(state = filter_state, action){
   switch (action.type) {
-    case START_DATE_CHANGE:
-      return {...state, ...{start_date: action.date}}
-    case DISTRIBUTE_DATE_CHANGE:
-      return {...state, ...{delivery_date: action.date}}
     default:
       return state
   }
@@ -26,18 +18,39 @@ var orders_state = {
   page_no: 0,
   total: 0,
   list: [],
-  selected_order_id: undefined,
+  active_order_id: undefined,
   check_order_info: null,
+
+  change_submitting: false,
 }
 function orders(state = orders_state, action){
   switch (action.type) {
-    case GET_ORDER_LIST:
+    case OrderActions.GET_ORDER_LIST:
       return {...state, ...action.data}
-
-    case CHECK_ORDER:
-      return {...state, selected_order_id: action.selected_order_id}
-    case GET_ORDER_DETAIL_PRODUCTS:
+    case OrderActions.CHECK_ORDER:
+      state.list.forEach(n => {
+        if(n.order_id == action.order_id)
+          n.checked = action.checked;
+      })
+      return {...state}
+    case OrderActions.CHECK_ALL_ORDERS:
+      state.list.forEach(n => {
+        n.checked = action.checked;
+      })
+      return {...state}
+    case OrderActions.ACTIVE_ORDER:
+      return {...state, active_order_id: action.active_order_id}
+    case OrderActions.GET_ORDER_DETAIL_PRODUCTS:
       return {...state, check_order_info: action.data}
+
+    case ChangeActions.ORDERS_EXCHANGE:
+      if(action.key == 0){
+        return {...state, change_submitting: true }
+      }else if(action.key == 1 || action.key == 2){
+        return {...state, change_submitting: false }
+      }else{
+        alert('nali?')
+      }
     default:
       return state;
   }

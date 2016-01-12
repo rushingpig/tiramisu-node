@@ -65,7 +65,7 @@ var DatePicker = React.createClass({
       <div style={{'display': 'inline-block'}}>
         <input ref="date" {...this.props['redux-form']}
            value={this.state.date} 
-           className={`form-control input-sm ${this.props.className}`} />
+           className={`form-control input-xs ${this.props.className}`} />
       </div>
     );
   }

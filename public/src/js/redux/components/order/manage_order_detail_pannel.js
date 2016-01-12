@@ -27,7 +27,7 @@ class TopHeader extends Component {
 
 class ManageOrderDetailPannel extends Component {
   render(){
-    var { mainForm, area, dispatch, products, params } = this.props;
+    var { mainForm, history_orders, area, dispatch, products, params } = this.props;
     return (
       <div className="order-manage">
         <TopHeader />
@@ -36,6 +36,7 @@ class ManageOrderDetailPannel extends Component {
           <div className="panel-body">
             <ManageOrderForm
               form-data={mainForm}
+              history_orders={history_orders}
               area={area} 
               editable={!!(params && params.id)}
               order_id={params.id}

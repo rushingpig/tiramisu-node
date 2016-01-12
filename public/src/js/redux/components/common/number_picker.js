@@ -21,7 +21,7 @@ var NumberPicker = React.createClass({
     return (
       <div className="number-picker form-inline">
         <a onClick={this.minus} href="javascript:;"><i className="fa fa-minus"></i></a>
-        <input value={this.state.value} onChange={this.input} className="form-control input-sm" />
+        <input value={this.state.value} onChange={this.input} className="form-control input-xs" />
         <a onClick={this.add} href="javascript:;"><i className="fa fa-plus"></i></a>
       </div>
     );

@@ -35,7 +35,7 @@ export default class SearchInput extends React.Component {
 SearchInput.defaultProps = {
   className: '',
   searching: false,
-  size: 'input-sm',
+  size: 'input-xs',
   placeholder: '',
   searchHandler: function(){}
 }

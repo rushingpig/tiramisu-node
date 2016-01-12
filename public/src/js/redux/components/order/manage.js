@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { reduxForm } from 'redux-form';
 
 import * as AreaActions from 'actions/area';
-import * as OrderManageActions from 'actions/order_manage';
+import * as OrderManageActions from 'actions/orders';
 import { getOrderSrcs } from 'actions/order_manage_form';
 
 import DatePicker from 'common/datepicker';
@@ -16,9 +16,10 @@ import history from 'history_instance';
 import LineRouter from 'common/line_router';
 import SearchInput from 'common/search_input';
 import { get_table_empty } from 'common/loading';
+import LazyLoad from 'utils/lazy_load';
 
 import OrderProductsDetail from 'common/order_products_detail';
-import ManageDetailModal from './manage_detail_modal';
+import ManageDetailModal from 'common/order_detail_modal';
 import ManageAlterStationModal from './manage_alter_station_modal';
 import OrderSrcsSelects from 'common/order_srcs_selects';
 
@@ -34,7 +35,8 @@ class TopHeader extends Component {
     )
   }
   addOrder(){
-    history.replace('/om/index/add');
+    // history.replace('/om/index/add');
+    history.push('/om/index/add');
   }
 }
 
@@ -71,7 +73,7 @@ class FilterHeader extends Component {
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <input {...keywords} className="form-control input-sm" placeholder="关键字" />
+          <input {...keywords} className="form-control input-xs" placeholder="关键字" />
           {' 开始时间'}
           <DatePicker redux-form={begin_time} className="short-input" />
           {' 配送时间'}
@@ -82,7 +84,7 @@ class FilterHeader extends Component {
           <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space"/>
           <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space"/>
           <Select {...status} options={all_order_status} default-text="订单状态" className="space"/>
-          <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-sm"><i className="fa fa-search"></i></button>
+          <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs"><i className="fa fa-search"></i></button>
         </div>
       </div>
     )
@@ -92,6 +94,7 @@ class FilterHeader extends Component {
       var { getProvinces, getOrderSrcs } = this.props.actions;
       getProvinces();
       getOrderSrcs();
+      LazyLoad('noty');
     },0)
   }
   onProvinceChange(callback, e){
@@ -134,7 +137,7 @@ class OrderRow extends Component {
   render(){
     var { props } = this;
     return (
-      <tr className={props.selected_order_id == props.order_id ? 'active' : ''} onClick={this.clickHandler.bind(this)}>
+      <tr className={props.active_order_id == props.order_id ? 'active' : ''} onClick={this.clickHandler.bind(this)}>
         <td>
           <a onClick={this.editHandler.bind(this)} href="javascript:;">[编辑]</a><br/>
           <a onClick={this.viewDetail.bind(this)} href="javascript:;">[查看]</a><br/>
@@ -174,10 +177,10 @@ class OrderRow extends Component {
     )
   }
   clickHandler(){
-    this.props.checkOrder(this.props.order_id);
+    this.props.activeOrder(this.props.order_id);
   }
   editHandler(e){
-    history.replace('/om/index/' + this.props.order_id);
+    history.push('/om/index/' + this.props.order_id);
     e.stopPropagation();
   }
   viewDetail(e){
@@ -200,12 +203,12 @@ class ManagePannel extends Component {
     }
   }
   render(){
-    var { filter, area, checkOrder, dispatch, getOrderList } = this.props;
-    var { page_no, total, list, check_order_info, selected_order_id } = this.props.orders;
+    var { filter, area, activeOrder, dispatch, getOrderList } = this.props;
+    var { page_no, total, list, check_order_info, active_order_id } = this.props.orders;
     var { viewDetail, alterStation } = this;
 
     var content = list.map((n, i) => {
-      return <OrderRow key={n.order_id} {...{...n, selected_order_id, viewDetail, alterStation, checkOrder}} />;
+      return <OrderRow key={n.order_id} {...{...n, active_order_id, viewDetail, alterStation, activeOrder}} />;
     })
     return (
       <div className="order-manage">
@@ -261,7 +264,12 @@ class ManagePannel extends Component {
         </div>
 
         { check_order_info
-          ? <OrderProductsDetail products={check_order_info.products} />
+          ? <div className="panel">
+              <div className="panel-body">
+                <div>订单管理 >> 产品详情</div>
+                <OrderProductsDetail products={check_order_info.products} />
+              </div>
+            </div>
           : null }
 
         <div ref="modal-wrap"></div>

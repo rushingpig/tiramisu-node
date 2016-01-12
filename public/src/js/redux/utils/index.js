@@ -8,6 +8,10 @@ function core_isObject(arg) {
   return typeof arg === 'object' && arg !== null;
 }
 
+function core_isString(arg) {
+  return typeof arg === 'string';
+}
+
 function core_isArray(arg) {
   return Object.prototype.toString.call(arg) === '[object Array]';
 }
@@ -148,6 +152,8 @@ function toFixed(target, digit){
 export default {
   core: {
     isArray: core_isArray,
+    isObject: core_isObject,
+    isString: core_isString,
   },
   form: {
     isNumber: form_isNumber,

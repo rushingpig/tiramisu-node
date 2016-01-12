@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {findDOMNode} from 'react-dom';
+import {render, findDOMNode} from 'react-dom';
 import { reduxForm } from 'redux-form';
 
 import MyMap from 'utils/MyMap';
@@ -9,6 +9,8 @@ import Pagination from 'common/pagination';
 import LazyLoad from 'utils/lazy_load';
 import Utils from 'utils/index';
 import history from 'history_instance';
+
+import HistoryOrders from './manage_history_orders';
 
 import { DELIVERY_TO_HOME, DELIVERY_TO_STORE,
   SELECT_DEFAULT_VALUE, INVOICE } from 'config/app.config';
@@ -77,8 +79,12 @@ class ManageAddForm extends Component {
         delivery_hours, //配送时段：几点到几点
         remarks,
         invoice,
-      }
+      },
+      history_orders,
     } = this.props;
+
+    var { getHistoryOrders, checkHistoryOrder } = this.props.actions;
+
     var { save_ing, save_success, submit_ing, 
       all_delivery_time, all_pay_status, all_order_srcs, 
       delivery_stations, all_pay_modes} = this.props['form-data'];
@@ -106,93 +112,92 @@ class ManageAddForm extends Component {
 
     return (
     <div>
-      <form>
-        <div className="form-group form-inline">
-          <label className="control-label">{'　配送方式：'}</label>
-          <label>
-            <input type="radio" 
-              {...delivery_type}
-              value={DELIVERY_TO_HOME}
-              checked={delivery_type.value == DELIVERY_TO_HOME} /> 配送上门</label>
-          {'　'}
-          <label>
-            <input type="radio" 
-              {...delivery_type}
-              value={DELIVERY_TO_STORE}
-              checked={delivery_type.value == DELIVERY_TO_STORE} /> 门店自提</label>
-        </div>
-        <div className="form-group form-inline">
-          <label>{'下单人姓名：'}</label>
-          <input {...owner_name} className={`form-control input-sm ${owner_name.error}`} type="text" />
-        </div>
-        <div className="form-group form-inline">
-          <label>{'下单人手机：'}</label>
-          <input {...owner_mobile} className={`form-control input-sm ${ owner_mobile.error }`} type="text" />{'　'}
-          <button className="btn btn-default btn-sm">查询历史订单</button>{' '}
-          <button className="btn btn-default btn-sm">拨号</button>
-        </div>
-        <div className="form-group form-inline">
-          <label>{'收货人姓名：'}</label>
-          <input {...recipient_name} className={`form-control input-sm ${recipient_name.error}`} type="text" />
-        </div>
-        <div className="form-group form-inline">
-          <label>{'收货人手机：'}</label>
-          <input {...recipient_mobile} className={`form-control input-sm ${recipient_mobile.error}`} type="text" />
-        </div>
-        <div className="form-group form-inline">
-          <label>{delivery_type.value == DELIVERY_TO_HOME ? '收货人地址：' : '　选择分店：'}</label>
-          <Select ref="province" options={provinces} {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} />{' '}
-          <Select ref="city" options={cities} {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} />{' '}
-          <Select ref="district" options={districts} {...regionalism_id} className={`${regionalism_id.error}`} />{' '}
-          <input ref="recipient_address" {...recipient_address} className={`form-control input-sm ${recipient_address.error}`} type="text" />
-        </div>
+      <div className="form-group form-inline">
+        <label className="control-label">{'　配送方式：'}</label>
+        <label>
+          <input type="radio" 
+            {...delivery_type}
+            value={DELIVERY_TO_HOME}
+            checked={delivery_type.value == DELIVERY_TO_HOME} /> 配送上门</label>
+        {'　'}
+        <label>
+          <input type="radio" 
+            {...delivery_type}
+            value={DELIVERY_TO_STORE}
+            checked={delivery_type.value == DELIVERY_TO_STORE} /> 门店自提</label>
+      </div>
+      <div className="form-group form-inline">
+        <label>{'下单人姓名：'}</label>
+        <input {...owner_name} className={`form-control input-xs ${owner_name.error}`} type="text" />
+      </div>
+      <div className="form-group form-inline">
+        <label>{'下单人手机：'}</label>
+        <input {...owner_mobile} ref="owner_mobile" className={`form-control input-xs ${ owner_mobile.error }`} type="text" />{'　'}
+        <button onClick={this.showHistoryModal.bind(this)} className="btn btn-default btn-xs">查询历史订单</button>{' '}
+        <button className="btn btn-default btn-xs">拨号</button>
+      </div>
+      <div className="form-group form-inline">
+        <label>{'收货人姓名：'}</label>
+        <input {...recipient_name} className={`form-control input-xs ${recipient_name.error}`} type="text" />
+      </div>
+      <div className="form-group form-inline">
+        <label>{'收货人手机：'}</label>
+        <input {...recipient_mobile} className={`form-control input-xs ${recipient_mobile.error}`} type="text" />
+      </div>
+      <div className="form-group form-inline">
+        <label>{delivery_type.value == DELIVERY_TO_HOME ? '收货人地址：' : '　选择分店：'}</label>
+        <Select ref="province" options={provinces} {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} />{' '}
+        <Select ref="city" options={cities} {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} />{' '}
+        <Select ref="district" options={districts} {...regionalism_id} className={`${regionalism_id.error}`} />{' '}
+        <input ref="recipient_address" {...recipient_address} className={`form-control input-xs ${recipient_address.error}`} type="text" />
+      </div>
+      {
+        delivery_type.value == DELIVERY_TO_HOME
+        ? <div className="form-group form-inline">
+            <label>{'标志性建筑：'}</label>
+            <input {...recipient_landmark} className={`form-control input-xs ${recipient_landmark.error}`} type="text" />
+          </div>
+        : null
+      }
+      <div className="form-group form-inline">
+        <label>{'　配送中心：'}</label>
+        <Select {...delivery_id} options={delivery_stations} className={`form-select ${delivery_id.error}`} />
+      </div>
+      <div className="form-group form-inline">
+        <label>{'　订单来源：'}</label>
         {
-          delivery_type.value == DELIVERY_TO_HOME
-          ? <div className="form-group form-inline">
-              <label>{'标志性建筑：'}</label>
-              <input {...recipient_landmark} className={`form-control input-sm ${recipient_landmark.error}`} type="text" />
-            </div>
-          : null
+          all_order_srcs.length == 1 //2级
+          ? <Select {...src_id} options={all_order_srcs[0]} key="order_srcs_level1" className={`form-select ${src_id.error}`} />
+          : [
+              (order_srcs_level2.length 
+                ? <Select value={selected_order_src_level1_id} options={all_order_srcs[0]} onChange={this.orderSrcsLevel1Change.bind(this)} key="order_srcs_level1" className="form-select" />
+                : <Select {...src_id} value={selected_order_src_level1_id} options={all_order_srcs[0]} onChange={this.orderSrcsLevel1Change.bind(this)} key="order_srcs_level1" className="form-select" />),
+              ' ',
+              (order_srcs_level2.length ? <Select {...src_id} options={order_srcs_level2} key="order_srcs_level2" className={`form-select ${src_id.error}`} />  : null)
+            ]
         }
-        <div className="form-group form-inline">
-          <label>{'　配送中心：'}</label>
-          <Select {...delivery_id} options={delivery_stations} className={`form-select ${delivery_id.error}`} />
-        </div>
-        <div className="form-group form-inline">
-          <label>{'　订单来源：'}</label>
-          {
-            all_order_srcs.length == 1 //2级
-            ? <Select {...src_id} options={all_order_srcs[0]} key="order_srcs_level1" className={`form-select ${src_id.error}`} />
-            : [
-                (order_srcs_level2.length 
-                  ? <Select value={selected_order_src_level1_id} options={all_order_srcs[0]} onChange={this.orderSrcsLevel1Change.bind(this)} key="order_srcs_level1" className="form-select" />
-                  : <Select {...src_id} value={selected_order_src_level1_id} options={all_order_srcs[0]} onChange={this.orderSrcsLevel1Change.bind(this)} key="order_srcs_level1" className="form-select" />),
-                ' ',
-                (order_srcs_level2.length ? <Select {...src_id} options={order_srcs_level2} key="order_srcs_level2" className={`form-select ${src_id.error}`} />  : null)
-              ]
-          }
-        </div>
-        <div className="form-group form-inline">
-          <label>{'　支付方式：'}</label>
-         <Select {...pay_modes_id} options={all_pay_modes} className={`form-select ${pay_modes_id.error}`} />
-        </div>
-        <div className="form-group form-inline">
-          <label>{'　支付状态：'}</label>
-          <Select {...pay_status} options={all_pay_status} className={`form-select ${pay_status.error}`} />
-        </div>
-        <div className="form-group form-inline">
-          <label>{'　配送时间：'}</label>
-          <DatePicker redux-form={delivery_date} className={`${delivery_date.error}`}/>{' '}
-          <Select {...delivery_hours} options={all_delivery_time} className={`${delivery_hours.error}`} />
-        </div>
-        <div className="form-group form-inline">
-          <label>{'　　　备注：'}</label>
-          <textarea {...remarks} className="form-control input-sm" rows="2" cols="40"></textarea>
-          {'　　'}
-          <label>{'发票备注：'}</label>
-          <Select {...invoice} options={invoices} className={`${invoice.error}`} no-default="true" />
-        </div>
-      </form>
+      </div>
+      <div className="form-group form-inline">
+        <label>{'　支付方式：'}</label>
+       <Select {...pay_modes_id} options={all_pay_modes} className={`form-select ${pay_modes_id.error}`} />
+      </div>
+      <div className="form-group form-inline">
+        <label>{'　支付状态：'}</label>
+        <Select {...pay_status} options={all_pay_status} className={`form-select ${pay_status.error}`} />
+      </div>
+      <div className="form-group form-inline">
+        <label>{'　配送时间：'}</label>
+        <DatePicker redux-form={delivery_date} className={`${delivery_date.error}`}/>{' '}
+        <Select {...delivery_hours} options={all_delivery_time} className={`${delivery_hours.error}`} />
+      </div>
+      <div className="form-group form-inline">
+        <label>{'　　　备注：'}</label>
+        <textarea {...remarks} className="form-control input-xs" rows="2" cols="40"></textarea>
+        {'　　'}
+        <label>{'发票备注：'}</label>
+        <Select {...invoice} options={invoices} className={`${invoice.error}`} no-default="true" />
+      </div>
+
       <hr className="dotted" />
       {this.props.children}
       <div className="form-group">
@@ -203,19 +208,25 @@ class ManageAddForm extends Component {
                   onClick={handleSubmit(this._check.bind(this, this.handleSaveOrder))} 
                   disabled={save_ing} 
                   data-submitting={save_ing} 
-                  className="btn btn-theme btn-sm">保存信息</button>,
+                  className="btn btn-theme btn-xs">保存信息</button>,
               '　　',
               <button
                   onClick={handleSubmit(this._check.bind(this, this.handleSubmitOrder))}
-                  disabled={save_ing} className="btn btn-theme btn-sm">保存</button>
+                  disabled={save_ing} className="btn btn-theme btn-xs">保存</button>
             ]
           : <button 
                 onClick={handleSubmit(this._check.bind(this, this.handleCreateOrder))} 
                 disabled={save_ing} 
                 data-submitting={save_ing} 
-                className="btn btn-theme btn-sm">生成新订单</button>
+                className="btn btn-theme btn-xs">生成新订单</button>
         }
       </div>
+
+      <HistoryOrders 
+          ref="history_orders_modal"
+          phone_num={owner_mobile.value} 
+          data={history_orders}
+          {...{getHistoryOrders, checkHistoryOrder}} />
     </div>
     )
   }
@@ -240,7 +251,7 @@ class ManageAddForm extends Component {
   handleCreateOrder(dispatch, form_data){
     dispatch(this.props.actions.createOrder(form_data)).done(function(){
       Utils.noty('success', '保存成功');
-      history.replace('/om/index');
+      history.push('/om/index');
     }).fail(function(){
       Utils.noty('error', '保存异常');
     });
@@ -255,7 +266,7 @@ class ManageAddForm extends Component {
     form_data.order_id = this.props.order_id;
     dispatch(this.props.actions.submitOrder(form_data)).done(function(){
       Utils.noty('success', '已成功提交！');
-      history.replace('/om/index');
+      history.push('/om/index');
     }).fail(function(){
       Utils.noty('error', '操作异常');
     });
@@ -327,6 +338,9 @@ class ManageAddForm extends Component {
   }
   addProducts(){
     this.refs.productsModal.show();
+  }
+  showHistoryModal(){
+    this.refs.history_orders_modal.show();
   }
 }
 

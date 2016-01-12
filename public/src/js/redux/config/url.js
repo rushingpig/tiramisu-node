@@ -44,6 +44,9 @@ const URL = (function(){
     //产品
     categories: '/product/categories',
     products: '/products',
+
+    //送货管理
+    order_exchange: '/orders/exchange',
   };
 
   for(var a in url){

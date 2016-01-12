@@ -1,13 +1,19 @@
 import { GET, TEST } from 'utils/request'; //Promise
 import Url from 'config/url';
 import { getValues } from 'redux-form';
+import { NO_MORE_CODE } from 'config/app.config';
+import { noty } from 'utils/index';
 
 export const GET_ORDER_LIST = 'GET_ORDER_LIST';
 export function getOrderList(data){
   return (dispatch, getState) => {
     var filter_data = getValues(getState().form.order_manage_filter);
-    debugger;
-    return GET(Url.orders.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch);
+    return GET(Url.orders.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch)
+      .fail(function(msg, code){
+        if(code == NO_MORE_CODE){
+          noty('alert', '没有查询到任何结果');
+        }
+      });
   }
   // return TEST({
   //   total: 1,
@@ -40,13 +46,31 @@ export function getOrderList(data){
   // }, GET_ORDER_LIST);
 }
 
-export const CHECK_ORDER = 'CHECK_ORDER';
+export const CHECK_ALL_ORDERS = 'CHECK_ALL_ORDERS';
+export function checkAllOrders(checked){
+  return {
+    type: CHECK_ALL_ORDERS,
+    checked,
+  }
+}
+
+export const CHECK_ORDER = 'CHECK_ORDER';  // 用于某些情况下选中订单 做批量操作
+export function checkOrder(order_id, checked){
+  return {
+    type: CHECK_ORDER,
+    order_id,
+    checked,
+  }
+}
+
+
+export const ACTIVE_ORDER = 'ACTIVE_ORDER';  // 激活订单，用于查阅该订单详情
 export const GET_ORDER_DETAIL_PRODUCTS = 'GET_ORDER_DETAIL_PRODUCTS';
-export function checkOrder(id){
+export function activeOrder(id){
   return dispatch => {
     dispatch({
-      type: CHECK_ORDER,
-      selected_order_id: id
+      type: ACTIVE_ORDER,
+      active_order_id: id
     })
     return GET(Url.order_detail.toString(id), null, GET_ORDER_DETAIL_PRODUCTS)(dispatch);
   }

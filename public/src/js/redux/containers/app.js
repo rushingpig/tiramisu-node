@@ -4,6 +4,8 @@ import {Entry, ComingSoon, NoPage} from '../components/body';
 import OrderPannel from '../components/order/manage';
 import OrderDetailPannel from '../components/order/manage_order_detail_pannel';
 import DeliveryChangePannel from '../components/delivery/change';
+import DeliveryManagePannel from '../components/delivery/delivery_manage';
+import DeliveryDistributePannel from '../components/delivery/delivery_distribute';
 import history from 'history_instance';
 import {Router, Route, IndexRoute} from 'react-router';
 
@@ -23,9 +25,9 @@ export default class App extends Component {
           </Route>
 
           <Route path="dm">
-            <Route path="process" component={DeliveryChangePannel} />
-            <Route path="delivery" component={ComingSoon} />
-            <Route path="distribute" component={ComingSoon} />
+            <Route path="change" component={DeliveryChangePannel} />
+            <Route path="delivery" component={DeliveryManagePannel} />
+            <Route path="distribute" component={DeliveryDistributePannel} />
             <Route path="review" component={ComingSoon} />
           </Route>
 

@@ -23,31 +23,26 @@ export default class OrderProductsDetail extends Component {
       return ProductRow(n);
     })
     return (
-      <div className="panel">
-        <div className="panel-body">
-          <div>订单管理 >> 产品详情</div>
-          <div className="table-responsive">
-            <table className="table text-center">
-              <thead>
-              <tr>
-                <th>产品名称</th>
-                <th>原价</th>
-                <th>规格</th>
-                <th>数量</th>
-                <th>实际售价</th>
-                <th>巧克力牌</th>
-                <th>祝福贺卡</th>
-                <th>产品图册</th>
-                <th>自由拼名称</th>
-                <th>自由拼描述</th>
-              </tr>
-              </thead>
-              <tbody>
-                {products}
-              </tbody>
-            </table>
-          </div>
-        </div>
+      <div className="table-responsive">
+        <table className="table text-center">
+          <thead>
+          <tr>
+            <th>产品名称</th>
+            <th>原价</th>
+            <th>规格</th>
+            <th>数量</th>
+            <th>实际售价</th>
+            <th>巧克力牌</th>
+            <th>祝福贺卡</th>
+            <th>产品图册</th>
+            <th>自由拼名称</th>
+            <th>自由拼描述</th>
+          </tr>
+          </thead>
+          <tbody>
+            {products}
+          </tbody>
+        </table>
       </div>
     )
   }

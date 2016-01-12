@@ -4,7 +4,10 @@
 /**************************/
 body
   background: #fff
-  font-family: 'sans-serif'
+  // font-family: 'sans-serif'
+  font-family: "open sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 13px;
+  color: #676a6c;
   overflow: hidden
   perspective: 1000
   &.login_hide
@@ -37,16 +40,27 @@ a
   &:hover
     @extend .no-text-deco
     color: $theme-font-color
+  &:focus
+    @extend .no-text-deco
+    outline: none
 
 /**************************/
 /********* 修饰类 **********/
 /**************************/
 .inline-block
   display: inline-block !important
+.mg-15
+  margin-bottom: 15px
 
 .space
   margin-left: 6px
   margin-right: 6px
+.space-right
+  margin-right: 6px
+.space-left
+  margin-left: 6px
+.pl-20
+  padding-left: 20px
 .round
   @include border-radius(5px)
 .bordered
@@ -61,6 +75,10 @@ a
   white-space: nowrap
 .gray
   color: #9C9A9A !important
+.font-sm
+  font-size: 12px !important
+.font-lg
+  font-size: 15px !important
 
 /**************************/
 /********* 组件类 **********/
@@ -81,6 +99,8 @@ a
     cursor: default
 .form-control.short-input
   width: 85px
+.form-control.long-input
+  width: 200px
 
 .search-input
   position: relative
@@ -116,10 +136,12 @@ hr.dotted
     color: #fff
     background-color: $btn-color
     border-color: $btn-color
-  &.btn-theme:hover, &.btn-theme:focus, &.btn-theme:active.focus, &.btn-theme.active:hover, &.btn-theme.active:focus, &.btn-theme.active.focus, .open > &.btn-theme.dropdown-toggle:hover, .open > &.btn-theme.dropdown-toggle:focus, .open > &.btn-theme.dropdown-toggle.focus
-    color: #fff
-    background-color: darken($btn-color, 5)
-    border-color: darken($btn-color, 8)
+  &.btn-theme:hover, &.btn-theme:focus, &.btn-theme.active:focus, &.btn-theme.active:hover, &.btn-theme.active.focus, .open > &.btn-theme.dropdown-toggle:hover, .open > &.btn-theme.dropdown-toggle:focus, .open > &.btn-theme.dropdown-toggle.focus
+    background-color: darken($btn-color, 8)
+    border-color: darken($btn-color, 12)
+  &.btn-theme:active
+    background-color: darken($btn-color, 15)
+    border-color: darken($btn-color, 20)
   &.btn-theme[disabled]:hover
     background-color: $btn-color
   &[data-submitting=true], &[data-submitting=true]:hover, &[data-submitting=true]:active, &[data-submitting=true]:focus
@@ -154,4 +176,10 @@ hr.dotted
 .table tbody tr.clickable
   cursor: pointer
   user-select: none
+
+.time-input
+  @extend .tc
+  width: 30px !important
+  padding-left: 2px
+  padding-right: 2px
 

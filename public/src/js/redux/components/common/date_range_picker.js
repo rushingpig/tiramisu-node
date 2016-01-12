@@ -45,7 +45,7 @@ var DateRangePicker = React.createClass({
   },
   onChange: function() {}, //占位
   render: function(){
-    var classnames = "form-control input-sm input-nm-w " + this.props.className;
+    var classnames = "form-control input-xs input-nm-w " + this.props.className;
     return (
       <div style={{'display': 'inline-block'}}>
         <input ref="begin" value={this.props.begin} onChange={this.onChange} className={classnames} />{' ~ '}

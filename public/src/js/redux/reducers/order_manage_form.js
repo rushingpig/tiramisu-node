@@ -1,12 +1,7 @@
 import { combineReducers } from 'redux';
 import { area } from './area_select';
-import { GOT_ORDER_SRCS, GOT_DELIVERY_STATIONS, GOT_PAY_MODES,
-  SAVE_ORDER_INFO_ING, SAVE_ORDER_INFO_SUCCESS, SAVE_ORDER_INFO_FAIL,
-  CONFIRM_PRODUCT_ATTR_CHANGE,
-  GOT_ORDER_BY_ID, SUBMIT_ORDER_ING, SUBMIT_ORDER_COMPLETE } from 'actions/order_manage_form';
-import { GOT_CATEGORIES, SEARCH_PRODUCTS, SELECT_PRODUCT, 
-  CONFIRM_ALL_SELECTED_PRODUCTS, DELETE_SELECTED_PRODUCT, 
-  CANCEL_ALL_SELECTED_PRODUCTS, CHANGE_PRODUCT_NUM, DELETE_CONFIRM_PRODUCT } from 'actions/order_products';
+import * as FormActions from 'actions/order_manage_form';
+import * as OrderProductsActions from 'actions/order_products';
 import { UPDATE_PATH } from 'redux-simple-router';
 import * as AreaActions from 'actions/area';
 import { map } from 'utils/index';
@@ -41,7 +36,7 @@ function mainForm(state = initial_state, action) {
   switch(action.type) {
     case UPDATE_PATH:
       return initial_state;
-    case GOT_ORDER_SRCS:
+    case FormActions.GOT_ORDER_SRCS:
       let l1 = [], l2 = [];
       //level最多为2级
       action.data.forEach(n => {
@@ -53,24 +48,24 @@ function mainForm(state = initial_state, action) {
         }
       })
       return {...state, all_order_srcs: !l2.length ? [l1] : [l1, l2] }
-    case GOT_DELIVERY_STATIONS:
+    case FormActions.GOT_DELIVERY_STATIONS:
       return {...state, delivery_stations: map(action.data, (text, id) => ({id, text})) }
-    case GOT_PAY_MODES:
+    case FormActions.GOT_PAY_MODES:
       return {...state, all_pay_modes: map(action.data, (text, id) => ({id, text})) }
 
-    case SAVE_ORDER_INFO_ING:
+    case FormActions.SAVE_ORDER_INFO_ING:
       return {...state, save_ing: true }
-    case SAVE_ORDER_INFO_SUCCESS:
+    case FormActions.SAVE_ORDER_INFO_SUCCESS:
       return {...state, save_success: true, save_ing: false }
-    case SAVE_ORDER_INFO_FAIL:
+    case FormActions.SAVE_ORDER_INFO_FAIL:
       return {...state, save_success: false, save_ing: false }
 
-    case SUBMIT_ORDER_ING:
+    case FormActions.SUBMIT_ORDER_ING:
       return {...state, submit_ing: true}
-    case SUBMIT_ORDER_COMPLETE:
+    case FormActions.SUBMIT_ORDER_COMPLETE:
       return {...state, submit_ing: true}
 
-    case GOT_ORDER_BY_ID:
+    case FormActions.GOT_ORDER_BY_ID:
       return (function(){
         var {data} = action;
         var tmp = data.delivery_time.split(' ');
@@ -104,9 +99,9 @@ function products_choosing(state = products_choosing_state, action){
   switch(action.type){
     case UPDATE_PATH:
       return products_choosing_state;
-    case GOT_CATEGORIES:
+    case OrderProductsActions.GOT_CATEGORIES:
       return {...state, all_categories: map(action.data, (text, id) => ({id, text}))};
-    case SEARCH_PRODUCTS:
+    case OrderProductsActions.SEARCH_PRODUCTS:
       //如果检索到已被选商品，那么则要标明已被勾选
       state.selected_list.forEach(function(n){
         for(var i=0,len=action.data.list.length; i<len; i++){
@@ -118,7 +113,7 @@ function products_choosing(state = products_choosing_state, action){
         }
       });
       return {...state, search_results: action.data};
-    case SELECT_PRODUCT:
+    case OrderProductsActions.SELECT_PRODUCT:
       sku_id = action.data.sku_id;
       if(state.selected_list.some(n => n.sku_id == sku_id)){
         return state;
@@ -133,7 +128,7 @@ function products_choosing(state = products_choosing_state, action){
       });
       action.data.num = 1;  //默认1
       return {...state, selected_list: [...state.selected_list, action.data] };
-    case DELETE_SELECTED_PRODUCT:
+    case OrderProductsActions.DELETE_SELECTED_PRODUCT:
       sku_id = action.data.sku_id;
       state.search_results.list.forEach(function(n){
         n.skus.forEach(function(m){
@@ -144,7 +139,7 @@ function products_choosing(state = products_choosing_state, action){
       });
       new_selected_list = [...state.selected_list].filter(n => n.sku_id != sku_id);
       return {...state, selected_list: new_selected_list};
-    case CHANGE_PRODUCT_NUM:
+    case OrderProductsActions.CHANGE_PRODUCT_NUM:
       let { num } = action;
       sku_id = action.sku_id;
       new_selected_list = clone(state.selected_list);
@@ -155,7 +150,7 @@ function products_choosing(state = products_choosing_state, action){
       });
       return {...state, selected_list: new_selected_list};
 
-    case CONFIRM_ALL_SELECTED_PRODUCTS:
+    case OrderProductsActions.CONFIRM_ALL_SELECTED_PRODUCTS:
       return (function(){
         var base = {
           discount_price: 0,
@@ -174,10 +169,10 @@ function products_choosing(state = products_choosing_state, action){
         return {...state, confirm_list: confirm_list };
       })();
 
-    case CANCEL_ALL_SELECTED_PRODUCTS:
+    case OrderProductsActions.CANCEL_ALL_SELECTED_PRODUCTS:
       return {...state, selected_list: [...clone(state.confirm_list)] };
 
-    case CONFIRM_PRODUCT_ATTR_CHANGE:
+    case OrderProductsActions.CONFIRM_PRODUCT_ATTR_CHANGE:
       sku_id = action.data.sku_id;
       //突变
       state.confirm_list.forEach(function(n){
@@ -187,7 +182,7 @@ function products_choosing(state = products_choosing_state, action){
       });
       return {...state};
 
-    case DELETE_CONFIRM_PRODUCT:
+    case OrderProductsActions.DELETE_CONFIRM_PRODUCT:
       sku_id = action.data.sku_id;
       // 突变
       state.search_results.list.forEach(function(n){
@@ -203,8 +198,29 @@ function products_choosing(state = products_choosing_state, action){
       new_selected_list.splice(new_selected_list.findIndex( n => n.sku_id == sku_id), 1);
       return {...state, confirm_list: new_confirm_list, selected_list: new_selected_list }
 
-    case GOT_ORDER_BY_ID:
+    case OrderProductsActions.GOT_ORDER_BY_ID:
       return {...state, confirm_list: action.data.products, selected_list: action.data.products };
+    default:
+      return state;
+  }
+}
+
+var history_orders_state = {
+  page_no: 0,
+  total: 0,
+  list: [],
+  active_order_id: undefined,
+  check_order_info: null,
+}
+function history_orders(state = history_orders_state, action){
+  switch (action.type) {
+    case FormActions.GET_HISTORY_ORDERS:
+      return {...state, ...action.data}
+
+    case FormActions.CHECK_HISTORY_ORDER:
+      return {...state, active_order_id: action.active_order_id}
+    case FormActions.GET_HISTORY_ORDER_DETAIL_PRODUCTS:
+      return {...state, check_order_info: action.data}
     default:
       return state;
   }
@@ -213,7 +229,8 @@ function products_choosing(state = products_choosing_state, action){
 const orderAddReducer = combineReducers({
   area: area(true),
   mainForm,
-  products: products_choosing
+  products: products_choosing,
+  history_orders,
 })
 
 export default orderAddReducer

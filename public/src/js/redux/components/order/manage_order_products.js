@@ -13,7 +13,7 @@ export default class ManageAddProducts extends Component {
     return (
       <div>
         <div className="form-group">
-          选择产品：<button onClick={this.addProducts.bind(this)} className="btn btn-sm btn-theme">添加</button>
+          选择产品：<button onClick={this.addProducts.bind(this)} className="btn btn-xs btn-theme">添加</button>
         </div>
         <div className="table-responsive">
           <table className="table text-center">

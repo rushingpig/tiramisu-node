@@ -12,7 +12,8 @@ var res_obj = require('../../../util/res_obj'),
     TiramisuError = require('../../../error/tiramisu_error'),
     schema = require('../../../schema'),
     dao = require('../../../dao'),
-    productDao = dao.product;
+    ProductDao = dao.product,
+    productDao = new ProductDao();
 
 function ProductService() {
 

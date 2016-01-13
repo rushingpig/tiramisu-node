@@ -93,4 +93,4 @@ ProductDao.prototype.findProductsByOrderId = function(orderId){
     return baseDao.select(sql,params);
 };
 
-module.exports = new ProductDao();
+module.exports = ProductDao;

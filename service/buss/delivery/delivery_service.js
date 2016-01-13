@@ -7,8 +7,10 @@
  */
 "use strict";
 var dao = require('../../../dao'),
-    deliveryDao = dao.delivery,
-    orderDao = dao.order,
+    DeliveryDao = dao.delivery,
+    OrderDao = dao.order,
+    deliveryDao = new DeliveryDao(),
+    orderDao = new OrderDao(),
     Constant = require('../../../common/Constant'),
     res_obj = require('../../../util/res_obj'),
     systemUtils = require('../../../common/SystemUtils'),

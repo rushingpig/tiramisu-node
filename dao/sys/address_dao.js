@@ -11,7 +11,7 @@ var tables = require('../../config').tables;
 var baseDao = require('../base_dao'),
     del_flag = baseDao.del_flag;
 function AddressDao(table){
-    this.table = table;
+    this.table = table || tables.dict_regionalism;
     this.baseSql = util.format('select ?? from %s where 1=1 and level_type = ? and del_flag = ?',this.table);
     this.baseColumns = ['id','name'];
 }
@@ -29,4 +29,4 @@ AddressDao.prototype.findDistrictsByCityId = function(cityId){
 };
 
 
-module.exports = new AddressDao(tables.dict_regionalism);
+module.exports = AddressDao;

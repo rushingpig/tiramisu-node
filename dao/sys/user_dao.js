@@ -10,7 +10,7 @@ var baseDao = require('../base_dao');
 var tables = require('../../config').tables;
 var sys_user = tables.sys_user;
 function UserDao(table){
-    this.table = table;
+    this.table = table || tables.sys_user;
 }
 
 UserDao.prototype.findByUsername = (username,password)=>{
@@ -19,4 +19,4 @@ UserDao.prototype.findByUsername = (username,password)=>{
     return baseDao.select(sql,params);
 };
 
-module.exports = new UserDao(tables.sys_user);
+module.exports = UserDao;

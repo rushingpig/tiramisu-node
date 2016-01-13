@@ -384,5 +384,5 @@ OrderDao.prototype.findOrderHistory = function(query_data){
     });
 
 };
-module.exports = new OrderDao();
+module.exports = OrderDao;
 

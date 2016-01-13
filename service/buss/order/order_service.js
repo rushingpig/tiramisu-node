@@ -21,7 +21,8 @@ var res_obj = require('../../../util/res_obj'),
     printApply = schema.printApply,
     del_flag = require('../../../dao/base_dao').del_flag,
     dao = require('../../../dao'),
-    orderDao = dao.order;
+    OrderDao = dao.order,
+    orderDao = new OrderDao();
 
 function OrderService() {
 }

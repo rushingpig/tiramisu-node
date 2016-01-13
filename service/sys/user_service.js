@@ -6,8 +6,9 @@
  * @version: v0.0.1
  */
 "use strict";
-var dao = require('../../dao');
-var userDao = dao.user;
+var dao = require('../../dao'),
+    UserDao = dao.user,
+    userDao = new UserDao();
 
 function UserService(){
 

@@ -7,7 +7,8 @@
  */
 "use strict";
 var dao = require('../../dao'),
-    addressDao = dao.address,
+    AddressDao = dao.address,
+    addressDao = new AddressDao(),
     systemUtils = require('../../common/SystemUtils'),
     res_obj = require('../../util/res_obj');
 function AddressService() {

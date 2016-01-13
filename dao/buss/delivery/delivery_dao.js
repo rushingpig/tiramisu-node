@@ -143,4 +143,4 @@ DeliveryDao.prototype.findDeliverymansByStation = function(userId){
     return baseDao.select(sql,params);
 
 };
-module.exports = new DeliveryDao();
+module.exports = DeliveryDao;

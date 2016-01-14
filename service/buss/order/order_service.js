@@ -39,7 +39,7 @@ OrderService.prototype.getOrderSrcList = (req, res, next)=> {
         }
         res.api(results);
     }));
-}
+};
 /**
  * add an order record in the table
  * @param req
@@ -178,6 +178,7 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
             products : []
         };
         for(let curr of results){
+            data.order_id = req.params.orderId;
             data.delivery_id = curr.delivery_id;
             data.delivery_name = curr.delivery_name;
             data.delivery_time = curr.delivery_time;
@@ -516,7 +517,7 @@ OrderService.prototype.listOrders = (entrance)=>{
                     city : curr.merger_name.split(',')[2],
                     created_by : curr.created_by,
                     created_time : curr.created_time,
-                    delivery_name : delivery_adds.join(','),
+                    delivery_name : delivery_adds.join(',') +  curr.address,
                     delivery_time : curr.delivery_time,
                     delivery_type : Constant.DTD[curr.delivery_type],
                     discount_price : curr.discount_price,
@@ -524,13 +525,13 @@ OrderService.prototype.listOrders = (entrance)=>{
                     is_submit : Constant.YESORNOD[curr.is_submit],
                     merchant_id : curr.merchant_id,
                     coupon : curr.coupon,
-                    is_print : curr.is_print,
+                    print_status : curr.print_status,
                     order_id : systemUtils.getShowOrderId(curr.id,curr.created_time),
                     original_price : curr.original_price,
                     owner_mobile : curr.owner_mobile,
                     owner_name : curr.owner_name,
                     pay_status : Constant.PSD[curr.pay_status],
-                    recipient_address : curr.address,
+                    recipient_address :delivery_adds.join(',') +  curr.address,
                     recipient_mobile : curr.recipient_mobile,
                     recipient_name : curr.recipient_name,
                     remarks : curr.remarks,
@@ -538,8 +539,15 @@ OrderService.prototype.listOrders = (entrance)=>{
                     status : Constant.OSD[curr.status],
                     updated_by : curr.updated_by,
                     updated_time : curr.updated_time,
-                    submit_time : curr.submit_time
+                    submit_time : curr.submit_time,
+                    deliveryman_name : curr.deliveryman_name,
+                    deliveryman_mobile : curr.deliveryman_mobile
                 };
+                if(curr.delivery_type == Constant.DT.TAKETHEIR){
+                    delete list_obj.recipient_address;
+                }else if(curr.delivery_type == Constant.DT.DELIVERY){
+                    delete list_obj.delivery_name;
+                }
                 data.list.push(list_obj);
             }
             res.api(data);
@@ -555,7 +563,7 @@ OrderService.prototype.listOrders = (entrance)=>{
  * @param next
  */
 OrderService.prototype.history = (req,res,next)=>{
-    req.checkParams('orderId').notEmpty().isLength(16);
+    req.checkParams('orderId').isOrderId();
     req.checkQuery('sort_type').notEmpty();
     req.checkQuery('page_no').isInt();
     req.checkQuery('page_size').isInt();
@@ -566,7 +574,7 @@ OrderService.prototype.history = (req,res,next)=>{
     }
     let query_data = {
         order_id : systemUtils.getDBOrderId(req.params.orderId),
-        sort_type : req.query.sort_type,
+        sort_type : req.query.sort_type
     };
     let promise = orderDao.findOrderHistory(systemUtils.assemblePaginationObj(req,query_data)).then((_res)=>{
         if(toolUtils.isEmptyArray(_res.result) || toolUtils.isEmptyArray(_res._result)){
@@ -581,6 +589,37 @@ OrderService.prototype.history = (req,res,next)=>{
         res.api(res_data);
     });
     systemUtils.wrapService(res,next,promise);
+};
+/**
+ * cancel the order
+ * @param req
+ * @param res
+ * @param next
+ */
+OrderService.prototype.cancelOrder = (req,res,next)=>{
+    req.checkParams('orderId').notEmpty().isLength(16);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let orderId = systemUtils.getDBOrderId(req.params.orderId);
+    let promise = orderDao.findOrderById(orderId).then((_res)=> {
+        if (toolUtils.isEmptyArray(_res)) {
+            throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
+        } else if (updated_time !== _res[0].updated_time) {
+            throw new TiramisuError(res_obj.OPTION_EXPIRED);
+        }
+        let order_update_obj = {
+            status : Constant.OS.CANCEL
+        };
+        return orderDao.updateOrder(systemUtils.assembleUpdateObj(req,order_update_obj),orderId);
+    }).then((result)=>{
+        if(parseInt(result) <= 0){
+            throw new TiramisuError(res_obj.FAIL);
+        }
+        res.api();
+    });
 };
 
 

@@ -81,7 +81,7 @@ BaseDao.insert = (sql, params,noInsertId) => {
 /**
  * example:
  * <li>let sql = "insert into table_name(column1,column2) values ?"</li>
- * <li>let params = [[['foo1','bar1'],['foo2','bar2']] ===> ('foo1','bar1'),('foo2','bar2')</li>
+ * <li>let params = [['foo1','bar1'],['foo2','bar2']] ===> ('foo1','bar1'),('foo2','bar2')</li>
  * @param sql
  * @param params
  * @returns {Promise}
@@ -152,6 +152,7 @@ BaseDao.voidTrans = function (sqls,params) {
                 }
                 trans.commit();
                 connection.release();
+                resolve();
             }
         });
     });
@@ -166,11 +167,15 @@ BaseDao.trans = function(){
             if (err) {
                 reject(err);
             } else {
-                queues(connection, config.mysql_options.debug);
-                let trans = connection.startTransaction();
-                resolve(trans);
-                trans.execute();
+                //queues(connection, config.mysql_options.debug);
+                //let trans = connection.startTransaction();
+                //resolve(trans);
+                //trans.commit();
+                //trans.execute();
                 connection.release();
+                connection.query('select * from buss_city',()=>{
+                    console.log('use connection after release...');
+                });
             }
         });
     });

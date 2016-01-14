@@ -8,6 +8,14 @@
 "use strict";
 const Constant = {};
 /**
+ * the delivery type
+ * @type {{}}
+ */
+Constant.DT = {
+    TAKETHEIR : 'TAKETHEIR',
+    DELIVERY : 'DELIVERY'
+};
+/**
  * the order status
  * @type {{}}
  */
@@ -75,9 +83,19 @@ Constant.OSR = {
  * @type {{}}
  */
 Constant.OPS = {
-    UNCHECKED : 'UNCHECKED',    //  未审核
-    CHECKED : 'CHECKED',    // 审核通过
-    CHECKFAILED : 'CHECKFAILED' // 审核不通过
+    UNAUDIT : 'UNAUDIT',    //  未审核
+    AUDITED : 'AUDITED',    // 审核通过
+    AUDITFAILED : 'AUDITFAILED' // 审核不通过
+};
+/**
+ * print status
+ * @type {{PRINTABLE: string, UNPRINTABLE: string, AUDITING: string, REPRINTABLE: string}}
+ */
+Constant.PS = {
+    PRINTABLE : 'PRINTABLE',
+    UNPRINTABLE : 'UNPRINTABLE',
+    AUDITING : 'AUDITING',
+    REPRINTABLE : 'REPRINTABLE'
 };
 
 

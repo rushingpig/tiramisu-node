@@ -10,11 +10,23 @@
 module.exports = {
     OK : {
         code : '0000',
-        msg  : 'everything goes well -> enjoy yourself...',
+        msg  : 'everything goes well -> enjoy yourself...'
     },
     INVALID_USERNAME_OR_PASSWORD : {
         code : '1000',
-        msg  : '用户名或密码输入有误,请重新输入',
+        msg  : '用户名或密码输入有误,请重新输入...'
+    },
+    ERROR_VALIDATE_CODE : {
+        code : '10001',
+        msg : '验证码输入有误,请重新输入...'
+    },
+    ORDER_AUDITING : {
+        code : '2000',
+        msg : '有订单打印正在审核中,请等待审核通过...'
+    },
+    ORDER_NO_PRINT : {
+        code : '2001',
+        msg : '有订单打印不被允许,请重新申请打印...'
     },
     SESSION_TIME_OUT : {
         code : '1001',

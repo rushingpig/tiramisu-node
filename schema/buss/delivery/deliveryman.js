@@ -12,5 +12,11 @@ module.exports = {
     },
     'deliveryman_id' : {
         isInt : true
+    },
+    'deliveryman_name' : {
+        notEmpty : true
+    },
+    'deliveryman_mobile' : {
+        notEmpty : true
     }
 };

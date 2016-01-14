@@ -9,9 +9,10 @@
 var util = require('util'),
     resObj = require('../util/res_obj');
 
-function TiramisuError(res_obj,filename,lineNumber){
+function TiramisuError(res_obj,msg,filename,lineNumber){
     this.res_obj = res_obj;
-    Error.call(res_obj.msg,filename,lineNumber);
+    this.msg = msg;
+    Error.call(msg,filename,lineNumber);
 }
 util.inherits(TiramisuError,Error);
 

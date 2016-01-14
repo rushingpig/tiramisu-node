@@ -24,7 +24,7 @@ module.exports = {
                 if(err.getResObj() === res_obj.FAIL){
                     res.status(500);
                 }
-                res.api(err.getResObj(),null);
+                res.api(err.getResObj(),err.getMsg());
             }else{
                 next(err);
             }
@@ -96,7 +96,7 @@ module.exports = {
     encodeForFulltext : (obj) => {
         let str = '';
         if(!obj || typeof obj !== 'string' || obj.length === 0){
-            logger.error('the object to be encode is not valid string ...');
+            logger.warn('the object to be encode is not valid string ...');
         }else{
             for(let i = 0;i < obj.length;i++){
                 str += (encodeURIComponent(obj.charAt(i)).replace(/%/g,'')+' ');

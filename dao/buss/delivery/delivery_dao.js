@@ -104,9 +104,25 @@ DeliveryDao.prototype.findReprintApplies = function(query_obj){
  * update the reprint apply record
  * @param update_obj
  */
-DeliveryDao.prototype.updateReprintApply = function(update_obj,apply_id){
-    let sql = this.base_update_sql + " where id = ? and status = 'UNAUDIT'";    //avoid concurrency to update twice
-    return baseDao.update(sql,[tables.buss_print_apply,update_obj,apply_id]);
+DeliveryDao.prototype.updateReprintApply = function(update_obj,apply_id,is_reprint){
+    let sql = this.base_update_sql + " where id = ? ";    //avoid concurrency to update twice
+    let params = [tables.buss_print_apply,update_obj,apply_id];
+    if(is_reprint){
+        sql += " and is_reprint = 0";
+    }else{
+        sql += " and status = ?";
+        params.push(constant.OPS.UNAUDIT);
+    }
+    return baseDao.update(sql,params);
+};
+/**
+ * find the record of apply for reprint by order id
+ * @param order_id
+ */
+DeliveryDao.prototype.findReprintApplyByOrderId = function(order_id){
+    let sql = "select * from ?? where order_id = ? and is_reprint = 0 order by created_time desc limit 1";
+    let params = [tables.buss_print_apply,order_id];
+    return baseDao.select(sql,params);
 };
 /**
  * update the order record to allocated deliveryman

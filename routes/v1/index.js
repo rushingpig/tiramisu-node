@@ -63,7 +63,8 @@ a.post('/order/reprint/apply',deliveryService.applyForRePrint);
 //*********************
 //******** PUT ********
 //*********************
-
+a.put('/orders/print',deliveryService.print);
+a.put('/order/:orderId/reprint',deliveryService.reprint);
 a.put('/order/:orderId',orderService.editOrder(false));     // 保存
 a.put('/order/:orderId/submit',orderService.editOrder(true)); // 提交
 a.put('/orders/exchange',deliveryService.exchageOrders);
@@ -75,7 +76,7 @@ a.put('/delivery/deliveryman',deliveryService.allocateDeliveryman);
 //************************
 //******** DELETE ********
 //************************
-
+a.delete('/order/:orderId',orderService.cancelOrder);
 
 
 //=====================router for business end======================

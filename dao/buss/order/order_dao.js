@@ -176,6 +176,7 @@ let columns = [
     'bo.coupon',
     'bo.`status`',
     'bo.submit_time',
+    'bo.print_status',
     'br.delivery_type',
     'br.address',
     'br.landmark',
@@ -183,6 +184,8 @@ let columns = [
     'bos.merge_name as src_name',
     'su1.name as created_by',
     'su2.name as updated_by',
+    'su3.name as deliveryman_name',
+    'su3.mobile as deliveryman_mobile',
     'bo.updated_time'
 ].join(',');
     let params = [];
@@ -206,6 +209,8 @@ let columns = [
     sql += " left join ?? su1 on su1.id = bo.created_by";
     params.push(tables.sys_user);
     sql += " left join ?? su2 on su2.id = bo.updated_by";
+    params.push(tables.sys_user);
+    sql += " left join ?? su3 on su3.id = bo.deliveryman_id";
     params.push(tables.sys_user);
     sql += " where 1=1";
     if(query_data.owner_mobile){
@@ -245,7 +250,7 @@ let columns = [
             sql += " order by bo.delivery_time asc,bo.`status` asc";
             break;
         case constant.OSR.DELIVER_LIST :
-            sql += " order by bo.is_print asc,bo.delivery_time asc";
+            sql += " order by bo.print_status asc,bo.delivery_time asc";
             break;
         default :
             // do nothing && order by with the db self
@@ -354,6 +359,14 @@ OrderDao.prototype.insertOrderHistory = function(order_history_obj){
     return baseDao.insert(this.base_insert_sql,[tables.buss_order_history,order_history_obj]);
 };
 /**
+ * batch insert records
+ * @param order_history_objs
+ */
+OrderDao.prototype.batchInsertOrderHistory = function(order_history_params){
+    let sql = "insert into ??(order_id,`option`,created_by,created_time) values ?";
+    return baseDao.batchInsert(sql,[tables.buss_order_history,order_history_params]);
+};
+/**
  * find the history of the order
  * @param orderId
  * @returns {Promise}
@@ -361,8 +374,6 @@ OrderDao.prototype.insertOrderHistory = function(order_history_obj){
 OrderDao.prototype.findOrderHistory = function(query_data){
     let columns = [
         'boh.order_id',
-        'boh.owner_name',
-        'boh.owner_mobile',
         'boh.`option`',
         'boh.created_time',
         'su.`name` as created_by'
@@ -383,6 +394,24 @@ OrderDao.prototype.findOrderHistory = function(query_data){
         });
     });
 
+};
+/**
+ * get the order list by the given order ids
+ * @param order_ids
+ * @returns {Promise}
+ */
+OrderDao.prototype.findOrdersByIds = function(order_ids){
+    let sql = "select * from ?? where id in"+dbHelper.genInSql(order_ids);
+    return baseDao.select(sql,[tables.buss_order]);
+};
+/**
+ * batch update orders by the given order ids
+ * @param update_obj
+ * @param order_ids
+ */
+OrderDao.prototype.updateOrders = function(update_obj,order_ids){
+    let sql = this.base_update_sql + " where id in"+dbHelper.genInSql(order_ids);
+    baseDao.update(sql,[tables.buss_order,update_obj]);
 };
 module.exports = OrderDao;
 

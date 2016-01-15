@@ -3428,6 +3428,12 @@ button, .btn:focus, .btn.focus, .btn:active:focus, .btn:active.focus, .btn.activ
 .table > tbody + tbody {
   border-top: none; }
 
+.table-hover > tbody > tr:hover {
+  background-color: #F9F2E8; }
+
+.table > tbody > tr.active > td, .table > tbody > tr.active:hover > td {
+  background-color: #FBF0E1; }
+
 .input-xs, .input-group-xs > .form-control, .input-group-xs > .input-group-addon, .input-group-xs > .input-group-btn > .btn {
   height: 27px;
   padding: 5px;
@@ -3447,6 +3453,15 @@ select.input-xs, .input-group-xs > select.form-control, .input-group-xs > select
 .form-control {
   font-size: 12px; }
 
+h4, .h4 {
+  font-size: 16px; }
+
+.modal-header .close {
+  opacity: 1; }
+  .modal-header .close:hover {
+    color: #A95B5B;
+    opacity: 1; }
+
 .h100, html, body, body > section, #app-container, .right-side {
   height: 100%; }
 
@@ -3456,7 +3471,7 @@ select.input-xs, .input-group-xs > select.form-control, .input-group-xs > select
 .theme-color {
   color: #fcdfb3; }
 
-.menu-list-active, .left-side .menu-list a:hover, .left-side .menu-list a:active, .left-side .menu-list a:focus, .left-side .menu-list.active > a {
+.menu-list-active, .left-side .menu-list a:hover, .left-side .menu-list a:active, .left-side .menu-list a:focus, .left-side .menu-list.active > a, .left-side .menu-list.open > a {
   background-color: #F5E6CE; }
 
 .submenu-list-active, .left-side .sub-menu-list li a:hover, .left-side .sub-menu-list li a:active, .left-side .sub-menu-list li a:focus, .left-side .sub-menu-list li a.active, .left-side .sub-menu-list li.active a {
@@ -3491,7 +3506,7 @@ body {
   overflow: auto; }
 
 .right-side {
-  margin-left: 220px;
+  margin-left: 200px;
   background: #fef8ee;
   min-height: 1000px; }
   .right-side .main-content {
@@ -3528,7 +3543,7 @@ a:focus {
 .pl-20 {
   padding-left: 20px; }
 
-.round {
+.round, .order-status {
   border-radius: 5px; }
 
 .bordered {
@@ -3665,9 +3680,12 @@ hr.dotted {
   padding-left: 2px;
   padding-right: 2px; }
 
+.order-status {
+  width: 80px; }
+
 .left-side {
   position: fixed;
-  width: 220px;
+  width: 200px;
   height: 100%;
   overflow-y: auto;
   border-right: 2px solid #fcdfb3;
@@ -3693,7 +3711,7 @@ hr.dotted {
     padding: 8px 15px;
     line-height: 20px;
     padding-left: 16px;
-    transition: background-color 0.2s ease-out 0s, color 0.2s ease-out 0s; }
+    transition: background-color 0.1s ease-in 0s, color 0.2s ease-in 0s; }
   .left-side .menu-list > a {
     padding: 12px 20px;
     text-indent: 30px; }
@@ -3723,11 +3741,10 @@ hr.dotted {
     .left-side .sub-menu-list li a {
       font-size: 16px;
       font-weight: normal;
-      padding: 10px 5px 10px 50px;
-      transition: all 0.1s ease-out 0s; }
+      padding: 10px 5px 10px 50px; }
     .left-side .sub-menu-list li.active a {
       color: #9C6B6B; }
-  .left-side .active .sub-menu-list {
+  .left-side .open .sub-menu-list {
     display: block; }
 
 .left-side-collapsed .left-side {
@@ -3945,7 +3962,7 @@ hr.dotted {
 .sticky-header .header-section {
   position: fixed;
   top: 0;
-  left: 220px;
+  left: 200px;
   width: 100%;
   z-index: 100; }
 

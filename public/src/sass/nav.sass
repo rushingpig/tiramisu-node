@@ -28,7 +28,7 @@
       padding: 8px 15px
       line-height: 20px
       padding-left: 16px
-      transition: background-color 0.2s ease-out 0s, color 0.2s ease-out 0s
+      transition: background-color 0.1s ease-in 0s, color 0.2s ease-in 0s
       &:hover, &:active, &:focus
         @extend .menu-list-active
     > a
@@ -53,16 +53,18 @@
         @extend .menu-list-active
     &.open
       >a
+        @extend .menu-list-active
         &:after
           content: '_'
           margin-top: -6px
   .sub-menu-list
     list-style: none
     display: none
+    // overflow: hidden
     margin: 0
     padding: 0
     background: $theme-light-color
-    text
+    // transition: height .3s
     &.active
       display: block
     li a
@@ -71,14 +73,14 @@
       //height: $nav-sub-item-height
       //line-height: $nav-sub-item-height
       padding: $nav-sub-item-height/2 5px $nav-sub-item-height/2 50px
-      transition: all 0.1s ease-out 0s
+      // transition: all 0.08s ease-in
       &:hover,&:active,&:focus,&.active
         @extend .submenu-list-active
         
     li.active a
       @extend .submenu-list-active
       color: $nav-active-font-color
-  .active
+  .open
     .sub-menu-list
       display: block
 .left-side-collapsed

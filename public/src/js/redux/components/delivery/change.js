@@ -7,6 +7,7 @@ import Select from 'common/select';
 import Pagination from 'common/pagination';
 import StdModal from 'common/std_modal';
 import LineRouter from 'common/line_router';
+import { tableLoader } from 'common/loading';
 
 import { noty } from 'utils/index';
 import { DELIVERY_MAP } from 'config/app.config';
@@ -108,7 +109,8 @@ class DeliverChangePannel extends Component {
   }
   render(){
     var { filter, exchangeOrders } = this.props;
-    var { page_no, total, list, check_order_info, active_order_id, change_submitting } = this.props.orders;
+    var { change_submitting } = filter;
+    var { loading, page_no, total, list, checked_order_ids, check_order_info, active_order_id } = this.props.orders;
     var { checkOrderHandler, viewOrderDetail, activeOrderHandler } = this;
 
     var content = list.map((n, i) => {
@@ -141,7 +143,7 @@ class DeliverChangePannel extends Component {
                 </tr>
                 </thead>
                 <tbody>
-                {content}
+                { tableLoader( loading, content ) }
                 </tbody>
               </table>
             </div>
@@ -164,13 +166,13 @@ class DeliverChangePannel extends Component {
             </div>
           : null }
 
-        <ChangeModal {...{exchangeOrders, change_submitting}} data={list} ref="changeModal" />
+        <ChangeModal {...{exchangeOrders, change_submitting, checked_order_ids}} ref="changeModal" />
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} />
       </div>
     )
   }
   changeHandler(){
-    if(this.props.orders.list.filter(n => n.checked).length){
+    if(this.props.orders.checked_order_ids.length){
       this.refs.changeModal.show();
     }else{
       noty('warning', '请先选择需要转换的订单！');
@@ -223,11 +225,10 @@ class ChangeModal extends Component {
     }
   }
   render(){
-    var list = this.props.data;
-    var num = list.filter(n => n.checked).length;
+    var { checked_order_ids } = this.props;
     return (
       <StdModal onConfirm={this.onConfirm.bind(this)} submitting={this.props.change_submitting} ref="modal" title="批量转换操作">
-        <center><h5>您已同时勾选<span className="strong font-lg">{' ' + num + ' '}</span>个订单</h5></center>
+        <center><h5>您已同时勾选<span className="strong font-lg">{' ' + checked_order_ids.length + ' '}</span>个订单</h5></center>
         <center><h5>进行转换</h5></center>
       </StdModal>
     )
@@ -239,13 +240,8 @@ class ChangeModal extends Component {
     this.refs.modal.hide();
   }
   onConfirm(){
-    var { exchangeOrders, data } = this.props;
-    var order_ids = [];
-    data.forEach(n => {
-      if(n.checked)
-        order_ids.push(n.order_id);
-    });
-    exchangeOrders(order_ids).done(function(){
+    var { exchangeOrders, checked_order_ids } = this.props;
+    exchangeOrders(checked_order_ids).done(function(){
       this.hide();
       noty('success', '转换成功！')
     }.bind(this)).fail(() => {
@@ -255,7 +251,7 @@ class ChangeModal extends Component {
 };
 
 ChangeModal.PropTypes = {
-  data: PropTypes.array.isRequired,
+  checked_order_ids: PropTypes.array.isRequired,
   exchangeOrders: PropTypes.func.isRequired,
   change_submitting: PropTypes.bool.isRequired,
 }

@@ -14,7 +14,7 @@ var Select = React.createClass({
         <option value={n.id} key={n.id}>{n.text}</option>
       );
     });
-    var className = "form-control input-sm " + (this.props.className || '');
+    var className = "form-control input-xs " + (this.props.className || '');
     this.props = {...this.props, ...{className: className}};
     return (
       <select {...this.props}>

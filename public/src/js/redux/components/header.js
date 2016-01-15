@@ -32,9 +32,9 @@ class Header extends Component {
                 <span className="caret"></span>
               </a>
               <ul className="dropdown-menu dropdown-menu-usermenu pull-right">
-                <li><a href="javascript:;"><i className="fa fa-user"></i>  Profile</a></li>
-                <li><a href="javascript:;"><i className="fa fa-cog"></i>  Settings</a></li>
-                <li><a href="javascript:;"><i className="fa fa-sign-out"></i> Log Out</a></li>
+                <li><a href="javascript:;"><i className="fa fa-user"></i>  个人</a></li>
+                <li><a href="javascript:;"><i className="fa fa-cog"></i>  设置</a></li>
+                <li><a href="javascript:;" onClick={this.logout.bind(this)}><i className="fa fa-sign-out"></i> 退出</a></li>
               </ul>
             </li>
           </ul>
@@ -57,13 +57,16 @@ class Header extends Component {
     }
   }
   showUserMenu(){
-    this.setState({
-      usermenu_open: !this.state.usermenu_open
-    })
+    // this.setState({
+    //   usermenu_open: !this.state.usermenu_open
+    // })
+  }
+  logout(){
+    console.log('=====> logout...')
   }
   componentDidMount(){
-    $('body').on('click', this.hideDropDown);
-    $('#notification-menu').on('click', '.dropdown-menu', this.stopPropagation);
+    // $('body').on('click', this.hideDropDown);
+    // $('#notification-menu').on('click', '.dropdown-menu', this.stopPropagation);
     this.timer = setInterval(()=>{
       var now = new Date();
       if(now.getDay() != this.state.day){
@@ -75,16 +78,16 @@ class Header extends Component {
     }, 500);
   }
   componentWillUnmount(){
-    $('body').off('click', this.hideDropDown);
-    $('#notification-menu').off('click', this.stopPropagation);
+    // $('body').off('click', this.hideDropDown);
+    // $('#notification-menu').off('click', this.stopPropagation);
   }
-  hideDropDown(e){
-    $('#notification-menu').find('li.open').removeClass('open');
-  }
-  stopPropagation(e){
-    e.stopPropagation();
-    return false;
-  }
+  // hideDropDown(e){
+  //   $('#notification-menu').find('li.open').removeClass('open');
+  // }
+  // stopPropagation(e){
+  //   e.stopPropagation();
+  //   return false;
+  // }
 }
 
 export default Header;

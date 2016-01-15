@@ -28,8 +28,7 @@ export default class LineRouter extends React.Component {
     )
   }
   jumpTo(link){
-    debugger;
-    history.push(link);
+    link && history.push(link);
   }
 }
 

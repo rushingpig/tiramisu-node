@@ -47,6 +47,13 @@ const URL = (function(){
 
     //送货管理
     order_exchange: '/orders/exchange',
+    apply_print: '/order/reprint/apply', //申请打印
+    print_review_list: '/order/reprint/applies',
+    review_print_apply: '/order/reprint/apply/:apply_id', //审核申请
+
+    //配送员
+    deliveryman: '/delivery/deliverymans',
+    deliveryman_apply: '/delivery/deliveryman', //分配配送员
   };
 
   for(var a in url){

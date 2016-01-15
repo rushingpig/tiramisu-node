@@ -1,6 +1,11 @@
 export default {
   root: '/',
   ajax: '/v1/a',
+  REQUEST: {
+    ING: 0,
+    SUCCESS: 1,
+    FAIL: 2
+  },
 
   SUCCESS_CODE: '0000',
   NO_MORE_CODE: '9998',
@@ -45,6 +50,16 @@ export default {
     '22:00~23:00'
   ],
 
+  order_status: {
+    CANCEL : {value: '取消', bg: '#f0f'},
+    UNTREATED : {value: '未处理', bg: '#f0f'},
+    STATION : {value: '已分配配送站', bg: '#f0f'},
+    CONVERT : {value: '已转换', bg: '#f0f'},
+    INLINE : {value: '生产中', bg: '#f0f'},
+    DELIVERY : {value: '已分配配送员', bg: '#f0f'},
+    COMPLETED : {value: '订单完成', bg: '#f0f'},
+    EXCEPTION : {value: '订单异常', bg: '#f0f'}
+  },
   pay_status: {
     'COD': '货到付款',
     'REFUNDING': '退款中',
@@ -56,5 +71,10 @@ export default {
     NO: 0
   },
 
+  PRINT_REVIEW_STATUS: {
+    'UNAUDIT': '未审核',
+    'AUDITED': '审核通过',
+    'AUDITFAILED': '审核失败',
+  }
 
 }

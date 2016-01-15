@@ -4,26 +4,29 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import LinkedStateMixin from 'react-addons-linked-state-mixin';
 
-import * as OrderManageActions from 'actions/orders';
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
-import Pagination from 'common/pagination';
-
-import Config from 'config/app.config';
-import history from 'history_instance';
-import LineRouter from 'common/line_router';
-import OrderProductsDetail from 'common/order_products_detail';
 import TimeInput from 'common/time_input';
+import Pagination from 'common/pagination';
+import LineRouter from 'common/line_router';
+import { tableLoader } from 'common/loading';
 
-// import ManageDetailModal from 'common/order_detail_modal';
-// import ManageAlterStationModal from './manage_alter_station_modal';
+import { DELIVERY_MAP } from 'config/app.config';
+import history from 'history_instance';
+import LazyLoad from 'utils/lazy_load';
+
+import * as OrderActions from 'actions/orders';
+import * as DeliveryDistributeActions from 'actions/delivery_distribute';
+
+import OrderProductsDetail from 'common/order_products_detail';
+import OrderDetailModal from 'common/order_detail_modal';
 
 class TopHeader extends Component {
   render(){
     return (
       <div className="clearfix top-header">
         <LineRouter 
-          routes={[{name: '送货单管理', link: '/dm/change'}, {name: '配送单列表', link: ''}]} />
+          routes={[{name: '送货单管理', link: ''}, {name: '配送单列表', link: ''}]} />
       </div>
     )
   }
@@ -31,16 +34,16 @@ class TopHeader extends Component {
 
 class FilterHeader extends Component {
   render(){
-    var { start_date, delivery_date } = this.props;
+    var {  } = this.props;
     return (
       <div className="panel search">
         <div className="panel-body">
           <div className="form-group form-inline">
             <input className="form-control input-xs" placeholder="关键字" />
             {' 开始时间'}
-            <DatePicker date={start_date} className="short-input" />
+            <DatePicker className="short-input" />
             {' 配送时间'}
-            <DatePicker date={delivery_date} className="short-input" />
+            <DatePicker className="short-input" />
             <Select default-text="选择支付方式" className="space"/>
             <Select default-text="选择订单状态" className="space"/>
             <Select default-text="选择配送员" className="space"/>
@@ -56,6 +59,9 @@ class FilterHeader extends Component {
       </div>
     )
   }
+  printHandler(){
+
+  }
 }
 // FilterHeader.propTypes = {
 //   start_date: PropTypes.string.isRequired,
@@ -68,14 +74,16 @@ class OrderRow extends Component {
   render(){
     var { props } = this;
     return (
-      <tr className={props.active_order_id == props.order_id ? 'active' : ''}>
+      <tr onClick={this.clickHandler.bind(this)} className={props.active_order_id == props.order_id ? 'active' : ''}>
         <td>
-          <input type="checkbox" />
+          <input onChange={this.checkOrderHandler.bind(this)} checked={props.checked} type="checkbox" />
         </td>
         <td>
           <a onClick={this.showSignedModal.bind(this)} href="javascript:;">[签收]</a><br/>
           <a onClick={this.showUnSignedModal.bind(this)} href="javascript:;">[未签收]</a>
         </td>
+        <td>{props.delivery_time}</td>
+        <td>todo</td>
         <td>{props.owner_name}<br />{props.owner_mobile}</td>
         <td className="text-left">
           姓名：{props.recipient_name}<br />
@@ -85,13 +93,11 @@ class OrderRow extends Component {
           </div>
           建筑：todo
         </td>
-        <td>todo</td>
-        <td>todo</td>
-        <td className="nowrap">todo</td>
-        <td>todo</td>
+        <td><a onClick={props.viewOrderDetail} href="javascript:;">{props.order_id}</a></td>
+        <td>{DELIVERY_MAP[props.pay_modes_id]}</td>
         <td><div className="remark-in-table">{props.remarks}</div></td>
-        <td>{props.updated_by}</td>
-        <td><div className="time">{props.updated_date}</div></td>
+        <td>todo</td>
+        <td>todo</td>
       </tr>
     )
   }
@@ -101,9 +107,13 @@ class OrderRow extends Component {
   showUnSignedModal(){
     this.props.showUnSignedModal();
   }
-  // clickHandler(){
-  //   this.props.activeOrder(this.props.order_id);
-  // }
+  checkOrderHandler(e){
+    var { order_id, checkOrderHandler } = this.props;
+    checkOrderHandler(order_id, e.target.checked);
+  }
+  clickHandler(){
+    this.props.activeOrderHandler(this.props.order_id);
+  }
 }
 
 class DeliveryDistributePannel extends Component {
@@ -114,14 +124,17 @@ class DeliveryDistributePannel extends Component {
     }
     this.showSignedModal = this.showSignedModal.bind(this);
     this.showUnSignedModal = this.showUnSignedModal.bind(this);
+    this.checkOrderHandler = this.checkOrderHandler.bind(this);
+    this.activeOrderHandler = this.activeOrderHandler.bind(this);
+    this.viewOrderDetail = this.viewOrderDetail.bind(this);
   }
   render(){
     var { filter } = this.props;
-    var { page_no, total, list, check_order_info, active_order_id } = this.props.orders;
-    var { viewDetail, showSignedModal, showUnSignedModal } = this;
+    var { loading, page_no, total, list, check_order_info, active_order_id } = this.props.orders;
+    var { showSignedModal, showUnSignedModal, checkOrderHandler, viewOrderDetail, activeOrderHandler } = this;
 
     var content = list.map((n, i) => {
-      return <OrderRow key={n.order_id} {...{...n, active_order_id, viewDetail, activeOrder}} />;
+      return <OrderRow key={n.order_id} {...{...n, active_order_id, showSignedModal, showUnSignedModal, viewOrderDetail, checkOrderHandler, activeOrderHandler}} />;
     })
     return (
       <div className="order-manage">
@@ -136,7 +149,7 @@ class DeliveryDistributePannel extends Component {
               <table className="table table-hover text-center">
                 <thead>
                 <tr>
-                  <th><input type="checkbox" /></th>
+                  <th><input onChange={this.checkAll.bind(this)} type="checkbox" /></th>
                   <th>管理操作</th>
                   <th>送达时间</th>
                   <th>货到付款金额</th>
@@ -150,7 +163,7 @@ class DeliveryDistributePannel extends Component {
                 </tr>
                 </thead>
                 <tbody>
-                  <OrderRow showSignedModal={this.showSignedModal} showUnSignedModal={this.showUnSignedModal} />
+                  { tableLoader( loading, content ) }
                 </tbody>
               </table>
             </div>
@@ -165,9 +178,15 @@ class DeliveryDistributePannel extends Component {
         </div>
 
         { check_order_info
-          ? <OrderProductsDetail products={check_order_info.products} />
+          ? <div className="panel">
+              <div className="panel-body">
+                <div>订单产品详情</div>
+                <OrderProductsDetail products={check_order_info.products} />
+              </div>
+            </div>
           : null }
 
+        <OrderDetailModal ref="detail_modal" data={check_order_info || {}} />
         <div ref="modal-wrap"></div>
       </div>
     )
@@ -176,9 +195,23 @@ class DeliveryDistributePannel extends Component {
     this.setState({page_no: page});
   }
   componentDidMount() {
-    // this.showSignedModal({});
-    // var { getOrderList, orders } = this.props;
-    // getOrderList({page_no: orders.page_no, page_size: this.state.page_size});
+    var { getOrderList, orders } = this.props;
+    getOrderList({page_no: orders.page_no, page_size: this.state.page_size});
+
+    LazyLoad('noty');
+  }
+  activeOrderHandler(order_id){
+    if(this.props.orders.active_order_id != order_id)
+      this.props.activeOrder(order_id);
+  }
+  checkOrderHandler(order_id, checked){
+    this.props.checkOrder(order_id, checked);
+  }
+  checkAll(e){
+    this.props.checkAllOrders(e.target.checked);
+  }
+  viewOrderDetail(){
+    this.refs.detail_modal.show();
   }
   showSignedModal(n){
     render(<SignedModal data={n} data-id={new Date().getTime()} />, this.refs['modal-wrap']);
@@ -194,10 +227,10 @@ function mapStateToProps({deliveryDistribute}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  return bindActionCreators(OrderManageActions, dispatch);
+  return bindActionCreators({...OrderActions, ...DeliveryDistributeActions}, dispatch);
 }
 
-export default connect(mapStateToProps, OrderManageActions)(DeliveryDistributePannel);
+export default connect(mapStateToProps, mapDispatchToProps)(DeliveryDistributePannel);
 
 /***************   *******   *****************/
 /***************   子模态框   *****************/

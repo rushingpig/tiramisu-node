@@ -250,6 +250,12 @@ button, .btn:focus, .btn.focus, .btn:active:focus, .btn:active.focus, .btn.activ
 .table > tbody + tbody{
     border-top: none;
 }
+.table-hover > tbody > tr:hover {
+    background-color: #F9F2E8;
+}
+.table > tbody > tr.active > td, .table > tbody > tr.active:hover > td {
+    background-color: #FBF0E1;
+}
 
 .input-xs, .input-group-xs > .form-control, .input-group-xs > .input-group-addon, .input-group-xs > .input-group-btn > .btn{
     height: 27px;
@@ -269,4 +275,15 @@ select.input-xs, .input-group-xs > select.form-control, .input-group-xs > select
 }
 .form-control {
     font-size: 12px;
+}
+h4, .h4 {
+    font-size: 16px;
+}
+
+.modal-header .close{
+    opacity: 1;
+    &:hover {
+        color: #A95B5B;
+        opacity: 1;
+    }
 }

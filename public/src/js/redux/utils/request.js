@@ -1,12 +1,12 @@
 import req from 'superagent';
 import Promise from './promise';
-import config from 'config/app.config';
+import { SUCCESS_CODE, REQUEST } from 'config/app.config';
 import { core } from 'utils/index';
 
 function _end_callback(resolve, reject){
   return function(err, res){
     if(res.ok){
-      if(res.body.code === config.SUCCESS_CODE){
+      if(res.body.code === SUCCESS_CODE){
         resolve(res.body.data);
       }else{
         console.error(res.body.msg || 'request error');
@@ -71,13 +71,24 @@ export function POST(url, query_data, action_type){
   }
 }
 
-export function PUT(url, query_data, action_type){
-  return (dispatch) => {
-    return put(url, query_data)
-      .done(function(data){
+export function PUT(url, send_data, action_type){
+  return (dispatch, getState) => {
+    //key: 0->正在处理，1->成功，2->失败 (减少信号量)
+    dispatch({
+      type: action_type,
+      key: REQUEST.ING,
+    });
+    return put(url, send_data)
+      .done(function(){
         dispatch({
           type: action_type,
-          data
+          key: REQUEST.SUCCESS
+        })
+      })
+      .fail(function(){
+        dispatch({
+          type: action_type,
+          key: REQUEST.FAIL
         })
       })
   }

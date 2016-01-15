@@ -1,9 +1,10 @@
 import { map } from 'utils/index';
 import { combineReducers } from 'redux';
-import * as OrderManageActions from 'actions/orders';
 import { GOT_ORDER_SRCS } from 'actions/order_manage_form';
-import { area } from './area_select';
 import { pay_status } from 'config/app.config';
+
+import { area } from './area_select';
+import { orders } from './orders';
 
 var filter_state = {
   search_ing: false,
@@ -27,27 +28,6 @@ function filter(state = filter_state, action){
       return {...state, all_order_srcs: !l2.length ? [l1] : [l1, l2] }
     default:
       return state
-  }
-}
-
-var orders_state = {
-  page_no: 0,
-  total: 0,
-  list: [],
-  active_order_id: undefined,
-  check_order_info: null,
-}
-function orders(state = orders_state, action){
-  switch (action.type) {
-    case OrderManageActions.GET_ORDER_LIST:
-      return {...state, ...action.data}
-
-    case OrderManageActions.ACTIVE_ORDER:
-      return {...state, active_order_id: action.active_order_id}
-    case OrderManageActions.GET_ORDER_DETAIL_PRODUCTS:
-      return {...state, check_order_info: action.data}
-    default:
-      return state;
   }
 }
 

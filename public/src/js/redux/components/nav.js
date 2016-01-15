@@ -3,20 +3,6 @@ import nav_config from 'config/nav.config';
 import Util from 'utils/index';
 import {Link} from 'react-router';
 
-// class MenuItem extend Component {
-//   render(){
-//     return (
-//       <li key={firstLevelItem.key} className="menu-list">
-//         <a href="#">
-//           <i className={`fa fa-${firstLevelItem.icon}`} />
-//           {firstLevelItem.name}
-//         </a>
-//         {this.props.children}
-//       </li>
-//     )
-//   }
-// }
-
 export default class Nav extends Component {
   render(){
     var current_path = location.pathname;
@@ -39,7 +25,7 @@ export default class Nav extends Component {
         })
 
         return (
-          <li key={firstLevelItem.key} className={"menu-list " + (active ? 'active' : '')}>
+          <li key={firstLevelItem.key} className={"menu-list " + (active ? 'active open' : '')}>
             <a className="menu-1" href="javascript:;">
               <span>{firstLevelItem.name}</span>
             </a>
@@ -51,7 +37,7 @@ export default class Nav extends Component {
         )
       } else { //只有一级菜单
         return (
-          <li key={firstLevelItem.key} className="menu-list" className={check_active(firstLevelItem.link, current_path) ? 'active' : ''}>
+          <li key={firstLevelItem.key} className="menu-list" className={check_active(firstLevelItem.link, current_path) ? 'active open' : ''}>
             <Link to={firstLevelItem.link} clasName="menu-1">
               {firstLevelItem.name}
             </Link>
@@ -72,40 +58,37 @@ export default class Nav extends Component {
 
   componentDidMount(){
     var $nav = $('.left-side');
+    var SLIDE_TIME = 180;
 
-    $nav.on('click', 'a', function(){
-      var $this = $(this), $p = $this.parent(), $menulist = $this.parents('.menu-list').eq(0);
-
-        $menulist
-          .siblings('li.active').removeClass('active')
-          .find('li.active').remove('active');
-
-      //左侧菜单展开
-      if(!$('#app-container').hasClass('left-side-collapsed')){
-        // 一级
-        if($this.hasClass('menu-1')){
-          $p.toggleClass('open').find('.sub-menu-list')
-            .slideToggle(180, function(){
-              $menulist.addClass('active')
+    $nav.on('click', 'a.menu-1', function(){
+      var $menulist = $(this).parents('.menu-list').eq(0);
+      $menulist
+        .siblings('.open').each(function(){
+          var $others = $(this);
+          $others.find('.sub-menu-list')
+            .slideToggle(SLIDE_TIME, function(){
+              $others.removeClass('open')
             });
-        }
-      //左侧菜单收缩
-      }else{
-        $menulist.addClass('active');
-        if($this.hasClass('menu-2')){
-          $menulist.removeClass('on-hover');
-        }
-      }
-
-      $p.addClass('active').siblings('.active').removeClass('active');
-
-    }).find('.menu-list').each(function(){
-      $(this).on('mouseenter', function(){
-        $(this).addClass('on-hover');
-      }).on('mouseleave', function(){
-        $(this).removeClass('on-hover');
-      });
+        })
+      $menulist
+        .find('.sub-menu-list')
+          .slideToggle(SLIDE_TIME, function(){
+            $menulist.toggleClass('open')
+          });
+    }).on('click', 'a.menu-2', function(){
+      var $this = $(this), $li = $this.parent(), $menulist = $this.parents('.menu-list').eq(0);
+      $li.addClass('active');
+      $menulist.addClass('active').removeClass('on-hover');
     });
+
+    $nav
+      .find('.menu-list').each(function(){
+        $(this).on('mouseenter', function(){
+          $(this).addClass('on-hover');
+        }).on('mouseleave', function(){
+          $(this).removeClass('on-hover');
+        });
+      });
   }
 
   componentWillUnmount(){

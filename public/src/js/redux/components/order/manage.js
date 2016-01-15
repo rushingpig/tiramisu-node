@@ -15,11 +15,11 @@ import Config from 'config/app.config';
 import history from 'history_instance';
 import LineRouter from 'common/line_router';
 import SearchInput from 'common/search_input';
-import { get_table_empty } from 'common/loading';
+import { tableLoader } from 'common/loading';
 import LazyLoad from 'utils/lazy_load';
 
 import OrderProductsDetail from 'common/order_products_detail';
-import ManageDetailModal from 'common/order_detail_modal';
+import OrderDetailModal from 'common/order_detail_modal';
 import ManageAlterStationModal from './manage_alter_station_modal';
 import OrderSrcsSelects from 'common/order_srcs_selects';
 
@@ -84,7 +84,9 @@ class FilterHeader extends Component {
           <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space"/>
           <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space"/>
           <Select {...status} options={all_order_status} default-text="订单状态" className="space"/>
-          <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs"><i className="fa fa-search"></i></button>
+          <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
+            <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
+          </button>
         </div>
       </div>
     )
@@ -140,7 +142,7 @@ class OrderRow extends Component {
       <tr className={props.active_order_id == props.order_id ? 'active' : ''} onClick={this.clickHandler.bind(this)}>
         <td>
           <a onClick={this.editHandler.bind(this)} href="javascript:;">[编辑]</a><br/>
-          <a onClick={this.viewDetail.bind(this)} href="javascript:;">[查看]</a><br/>
+          <a onClick={this.viewOrderDetail.bind(this)} href="javascript:;">[查看]</a><br/>
           <a onClick={this.alterStation.bind(this)} href="javascript:;" className="nowrap">[修改配送]</a>
         </td>
         <td>{props.merchant_id}</td>
@@ -183,8 +185,8 @@ class OrderRow extends Component {
     history.push('/om/index/' + this.props.order_id);
     e.stopPropagation();
   }
-  viewDetail(e){
-    this.props.viewDetail(this.props);
+  viewOrderDetail(e){
+    this.props.viewOrderDetail(this.props);
     e.stopPropagation();
   }
   alterStation(e){
@@ -196,7 +198,7 @@ class OrderRow extends Component {
 class ManagePannel extends Component {
   constructor(props){
     super(props);
-    this.viewDetail = this.viewDetail.bind(this);
+    this.viewOrderDetail = this.viewOrderDetail.bind(this);
     this.alterStation = this.alterStation.bind(this);
     this.state = {
       page_size: 8,
@@ -204,11 +206,11 @@ class ManagePannel extends Component {
   }
   render(){
     var { filter, area, activeOrder, dispatch, getOrderList } = this.props;
-    var { page_no, total, list, check_order_info, active_order_id } = this.props.orders;
-    var { viewDetail, alterStation } = this;
+    var { loading, page_no, total, list, check_order_info, active_order_id } = this.props.orders;
+    var { viewOrderDetail, alterStation } = this;
 
     var content = list.map((n, i) => {
-      return <OrderRow key={n.order_id} {...{...n, active_order_id, viewDetail, alterStation, activeOrder}} />;
+      return <OrderRow key={n.order_id} {...{...n, active_order_id, viewOrderDetail, alterStation, activeOrder}} />;
     })
     return (
       <div className="order-manage">
@@ -249,7 +251,7 @@ class ManagePannel extends Component {
                 </tr>
                 </thead>
                 <tbody>
-                {content.length ? content : get_table_empty()}
+                { tableLoader( loading, content ) }
                 </tbody>
               </table>
             </div>
@@ -272,6 +274,8 @@ class ManagePannel extends Component {
             </div>
           : null }
 
+        <OrderDetailModal ref="detail_modal" data={check_order_info || {}} />
+
         <div ref="modal-wrap"></div>
       </div>
     )
@@ -283,8 +287,8 @@ class ManagePannel extends Component {
     var { getOrderList, orders } = this.props;
     getOrderList({page_no: orders.page_no, page_size: this.state.page_size});
   }
-  viewDetail(n){
-    render(<ManageDetailModal data={n} data-id={new Date().getTime()} />, this.refs['modal-wrap']);
+  viewOrderDetail(){
+    this.refs.detail_modal.show();
   }
   alterStation(n){
     render(<ManageAlterStationModal data={n} data-id={new Date().getTime()} />, this.refs['modal-wrap'])

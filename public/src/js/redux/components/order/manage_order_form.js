@@ -244,31 +244,31 @@ class ManageAddForm extends Component {
 
         callback.call(this, dispatch, form_data);
       }else{
-        Utils.noty('warning', '请填写完整');
+        Utils.Noty('warning', '请填写完整');
       }
     }, 0);
   }
   handleCreateOrder(dispatch, form_data){
     dispatch(this.props.actions.createOrder(form_data)).done(function(){
-      Utils.noty('success', '保存成功');
+      Utils.Noty('success', '保存成功');
       history.push('/om/index');
     }).fail(function(){
-      Utils.noty('error', '保存异常');
+      Utils.Noty('error', '保存异常');
     });
   }
   handleSaveOrder(dispatch, form_data){
     form_data.order_id = this.props.order_id;
     dispatch(this.props.actions.saveOrder(form_data)).fail(function(){
-      Utils.noty('error', '保存异常');
+      Utils.Noty('error', '保存异常');
     });
   }
   handleSubmitOrder(dispatch, form_data){
     form_data.order_id = this.props.order_id;
     dispatch(this.props.actions.submitOrder(form_data)).done(function(){
-      Utils.noty('success', '已成功提交！');
+      Utils.Noty('success', '已成功提交！');
       history.push('/om/index');
     }).fail(function(){
-      Utils.noty('error', '操作异常');
+      Utils.Noty('error', '操作异常');
     });
   }
   componentDidMount(){

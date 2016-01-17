@@ -5,26 +5,34 @@ var config = {
     js: root + 'lib/jquery.noty.packaged.min.js',
   },
   chinese_py: {
-    js: root + 'lib/chinese_py.js'
+    js: root + 'lib/chinese_py.min.js'
   }
 };
+var load_map = {};
 
 export default function LazyLoad(name){
-  var load_map = {};
   $(function(){
     var plugin = config[name];
     if(plugin && !load_map[name]){
       setTimeout(function(){
         if(plugin.css){
-          $('head').append('<link rel="stylesheet" href="' + plugin.css + '">');
+          var link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = plugin.css;
+          document.head.appendChild(link);
         }
         if(plugin.js){
-          $('body').append('<script src="' + plugin.js + '"></script>');
+          var sc = document.createElement("script");
+          sc.type = "text\/javascript";
+          sc.src = plugin.js;
+          document.body.appendChild(sc);
         }
         load_map[name] = 1; //已加载过
-      }, 200);
+      }, 0);
     }else{
       console.warn('lazy load "' + name + '" fail');
     }
   })
 }
+
+window.LazyLoad = LazyLoad;

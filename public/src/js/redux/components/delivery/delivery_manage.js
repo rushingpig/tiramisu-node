@@ -14,7 +14,7 @@ import { tableLoader } from 'common/loading';
 import { order_status } from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
-import { noty } from 'utils/index';
+import { Noty } from 'utils/index';
 
 import * as OrderActions from 'actions/orders';
 import * as DeliverymanActions from 'actions/deliveryman';
@@ -223,7 +223,7 @@ class DeliveryManagePannel extends Component {
         this.refs.EditModal.show();
       })
     }else{
-      noty('warning', '请先勾选订单！');
+      Noty('warning', '请先勾选订单！');
     }
   }
   showBatchPrintModal(n){
@@ -231,7 +231,7 @@ class DeliveryManagePannel extends Component {
     if(checked_order_ids.length){
       this.refs.PrintModal.show();
     }else{
-      noty('warning', '请先勾选订单！');
+      Noty('warning', '请先勾选订单！');
     }
   }
   printHandler(n){
@@ -241,7 +241,7 @@ class DeliveryManagePannel extends Component {
     }
     var a = this._print_flag % 3;
     if(a == 0){
-      noty('success', '模拟打印已完成');
+      Noty('success', '模拟打印已完成');
     }else if(a == 1){
       this.refs.ApplyPrintModal.show();
     }else if(a == 2){
@@ -415,11 +415,11 @@ var EditModal = React.createClass({
       deliveryman_id: this.state.selected_delivery_man,
       order_ids: this.props.orders.map(n => n.order_id)
     }).done(function(json){
-      noty('success', '操作成功！');
+      Noty('success', '操作成功！');
       this.hide();
     }.bind(this)).fail(function(json){
       console.error(json);
-      noty('error', '操作失败！');
+      Noty('error', '操作失败！');
     })
   },
   componentDidMount: function(){
@@ -477,7 +477,7 @@ var ApplyPrintModal = React.createClass({
       this.hide();
     }.bind(this))
     .fail(function(){
-      noty('error', '服务器异常')
+      Noty('error', '服务器异常')
     })
   },
   show: function(){
@@ -516,11 +516,11 @@ var RePrintModal = React.createClass({
   },
   saveHandler: function(){
     this.props.rePrint({validate_code: this.state.validate_code, order_id: this.props.data.order_id}).done(function(){
-      noty('success', '验证通过，可以打印了，todo')
+      Noty('success', '验证通过，可以打印了，todo')
       this.hide();
     }.bind(this))
     .fail(function(){
-      noty('error', '服务器异常')
+      Noty('error', '服务器异常')
     })
   },
   mixins: [LinkedStateMixin],

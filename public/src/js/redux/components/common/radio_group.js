@@ -6,17 +6,21 @@ export default class RadioGroup extends Component {
     this.onCheck = this.onCheck.bind(this);
   }
   render(){
-    var { radios, space, value } = this.props;
+    var { radios, space, value, vertical, name } = this.props;
+
     var content = radios.map((n, i) => {
-      return (
-        <label style={{marginRight: space}} key={n.value}>
-          <input value={n.value} checked={this.props.value == n.value} onChange={this.onCheck} type="radio" />
+      var item = (
+        <label style={{ marginRight: space }} key={n.value}>
+          <input value={n.value} checked={this.props.value == n.value} name={name} onChange={this.onCheck} type="radio" />
           {' ' + n.text}
         </label>
-      )
+      );
+      return vertical ? <div key={n.value}>{item}</div> : item;
     })
+
+    //onChange少不了，有bug
     return (
-      <div className="inline-block" style={this.props.style}>
+      <div {...this.props} onChange={function(){}}>
         { content }
       </div>
     )
@@ -27,10 +31,12 @@ export default class RadioGroup extends Component {
 }
 
 RadioGroup.defaultProps = {
-  space: 16
+  space: 16,
+  vertical: false,
 }
 
 RadioGroup.PropTypes = {
+  name: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   radios: PropTypes.array.isRequired,  //得按顺序，所以得用数组
   onChange: PropTypes.func.isRequired,

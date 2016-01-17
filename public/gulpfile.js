@@ -42,9 +42,11 @@ var d = function(file_path){
 *  concat common css, 
 */
 gulp.task('css', function(){
-  gulp.src([s('css/normalize.css'), s('css/bs.css'), s('css/datepicker.css')])
-  .pipe(concat('common.css'))
+  gulp.src(s('css/*.css'))
   .pipe(minifyCss())
+  .pipe(rename({
+    suffix: ".min",
+  }))
   .pipe(gulp.dest(d('css')));
 });
 
@@ -89,6 +91,15 @@ gulp.task('scripts', function(){
       suffix: ".min",
     }))
     .pipe(gulp.dest(d('js')));
+});
+
+gulp.task('lib', function(){
+  return gulp.src(s('js/lib/*.js'))
+    .pipe(uglify())
+    .pipe(rename({
+      suffix: ".min",
+    }))
+    .pipe(gulp.dest(d('lib')));
 });
 
 gulp.task('template:pre', function(){
@@ -172,7 +183,7 @@ gulp.task("webpack-dev-server", function(callback) {
 });
 
 //@2: 第二步操作
-gulp.task('default', ['css', 'sass', 'scripts', 'images', 'template:pre', 'browser-sync'], function () {
+gulp.task('default', ['css', 'sass', 'scripts', 'lib', 'images', 'template:pre', 'browser-sync'], function () {
   gulp.watch(s('sass/**/*'), ['sass']);
   gulp.watch(s('js/*.js'), ['scripts']);
   gulp.watch(s('images/*'), ['images']);
@@ -181,7 +192,4 @@ gulp.task('default', ['css', 'sass', 'scripts', 'images', 'template:pre', 'brows
 
 });
 
-gulp.task('deploy', gulpSequence('webpack:react', 'scripts', 'template:deploy', 'rev'));
-
-//本地直接打开index.html测试用
-gulp.task('deploy:local', gulpSequence('webpack:react', 'scripts', 'template:local', 'rev'));
+gulp.task('deploy', gulpSequence('webpack:react', 'scripts', 'lib', 'template:deploy', 'rev'));

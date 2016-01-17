@@ -14,7 +14,7 @@ var DatePicker = React.createClass({
     }
   },
   componentWillReceiveProps: function(nextProps) {
-    if (nextProps['redux-form'].value && (nextProps['redux-form'].value != this.props['redux-form'].value)) {
+    if (nextProps['redux-form'] && nextProps['redux-form'].value && (nextProps['redux-form'].value != this.props['redux-form'].value)) {
       $(function(){
         this.setState({
           date: nextProps['redux-form'].value,
@@ -22,6 +22,9 @@ var DatePicker = React.createClass({
           this.initDatePicker().update();
         });
       }.bind(this))
+    }
+    if(nextProps.value != this.state.date){
+      this.setState({ date: nextProps.value })
     }
   },
   componentDidMount: function() {
@@ -48,7 +51,9 @@ var DatePicker = React.createClass({
       $date = $dom_date.datepicker({
         format: 'yyyy-mm-dd',
       }).on('changeDate', function(e) {
-        this.setState({date: e.target.value}, function(){
+        var value = e.target.value;
+        this.props.onChange && this.props.onChange(value);
+        this.setState({date: value}, function(){
           // setTimeout(function(){
             $dom_date.focus();
             $dom_date.blur();

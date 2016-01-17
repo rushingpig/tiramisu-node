@@ -19052,7 +19052,7 @@
 
 	var _componentsDeliveryDelivery_distribute2 = _interopRequireDefault(_componentsDeliveryDelivery_distribute);
 
-	var _componentsDeliveryPrint_review = __webpack_require__(319);
+	var _componentsDeliveryPrint_review = __webpack_require__(320);
 
 	var _componentsDeliveryPrint_review2 = _interopRequireDefault(_componentsDeliveryPrint_review);
 
@@ -19683,7 +19683,19 @@
 	  return (/^[+]?((\d+.(\d){1,2})|(\d)+)$/.test(input + '') && parseFloat(input) <= 30000 && parseFloat(input) > 0
 	  );
 	}
-
+	function form_isDate(input) {
+	  return (/^[0-9]{4}-(((0[13578]|(10|12))-(0[1-9]|[1-2][0-9]|3[0-1]))|(02-(0[1-9]|[1-2][0-9]))|((0[469]|11)-(0[1-9]|[1-2][0-9]|30)))$/.test(input)
+	  );
+	}
+	function form_isTime(input) {
+	  return (/^(([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])(:([0-5]?[0-9]))?$/.test(input)
+	  );
+	}
+	//简单版
+	function form_isMobile(input) {
+	  return (/^\d{11}$/.test(input)
+	  );
+	}
 	/**
 	*
 	* 描述：日期格式化
@@ -19781,8 +19793,11 @@
 	    isNumberAndLetter: form_isNumberAndLetter,
 	    isNaN: form_isNaN,
 	    isPositiveNumber: form_isPositiveNumber, //正数
-	    isPositiveRightNumber: form_isPositiveRightNumber },
-	  //正数, 且最大两位小数，上限30000
+	    isPositiveRightNumber: form_isPositiveRightNumber, //正数, 且最大两位小数，上限30000
+	    isDate: form_isDate, //yyyy-MM-dd
+	    isTime: form_isTime, //HH:mm:ss 或 HH:mm
+	    isMobile: form_isMobile },
+	  //简单版
 	  dateFormat: dateFormat,
 	  getDate: getDate,
 
@@ -19793,7 +19808,7 @@
 
 	  toFixed: toFixed,
 
-	  noty: _noty2['default'] };
+	  Noty: _noty2['default'] };
 	module.exports = exports['default'];
 	//提示信息小窗口：param：（type， text);
 
@@ -27720,6 +27735,8 @@
 	    delivery_stations: '/stations',
 	    order_srcs: '/order/srcs',
 	    pay_modes: '/pay/modes',
+	    order_sign: '/order/:orderId/signin',
+	    order_unsign: '/order/:orderId/unsignin',
 
 	    //产品
 	    categories: '/product/categories',
@@ -31578,7 +31595,7 @@
 	    var filter_data = (0, _reduxForm.getValues)(getState().form.order_manage_filter);
 	    return (0, _utilsRequest.GET)(_configUrl2['default'].orders.toString(), _extends({}, data, filter_data), GET_ORDER_LIST)(dispatch).fail(function (msg, code) {
 	      if (code == _configAppConfig.NO_MORE_CODE) {
-	        (0, _utilsIndex.noty)('alert', '没有查询到任何结果');
+	        (0, _utilsIndex.Noty)('alert', '没有查询到任何结果');
 	      }
 	    });
 	  };
@@ -31986,7 +32003,7 @@
 	    };
 	  },
 	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-	    if (nextProps['redux-form'].value && nextProps['redux-form'].value != this.props['redux-form'].value) {
+	    if (nextProps['redux-form'] && nextProps['redux-form'].value && nextProps['redux-form'].value != this.props['redux-form'].value) {
 	      $((function () {
 	        this.setState({
 	          date: nextProps['redux-form'].value
@@ -31994,6 +32011,9 @@
 	          this.initDatePicker().update();
 	        });
 	      }).bind(this));
+	    }
+	    if (nextProps.value != this.state.date) {
+	      this.setState({ date: nextProps.value });
 	    }
 	  },
 	  componentDidMount: function componentDidMount() {
@@ -32020,7 +32040,9 @@
 	      $date = $dom_date.datepicker({
 	        format: 'yyyy-mm-dd'
 	      }).on('changeDate', (function (e) {
-	        this.setState({ date: e.target.value }, function () {
+	        var value = e.target.value;
+	        this.props.onChange && this.props.onChange(value);
+	        this.setState({ date: value }, function () {
 	          // setTimeout(function(){
 	          $dom_date.focus();
 	          $dom_date.blur();
@@ -32643,30 +32665,37 @@
 	    js: root + 'lib/jquery.noty.packaged.min.js'
 	  },
 	  chinese_py: {
-	    js: root + 'lib/chinese_py.js'
+	    js: root + 'lib/chinese_py.min.js'
 	  }
 	};
+	var load_map = {};
 
 	function LazyLoad(name) {
-	  var load_map = {};
 	  $(function () {
 	    var plugin = config[name];
 	    if (plugin && !load_map[name]) {
 	      setTimeout(function () {
 	        if (plugin.css) {
-	          $('head').append('<link rel="stylesheet" href="' + plugin.css + '">');
+	          var link = document.createElement("link");
+	          link.rel = "stylesheet";
+	          link.href = plugin.css;
+	          document.head.appendChild(link);
 	        }
 	        if (plugin.js) {
-	          $('body').append('<script src="' + plugin.js + '"></script>');
+	          var sc = document.createElement("script");
+	          sc.type = "text\/javascript";
+	          sc.src = plugin.js;
+	          document.body.appendChild(sc);
 	        }
 	        load_map[name] = 1; //已加载过
-	      }, 200);
+	      }, 0);
 	    } else {
 	      console.warn('lazy load "' + name + '" fail');
 	    }
 	  });
 	}
 
+	window.LazyLoad = LazyLoad;
 	module.exports = exports['default'];
 
 /***/ },
@@ -34168,7 +34197,7 @@
 
 	          callback.call(_this2, dispatch, form_data);
 	        } else {
-	          _utilsIndex2['default'].noty('warning', '请填写完整');
+	          _utilsIndex2['default'].Noty('warning', '请填写完整');
 	        }
 	      }, 0);
 	    }
@@ -34176,10 +34205,10 @@
 	    key: 'handleCreateOrder',
 	    value: function handleCreateOrder(dispatch, form_data) {
 	      dispatch(this.props.actions.createOrder(form_data)).done(function () {
-	        _utilsIndex2['default'].noty('success', '保存成功');
+	        _utilsIndex2['default'].Noty('success', '保存成功');
 	        _history_instance2['default'].push('/om/index');
 	      }).fail(function () {
-	        _utilsIndex2['default'].noty('error', '保存异常');
+	        _utilsIndex2['default'].Noty('error', '保存异常');
 	      });
 	    }
 	  }, {
@@ -34187,7 +34216,7 @@
 	    value: function handleSaveOrder(dispatch, form_data) {
 	      form_data.order_id = this.props.order_id;
 	      dispatch(this.props.actions.saveOrder(form_data)).fail(function () {
-	        _utilsIndex2['default'].noty('error', '保存异常');
+	        _utilsIndex2['default'].Noty('error', '保存异常');
 	      });
 	    }
 	  }, {
@@ -34195,10 +34224,10 @@
 	    value: function handleSubmitOrder(dispatch, form_data) {
 	      form_data.order_id = this.props.order_id;
 	      dispatch(this.props.actions.submitOrder(form_data)).done(function () {
-	        _utilsIndex2['default'].noty('success', '已成功提交！');
+	        _utilsIndex2['default'].Noty('success', '已成功提交！');
 	        _history_instance2['default'].push('/om/index');
 	      }).fail(function () {
-	        _utilsIndex2['default'].noty('error', '操作异常');
+	        _utilsIndex2['default'].Noty('error', '操作异常');
 	      });
 	    }
 	  }, {
@@ -36373,7 +36402,7 @@
 	      if (this.props.orders.checked_order_ids.length) {
 	        this.refs.changeModal.show();
 	      } else {
-	        (0, _utilsIndex.noty)('warning', '请先选择需要转换的订单！');
+	        (0, _utilsIndex.Noty)('warning', '请先选择需要转换的订单！');
 	      }
 	    }
 	  }, {
@@ -36503,9 +36532,9 @@
 
 	      exchangeOrders(checked_order_ids).done((function () {
 	        this.hide();
-	        (0, _utilsIndex.noty)('success', '转换成功！');
+	        (0, _utilsIndex.Noty)('success', '转换成功！');
 	      }).bind(this)).fail(function () {
-	        (0, _utilsIndex.noty)('error', '转换异常');
+	        (0, _utilsIndex.Noty)('error', '转换异常');
 	      });
 	    }
 	  }]);
@@ -37254,7 +37283,7 @@
 	          this.refs.EditModal.show();
 	        });
 	      } else {
-	        (0, _utilsIndex.noty)('warning', '请先勾选订单！');
+	        (0, _utilsIndex.Noty)('warning', '请先勾选订单！');
 	      }
 	    }
 	  }, {
@@ -37265,7 +37294,7 @@
 	      if (checked_order_ids.length) {
 	        this.refs.PrintModal.show();
 	      } else {
-	        (0, _utilsIndex.noty)('warning', '请先勾选订单！');
+	        (0, _utilsIndex.Noty)('warning', '请先勾选订单！');
 	      }
 	    }
 	  }, {
@@ -37277,7 +37306,7 @@
 	      }
 	      var a = this._print_flag % 3;
 	      if (a == 0) {
-	        (0, _utilsIndex.noty)('success', '模拟打印已完成');
+	        (0, _utilsIndex.Noty)('success', '模拟打印已完成');
 	      } else if (a == 1) {
 	        this.refs.ApplyPrintModal.show();
 	      } else if (a == 2) {
@@ -37537,11 +37566,11 @@
 	        return n.order_id;
 	      })
 	    }).done((function (json) {
-	      (0, _utilsIndex.noty)('success', '操作成功！');
+	      (0, _utilsIndex.Noty)('success', '操作成功！');
 	      this.hide();
 	    }).bind(this)).fail(function (json) {
 	      console.error(json);
-	      (0, _utilsIndex.noty)('error', '操作失败！');
+	      (0, _utilsIndex.Noty)('error', '操作失败！');
 	    });
 	  },
 	  componentDidMount: function componentDidMount() {
@@ -37632,7 +37661,7 @@
 	    this.props.applyPrint(_extends({}, this.state, { order_id: this.props.data.order_id })).done((function () {
 	      this.hide();
 	    }).bind(this)).fail(function () {
-	      (0, _utilsIndex.noty)('error', '服务器异常');
+	      (0, _utilsIndex.Noty)('error', '服务器异常');
 	    });
 	  },
 	  show: function show() {
@@ -37691,10 +37720,10 @@
 	  },
 	  saveHandler: function saveHandler() {
 	    this.props.rePrint({ validate_code: this.state.validate_code, order_id: this.props.data.order_id }).done((function () {
-	      (0, _utilsIndex.noty)('success', '验证通过，可以打印了，todo');
+	      (0, _utilsIndex.Noty)('success', '验证通过，可以打印了，todo');
 	      this.hide();
 	    }).bind(this)).fail(function () {
-	      (0, _utilsIndex.noty)('error', '服务器异常');
+	      (0, _utilsIndex.Noty)('error', '服务器异常');
 	    });
 	  },
 	  mixins: [_reactAddonsLinkedStateMixin2['default']],
@@ -38100,7 +38129,15 @@
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
+	var _commonStd_modal = __webpack_require__(307);
+
+	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
+
 	var _commonLoading = __webpack_require__(291);
+
+	var _commonRadio_group = __webpack_require__(318);
+
+	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
 
 	var _configAppConfig = __webpack_require__(157);
 
@@ -38112,11 +38149,13 @@
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
+	var _utilsIndex = __webpack_require__(160);
+
 	var _actionsOrders = __webpack_require__(284);
 
 	var OrderActions = _interopRequireWildcard(_actionsOrders);
 
-	var _actionsDelivery_distribute = __webpack_require__(318);
+	var _actionsDelivery_distribute = __webpack_require__(319);
 
 	var DeliveryDistributeActions = _interopRequireWildcard(_actionsDelivery_distribute);
 
@@ -38336,12 +38375,12 @@
 	  }, {
 	    key: 'showSignedModal',
 	    value: function showSignedModal() {
-	      this.props.showSignedModal();
+	      this.props.showSignedModal(this.props);
 	    }
 	  }, {
 	    key: 'showUnSignedModal',
 	    value: function showUnSignedModal() {
-	      this.props.showUnSignedModal();
+	      this.props.showUnSignedModal(this.props);
 	    }
 	  }, {
 	    key: 'checkOrderHandler',
@@ -38382,14 +38421,19 @@
 	  _createClass(DeliveryDistributePannel, [{
 	    key: 'render',
 	    value: function render() {
-	      var filter = this.props.filter;
-	      var _props$orders = this.props.orders;
-	      var loading = _props$orders.loading;
-	      var page_no = _props$orders.page_no;
-	      var total = _props$orders.total;
-	      var list = _props$orders.list;
-	      var check_order_info = _props$orders.check_order_info;
-	      var active_order_id = _props$orders.active_order_id;
+	      var _props2 = this.props;
+	      var filter = _props2.filter;
+	      var orders = _props2.orders;
+	      var main = _props2.main;
+	      var signOrder = _props2.signOrder;
+	      var unsignOrder = _props2.unsignOrder;
+	      var submitting = main.submitting;
+	      var loading = orders.loading;
+	      var page_no = orders.page_no;
+	      var total = orders.total;
+	      var list = orders.list;
+	      var check_order_info = orders.check_order_info;
+	      var active_order_id = orders.active_order_id;
 	      var showSignedModal = this.showSignedModal;
 	      var showUnSignedModal = this.showUnSignedModal;
 	      var checkOrderHandler = this.checkOrderHandler;
@@ -38514,7 +38558,8 @@
 	          )
 	        ) : null,
 	        _react2['default'].createElement(_commonOrder_detail_modal2['default'], { ref: 'detail_modal', data: check_order_info || {} }),
-	        _react2['default'].createElement('div', { ref: 'modal-wrap' })
+	        _react2['default'].createElement(SignedModal, _extends({ ref: 'SignedModal' }, _extends({}, check_order_info, { submitting: submitting, signOrder: signOrder }))),
+	        _react2['default'].createElement(UnSignedModal, _extends({ ref: 'UnSignedModal' }, _extends({}, check_order_info, { submitting: submitting, unsignOrder: unsignOrder })))
 	      );
 	    }
 	  }, {
@@ -38525,9 +38570,9 @@
 	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      var _props2 = this.props;
-	      var getOrderList = _props2.getOrderList;
-	      var orders = _props2.orders;
+	      var _props3 = this.props;
+	      var getOrderList = _props3.getOrderList;
+	      var orders = _props3.orders;
 
 	      getOrderList({ page_no: orders.page_no, page_size: this.state.page_size });
 
@@ -38556,12 +38601,12 @@
 	  }, {
 	    key: 'showSignedModal',
 	    value: function showSignedModal(n) {
-	      (0, _reactDom.render)(_react2['default'].createElement(SignedModal, { data: n, 'data-id': new Date().getTime() }), this.refs['modal-wrap']);
+	      this.refs.SignedModal.show();
 	    }
 	  }, {
 	    key: 'showUnSignedModal',
 	    value: function showUnSignedModal(n) {
-	      (0, _reactDom.render)(_react2['default'].createElement(UnSignedModal, { data: n, 'data-id': new Date().getTime() }), this.refs['modal-wrap']);
+	      this.refs.UnSignedModal.show();
 	    }
 	  }]);
 
@@ -38593,199 +38638,189 @@
 	      CASH: 'CASH', //现金赔偿
 	      REFUND: 'REFUND', //全额退款
 
-	      late_time: '',
-
+	      signin_date: (0, _utilsIndex.dateFormat)(new Date()),
+	      // signin_hour: '',  // 直接 TimeInput.val()获取
+	      late_minutes: 0,
 	      refund_method: '',
-	      refund_money: '',
+	      refund_money: 0,
 	      refund_reson: ''
 	    };
-	  },
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-	    if (nextProps['data-id'] != this.props['data-id']) {
-	      this.show();
-	    }
 	  },
 	  mixins: [_reactAddonsLinkedStateMixin2['default']],
 	  render: function render() {
 	    var _state = this.state;
-	    var late_time = _state.late_time;
+	    var signin_date = _state.signin_date;
+	    var late_minutes = _state.late_minutes;
 	    var refund_method = _state.refund_method;
 	    var refund_money = _state.refund_money;
 	    var refund_reson = _state.refund_reson;
 
 	    return _react2['default'].createElement(
-	      'div',
-	      { ref: 'modal', 'aria-hidden': 'false', 'aria-labelledby': 'myModalLabel', role: 'dialog', className: 'modal fade' },
-	      _react2['default'].createElement('div', { className: 'modal-backdrop fade' }),
+	      _commonStd_modal2['default'],
+	      { submitting: this.props.submitting, onConfirm: this.submitHandler, title: '订单完成页面', ref: 'modal' },
 	      _react2['default'].createElement(
 	        'div',
-	        { className: 'modal-dialog' },
+	        { className: 'form-group mg-15 form-inline' },
+	        _react2['default'].createElement(
+	          'label',
+	          null,
+	          '签收时间：'
+	        ),
+	        _react2['default'].createElement(_commonDatepicker2['default'], { value: signin_date, onChange: this.onSignInDateChange, className: 'short-input' }),
+	        '　',
+	        _react2['default'].createElement(_commonTime_input2['default'], { onChange: this.onTimeChange, ref: 'timeinput' })
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group form-inline mg-15' },
 	        _react2['default'].createElement(
 	          'div',
-	          { className: 'modal-content' },
+	          { className: 'row' },
 	          _react2['default'].createElement(
 	            'div',
-	            { className: 'modal-header' },
+	            { className: 'col-xs-6' },
 	            _react2['default'].createElement(
-	              'button',
-	              { 'aria-hidden': 'true', 'data-dismiss': 'modal', className: 'close', type: 'button' },
-	              '×'
-	            ),
-	            _react2['default'].createElement(
-	              'h4',
-	              { className: 'modal-title' },
-	              '订单完成页面'
-	            )
-	          ),
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'modal-body' },
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'form-group mg-15 form-inline' },
-	              _react2['default'].createElement(
-	                'label',
-	                null,
-	                '签收时间：'
-	              ),
-	              _react2['default'].createElement(_commonDatepicker2['default'], { className: 'short-input' }),
-	              '　',
-	              _react2['default'].createElement(_commonTime_input2['default'], { ref: 'timeinput' })
+	              'label',
+	              null,
+	              '迟到时长：'
 	            ),
 	            _react2['default'].createElement(
 	              'div',
-	              { className: 'form-group form-inline mg-15' },
+	              { className: 'inline-block input-group input-group-xs' },
+	              _react2['default'].createElement('input', { value: late_minutes, onChange: this.onLateTimeChange, type: 'text', className: 'form-control', style: { 'width': 50 } }),
 	              _react2['default'].createElement(
-	                'div',
-	                { className: 'row' },
-	                _react2['default'].createElement(
-	                  'div',
-	                  { className: 'col-xs-6' },
-	                  _react2['default'].createElement(
-	                    'label',
-	                    null,
-	                    '迟到时长：'
-	                  ),
-	                  _react2['default'].createElement(
-	                    'div',
-	                    { className: 'inline-block input-group input-group-xs' },
-	                    _react2['default'].createElement('input', { value: late_time, onChange: this.onLateTimeChange, type: 'text', className: 'form-control', style: { 'width': 50 } }),
-	                    _react2['default'].createElement(
-	                      'span',
-	                      { className: 'input-group-addon' },
-	                      'Min'
-	                    )
-	                  )
-	                ),
-	                _react2['default'].createElement(
-	                  'div',
-	                  { className: 'col-xs-6' },
-	                  _react2['default'].createElement(
-	                    'label',
-	                    null,
-	                    '货到付款金额：'
-	                  ),
-	                  _react2['default'].createElement('input', { readOnly: true, className: 'form-control input-xs short-input', style: { 'width': 50 } })
-	                )
+	                'span',
+	                { className: 'input-group-addon' },
+	                'Min'
 	              )
-	            ),
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'form-group mg-15' },
-	              _react2['default'].createElement(
-	                'label',
-	                { className: '' },
-	                _react2['default'].createElement('input', { value: this.state.CASH, onClick: this.checkMethod, type: 'radio', name: 'method' }),
-	                ' 现金赔偿（迟到30mins以内）'
-	              ),
-	              this.state.refund_method == this.state.CASH ? _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'div',
-	                  { className: 'input-group input-group-xs pl-20' },
-	                  _react2['default'].createElement('input', { valueLink: this.linkState('refund_money'), className: 'form-control input-xs', style: { 'width': 50 } }),
-	                  _react2['default'].createElement(
-	                    'span',
-	                    { className: 'input-group-addon' },
-	                    'RMB'
-	                  )
-	                )
-	              ) : null
-	            ),
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'form-group mg-15' },
-	              _react2['default'].createElement(
-	                'label',
-	                { className: '' },
-	                _react2['default'].createElement('input', { value: this.state.REFUND, onClick: this.checkMethod, type: 'radio', name: 'method' }),
-	                ' 全额退款（迟到时间>=30mins）'
-	              ),
-	              this.state.refund_method == this.state.REFUND ? _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group pl-20' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  _react2['default'].createElement('input', { value: 'XXX1', onClick: this.checkReason, name: 'reason', type: 'radio' }),
-	                  ' 迟到30mins以上'
-	                ),
-	                _react2['default'].createElement('br', null),
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  _react2['default'].createElement('input', { value: 'XXX2', onClick: this.checkReason, name: 'reason', type: 'radio' }),
-	                  ' 款式不符'
-	                ),
-	                _react2['default'].createElement('br', null),
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  _react2['default'].createElement('input', { value: 'XXX3', onClick: this.checkReason, name: 'reason', type: 'radio' }),
-	                  ' 尺寸、规格不符'
-	                ),
-	                _react2['default'].createElement('br', null)
-	              ) : null
 	            )
 	          ),
 	          _react2['default'].createElement(
 	            'div',
-	            { className: 'modal-footer' },
+	            { className: 'col-xs-6' },
 	            _react2['default'].createElement(
-	              'button',
-	              { onClick: this.hide, type: 'button', className: 'btn btn-sm btn-default', 'data-dismiss': 'modal' },
-	              '取消'
+	              'label',
+	              null,
+	              '货到付款金额：'
 	            ),
-	            _react2['default'].createElement(
-	              'button',
-	              { onClick: this.onConfirm, type: 'button', className: 'btn btn-sm btn-theme' },
-	              '确定'
-	            )
+	            _react2['default'].createElement('input', { value: this.props.total_amount || 0, readOnly: true, className: 'form-control input-xs short-input', style: { 'width': 50 } })
 	          )
 	        )
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group mg-15' },
+	        _react2['default'].createElement(
+	          'label',
+	          { className: '' },
+	          _react2['default'].createElement('input', { value: this.state.CASH, onClick: this.checkMethod, type: 'radio', name: 'method' }),
+	          ' 现金赔偿（迟到30mins以内）'
+	        ),
+	        this.state.refund_method == this.state.CASH ? _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'input-group input-group-xs pl-20' },
+	            _react2['default'].createElement('input', { valueLink: this.linkState('refund_money'), className: 'form-control input-xs', style: { 'width': 50 } }),
+	            _react2['default'].createElement(
+	              'span',
+	              { className: 'input-group-addon' },
+	              'RMB'
+	            )
+	          )
+	        ) : null
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group mg-15' },
+	        _react2['default'].createElement(
+	          'label',
+	          { className: '' },
+	          _react2['default'].createElement('input', { value: this.state.REFUND, onClick: this.checkMethod, type: 'radio', name: 'method' }),
+	          ' 全额退款（迟到时间>=30mins）'
+	        ),
+	        this.state.refund_method == this.state.REFUND ? _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group pl-20' },
+	          _react2['default'].createElement(_commonRadio_group2['default'], {
+	            value: refund_reson,
+	            vertical: true,
+	            name: 'refund_reson',
+	            radios: [{ value: 'XXX1', text: '迟到30mins以上' }, { value: 'XXX2', text: '款式不符' }, { value: 'XXX3', text: '尺寸、规格不符' }],
+	            onChange: this.checkReason
+	          })
+	        ) : null
 	      )
 	    );
 	  },
-	  componentDidMount: function componentDidMount() {
-	    this.show();
+	  submitHandler: function submitHandler() {
+	    var _state2 = this.state;
+	    var CASH = _state2.CASH;
+	    var late_minutes = _state2.late_minutes;
+	    var refund_method = _state2.refund_method;
+	    var refund_money = _state2.refund_money;
+	    var refund_reson = _state2.refund_reson;
+	    var signin_date = _state2.signin_date;
+
+	    var signin_hour = this.refs.timeinput.val();
+	    if (!_utilsIndex.form.isNumber(late_minutes) || late_minutes < 0) {
+	      (0, _utilsIndex.Noty)('warning', '迟到时间输入有误');return;
+	    }
+	    if (!signin_date || !signin_hour) {
+	      (0, _utilsIndex.Noty)('warning', '请填写签收时间');return;
+	    }
+	    if (late_minutes > 0) {
+	      if (!refund_method) {
+	        (0, _utilsIndex.Noty)('warning', '请选择赔偿方式');return;
+	      }
+	      if (refund_method == CASH) {
+	        if (!_utilsIndex.form.isNumber(refund_money)) {
+	          (0, _utilsIndex.Noty)('warning', '请输入现金赔偿金额');return;
+	        }
+	      } else {
+	        if (!refund_reson) {
+	          (0, _utilsIndex.Noty)('warning', '请勾选全额退款原因');return;
+	        }
+	      }
+	    }
+	    this.props.signOrder({
+	      late_minutes: late_minutes,
+	      payfor_type: refund_method,
+	      payfor_amount: refund_money,
+	      payfor_reason: refund_reson,
+	      signin_time: signin_date + ' ' + signin_hour
+	    }).done((function () {
+	      this.hide();
+	      (0, _utilsIndex.Noty)('success', '签收成功！');
+	    }).bind(this)).fail(function () {
+	      (0, _utilsIndex.Noty)('error', '提交失败');
+	    });
+	  },
+	  onSignInDateChange: function onSignInDateChange(value) {
+	    this.setState({ signin_date: value });
+	  },
+	  onTimeChange: function onTimeChange(value) {
+	    this.setState({ signin_hour: value });
 	  },
 	  onLateTimeChange: function onLateTimeChange(e) {
 	    var value = e.target.value;
 
-	    this.setState({ late_time: value, refund_money: value <= 30 ? value : '' });
+	    this.setState({ late_minutes: value, refund_money: value <= 30 ? value : '' });
 	  },
 	  checkMethod: function checkMethod(e) {
 	    this.setState({ refund_method: e.target.value });
 	  },
-	  checkReason: function checkReason(e) {
-	    this.setState({ refund_reson: e.target.value });
+	  checkReason: function checkReason(value) {
+	    this.setState({ refund_reson: value });
 	  },
 	  show: function show() {
-	    $(this.refs.modal).modal('show');
+	    this.refs.modal.show();
+	    this.refs.timeinput.reset();
+	    this.setState(this.getInitialState());
 	  },
 	  hide: function hide() {
-	    $(this.refs.modal).modal('hide');
+	    this.refs.modal.hide();
 	  }
 	});
 
@@ -38795,182 +38830,151 @@
 	  getInitialState: function getInitialState() {
 	    return {
 	      NOTFOUND: 'NOTFOUND',
-	      OTHERS: 'OTHERS',
+	      OTHER: 'OTHER',
 
-	      reason: '',
-	      other_reasons: '',
+	      reason_type: '',
+	      notfound_reason: '联系不上用户，无人签收',
+	      other_reason: '',
 	      real_pay: '',
-	      black_list: undefined
+	      black_list: '0'
 	    };
-	  },
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-	    //组建身份证，当它不一样时，证明要重新打开
-	    if (nextProps['data-id'] != this.props['data-id']) {
-	      this.show();
-	    }
 	  },
 	  mixins: [_reactAddonsLinkedStateMixin2['default']],
 	  render: function render() {
-	    var _state2 = this.state;
-	    var late_time = _state2.late_time;
-	    var refund_method = _state2.refund_method;
-	    var refund_money = _state2.refund_money;
-	    var refund_reson = _state2.refund_reson;
+	    var notfound_reason = this.state.notfound_reason;
 
 	    return _react2['default'].createElement(
-	      'div',
-	      { ref: 'modal', 'aria-hidden': 'false', 'aria-labelledby': 'myModalLabel', role: 'dialog', className: 'modal fade' },
-	      _react2['default'].createElement('div', { className: 'modal-backdrop fade' }),
+	      _commonStd_modal2['default'],
+	      { submitting: this.props.submitting, onConfirm: this.submitHandler, title: '订单未完成页面', ref: 'modal' },
 	      _react2['default'].createElement(
 	        'div',
-	        { className: 'modal-dialog' },
+	        { className: ' mg-15' },
+	        _react2['default'].createElement(
+	          'label',
+	          { className: 'strong-label' },
+	          '未签收原因：'
+	        ),
 	        _react2['default'].createElement(
 	          'div',
-	          { className: 'modal-content' },
+	          { className: 'form-group form-inline' },
 	          _react2['default'].createElement(
-	            'div',
-	            { className: 'modal-header' },
-	            _react2['default'].createElement(
-	              'button',
-	              { 'aria-hidden': 'true', 'data-dismiss': 'modal', className: 'close', type: 'button' },
-	              '×'
-	            ),
-	            _react2['default'].createElement(
-	              'h4',
-	              { className: 'modal-title' },
-	              '订单未完成页面'
-	            )
-	          ),
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'modal-body' },
-	            _react2['default'].createElement(
-	              'div',
-	              { className: ' mg-15' },
-	              _react2['default'].createElement(
-	                'label',
-	                { className: 'strong-label' },
-	                '未签收原因：'
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  _react2['default'].createElement('input', { value: this.state.NOTFOUND, onClick: this.checkReason, type: 'radio', name: 'reason' }),
-	                  ' 联系不上用户，无人签收'
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  _react2['default'].createElement('input', { value: this.state.OTHERS, onClick: this.checkReason, type: 'radio', name: 'reason' }),
-	                  ' 其他'
-	                ),
-	                '　',
-	                _react2['default'].createElement('input', { valueLink: this.linkState('other_reasons'), className: 'form-control input-xs long-input' })
-	              )
-	            ),
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'form-inline mg-15' },
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'row' },
-	                _react2['default'].createElement(
-	                  'div',
-	                  { className: 'col-xs-6' },
-	                  _react2['default'].createElement(
-	                    'label',
-	                    null,
-	                    '货到付款金额：'
-	                  ),
-	                  _react2['default'].createElement('input', { readOnly: true, className: 'form-control input-xs short-input', style: { 'width': 50 } })
-	                ),
-	                _react2['default'].createElement(
-	                  'div',
-	                  { className: 'col-xs-6' },
-	                  _react2['default'].createElement(
-	                    'label',
-	                    null,
-	                    '实收金额：'
-	                  ),
-	                  _react2['default'].createElement('input', { valueLink: this.linkState('real_pay'), className: 'form-control input-xs', style: { 'width': 50 } })
-	                )
-	              )
-	            ),
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'form-group mg-15' },
-	              _react2['default'].createElement(
-	                'label',
-	                { className: 'strong-label' },
-	                '是否将该用户列入黑名单：'
-	              ),
-	              '　',
-	              _react2['default'].createElement(
-	                'label',
-	                null,
-	                _react2['default'].createElement('input', { value: '1', onClick: this.checkBlackList, name: 'reason', type: 'radio' }),
-	                ' 是'
-	              ),
-	              '　　',
-	              _react2['default'].createElement(
-	                'label',
-	                null,
-	                _react2['default'].createElement('input', { value: '0', onClick: this.checkBlackList, name: 'reason', type: 'radio' }),
-	                ' 否'
-	              ),
-	              _react2['default'].createElement('br', null),
-	              _react2['default'].createElement(
-	                'p',
-	                { className: 'font-xs gray' },
-	                '（列入黑名单后，此用户ID下单无法再选择货到付款模式）'
-	              )
-	            )
-	          ),
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'modal-footer' },
-	            _react2['default'].createElement(
-	              'button',
-	              { onClick: this.hide, type: 'button', className: 'btn btn-sm btn-default', 'data-dismiss': 'modal' },
-	              '取消'
-	            ),
-	            _react2['default'].createElement(
-	              'button',
-	              { onClick: this.onConfirm, type: 'button', className: 'btn btn-sm btn-theme' },
-	              '确定'
-	            )
+	            'label',
+	            null,
+	            _react2['default'].createElement('input', { value: this.state.NOTFOUND,
+	              checked: this.state.reason_type == this.state.NOTFOUND,
+	              onClick: this.checkReason, type: 'radio', name: 'reason' }),
+	            ' ' + notfound_reason
 	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            _react2['default'].createElement('input', { value: this.state.OTHER,
+	              checked: this.state.reason_type == this.state.OTHER,
+	              onClick: this.checkReason, type: 'radio', name: 'reason' }),
+	            ' 其他'
+	          ),
+	          '　',
+	          _react2['default'].createElement('input', { valueLink: this.linkState('other_reason'), className: 'form-control input-xs long-input' })
+	        )
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-inline mg-15' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'row' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'col-xs-6' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '货到付款金额：'
+	            ),
+	            _react2['default'].createElement('input', { value: this.props.total_amount || 0, readOnly: true, className: 'form-control input-xs short-input', style: { 'width': 50 } })
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'col-xs-6' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '实收金额：'
+	            ),
+	            _react2['default'].createElement('input', { valueLink: this.linkState('real_pay'), className: 'form-control input-xs', style: { 'width': 50 } })
+	          )
+	        )
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group mg-15' },
+	        _react2['default'].createElement(
+	          'label',
+	          { className: 'strong-label' },
+	          '是否将该用户列入黑名单：'
+	        ),
+	        '　',
+	        _react2['default'].createElement(_commonRadio_group2['default'], {
+	          value: this.state.black_list,
+	          radios: [{ value: "1", text: '是' }, { value: "0", text: '否' }],
+	          onChange: this.checkBlackList
+	        }),
+	        _react2['default'].createElement(
+	          'p',
+	          { className: 'font-xs gray' },
+	          '（列入黑名单后，此用户ID下单无法再选择货到付款模式）'
 	        )
 	      )
 	    );
 	  },
-	  componentDidMount: function componentDidMount() {
-	    this.show();
+	  submitHandler: function submitHandler() {
+	    var _state3 = this.state;
+	    var reason_type = _state3.reason_type;
+	    var OTHER = _state3.OTHER;
+	    var notfound_reason = _state3.notfound_reason;
+	    var other_reason = _state3.other_reason;
+	    var real_pay = _state3.real_pay;
+	    var black_list = _state3.black_list;
+
+	    if (!reason_type) {
+	      (0, _utilsIndex.Noty)('warning', '请选择未签收原因');return;
+	    }
+	    if (reason_type == OTHER && !other_reason.trim()) {
+	      (0, _utilsIndex.Noty)('warning', '请填写其他未签收原因');return;
+	    }
+	    if (!_utilsIndex.form.isNumber(real_pay)) {
+	      (0, _utilsIndex.Noty)('warning', '请填写正确的实收金额');return;
+	    }
+	    this.props.unsignOrder({
+	      COD_amount: real_pay * 100,
+	      unsignin_reason: reason_type == OTHER ? other_reason : notfound_reason,
+	      is_blacklist: black_list
+	    }).done((function () {
+	      this.hide();
+	      (0, _utilsIndex.Noty)('success', '操作成功！');
+	    }).bind(this)).fail(function () {
+	      (0, _utilsIndex.Noty)('error', '提交失败');
+	    });
 	  },
 	  checkReason: function checkReason(e) {
-	    this.setState({ reason: e.target.value });
+	    var reason_type = e.target.value;
+	    this.setState({ reason_type: reason_type, other_reason: reason_type == this.state.NOTFOUND ? '' : this.state.other_reason });
 	  },
-	  checkBlackList: function checkBlackList(e) {
-	    this.setState({ black_list: e.target.value });
+	  checkBlackList: function checkBlackList(value) {
+	    this.setState({ black_list: value });
 	  },
 	  show: function show() {
-	    $(this.refs.modal).modal('show');
+	    this.refs.modal.show();
+	    this.setState(this.getInitialState());
 	  },
 	  hide: function hide() {
-	    $(this.refs.modal).modal('hide');
+	    this.refs.modal.hide();
 	  }
 	});
-
-	// DetailModal.PropTypes = {
-	//   dispatch: PropTypes.func.isRequired,
-	// }
 	module.exports = exports['default'];
 
 /***/ },
@@ -39007,8 +39011,8 @@
 
 	    _get(Object.getPrototypeOf(TimeInput.prototype), 'constructor', this).call(this, props);
 	    this.state = {
-	      hour: this.props.hour,
-	      minute: this.props.minute,
+	      hour: '',
+	      minute: '',
 	      hour_error: '',
 	      minute_error: ''
 	    };
@@ -39044,7 +39048,21 @@
 	  }, {
 	    key: 'val',
 	    value: function val() {
-	      return this.state.hour + ':' + this.state.minute;
+	      var _state2 = this.state;
+	      var hour = _state2.hour;
+	      var minute = _state2.minute;
+
+	      return !hour || !minute ? '' : hour + ':' + minute;
+	    }
+	  }, {
+	    key: 'reset',
+	    value: function reset() {
+	      this.setState({
+	        hour: '',
+	        minute: '',
+	        hour_error: '',
+	        minute_error: ''
+	      });
 	    }
 	  }, {
 	    key: 'onHourChange',
@@ -39085,7 +39103,102 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
-	exports.exchangeOrders = exchangeOrders;
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var RadioGroup = (function (_Component) {
+	  _inherits(RadioGroup, _Component);
+
+	  function RadioGroup(props) {
+	    _classCallCheck(this, RadioGroup);
+
+	    _get(Object.getPrototypeOf(RadioGroup.prototype), 'constructor', this).call(this, props);
+	    this.onCheck = this.onCheck.bind(this);
+	  }
+
+	  _createClass(RadioGroup, [{
+	    key: 'render',
+	    value: function render() {
+	      var _this = this;
+
+	      var _props = this.props;
+	      var radios = _props.radios;
+	      var space = _props.space;
+	      var value = _props.value;
+	      var vertical = _props.vertical;
+	      var name = _props.name;
+
+	      var content = radios.map(function (n, i) {
+	        var item = _react2['default'].createElement(
+	          'label',
+	          { style: { marginRight: space }, key: n.value },
+	          _react2['default'].createElement('input', { value: n.value, checked: _this.props.value == n.value, name: name, onChange: _this.onCheck, type: 'radio' }),
+	          ' ' + n.text
+	        );
+	        return vertical ? _react2['default'].createElement(
+	          'div',
+	          { key: n.value },
+	          item
+	        ) : item;
+	      });
+
+	      //onChange少不了，有bug
+	      return _react2['default'].createElement(
+	        'div',
+	        _extends({}, this.props, { onChange: function () {} }),
+	        content
+	      );
+	    }
+	  }, {
+	    key: 'onCheck',
+	    value: function onCheck(e) {
+	      this.props.onChange(e.target.value);
+	    }
+	  }]);
+
+	  return RadioGroup;
+	})(_react.Component);
+
+	exports['default'] = RadioGroup;
+
+	RadioGroup.defaultProps = {
+	  space: 16,
+	  vertical: false
+	};
+
+	RadioGroup.PropTypes = {
+	  name: _react.PropTypes.string.isRequired,
+	  value: _react.PropTypes.string.isRequired,
+	  radios: _react.PropTypes.array.isRequired, //得按顺序，所以得用数组
+	  onChange: _react.PropTypes.func.isRequired
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 319 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.signOrder = signOrder;
+	exports.unsignOrder = unsignOrder;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -39097,36 +39210,32 @@
 
 	var _configUrl2 = _interopRequireDefault(_configUrl);
 
-	var ORDERS_EXCHANGE = 'ORDERS_EXCHANGE';exports.ORDERS_EXCHANGE = ORDERS_EXCHANGE;
+	var SIGN_ORDER = 'SIGN_ORDER';exports.SIGN_ORDER = SIGN_ORDER;
 	//key: 0->正在处理，1->成功，2->失败
 
-	function exchangeOrders(order_ids) {
+	function signOrder(data) {
 	  //若是异步的话，那么该函数必须也返回一个函数
-	  return function (dispatch, getState) {
-	    dispatch({
-	      type: ORDERS_EXCHANGE,
-	      key: 0
-	    });
-	    return (0, _utilsRequest.put)(_configUrl2['default'].order_exchange.toString(), { order_ids: order_ids }).done(function () {
-	      dispatch({
-	        type: ORDERS_EXCHANGE,
-	        key: 1
-	      });
-	    }).fail(function () {
-	      dispatch({
-	        type: ORDERS_EXCHANGE,
-	        key: 2
-	      });
-	    });
-	  };
-	  // return TEST(null, [
-	  //   {type: ORDERS_EXCHANGE, key: 0},  //立即派发
-	  //   {type: ORDERS_EXCHANGE, key: 2}   //2000毫秒后派发
-	  // ], 2000, false);
+	  // return PUT(Url.order_sign.toString(), data, SIGN_ORDER);
+	  debugger;
+	  return (0, _utilsRequest.TEST)(null, [{ type: SIGN_ORDER, key: 0 }, //立即派发
+	  { type: SIGN_ORDER, key: 1 } //2000毫秒后派发
+	  ], 2000, true);
+	}
+
+	var UNSIGN_ORDER = 'UNSIGN_ORDER';exports.UNSIGN_ORDER = UNSIGN_ORDER;
+	//key: 0->正在处理，1->成功，2->失败
+
+	function unsignOrder(data) {
+	  //若是异步的话，那么该函数必须也返回一个函数
+	  // return PUT(Url.order_unsign.toString(), data, UNSIGN_ORDER);
+	  debugger;
+	  return (0, _utilsRequest.TEST)(null, [{ type: UNSIGN_ORDER, key: 0 }, //立即派发
+	  { type: UNSIGN_ORDER, key: 1 } //2000毫秒后派发
+	  ], 2000, true);
 	}
 
 /***/ },
-/* 319 */
+/* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39183,7 +39292,7 @@
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _commonRadio_group = __webpack_require__(320);
+	var _commonRadio_group = __webpack_require__(318);
 
 	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
 
@@ -39424,7 +39533,7 @@
 	      var submitting = _props3$main.submitting;
 
 	      var content = list.map(function (n, i) {
-	        return _react2['default'].createElement(ReviewRow, _extends({ key: n.id }, _extends({}, n, { showReviewModal: showReviewModal })));
+	        return _react2['default'].createElement(ReviewRow, _extends({ key: n.apply_id }, _extends({}, n, { showReviewModal: showReviewModal })));
 	      });
 	      return _react2['default'].createElement(
 	        'div',
@@ -39638,7 +39747,12 @@
 	            null,
 	            '　是否通过：'
 	          ),
-	          _react2['default'].createElement(_commonRadio_group2['default'], { radios: this.state.radios, value: this.state.status, onChange: this.onStatusChange })
+	          _react2['default'].createElement(_commonRadio_group2['default'], {
+	            radios: this.state.radios,
+	            value: this.state.status,
+	            className: 'inline-block',
+	            name: 'review_status',
+	            onChange: this.onStatusChange })
 	        ),
 	        _react2['default'].createElement(
 	          'div',
@@ -39679,91 +39793,10 @@
 	    this.props.reviewPrintApply(apply_id, { applicant_mobile: applicant_mobile, order_id: order_id, status: status, audit_opinion: audit_opinion }).done((function () {
 	      this.hide();
 	    }).bind(this)).fail(function () {
-	      (0, _utilsIndex.noty)('error', '服务器异常');
+	      (0, _utilsIndex.Noty)('error', '服务器异常');
 	    });
 	  }
 	});
-	module.exports = exports['default'];
-
-/***/ },
-/* 320 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var RadioGroup = (function (_Component) {
-	  _inherits(RadioGroup, _Component);
-
-	  function RadioGroup(props) {
-	    _classCallCheck(this, RadioGroup);
-
-	    _get(Object.getPrototypeOf(RadioGroup.prototype), 'constructor', this).call(this, props);
-	    this.onCheck = this.onCheck.bind(this);
-	  }
-
-	  _createClass(RadioGroup, [{
-	    key: 'render',
-	    value: function render() {
-	      var _this = this;
-
-	      var _props = this.props;
-	      var radios = _props.radios;
-	      var space = _props.space;
-	      var value = _props.value;
-
-	      var content = radios.map(function (n, i) {
-	        return _react2['default'].createElement(
-	          'label',
-	          { style: { marginRight: space }, key: n.value },
-	          _react2['default'].createElement('input', { value: n.value, checked: _this.props.value == n.value, onChange: _this.onCheck, type: 'radio' }),
-	          ' ' + n.text
-	        );
-	      });
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'inline-block', style: this.props.style },
-	        content
-	      );
-	    }
-	  }, {
-	    key: 'onCheck',
-	    value: function onCheck(e) {
-	      this.props.onChange(e.target.value);
-	    }
-	  }]);
-
-	  return RadioGroup;
-	})(_react.Component);
-
-	exports['default'] = RadioGroup;
-
-	RadioGroup.defaultProps = {
-	  space: 16
-	};
-
-	RadioGroup.PropTypes = {
-	  value: _react.PropTypes.string.isRequired,
-	  radios: _react.PropTypes.array.isRequired, //得按顺序，所以得用数组
-	  onChange: _react.PropTypes.func.isRequired
-	};
 	module.exports = exports['default'];
 
 /***/ },
@@ -39788,6 +39821,8 @@
 
 	var _configUrl2 = _interopRequireDefault(_configUrl);
 
+	var _utilsIndex = __webpack_require__(160);
+
 	var GET_PRINT_REVIEW_LIST = 'GET_PRINT_REVIEW_LIST';
 	exports.GET_PRINT_REVIEW_LIST = GET_PRINT_REVIEW_LIST;
 
@@ -39797,7 +39832,8 @@
 	  //   return GET(Url.print_review_list.toString(), data, GET_PRINT_REVIEW_LIST)(dispatch)
 	  //     .fail(function(msg, code){
 	  //       if(code == NO_MORE_CODE){
-	  //         noty('alert', '没有查询到任何结果');
+	  //         //这里注意Noty 
+	  //         Noty('alert', '没有查询到任何结果');
 	  //       }
 	  //     });
 	  // }
@@ -39831,7 +39867,7 @@
 	  // return PUT(Url.review_print_apply.toString(apply_id), data, REVIEW_PRINT_APPLY);
 	  return (0, _utilsRequest.TEST)(null, [{ type: REVIEW_PRINT_APPLY, key: 0 }, //立即派发
 	  { type: REVIEW_PRINT_APPLY, key: 1 } //2000毫秒后派发
-	  ], 2000, true);
+	  ], 1000, true);
 	}
 
 /***/ },
@@ -42974,11 +43010,21 @@
 	  value: true
 	});
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
 	var _utilsIndex = __webpack_require__(160);
 
 	var _redux = __webpack_require__(221);
 
+	var _configAppConfig = __webpack_require__(157);
+
 	var _reducersOrders = __webpack_require__(330);
+
+	var _actionsDelivery_distribute = __webpack_require__(319);
+
+	var Actions = _interopRequireWildcard(_actionsDelivery_distribute);
 
 	var filter_state = {
 	  search_ing: false
@@ -42993,9 +43039,31 @@
 	  }
 	}
 
+	var main_state = {
+	  submitting: false
+	};
+	function main(state, action) {
+	  if (state === undefined) state = main_state;
+
+	  switch (action.type) {
+	    case Actions.SIGN_ORDER:
+	    case Actions.UNSIGN_ORDER:
+	      if (action.key == _configAppConfig.REQUEST.ING) {
+	        return _extends({}, state, { submitting: true });
+	      } else if (action.key == _configAppConfig.REQUEST.SUCCESS || action.key == _configAppConfig.REQUEST.FAIL) {
+	        return _extends({}, state, { submitting: false });
+	      } else {
+	        console.error('nali?');
+	      }
+	    default:
+	      return state;
+	  }
+	}
+
 	exports['default'] = (0, _redux.combineReducers)({
 	  filter: filter,
-	  orders: _reducersOrders.orders
+	  orders: _reducersOrders.orders,
+	  main: main
 	});
 	module.exports = exports['default'];
 

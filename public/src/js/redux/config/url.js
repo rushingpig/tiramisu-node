@@ -40,6 +40,8 @@ const URL = (function(){
     delivery_stations: '/stations',
     order_srcs: '/order/srcs',
     pay_modes: '/pay/modes',
+    order_sign: '/order/:orderId/signin',
+    order_unsign: '/order/:orderId/unsignin',
 
     //产品
     categories: '/product/categories',

@@ -9,11 +9,14 @@ import Select from 'common/select';
 import TimeInput from 'common/time_input';
 import Pagination from 'common/pagination';
 import LineRouter from 'common/line_router';
+import StdModal from 'common/std_modal';
 import { tableLoader } from 'common/loading';
+import RadioGroup from 'common/radio_group';
 
 import { DELIVERY_MAP } from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
+import { form, Noty, dateFormat } from 'utils/index';
 
 import * as OrderActions from 'actions/orders';
 import * as DeliveryDistributeActions from 'actions/delivery_distribute';
@@ -102,10 +105,10 @@ class OrderRow extends Component {
     )
   }
   showSignedModal(){
-    this.props.showSignedModal();
+    this.props.showSignedModal(this.props);
   }
   showUnSignedModal(){
-    this.props.showUnSignedModal();
+    this.props.showUnSignedModal(this.props);
   }
   checkOrderHandler(e){
     var { order_id, checkOrderHandler } = this.props;
@@ -129,8 +132,9 @@ class DeliveryDistributePannel extends Component {
     this.viewOrderDetail = this.viewOrderDetail.bind(this);
   }
   render(){
-    var { filter } = this.props;
-    var { loading, page_no, total, list, check_order_info, active_order_id } = this.props.orders;
+    var { filter, orders, main, signOrder, unsignOrder } = this.props;
+    var { submitting } = main;
+    var { loading, page_no, total, list, check_order_info, active_order_id } = orders;
     var { showSignedModal, showUnSignedModal, checkOrderHandler, viewOrderDetail, activeOrderHandler } = this;
 
     var content = list.map((n, i) => {
@@ -187,7 +191,8 @@ class DeliveryDistributePannel extends Component {
           : null }
 
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} />
-        <div ref="modal-wrap"></div>
+        <SignedModal ref="SignedModal" {...{...check_order_info, submitting, signOrder}} />
+        <UnSignedModal ref="UnSignedModal" {...{...check_order_info, submitting, unsignOrder}} />
       </div>
     )
   }
@@ -214,10 +219,10 @@ class DeliveryDistributePannel extends Component {
     this.refs.detail_modal.show();
   }
   showSignedModal(n){
-    render(<SignedModal data={n} data-id={new Date().getTime()} />, this.refs['modal-wrap']);
+    this.refs.SignedModal.show();
   }
   showUnSignedModal(n){
-    render(<UnSignedModal data={n} data-id={new Date().getTime()} />, this.refs['modal-wrap']);
+    this.refs.UnSignedModal.show();
   }
 }
 
@@ -242,111 +247,141 @@ var SignedModal = React.createClass({
       CASH: 'CASH', //现金赔偿
       REFUND: 'REFUND', //全额退款
 
-      late_time: '',
-
+      signin_date: dateFormat(new Date()),
+      // signin_hour: '',  // 直接 TimeInput.val()获取
+      late_minutes: 0,
       refund_method: '',
-      refund_money: '',
+      refund_money: 0,
       refund_reson: '',
     };
   },
-  componentWillReceiveProps: function(nextProps){
-    if(nextProps['data-id'] != this.props['data-id']){
-      this.show();
-    }
-  },
   mixins: [ LinkedStateMixin ],
   render: function(){
-    var { late_time, refund_method, refund_money, refund_reson} = this.state;
+    var { signin_date, late_minutes, refund_method, refund_money, refund_reson} = this.state;
     return (
-    <div ref="modal" aria-hidden="false" aria-labelledby="myModalLabel" role="dialog" className="modal fade" >
-      <div className="modal-backdrop fade"></div>
-      <div className="modal-dialog">
-        <div className="modal-content">
-          <div className="modal-header">
-            <button aria-hidden="true" data-dismiss="modal" className="close" type="button">×</button>
-            <h4 className="modal-title">订单完成页面</h4>
-          </div>
-          <div className="modal-body">
-            <div className="form-group mg-15 form-inline">
-              <label>签收时间：</label>
-              <DatePicker className="short-input" />
-              {'　'}
-              <TimeInput ref="timeinput" />
-            </div>
-            <div className="form-group form-inline mg-15">
-              <div className="row">
-                <div className="col-xs-6">
-                  <label>迟到时长：</label>
-                  <div className="inline-block input-group input-group-xs">
-                    <input value={late_time} onChange={this.onLateTimeChange} type="text" className="form-control" style={{'width': 50}} />
-                    <span className="input-group-addon">Min</span>
-                  </div>
-                </div>
-                <div className="col-xs-6">
-                  <label>货到付款金额：</label>
-                  <input readOnly className="form-control input-xs short-input" style={{'width': 50}} />
-                </div>
+      <StdModal submitting={this.props.submitting} onConfirm={this.submitHandler} title="订单完成页面" ref="modal">
+        <div className="form-group mg-15 form-inline">
+          <label>签收时间：</label>
+          <DatePicker value={signin_date} onChange={this.onSignInDateChange} className="short-input" />
+          {'　'}
+          <TimeInput onChange={this.onTimeChange} ref="timeinput" />
+        </div>
+        <div className="form-group form-inline mg-15">
+          <div className="row">
+            <div className="col-xs-6">
+              <label>迟到时长：</label>
+              <div className="inline-block input-group input-group-xs">
+                <input value={late_minutes} onChange={this.onLateTimeChange} type="text" className="form-control" style={{'width': 50}} />
+                <span className="input-group-addon">Min</span>
               </div>
             </div>
-            <div className="form-group mg-15">
-              <label className="">
-                <input value={this.state.CASH} onClick={this.checkMethod} type="radio" name="method" />
-                {' 现金赔偿（迟到30mins以内）'}
-              </label>
-              {
-                this.state.refund_method == this.state.CASH
-                ? <div className="form-group form-inline">
-                    <div className="input-group input-group-xs pl-20">
-                      <input valueLink={this.linkState('refund_money')} className="form-control input-xs" style={{'width': 50}} />
-                      <span className="input-group-addon">RMB</span>
-                    </div>
-                  </div>
-                : null
-              }
+            <div className="col-xs-6">
+              <label>货到付款金额：</label>
+              <input value={this.props.total_amount || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
             </div>
-            <div className="form-group mg-15">
-              <label className="">
-                <input value={this.state.REFUND} onClick={this.checkMethod} type="radio" name="method" />
-                {' 全额退款（迟到时间>=30mins）'}
-              </label>
-              {
-                this.state.refund_method == this.state.REFUND
-                ? <div className="form-group pl-20">
-                    <label><input value={'XXX1'} onClick={this.checkReason} name="reason" type="radio" />{' 迟到30mins以上'}</label><br/>
-                    <label><input value={'XXX2'} onClick={this.checkReason} name="reason" type="radio" />{' 款式不符'}</label><br/>
-                    <label><input value={'XXX3'} onClick={this.checkReason} name="reason" type="radio" />{' 尺寸、规格不符'}</label><br/>
-                  </div>
-                : null
-              }
-            </div>
-          </div>
-          <div className="modal-footer">
-            <button onClick={this.hide} type="button" className="btn btn-sm btn-default" data-dismiss="modal">取消</button>
-            <button onClick={this.onConfirm} type="button" className="btn btn-sm btn-theme">确定</button>
           </div>
         </div>
-      </div>
-    </div>
+        <div className="form-group mg-15">
+          <label className="">
+            <input value={this.state.CASH} onClick={this.checkMethod} type="radio" name="method" />
+            {' 现金赔偿（迟到30mins以内）'}
+          </label>
+          {
+            this.state.refund_method == this.state.CASH
+            ? <div className="form-group form-inline">
+                <div className="input-group input-group-xs pl-20">
+                  <input valueLink={this.linkState('refund_money')} className="form-control input-xs" style={{'width': 50}} />
+                  <span className="input-group-addon">RMB</span>
+                </div>
+              </div>
+            : null
+          }
+        </div>
+        <div className="form-group mg-15">
+          <label className="">
+            <input value={this.state.REFUND} onClick={this.checkMethod} type="radio" name="method" />
+            {' 全额退款（迟到时间>=30mins）'}
+          </label>
+          {
+            this.state.refund_method == this.state.REFUND
+            ? <div className="form-group pl-20">
+                <RadioGroup 
+                  value={refund_reson} 
+                  vertical={true}
+                  name="refund_reson"
+                  radios={[
+                    {value: 'XXX1', text: '迟到30mins以上'}, 
+                    {value: 'XXX2', text: '款式不符'}, 
+                    {value: 'XXX3', text: '尺寸、规格不符'}]}
+                  onChange={this.checkReason}
+                />
+              </div>
+            : null
+          }
+        </div>
+      </StdModal>
     )
   },
-  componentDidMount: function(){
-    this.show();
+  submitHandler(){
+    var { CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date } = this.state;
+    var signin_hour = this.refs.timeinput.val();
+    if(!form.isNumber(late_minutes) || late_minutes < 0){
+      Noty('warning', '迟到时间输入有误');return;
+    }
+    if(!signin_date || !signin_hour){
+      Noty('warning', '请填写签收时间');return;
+    }
+    if(late_minutes > 0){
+      if(!refund_method){
+        Noty('warning', '请选择赔偿方式');return;
+      }
+      if(refund_method == CASH){
+        if(!form.isNumber(refund_money)){
+          Noty('warning', '请输入现金赔偿金额');return;
+        }
+      }else{
+        if(!refund_reson){
+          Noty('warning', '请勾选全额退款原因');return;
+        }
+      }
+    }
+    this.props.signOrder({
+      late_minutes: late_minutes,
+      payfor_type: refund_method,
+      payfor_amount: refund_money,
+      payfor_reason: refund_reson,
+      signin_time: signin_date + ' ' + signin_hour
+    }).done(function(){
+      this.hide();
+      Noty('success', '签收成功！');
+    }.bind(this))
+    .fail(function(){
+      Noty('error', '提交失败')
+    })
+  },
+  onSignInDateChange: function(value){
+    this.setState({ signin_date: value })
+  },
+  onTimeChange: function(value){
+    this.setState({signin_hour: value})
   },
   onLateTimeChange: function(e){
     var { value } = e.target;
-    this.setState({ late_time: value, refund_money: value <=30 ? value : ''})
+    this.setState({ late_minutes: value, refund_money: value <=30 ? value : ''})
   },
   checkMethod: function(e){
     this.setState({ refund_method: e.target.value });
   },
-  checkReason: function(e){
-    this.setState({ refund_reson: e.target.value });
+  checkReason: function(value){
+    this.setState({ refund_reson: value });
   },
   show: function(){
-    $(this.refs.modal).modal('show');
+    this.refs.modal.show();
+    this.refs.timeinput.reset();
+    this.setState(this.getInitialState());
   },
   hide: function(){
-    $(this.refs.modal).modal('hide');
+    this.refs.modal.hide();
   },
 });
 
@@ -354,97 +389,101 @@ var UnSignedModal = React.createClass({
   getInitialState: function() {
     return {
       NOTFOUND: 'NOTFOUND',
-      OTHERS: 'OTHERS',
+      OTHER: 'OTHER',
 
-      reason: '',
-      other_reasons: '',
+      reason_type: '',
+      notfound_reason: '联系不上用户，无人签收',
+      other_reason: '',
       real_pay: '',
-      black_list: undefined,
+      black_list: '0',
     };
-  },
-  componentWillReceiveProps: function(nextProps){
-    //组建身份证，当它不一样时，证明要重新打开
-    if(nextProps['data-id'] != this.props['data-id']){
-      this.show();
-    }
   },
   mixins: [ LinkedStateMixin ],
   render: function(){
-    var { late_time, refund_method, refund_money, refund_reson} = this.state;
+    var { notfound_reason } = this.state;
     return (
-    <div ref="modal" aria-hidden="false" aria-labelledby="myModalLabel" role="dialog" className="modal fade" >
-      <div className="modal-backdrop fade"></div>
-      <div className="modal-dialog">
-        <div className="modal-content">
-          <div className="modal-header">
-            <button aria-hidden="true" data-dismiss="modal" className="close" type="button">×</button>
-            <h4 className="modal-title">订单未完成页面</h4>
+      <StdModal submitting={this.props.submitting} onConfirm={this.submitHandler} title="订单未完成页面" ref="modal">
+        <div className=" mg-15">
+          <label className="strong-label">未签收原因：</label>
+          <div className="form-group form-inline">
+            <label>
+              <input value={this.state.NOTFOUND}
+               checked={this.state.reason_type == this.state.NOTFOUND} 
+               onClick={this.checkReason} type="radio" name="reason" />
+              {' ' + notfound_reason}
+            </label>
           </div>
-          <div className="modal-body">
-            <div className=" mg-15">
-              <label className="strong-label">未签收原因：</label>
-              <div className="form-group form-inline">
-                <label>
-                  <input value={this.state.NOTFOUND} onClick={this.checkReason} type="radio" name="reason" />
-                  {' 联系不上用户，无人签收'}
-                </label>
-              </div>
-              <div className="form-group form-inline">
-                <label>
-                  <input value={this.state.OTHERS} onClick={this.checkReason} type="radio" name="reason" />
-                  {' 其他'}
-                </label>
-                {'　'}
-                <input valueLink={this.linkState('other_reasons')} className="form-control input-xs long-input" />
-              </div>
-            </div>
-            <div className="form-inline mg-15">
-              <div className="row">
-                <div className="col-xs-6">
-                  <label>货到付款金额：</label>
-                  <input readOnly className="form-control input-xs short-input" style={{'width': 50}} />
-                </div>
-                <div className="col-xs-6">
-                  <label>实收金额：</label>
-                  <input valueLink={this.linkState('real_pay')} className="form-control input-xs" style={{'width': 50}} />
-                </div>
-              </div>
-            </div>
-            <div className="form-group mg-15">
-              <label className="strong-label">是否将该用户列入黑名单：</label>
-              {'　'}
-              <label><input value="1" onClick={this.checkBlackList} name="reason" type="radio" />{' 是'}</label>
-              {'　　'}
-              <label><input value="0" onClick={this.checkBlackList} name="reason" type="radio" />{' 否'}</label><br/>
-              <p className="font-xs gray">（列入黑名单后，此用户ID下单无法再选择货到付款模式）</p>
-            </div>
-          </div>
-          <div className="modal-footer">
-            <button onClick={this.hide} type="button" className="btn btn-sm btn-default" data-dismiss="modal">取消</button>
-            <button onClick={this.onConfirm} type="button" className="btn btn-sm btn-theme">确定</button>
+          <div className="form-group form-inline">
+            <label>
+              <input value={this.state.OTHER} 
+                checked={this.state.reason_type == this.state.OTHER} 
+                onClick={this.checkReason} type="radio" name="reason" />
+              {' 其他'}
+            </label>
+            {'　'}
+            <input valueLink={this.linkState('other_reason')} className="form-control input-xs long-input" />
           </div>
         </div>
-      </div>
-    </div>
+        <div className="form-inline mg-15">
+          <div className="row">
+            <div className="col-xs-6">
+              <label>货到付款金额：</label>
+              <input value={this.props.total_amount || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+            </div>
+            <div className="col-xs-6">
+              <label>实收金额：</label>
+              <input valueLink={this.linkState('real_pay')} className="form-control input-xs" style={{'width': 50}} />
+            </div>
+          </div>
+        </div>
+        <div className="form-group mg-15">
+          <label className="strong-label">是否将该用户列入黑名单：</label>
+          {'　'}
+          <RadioGroup 
+            value={this.state.black_list} 
+            radios={[{value: "1", text: '是'}, {value: "0", text: '否'}]}
+            onChange={this.checkBlackList}
+          />
+          <p className="font-xs gray">（列入黑名单后，此用户ID下单无法再选择货到付款模式）</p>
+        </div>
+      </StdModal>
     )
   },
-  componentDidMount: function(){
-    this.show();
+  submitHandler(){
+    var { reason_type, OTHER, notfound_reason, other_reason, real_pay, black_list } = this.state;
+    if(!reason_type){
+      Noty('warning', '请选择未签收原因');return;
+    }
+    if( reason_type == OTHER && !other_reason.trim()){
+      Noty('warning', '请填写其他未签收原因');return;
+    }
+    if( !form.isNumber( real_pay ) ){
+      Noty('warning', '请填写正确的实收金额');return;
+    }
+    this.props.unsignOrder({
+      COD_amount: real_pay * 100,
+      unsignin_reason: reason_type == OTHER ? other_reason : notfound_reason,
+      is_blacklist: black_list,
+    }).done(function(){
+      this.hide();
+      Noty('success', '操作成功！');
+    }.bind(this))
+    .fail(function(){
+      Noty('error', '提交失败')
+    })
   },
   checkReason: function(e){
-    this.setState({ reason: e.target.value });
+    var reason_type = e.target.value;
+    this.setState({ reason_type, other_reason: reason_type == this.state.NOTFOUND ? '' : this.state.other_reason });
   },
-  checkBlackList: function(e){
-    this.setState({ black_list: e.target.value });
+  checkBlackList: function(value){
+    this.setState({ black_list: value });
   },
   show: function(){
-    $(this.refs.modal).modal('show');
+    this.refs.modal.show();
+    this.setState(this.getInitialState());
   },
   hide: function(){
-    $(this.refs.modal).modal('hide');
+    this.refs.modal.hide();
   },
 })
-
-// DetailModal.PropTypes = {
-//   dispatch: PropTypes.func.isRequired,
-// }

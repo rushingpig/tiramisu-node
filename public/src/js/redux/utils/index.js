@@ -1,4 +1,4 @@
-import noty from './_noty';
+import Noty from './_noty';
 
 function core_isFunction(arg) {
   return typeof arg === 'function';
@@ -62,7 +62,16 @@ function form_isPositiveNumber(input) {
 function form_isPositiveRightNumber(input) {
   return /^[+]?((\d+.(\d){1,2})|(\d)+)$/.test(input + '') && parseFloat(input) <= 30000 && parseFloat(input) > 0;
 }
-
+function form_isDate(input){
+  return /^[0-9]{4}-(((0[13578]|(10|12))-(0[1-9]|[1-2][0-9]|3[0-1]))|(02-(0[1-9]|[1-2][0-9]))|((0[469]|11)-(0[1-9]|[1-2][0-9]|30)))$/.test(input);
+}
+function form_isTime(input){
+  return /^(([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])(:([0-5]?[0-9]))?$/.test(input);
+}
+//简单版
+function form_isMobile(input){
+  return /^\d{11}$/.test(input);
+}
 /**
 *
 * 描述：日期格式化
@@ -162,6 +171,9 @@ export default {
     isNaN: form_isNaN,
     isPositiveNumber: form_isPositiveNumber, //正数
     isPositiveRightNumber: form_isPositiveRightNumber, //正数, 且最大两位小数，上限30000
+    isDate: form_isDate, //yyyy-MM-dd
+    isTime: form_isTime, //HH:mm:ss 或 HH:mm
+    isMobile: form_isMobile, //简单版
   },
   dateFormat,
   getDate,
@@ -173,5 +185,5 @@ export default {
 
   toFixed,
 
-  noty,          //提示信息小窗口：param：（type， text);
+  Noty,          //提示信息小窗口：param：（type， text);
 };

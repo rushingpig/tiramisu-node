@@ -1,5 +1,6 @@
 import { PUT, TEST } from 'utils/request'; //Promise
 import Url from 'config/url';
+import { Noty } from 'utils/index';
 
 export const GET_PRINT_REVIEW_LIST = 'GET_PRINT_REVIEW_LIST';
 export function getPrintReviewList(data){
@@ -8,7 +9,8 @@ export function getPrintReviewList(data){
   //   return GET(Url.print_review_list.toString(), data, GET_PRINT_REVIEW_LIST)(dispatch)
   //     .fail(function(msg, code){
   //       if(code == NO_MORE_CODE){
-  //         noty('alert', '没有查询到任何结果');
+  //         //这里注意Noty  
+  //         Noty('alert', '没有查询到任何结果');
   //       }
   //     });
   // }
@@ -41,5 +43,5 @@ export function reviewPrintApply(apply_id, data) {
   return TEST(null, [
     {type: REVIEW_PRINT_APPLY, key: 0},  //立即派发
     {type: REVIEW_PRINT_APPLY, key: 1}   //2000毫秒后派发
-  ], 2000, true);
+  ], 1000, true);
 }

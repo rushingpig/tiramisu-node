@@ -12,7 +12,7 @@ import LineRouter from 'common/line_router';
 import RadioGroup from 'common/radio_group';
 import { tableLoader } from 'common/loading';
 
-import { noty } from 'utils/index';
+import { Noty } from 'utils/index';
 import { DELIVERY_MAP, PRINT_REVIEW_STATUS } from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
@@ -107,7 +107,7 @@ class DeliverPrintReviewPannel extends Component {
     var { filter, reviewPrintApply, main: { loading, page_no, total, list, submitting } } = this.props;
 
     var content = list.map((n, i) => {
-      return <ReviewRow key={n.id} {...{...n, showReviewModal}} />;
+      return <ReviewRow key={n.apply_id} {...{...n, showReviewModal}} />;
     })
     return (
       <div className="order-manage">
@@ -214,7 +214,12 @@ var ReviewModal = React.createClass({
           </div>
           <div className="form-group form-inline">
             <label>{'　是否通过：'}</label>
-            <RadioGroup radios={this.state.radios} value={this.state.status} onChange={this.onStatusChange} />
+            <RadioGroup 
+              radios={this.state.radios} 
+              value={this.state.status} 
+              className="inline-block"
+              name="review_status"
+              onChange={this.onStatusChange} />
           </div>
           <div className="form-group form-inline">
             <label>{'申请人手机：'}</label>
@@ -242,7 +247,7 @@ var ReviewModal = React.createClass({
         this.hide();
       }.bind(this))
       .fail(function(){
-        noty('error', '服务器异常');
+        Noty('error', '服务器异常');
       })
   },
 });

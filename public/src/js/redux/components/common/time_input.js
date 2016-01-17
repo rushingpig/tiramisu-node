@@ -5,8 +5,8 @@ export default class TimeInput extends Component {
   constructor(props){
     super(props);
     this.state = {
-      hour: this.props.hour,
-      minute: this.props.minute,
+      hour: '',
+      minute: '',
       hour_error: '',
       minute_error: '',
     }
@@ -28,7 +28,16 @@ export default class TimeInput extends Component {
     )
   }
   val(){
-    return this.state.hour + ':' + this.state.minute
+    var { hour, minute } = this.state;
+    return !hour || !minute ? '' : hour + ':' + minute;
+  }
+  reset(){
+    this.setState({
+      hour: '',
+      minute: '',
+      hour_error: '',
+      minute_error: '',
+    })
   }
   onHourChange(e){
     var {value} = e.target, hour_error;

@@ -9,7 +9,7 @@ import StdModal from 'common/std_modal';
 import LineRouter from 'common/line_router';
 import { tableLoader } from 'common/loading';
 
-import { noty } from 'utils/index';
+import { Noty } from 'utils/index';
 import { DELIVERY_MAP } from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
@@ -175,7 +175,7 @@ class DeliverChangePannel extends Component {
     if(this.props.orders.checked_order_ids.length){
       this.refs.changeModal.show();
     }else{
-      noty('warning', '请先选择需要转换的订单！');
+      Noty('warning', '请先选择需要转换的订单！');
     }
   }
   activeOrderHandler(order_id){
@@ -243,9 +243,9 @@ class ChangeModal extends Component {
     var { exchangeOrders, checked_order_ids } = this.props;
     exchangeOrders(checked_order_ids).done(function(){
       this.hide();
-      noty('success', '转换成功！')
+      Noty('success', '转换成功！')
     }.bind(this)).fail(() => {
-      noty('error', '转换异常')
+      Noty('error', '转换异常')
     })
   }
 };

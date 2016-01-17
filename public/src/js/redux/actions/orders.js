@@ -2,7 +2,7 @@ import { GET, TEST } from 'utils/request'; //Promise
 import Url from 'config/url';
 import { getValues } from 'redux-form';
 import { NO_MORE_CODE } from 'config/app.config';
-import { noty } from 'utils/index';
+import { Noty } from 'utils/index';
 
 export const GET_ORDER_LIST = 'GET_ORDER_LIST';
 export function getOrderList(data){
@@ -11,7 +11,7 @@ export function getOrderList(data){
     return GET(Url.orders.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch)
       .fail(function(msg, code){
         if(code == NO_MORE_CODE){
-          noty('alert', '没有查询到任何结果');
+          Noty('alert', '没有查询到任何结果');
         }
       });
   }

@@ -9,8 +9,7 @@
 module.exports = {
     'orderId' : {
         notEmpty : true,
-        isInt : true
+        isInt : true,
+        isOrderId : true
     },
-
-
 };

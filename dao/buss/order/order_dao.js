@@ -90,12 +90,13 @@ OrderDao.prototype.updateOrderFulltext = function(order_fulltext_obj,orderId){
     return baseDao.update(this.base_update_sql,[tables.buss_order_fulltext,order_fulltext_obj,orderId]);
 };
 /**
- * find the order detail info by orderId
+ * find the order detail info by orderId or orderIds
  * @param orderId
  */
-OrderDao.prototype.findOrderById = function(orderId){
+OrderDao.prototype.findOrderById = function(orderIdOrIds){
     let columns = ['br.delivery_type',
         'bo.owner_name',
+        'bo.id',
         'bo.owner_mobile',
         'br.`name` as recipient_name',
         'br.mobile as recipient_mobile',
@@ -110,8 +111,10 @@ OrderDao.prototype.findOrderById = function(orderId){
         'bo.src_id',
         'bo.remarks',
         'bo.status',
+        'bo.coupon',
         'bp.`name` as product_name',
         'bp.original_price',
+        'bos.amount',
         'bos.num',
         'bps.size',
         'bps.price',
@@ -122,18 +125,24 @@ OrderDao.prototype.findOrderById = function(orderId){
         'bos.custom_name',
         'bos.custom_desc',
         'bos.atlas',
+        'bosrc.merge_name',
         'dr.name as regionalism_name',
         'dr.id as regionalism_id',
         'dr2.name as city_name',
         'dr2.id as city_id',
         'dr3.name as province_name',
         'dr3.id as province_id',
-        'bo.updated_time'
+        'bo.updated_time',
+        'bo.created_time',
+        'su1.name as created_by',
+        'su2.name as deliveryman_name'
     ].join(',');
     let sql = "select "+columns+" from ?? bo",params = [];
     params.push(tables.buss_order);
     sql += " left join ?? br on bo.recipient_id = br.id";
     params.push(tables.buss_recipient);
+    sql += " left join ?? bosrc on bo.src_id = bosrc.id";
+    params.push(tables.buss_order_src);
     sql += " left join ?? bpm on bo.pay_modes_id = bpm.id";
     params.push(tables.buss_pay_modes);
     sql += " left join ?? bds on bo.delivery_id = bds.id";
@@ -150,9 +159,24 @@ OrderDao.prototype.findOrderById = function(orderId){
     params.push( tables.buss_product_sku);
     sql += " left join ?? bp on bps.product_id = bp.id";
     params.push( tables.buss_product);
-    sql += " where 1=1 and bo.del_flag = ? and bo.id = ?";
+    sql += " left join ?? su1 on bo.created_by = su1.id";
+    params.push(tables.sys_user);
+    sql += " left join ?? su2 on bo.deliveryman_id = su2.id";
+    params.push(tables.sys_user);
+    sql += " where 1=1 and bo.del_flag = ? ";
     params.push(del_flag.SHOW);
-    params.push(orderId);
+    if(Array.isArray(orderIdOrIds)){
+        if(orderIdOrIds.length === 1){
+            sql += " and bo.id = ?";
+            params.push(orderIdOrIds[0]);
+        }else{
+            sql += " and bo.id in" + dbHelper.genInSql(orderIdOrIds);
+        }
+    }else{
+        sql += " and bo.id = ?";
+        params.push(orderIdOrIds);
+    }
+
     return baseDao.select(sql,params);
 };
 /**
@@ -173,6 +197,7 @@ let columns = [
     'bo.remarks',
     'bo.total_original_price',
     'bo.total_discount_price',
+    'bo.total_amount',
     'bo.coupon',
     'bo.`status`',
     'bo.submit_time',

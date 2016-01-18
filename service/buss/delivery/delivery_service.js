@@ -14,6 +14,7 @@ var dao = require('../../../dao'),
     Constant = require('../../../common/Constant'),
     res_obj = require('../../../util/res_obj'),
     systemUtils = require('../../../common/SystemUtils'),
+    dateUtils = require('../../../common/DateUtils'),
     TiramisuError = require('../../../error/tiramisu_error'),
     toolUtils = require('../../../common/ToolUtils'),
     schema = require('../../../schema');
@@ -408,7 +409,82 @@ DeliveryService.prototype.print = (req,res,next)=>{
         if(parseInt(result) <= 0){
             throw new TiramisuError(res_obj.FAIL);
         }
-        res.render('print');
+        return orderDao.findOrderById(order_ids);
+    }).then((results)=>{
+        if(toolUtils.isEmptyArray(results)){
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        let res_data = {},map = new Map();
+
+        results.forEach((curr)=>{
+
+            if(!map.has(curr.id)){
+                let data = {
+                    products : []
+                };
+                data.order_id = systemUtils.getShowOrderId(curr.id,curr.created_time);
+                data.created_time = dateUtils.format(curr.created_time);
+                data.delivery_id = curr.delivery_id;
+                data.delivery_name = curr.delivery_name;
+                data.delivery_time = curr.delivery_time;
+                data.delivery_type = curr.delivery_type;
+                data.owner_mobile = curr.owner_mobile;
+                data.owner_name = curr.owner_name;
+                data.pay_modes_id = curr.pay_modes_id;
+                data.pay_name = curr.pay_name;
+                data.recipient_address = curr.recipient_address;
+                data.recipient_name = curr.recipient_name;
+                data.remarks = curr.remarks;
+                data.coupon = curr.coupon;
+                data.src_id = curr.src_id;
+                data.province_id = curr.province_id;
+                data.province_name = curr.province_name;
+                data.city_id = curr.city_id;
+                data.city_name = curr.city_name;
+                data.regionalism_id = curr.regionalism_id;
+                data.regionalism_name = curr.regionalism_name;
+                data.pay_status = curr.pay_status;
+                data.recipient_mobile = curr.recipient_mobile;
+                data.recipient_landmark = curr.landmark;
+                if(curr.sku_id){
+                    let product_obj = {
+                        sku_id : curr.sku_id,
+                        choco_board : curr.choco_board,
+                        custom_desc : curr.custom_desc,
+                        custom_name : curr.custom_name,
+                        discount_price : curr.discount_price,
+                        greeting_card : curr.greeting_card,
+                        num : curr.num,
+                        original_price : curr.original_price,
+                        product_name : curr.product_name,
+                        atlas : curr.atlas,
+                        size : curr.size
+                    };
+                    data.products.push(product_obj);
+                }
+                map.set(curr.id,data);
+            }else{
+                if(curr.sku_id) {
+                    let product_obj = {
+                        sku_id: curr.sku_id,
+                        choco_board: curr.choco_board,
+                        custom_desc: curr.custom_desc,
+                        custom_name: curr.custom_name,
+                        discount_price: curr.discount_price,
+                        greeting_card: curr.greeting_card ? curr.greeting_card : '不需要',
+                        num: curr.num,
+                        original_price: curr.original_price,
+                        product_name: curr.product_name,
+                        atlas: curr.atlas,
+                        size: curr.size
+                    };
+                    map.get(curr.id).products.push(product_obj);
+                }
+            }
+        });
+        res_data.list = Array.from(map.values());
+        res_data.baseHref = req.protocol + '://' + req.headers.host;
+        res.render('print',res_data);
     });
     systemUtils.wrapService(res,next,promise);
 };

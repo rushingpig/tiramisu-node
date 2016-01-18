@@ -12,6 +12,7 @@ var log4js = require('log4js');
 var logger = log4js.getLogger('express');
 var session = require('express-session');
 var exphbs = require('express-handlebars');
+var hbs = require('./common/HandlebarsUtils').instance(exphbs);
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var validator = require('express-validator');
@@ -22,13 +23,14 @@ var v1Router = require('./routes/v1');
 var router = require('./routes');
 var middleware = require('./middleware');
 
+
 //global.loog = LogHelper.getLogger('tiramisu');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 //app.set('view engine', 'jade');
 
-app.engine('.hbs', exphbs({defaultLayout: 'single', extname: '.hbs'}));
+app.engine('.hbs', hbs.engine);
 app.set('view engine', '.hbs');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

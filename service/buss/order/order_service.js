@@ -528,6 +528,7 @@ OrderService.prototype.listOrders = (entrance)=>{
                     print_status : curr.print_status,
                     order_id : systemUtils.getShowOrderId(curr.id,curr.created_time),
                     original_price : curr.original_price,
+                    total_amount : curr.total_amount,
                     owner_mobile : curr.owner_mobile,
                     owner_name : curr.owner_name,
                     pay_status : Constant.PSD[curr.pay_status],

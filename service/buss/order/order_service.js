@@ -69,8 +69,8 @@ OrderService.prototype.addOrder = (req, res, next) => {
         invoice = req.body.invoice,
         remarks = req.body.remarks,
         total_amount = req.body.total_amount,
-        total_original_price = req.body.total_original_price,
-        total_discount_price = req.body.total_discount_price,
+        total_original_price = req.body.original_price,
+        total_discount_price = req.body.discount_price,
         products = req.body.products;
 
 

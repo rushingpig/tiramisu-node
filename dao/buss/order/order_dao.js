@@ -205,6 +205,8 @@ let columns = [
     'br.delivery_type',
     'br.address',
     'br.landmark',
+    'br.name as recipient_name',
+    'br.mobile as recipient_mobile',
     'dr.merger_name',
     'bos.merge_name as src_name',
     'su1.name as created_by',

@@ -71,7 +71,8 @@ OrderService.prototype.addOrder = (req, res, next) => {
         total_amount = req.body.total_amount,
         total_original_price = req.body.original_price,
         total_discount_price = req.body.discount_price,
-        products = req.body.products;
+        products = req.body.products,
+        prefix_address = req.body.prefix_address;
 
 
 
@@ -93,7 +94,7 @@ OrderService.prototype.addOrder = (req, res, next) => {
                 pay_status: pay_status,
                 owner_name : owner_name,
                 owner_mobile : owner_mobile,
-                is_submit: 0,
+                is_submit: 1,
                 is_deal: 0,
                 status : Constant.OS.STATION,
                 remarks: remarks,
@@ -131,7 +132,7 @@ OrderService.prototype.addOrder = (req, res, next) => {
                 owner_mobile : owner_mobile,
                 recipient_name : systemUtils.encodeForFulltext(recipient_name),
                 recipient_mobile : recipient_mobile,
-                recipient_address : systemUtils.encodeForFulltext(recipient_address),
+                recipient_address : systemUtils.encodeForFulltext(prefix_address + recipient_address),
                 landmark : systemUtils.encodeForFulltext(recipient_landmark)
             };
             let order_history_obj = {
@@ -280,9 +281,11 @@ OrderService.prototype.editOrder = function(is_submit){
             delivery_time: delivery_time,
             total_amount : total_amount,
             total_original_price : total_original_price,
-            total_discount_price : total_discount_price
+            total_discount_price : total_discount_price,
+            is_deal : 1
         };
         if(is_submit){
+            order_obj.is_submit = 1;
             order_obj.status = Constant.OS.STATION;
             order_obj.submit_time = new Date();
         }else{
@@ -474,12 +477,16 @@ OrderService.prototype.listOrders = (entrance)=>{
             end_time : req.query.end_time,
             is_deal : req.query.is_deal,
             is_submit : req.query.is_submit,
-            keywords : systemUtils.encodeForFulltext(req.query.keywords || ''),
             src_id : req.query.src_id,
             status : req.query.status,
             city_id : req.query.city_id,
             owner_mobile : req.query.owner_mobile
         };
+        if(isNaN(parseInt(req.query.keywords || ''))){
+            query_data.keywords = systemUtils.encodeForFulltext(req.query.keywords || '');
+        }else{
+            query_data.keywords = req.query.keywords;
+        }
         if(entrance === Constant.OSR.LIST){
             query_data.order_sorted_rules = entrance;
         }else if (entrance === Constant.OSR.DELIVERY_EXCHANGE){
@@ -510,6 +517,7 @@ OrderService.prototype.listOrders = (entrance)=>{
 
                 let list_obj = {
                     cancel_reason : curr.cancel_reason,
+                    landmark : curr.landmark,
                     city : curr.merger_name.split(',')[2],
                     created_by : curr.created_by,
                     created_time : curr.created_time,

@@ -23,7 +23,7 @@ var DatePicker = React.createClass({
         });
       }.bind(this))
     }
-    if(nextProps.value != this.state.date){
+    if(nextProps.value != this.props.value){
       this.setState({ date: nextProps.value })
     }
   },

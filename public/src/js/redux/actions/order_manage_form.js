@@ -39,10 +39,8 @@ export function productAttrChange(data){
 
 export const GET_HISTORY_ORDERS = 'GET_HISTORY_ORDERS';
 export function getHistoryOrders(data){
-  // return {
-  //   type: GET_HISTORY_ORDERS,
-  //   data,
-  // }
+  return GET(Url.orders.toString(), data, GET_HISTORY_ORDERS);
+/*
   return TEST({
     total: 1,
     page_no: 0,
@@ -73,6 +71,7 @@ export function getHistoryOrders(data){
       'updated_date':  '最后操作时间eeee',
     }]
   }, GET_HISTORY_ORDERS);
+*/
 }
 export const CHECK_HISTORY_ORDER = 'CHECK_HISTORY_ORDER';
 export const GET_HISTORY_ORDER_DETAIL_PRODUCTS = 'GET_HISTORY_ORDER_DETAIL_PRODUCTS';

@@ -52,3 +52,18 @@ export function orders(state = orders_state, action){
       return state;
   }
 }
+
+var operation_record = {
+  page_no: 0,
+  total: 0,
+  list: [],
+}
+
+export function operationRecord(state = operation_record, action){
+  switch(action.type){
+    case OrderActions.GET_ORDER_OPT_RECORD:
+      return {...state, ...action.data}
+    default:
+      return state;
+  }
+}

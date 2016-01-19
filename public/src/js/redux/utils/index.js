@@ -1,4 +1,5 @@
 import Noty from './_noty';
+import React from 'react';
 
 function core_isFunction(arg) {
   return typeof arg === 'function';
@@ -158,6 +159,30 @@ function toFixed(target, digit){
   }
 }
 
+//给类似"{修改} {配送站} 为 {龙华站}"这样的文本 着色
+function colour(input){
+  input = (input + '').trim().split('\n');
+  var results = [];
+  input.forEach((_input, j) => {
+    var tmp = [];
+    _input = _input.match(/[^\{\}]*/g);
+    var createSpan = index => <span key={index} className="strong">{_input[index]}</span>;
+    for(var i=0,len=_input.length; i<len; i++){
+      if(_input[i] == ""){
+        if( i + 1 <len && _input[i+1] && _input[i+2] == ""){
+          tmp.push(createSpan(i+1));
+          i += 2;
+        }
+      }else{
+        tmp.push(_input[i]);
+      }
+    }
+    input.length > 1 && tmp.push(<br key={'br' + j} />);
+    results.push(<span key={'record-row' + j} className="nowrap">{tmp}</span>); //不允许换行
+  })
+  return results;
+}
+
 export default {
   core: {
     isArray: core_isArray,
@@ -186,4 +211,6 @@ export default {
   toFixed,
 
   Noty,          //提示信息小窗口：param：（type， text);
+
+  colour,        //
 };

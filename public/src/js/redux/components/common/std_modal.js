@@ -7,7 +7,7 @@ export default class StdModal extends Component {
     this.hide = this.hide.bind(this);
   }
   render(){
-    var { size, title, submitting, onConfirm } = this.props;
+    var { size, title, submitting, onConfirm, footer } = this.props;
     return (
     <div ref="__modal" aria-hidden="false" aria-labelledby="myModalLabel" role="dialog" className="modal fade" >
       <div className="modal-backdrop fade"></div>
@@ -20,13 +20,17 @@ export default class StdModal extends Component {
           <div className="modal-body">
             {this.props.children}
           </div>
-          <div className="modal-footer">
-            <button onClick={this.hide} type="button" className="btn btn-sm btn-default" data-dismiss="modal">取消</button>
-            <button 
-              onClick={onConfirm} 
-              disabled={submitting} 
-              data-submitting={submitting} type="button" className="btn btn-sm btn-theme">确定</button>
-          </div>
+          {
+            footer
+            ? <div className="modal-footer">
+                <button onClick={this.hide} type="button" className="btn btn-sm btn-default" data-dismiss="modal">取消</button>
+                <button 
+                  onClick={onConfirm} 
+                  disabled={submitting} 
+                  data-submitting={submitting} type="button" className="btn btn-sm btn-theme">确定</button>
+              </div>
+            : null
+          }
         </div>
       </div>
     </div>
@@ -54,4 +58,5 @@ StdModal.defaultProps = {
   submitting: false,
   onConfirm: function(){},
   onCancel: function(){},
+  footer: true, //是否需要 modal-footer
 }

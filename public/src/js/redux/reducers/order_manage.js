@@ -4,7 +4,7 @@ import { GOT_ORDER_SRCS } from 'actions/order_manage_form';
 import { pay_status } from 'config/app.config';
 
 import { area } from './area_select';
-import { orders } from './orders';
+import { orders, operationRecord } from './orders';
 
 var filter_state = {
   search_ing: false,
@@ -35,4 +35,5 @@ export default combineReducers({
   filter,
   area: area(false),
   orders,
+  operationRecord
 })

@@ -1,10 +1,12 @@
 import React, {Component, PropTypes} from 'react';
-
 import * as OrderManageActions from 'actions/orders';
 
 import Pagination from 'common/pagination';
-import Config from 'config/app.config';
+import StdModal from 'common/std_modal';
 import { get_table_empty } from 'common/loading';
+
+import Config from 'config/app.config';
+import { form } from 'utils/index';
 
 import OrderProductsDetail from 'common/order_products_detail';
 
@@ -31,7 +33,7 @@ class OrderRow extends Component {
         <td><div className="bg-success round">{props.status}</div></td>
         <td>todo</td>
         <td>{props.updated_by}</td>
-        <td><div className="time">{props.updated_date}<br/><a href="#">操作记录</a></div></td>
+        <td><div className="time">{props.updated_date}</div></td>
       </tr>
     )
   }
@@ -47,7 +49,7 @@ class HistoryOrders extends Component {
     this.show = this.show.bind(this);
     this.hide = this.hide.bind(this);
     this.state = {
-      page_size: 8,
+      page_size: 3,
       phone_num: this.props.phone_num
     }
   }
@@ -60,58 +62,65 @@ class HistoryOrders extends Component {
       return <OrderRow key={n.order_id} {...{...n, active_order_id, viewDetail, checkHistoryOrder}} />;
     })
     return (
-    <div ref="modal" aria-hidden="false" aria-labelledby="myModalLabel" role="dialog" className="modal fade" >
-      <div className="modal-backdrop fade"></div>
-      <div className="modal-dialog modal-lg">
-        <div className="modal-content">
-          <div className="modal-header">
-            <button onClick={this.hide} aria-hidden="true" data-dismiss="modal" className="close" type="button">×</button>
-            <h4 className="modal-title">历史订单</h4>
-          </div>
-          <div className="modal-body">
-            <div className="table-responsive">
-              <table className="table table-hover text-center">
-                <thead>
-                <tr>
-                  <th>订单号</th>
-                  <th>下单时间</th>
-                  <th>下单人</th>
-                  <th>收货人信息</th>
-                  <th>配送时间</th>
-                  <th>备注</th>
-                  <th>订单来源</th>
-                  <th>订单状态</th>
-                  <th>发票备注</th>
-                  <th>操作人</th>
-                  <th>操作时间</th>
-                </tr>
-                </thead>
-                <tbody>
-                {content.length ? content : get_table_empty()}
-                </tbody>
-              </table>
-            </div>
+    <StdModal ref="modal" size="lg" footer={false} title="历史订单">
+      <div className="form-group form-inline">
+        <label>
+          {'手机号码 '}
+          <input value={this.state.phone_num} onChange={this.onPhonenumChange.bind(this)} className="form-control input-xs" />
+        </label>
+        {'　'}
+        <button onClick={this.search} className="btn btn-default btn-xs">查询</button>
+        {'　'}
+        <button className="btn btn-default btn-xs">复制订单</button>
+      </div>
+      <div className="table-responsive">
+        <table className="table table-hover text-center">
+          <thead>
+          <tr>
+            <th>订单号</th>
+            <th>下单时间</th>
+            <th>下单人</th>
+            <th>收货人信息</th>
+            <th>配送时间</th>
+            <th>备注</th>
+            <th>订单来源</th>
+            <th>订单状态</th>
+            <th>发票备注</th>
+            <th>操作人</th>
+            <th>操作时间</th>
+          </tr>
+          </thead>
+          <tbody>
+          {content.length ? content : get_table_empty()}
+          </tbody>
+        </table>
+      </div>
 
-            <Pagination 
-              page_no={page_no} 
-              total_count={total} 
-              page_size={this.state.page_size} 
-              onPageChange={this.onPageChange}
-            />
+      <Pagination 
+        page_no={page_no} 
+        total_count={total} 
+        page_size={this.state.page_size} 
+        onPageChange={this.onPageChange}
+      />
 
-            { check_order_info
-            ? <div className="panel">
-                <div className="panel-body">
-                  <div>历史订单产品详情</div>
-                  <OrderProductsDetail products={check_order_info.products} />
-                </div>
-              </div>
-            : null }
+      { check_order_info
+      ? <div className="panel">
+          <div className="panel-body">
+            <div>历史订单产品详情</div>
+            <OrderProductsDetail products={check_order_info.products} />
           </div>
         </div>
-      </div>
-    </div>
+      : null }
+    </StdModal>
     )
+  }
+  onPhonenumChange(e){
+    this.setState({ phone_num: e.target.value })
+  }
+  componentWillReceiveProps(nextProps){
+    if(nextProps.phone_num != this.props.phone_num){
+      this.setState({ phone_num: nextProps.phone_num })
+    }
   }
   onPageChange(page){
     this.setState({page_no: page});
@@ -120,16 +129,19 @@ class HistoryOrders extends Component {
 
   }
   search(){
-    var { getHistoryOrders, data: {page_no, page_size} } = this.props;
-    var { phone_num } = this.state;
-    getHistoryOrders({phone_num, page_no, page_size});
+    var { getHistoryOrders, data: {page_no} } = this.props;
+    var { phone_num, page_size } = this.state;
+    if(form.isMobile(phone_num))
+      getHistoryOrders({owner_mobile: phone_num, page_no, page_size});
+    else
+      noty('warning', '错误的电话号码')
   }
   show(){
-    $(this.refs.modal).modal('show');
+    this.refs.modal.show();
     this.search();
   }
   hide(){
-    $(this.refs.modal).modal('hide');
+    this.refs.modal.hide();
   }
 }
 

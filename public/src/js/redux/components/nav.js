@@ -61,20 +61,22 @@ export default class Nav extends Component {
     var SLIDE_TIME = 180;
 
     $nav.on('click', 'a.menu-1', function(){
-      var $menulist = $(this).parents('.menu-list').eq(0);
-      $menulist
-        .siblings('.open').each(function(){
-          var $others = $(this);
-          $others.find('.sub-menu-list')
+      if(!$('#app-container').hasClass('left-side-collapsed')){
+        var $menulist = $(this).parents('.menu-list').eq(0);
+        $menulist
+          .siblings('.open').each(function(){
+            var $others = $(this);
+            $others.find('.sub-menu-list')
+              .slideToggle(SLIDE_TIME, function(){
+                $others.removeClass('open')
+              });
+          })
+        $menulist
+          .find('.sub-menu-list')
             .slideToggle(SLIDE_TIME, function(){
-              $others.removeClass('open')
+              $menulist.toggleClass('open')
             });
-        })
-      $menulist
-        .find('.sub-menu-list')
-          .slideToggle(SLIDE_TIME, function(){
-            $menulist.toggleClass('open')
-          });
+      }
     }).on('click', 'a.menu-2', function(){
       var $this = $(this), $li = $this.parent(), $menulist = $this.parents('.menu-list').eq(0);
       $li.addClass('active');

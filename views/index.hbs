@@ -12,9 +12,9 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="stylesheet" href="/css/datepicker.min.css">
     <link href="https://cdn.bootcss.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css?rev=@@hash">
-    <!-- <script type="text/javascript">xfxb = { login: {{isLogin}} };</script> -->
-    <script type="text/javascript">xfxb = { login: true, root: "/", };</script>
+    <link rel="stylesheet" href="/css/style.min.css?rev=@@hash">
+    <script type="text/javascript">xfxb = { login: {{isLogin}}, root: "/", };</script>
+    <!-- <script type="text/javascript">xfxb = { login: false, root: "/", };</script> -->
 </head>
 
 <body>
@@ -23,8 +23,8 @@
     <script>
     window.jQuery || document.write('<script src="/lib/vendor/jquery-1.11.3.min.js"><\/script>')
     </script>
-    <script src="/js/app.min.js?rev=@@hash"></script>
-    
+    <script src="http://localhost:3000/app.js"></script>
+    <script src="http://localhost:3000/webpack-dev-server.js"></script>
     <!-- <script src="/js/main.min.js?rev=@@hash"></script>              -->
     <script src="https://cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="/lib/bootstrap-datepicker.min.js"></script>

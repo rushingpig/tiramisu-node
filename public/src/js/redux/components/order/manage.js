@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { reduxForm } from 'redux-form';
 
 import * as AreaActions from 'actions/area';
-import * as OrderManageActions from 'actions/orders';
+import * as OrderActions from 'actions/orders';
 import { getOrderSrcs } from 'actions/order_manage_form';
 
 import DatePicker from 'common/datepicker';
@@ -15,8 +15,10 @@ import Config from 'config/app.config';
 import history from 'history_instance';
 import LineRouter from 'common/line_router';
 import SearchInput from 'common/search_input';
-import { tableLoader } from 'common/loading';
+import { tableLoader, get_table_empty } from 'common/loading';
+import StdModal from 'common/std_modal';
 import LazyLoad from 'utils/lazy_load';
+import { colour } from 'utils/index';
 
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from 'common/order_detail_modal';
@@ -40,6 +42,9 @@ class TopHeader extends Component {
   }
 }
 
+/**
+ * 每个页面的filter都对应一个form表单，在全局state的form字段下
+ */
 class FilterHeader extends Component {
   constructor(props){
     super(props);
@@ -135,15 +140,15 @@ FilterHeader = reduxForm({
   ]
 })( FilterHeader );
 
-class OrderRow extends Component {
+var OrderRow = React.createClass({
   render(){
     var { props } = this;
     return (
-      <tr className={props.active_order_id == props.order_id ? 'active' : ''} onClick={this.clickHandler.bind(this)}>
+      <tr className={props.active_order_id == props.order_id ? 'active' : ''} onClick={this.clickHandler}>
         <td>
-          <a onClick={this.editHandler.bind(this)} href="javascript:;">[编辑]</a><br/>
-          <a onClick={this.viewOrderDetail.bind(this)} href="javascript:;">[查看]</a><br/>
-          <a onClick={this.alterStation.bind(this)} href="javascript:;" className="nowrap">[修改配送]</a>
+          <a onClick={this.editHandler} href="javascript:;">[编辑]</a><br/>
+          <a onClick={this.viewOrderDetail} href="javascript:;">[查看]</a><br/>
+          <a onClick={this.alterStation} href="javascript:;" className="nowrap">[修改配送]</a>
         </td>
         <td>{props.merchant_id}</td>
         <td>{props.order_id}</td>
@@ -174,43 +179,49 @@ class OrderRow extends Component {
         <td><div className="remark-in-table">{props.remarks}</div></td>
         <td>{props.created_by}</td>
         <td>{props.updated_by}</td>
-        <td><div className="time">{props.updated_date}<br/><a href="#">操作记录</a></div></td>
+        <td><div className="time">{props.updated_date}<br/><a onClick={this.viewOrderOperationRecord} href="javascript:;">操作记录</a></div></td>
       </tr>
     )
-  }
+  },
   clickHandler(){
-    this.props.activeOrder(this.props.order_id);
-  }
+    var { order_id, active_order_id, activeOrder } = this.props;
+    order_id != active_order_id && activeOrder(order_id);
+  },
   editHandler(e){
     history.push('/om/index/' + this.props.order_id);
     e.stopPropagation();
-  }
+  },
   viewOrderDetail(e){
     this.props.viewOrderDetail(this.props);
     e.stopPropagation();
-  }
+  },
   alterStation(e){
     this.props.alterStation(this.props);
     e.stopPropagation();
+  },
+  viewOrderOperationRecord(e){
+    this.props.viewOrderOperationRecord(this.props);
+    e.stopPropagation();
   }
-}
+})
 
 class ManagePannel extends Component {
   constructor(props){
     super(props);
     this.viewOrderDetail = this.viewOrderDetail.bind(this);
     this.alterStation = this.alterStation.bind(this);
+    this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
     this.state = {
       page_size: 8,
     }
   }
   render(){
-    var { filter, area, activeOrder, dispatch, getOrderList } = this.props;
+    var { filter, area, activeOrder, operationRecord, dispatch, getOrderList, getOrderOptRecord } = this.props;
     var { loading, page_no, total, list, check_order_info, active_order_id } = this.props.orders;
-    var { viewOrderDetail, alterStation } = this;
+    var { viewOrderDetail, alterStation, viewOrderOperationRecord } = this;
 
     var content = list.map((n, i) => {
-      return <OrderRow key={n.order_id} {...{...n, active_order_id, viewOrderDetail, alterStation, activeOrder}} />;
+      return <OrderRow key={n.order_id} {...{...n, active_order_id, viewOrderDetail, alterStation, viewOrderOperationRecord, activeOrder}} />;
     })
     return (
       <div className="order-manage">
@@ -255,14 +266,14 @@ class ManagePannel extends Component {
                 </tbody>
               </table>
             </div>
-          </div>
-
-           <Pagination 
+            
+            <Pagination 
               page_no={page_no} 
               total_count={total} 
               page_size={this.state.page_size} 
-              onPageChange={this.onPageChange}
+              onPageChange={this.onPageChange.bind(this)}
             />
+          </div>
         </div>
 
         { check_order_info
@@ -275,23 +286,28 @@ class ManagePannel extends Component {
           : null }
 
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} />
-
+        <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, ...operationRecord}} />
         <div ref="modal-wrap"></div>
       </div>
     )
   }
   onPageChange(page){
-    this.setState({page_no: page});
+    this.search(page);
   }
   componentDidMount() {
-    var { getOrderList, orders } = this.props;
-    getOrderList({page_no: orders.page_no, page_size: this.state.page_size});
+    this.search(this.props.orders.page_no);
+  }
+  search(page){
+    this.props.getOrderList({page_no: page, page_size: this.state.page_size});
   }
   viewOrderDetail(){
     this.refs.detail_modal.show();
   }
   alterStation(n){
     render(<ManageAlterStationModal data={n} data-id={new Date().getTime()} />, this.refs['modal-wrap'])
+  }
+  viewOrderOperationRecord(n){
+    this.refs.OperationRecordModal.show(n);
   }
 }
 
@@ -301,10 +317,97 @@ function mapStateToProps({orderManage}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  var actions = bindActionCreators(OrderManageActions, dispatch);
+  var actions = bindActionCreators(OrderActions, dispatch);
   actions.dispatch = dispatch;
   return actions;
 }
 
-// export default connect(mapStateToProps, OrderManageActions)(ManagePannel);
+// export default connect(mapStateToProps, OrderActions)(ManagePannel);
 export default connect(mapStateToProps, mapDispatchToProps)(ManagePannel);
+
+
+/***************   *******   *****************/
+/***************   子模态框   *****************/
+/***************   *******   *****************/
+
+var OperationRecordModal = React.createClass({
+  getInitialState() {
+    return {
+      sort_type: 'DESC', //ASC
+      page_size: 8,
+      data: {},
+    };
+  },
+  render(){
+    var { order_id, owner_mobile, owner_name } = this.state.data;
+    var { page_no, total, list } = this.props;
+    var content = list.map( (n, i) => {
+      return (
+        <tr key={n.order_id + '' + i}>
+          <td>{n.created_by}</td>
+          <td className="text-left">{colour(n.option)}</td>
+          <td>{n.created_time}</td>
+        </tr>
+      )
+    })
+    return (
+      <StdModal title="操作历史记录" footer={false} ref="modal">
+        <div className="">
+          <label>订单号：</label>
+          {order_id}
+        </div>
+        <div className="form-group">
+          <label>下单人信息：</label>
+          {owner_name + '　' + owner_mobile}
+        </div>
+        <div className="table-responsive">
+          <table className="table table-hover table-bordered text-left">
+            <thead>
+            <tr>
+              <th>操作人</th>
+              <th>操作记录</th>
+              <th className={`sorting ${this.state.sort_type.toLowerCase()}`} onClick={this.changeSortType}>操作时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            {content.length ? content : get_table_empty()}
+            </tbody>
+          </table>
+        </div>
+
+        <Pagination 
+          page_no={page_no} 
+          total_count={total} 
+          page_size={this.state.page_size} 
+          onPageChange={this.onPageChange}
+        />
+      </StdModal>
+    )
+  },
+  changeSortType(){
+    if(this.state.sort_type == 'DESC')
+      this.setState({ sort_type: 'ASC' }, this.search.bind(this, this.props.page_no))
+    else
+      this.setState({ sort_type: 'DESC' }, this.search.bind(this, this.props.page_no))
+  },
+  onPageChange(page){
+    this.search(page);
+  },
+  search(page_no){
+    var { page_size, sort_type } = this.state;
+    this.props.getOrderOptRecord(this.state.data.order_id, {
+      page_no: page_no,
+      page_size,
+      sort_type
+    });
+  },
+  show(data){
+    this.refs.modal.show();
+    this.setState({ data }, function(){
+      this.search(this.props.page_no);
+    });
+  },
+  hide(){
+    this.refs.modal.hide();
+  },
+});

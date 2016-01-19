@@ -215,7 +215,7 @@ var history_orders_state = {
 function history_orders(state = history_orders_state, action){
   switch (action.type) {
     case FormActions.GET_HISTORY_ORDERS:
-      return {...state, ...action.data}
+      return {...state, ...action.data, active_order_id: undefined, check_order_info: null}
 
     case FormActions.CHECK_HISTORY_ORDER:
       return {...state, active_order_id: action.active_order_id}

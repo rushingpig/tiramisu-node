@@ -57,6 +57,10 @@ gulp.task('sass', function() {
   .pipe(sass({outputStyle: ''}))
   .pipe(prefix('last 2 versions', '> 1%', 'ie 8', 'Android 2', 'Firefox ESR'))
   .pipe(plumber())
+  .pipe(minifyCss())
+  .pipe(rename({
+    suffix: ".min",
+  }))
   .pipe(gulp.dest(d('css')));
 });
 

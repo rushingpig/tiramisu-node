@@ -204,13 +204,15 @@ class ManageAddForm extends Component {
         {
           editable
           ? [
-              <button 
+              <button
+                  key="saveBtn" 
                   onClick={handleSubmit(this._check.bind(this, this.handleSaveOrder))} 
                   disabled={save_ing} 
                   data-submitting={save_ing} 
                   className="btn btn-theme btn-xs">保存信息</button>,
               '　　',
               <button
+                  key="submitBtn"
                   onClick={handleSubmit(this._check.bind(this, this.handleSubmitOrder))}
                   disabled={save_ing} className="btn btn-theme btn-xs">保存</button>
             ]
@@ -242,21 +244,23 @@ class ManageAddForm extends Component {
         delete form_data.delivery_date;
         delete form_data.delivery_hours;
 
-        callback.call(this, dispatch, form_data);
+        callback.call(this, form_data);
       }else{
         Utils.Noty('warning', '请填写完整');
       }
     }, 0);
   }
-  handleCreateOrder(dispatch, form_data){
-    dispatch(this.props.actions.createOrder(form_data)).done(function(){
-      Utils.Noty('success', '保存成功');
-      history.push('/om/index');
-    }).fail(function(){
-      Utils.Noty('error', '保存异常');
-    });
+  handleCreateOrder(form_data){
+    this.props.actions.createOrder(form_data)
+      .done(function(){
+        Utils.Noty('success', '保存成功');
+        history.push('/om/index');
+      })
+      .fail(function(){
+        Utils.Noty('error', '保存异常');
+      });
   }
-  handleSaveOrder(dispatch, form_data){
+  handleSaveOrder(form_data){
     form_data.order_id = this.props.order_id;
     dispatch(this.props.actions.saveOrder(form_data)).fail(function(){
       Utils.Noty('error', '保存异常');

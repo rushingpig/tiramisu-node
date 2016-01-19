@@ -176,6 +176,30 @@ hr.dotted
 .table tbody tr.clickable
   cursor: pointer
   user-select: none
+.table
+  .sorting
+    cursor: pointer
+    //默认asc
+    &.asc
+      &:after
+        content: ''
+        position: relative
+        top: -3px
+        margin-left: 5px
+        border-bottom: 5px solid #B5A8A8
+        border-left: 5px solid transparent
+        border-right: 5px solid transparent
+        display: inline-block
+    &.desc
+      &:after
+        content: ''
+        position: relative
+        top: -2px
+        margin-left: 5px
+        border-top: 5px solid #B5A8A8
+        border-left: 5px solid transparent
+        border-right: 5px solid transparent
+        display: inline-block
 
 .time-input
   @extend .tc

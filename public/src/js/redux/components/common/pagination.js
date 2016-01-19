@@ -160,7 +160,7 @@ var Pagination = React.createClass({
 
 
   return (
-    <div className="clearfix" style={{"padding": "0 20px"}}>
+    <div className="clearfix">
       <ul className="pagination pull-right">
         <li className={'paginate_button previous'+preDisabledCls} onClick={this._prevPage}>
             <a href="javascript:;">«</a>
@@ -178,7 +178,7 @@ var Pagination = React.createClass({
             <a href="javascript:;">»</a>
         </li>
       </ul>
-      <div style={{'lineHeight': '31px', 'marginRight': '15px'}}>
+      <div style={{'lineHeight': '31px'}}>
         {'共' + this.props.total_count + '项'}
       </div>
     </div>

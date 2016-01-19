@@ -1,6 +1,6 @@
 import req from 'superagent';
 import Promise from './promise';
-import { SUCCESS_CODE, REQUEST } from 'config/app.config';
+import { SUCCESS_CODE, NO_MORE_CODE, REQUEST } from 'config/app.config';
 import { core } from 'utils/index';
 
 function _end_callback(resolve, reject){
@@ -8,6 +8,12 @@ function _end_callback(resolve, reject){
     if(res.ok){
       if(res.body.code === SUCCESS_CODE){
         resolve(res.body.data);
+      }else if(res.body.code === NO_MORE_CODE){
+        resolve({
+          page_no: 0,
+          total: 0,
+          list: [],
+        })
       }else{
         console.error(res.body.msg || 'request error');
         reject(res.body.msg, res.body.code);

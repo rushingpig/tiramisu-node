@@ -171,14 +171,14 @@ class DeliveryDistributePannel extends Component {
                 </tbody>
               </table>
             </div>
-          </div>
 
-           <Pagination 
+            <Pagination 
               page_no={page_no} 
               total_count={total} 
               page_size={this.state.page_size} 
               onPageChange={this.onPageChange}
             />
+          </div>
         </div>
 
         { check_order_info

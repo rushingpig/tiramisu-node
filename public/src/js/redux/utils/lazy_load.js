@@ -30,7 +30,7 @@ export default function LazyLoad(name){
         load_map[name] = 1; //已加载过
       }, 0);
     }else{
-      console.warn('lazy load "' + name + '" fail');
+      console.warn('lazy load "' + name + '" fail or has loaded');
     }
   })
 }

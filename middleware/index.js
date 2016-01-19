@@ -13,6 +13,7 @@ middleware.passport =  require('./security/passport_mw');
 middleware.login = require('./login/login_mw');
 middleware.system = require('./sys/system_mw');
 middleware.db = require('./sys/db_init_mw');
+middleware.ajax = require('./ajax/ajax_mw');
 
 
 module.exports = middleware;

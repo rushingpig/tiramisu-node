@@ -101,6 +101,7 @@ if (app.get('env') === 'development') {
 
 if (app.get('env') === 'dev') {
     app.use(function (err, req, res, next) {
+        res.status(err.status || 500);
         if(err){
           console.error(err);
         }
@@ -112,6 +113,7 @@ if (app.get('env') === 'dev') {
 // no stacktraces leaked to user
 // for the for-end framework
 app.use(function (err, req, res, next) {
+    res.status(err.status || 500);
     res.renders('index',{isLogin : req.session.user ? true : false});
 });
 module.exports = app;

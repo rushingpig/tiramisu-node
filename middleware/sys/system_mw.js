@@ -25,9 +25,9 @@ SystemMiddleware.prototype = {
                 res.set('Content-Type', 'text/html');
                 res.send(html);
             };
-            res.renders = function (tplName) {
+            res.renders = function (tplName,data,cb) {
                 res.set('Content-Type', 'text/html');
-                res.render(tplName);
+                res.render(tplName,data,cb);
             };
             res.sendText = function (text) {
                 res.set('Content-Type', 'text/plain');

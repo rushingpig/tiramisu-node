@@ -53,7 +53,7 @@ module.exports = {
         }
         return showOrderId.substring(8);
     },
-    assembleInsertObj : (req,obj) =>{
+    assembleInsertObj : (req,obj,ignoreUpdatedTime) =>{
         if(!(req instanceof IncomingMessage)){
             logger.error('the req object['+req+'must be the instance of IncomingMessage...');
             throw new Error('the req object['+req+'must be the instance of IncomingMessage...');
@@ -64,7 +64,9 @@ module.exports = {
         }
         obj.created_by = req.session.user.id;
         obj.created_time = new Date();
-        obj.updated_time = new Date();
+        if(!ignoreUpdatedTime){
+            obj.updated_time = new Date();
+        }
         return obj;
     },
     assembleUpdateObj : (req,obj) => {

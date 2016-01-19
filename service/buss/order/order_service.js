@@ -136,13 +136,11 @@ OrderService.prototype.addOrder = (req, res, next) => {
             };
             let order_history_obj = {
                 order_id : orderId,
-                owner_name : owner_name,
-                owner_mobile : owner_mobile,
                 option : '添加订单'
             };
             return orderDao.insertOrderFulltext(order_fulltext_obj)
                 .then(()=>{
-                    return orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj));
+                    return orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
                 })
                 .then(()=>{
                 return orderDao.batchInsertOrderSku(params);
@@ -299,9 +297,7 @@ OrderService.prototype.editOrder = function(is_submit){
             //===========for history begin=============
             let current_order = _res[0],
                 order_history_obj = {
-                    order_id : orderId,
-                    owner_name : owner_name,
-                    owner_mobile : owner_mobile
+                    order_id : orderId
                 },
                 add_skus = [],delete_skuIds = [],update_skus = [];
             let option = '';
@@ -382,7 +378,7 @@ OrderService.prototype.editOrder = function(is_submit){
                 landmark : systemUtils.encodeForFulltext(recipient_landmark)
             };
             let orderPromise = orderDao.editOrder(systemUtils.assembleUpdateObj(req,order_obj),orderId,systemUtils.assembleUpdateObj(req,recipient_obj),recipient_id,products,add_skus,delete_skuIds,update_skus);
-            let orderHistoryPromise = orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj));
+            let orderHistoryPromise = orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
             let orderFulltextPromise = orderDao.updateOrderFulltext(order_fulltext_obj,orderId);
             return Promise.all([orderPromise,orderHistoryPromise,orderFulltextPromise]);
         }).then(()=>{

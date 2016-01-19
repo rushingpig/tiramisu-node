@@ -36,7 +36,7 @@ LogHelper.prototype.getLogger = function(loggerName,level){
  * get the log instance for system
  * @returns {Logger}
  */
-var syslog = new LogHelper().getLogger('tiramisu')
+var syslog = new LogHelper().getLogger('tiramisu');
 LogHelper.systemLog = function(){
     if(!syslog){
         syslog = new LogHelper().getLogger('tiramisu');

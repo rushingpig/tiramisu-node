@@ -104,9 +104,9 @@ var log4js_options = {
 
 var ping_xx = {
     apiKey: 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
-}
+};
 
-var login_required = false;
+var login_required = true;
 
 module .exports = {
     exp_static_options : exp_static_options,

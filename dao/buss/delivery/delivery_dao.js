@@ -1,5 +1,5 @@
 /**
- * @des    :
+ * @des    : the dao module of the delivery
  * @author : pigo.can
  * @date   : 15/12/17 上午9:31
  * @email  : zhenglin.zhu@xfxb.net

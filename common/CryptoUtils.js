@@ -1,5 +1,5 @@
 /**
- * @des    :
+ * @des    : the module for crypto
  * @author : pigo.can
  * @date   : 15/12/14 上午9:24
  * @email  : zhenglin.zhu@xfxb.net

@@ -18,9 +18,9 @@ export function getOrderSrcs(){
   // });
 }
 
-export const GOT_DELIVERY_STATIONS = 'GOT_DELIVERY_CENTER';
+export const GOT_DELIVERY_STATIONS = 'GOT_DELIVERY_STATIONS';
 export function getDeliveryStations() {
-  return GET(Url.delivery_stations.toString(), null, GOT_DELIVERY_STATIONS);
+  return GET(Url.stations.toString(), null, GOT_DELIVERY_STATIONS);
 }
 
 export const GOT_PAY_MODES = 'GOT_PAY_MODES';
@@ -88,9 +88,17 @@ export function checkHistoryOrder(id){
 function _getFormData(form_data, getState){
   var products = getState().orderManageForm.products.confirm_list;
   var total_amount = products.reduce((p, n) => p + n.discount_price*100, 0);
+  var total_amount = 0, original_price = 0, discount_price = 0;
+  products.forEach(n => {
+    total_amount += n.amount * 100;
+    original_price += n.original_price * n.num;
+    discount_price += n.discount_price * 100 * n.num;
+  })
   return {
     ...form_data,
-    total_amount: total_amount / 100,
+    total_amount,
+    original_price,
+    discount_price,
     products,
   };
 }

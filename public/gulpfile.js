@@ -26,9 +26,8 @@ var webpack_deploy_config = require('./src/js/redux/webpack.deploy.config.js');
 var config = {
   app_port: 8080,
   webpack_port: 3000,
-  node_port: 7001,
-  //root: '/',  //资源路径
-  root: 'http://127.0.0.1:7002/',  //资源路径
+  node_port: 3001,
+  root: '/',  //资源路径
   src: 'src/',
   dest: './',
   views: '../views/'
@@ -123,7 +122,7 @@ gulp.task('template:pre', function(){
 gulp.task('template:deploy', function(){
   return gulp.src(s('index.html'))
     .pipe(replace(/\{\{root\}\}/g, config.root))
-    .pipe(replace(/\{\{app\.js\}\}/, '/js/app.min.js?rev=@@hash'))
+    .pipe(replace(/\{\{app\.js\}\}/, config.root + '/js/app.min.js?rev=@@hash'))
     .pipe(replace(/\{\{webpack-dev-server\.js\}\}/, ''))
     .pipe(gulp.dest('./'))
     .pipe(rename({

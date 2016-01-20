@@ -23,7 +23,7 @@ const validate = (values, {form}) => {
     if (form[key] && form[key].touched && !values[key])
       errors[key] = msg;
   }
-  function _v_s(key){
+  function _v_selsect(key){
     if(form[key] && form[key].touched && (!values[key] || values[key] == SELECT_DEFAULT_VALUE))
       errors[key] = msg;
   }
@@ -32,17 +32,29 @@ const validate = (values, {form}) => {
   _v('owner_mobile');
   _v('recipient_name');
   _v('recipient_mobile');
-  _v('recipient_address');
   _v('recipient_landmark');
   _v('delivery_date');
 
-  _v_s('regionalism_id');
-  // _v_s('delivery_id');
-  _v_s('src_id');
-  _v_s('pay_modes_id');
-  _v_s('pay_status');
-  _v_s('delivery_hours');
+  _v_selsect('regionalism_id');
+  // _v_selsect('delivery_id');
+  _v_selsect('src_id');
+  _v_selsect('pay_modes_id');
+  _v_selsect('pay_status');
+  _v_selsect('delivery_hours');
+
+  //配送上门
+  if(values.delivery_type == DELIVERY_TO_HOME){
+    _v('recipient_address');
+  //自提时，则不需建筑物字段, 但地址则为相应的门店地址
+  }else if(values.delivery_type == DELIVERY_TO_STORE){
+    delete errors.recipient_landmark;
+
+    delete errors.recipient_address;
+    _v_selsect('shop_id'); //门店
+  }
+
   console.log(errors);
+  //errors为空对象才表明验证正确
   return errors;
 };
 
@@ -68,7 +80,8 @@ class ManageAddForm extends Component {
         recipient_address, //收货人详细地址----》送货上门
         province_id,
         city_id,
-        regionalism_id,    //分店ID ----》自取
+        regionalism_id,    //区ID
+        shop_id,           //门店
         recipient_landmark, //标志性建筑
         delivery_id,     //配送中心
         src_id,          //订单来源
@@ -88,7 +101,7 @@ class ManageAddForm extends Component {
     var { save_ing, save_success, submit_ing, 
       all_delivery_time, all_pay_status, all_order_srcs, 
       delivery_stations, all_pay_modes} = this.props['form-data'];
-    var {provinces, cities, districts} = this.props.area;
+    var {provinces, cities, districts, delivery_shops} = this.props.area;
     var {invoices, selected_order_src_level1_id} = this.state;
 
     
@@ -148,8 +161,12 @@ class ManageAddForm extends Component {
         <label>{delivery_type.value == DELIVERY_TO_HOME ? '收货人地址：' : '　选择分店：'}</label>
         <Select ref="province" options={provinces} {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} />{' '}
         <Select ref="city" options={cities} {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} />{' '}
-        <Select ref="district" options={districts} {...regionalism_id} className={`${regionalism_id.error}`} />{' '}
-        <input ref="recipient_address" {...recipient_address} className={`form-control input-xs ${recipient_address.error}`} type="text" />
+        <Select ref="district" options={districts} {...regionalism_id} onChange={this.onDistrictChange.bind(this, regionalism_id.onChange)} className={`${regionalism_id.error}`} />{' '}
+        {
+          delivery_type.value == DELIVERY_TO_HOME
+            ? <input ref="recipient_address" {...recipient_address} className={`form-control input-xs ${recipient_address.error}`} type="text" />
+            : <Select ref="shop" options={delivery_shops} {...shop_id} className={`${shop_id.error}`} />
+        }
       </div>
       {
         delivery_type.value == DELIVERY_TO_HOME
@@ -244,6 +261,17 @@ class ManageAddForm extends Component {
         delete form_data.delivery_date;
         delete form_data.delivery_hours;
 
+        //拼接省市区
+        form_data.prefix_address = (
+          $(findDOMNode(this.refs.province)).find('option:selected').html() +
+          $(findDOMNode(this.refs.city)).find('option:selected').html() + 
+          $(findDOMNode(this.refs.district)).find('option:selected').html()
+        )
+        //门店自提时，将门店id转换为 收货人详细地址
+        if(form_data.delivery_type == DELIVERY_TO_STORE){
+          form_data.recipient_address = $(findDOMNode(this.refs.shop)).find('option:selected').html();
+        }
+
         callback.call(this, form_data);
       }else{
         Utils.Noty('warning', '请填写完整');
@@ -337,6 +365,13 @@ class ManageAddForm extends Component {
       this.props.actions.getDistricts(value);
     callback(e);
   }
+  onDistrictChange(callback, e){
+    var {value} = e.target;
+    this.props.actions.districtReset();
+    if(value != this.refs.district.props['default-value'])
+      this.props.actions.getDeliveryShops(value);
+    callback(e);
+  }
   orderSrcsLevel1Change(e){
     this.setState({selected_order_src_level1_id: e.target.value})
   }
@@ -385,6 +420,7 @@ ManageAddForm = reduxForm({
     'recipient_name', //下单人姓名
     'recipient_mobile',
     'recipient_address', //收货人详细地址----》送货上门
+    'shop_id',  //门店---->门店自提（提交时，注意，需要将shop_id对应的shop名，转换成上面的recipient_address，"门店也是个地址"）
     'province_id',
     'city_id',
     'regionalism_id',    //分店ID ----》自取

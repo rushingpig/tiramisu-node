@@ -37,7 +37,6 @@ const URL = (function(){
     provinces: '/provinces',
     cities: '/province/:provinceId/cities',
     districts: '/city/:cityId/districts',
-    delivery_stations: '/stations',
     order_srcs: '/order/srcs',
     pay_modes: '/pay/modes',
     order_sign: '/order/:orderId/signin',
@@ -57,6 +56,10 @@ const URL = (function(){
     //配送员
     deliveryman: '/delivery/deliverymans',
     deliveryman_apply: '/delivery/deliveryman', //分配配送员
+
+    //地址
+    stations: '/stations', //配送站
+    shops: '/district/:districtId/shops', //门店
   };
 
   for(var a in url){

@@ -183,6 +183,15 @@ function colour(input){
   return results;
 }
 
+//去除表单中的“” 和 "-1" 等无用字段，（主要用于filter 表单中）
+function formCompile(form_data){
+  for(var a in form_data){
+    if(form_data[a] === "" || form_data[a] === "-1")
+      form_data[a] = undefined;
+  }
+  return form_data;
+}
+
 export default {
   core: {
     isArray: core_isArray,
@@ -212,5 +221,6 @@ export default {
 
   Noty,          //提示信息小窗口：param：（type， text);
 
-  colour,        //
+  colour,        //着色
+  formCompile,   ////去除表单中的“” 和 "-1" 等无用字段，（主要用于filter 表单中）
 };

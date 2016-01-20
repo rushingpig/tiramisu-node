@@ -1,6 +1,7 @@
 export default {
   root: '/',
   ajax: '/v1/a',
+  // ajax: 'http://192.168.0.107:3001/v1/a',
   REQUEST: {
     ING: 0,
     SUCCESS: 1,

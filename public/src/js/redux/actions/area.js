@@ -1,4 +1,4 @@
-import {get, post} from 'utils/request'; //Promise
+import {get, post, GET} from 'utils/request'; //Promise
 import Url from 'config/url';
 
 
@@ -60,3 +60,16 @@ function _resolve(url, signal) {
       })
   }
 }
+
+export const GOT_DELIVERY_SHOPS = 'GOT_DELIVERY_SHOPS';
+export function getDeliveryShops(district_id) {
+  return GET(Url.shops.toString(district_id), null, GOT_DELIVERY_SHOPS);
+}
+
+export const DISTRICT_RESET = 'DISTRICT_RESET'; //清空shop
+export function districtReset(){
+  return {
+    type: DISTRICT_RESET,
+  }
+}
+

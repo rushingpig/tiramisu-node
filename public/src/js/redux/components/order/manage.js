@@ -80,9 +80,9 @@ class FilterHeader extends Component {
         <div className="panel-body form-inline">
           <input {...keywords} className="form-control input-xs" placeholder="关键字" />
           {' 开始时间'}
-          <DatePicker redux-form={begin_time} className="short-input" />
+          <DatePicker editable redux-form={begin_time} className="short-input" />
           {' 配送时间'}
-          <DatePicker redux-form={end_time} className="short-input" />
+          <DatePicker editable redux-form={end_time} className="short-input" />
           <Select {...is_submit} options={this.state.submit_opts} default-text="是否提交" className="space"/>
           <Select {...is_deal} options={this.state.deal_opts} default-text="是否处理" className="space"/>
           <OrderSrcsSelects {...{all_order_srcs, src_id}} />
@@ -143,6 +143,7 @@ FilterHeader = reduxForm({
 var OrderRow = React.createClass({
   render(){
     var { props } = this;
+    var src_name = props.src_name.split(',');
     return (
       <tr className={props.active_order_id == props.order_id ? 'active' : ''} onClick={this.clickHandler}>
         <td>
@@ -160,14 +161,15 @@ var OrderRow = React.createClass({
           <div className="address-detail-td">
             <span className="inline-block">地址：</span><span className="address-all">{props.recipient_address}</span>
           </div>
-          建筑：todo
+          建筑：{props.landmark}
         </td>
-        <td>{props.delivery_date}</td>
-        <td className="nowrap">todo<br /><span className="bordered">todo</span></td>
-        <td><strong className="strong">{Config.pay_status[props.pay_status]}</strong></td>
-        <td className="nowrap">
-          总金额：todo <br />
-          应收：todo
+        <td>{props.delivery_type}</td>
+        <td className="nowrap">{src_name[0]}<br /><span className="bordered">{src_name[1]}</span></td>
+        <td><strong className="strong">{props.pay_status}</strong></td>
+        <td className="nowrap text-left">
+          原价：{props.original_price/100} <br />
+          实际售价：{props.discount_price/100} <br />
+          应收金额：{props.total_amount/100}
         </td>
         <td><div className="bg-success round">{props.status}</div></td>
         <td>todo</td>
@@ -177,8 +179,8 @@ var OrderRow = React.createClass({
         <td>{props.city}</td>
         <td>{props.cancel_reason}</td>
         <td><div className="remark-in-table">{props.remarks}</div></td>
-        <td>{props.created_by}</td>
         <td>{props.updated_by}</td>
+        <td>{props.created_by}</td>
         <td><div className="time">{props.updated_date}<br/><a onClick={this.viewOrderOperationRecord} href="javascript:;">操作记录</a></div></td>
       </tr>
     )
@@ -193,7 +195,7 @@ var OrderRow = React.createClass({
   },
   viewOrderDetail(e){
     this.props.viewOrderDetail(this.props);
-    e.stopPropagation();
+    // e.stopPropagation();
   },
   alterStation(e){
     this.props.alterStation(this.props);

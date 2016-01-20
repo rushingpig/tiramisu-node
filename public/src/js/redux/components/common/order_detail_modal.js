@@ -14,7 +14,7 @@ export default class DetailModal extends Component {
   //   }
   // }
   render(){
-    var { data, products = [] } = this.props;
+    var { data, data: {products = []} } = this.props;
     var products = products.map( n => {
       return (
         <tr key={n.sku_id}>

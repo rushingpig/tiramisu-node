@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
-import { GOT_PROVINCES, GOT_CITIES, GOT_DISTRICTS, 
-  PROVINCE_RESET, CITY_RESET } from 'actions/area';
+import * as Actions from 'actions/area';
 import { UPDATE_PATH } from 'redux-simple-router';
 import { map } from 'utils/index';
 
@@ -8,32 +7,32 @@ var initial_state = {
   provinces: [],
   cities: [],
   districts: [],
+  delivery_shops: [],
 }
 
 function _t(data){
-  return map(data, function(n, i){
-    return {
-      id: i,
-      text: n
-    }
-  })
+  return map(data, (text, id) => ({id, text}))
 }
 
 export function area(if_reset){
   return function area(state = initial_state, action){
     switch (action.type) {
-      case UPDATE_PATH:
+      case Actions.UPDATE_PATH:
         return if_reset ? initial_state : state;
-      case GOT_PROVINCES:
+      case Actions.GOT_PROVINCES:
         return {...state, provinces: _t(action.data) };
-      case PROVINCE_RESET:
-        return {...state, cities: [], districts: [] };
-      case GOT_CITIES:
+      case Actions.PROVINCE_RESET:
+        return {...state, cities: [], districts: [], delivery_shops: [] };
+      case Actions.GOT_CITIES:
         return {...state, cities: _t(action.data) };
-      case CITY_RESET:
-        return {...state, districts: []}
-      case GOT_DISTRICTS:
+      case Actions.CITY_RESET:
+        return {...state, districts: [], delivery_shops: []}
+      case Actions.GOT_DISTRICTS:
         return {...state, districts: _t(action.data) };
+      case Actions.GOT_DELIVERY_SHOPS:
+        return {...state, delivery_shops: _t(action.data) };
+      case Actions.DISTRICT_RESET:
+        return {...state, delivery_shops: []}
       default:
         return state
     }

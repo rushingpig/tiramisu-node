@@ -2,12 +2,13 @@ import { GET, TEST } from 'utils/request'; //Promise
 import Url from 'config/url';
 import { getValues } from 'redux-form';
 import { NO_MORE_CODE } from 'config/app.config';
-import { Noty } from 'utils/index';
+import { Noty, formCompile } from 'utils/index';
 
 export const GET_ORDER_LIST = 'GET_ORDER_LIST';
 export function getOrderList(data){
   return (dispatch, getState) => {
     var filter_data = getValues(getState().form.order_manage_filter);
+    filter_data = formCompile(filter_data);
     return GET(Url.orders.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch)
       // .fail(function(msg, code){
       //   if(code == NO_MORE_CODE){

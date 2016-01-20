@@ -1,11 +1,12 @@
 import React, {PropTypes} from 'react';
-import {dateFormat} from 'utils/index';
+import {dateFormat, form } from 'utils/index';
 
 var DatePicker = React.createClass({
   getDefaultProps: function() {
     return {
       className: '',
       'redux-form': {},
+      editable: false,
     };
   },
   getInitialState: function() {
@@ -14,12 +15,17 @@ var DatePicker = React.createClass({
     }
   },
   componentWillReceiveProps: function(nextProps) {
-    if (nextProps['redux-form'] && nextProps['redux-form'].value && (nextProps['redux-form'].value != this.props['redux-form'].value)) {
+    if (
+      nextProps['redux-form']
+      && nextProps['redux-form'].value != undefined 
+      && (nextProps['redux-form'].value != this.props['redux-form'].value)
+    ) {
       $(function(){
         this.setState({
           date: nextProps['redux-form'].value,
         }, function() {
-          this.initDatePicker().update();
+          if(form.isDate(nextProps['redux-form'].value))
+            this.initDatePicker().update();
         });
       }.bind(this))
     }
@@ -65,6 +71,9 @@ var DatePicker = React.createClass({
     return $date;
   },
   render: function(){
+    if(!this.props.editable){
+      this.props['redux-form'].onChange = function(){};
+    }
     //redux-from 中包含value
     return (
       <div style={{'display': 'inline-block'}}>
@@ -76,8 +85,8 @@ var DatePicker = React.createClass({
   }
 });
 
-DatePicker.propTypes = {
-  'redux-form': PropTypes.object.isRequired
-};
+// DatePicker.propTypes = {
+//   'redux-form': PropTypes.object.isRequired
+// };
 
 export default DatePicker;

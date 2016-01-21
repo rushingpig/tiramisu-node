@@ -211,7 +211,7 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
                     greeting_card : curr.greeting_card,
                     num : curr.num,
                     original_price : curr.original_price,
-                    product_name : curr.product_name,
+                    name : curr.product_name,
                     atlas : curr.atlas,
                     size : curr.size,
                     amount : curr.amount
@@ -507,7 +507,7 @@ OrderService.prototype.listOrders = (entrance)=>{
             if(!(resObj.result && resObj._result)){
                 throw new TiramisuError(res_obj.FAIL);
             }else if(toolUtils.isEmptyArray(resObj._result)){
-                throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+                throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);
             }
             let data = {
                 list : [],
@@ -581,7 +581,7 @@ OrderService.prototype.history = (req,res,next)=>{
     };
     let promise = orderDao.findOrderHistory(systemUtils.assemblePaginationObj(req,query_data)).then((_res)=>{
         if(toolUtils.isEmptyArray(_res.result) || toolUtils.isEmptyArray(_res._result)){
-            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+            throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);
         }
         let res_data = {
             total : _res.result[0].total,

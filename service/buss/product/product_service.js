@@ -58,14 +58,14 @@ ProductService.prototype.listProducts = (req, res, next) => {
     }, temp_obj = {};
     let promise = productDao.findProductsCount(product_name, category_id, page_no, page_size).then((data)=> {
         if (toolUtils.isEmptyArray(data.results)) {
-            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+            throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);
         }
         let preSql = data.sql, preParams = data.params;
         res_data.total = data.results[0].total;
         return productDao.findProducts(preSql, preParams);
     }).then((_re)=> {
         if (toolUtils.isEmptyArray(_re)) {
-            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+            throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);
         }
         _re.forEach((curr)=> {
             let key = curr.product_id + curr.size;

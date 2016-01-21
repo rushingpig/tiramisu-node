@@ -32,6 +32,14 @@ module.exports = {
         code : '1001',
         msg : '长时间未操作,请重新登录...'
     },
+    NO_MORE_PAGE_RESULTS : {
+        code : '9998',
+        msg : 'no more results...',
+        data : {
+            list : [],
+            total : 0
+        }
+    },
     OPTION_EXPIRED : {
         code : '9995',
         msg : '啊哈,有人捷足先登了,重新获取最新记录吧...'

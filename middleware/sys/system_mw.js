@@ -82,7 +82,7 @@ function api(res) {
                 temp.data = res_tpl || {};
             }else if(err === undefined && arguments.length === 2){
                 temp = clone(res_tpl);
-                temp.data = {};
+                temp.data = temp.data || {};
                 temp.err = data || '';
             }else{
                 temp = clone(res_tpl);

@@ -307,8 +307,10 @@ OrderDao.prototype.editOrder = function(order_obj,order_id,recipient_obj,recipie
     let order_sql = this.base_update_sql + " where id = ?",recipent_sql = order_sql,
         recipient_params = [tables.buss_recipient,recipient_obj,recipient_id],
         order_params = [tables.buss_order,order_obj,order_id],
-        userId = order_obj.update_by;
-    return baseDao.trans().then((trans)=>{
+        userId = order_obj.update_by,
+        temp_connection = null;
+    return baseDao.trans().then((trans,connection)=>{
+        temp_connection = connection;
         return new Promise((resolve,reject)=>{
             trans.query(recipent_sql,recipient_params,(err_recipient)=>{
                 if(err_recipient){
@@ -342,6 +344,7 @@ OrderDao.prototype.editOrder = function(order_obj,order_id,recipient_obj,recipie
                         trans.query(order_sku_update_sql,order_sku_update_params,cb);
                     });
                     trans.commit(()=>{
+                        temp_connection.release();
                         resolve();
                     });
                 });

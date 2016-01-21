@@ -167,15 +167,11 @@ BaseDao.trans = function(){
             if (err) {
                 reject(err);
             } else {
-                //queues(connection, config.mysql_options.debug);
-                //let trans = connection.startTransaction();
-                //resolve(trans);
-                //trans.commit();
-                //trans.execute();
-                connection.release();
-                connection.query('select * from buss_city',()=>{
-                    console.log('use connection after release...');
-                });
+                queues(connection, config.mysql_options.debug);
+                let trans = connection.startTransaction();
+                resolve(trans,connection);
+                trans.commit();
+                trans.execute();
             }
         });
     });

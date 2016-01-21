@@ -57,7 +57,7 @@ var Pagination = React.createClass({
     // if (this.props.onPageChangeBefore){
     //     this.props.onPageChangeBefore(page);
     // }
-    if (this.props.onPageChange){
+    if (this.props.onPageChange && this.props.page_no != page){
         this.props.onPageChange(page);
         /*
         this.setState({

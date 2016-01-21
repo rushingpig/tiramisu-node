@@ -4,10 +4,10 @@ function ProductRow(product){
   return (
     <tr key={product.sku_id}>
       <td>{product.product_name}</td>
-      <td>￥{product.original_price / 100}</td>
+      <td>￥{product.original_price}</td>
       <td>{product.size}</td>
       <td>{product.num}</td>
-      <td>￥{product.discount_price / 100}</td>
+      <td>￥{product.discount_price}</td>
       <td>{product.choco_board}</td>
       <td>{product.greeting_card}</td>
       <td>{product.atlas}</td>

@@ -23,7 +23,7 @@ var Login = React.createClass({
             <input value={username} ref="username"
                 onChange={this.onUsernameChange} type="text" className="form-control" placeholder="用户名" autofocus=""/>
             <input value={password} ref="password"
-                onChange={this.onPasswordChange} type="password" className="form-control" placeholder="密码"/>
+                onChange={this.onPasswordChange} onKeyDown={this.onEnterHandler} type="password" className="form-control" placeholder="密码"/>
             <div className="error-msg">{error_msg}</div>
             <button disabled={login_ing} onClick={this.login} className="btn btn-lg btn-login btn-block">
                 <i className="fa fa-check"></i>
@@ -89,6 +89,11 @@ var Login = React.createClass({
   onPasswordChange: function(e){
     this.props.dispatch(passwordChange(e.target.value));
     // this.setState({password: e.target.value});
+  },
+  onEnterHandler: function(e){
+    if(e.which == 13){
+      this.login();
+    }
   },
   tipNoInput: function(ref){
     var $input = $(this.refs[ref]).addClass('tip').focus();

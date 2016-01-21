@@ -30,7 +30,7 @@ export function area(if_reset){
       case Actions.GOT_DISTRICTS:
         return {...state, districts: _t(action.data) };
       case Actions.GOT_DELIVERY_SHOPS:
-        return {...state, delivery_shops: _t(action.data) };
+        return {...state, delivery_shops: map(action.data, text => ({id: text, text})) };
       case Actions.DISTRICT_RESET:
         return {...state, delivery_shops: []}
       default:

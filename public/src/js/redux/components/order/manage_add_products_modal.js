@@ -2,6 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import Select from 'common/select';
 import NumberPicker from 'common/number_picker';
 import Pagination from 'common/pagination';
+import SelectGroup from 'common/select_group';
+import { get_table_empty } from 'common/loading';
+
 import * as OrderProductsActions from 'actions/order_products';
 import { SELECT_DEFAULT_VALUE } from 'config/app.config';
 import { toFixed } from 'utils/index';
@@ -41,7 +44,7 @@ export default class ProductsModal extends Component {
             <div className="form-group form-inline">
               <input value={s.sku_name} onChange={this.handleSkuName.bind(this)} className="form-control input-xs" placeholder="输入产品名称" />
               {' '}
-              <Select value={s.category_id} onChange={this.onCategoryChange.bind(this)} options={all_categories} default-text="选择产品分类" />
+              <SelectGroup value={s.category_id} onChange={this.onCategoryChange.bind(this)} options={all_categories} default-text="选择产品分类" />
               {' '}
               <button onClick={this.search.bind(this)} className="btn btn-xs btn-default"><i className="fa fa-search"></i>{' 查询'}</button>
             </div>
@@ -60,7 +63,7 @@ export default class ProductsModal extends Component {
                   <th>管理操作</th>
                 </tr>
                 </thead>
-                {product_list}
+                {product_list.length ? product_list : <tbody>{get_table_empty()}</tbody>}
               </table>
             </div>
 

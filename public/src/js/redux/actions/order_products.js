@@ -3,13 +3,14 @@ import Url from 'config/url';
 
 export const GOT_CATEGORIES = 'GOT_CATEGORIES';
 export function getCategories(){
-  // return GET(Url.categories.toString(), null, GOT_CATEGORIES);
-  return TEST({1: '11111', 2: '2222'}, GOT_CATEGORIES);
+  return GET(Url.categories.toString(), null, GOT_CATEGORIES);
+  // return TEST({1: '11111', 2: '2222'}, GOT_CATEGORIES);
 }
 
 export const SEARCH_PRODUCTS = 'SEARCH_PRODUCTS';
 export function searchProducts(query_data){
-  // return GET(Url.products.toString(), query_data, SEARCH_PRODUCTS);
+  return GET(Url.products.toString(), query_data, SEARCH_PRODUCTS);
+/*
   return TEST({
     list: [
       {
@@ -51,6 +52,7 @@ export function searchProducts(query_data){
     ],
     total: 2
   }, SEARCH_PRODUCTS);
+*/
 }
 
 export const SELECT_PRODUCT = 'SELECT_PRODUCT';
@@ -97,5 +99,14 @@ export function deleteConfirmProduct(sku_info){
   return {
     type: DELETE_CONFIRM_PRODUCT,
     data: sku_info
+  }
+}
+
+//
+export const CONFIRM_PRODUCT_ATTR_CHANGE = 'CONFIRM_PRODUCT_ATTR_CHANGE';
+export function productAttrChange(data){
+  return {
+    type: CONFIRM_PRODUCT_ATTR_CHANGE,
+    data
   }
 }

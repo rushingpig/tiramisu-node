@@ -48,9 +48,7 @@ const validate = (values, {form}) => {
   //自提时，则不需建筑物字段, 但地址则为相应的门店地址
   }else if(values.delivery_type == DELIVERY_TO_STORE){
     delete errors.recipient_landmark;
-
-    delete errors.recipient_address;
-    _v_selsect('shop_id'); //门店
+    _v_selsect('recipient_address'); //门店
   }
 
   console.log(errors);
@@ -77,11 +75,10 @@ class ManageAddForm extends Component {
         owner_mobile,
         recipient_name, //下单人姓名
         recipient_mobile,
-        recipient_address, //收货人详细地址----》送货上门
+        recipient_address, //收货人详细地址----》送货上门 ，当门店自提时，则是门店地址
         province_id,
         city_id,
         regionalism_id,    //区ID
-        shop_id,           //门店
         recipient_landmark, //标志性建筑
         delivery_id,     //配送中心
         src_id,          //订单来源
@@ -131,12 +128,14 @@ class ManageAddForm extends Component {
           <input type="radio" 
             {...delivery_type}
             value={DELIVERY_TO_HOME}
+            name="delivery_type"
             checked={delivery_type.value == DELIVERY_TO_HOME} /> 配送上门</label>
         {'　'}
         <label>
           <input type="radio" 
             {...delivery_type}
             value={DELIVERY_TO_STORE}
+            name="delivery_type"
             checked={delivery_type.value == DELIVERY_TO_STORE} /> 门店自提</label>
       </div>
       <div className="form-group form-inline">
@@ -165,7 +164,7 @@ class ManageAddForm extends Component {
         {
           delivery_type.value == DELIVERY_TO_HOME
             ? <input ref="recipient_address" {...recipient_address} className={`form-control input-xs ${recipient_address.error}`} type="text" />
-            : <Select ref="shop" options={delivery_shops} {...shop_id} className={`${shop_id.error}`} />
+            : <Select ref="shop" options={delivery_shops} {...recipient_address} className={`${recipient_address.error}`} />
         }
       </div>
       {
@@ -270,6 +269,7 @@ class ManageAddForm extends Component {
         //门店自提时，将门店id转换为 收货人详细地址
         if(form_data.delivery_type == DELIVERY_TO_STORE){
           form_data.recipient_address = $(findDOMNode(this.refs.shop)).find('option:selected').html();
+          form_data.recipient_landmark = '';
         }
 
         callback.call(this, form_data);
@@ -290,13 +290,17 @@ class ManageAddForm extends Component {
   }
   handleSaveOrder(form_data){
     form_data.order_id = this.props.order_id;
-    dispatch(this.props.actions.saveOrder(form_data)).fail(function(){
+    form_data.updated_time = Utils.dateFormat(new Date(), 'yyyy-MM-dd hh:mm:ss');
+    form_data.recipient_id = this.props.recipient_id;
+    this.props.actions.saveOrder(form_data).fail(function(){
       Utils.Noty('error', '保存异常');
     });
   }
-  handleSubmitOrder(dispatch, form_data){
+  handleSubmitOrder(form_data){
     form_data.order_id = this.props.order_id;
-    dispatch(this.props.actions.submitOrder(form_data)).done(function(){
+    form_data.updated_time = Utils.dateFormat(new Date(), 'yyyy-MM-dd hh:mm:ss');
+    form_data.recipient_id = this.props.recipient_id;
+    this.props.actions.submitOrder(form_data).done(function(){
       Utils.Noty('success', '已成功提交！');
       history.push('/om/index');
     }).fail(function(){
@@ -411,35 +415,31 @@ ManageAddForm.PropTypes = {
   order_id: PropTypes.any.isRequired,
 }
 
-ManageAddForm = reduxForm({
-  form: 'add_order',  //表单命名空间
-  fields: [
-    'delivery_type',
-    'owner_name',
-    'owner_mobile',
-    'recipient_name', //下单人姓名
-    'recipient_mobile',
-    'recipient_address', //收货人详细地址----》送货上门
-    'shop_id',  //门店---->门店自提（提交时，注意，需要将shop_id对应的shop名，转换成上面的recipient_address，"门店也是个地址"）
-    'province_id',
-    'city_id',
-    'regionalism_id',    //分店ID ----》自取
-    'recipient_landmark', //标志性建筑
-    'delivery_id',     //配送中心
-    'src_id',          //订单来源
-    'pay_modes_id',
-    'pay_status',
-    // 'delivery_time',
-    'delivery_date',
-    'delivery_hours',
-    'remarks',
-    'invoice',
-  ],
-  validate,
-  touchOnBlur: true
-}, state => ({
-  //赋初始值
-  initialValues: state.orderManageForm.mainForm.data
-}))( ManageAddForm );
-
-export default ManageAddForm;
+export default function initManageOrderForm( initFunc ){
+  return reduxForm({
+    form: 'add_order',  //表单命名空间
+    fields: [
+      'delivery_type',
+      'owner_name',
+      'owner_mobile',
+      'recipient_name', //下单人姓名
+      'recipient_mobile',
+      'recipient_address', //收货人详细地址----》送货上门
+      'province_id',
+      'city_id',
+      'regionalism_id',    //分店ID ----》自取
+      'recipient_landmark', //标志性建筑
+      'delivery_id',     //配送中心
+      'src_id',          //订单来源
+      'pay_modes_id',
+      'pay_status',
+      // 'delivery_time',
+      'delivery_date',
+      'delivery_hours',
+      'remarks',
+      'invoice',
+    ],
+    validate,
+    touchOnBlur: true,
+  }, initFunc)( ManageAddForm );
+}

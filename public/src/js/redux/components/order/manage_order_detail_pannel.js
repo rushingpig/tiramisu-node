@@ -10,7 +10,8 @@ import DatePicker from 'common/datepicker';
 import Alert from 'common/alert';
 import LineRouter from 'common/line_router';
 
-import ManageOrderForm from './manage_order_form';
+import ManageOrderFormCreate from './manage_order_form_create';
+import ManageOrderFormEdit from './manage_order_form_edit';
 import ManageOrderProducts from './manage_order_products';
 
 class TopHeader extends Component {
@@ -28,21 +29,36 @@ class TopHeader extends Component {
 class ManageOrderDetailPannel extends Component {
   render(){
     var { mainForm, history_orders, area, dispatch, products, params } = this.props;
+    var editable = !!(params && params.id);
+
+    var actions = {...bindActionCreators(AreaActions, dispatch), ...bindActionCreators(OrderFormActions, dispatch)};
     return (
       <div className="order-manage">
         <TopHeader />
         <div className="panel">
           <header className="panel-heading">订单详情</header>
           <div className="panel-body">
-            <ManageOrderForm
-              form-data={mainForm}
-              history_orders={history_orders}
-              area={area} 
-              editable={!!(params && params.id)}
-              order_id={params.id}
-              actions={{...bindActionCreators(AreaActions, dispatch), ...bindActionCreators(OrderFormActions, dispatch)}}>
-                <ManageOrderProducts dispatch={dispatch} {...products} />
-            </ManageOrderForm>
+            {
+              !editable
+                ? <ManageOrderFormCreate
+                    form-data={mainForm}
+                    history_orders={history_orders}
+                    area={area} 
+                    editable={editable}
+                    order_id={params.id}
+                    actions={actions}>
+                      <ManageOrderProducts dispatch={dispatch} {...products} />
+                  </ManageOrderFormCreate>
+                : <ManageOrderFormEdit
+                    form-data={mainForm}
+                    history_orders={history_orders}
+                    area={area} 
+                    editable={editable}
+                    order_id={params.id}
+                    actions={actions}>
+                      <ManageOrderProducts dispatch={dispatch} {...products} />
+                  </ManageOrderFormEdit>
+            }
           </div>
         </div>
       </div>

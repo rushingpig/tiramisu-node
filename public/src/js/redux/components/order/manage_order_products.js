@@ -1,8 +1,11 @@
+/**
+ * form表单下面已添加进来的商品
+ */
 import React, {Component, PropTypes} from 'react';
 import {render} from 'react-dom';
 import ProductsModal from './manage_add_products_modal';
 import { setSelectProductStatus, deleteConfirmProduct } from 'actions/order_products';
-import * as OrderManageFormActions from 'actions/order_manage_form';
+import * as ProductsActions from 'actions/order_products';
 
 export default class ManageAddProducts extends Component {
   render(){
@@ -62,18 +65,20 @@ var AddedProductsRow = React.createClass({
   render(){
     var { handleChange } = this;
     var { editable, edit_input_classname } = this.state;
-    var { sku_id, name, size, original_price, num,
+    var { sku_id, product_name, size, original_price, num,
       discount_price, amount, choco_board, greeting_card, atlas, custom_name, custom_desc } = this.props.data;
     return (
       <tr className="form-inline">
-        <td>{name}</td>
+        <td>{product_name}</td>
         <td>{size}</td>
         <td>{original_price/100}</td>
         <td>{num}</td>
         <td>{editable 
           ? <input value={discount_price} onChange={handleChange.bind(this, 'discount_price')} className={edit_input_classname} style={{width: 50}} type="text" /> 
           : discount_price}</td>
-        <td>0</td>
+        <td>{editable 
+          ? <input value={amount} onChange={handleChange.bind(this, 'amount')} className={edit_input_classname} style={{width: 50}} type="text" /> 
+          : amount}</td>
         <td>{editable 
           ? <textarea value={choco_board} onChange={handleChange.bind(this, 'choco_board')} className={edit_input_classname} rows="2" cols="15"></textarea> 
           : choco_board}</td>
@@ -95,11 +100,11 @@ var AddedProductsRow = React.createClass({
     )
   },
   handleChange(attr_name, e){
-    this.props.dispatch(OrderManageFormActions.productAttrChange({
+    this.props.dispatch(ProductsActions.productAttrChange({
       sku_id: this.props.data.sku_id,
       attr: {
         name: attr_name,
-        value: typeof e.target.checked == 'undefined' ? e.target.value : e.target.checked
+        value: e.target.getAttribute('type') == 'text' || e.target.nodeName.toLowerCase() == 'textarea' ? e.target.value : e.target.checked
       }
     }));
   },

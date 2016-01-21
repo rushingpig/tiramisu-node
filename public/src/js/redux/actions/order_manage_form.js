@@ -28,15 +28,6 @@ export function getPayModes(){
   return GET(Url.pay_modes.toString(), null, GOT_PAY_MODES);
 }
 
-//
-export const CONFIRM_PRODUCT_ATTR_CHANGE = 'CONFIRM_PRODUCT_ATTR_CHANGE';
-export function productAttrChange(data){
-  return {
-    type: CONFIRM_PRODUCT_ATTR_CHANGE,
-    data
-  }
-}
-
 export const GET_HISTORY_ORDERS = 'GET_HISTORY_ORDERS';
 export function getHistoryOrders(data){
   return GET(Url.orders.toString(), data, GET_HISTORY_ORDERS);

@@ -9,11 +9,7 @@ function _end_callback(resolve, reject){
       if(res.body.code === SUCCESS_CODE){
         resolve(res.body.data);
       }else if(res.body.code === NO_MORE_CODE){
-        resolve({
-          page_no: 0,
-          total: 0,
-          list: [],
-        })
+        resolve(res.body.data);
       }else{
         console.error(res.body.msg || 'request error');
         reject(res.body.msg, res.body.code);

@@ -27,8 +27,7 @@ var initial_state = {
 
   //edit data from server
   data: {
-    delivery_type: DELIVERY_TO_HOME,
-    invoice: INVOICE.NO
+    
   },
 }
 
@@ -75,6 +74,7 @@ function mainForm(state = initial_state, action) {
         //
         store.dispatch(AreaActions.getCities(data.province_id));
         store.dispatch(AreaActions.getDistricts(data.city_id));
+        store.dispatch(AreaActions.getDeliveryShops(data.regionalism_id));
         
         return {...state, data}
       })();
@@ -100,7 +100,7 @@ function products_choosing(state = products_choosing_state, action){
     case UPDATE_PATH:
       return products_choosing_state;
     case OrderProductsActions.GOT_CATEGORIES:
-      return {...state, all_categories: map(action.data, (text, id) => ({id, text}))};
+      return {...state, all_categories: action.data};
     case OrderProductsActions.SEARCH_PRODUCTS:
       //如果检索到已被选商品，那么则要标明已被勾选
       state.selected_list.forEach(function(n){
@@ -154,11 +154,11 @@ function products_choosing(state = products_choosing_state, action){
       return (function(){
         var base = {
           discount_price: 0,
-          choco_board: '巧克力牌xxx', //巧克力牌
-          greeting_card: '祝福语xxx', //祝福语
+          choco_board: '', //巧克力牌
+          greeting_card: '', //祝福语
           atlas: true, //产品图册
-          custom_name: '自定义名称xxx',  //自定义名称
-          custom_desc: '自定义描述xxx',  //自定义描述
+          custom_name: '',  //自定义名称
+          custom_desc: '',  //自定义描述
         }
         var confirm_list = state.selected_list.map(function(n){
           var new_item = {...n, ...base};
@@ -198,7 +198,7 @@ function products_choosing(state = products_choosing_state, action){
       new_selected_list.splice(new_selected_list.findIndex( n => n.sku_id == sku_id), 1);
       return {...state, confirm_list: new_confirm_list, selected_list: new_selected_list }
 
-    case OrderProductsActions.GOT_ORDER_BY_ID:
+    case FormActions.GOT_ORDER_BY_ID:
       return {...state, confirm_list: action.data.products, selected_list: action.data.products };
     default:
       return state;

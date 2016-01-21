@@ -169,7 +169,7 @@ BaseDao.trans = function(){
             } else {
                 queues(connection, config.mysql_options.debug);
                 let trans = connection.startTransaction();
-                resolve(trans,connection);
+                resolve({trans,connection});
                 trans.commit();
                 trans.execute();
             }
@@ -184,3 +184,4 @@ BaseDao.del_flag = {
 module.exports = BaseDao;
 module.exports.instance = new BaseDao();
 module.exports.pool = pool;
+

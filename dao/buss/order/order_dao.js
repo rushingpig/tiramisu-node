@@ -309,8 +309,8 @@ OrderDao.prototype.editOrder = function(order_obj,order_id,recipient_obj,recipie
         order_params = [tables.buss_order,order_obj,order_id],
         userId = order_obj.update_by,
         temp_connection = null;
-    return baseDao.trans().then((trans,connection)=>{
-        temp_connection = connection;
+    return baseDao.trans().then((tranconn)=>{
+        temp_connection = tranconn.connection;
         return new Promise((resolve,reject)=>{
             trans.query(recipent_sql,recipient_params,(err_recipient)=>{
                 if(err_recipient){

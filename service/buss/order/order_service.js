@@ -122,7 +122,8 @@ OrderService.prototype.addOrder = (req, res, next) => {
                 arr.push(curr.atlas);
                 arr.push(curr.custom_name || '');
                 arr.push(curr.custom_desc || '');
-                arr.push(curr.discount_price);
+                arr.push(curr.discount_price || 0);
+                arr.push(curr.amount || 0);
                 params.push(arr);
             });
             let order_fulltext_obj = {
@@ -188,6 +189,7 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
             data.pay_name = curr.pay_name;
             data.recipient_address = curr.recipient_address;
             data.recipient_name = curr.recipient_name;
+            data.recipient_id = curr.recipient_id;
             data.remarks = curr.remarks;
             data.src_id = curr.src_id;
             data.province_id = curr.province_id;
@@ -211,7 +213,8 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
                     original_price : curr.original_price,
                     product_name : curr.product_name,
                     atlas : curr.atlas,
-                    size : curr.size
+                    size : curr.size,
+                    amount : curr.amount
                 };
                 data.products.push(product_obj);
             }
@@ -521,7 +524,6 @@ OrderService.prototype.listOrders = (entrance)=>{
                     city : curr.merger_name.split(',')[2],
                     created_by : curr.created_by,
                     created_time : curr.created_time,
-                    delivery_name : delivery_adds.join(',') +  curr.address,
                     delivery_time : curr.delivery_time,
                     delivery_type : Constant.DTD[curr.delivery_type],
                     discount_price : curr.total_discount_price,
@@ -548,11 +550,7 @@ OrderService.prototype.listOrders = (entrance)=>{
                     deliveryman_name : curr.deliveryman_name,
                     deliveryman_mobile : curr.deliveryman_mobile
                 };
-                if(curr.delivery_type == Constant.DT.TAKETHEIR){
-                    delete list_obj.recipient_address;
-                }else if(curr.delivery_type == Constant.DT.DELIVERY){
-                    delete list_obj.delivery_name;
-                }
+
                 data.list.push(list_obj);
             }
             res.api(data);

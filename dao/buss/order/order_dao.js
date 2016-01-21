@@ -98,6 +98,7 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds){
         'bo.owner_name',
         'bo.id',
         'bo.owner_mobile',
+        'br.id as recipient_id',
         'br.`name` as recipient_name',
         'br.mobile as recipient_mobile',
         'br.address as recipient_address',

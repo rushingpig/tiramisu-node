@@ -28,8 +28,12 @@ function DeliveryService(){
  * @param next
  */
 DeliveryService.prototype.getDeliveryStationList = (req,res,next)=>{
-
-    systemUtils.wrapService(res,next,deliveryDao.findAllStations().then(results=>{
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let promise = deliveryDao.findAllStations().then(results=>{
         if(toolUtils.isEmptyArray(results)){
             res.api(res_obj.NO_MORE_RESULTS);
             return;
@@ -39,7 +43,8 @@ DeliveryService.prototype.getDeliveryStationList = (req,res,next)=>{
             data[curr.id] = curr.name;
         });
         res.api(data);
-    }));
+    });
+    systemUtils.wrapService(res,next,promise);
 };
 
 /**

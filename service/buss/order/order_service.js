@@ -201,6 +201,7 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
             data.pay_status = curr.pay_status;
             data.recipient_mobile = curr.recipient_mobile;
             data.recipient_landmark = curr.landmark;
+            data.updated_time = curr.updated_time;
             if(curr.sku_id){
                 let product_obj = {
                     sku_id : curr.sku_id,

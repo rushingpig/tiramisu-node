@@ -73,7 +73,7 @@ OrderDao.prototype.insertOrderSku = function(order_sku_obj){
     return baseDao.insert(this.base_insert_sql,[tables.buss_order_sku,order_sku_obj]);
 };
 OrderDao.prototype.batchInsertOrderSku = function(params){
-    let sql = "insert into "+tables.buss_order_sku+"(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price) values ?";
+    let sql = "insert into "+tables.buss_order_sku+"(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price,amount) values ?";
     return baseDao.batchInsert(sql,[params]);
 };
 OrderDao.prototype.insertOrderFulltext = function(order_fulltext_obj){

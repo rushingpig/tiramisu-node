@@ -154,7 +154,7 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds){
     params.push(tables.dict_regionalism);
     sql += " left join ?? dr3 on dr2.parent_id = dr3.id";
     params.push( tables.dict_regionalism);
-    sql += " left join ?? bos on bo.id = bos.order_id and del_flag = ?";
+    sql += " left join ?? bos on bo.id = bos.order_id and bos.del_flag = ?";
     params.push(tables.buss_order_sku);
     params.push(del_flag.SHOW);
     sql += " left join ?? bps on bos.sku_id = bps.id";

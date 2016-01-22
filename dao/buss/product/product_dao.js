@@ -88,8 +88,8 @@ ProductDao.prototype.findProductsByOrderId = function(orderId){
     sql += " left join buss_order bo on bos.order_id = bo.id";
     sql += " left join buss_product_sku bps on bps.id = bos.sku_id";
     sql += " left join buss_product bp on bp.id = bps.product_id";
-    sql += " where bos.order_id = ?"
-    params.push(tables.buss_order_sku,orderId);
+    sql += " where bos.order_id = ? and bos.del_flag = ?";
+    params.push(tables.buss_order_sku,orderId,del_flag.SHOW);
     return baseDao.select(sql,params);
 };
 

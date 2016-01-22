@@ -87,7 +87,7 @@ OrderDao.prototype.insertOrderFulltext = function(order_fulltext_obj){
  */
 OrderDao.prototype.updateOrderFulltext = function(order_fulltext_obj,orderId){
     let sql = this.base_update_sql + " where order_id = ?";
-    return baseDao.update(this.base_update_sql,[tables.buss_order_fulltext,order_fulltext_obj,orderId]);
+    return baseDao.update(sql,[tables.buss_order_fulltext,order_fulltext_obj,orderId]);
 };
 /**
  * find the order detail info by orderId or orderIds
@@ -154,8 +154,9 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds){
     params.push(tables.dict_regionalism);
     sql += " left join ?? dr3 on dr2.parent_id = dr3.id";
     params.push( tables.dict_regionalism);
-    sql += " left join ?? bos on bo.id = bos.order_id";
-    params.push( tables.buss_order_sku);
+    sql += " left join ?? bos on bo.id = bos.order_id and del_flag = ?";
+    params.push(tables.buss_order_sku);
+    params.push(del_flag.SHOW);
     sql += " left join ?? bps on bos.sku_id = bps.id";
     params.push( tables.buss_product_sku);
     sql += " left join ?? bp on bps.product_id = bp.id";
@@ -311,6 +312,7 @@ OrderDao.prototype.editOrder = function(order_obj,order_id,recipient_obj,recipie
         temp_connection = null;
     return baseDao.trans().then((tranconn)=>{
         temp_connection = tranconn.connection;
+        let trans = tranconn.trans;
         return new Promise((resolve,reject)=>{
             trans.query(recipent_sql,recipient_params,(err_recipient)=>{
                 if(err_recipient){
@@ -333,16 +335,22 @@ OrderDao.prototype.editOrder = function(order_obj,order_id,recipient_obj,recipie
                             return;
                         }
                     };
-                    add_skus.forEach((curr)=>{
-                        trans.query(this.base_insert_sql,[tables.buss_order_sku,curr],cb);
-                    });
-                    let order_sku_batch_update_sql = this.base_update_sql + " where order_id = ? and sku_id in "+dbHelper.genInSql(delete_skuIds);
-                    trans.query(order_sku_batch_update_sql,[tables.buss_order_sku,{del_flag : del_flag.HIDE,updated_by:userId},order_id],cb);
-                    update_skus.forEach((curr)=>{
-                        let order_sku_update_sql = this.base_update_sql + " where order_id = ? and sku_id = ?";
-                        let order_sku_update_params = [tables.buss_order_sku,curr,order_id,curr.sku_id];
-                        trans.query(order_sku_update_sql,order_sku_update_params,cb);
-                    });
+                    if(!toolUtils.isEmptyArray(add_skus)){
+                        add_skus.forEach((curr)=>{
+                            trans.query(this.base_insert_sql,[tables.buss_order_sku,curr],cb);
+                        });
+                    }
+                    if(!toolUtils.isEmptyArray(delete_skuIds)){
+                        let order_sku_batch_update_sql = this.base_update_sql + " where order_id = ? and sku_id in "+dbHelper.genInSql(delete_skuIds);
+                        trans.query(order_sku_batch_update_sql,[tables.buss_order_sku,{del_flag : del_flag.HIDE,updated_by:userId},order_id],cb);
+                    }
+                    if(!toolUtils.isEmptyArray(update_skus)) {
+                        update_skus.forEach((curr)=> {
+                            let order_sku_update_sql = this.base_update_sql + " where order_id = ? and sku_id = ?";
+                            let order_sku_update_params = [tables.buss_order_sku, curr, order_id, curr.sku_id];
+                            trans.query(order_sku_update_sql, order_sku_update_params, cb);
+                        });
+                    }
                     trans.commit(()=>{
                         temp_connection.release();
                         resolve();

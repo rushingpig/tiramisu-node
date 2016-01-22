@@ -3,8 +3,8 @@ import React, {Component, PropTypes} from 'react';
 function ProductRow(product){
   return (
     <tr key={product.sku_id}>
-      <td>{product.product_name}</td>
-      <td>￥{product.original_price}</td>
+      <td>{product.name}</td>
+      <td>￥{product.original_price/100}</td>
       <td>{product.size}</td>
       <td>{product.num}</td>
       <td>￥{product.discount_price}</td>

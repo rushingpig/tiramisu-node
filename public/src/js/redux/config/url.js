@@ -48,7 +48,9 @@ const URL = (function(){
     products: '/products',
 
     //送货管理
-    order_exchange: '/orders/exchange',
+    order_exchange: '/orders/exchange', //订单转送单列表
+    order_delivery: '/orders/delivery', //送货单管理列表
+    order_distribute: '/orders/signin', //配送单管理列表
     apply_print: '/order/reprint/apply', //申请打印
     print_review_list: '/order/reprint/applies',
     review_print_apply: '/order/reprint/apply/:apply_id', //审核申请

@@ -36,7 +36,7 @@ const validate = (values, {form}) => {
   _v('delivery_date');
 
   _v_selsect('regionalism_id');
-  // _v_selsect('delivery_id');
+  _v_selsect('delivery_id');
   _v_selsect('src_id');
   _v_selsect('pay_modes_id');
   _v_selsect('pay_status');
@@ -177,7 +177,7 @@ class ManageAddForm extends Component {
       }
       <div className="form-group form-inline">
         <label>{'　配送中心：'}</label>
-        <Select {...delivery_id} options={delivery_stations} className={`form-select ${delivery_id.error}`} />
+        <Select {...delivery_id} options={delivery_stations} className={`form-select ${delivery_id.error}`} ref="delivery_center" />
       </div>
       <div className="form-group form-inline">
         <label>{'　订单来源：'}</label>
@@ -230,7 +230,7 @@ class ManageAddForm extends Component {
               <button
                   key="submitBtn"
                   onClick={handleSubmit(this._check.bind(this, this.handleSubmitOrder))}
-                  disabled={save_ing} className="btn btn-theme btn-xs">保存</button>
+                  disabled={save_ing} className="btn btn-theme btn-xs">提交</button>
             ]
           : <button 
                 onClick={handleSubmit(this._check.bind(this, this.handleCreateOrder))} 
@@ -253,22 +253,28 @@ class ManageAddForm extends Component {
     
     //redux-form的缘故，这里必须异步，否则errors为空对象
     setTimeout(() => {
-      var { errors, dispatch, actions: {createOrder} } = this.props;
+      var { errors, dispatch, actions: {createOrder}, order_id } = this.props;
+      var order_info = this.props['form-data'].data;
       if(!Object.keys(errors).length){
         form_data.delivery_id = 1;
         form_data.delivery_time = form_data.delivery_date + ' ' + form_data.delivery_hours;
         delete form_data.delivery_date;
         delete form_data.delivery_hours;
 
+        form_data.order_id = order_id;
+        form_data.updated_time = order_info.updated_time;
+        form_data.recipient_id = order_info.recipient_id;
+        form_data.delivery_name = this.findSelectedOptionText('delivery_center');
+
         //拼接省市区
         form_data.prefix_address = (
-          $(findDOMNode(this.refs.province)).find('option:selected').html() +
-          $(findDOMNode(this.refs.city)).find('option:selected').html() + 
-          $(findDOMNode(this.refs.district)).find('option:selected').html()
+          this.findSelectedOptionText('province') +
+          this.findSelectedOptionText('city') +
+          this.findSelectedOptionText('district')
         )
         //门店自提时，将门店id转换为 收货人详细地址
         if(form_data.delivery_type == DELIVERY_TO_STORE){
-          form_data.recipient_address = $(findDOMNode(this.refs.shop)).find('option:selected').html();
+          form_data.recipient_address = this.findSelectedOptionText('shop');
           form_data.recipient_landmark = '';
         }
 
@@ -277,6 +283,9 @@ class ManageAddForm extends Component {
         Utils.Noty('warning', '请填写完整');
       }
     }, 0);
+  }
+  findSelectedOptionText(_refs){
+    return $(findDOMNode(this.refs[_refs])).find('option:selected').html();
   }
   handleCreateOrder(form_data){
     this.props.actions.createOrder(form_data)
@@ -289,17 +298,16 @@ class ManageAddForm extends Component {
       });
   }
   handleSaveOrder(form_data){
-    form_data.order_id = this.props.order_id;
-    form_data.updated_time = Utils.dateFormat(new Date(), 'yyyy-MM-dd hh:mm:ss');
-    form_data.recipient_id = this.props.recipient_id;
-    this.props.actions.saveOrder(form_data).fail(function(){
-      Utils.Noty('error', '保存异常');
-    });
+    this.props.actions.saveOrder(form_data)
+      .done(function(){
+        Utils.Noty('success', '保存成功')
+        this.props.actions.getOrderById(form_data.order_id).fail(function(){history.go(0);}.bind(this));
+      }.bind(this))
+      .fail(function(){
+        Utils.Noty('error', '保存异常');
+      });
   }
   handleSubmitOrder(form_data){
-    form_data.order_id = this.props.order_id;
-    form_data.updated_time = Utils.dateFormat(new Date(), 'yyyy-MM-dd hh:mm:ss');
-    form_data.recipient_id = this.props.recipient_id;
     this.props.actions.submitOrder(form_data).done(function(){
       Utils.Noty('success', '已成功提交！');
       history.push('/om/index');
@@ -316,42 +324,41 @@ class ManageAddForm extends Component {
     var self = this;
 
     //初始化地图
-    MyMap.create( (map) => {
-      self._bmap = map;
-    });
+    // MyMap.create( (map) => {
+    //   self._bmap = map;
+    // });
 
-    $(this.refs.recipient_address).on('blur', (e) => {
-      var detail = e.target.value;
-      if(detail){
-        let province = $(findDOMNode(self.refs.province)).find('option:selected').text();
-        let city = $(findDOMNode(self.refs.city)).find('option:selected').text();
-        let district = $(findDOMNode(self.refs.district)).find('option:selected').text();
-        let default_text = self.refs.province.props['default-text'];
-        if(province != default_text && city != default_text && district != default_text){
-          if(BMap){
-            let map = self._bmap;
-            map.centerAndZoom(city);
-            let localSearch = new BMap.LocalSearch(map);
-            localSearch.setSearchCompleteCallback( (searchResult) => {
-              var poi = searchResult.getPoi(0);
-              if(poi){
-                console.log(poi.point.lng + "," + poi.point.lat);
-                getDeliveryStations({
-                  lng: poi.point.lng,
-                  lat: poi.point.lat
-                })
-              }
-            });
-            localSearch.search(district + detail);
-          }else{
-            alert('地图服务加载失败，请稍后再试');
-          }
-        }
-      }
-    });
-    
-    // $(findDOMNode(this.refs.province)).on('change', this.onProvinceChange.bind(this));
-    // $(findDOMNode(this.refs.city)).on('change', this.onCityChange.bind(this));
+    getDeliveryStations();
+
+    // $(this.refs.recipient_address).on('blur', (e) => {
+    //   var detail = e.target.value;
+    //   if(detail){
+    //     let province = $(findDOMNode(self.refs.province)).find('option:selected').text();
+    //     let city = $(findDOMNode(self.refs.city)).find('option:selected').text();
+    //     let district = $(findDOMNode(self.refs.district)).find('option:selected').text();
+    //     let default_text = self.refs.province.props['default-text'];
+    //     if(province != default_text && city != default_text && district != default_text){
+    //       if(BMap){
+    //         let map = self._bmap;
+    //         map.centerAndZoom(city);
+    //         let localSearch = new BMap.LocalSearch(map);
+    //         localSearch.setSearchCompleteCallback( (searchResult) => {
+    //           var poi = searchResult.getPoi(0);
+    //           if(poi){
+    //             console.log(poi.point.lng + "," + poi.point.lat);
+    //             getDeliveryStations({
+    //               lng: poi.point.lng,
+    //               lat: poi.point.lat
+    //             })
+    //           }
+    //         });
+    //         localSearch.search(district + detail);
+    //       }else{
+    //         alert('地图服务加载失败，请稍后再试');
+    //       }
+    //     }
+    //   }
+    // });
 
     LazyLoad('noty');
   }

@@ -13,24 +13,26 @@ var load_map = {};
 export default function LazyLoad(name){
   $(function(){
     var plugin = config[name];
-    if(plugin && !load_map[name]){
-      setTimeout(function(){
-        if(plugin.css){
-          var link = document.createElement("link");
-          link.rel = "stylesheet";
-          link.href = plugin.css;
-          document.head.appendChild(link);
-        }
-        if(plugin.js){
-          var sc = document.createElement("script");
-          sc.type = "text\/javascript";
-          sc.src = plugin.js;
-          document.body.appendChild(sc);
-        }
-        load_map[name] = 1; //已加载过
-      }, 0);
+    if(plugin){
+      if(!load_map[name]){
+        setTimeout(function(){
+          if(plugin.css){
+            var link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = plugin.css;
+            document.head.appendChild(link);
+          }
+          if(plugin.js){
+            var sc = document.createElement("script");
+            sc.type = "text\/javascript";
+            sc.src = plugin.js;
+            document.body.appendChild(sc);
+          }
+          load_map[name] = 1; //已加载过
+        }, 0);
+      }
     }else{
-      console.warn('lazy load "' + name + '" fail or has loaded');
+      console.error('lazy load "' + name + '" fail');
     }
   })
 }

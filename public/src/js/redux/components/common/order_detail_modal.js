@@ -18,9 +18,9 @@ export default class DetailModal extends Component {
     var products = products.map( n => {
       return (
         <tr key={n.sku_id}>
-          <td>{n.product_name}</td>
+          <td>{n.name}</td>
           <td className="text-left">规格：{n.size}<br/>数量：{n.num}</td>
-          <td className="text-left">原价：￥{n.original_price / 100}<br/>实际售价：￥{n.discount_price / 100}</td>
+          <td className="text-left">原价：￥{n.original_price / 100}<br/>实际售价：￥{n.discount_price}</td>
           <td>￥{n.amount}</td>
           <td>{n.choco_board}</td>
           <td>{n.greeting_card}</td>
@@ -42,7 +42,7 @@ export default class DetailModal extends Component {
           <div className="modal-body strong-label">
             <div className="form-group form-inline">
               <label>{'　配送方式：'}</label>
-              <span className="gray">{ DELIVERY_MAP[data.pay_modes_id] }</span>
+              <span className="gray">{ DELIVERY_MAP[data.delivery_type] }</span>
             </div>
             <div className="form-group form-inline">
               <label>{'下单人信息：'}</label>
@@ -61,8 +61,12 @@ export default class DetailModal extends Component {
               <span className="gray">{data.recipient_landmark}</span>
             </div>
             <div className="form-group form-inline">
-              <label className="inline-block">{'　支付方式：'}<br/>{' '}<br/>{' '}<br/></label>
-              <span className="inline-block gray">第三方支付(todo)<br/>团购密码 xxxxxx(todo)<br/>{pay_status[data.pay_status]}</span>
+              <label className="inline-block">{'　支付方式：'}<br/>{data.coupon ? [' ', <br/>] : null}{' '}<br/></label>
+              <span className="inline-block gray">
+                {data.pay_name}<br/>
+                {data.coupon ? ['团购密码 ' + data.coupon, <br/>] : null}
+                {pay_status[data.pay_status]}
+              </span>
             </div>
             <div className="form-group form-inline">
               <label>{'　配送时间：'}</label>
@@ -72,6 +76,7 @@ export default class DetailModal extends Component {
               <label>{'　　　备注：'}</label>
               <span className="gray">{data.remarks}</span>
             </div>
+            <hr className="dotted" />
             <div className="form-group form-inline">
               <label>{'　产品信息：'}</label>
             </div>

@@ -5,6 +5,11 @@ import { core } from 'utils/index';
 
 function _end_callback(resolve, reject){
   return function(err, res){
+    if(err){
+      console.error(err);
+      reject('请求失败！');
+      return;
+    }
     if(res.ok){
       if(res.body.code === SUCCESS_CODE){
         resolve(res.body.data);

@@ -187,6 +187,7 @@ OrderService.prototype.getOrderDetail = (req,res,next) =>{
             data.owner_name = curr.owner_name;
             data.pay_modes_id = curr.pay_modes_id;
             data.pay_name = curr.pay_name;
+            data.coupon = curr.coupon;
             data.recipient_address = curr.recipient_address;
             data.recipient_name = curr.recipient_name;
             data.recipient_id = curr.recipient_id;

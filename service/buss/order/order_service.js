@@ -332,7 +332,8 @@ OrderService.prototype.editOrder = function(is_submit){
                             atlas : curr.atlas,
                             custom_name : curr.custom_name,
                             custom_desc : curr.custom_desc,
-                            discount_price : curr.discount_price
+                            discount_price : curr.discount_price,
+                            amount : curr.amount
                         };
                         update_skus.push(systemUtils.assembleUpdateObj(req,order_sku_obj));
                     }
@@ -349,7 +350,8 @@ OrderService.prototype.editOrder = function(is_submit){
                         atlas : curr.atlas,
                         custom_name : curr.custom_name,
                         custom_desc : curr.custom_desc,
-                        discount_price : curr.discount_price
+                        discount_price : curr.discount_price,
+                        amount : curr.amount
                     };
                     add_skus.push(systemUtils.assembleInsertObj(req,order_sku_obj));
                 }

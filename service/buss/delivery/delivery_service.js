@@ -375,14 +375,15 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
  * @param next
  */
 DeliveryService.prototype.print = (req,res,next)=>{
-    req.checkBody('order_ids').isArray();
+    req.checkQuery('order_ids').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
         res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
+    console.log(req.query.order_ids.split(','),'===========');
     let order_history_params = [];
-    let order_ids = req.body.order_ids.map((curr)=>{
+    let order_ids = req.query.order_ids.split(',').map((curr)=>{
         let param = [systemUtils.getDBOrderId(curr),'打印订单',req.session.user.id,new Date()];
         order_history_params.push(param);
         return systemUtils.getDBOrderId(curr);

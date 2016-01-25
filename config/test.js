@@ -24,8 +24,9 @@ var exp_session_options = {
     saveUninitialized : true,
     cookie : {
         secure : false,
-        maxAge : 1000000,
-        expires : new Date(Date.now() + 1000000)
+        //maxAge : 1000000,
+        //expires : new Date(Date.now() + 1000000)
+        expires : false
     }
 };
 //  express router config options
@@ -33,6 +34,19 @@ var exp_router_options = {
     caseSensitive:false,
     mergeParams:false,
     strict:false
+};
+const exp_validator_custom = {
+    customValidators: {
+        isArray: function(value) {
+            return value && Array.isArray(value);
+        },
+        gte: function(param, num) {
+            return param >= num;
+        },
+        isOrderId : function(orderId) {
+            return typeof orderId === 'string' && orderId.substring(8) && !isNaN(parseInt(orderId.substring(8)))
+        },
+    }
 };
 //  the table list in database  ->  tiramisu
 var tables = {
@@ -56,6 +70,7 @@ var tables = {
     buss_shop : 'buss_shop',
     buss_product_sku : 'buss_product_sku',
     buss_order_fulltext : 'buss_order_fulltext',
+    buss_print_apply : 'buss_print_apply',
 //=================Dict===================
     dict_regionalism : 'dict_regionalism',
 };
@@ -79,7 +94,7 @@ var mysql_options = {
 
 };
 
-//  exclude path arrays
+//  exclude path arrays of login filter
 var exclude_paths = ['/','/v1/a/login'];
 
 var log4js_options = {
@@ -89,14 +104,15 @@ var log4js_options = {
 
 var ping_xx = {
     apiKey: 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
-}
+};
 
-var login_required = false;
+var login_required = true;
 
 module .exports = {
     exp_static_options : exp_static_options,
     exp_session_options : exp_session_options,
     exp_router_options : exp_router_options,
+    exp_validator_custom : exp_validator_custom,
     tables : tables,
     ping_xx: ping_xx,
     login_required: login_required,
@@ -104,3 +120,4 @@ module .exports = {
     log4js_options : log4js_options,
     exclude_paths : exclude_paths
 };
+

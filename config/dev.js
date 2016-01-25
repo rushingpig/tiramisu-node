@@ -56,7 +56,6 @@ var tables = {
     sys_menu : 'sys_menu',
     sys_user_role : 'sys_user_role',
     sys_role_menu : 'sys_role_menu',
-    sys_role_station : 'sys_role_station',
 //=================Buss=================
     buss_city : 'buss_city',
     buss_delivery_station : 'buss_delivery_station',
@@ -95,7 +94,7 @@ var mysql_options = {
 
 };
 
-//  exclude path arrays
+//  exclude path arrays of login filter
 var exclude_paths = ['/','/v1/a/login'];
 
 var log4js_options = {

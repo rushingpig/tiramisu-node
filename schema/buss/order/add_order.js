@@ -45,5 +45,8 @@ module.exports = {
     },
     'total_amount': {
         notEmpty: true
+    },
+    'greeting_card' : {
+        optional : true
     }
 };

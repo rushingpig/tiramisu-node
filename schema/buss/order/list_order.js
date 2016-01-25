@@ -1,5 +1,5 @@
 /**
- * @des    :
+ * @des    : the schema of the list order api
  * @author : pigo.can
  * @date   : 15/12/29 下午2:45
  * @email  : zhenglin.zhu@xfxb.net
@@ -50,4 +50,20 @@ module.exports = {
             options: ['zh-CN']
         }
     },
+    'delivery_id' : {
+        optional : true,
+        isInt : true
+    },
+    'deliveryman_id' : {
+        optional : true,
+        isInt : true
+    },
+    'is_print' : {
+        optional : true,
+        isInt : true
+    },
+    'is_greeting_card' : {
+        optional : true,
+        isInt : true
+    }
 };

@@ -41,7 +41,6 @@ module.exports = {
         notEmpty: true
     },
     'delivery_id': {
-        optional : false,
         notEmpty: true,
         isInt : true
     },

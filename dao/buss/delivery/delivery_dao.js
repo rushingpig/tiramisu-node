@@ -34,7 +34,7 @@ DeliveryDao.prototype.updateOrderStatus = function(order_ids){
     let sql = this.base_update_sql + " where id in " + dbHelper.genInSql(order_ids);
     let params = [];
     params.push(tables.buss_order);
-    params.push({status:constant.OS.CONVERT});
+    params.push({status:constant.OS.CONVERT,exchange_time : new Date()});
     return baseDao.update(sql,params);
 };
 /**
@@ -139,7 +139,7 @@ DeliveryDao.prototype.updateOrderWithDeliveryman = function(order_ids,update_obj
  * find the deliverymans list by the login user of the station
  * @param userId
  */
-DeliveryDao.prototype.findDeliverymansByStation = function(userId){
+DeliveryDao.prototype.findDeliverymansByStation = function(city_id){
     let columns = [
         'su.id as deliveryman_id',
         'su.name as deliveryman_name',
@@ -147,14 +147,11 @@ DeliveryDao.prototype.findDeliverymansByStation = function(userId){
     ].join(','),params = [];
     let sql = "select "+columns+" from ?? su";
     params.push(tables.sys_user);
-    sql += " inner join ?? sur on su.id = sur.user_id";
-    params.push(tables.sys_user_role);
-    sql += " inner join ?? sr on sr.id = sur.role_id";
-    params.push(tables.sys_role);
-    sql += " left join ?? srs on sur.role_id = srs.role_id";
-    params.push(tables.sys_role_station);
-    sql += " where 1=1 and su.station_id = srs.station_id and su.id = ?";
-    params.push(userId);
+    sql += " inner join ?? bds on su.station_id = bds.id";
+    params.push(tables.buss_delivery_station);
+    sql += " inner join ?? dr on bds.regionalism_id = dr.id and dr.parent_id = ?";
+    params.push(tables.dict_regionalism);
+    params.push(city_id);
 
     return baseDao.select(sql,params);
 

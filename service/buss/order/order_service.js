@@ -72,7 +72,8 @@ OrderService.prototype.addOrder = (req, res, next) => {
         total_original_price = req.body.original_price,
         total_discount_price = req.body.discount_price,
         products = req.body.products,
-        prefix_address = req.body.prefix_address;
+        prefix_address = req.body.prefix_address,
+        greeting_card = req.body.greeting_card;
 
 
 
@@ -103,7 +104,8 @@ OrderService.prototype.addOrder = (req, res, next) => {
                 total_amount : total_amount,
                 total_original_price : total_original_price,
                 total_discount_price : total_discount_price,
-                submit_time : new Date()
+                submit_time : new Date(),
+                greeting_card : greeting_card
             };
             orderObj = systemUtils.assembleInsertObj(req,orderObj);
             return orderDao.insertOrder(orderObj);
@@ -263,7 +265,8 @@ OrderService.prototype.editOrder = function(is_submit){
             total_original_price = req.body.total_original_price,
             total_discount_price = req.body.total_discount_price,
             products = req.body.products,
-            delivery_name = req.body.delivery_name;
+            delivery_name = req.body.delivery_name,
+            greeting_card = req.body.greeting_card;
 
         let recipient_obj = {
             regionalism_id: regionalism_id,
@@ -287,7 +290,8 @@ OrderService.prototype.editOrder = function(is_submit){
             total_amount : total_amount,
             total_original_price : total_original_price,
             total_discount_price : total_discount_price,
-            is_deal : 1
+            is_deal : 1,
+            greeting_card : greeting_card
         };
         if(is_submit){
             order_obj.is_submit = 1;
@@ -487,7 +491,11 @@ OrderService.prototype.listOrders = (entrance)=>{
             src_id : req.query.src_id,
             status : req.query.status,
             city_id : req.query.city_id,
-            owner_mobile : req.query.owner_mobile
+            owner_mobile : req.query.owner_mobile,
+            delivery_id : req.query.delivery_id,
+            deliveryman_id : req.query.deliveryman_id,
+            is_print : req.query.is_print,
+            is_greeting_card : req.query.is_greeting_card
         };
         if(isNaN(parseInt(req.query.keywords || ''))){
             query_data.keywords = systemUtils.encodeForFulltext(req.query.keywords || '');
@@ -552,7 +560,11 @@ OrderService.prototype.listOrders = (entrance)=>{
                     updated_time : curr.updated_time,
                     submit_time : curr.submit_time,
                     deliveryman_name : curr.deliveryman_name,
-                    deliveryman_mobile : curr.deliveryman_mobile
+                    deliveryman_mobile : curr.deliveryman_mobile,
+                    exchange_time : curr.exchange_time,
+                    print_time : curr.print_time,
+                    signin_time : curr.signin_time,
+                    greeting_card : curr.greeting_card
                 };
 
                 data.list.push(list_obj);

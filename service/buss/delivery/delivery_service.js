@@ -314,7 +314,8 @@ DeliveryService.prototype.listDeliverymans = (req,res,next)=>{
         res.api(res_obj.SESSION_TIME_OUT,null);
         return;
     }
-    let promise = deliveryDao.findDeliverymansByStation(currentUserId).then((results)=>{
+    let city_id = req.session.user.city_id;
+    let promise = deliveryDao.findDeliverymansByStation(city_id).then((results)=>{
         if(toolUtils.isEmptyArray(results)){
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
@@ -402,7 +403,8 @@ DeliveryService.prototype.print = (req,res,next)=>{
         });
         let print_status_update_obj = {
             print_status : Constant.PS.UNPRINTABLE,
-            status : Constant.OS.INLINE
+            status : Constant.OS.INLINE,
+            print_time : new Date()
         };
         return orderDao.updateOrders(systemUtils.assembleUpdateObj(req,print_status_update_obj),order_ids);
     }).then((result)=>{

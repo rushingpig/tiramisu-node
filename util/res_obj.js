@@ -38,7 +38,8 @@ module.exports = {
         data : {
             list : [],
             total : 0
-        }
+        },
+        page_no : -1
     },
     OPTION_EXPIRED : {
         code : '9995',

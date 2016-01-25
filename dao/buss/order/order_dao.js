@@ -195,6 +195,8 @@ let columns = [
     'bo.delivery_time',
     'bo.is_deal',
     'bo.is_submit',
+    'bo.exchange_time',
+    'bo.print_time',
     'bo.cancel_reason',
     'bo.remarks',
     'bo.total_original_price',
@@ -203,6 +205,7 @@ let columns = [
     'bo.coupon',
     'bo.`status`',
     'bo.submit_time',
+    'bo.signin_time',
     'bo.print_status',
     'br.delivery_type',
     'br.address',
@@ -215,10 +218,11 @@ let columns = [
     'su2.name as updated_by',
     'su3.name as deliveryman_name',
     'su3.mobile as deliveryman_mobile',
-    'bo.updated_time'
+    'bo.updated_time',
+    'bo.greeting_card'
 ].join(',');
     let params = [];
-    let sql = "select "+columns+" from ?? bo";
+    let sql = "select " + columns + " from ?? bo";
     params.push(tables.buss_order);
     if(query_data.keywords){
         sql += " inner join ?? bof on match(bof.show_order_id,bof.landmark,bof.owner_mobile,bof.owner_name,bof.recipient_name,bof.recipient_address,bof.recipient_mobile) against(? IN BOOLEAN MODE) and bof.order_id = bo.id";
@@ -228,7 +232,10 @@ let columns = [
     sql += " left join ?? br on bo.recipient_id = br.id";
     params.push(tables.buss_recipient);
     if(query_data.city_id){
-        sql += " and br.regionalism_id = ?";
+        sql += " inner join ?? bds on bo.delivery_id = bds.id";
+        sql += " inner join ?? dr2 on dr2.id = bds.regionalism_id and dr2.parent_id = ?";
+        params.push(tables.buss_delivery_station);
+        params.push(tables.dict_regionalism);
         params.push(query_data.city_id);
     }
     sql += " left join ?? bos on bo.src_id = bos.id";
@@ -268,6 +275,29 @@ let columns = [
         sql += " and bo.status = ?";
         params.push(query_data.status);
     }
+    if(query_data.delivery_id){
+        sql += " and bo.delivery_id = ?";
+        params.push(query_data.delivery_id);
+    }
+    if(query_data.deliveryman_id){
+        sql += " and bo.deliveryman_id = ?";
+        params.push(query_data.deliveryman_id);
+    }
+    if(parseInt(query_data.is_print) === 1){   //  查询已经打印过的订单
+        sql += " and (bo.print_status = ? or bo.print_status = ?)";
+        params.push(constant.PS.UNPRINTABLE);
+        params.push(constant.PS.AUDITING);
+    }else if(parseInt(query_data.is_print) === 0){
+        sql += " and (bo.print_status = ? or bo.print_status = ?)";
+        params.push(constant.PS.PRINTABLE);
+        params.push(constant.PS.REPRINTABLE);
+    }
+
+    if(parseInt(query_data.is_greeting_card) === 1){
+        sql += " and bo.greeting_card is not null";
+    }else if(parseInt(query_data.is_greeting_card) === 0){
+        sql += " and bo.greeting_card is null";
+    }
     switch (query_data.order_sorted_rules){
         case constant.OSR.LIST:
             sql += " order by bo.created_time desc";
@@ -275,16 +305,15 @@ let columns = [
         case constant.OSR.DELIVERY_EXCHANGE :
             sql += " order by bo.delivery_time asc";
             break;
-        case constant.OSR.RECEIVE_LIST :
-            sql += " order by bo.delivery_time asc,bo.`status` asc";
-            break;
         case constant.OSR.DELIVER_LIST :
             sql += " order by bo.print_status asc,bo.delivery_time asc";
+            break;
+        case constant.OSR.RECEIVE_LIST :
+            sql += " order by bo.delivery_time asc,bo.`status` asc";
             break;
         default :
             // do nothing && order by with the db self
     }
-
     let countSql = dbHelper.countSql(sql);
     return baseDao.select(countSql,params).then((result)=>{
         return baseDao.select(dbHelper.paginate(sql,query_data.page_no,query_data.page_size),params).then((_result)=>{

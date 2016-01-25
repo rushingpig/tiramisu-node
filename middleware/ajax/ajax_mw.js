@@ -1,5 +1,5 @@
 /**
- * @des    :
+ * @des    : the middleware for the ajax request
  * @author : pigo.can
  * @date   : 16/1/19 下午1:54
  * @email  : zhenglin.zhu@xfxb.net

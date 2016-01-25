@@ -54,6 +54,7 @@ a.get('/order/reprint/applies',deliveryService.listReprintApplies); // 获取申
 a.get('/delivery/deliverymans',deliveryService.listDeliverymans);   // 获取配送员列表
 
 a.get('/orders/print',deliveryService.print);   // 打印订单
+a.get('/order/:orderId/reprint',deliveryService.reprint);   // 重新打印订单
 //**********************
 //******** POST ********
 //**********************
@@ -66,7 +67,7 @@ a.post('/order/reprint/apply',deliveryService.applyForRePrint); // 申请重新�
 //******** PUT ********
 //*********************
 
-a.put('/order/:orderId/reprint',deliveryService.reprint);   // 重新打印订单
+a.put('/order/:orderId/validate',deliveryService.validate); // 检验重新打印的验证码
 a.put('/order/:orderId',orderService.editOrder(false));     // 保存
 a.put('/order/:orderId/submit',orderService.editOrder(true)); // 提交
 a.put('/orders/exchange',deliveryService.exchageOrders);    // 转换订单

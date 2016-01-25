@@ -1,5 +1,5 @@
 /**
- * @des    :
+ * @des    : the module utils for the system
  * @author : pigo.can
  * @date   : 15/12/16 下午3:40
  * @email  : zhenglin.zhu@xfxb.net

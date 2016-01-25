@@ -104,13 +104,16 @@ DeliveryDao.prototype.findReprintApplies = function(query_obj){
  * update the reprint apply record
  * @param update_obj
  */
-DeliveryDao.prototype.updateReprintApply = function(update_obj,apply_id,is_reprint){
-    let sql = this.base_update_sql + " where id = ? ";    //avoid concurrency to update twice
-    let params = [tables.buss_print_apply,update_obj,apply_id];
+DeliveryDao.prototype.updateReprintApply = function(update_obj,apply_id,is_reprint,order_id){
+    let sql = this.base_update_sql + " where 1=1 ";    //avoid concurrency to update twice
+    let params = [tables.buss_print_apply,update_obj];
     if(is_reprint){
-        sql += " and is_reprint = 0";
+        sql += " and is_reprint = 0 and order_id = ? and status = ?";
+        params.push(order_id);
+        params.push(constant.OPS.AUDITED);
     }else{
-        sql += " and status = ?";
+        sql += " and id = ? and status = ?";
+        params.push(apply_id);
         params.push(constant.OPS.UNAUDIT);
     }
     return baseDao.update(sql,params);
@@ -120,8 +123,8 @@ DeliveryDao.prototype.updateReprintApply = function(update_obj,apply_id,is_repri
  * @param order_id
  */
 DeliveryDao.prototype.findReprintApplyByOrderId = function(order_id){
-    let sql = "select * from ?? where order_id = ? and is_reprint = 0 order by created_time desc limit 1";
-    let params = [tables.buss_print_apply,order_id];
+    let sql = "select * from ?? where order_id = ? and status = ? and is_reprint = 0 order by created_time desc limit 1";
+    let params = [tables.buss_print_apply,order_id,constant.OPS.AUDITED];
     return baseDao.select(sql,params);
 };
 /**

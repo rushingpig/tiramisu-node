@@ -192,6 +192,18 @@ function formCompile(form_data){
   return form_data;
 }
 
+function reactReplace(input = '', reg_or_string, reactElement){
+  input = (input || '').split(reg_or_string);
+  var results = [];
+  for(var i=0,len=input.length; i<len; i++){
+    results.push(input[i]);
+    if(i < len - 1){
+      results.push(reactElement); //待定，没有加key
+    }
+  }
+  return results;
+}
+
 export default {
   core: {
     isArray: core_isArray,
@@ -223,4 +235,5 @@ export default {
 
   colour,        //着色
   formCompile,   ////去除表单中的“” 和 "-1" 等无用字段，（主要用于filter 表单中）
+  reactReplace,  //将特定字符串转换成 React元素组
 };

@@ -66,13 +66,24 @@ export function GET(url, query_data, action_type){
   }
 }
 
-export function POST(url, query_data, action_type){
-  return (dispatch) => {
-    return post(url, query_data)
-      .done(function(data){
+export function POST(url, send_data, action_type){
+  return (dispatch, getState) => {
+    //key: 0->正在处理，1->成功，2->失败 (减少信号量)
+    dispatch({
+      type: action_type,
+      key: REQUEST.ING,
+    });
+    return post(url, send_data)
+      .done(function(){
         dispatch({
           type: action_type,
-          data
+          key: REQUEST.SUCCESS
+        })
+      })
+      .fail(function(){
+        dispatch({
+          type: action_type,
+          key: REQUEST.FAIL
         })
       })
   }

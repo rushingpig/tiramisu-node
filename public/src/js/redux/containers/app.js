@@ -5,7 +5,7 @@ import OrderPannel from '../components/order/manage';
 import OrderDetailPannel from '../components/order/manage_order_detail_pannel';
 import DeliveryChangePannel from '../components/delivery/change';
 import DeliveryManagePannel from '../components/delivery/delivery_manage';
-import DeliveryDistributePannel from '../components/delivery/delivery_distribute';
+import DistributeManagePannel from '../components/delivery/distribute_manage';
 import DeliverPrintReviewPannel from '../components/delivery/print_review';
 import history from 'history_instance';
 import {Router, Route, IndexRoute} from 'react-router';
@@ -28,7 +28,7 @@ export default class App extends Component {
           <Route path="dm">
             <Route path="change" component={DeliveryChangePannel} />
             <Route path="delivery" component={DeliveryManagePannel} />
-            <Route path="distribute" component={DeliveryDistributePannel} />
+            <Route path="distribute" component={DistributeManagePannel} />
             <Route path="review" component={DeliverPrintReviewPannel} />
           </Route>
 

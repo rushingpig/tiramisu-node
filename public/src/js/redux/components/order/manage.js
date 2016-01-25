@@ -300,6 +300,7 @@ class ManagePannel extends Component {
     this.search(this.props.orders.page_no);
   }
   search(page){
+    page = typeof page == 'undefined' ? this.props.page_no : page;
     this.props.getOrderList({page_no: page, page_size: this.state.page_size});
   }
   viewOrderDetail(){

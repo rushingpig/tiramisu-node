@@ -1,7 +1,9 @@
 import React, {Component, PropTypes} from 'react';
-import { render } from 'react-dom';
+import { render, findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { reduxForm } from 'redux-form';
+
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import Pagination from 'common/pagination';
@@ -18,10 +20,9 @@ import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from 'common/order_detail_modal';
 
 import * as OrderActions from 'actions/orders';
+import * as AreaActions from 'actions/area';
 import * as ChangeActions from 'actions/delivery_change';
 
-// import ManageDetailModal from 'common/order_detail_modal';
-// import ManageAlterStationModal from './manage_alter_station_modal';
 
 class TopHeader extends Component {
   render(){
@@ -35,29 +36,93 @@ class TopHeader extends Component {
 }
 
 class FilterHeader extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      search_ing: false,
+    }
+  }
   render(){
-    var { start_date, delivery_date, changeHandler } = this.props;
+    var { 
+      fields: {
+        keywords,
+        begin_time,
+        end_time,
+        delivery_id,
+        province_id,
+        city_id,
+      },
+      provinces,
+      cities,
+      delivery_stations,
+      changeHandler,
+      change_submitting,
+    } = this.props;
+    var { search_ing } = this.state;
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <input className="form-control input-xs" placeholder="关键字" />
+          <input {...keywords} className="form-control input-xs" placeholder="关键字" />
           {' 开始时间'}
-          <DatePicker date={start_date} className="short-input" />
+          <DatePicker editable redux-form={begin_time} className="short-input" />
           {' 配送时间'}
-          <DatePicker date={delivery_date} className="short-input" />
-          <Select default-text="选择配送中心" className="space"/>
-          <Select default-text="所属省份" className="space"/>
-          <Select default-text="所属城市" className="space"/>
-
-          <button onClick={changeHandler} className="btn btn-theme btn-xs">转换</button>
+          <DatePicker editable redux-form={end_time} className="short-input" />
+          <Select {...delivery_id} options={this.state.delivery_stations} default-text="选择配送中心" className="space"/>
+          <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space"/>
+          <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space"/>
+          <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
+            <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
+          </button>
+          {'　'}
+          <button disabled={change_submitting} data-submitting={change_submitting} onClick={changeHandler} className="btn btn-theme btn-xs">
+            转换
+          </button>
         </div>
       </div>
     )
   }
+  componentDidMount(){
+    setTimeout(function(){
+      var { getProvinces, getAllDeliveryStations } = this.props;
+      getProvinces();
+      LazyLoad('noty');
+    }.bind(this),0)
+  }
+  onProvinceChange(callback, e){
+    var {value} = e.target;
+    this.props.provinceReset();
+    if(value != this.refs.province.props['default-value'])
+      var $city = $(findDOMNode(this.refs.city));
+      this.props.getCities(value).done(() => {
+        $city.trigger('focus'); //聚焦已使city_id的值更新
+      });
+    callback(e);
+  }
+  search(){
+    this.setState({search_ing: true});
+    this.props.getOrderExchangeList({page_no: 0, page_size: this.props.page_size})
+      .always(()=>{
+        this.setState({search_ing: false});
+      });
+  }
 }
 FilterHeader.propTypes = {
   changeHandler: PropTypes.func.isRequired,
+  provinces: PropTypes.array.isRequired,
+  cities: PropTypes.array.isRequired,
+  delivery_stations: PropTypes.array.isRequired,
 }
+FilterHeader = reduxForm({
+  form: 'order_exchange_filter',
+  fields: [
+    'keywords',
+    'begin_time',
+    'end_time',
+    'delivery_id',
+    'province_id',
+    'city_id',
+  ]
+})( FilterHeader );
 
 class OrderRow extends Component {
   render(){
@@ -78,12 +143,12 @@ class OrderRow extends Component {
           建筑：{props.recipient_landmark}
         </td>
         <td>{props.coupon}</td>
-        <td>todo</td>
+        <td>{props.submit_time}</td>
         <td><a onClick={props.viewOrderDetail} href="javascript:;">{props.order_id}</a></td>
-        <td>{DELIVERY_MAP[props.pay_modes_id]}</td>
+        <td>{DELIVERY_MAP[props.delivery_type] || props.delivery_type}</td>
         <td><div className="remark-in-table">{props.remarks}</div></td>
         <td>{props.updated_by}</td>
-        <td><div className="time">{props.updated_date}</div></td>
+        <td><div className="time">{props.updated_time}</div></td>
       </tr>
     )
   }
@@ -106,12 +171,13 @@ class DeliverChangePannel extends Component {
     this.activeOrderHandler = this.activeOrderHandler.bind(this);
     this.changeHandler = this.changeHandler.bind(this);
     this.viewOrderDetail = this.viewOrderDetail.bind(this);
+    this.search = this.search.bind(this);
   }
   render(){
-    var { filter, exchangeOrders } = this.props;
+    var { filter, area, exchangeOrders } = this.props;
     var { change_submitting } = filter;
     var { loading, page_no, total, list, checked_order_ids, check_order_info, active_order_id } = this.props.orders;
-    var { checkOrderHandler, viewOrderDetail, activeOrderHandler } = this;
+    var { search, changeHandler, checkOrderHandler, viewOrderDetail, activeOrderHandler } = this;
 
     var content = list.map((n, i) => {
       return <OrderRow key={n.order_id} {...{...n, active_order_id, activeOrderHandler, checkOrderHandler, viewOrderDetail}} />;
@@ -120,7 +186,10 @@ class DeliverChangePannel extends Component {
       <div className="order-manage">
 
         <TopHeader />
-        <FilterHeader {...filter} changeHandler={this.changeHandler} />
+        <FilterHeader 
+          {...{...this.props, ...filter, ...area, changeHandler }} 
+          page_size={this.state.page_size} 
+        />
 
         <div className="panel">
           <header className="panel-heading">送货列表</header>
@@ -166,7 +235,7 @@ class DeliverChangePannel extends Component {
             </div>
           : null }
 
-        <ChangeModal {...{exchangeOrders, change_submitting, checked_order_ids}} ref="changeModal" />
+        <ChangeModal {...{exchangeOrders, search, change_submitting, checked_order_ids}} ref="changeModal" />
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} />
       </div>
     )
@@ -195,10 +264,12 @@ class DeliverChangePannel extends Component {
     this.setState({page_no: page});
   }
   componentDidMount() {
-    var { getOrderList, orders } = this.props;
-    getOrderList({page_no: orders.page_no, page_size: this.state.page_size});
-
+    this.search();
     LazyLoad('noty');
+  }
+  search(){
+    var { getOrderExchangeList, orders } = this.props;
+    getOrderExchangeList({page_no: orders.page_no, page_size: this.state.page_size});
   }
 }
 
@@ -208,7 +279,7 @@ function mapStateToProps({deliveryChange}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  return bindActionCreators({...OrderActions, ...ChangeActions}, dispatch);
+  return bindActionCreators({...OrderActions, ...AreaActions, ...ChangeActions}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeliverChangePannel);
@@ -219,11 +290,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(DeliverChangePannel)
 /***************   *******   *****************/
 
 class ChangeModal extends Component {
-  componentWillReceiveProps(nextProps){
-    if(nextProps['data-id'] != this.props['data-id']){
-      this.show();
-    }
-  }
   render(){
     var { checked_order_ids } = this.props;
     return (
@@ -240,8 +306,9 @@ class ChangeModal extends Component {
     this.refs.modal.hide();
   }
   onConfirm(){
-    var { exchangeOrders, checked_order_ids } = this.props;
+    var { exchangeOrders, search, checked_order_ids } = this.props;
     exchangeOrders(checked_order_ids).done(function(){
+      search();
       this.hide();
       Noty('success', '转换成功！')
     }.bind(this)).fail(() => {
@@ -254,4 +321,5 @@ ChangeModal.PropTypes = {
   checked_order_ids: PropTypes.array.isRequired,
   exchangeOrders: PropTypes.func.isRequired,
   change_submitting: PropTypes.bool.isRequired,
+  search: PropTypes.func.isRequired,
 }

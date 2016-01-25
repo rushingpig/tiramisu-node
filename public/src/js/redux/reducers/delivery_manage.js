@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import { orders } from 'reducers/orders';
+import { area } from 'reducers/area_select';
 import { deliveryman } from 'reducers/deliveryman';
 import * as Actions from 'actions/delivery_manage';
 import { REQUEST } from 'config/app.config';
@@ -22,7 +23,7 @@ function main(state = main_state, action){
   switch(action.type){
     case Actions.APPLY_DELIVERYMAN:
     case Actions.APPLY_PRINT:
-    case Actions.RE_PRINT:
+    case Actions.REPRINT_VALIDATE_CODE:
       if(action.key == REQUEST.ING){
         return {...state, submitting: true}
       }else if(action.key == REQUEST.SUCCESS || action.key == REQUEST.FAIL){
@@ -40,4 +41,5 @@ export default combineReducers({
   orders,
   deliveryman,
   main,
+  area: area(true)
 })

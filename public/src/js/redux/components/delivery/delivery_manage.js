@@ -1,8 +1,9 @@
 import React, {Component, PropTypes} from 'react';
-import { render } from 'react-dom';
+import { render, findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import LinkedStateMixin from 'react-addons-linked-state-mixin';
+import { reduxForm } from 'redux-form';
 
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
@@ -11,12 +12,13 @@ import StdModal from 'common/std_modal';
 import LineRouter from 'common/line_router';
 import { tableLoader } from 'common/loading';
 
-import { order_status } from 'config/app.config';
+import { order_status, YES_OR_NO, DELIVERY_MAP, PRINT_STATUS } from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
-import { Noty } from 'utils/index';
+import { Noty, map, reactReplace } from 'utils/index';
 
 import * as OrderActions from 'actions/orders';
+import * as AreaActions from 'actions/area';
 import * as DeliverymanActions from 'actions/deliveryman';
 import * as DeliveryManageActions from 'actions/delivery_manage';
 
@@ -35,25 +37,51 @@ class TopHeader extends Component {
 }
 
 class FilterHeader extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      search_ing: false,
+      all_print_status: YES_OR_NO,
+      delivery_types: map(DELIVERY_MAP, (text, id) => ({id, text})),
+    }
+  }
   render(){
-    var { start_date, delivery_date } = this.props;
+    var { 
+      fields: {
+        keywords,
+        begin_time,
+        end_time,
+        delivery_type,
+        print_status,
+        province_id,
+        city_id,
+      },
+      provinces,
+      cities,
+      delivery_stations,
+      change_submitting,
+    } = this.props;
+    var { search_ing, delivery_types, all_print_status } = this.state;
     return (
       <div className="panel search">
         <div className="panel-body">
           <div className="form-group form-inline">
-            <input className="form-control input-xs" placeholder="关键字" />
+            <input {...keywords} className="form-control input-xs" placeholder="关键字" />
             {' 开始时间'}
-            <DatePicker date={start_date} className="short-input" />
+            <DatePicker editable redux-form={begin_time} className="short-input" />
             {' 配送时间'}
-            <DatePicker date={delivery_date} className="short-input" />
-            <Select default-text="选择配送方式" className="space"/>
-            <Select default-text="是否打印" className="space"/>
+            <DatePicker editable redux-form={end_time} className="short-input" />
+            <Select {...delivery_type} options={delivery_types} default-text="选择配送方式" className="space"/>
+            <Select {...print_status} options={all_print_status} default-text="是否打印" className="space"/>
             <Select default-text="是否有祝福贺卡" className="space"/>
-            <Select default-text="所属省份" className="space"/>
-            <Select default-text="所属城市" className="space"/>
-            <button onClick={this.printHandler.bind(this)} className="btn btn-theme btn-xs">批量打印</button>
+            <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space"/>
+            <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space"/>
+            <button onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
+              <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
+            </button>
           </div>
           <div className="form-group form-inline">
+            <button onClick={this.printHandler.bind(this)} className="btn btn-theme space-right btn-xs">批量打印</button>
             <button className="btn btn-default btn-xs space-right">扫描前请点击</button>
             <button className="btn btn-theme btn-xs space-right">扫描完成</button>
             <button onClick={this.batchEdit.bind(this)} className="btn btn-theme btn-xs">批量编辑配送员</button>
@@ -61,6 +89,30 @@ class FilterHeader extends Component {
         </div>
       </div>
     )
+  }
+  componentDidMount(){
+    setTimeout(function(){
+      var { getProvinces } = this.props;
+      getProvinces();
+      LazyLoad('noty');
+    }.bind(this),0)
+  }
+  onProvinceChange(callback, e){
+    var {value} = e.target;
+    this.props.provinceReset();
+    if(value != this.refs.province.props['default-value'])
+      var $city = $(findDOMNode(this.refs.city));
+      this.props.getCities(value).done(() => {
+        $city.trigger('focus'); //聚焦已使city_id的值更新
+      });
+    callback(e);
+  }
+  search(){
+    this.setState({search_ing: true});
+    this.props.getOrderDeliveryList({page_no: 0, page_size: this.props.page_size})
+      .always(()=>{
+        this.setState({search_ing: false});
+      });
   }
   printHandler(){
     this.props.showBatchPrintModal();
@@ -72,12 +124,27 @@ class FilterHeader extends Component {
 FilterHeader.propTypes = {
   showBatchPrintModal: PropTypes.func.isRequired,
   showBatchEditModal: PropTypes.func.isRequired,
+  provinces: PropTypes.array.isRequired,
+  cities: PropTypes.array.isRequired,
 }
+FilterHeader = reduxForm({
+  form: 'order_delivery_filter',
+  fields: [
+    'keywords',
+    'begin_time',
+    'end_time',
+    'delivery_type',
+    'print_status',
+    'province_id',
+    'city_id',
+  ]
+})( FilterHeader );
 
 class OrderRow extends Component {
   render(){
     var { props } = this;
-    var { order_status = {} } = props;
+    var delivery_time = props.delivery_time.split(' ');
+    var _order_status = order_status[props.status] || {};
     return (
       <tr onClick={this.clickHandler.bind(this)} className={props.active_order_id == props.order_id ? 'active' : ''}>
         <td>
@@ -85,11 +152,17 @@ class OrderRow extends Component {
         </td>
         <td>
           <a onClick={this.showEditModal.bind(this)} href="javascript:;" className="nowrap">[编辑配送员]</a><br/>
-          <a onClick={this.printHandler.bind(this)} href="javascript:;">[打印]</a>
+          {
+            props.print_status == 'AUDITING'
+              ? '[正在审核]'
+              : <a onClick={this.printHandler.bind(this)} href="javascript:;">
+                  {props.print_status == 'REPRINTABLE' ? '[重新打印]' : '[打印]'}
+                </a>
+          }
         </td>
-        <td>{props.is_print == '1' ? '是' : '否'}</td>
-        <td>{props.deliveryman_name || 'todo'}<br />{props.deliveryman_name_mobile || 'todo'}</td>
-        <td>{props.delivery_time}</td>
+        <td>{PRINT_STATUS[props.print_status]}</td>
+        <td>{props.deliveryman_name}<br />{props.deliveryman_mobile}</td>
+        <td><div className="time">{delivery_time[0]}<br/>{delivery_time[1]}</div></td>
         <td>{props.owner_name}<br />{props.owner_mobile}</td>
         <td className="text-left">
           姓名：{props.recipient_name}<br />
@@ -99,23 +172,26 @@ class OrderRow extends Component {
           </div>
           建筑：{props.recipient_landmark}
         </td>
-        <td>todo</td>
-        <td>todo</td>
-        <td><div className="order-status" style={{background: order_status.bg}}>{order_status.value}</div></td>
+        <td className="text-left">{reactReplace(props.greeting_card, '|', <br />)}</td>
+        <td>{props.exchange_time}</td>
+        <td><div className="order-status" style={{background: _order_status.bg}}>{_order_status.value}</div></td>
         <td><a onClick={props.viewOrderDetail} href="javascript:;">{props.order_id}</a></td>
         <td>{props.remarks}</td>
       </tr>
     )
   }
-  showEditModal(){
+  showEditModal(e){
     this.props.showEditModal(this.props);
+    e.stopPropagation();
   }
-  printHandler(){
+  printHandler(e){
     this.props.printHandler(this.props);
+    e.stopPropagation();
   }
   checkOrderHandler(e){
     var { order_id, checkOrderHandler } = this.props;
     checkOrderHandler(order_id, e.target.checked);
+    // e.stopPropagation();
   }
   clickHandler(){
     this.props.activeOrderHandler(this.props.order_id);
@@ -128,7 +204,6 @@ class DeliveryManagePannel extends Component {
     this.state = {
       page_size: 8,
       batch_edit: false,
-      edit_orders: [],
     }
     this.showEditModal = this.showEditModal.bind(this);
     this.showBatchEditModal = this.showBatchEditModal.bind(this);
@@ -137,10 +212,11 @@ class DeliveryManagePannel extends Component {
     this.activeOrderHandler = this.activeOrderHandler.bind(this);
     this.viewOrderDetail = this.viewOrderDetail.bind(this);
     this.printHandler = this.printHandler.bind(this);
+    this.search = this.search.bind(this);
   }
   render(){
-    var { filter, getAllDeliveryman, applyDeliveryman, applyPrint, rePrint, deliveryman, main } = this.props;
-    var { loading, page_no, total, list, checked_order_ids, check_order_info, active_order_id } = this.props.orders;
+    var { filter, area, getAllDeliveryman, applyDeliveryman, startPrint, applyPrint, validatePrintCode, rePrint, deliveryman, main } = this.props;
+    var { loading, page_no, total, list, checked_orders, check_order_info, active_order_id } = this.props.orders;
     var { showBatchPrintModal, printHandler, showEditModal, showBatchEditModal, checkOrderHandler, viewOrderDetail, activeOrderHandler } = this;
 
     var content = list.map((n, i) => {
@@ -150,7 +226,10 @@ class DeliveryManagePannel extends Component {
       <div className="order-manage">
 
         <TopHeader />
-        <FilterHeader {...{...filter, showBatchPrintModal, showBatchEditModal}} />
+        <FilterHeader 
+          {...{...this.props, ...filter, ...area, showBatchPrintModal, showBatchEditModal}} 
+          page_size={this.state.page_size}
+        />
 
         <div className="panel">
           <header className="panel-heading">送货列表</header>
@@ -197,57 +276,47 @@ class DeliveryManagePannel extends Component {
             </div>
           : null }
 
-        <EditModal ref="EditModal" {...{
-          getAllDeliveryman, applyDeliveryman, orders: this.state.edit_orders, 
-          deliveryman, batch_edit: this.state.batch_edit, submitting: main.submitting }}
-        />
+        <EditModal ref="EditModal" {...{getAllDeliveryman, applyDeliveryman, deliveryman, submitting: main.submitting }} callback={this.search} />
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} />
-        <PrintModal ref="PrintModal" checked_order_ids={checked_order_ids} />
-        <ApplyPrintModal ref="ApplyPrintModal" {...{applyPrint, submitting: main.submitting}} data={check_order_info || {}} />
-        <RePrintModal ref="RePrintModal" {...{rePrint, submitting: main.submitting}} data={check_order_info || {}} />
+        <PrintModal ref="PrintModal" {...{checked_orders, startPrint, callback: this.search}} />
+        <ApplyPrintModal ref="ApplyPrintModal" {...{applyPrint, submitting: main.submitting}} callback={this.search} />
+        <RePrintModal ref="RePrintModal" {...{validatePrintCode, rePrint, submitting: main.submitting}} callback={this.search} />
       </div>
     )
   }
   showEditModal(n){
-    this.setState({ batch_edit: false, edit_orders: [n]}, function(){
-      this.refs.EditModal.show();
-    })
+    this.refs.EditModal.show([n]);
   }
   showBatchEditModal(){
-    var { list, checked_order_ids } = this.props.orders;
-    if(checked_order_ids.length){
-      var edit_orders = list.filter( n => {
-        return checked_order_ids.some( m => m == n.order_id);
-      })
-      this.setState({ batch_edit: true, edit_orders }, function(){
-        this.refs.EditModal.show();
-      })
+    var { checked_orders } = this.props.orders;
+    if(checked_orders.length){
+      this.refs.EditModal.show(checked_orders);
     }else{
       Noty('warning', '请先勾选订单！');
     }
   }
   showBatchPrintModal(n){
-    var { checked_order_ids } = this.props.orders;
-    if(checked_order_ids.length){
+    var { checked_orders } = this.props.orders;
+    if(checked_orders.length){
       this.refs.PrintModal.show();
     }else{
       Noty('warning', '请先勾选订单！');
     }
   }
-  printHandler(n){
-    //模拟轮换
-    if(!this._print_flag){
-      this._print_flag = 0;
+  printHandler({ print_status, order_id }){
+    if(print_status == 'PRINTABLE'){
+      this.props.startPrint([order_id])
+        .done(function(){
+          this.search(); //重新请求，刷新数据
+        })
+        .fail(function(){
+          Noty('error', '异常错误');
+        })
+    }else if(print_status == 'UNPRINTABLE'){
+      this.refs.ApplyPrintModal.show(order_id);
+    }else if(print_status == 'REPRINTABLE'){
+      this.refs.RePrintModal.show(order_id); //再次打印，输入验证码
     }
-    var a = this._print_flag % 3;
-    if(a == 0){
-      Noty('success', '模拟打印已完成');
-    }else if(a == 1){
-      this.refs.ApplyPrintModal.show();
-    }else if(a == 2){
-      this.refs.RePrintModal.show(); //再次打印，输入验证码
-    }
-    ++this._print_flag;
   }
   activeOrderHandler(order_id){
     if(this.props.orders.active_order_id != order_id)
@@ -264,14 +333,17 @@ class DeliveryManagePannel extends Component {
   }
 
   onPageChange(page){
-    this.setState({page_no: page});
+    this.search(page);
   }
   componentDidMount() {
-    var { getOrderList, orders } = this.props;
-    getOrderList({page_no: orders.page_no, page_size: this.state.page_size});
+    this.search();
 
     LazyLoad('noty');
     LazyLoad('chinese_py');
+  }
+  search(page){
+    page = typeof page == 'undefined' ? this.props.orders.page_no : page;
+    this.props.getOrderList({page_no: page, page_size: this.state.page_size});
   }
 }
 
@@ -281,7 +353,7 @@ function mapStateToProps({deliveryManage}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  return bindActionCreators({...OrderActions, ...DeliverymanActions, ...DeliveryManageActions}, dispatch);
+  return bindActionCreators({...OrderActions, ...AreaActions, ...DeliverymanActions, ...DeliveryManageActions}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeliveryManagePannel);
@@ -292,19 +364,34 @@ export default connect(mapStateToProps, mapDispatchToProps)(DeliveryManagePannel
 
 var PrintModal = React.createClass({
   render: function(){
-    var { checked_order_ids } = this.props;
+    var { checked_orders } = this.props;
     return (
-      <StdModal ref="modal" title="批量打印订单">
+      <StdModal ref="modal" title="批量打印订单" onConfirm={this.printHandler}>
         <center>
           <h5>
             您已同时勾选
-            <span className="strong font-lg">{' ' + checked_order_ids.length + ' '}</span>
+            <span className="strong font-lg">{' ' + checked_orders.length + ' '}</span>
             个订单
           </h5>
         </center>
         <center><h5>进行打印</h5></center>
       </StdModal>
     )
+  },
+  printHandler: function(){
+    var { checked_orders } = this.props;
+    if(checked_orders.some(n => n.print_status != 'PRINTABLE')){
+      Noty('warning', '请确定所有订单均可直接打印!');
+      return;
+    }
+    this.props.startPrint(this.props.checked_orders.map(n => n.order_id))
+      .done(function(){
+        Noty('success', '操作成功');
+        this.props.callback();
+      }.bind(this))
+      .fail(function(e){
+        Noty('error', e || '异常错误');
+      })
   },
   show: function(){
     this.refs.modal.show();
@@ -317,7 +404,6 @@ var PrintModal = React.createClass({
 var EditModal = React.createClass({
   propTypes: {
     'deliveryman': PropTypes.object.isRequired,
-    'orders': PropTypes.array.isRequired,
     'getAllDeliveryman': PropTypes.func.isRequired,
     'applyDeliveryman': PropTypes.func.isRequired,
   },
@@ -325,7 +411,8 @@ var EditModal = React.createClass({
     return {
       all_deliveryman: [],
       filter_results: [],
-      selected_delivery_man: undefined,
+      selected_deliveryman_id: undefined,
+      orders: [],
     };
   },
   componentWillReceiveProps: function(nextProps){
@@ -343,13 +430,13 @@ var EditModal = React.createClass({
         return n;
       })
       this.setState({
-        all_deliveryman: list, filter_results: new_data, selected_delivery_man: list.length && list[0].deliveryman_id
+        all_deliveryman: list, filter_results: new_data, selected_deliveryman_id: list.length && list[0].deliveryman_id
       })
     }
   },
   render: function(){
-    var { filter_results, selected_delivery_man } = this.state;
-    var { orders, batch_edit, submitting } = this.props;
+    var { filter_results, selected_deliveryman_id, orders } = this.state;
+    var { batch_edit, submitting } = this.props;
     var content = filter_results.map( n => {
       return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
     });
@@ -364,7 +451,7 @@ var EditModal = React.createClass({
         </div>
         <center className="form-inline mg-15" style={{'padding': '33px 0', 'textIndent': -15}}>
           {
-            batch_edit
+            orders.length > 1
             ? <div>
                 <h5 style={{'marginTop': 0}}>
                   您已同时勾选
@@ -377,7 +464,7 @@ var EditModal = React.createClass({
           }
           <div style={{'textIndent': -38}}>
             <label>{'配送人员　'}</label>
-            <select onChange={this.onSelectDeliveryman} value={selected_delivery_man} className="form-control input-sm" style={{'minWidth': '145px'}}>
+            <select onChange={this.onSelectDeliveryman} value={selected_deliveryman_id} className="form-control input-sm" style={{'minWidth': '145px'}}>
               {
                 content.length
                 ? content
@@ -405,17 +492,22 @@ var EditModal = React.createClass({
     }else{ //中文全称
       results = all_deliveryman.filter(n => n.text.indexOf(value) != -1)
     }
-    this.setState({ filter_results: results, selected_delivery_man: results.length && results[0].deliveryman_id });
+    this.setState({ filter_results: results, selected_deliveryman_id: results.length && results[0].deliveryman_id });
   },
   onSelectDeliveryman: function(e){
-    this.setState({ selected_delivery_man: e.target.value});
+    this.setState({ selected_deliveryman_id: e.target.value});
   },
   saveHandler: function(){
+    var { selected_deliveryman_id, orders } = this.state;
+    var selected_deliveryman = this.state.filter_results.filter(n => n.deliveryman_id == selected_deliveryman_id);
     this.props.applyDeliveryman({
-      deliveryman_id: this.state.selected_delivery_man,
-      order_ids: this.props.orders.map(n => n.order_id)
+      deliveryman_id: selected_deliveryman_id,
+      deliveryman_name: selected_deliveryman.length && selected_deliveryman[0].deliveryman_name,
+      deliveryman_mobile: selected_deliveryman.length && selected_deliveryman[0].deliveryman_mobile,
+      order_ids: orders.map(n => n.order_id)
     }).done(function(json){
       Noty('success', '操作成功！');
+      this.props.callback();
       this.hide();
     }.bind(this)).fail(function(json){
       console.error(json);
@@ -428,11 +520,13 @@ var EditModal = React.createClass({
       this.props.getAllDeliveryman();
     }, 200);
   },
-  show: function(){
+  show: function(orders){
+    this.setState({orders})
     this.refs.modal.show();
   },
   hide: function(){
     this.refs.modal.hide();
+    this.setState(this.getInitialState());
   },
 });
 
@@ -442,6 +536,7 @@ var ApplyPrintModal = React.createClass({
   },
   getInitialState: function() {
     return {
+      order_id: '',
       reason: '',
       applicant_mobile: '',
       director_mobile: ''
@@ -454,7 +549,7 @@ var ApplyPrintModal = React.createClass({
         <div className="pl-50">
           <div className="form-group form-inline">
             <label>{'　订单编号：'}</label>
-            <span>{` ${this.props.data.order_id}`}</span>
+            <span>{` ${this.state.order_id}`}</span>
           </div>
           <div className="form-group form-inline">
             <label>{'　申请理由：'}</label>
@@ -473,18 +568,23 @@ var ApplyPrintModal = React.createClass({
     )
   },
   saveHandler: function(){
-    this.props.applyPrint({...this.state, order_id: this.props.data.order_id}).done(function(){
-      this.hide();
-    }.bind(this))
-    .fail(function(){
-      Noty('error', '服务器异常')
-    })
+    this.props.applyPrint({...this.state, order_id: this.state.order_id})
+      .done(function(){
+        this.props.callback();
+        this.hide();
+      }.bind(this))
+      .fail(function(){
+        Noty('error', '服务器异常')
+      })
   },
-  show: function(){
-    this.refs.modal.show();
+  show: function(order_id){
+    this.setState({order_id}, function(){
+      this.refs.modal.show();
+    });
   },
   hide: function(){
     this.refs.modal.hide();
+    this.setState(this.getInitialState());
   },
 })
 
@@ -495,6 +595,7 @@ var RePrintModal = React.createClass({
   },
   getInitialState: function() {
     return {
+      order_id: '',
       validate_code: ''
     };
   },
@@ -504,7 +605,7 @@ var RePrintModal = React.createClass({
         <div className="pl-50">
           <div className="form-group form-inline">
             <label>{'订单编号：'}</label>
-            <span>{` ${this.props.data.order_id}`}</span>
+            <span>{` ${this.state.order_id}`}</span>
           </div>
           <div className="form-group form-inline">
             <label>{'　验证码：'}</label>
@@ -515,19 +616,26 @@ var RePrintModal = React.createClass({
     )
   },
   saveHandler: function(){
-    this.props.rePrint({validate_code: this.state.validate_code, order_id: this.props.data.order_id}).done(function(){
-      Noty('success', '验证通过，可以打印了，todo')
-      this.hide();
-    }.bind(this))
-    .fail(function(){
-      Noty('error', '服务器异常')
-    })
+    var { order_id } = this.state;
+    this.props.validatePrintCode(order_id, this.state.validate_code)
+      .done(function(){
+        this.props.rePrint(order_id).done(function(){
+          setTimeout(this.props.callback, 1000);
+        }.bind(this));
+        this.hide();
+      }.bind(this))
+      .fail(function(){
+        Noty('error', '服务器异常')
+      })
   },
   mixins: [LinkedStateMixin],
-  show: function(){
-    this.refs.modal.show();
+  show: function(order_id){
+    this.setState({order_id}, function(){
+      this.refs.modal.show();
+    })
   },
   hide: function(){
     this.refs.modal.hide();
+    this.setState(this.getInitialState());
   },
 })

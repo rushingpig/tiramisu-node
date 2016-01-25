@@ -25,6 +25,6 @@ export function exchangeOrders(order_ids) {
   }
   // return TEST(null, [
   //   {type: ORDERS_EXCHANGE, key: 0},  //立即派发
-  //   {type: ORDERS_EXCHANGE, key: 2}   //2000毫秒后派发
-  // ], 2000, false);
+  //   {type: ORDERS_EXCHANGE, key: 1}   //2000毫秒后派发
+  // ], 2000);
 }

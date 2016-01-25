@@ -9,8 +9,14 @@ var Pagination = React.createClass({
       total_count: 0,
       page_no: 0,
       page_num_show: 10, //分页的页码，显示10个
-      onPageChange: null//,
+      onPageChange: null,
+      no_more_code: -1, //后台返回空数据的时候，
       //onPageChangeBefore: null
+    }
+  },
+  componentWillReceiveProps: function(nextProps) {
+    if(nextProps.page_no == this.props.no_more_code){
+      this._selectPage(math.ceil(this.props.total_count / this.props.page_size));
     }
   },
   _calc_pages: function(){

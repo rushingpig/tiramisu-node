@@ -71,11 +71,18 @@ export default {
     YES: 1,
     NO: 0
   },
+  YES_OR_NO: [{id: 1, text: '是'}, {id: 0, text: '否'}],
 
   PRINT_REVIEW_STATUS: {
     'UNAUDIT': '未审核',
     'AUDITED': '审核通过',
     'AUDITFAILED': '审核失败',
+  },
+  PRINT_STATUS: {
+    'PRINTABLE': '是',
+    'UNPRINTABLE': '否',
+    'AUDITING': '否',
+    'REPRINTABLE': '是',
   }
 
 }

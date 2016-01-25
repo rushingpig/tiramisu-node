@@ -51,9 +51,12 @@ const URL = (function(){
     order_exchange: '/orders/exchange', //订单转送单列表
     order_delivery: '/orders/delivery', //送货单管理列表
     order_distribute: '/orders/signin', //配送单管理列表
+    print: '/orders/print',
     apply_print: '/order/reprint/apply', //申请打印
     print_review_list: '/order/reprint/applies',
     review_print_apply: '/order/reprint/apply/:apply_id', //审核申请
+    reprint_validate: '/order/:orderId/validate',
+    reprint: '/order/:orderId/reprint', //重新打印
 
     //配送员
     deliveryman: '/delivery/deliverymans',

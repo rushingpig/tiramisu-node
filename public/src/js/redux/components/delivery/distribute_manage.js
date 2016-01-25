@@ -1,8 +1,9 @@
 import React, {Component, PropTypes} from 'react';
-import { render } from 'react-dom';
+import { render, findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import LinkedStateMixin from 'react-addons-linked-state-mixin';
+import { reduxForm } from 'redux-form';
 
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
@@ -13,13 +14,16 @@ import StdModal from 'common/std_modal';
 import { tableLoader } from 'common/loading';
 import RadioGroup from 'common/radio_group';
 
-import { DELIVERY_MAP } from 'config/app.config';
+import { order_status, DELIVERY_MAP, YES_OR_NO } from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
 import { form, Noty, dateFormat } from 'utils/index';
 
 import * as OrderActions from 'actions/orders';
+import * as AreaActions from 'actions/area';
+import * as DeliverymanActions from 'actions/deliveryman';
 import * as DeliveryDistributeActions from 'actions/delivery_distribute';
+import { getPayModes } from 'actions/order_manage_form';
 
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from 'common/order_detail_modal';
@@ -36,25 +40,51 @@ class TopHeader extends Component {
 }
 
 class FilterHeader extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      search_ing: false,
+      all_print_status: YES_OR_NO,
+    }
+  }
   render(){
-    var {  } = this.props;
+    var { 
+      fields: {
+        keywords,
+        begin_time,
+        end_time,
+        pay_modes_id,
+        order_status,
+        deliveryman_id,
+        delivery_id,
+        province_id,
+        city_id,
+      },
+      provinces,
+      cities,
+      delivery_stations,
+      all_order_status,
+      all_pay_modes,
+      all_deliveryman,
+    } = this.props;
+    var { search_ing } = this.state;
     return (
       <div className="panel search">
         <div className="panel-body">
           <div className="form-group form-inline">
-            <input className="form-control input-xs" placeholder="关键字" />
+            <input {...keywords} className="form-control input-xs" placeholder="关键字" />
             {' 开始时间'}
-            <DatePicker className="short-input" />
+            <DatePicker editable redux-form={begin_time} className="short-input" />
             {' 配送时间'}
-            <DatePicker className="short-input" />
-            <Select default-text="选择支付方式" className="space"/>
-            <Select default-text="选择订单状态" className="space"/>
-            <Select default-text="选择配送员" className="space"/>
-            <Select default-text="选择配送中心" className="space"/>
+            <DatePicker editable redux-form={end_time} className="short-input" />
+            <Select {...pay_modes_id} options={all_pay_modes} default-text="选择支付方式" className="space"/>
+            <Select {...order_status} options={all_order_status} default-text="选择订单状态" className="space"/>
+            <Select {...deliveryman_id} options={all_deliveryman} default-text="选择配送员" className="space"/>
+            <Select {...delivery_id} options={delivery_stations} default-text="选择配送中心" className="space"/>
           </div>
           <div className="form-group form-inline">
-            <Select default-text="所属省份" className="space-right"/>
-            <Select default-text="所属城市" className="space"/>
+            <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space-right"/>
+            <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space"/>
             <button className="btn btn-default btn-xs space">扫描前请点击</button>
             <button className="btn btn-theme btn-xs space">扫描完成</button>
           </div>
@@ -62,20 +92,60 @@ class FilterHeader extends Component {
       </div>
     )
   }
-  printHandler(){
-
+  componentDidMount(){
+    setTimeout(function(){
+      var { getProvinces, getPayModes } = this.props;
+      getProvinces();
+      getPayModes();
+      LazyLoad('noty');
+    }.bind(this),0)
+  }
+  onProvinceChange(callback, e){
+    var {value} = e.target;
+    this.props.provinceReset();
+    if(value != this.refs.province.props['default-value'])
+      var $city = $(findDOMNode(this.refs.city));
+      this.props.getCities(value).done(() => {
+        $city.trigger('focus'); //聚焦已使city_id的值更新
+      });
+    callback(e);
+  }
+  search(){
+    this.setState({search_ing: true});
+    this.props.getOrderDistributeList({page_no: 0, page_size: this.props.page_size})
+      .always(()=>{
+        this.setState({search_ing: false});
+      });
   }
 }
-// FilterHeader.propTypes = {
-//   start_date: PropTypes.string.isRequired,
-//   delivery_date: PropTypes.string.isRequired,
-//   startDateChange: PropTypes.func.isRequired,
-//   deliveryDateChange: PropTypes.func.isRequired
-// }
+FilterHeader.propTypes = {
+  provinces: PropTypes.array.isRequired,
+  cities: PropTypes.array.isRequired,
+  all_pay_modes: PropTypes.array.isRequired,
+  delivery_stations: PropTypes.array.isRequired,
+  all_order_status: PropTypes.array.isRequired,
+  all_pay_modes: PropTypes.array.isRequired,
+  all_deliveryman: PropTypes.array.isRequired,
+}
+FilterHeader = reduxForm({
+  form: 'order_distribute_filter',
+  fields: [
+    'keywords',
+    'begin_time',
+    'end_time',
+    'pay_modes_id',
+    'order_status',
+    'deliveryman_id',
+    'delivery_id',
+    'province_id',
+    'city_id'
+  ]
+})( FilterHeader );
 
 class OrderRow extends Component {
   render(){
     var { props } = this;
+    var _order_status = order_status[props.status] || {};
     return (
       <tr onClick={this.clickHandler.bind(this)} className={props.active_order_id == props.order_id ? 'active' : ''}>
         <td>
@@ -94,13 +164,13 @@ class OrderRow extends Component {
           <div className="address-detail-td">
             <span className="inline-block">地址：</span><span className="address-all">{props.recipient_address}</span>
           </div>
-          建筑：todo
+          建筑：{props.recipient_landmark}
         </td>
         <td><a onClick={props.viewOrderDetail} href="javascript:;">{props.order_id}</a></td>
-        <td>{DELIVERY_MAP[props.pay_modes_id]}</td>
+        <td>{props.delivery_type}</td>
         <td><div className="remark-in-table">{props.remarks}</div></td>
         <td>todo</td>
-        <td>todo</td>
+        <td><div className="order-status" style={{background: _order_status.bg}}>{_order_status.value}</div></td>
       </tr>
     )
   }
@@ -132,7 +202,7 @@ class DeliveryDistributePannel extends Component {
     this.viewOrderDetail = this.viewOrderDetail.bind(this);
   }
   render(){
-    var { filter, orders, main, signOrder, unsignOrder } = this.props;
+    var { filter, area, deliveryman, orders, main, signOrder, unsignOrder } = this.props;
     var { submitting } = main;
     var { loading, page_no, total, list, check_order_info, active_order_id } = orders;
     var { showSignedModal, showUnSignedModal, checkOrderHandler, viewOrderDetail, activeOrderHandler } = this;
@@ -144,7 +214,10 @@ class DeliveryDistributePannel extends Component {
       <div className="order-manage">
 
         <TopHeader />
-        <FilterHeader {...filter} />
+        <FilterHeader
+          {...{...this.props, ...filter, ...area, all_deliveryman: deliveryman.list}}
+          page_size={this.state.page_size}
+        />
 
         <div className="panel">
           <header className="panel-heading">送货列表</header>
@@ -226,13 +299,13 @@ class DeliveryDistributePannel extends Component {
   }
 }
 
-function mapStateToProps({deliveryDistribute}){
-  return deliveryDistribute;
+function mapStateToProps({distributeManage}){
+  return distributeManage;
 }
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  return bindActionCreators({...OrderActions, ...DeliveryDistributeActions}, dispatch);
+  return bindActionCreators({...OrderActions, ...AreaActions, ...DeliverymanActions, ...DeliveryDistributeActions, getPayModes}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeliveryDistributePannel);

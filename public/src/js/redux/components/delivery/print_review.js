@@ -75,21 +75,20 @@ class ReviewRow extends Component {
         <td>{props.audit_opinion}</td>
         <td>{props.audit_time}</td>
         <td>{props.auditor}</td>
-        <td>{props.is_reprint == '1' ? '是' : '否'}</td>
         <td>{PRINT_REVIEW_STATUS[props.status]}</td>
         <td>{props.reprint_time}</td>
         <td>
-          <a onClick={this.reviewHandler.bind(this)} href="javascript:;" className="nowrap">[审核]</a><br/>
-          <a onClick={this.deleteHandler.bind(this)} href="javascript:;">[删除]</a>
+          {
+            props.status != 'AUDITED'
+              ? [<a key="review" onClick={this.reviewHandler.bind(this)} href="javascript:;" className="nowrap">[审核]</a>, <br key="br"/>]
+              : null
+          }
         </td>
       </tr>
     )
   }
   reviewHandler(){
     this.props.showReviewModal(this.props);
-  }
-  deleteHandler(){
-
   }
 }
 
@@ -101,9 +100,10 @@ class DeliverPrintReviewPannel extends Component {
       review_order: {},
     }
     this.showReviewModal = this.showReviewModal.bind(this);
+    this.search = this.search.bind(this);
   }
   render(){
-    var { showReviewModal } = this;
+    var { showReviewModal, search } = this;
     var { filter, reviewPrintApply, main: { loading, page_no, total, list, submitting } } = this.props;
 
     var content = list.map((n, i) => {
@@ -131,7 +131,6 @@ class DeliverPrintReviewPannel extends Component {
                   <th>审核意见</th>
                   <th>审核时间</th>
                   <th>审核人</th>
-                  <th>是否处理</th>
                   <th>审核状态</th>
                   <th>打印时间</th>
                   <th>管理操作</th>
@@ -147,12 +146,12 @@ class DeliverPrintReviewPannel extends Component {
               page_no={page_no} 
               total_count={total} 
               page_size={this.state.page_size} 
-              onPageChange={this.onPageChange}
+              onPageChange={this.onPageChange.bind(this)}
             />
           </div>
         </div>
 
-        <ReviewModal {...{data: this.state.review_order, reviewPrintApply, submitting}} ref="ReviewModal" />
+        <ReviewModal {...{data: this.state.review_order, reviewPrintApply, submitting, callback: search}} ref="ReviewModal" />
       </div>
     )
   }
@@ -160,14 +159,19 @@ class DeliverPrintReviewPannel extends Component {
     this.setState({review_order: n}, this.refs.ReviewModal.show());
   }
   onPageChange(page){
-    this.setState({page_no: page});
+    this.search(page);
   }
   componentDidMount() {
-    var { getPrintReviewList, main } = this.props;
-    getPrintReviewList({page_no: main.page_no, page_size: this.state.page_size});
+    this.search();
 
     LazyLoad('noty');
   }
+  search(page){
+    var { getPrintReviewList, main } = this.props;
+    page = typeof page == 'undefined' ? main.page_no : page;
+    getPrintReviewList({page_no: page, page_size: this.state.page_size});
+  }
+
 }
 
 function mapStateToProps({deliveryPrintReview}){
@@ -238,6 +242,7 @@ var ReviewModal = React.createClass({
   },
   hide: function(){
     this.refs.modal.hide();
+    this.setState(this.getInitialState());
   },
   onConfirm: function(){
     var { apply_id, applicant_mobile, order_id } = this.props.data;
@@ -245,6 +250,7 @@ var ReviewModal = React.createClass({
     this.props.reviewPrintApply(apply_id, { applicant_mobile, order_id, status, audit_opinion })
       .done(function(){
         this.hide();
+        this.props.callback();
       }.bind(this))
       .fail(function(){
         Noty('error', '服务器异常');

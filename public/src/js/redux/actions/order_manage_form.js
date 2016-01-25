@@ -80,10 +80,12 @@ function _getFormData(form_data, getState){
   var products = getState().orderManageForm.products.confirm_list;
   var total_amount = products.reduce((p, n) => p + n.discount_price*100, 0);
   var total_amount = 0, original_price = 0, discount_price = 0;
+  var gretting_card = [];
   products.forEach(n => {
     total_amount += n.amount * 100;
     original_price += n.original_price * n.num;
     discount_price += n.discount_price * 100 * n.num;
+    gretting_card.push(n.gretting_card);
   })
   return {
     ...form_data,
@@ -91,6 +93,7 @@ function _getFormData(form_data, getState){
     original_price,
     discount_price,
     products,
+    gretting_card: gretting_card.join('|')
   };
 }
 

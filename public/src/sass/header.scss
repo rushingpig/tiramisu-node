@@ -113,7 +113,7 @@
         transition: all 0.2s ease-out 0s;
 
         &:hover{
-          background: #2a323f;
+          background: #8E7268;
           color: #fff;
         }
       }
@@ -131,6 +131,6 @@
 
 .notification-menu .dropdown-toggle:hover, .notification-menu .dropdown-toggle:focus, .notification-menu .dropdown-toggle:active, .notification-menu .dropdown-toggle.active, .notification-menu .open .dropdown-toggle.dropdown-toggle {
     background: $theme-bg-color;
-    color: $theme-color;
+    color: #CCA468;
     box-shadow: none;
 }

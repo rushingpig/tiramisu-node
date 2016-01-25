@@ -6,6 +6,7 @@ var orders_state = {
   total: 0,
   list: [],
   checked_order_ids: [],
+  checked_orders: [],
   active_order_id: undefined,
   check_order_info: null,
 }
@@ -18,28 +19,30 @@ export function orders(state = orders_state, action){
 
     case OrderActions.CHECK_ORDER:
       return (function(){
-        var checked_order_ids = [];
+        var checked_order_ids = [], checked_orders = [];
         state.list.forEach(n => {
           if(n.order_id == action.order_id){
             n.checked = action.checked;
           }
           if(n.checked){
             checked_order_ids.push(n.order_id);
+            checked_orders.push(n);
           }
         })
-        return {...state, checked_order_ids}
+        return {...state, checked_order_ids, checked_orders}
       })();
 
     case OrderActions.CHECK_ALL_ORDERS:
       return (function(){
-        var checked_order_ids = [];
+        var checked_order_ids = [], checked_orders = [];
         state.list.forEach(n => {
           n.checked = action.checked;
           if(action.checked){
             checked_order_ids.push(n.order_id);
+            checked_orders.push(n);
           }
         })
-        return {...state, checked_order_ids}
+        return {...state, checked_order_ids, checked_orders}
       })()
 
     case OrderActions.ACTIVE_ORDER:

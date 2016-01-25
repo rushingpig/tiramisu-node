@@ -4,6 +4,10 @@ import { getValues } from 'redux-form';
 import { NO_MORE_CODE } from 'config/app.config';
 import { Noty, formCompile } from 'utils/index';
 
+/**
+ * GET_ORDER_LIST 这里共用了这个信号，代表获取列表数据（订单管理，订单转送单，送货单管理，配送单管理）
+ * @type {String}
+ */
 export const GET_ORDER_LIST = 'GET_ORDER_LIST';
 export function getOrderList(data){
   return (dispatch, getState) => {
@@ -47,6 +51,30 @@ export function getOrderList(data){
     }]
   }, GET_ORDER_LIST);
 */
+}
+
+export function getOrderExchangeList(data){
+  return (dispatch, getState) => {
+    var filter_data = getValues(getState().form.order_exchange_filter);
+    filter_data = formCompile(filter_data);
+    return GET(Url.order_exchange.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch);
+  }
+}
+
+export function getOrderDeliveryList(data){
+  return (dispatch, getState) => {
+    var filter_data = getValues(getState().form.order_delivery_filter);
+    filter_data = formCompile(filter_data);
+    return GET(Url.order_delivery.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch);
+  }
+}
+
+export function getOrderDistributeList(data){
+  return (dispatch, getState) => {
+    var filter_data = getValues(getState().form.order_distribute_filter);
+    filter_data = formCompile(filter_data);
+    return GET(Url.order_distribute.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch);
+  }
 }
 
 export const CHECK_ALL_ORDERS = 'CHECK_ALL_ORDERS';

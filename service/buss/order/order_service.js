@@ -512,7 +512,7 @@ OrderService.prototype.listOrders = (entrance)=>{
             query_data.status = Constant.OS.CONVERT;
         }else if (entrance === Constant.OSR.RECEIVE_LIST){
             query_data.order_sorted_rules = entrance;
-            query_data.status = Constant.OS.DELIVERY;
+            query_data.status = [Constant.OS.DELIVERY,Constant.OS.COMPLETED,Constant.OS.EXCEPTION];
         }
 
         let promise = orderDao.findOrderList(systemUtils.assemblePaginationObj(req,query_data)).then((resObj)=>{
@@ -532,7 +532,7 @@ OrderService.prototype.listOrders = (entrance)=>{
 
                 let list_obj = {
                     cancel_reason : curr.cancel_reason,
-                    landmark : curr.landmark,
+                    recipient_landmark : curr.landmark,
                     city : curr.merger_name.split(',')[2],
                     created_by : curr.created_by,
                     created_time : curr.created_time,
@@ -555,7 +555,8 @@ OrderService.prototype.listOrders = (entrance)=>{
                     recipient_name : curr.recipient_name,
                     remarks : curr.remarks,
                     src_name : curr.src_name,
-                    status : Constant.OSD[curr.status],
+                    //status : Constant.OSD[curr.status],
+                    status : curr.status,
                     updated_by : curr.updated_by,
                     updated_time : curr.updated_time,
                     submit_time : curr.submit_time,

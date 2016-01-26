@@ -215,15 +215,31 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
     }
     let update_obj = {
         late_minutes : req.body.late_minutes,
-        payfor_amount : req.body.payfor_amount,
+        payfor_amount : req.body.payfor_amount * 100,
         payfor_reason : req.body.payfor_reason,
         payfor_type : req.body.payfor_type,
         signin_time : req.body.signin_time,
         status : Constant.OS.COMPLETED
     };
+    let order_history_obj = {
+        order_id : systemUtils.getDBOrderId(req.params.orderId)
+    };
+    if(update_obj.payfor_amount == 0){
+        order_history_obj.option = '用户签收时间:{'+update_obj.signin_time+'}\n准点送达';
+    }else if(update_obj.payfor_type === Constant.PFT.CASH){
+        order_history_obj.option = '用户签收时间:{'+update_obj.signin_time+'}\n{现金赔偿}:{'+update_obj.payfor_amount+'}\n{迟到时长}:{'+update_obj.late_minutes+'分钟}';
+    }else if(update_obj.payfor_type === Constant.PFT.FULL_REFUND){
+        order_history_obj.option = '用户签收时间:{'+update_obj.signin_time+'}\n{全额退款--原因}:{'+update_obj.payfor_reason+'}';
+    }
+
     let promise = orderDao.updateOrder(systemUtils.assembleUpdateObj(req,update_obj),systemUtils.getDBOrderId(req.params.orderId)).then((result)=>{
         if(parseInt(result) <= 0){
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
+        }
+        return orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
+    }).then((insertResult)=>{
+        if(parseInt(insertResult) <= 0){
+            throw new TiramisuError(res_obj.FAIL,'新增订单签收历史记录时异常');
         }
         res.api();
     });
@@ -249,6 +265,11 @@ DeliveryService.prototype.unsigninOrder = (req,res,next)=>{
         unsignin_reason : req.body.unsignin_reason,
         status : Constant.OS.EXCEPTION
     };
+    let order_history_obj = {
+        order_id : systemUtils.getDBOrderId(req.params.orderId),
+        option : '订单无人签收,未签收原因为:\n{'+update_obj.unsignin_reason+'}'
+    };
+    //TODO the detail demand of the blacklist of user
     let promise = orderDao.findVersionInfoById(orderId).then((_res)=>{
         if(toolUtils.isEmptyArray(_res)){
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
@@ -259,6 +280,11 @@ DeliveryService.prototype.unsigninOrder = (req,res,next)=>{
     }).then((result)=>{
         if(parseInt(result) <= 0){
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
+        }
+        return orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
+    }).then((insertResult)=>{
+        if(parseInt(insertResult) <= 0){
+            throw new TiramisuError(res_obj.FAIL,'新增订单未签收历史记录时异常');
         }
         res.api();
     });

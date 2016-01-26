@@ -97,6 +97,14 @@ Constant.PS = {
     AUDITING : 'AUDITING',
     REPRINTABLE : 'REPRINTABLE'
 };
+/**
+ * the type of pay for
+ * @type {{}}
+ */
+Constant.PFT = {
+    CASH : 'CASH',
+    FULL_REFUND:'FULL_REFUND'
+};
 
 
 

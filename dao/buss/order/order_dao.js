@@ -272,8 +272,18 @@ let columns = [
         params.push(query_data.src_id);
     }
     if(query_data.status){
-        sql += " and bo.status = ?";
-        params.push(query_data.status);
+        if(Array.isArray(query_data.status)){
+            let temp_sql = " and (";
+            query_data.status.forEach((curr)=>{
+                temp_sql += " bo.status = ? or";
+                params.push(curr);
+            });
+            sql += temp_sql.substring(0,temp_sql.length - 3);
+            sql += ")";
+        }else{
+            sql += " and bo.status = ?";
+            params.push(query_data.status);
+        }
     }
     if(query_data.delivery_id){
         sql += " and bo.delivery_id = ?";

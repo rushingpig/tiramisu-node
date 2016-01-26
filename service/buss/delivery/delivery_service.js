@@ -66,8 +66,19 @@ DeliveryService.prototype.exchageOrders = (req,res,next)=>{
         let param = [systemUtils.getDBOrderId(curr),'转换订单',req.session.user.id,new Date()];
         order_history_params.push(param);
     });
-    let order_promise = deliveryDao.updateOrderStatus(orderIds).then((results)=>{
-        if(parseInt(results) <= 0){
+    let order_promise = orderDao.findOrdersByIds(orderIds).then((results)=>{
+        if(toolUtils.isEmptyArray(results)){
+            throw new TiramisuError(res_obj.INVALID_UPDATE_ID,'待转换的订单列表无效');
+        }
+        for(let i = 0;i < results.length;i++){
+            let curr = results[i];
+            if(curr.status !== Constant.OS.STATION){
+                throw new TiramisuError(res_obj.ORDER_NO_STATION,'待转换的订单号['+curr.id+']状态为['+curr.status+'],不能被转换...');
+            }
+        }
+        return deliveryDao.updateOrderStatus(orderIds);
+    }).then((result)=>{
+        if(parseInt(result) <= 0){
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
         }
     });
@@ -221,8 +232,9 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
         signin_time : req.body.signin_time,
         status : Constant.OS.COMPLETED
     };
+    let order_id = systemUtils.getDBOrderId(req.params.orderId);
     let order_history_obj = {
-        order_id : systemUtils.getDBOrderId(req.params.orderId)
+        order_id : order_id
     };
     if(update_obj.payfor_amount == 0){
         order_history_obj.option = '用户签收时间:{'+update_obj.signin_time+'}\n准点送达';
@@ -232,7 +244,16 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
         order_history_obj.option = '用户签收时间:{'+update_obj.signin_time+'}\n{全额退款--原因}:{'+update_obj.payfor_reason+'}';
     }
 
-    let promise = orderDao.updateOrder(systemUtils.assembleUpdateObj(req,update_obj),systemUtils.getDBOrderId(req.params.orderId)).then((result)=>{
+    let promise = orderDao.findOrderById(order_id).then((_res)=> {
+        if (toolUtils.isEmptyArray(_res)) {
+            throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
+        } else if (_res[0].status === Constant.OS.COMPLETED) {
+            throw new TiramisuError(res_obj.ORDER_COMPLETED);
+        } else if (_res[0].status === Constant.OS.EXCEPTION) {
+            throw new TiramisuError(res_obj.ORDER_EXCEPTION);
+        }
+        return orderDao.updateOrder(systemUtils.assembleUpdateObj(req, update_obj), systemUtils.getDBOrderId(req.params.orderId));
+    }).then((result)=>{
         if(parseInt(result) <= 0){
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
         }
@@ -251,7 +272,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
  * @param res
  * @param next
  */
-DeliveryService.prototype.unsigninOrder = (req,res,next)=>{
+DeliveryService.prototype.unsigninOrder = (req,res,next) => {
     req.checkParams('orderId').isOrderId();
     req.checkBody(schema.unsigninOrder);
     let errors = req.validationErrors();
@@ -265,18 +286,22 @@ DeliveryService.prototype.unsigninOrder = (req,res,next)=>{
         unsignin_reason : req.body.unsignin_reason,
         status : Constant.OS.EXCEPTION
     };
+
+    let order_id = systemUtils.getDBOrderId(req.params.orderId);
     let order_history_obj = {
-        order_id : systemUtils.getDBOrderId(req.params.orderId),
+        order_id : order_id,
         option : '订单无人签收,未签收原因为:\n{'+update_obj.unsignin_reason+'}'
     };
     //TODO the detail demand of the blacklist of user
-    let promise = orderDao.findVersionInfoById(orderId).then((_res)=>{
+    let promise = orderDao.findOrderById(order_id).then((_res)=>{
         if(toolUtils.isEmptyArray(_res)){
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
-        }else if(updated_time !== _res[0].updated_time){
-            throw new TiramisuError(res_obj.OPTION_EXPIRED);
+        }else if(_res[0].status === Constant.OS.COMPLETED ){
+            throw new TiramisuError(res_obj.ORDER_COMPLETED);
+        }else if(_res[0].status === Constant.OS.EXCEPTION){
+            throw new TiramisuError(res_obj.ORDER_EXCEPTION);
         }
-        return orderDao.updateOrder(systemUtils.assembleUpdateObj(req,update_obj),systemUtils.getDBOrderId(req.params.orderId));
+        return orderDao.updateOrder(systemUtils.assembleUpdateObj(req,update_obj),order_id);
     }).then((result)=>{
         if(parseInt(result) <= 0){
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);

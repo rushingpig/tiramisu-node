@@ -16,8 +16,12 @@ module.exports = {
         code : '1000',
         msg  : '用户名或密码输入有误,请重新输入...'
     },
+    SESSION_TIME_OUT : {
+        code : '1001',
+        msg : '长时间未操作,请重新登录...'
+    },
     ERROR_VALIDATE_CODE : {
-        code : '10001',
+        code : '1002',
         msg : '验证码输入有误,请重新输入...'
     },
     ORDER_AUDITING : {
@@ -28,9 +32,17 @@ module.exports = {
         code : '2001',
         msg : '有订单打印不被允许,请重新申请打印...'
     },
-    SESSION_TIME_OUT : {
-        code : '1001',
-        msg : '长时间未操作,请重新登录...'
+    ORDER_COMPLETED : {
+        code : '2002',
+        msg : '订单已签收,请勿重复签收...'
+    },
+    ORDER_EXCEPTION : {
+        code : '2003',
+        msg : '订单已被未签收,请勿重复签收...'
+    },
+    ORDER_NO_STATION : {
+        code : '2004',
+        msg : '订单不处于分配配送站状态,不能被转换...'
     },
     NO_MORE_PAGE_RESULTS : {
         code : '9998',

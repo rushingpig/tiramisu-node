@@ -16,9 +16,11 @@ module.exports = {
         isInt : true
     },
     'payfor_reason' : {
+        optional : true,
         notEmpty : true
     },
     'payfor_type' : {
+        optional : true,
         notEmpty : true
     },
     'signin_time' : {

@@ -44,8 +44,22 @@ const exp_validator_custom = {
             return param >= num;
         },
         isOrderId : function(orderId) {
-            return typeof orderId === 'string' && orderId.substring(8) && !isNaN(parseInt(orderId.substring(8)))
+            return typeof orderId === 'string' && orderId.length === 16 && orderId.substring(8) && !isNaN(parseInt(orderId.substring(8)))
         },
+        isOrderIds : function(orderIds){
+            if(!orderIds || !Array.isArray(orderIds)){
+                return false;
+            }
+            let result = true;
+            for(let i = 0;i < orderIds.length;i++){
+                let orderId = orderIds[i];
+                result = typeof orderId === 'string' && orderId.length === 16 && orderId.substring(8) && !isNaN(parseInt(orderId.substring(8)));
+                if(!result){
+                    break;
+                }
+            }
+            return result;
+        }
     }
 };
 //  the table list in database  ->  tiramisu

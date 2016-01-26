@@ -475,28 +475,45 @@ OrderService.prototype.getShopList = (req, res, next)=> {
  * @param res
  * @param next
  */
-OrderService.prototype.listOrders = (entrance)=>{
+OrderService.prototype.listOrders = (entrance,isBatchScan)=>{
     return  (req,res,next) => {
-        req.checkQuery(listOrder);
-        let errors = req.validationErrors();
-        if (errors) {
-            res.api(res_obj.INVALID_PARAMS,errors);
-            return;
+        let query_data = null;
+        if(isBatchScan){
+            req.checkBody('order_ids','订单列表有订单号无效...').isOrderIds();
+            let errors = req.validationErrors();
+            if (errors) {
+                res.api(res_obj.INVALID_PARAMS,errors);
+                return;
+            }
+            query_data = {
+                order_ids : req.body.order_ids.map((curr)=>{
+                    return systemUtils.getDBOrderId(curr);
+                })
+            };
+        }else{
+            req.checkQuery(listOrder);
+            let errors = req.validationErrors();
+            if (errors) {
+                res.api(res_obj.INVALID_PARAMS,errors);
+                return;
+            }
+            query_data = {
+                begin_time : req.query.begin_time,
+                end_time : req.query.end_time,
+                is_deal : req.query.is_deal,
+                is_submit : req.query.is_submit,
+                src_id : req.query.src_id,
+                status : req.query.status,
+                city_id : req.query.city_id,
+                owner_mobile : req.query.owner_mobile,
+                delivery_id : req.query.delivery_id,
+                deliveryman_id : req.query.deliveryman_id,
+                is_print : req.query.is_print,
+                is_greeting_card : req.query.is_greeting_card
+            };
         }
-        let query_data = {
-            begin_time : req.query.begin_time,
-            end_time : req.query.end_time,
-            is_deal : req.query.is_deal,
-            is_submit : req.query.is_submit,
-            src_id : req.query.src_id,
-            status : req.query.status,
-            city_id : req.query.city_id,
-            owner_mobile : req.query.owner_mobile,
-            delivery_id : req.query.delivery_id,
-            deliveryman_id : req.query.deliveryman_id,
-            is_print : req.query.is_print,
-            is_greeting_card : req.query.is_greeting_card
-        };
+
+
         if(isNaN(parseInt(req.query.keywords || ''))){
             query_data.keywords = systemUtils.encodeForFulltext(req.query.keywords || '');
         }else{

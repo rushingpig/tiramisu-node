@@ -308,6 +308,10 @@ let columns = [
     }else if(parseInt(query_data.is_greeting_card) === 0){
         sql += " and bo.greeting_card is null";
     }
+
+    if(query_data.order_ids && Array.isArray(query_data.order_ids)){
+        sql += " and bo.id in "+dbHelper.genInSql(query_data.order_ids);
+    }
     switch (query_data.order_sorted_rules){
         case constant.OSR.LIST:
             sql += " order by bo.created_time desc";

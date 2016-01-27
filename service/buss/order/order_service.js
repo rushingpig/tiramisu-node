@@ -555,6 +555,7 @@ OrderService.prototype.listOrders = (entrance,isBatchScan)=>{
                     created_time : curr.created_time,
                     delivery_time : curr.delivery_time,
                     delivery_type : Constant.DTD[curr.delivery_type],
+                    delivery_name : curr.delivery_name,
                     discount_price : curr.total_discount_price,
                     is_deal : Constant.YESORNOD[curr.is_deal],
                     is_submit : Constant.YESORNOD[curr.is_submit],

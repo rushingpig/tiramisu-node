@@ -207,6 +207,7 @@ let columns = [
     'bo.submit_time',
     'bo.signin_time',
     'bo.print_status',
+    'bds2.name as delivery_name',
     'br.delivery_type',
     'br.address',
     'br.landmark',
@@ -238,6 +239,8 @@ let columns = [
         params.push(tables.dict_regionalism);
         params.push(query_data.city_id);
     }
+    sql += " left join ?? bds2 on bo.delivery_id = bds2.id";
+    params.push(tables.buss_delivery_station);
     sql += " left join ?? bos on bo.src_id = bos.id";
     params.push(tables.buss_order_src);
     sql += " left join ?? dr on br.regionalism_id = dr.id";

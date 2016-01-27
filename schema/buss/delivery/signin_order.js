@@ -17,7 +17,6 @@ module.exports = {
     },
     'payfor_reason' : {
         optional : true,
-        notEmpty : true
     },
     'payfor_type' : {
         optional : true,

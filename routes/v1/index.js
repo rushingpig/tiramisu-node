@@ -59,8 +59,8 @@ a.get('/order/:orderId/reprint',deliveryService.reprint);   // 重新打印订�
 //******** POST ********
 //**********************
 
-a.post('/orders/delivery',orderService.listOrders(Constant.OSR.DELIVER_LIST,true));
-a.post('/orders/signin',orderService.listOrders(Constant.OSR.RECEIVE_LIST,true));
+a.post('/orders/delivery',orderService.listOrders(Constant.OSR.DELIVER_LIST,true)); // 批量扫描获取送货单列表
+a.post('/orders/signin',orderService.listOrders(Constant.OSR.RECEIVE_LIST,true));   // 批量扫面获取配送单列表
 
 a.post('/order',orderService.addOrder); // 添加订单
 

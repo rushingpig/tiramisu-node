@@ -95,9 +95,9 @@ OrderService.prototype.addOrder = (req, res, next) => {
                 pay_status: pay_status,
                 owner_name : owner_name,
                 owner_mobile : owner_mobile,
-                is_submit: 1,
-                is_deal: 0,
-                status : Constant.OS.STATION,
+                is_submit: 0,
+                is_deal: 1,
+                status : Constant.OS.TREATED,
                 remarks: remarks,
                 invoice: invoice,
                 delivery_time: delivery_time,
@@ -298,7 +298,7 @@ OrderService.prototype.editOrder = function(is_submit){
             order_obj.status = Constant.OS.STATION;
             order_obj.submit_time = new Date();
         }else{
-            order_obj.status = Constant.OS.UNTREATED;
+            order_obj.status = Constant.OS.TREATED;
         }
         let promise = orderDao.findOrderById(orderId).then((_res)=>{
             if(toolUtils.isEmptyArray(_res)){

@@ -22,6 +22,7 @@ Constant.DT = {
 Constant.OS = {
     CANCEL : 'CANCEL',  // 取消
     UNTREATED : 'UNTREATED',    // 未处理
+    TREATED : 'TREATED',    // 已处理
     STATION : 'STATION',    // 已分配配送站
     CONVERT : 'CONVERT',    // 已转换
     INLINE : 'INLINE',  // 生产中

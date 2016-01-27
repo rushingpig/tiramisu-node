@@ -29,7 +29,7 @@ export default class TimeInput extends Component {
   }
   val(){
     var { hour, minute } = this.state;
-    return !hour || !minute ? '' : hour + ':' + minute;
+    return !hour || !minute ? '' : (hour > 9 ? hour : '0' + hour) + ':' + (minute > 9 ? minute : '0' + minute);
   }
   reset(){
     this.setState({

@@ -52,14 +52,16 @@ export default {
   ],
 
   order_status: {
-    CANCEL : {value: '取消', bg: '#f0f'},
-    UNTREATED : {value: '未处理', bg: '#f0f'},
-    STATION : {value: '已分配配送站', bg: '#f0f'},
-    CONVERT : {value: '已转换', bg: '#f0f'},
-    INLINE : {value: '生产中', bg: '#f0f'},
-    DELIVERY : {value: '已分配配送员', bg: '#f0f'},
-    COMPLETED : {value: '订单完成', bg: '#f0f'},
-    EXCEPTION : {value: '订单异常', bg: '#f0f'}
+    CANCEL : {value: '取消', color: '#BDB8B8'},
+    UNTREATED : {value: '未处理', color: '#585353'},
+    TREATED : {value: '已处理', color: '#585353'},
+    STATION : {value: '已分配配送站', color: ''},
+    CONVERT : {value: '已转换', color: ''},
+    INLINE : {value: '生产中', color: ''},
+    DELIVERY : {value: '已分配配送员', color: ''},
+
+    COMPLETED : {value: '订单完成', color: '#0f0'},
+    EXCEPTION : {value: '订单异常', color: '#f00'}
   },
   pay_status: {
     'COD': '货到付款',

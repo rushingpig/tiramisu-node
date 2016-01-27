@@ -24,6 +24,7 @@ import * as DeliveryManageActions from 'actions/delivery_manage';
 
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from 'common/order_detail_modal';
+import ScanModal from 'common/scan_modal';
 
 class TopHeader extends Component {
   render(){
@@ -82,8 +83,7 @@ class FilterHeader extends Component {
           </div>
           <div className="form-group form-inline">
             <button onClick={this.printHandler.bind(this)} className="btn btn-theme space-right btn-xs">批量打印</button>
-            <button className="btn btn-default btn-xs space-right">扫描前请点击</button>
-            <button className="btn btn-theme btn-xs space-right">扫描完成</button>
+            <button onClick={this.onScanHandler.bind(this)} className="btn btn-theme btn-xs space-right">扫描</button>
             <button onClick={this.batchEdit.bind(this)} className="btn btn-theme btn-xs">批量编辑配送员</button>
           </div>
         </div>
@@ -119,6 +119,9 @@ class FilterHeader extends Component {
   }
   batchEdit(){
     this.props.showBatchEditModal();
+  }
+  onScanHandler(){
+    this.props.showScanModal();
   }
 }
 FilterHeader.propTypes = {
@@ -174,7 +177,7 @@ class OrderRow extends Component {
         </td>
         <td className="text-left">{reactReplace(props.greeting_card, '|', <br />)}</td>
         <td>{props.exchange_time}</td>
-        <td><div className="order-status" style={{background: _order_status.bg}}>{_order_status.value}</div></td>
+        <td><div className="order-status" style={{color: _order_status.color}}>{_order_status.value}</div></td>
         <td><a onClick={props.viewOrderDetail} href="javascript:;">{props.order_id}</a></td>
         <td>{props.remarks}</td>
       </tr>
@@ -202,7 +205,7 @@ class DeliveryManagePannel extends Component {
   constructor(props){
     super(props);
     this.state = {
-      page_size: 8,
+      page_size: 5,
       batch_edit: false,
     }
     this.showEditModal = this.showEditModal.bind(this);
@@ -213,12 +216,17 @@ class DeliveryManagePannel extends Component {
     this.viewOrderDetail = this.viewOrderDetail.bind(this);
     this.printHandler = this.printHandler.bind(this);
     this.search = this.search.bind(this);
+    this.showScanModal = this.showScanModal.bind(this);
   }
   render(){
-    var { filter, area, getAllDeliveryman, applyDeliveryman, startPrint, applyPrint, validatePrintCode, rePrint, deliveryman, main } = this.props;
+    var { filter, area, deliveryman, main, getAllDeliveryman, applyDeliveryman, startPrint, applyPrint, validatePrintCode, rePrint, searchByScan } = this.props;
     var { loading, page_no, total, list, checked_orders, check_order_info, active_order_id } = this.props.orders;
-    var { showBatchPrintModal, printHandler, showEditModal, showBatchEditModal, checkOrderHandler, viewOrderDetail, activeOrderHandler } = this;
+    var { showBatchPrintModal, printHandler, showEditModal, showScanModal, showBatchEditModal, checkOrderHandler, viewOrderDetail, activeOrderHandler } = this;
 
+    var {scan, scan_list} = main; //扫描
+    if(scan){
+      list = scan_list;
+    }
     var content = list.map((n, i) => {
       return <OrderRow key={n.order_id} {...{...n, active_order_id, showEditModal, printHandler, checkOrderHandler, viewOrderDetail, activeOrderHandler}} />;
     })
@@ -227,7 +235,7 @@ class DeliveryManagePannel extends Component {
 
         <TopHeader />
         <FilterHeader 
-          {...{...this.props, ...filter, ...area, showBatchPrintModal, showBatchEditModal}} 
+          {...{...this.props, ...filter, ...area, showScanModal, showBatchPrintModal, showBatchEditModal}} 
           page_size={this.state.page_size}
         />
 
@@ -258,12 +266,16 @@ class DeliveryManagePannel extends Component {
               </table>
             </div>
 
-            <Pagination 
-              page_no={page_no} 
-              total_count={total} 
-              page_size={this.state.page_size} 
-              onPageChange={this.onPageChange}
-            />
+            {
+              scan
+                ? null
+                : <Pagination 
+                    page_no={page_no} 
+                    total_count={total} 
+                    page_size={this.state.page_size} 
+                    onPageChange={this.onPageChange}
+                  />
+            }
           </div>
         </div>
 
@@ -281,6 +293,7 @@ class DeliveryManagePannel extends Component {
         <PrintModal ref="PrintModal" {...{checked_orders, startPrint, callback: this.search}} />
         <ApplyPrintModal ref="ApplyPrintModal" {...{applyPrint, submitting: main.submitting}} callback={this.search} />
         <RePrintModal ref="RePrintModal" {...{validatePrintCode, rePrint, submitting: main.submitting}} callback={this.search} />
+        <ScanModal ref="ScanModal" submitting={main.submitting} search={searchByScan} />
       </div>
     )
   }
@@ -318,6 +331,9 @@ class DeliveryManagePannel extends Component {
       this.refs.RePrintModal.show(order_id); //再次打印，输入验证码
     }
   }
+  showScanModal(){
+    this.refs.ScanModal.show();
+  }
   activeOrderHandler(order_id){
     if(this.props.orders.active_order_id != order_id)
       this.props.activeOrder(order_id);
@@ -343,7 +359,7 @@ class DeliveryManagePannel extends Component {
   }
   search(page){
     page = typeof page == 'undefined' ? this.props.orders.page_no : page;
-    this.props.getOrderList({page_no: page, page_size: this.state.page_size});
+    this.props.getOrderDeliveryList({page_no: page, page_size: this.state.page_size});
   }
 }
 
@@ -441,7 +457,7 @@ var EditModal = React.createClass({
       return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
     });
     return (
-      <StdModal onConfirm={this.saveHandler} submitting={submitting} ref="modal" title="编辑配送人员">
+      <StdModal onConfirm={this.saveHandler} onCancel={this.hideCallback} submitting={submitting} ref="modal" title="编辑配送人员">
         <div className="form-group form-inline mg-15">
           <div className="input-group input-group-sm">
             <span className="input-group-addon"><i className="fa fa-filter"></i></span>
@@ -508,7 +524,7 @@ var EditModal = React.createClass({
     }).done(function(json){
       Noty('success', '操作成功！');
       this.props.callback();
-      this.hide();
+      this.refs.modal.hide();
     }.bind(this)).fail(function(json){
       console.error(json);
       Noty('error', '操作失败！');
@@ -524,8 +540,7 @@ var EditModal = React.createClass({
     this.setState({orders})
     this.refs.modal.show();
   },
-  hide: function(){
-    this.refs.modal.hide();
+  hideCallback: function(){
     this.setState(this.getInitialState());
   },
 });
@@ -545,7 +560,7 @@ var ApplyPrintModal = React.createClass({
   mixins: [LinkedStateMixin],
   render: function(){
     return (
-      <StdModal onConfirm={this.saveHandler} submitting={this.props.submitting} ref="modal" size="sm" title="重新申请打印">
+      <StdModal onConfirm={this.saveHandler} onCancel={this.hideCallback} submitting={this.props.submitting} ref="modal" size="sm" title="重新申请打印">
         <div className="pl-50">
           <div className="form-group form-inline">
             <label>{'　订单编号：'}</label>
@@ -571,7 +586,7 @@ var ApplyPrintModal = React.createClass({
     this.props.applyPrint({...this.state, order_id: this.state.order_id})
       .done(function(){
         this.props.callback();
-        this.hide();
+        this.refs.modal.hide();
       }.bind(this))
       .fail(function(){
         Noty('error', '服务器异常')
@@ -582,8 +597,7 @@ var ApplyPrintModal = React.createClass({
       this.refs.modal.show();
     });
   },
-  hide: function(){
-    this.refs.modal.hide();
+  hideCallback: function(){
     this.setState(this.getInitialState());
   },
 })
@@ -601,7 +615,7 @@ var RePrintModal = React.createClass({
   },
   render: function(){
     return (
-      <StdModal onConfirm={this.saveHandler} submitting={this.props.submitting} ref="modal" size="sm" title="打印">
+      <StdModal onConfirm={this.saveHandler} onCancel={this.hideCallback} submitting={this.props.submitting} ref="modal" size="sm" title="打印">
         <div className="pl-50">
           <div className="form-group form-inline">
             <label>{'订单编号：'}</label>
@@ -622,7 +636,7 @@ var RePrintModal = React.createClass({
         this.props.rePrint(order_id).done(function(){
           setTimeout(this.props.callback, 1000);
         }.bind(this));
-        this.hide();
+        this.refs.modal.hide();
       }.bind(this))
       .fail(function(){
         Noty('error', '服务器异常')
@@ -634,8 +648,7 @@ var RePrintModal = React.createClass({
       this.refs.modal.show();
     })
   },
-  hide: function(){
-    this.refs.modal.hide();
+  hideCallback: function(){
     this.setState(this.getInitialState());
   },
 })

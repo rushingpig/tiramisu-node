@@ -96,7 +96,7 @@ class DeliverPrintReviewPannel extends Component {
   constructor(props){
     super(props);
     this.state = {
-      page_size: 8,
+      page_size: 10,
       review_order: {},
     }
     this.showReviewModal = this.showReviewModal.bind(this);
@@ -206,7 +206,7 @@ var ReviewModal = React.createClass({
   render: function(){
     var { submitting } = this.props;
     return (
-      <StdModal onConfirm={this.onConfirm} submitting={submitting} size="sm" ref="modal" title="审核打印申请">
+      <StdModal onConfirm={this.onConfirm} onCancel={this.hideCallback} submitting={submitting} size="sm" ref="modal" title="审核打印申请">
         <div className="pl-50">
           <div className="form-group form-inline">
             <label>{'　订单编号：'}</label>
@@ -240,8 +240,7 @@ var ReviewModal = React.createClass({
   show: function(){
     this.refs.modal.show();
   },
-  hide: function(){
-    this.refs.modal.hide();
+  hideCallback: function(){
     this.setState(this.getInitialState());
   },
   onConfirm: function(){
@@ -249,7 +248,7 @@ var ReviewModal = React.createClass({
     var { status, audit_opinion } = this.state;
     this.props.reviewPrintApply(apply_id, { applicant_mobile, order_id, status, audit_opinion })
       .done(function(){
-        this.hide();
+        this.refs.modal.hide();
         this.props.callback();
       }.bind(this))
       .fail(function(){

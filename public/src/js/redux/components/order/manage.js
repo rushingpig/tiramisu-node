@@ -144,6 +144,7 @@ var OrderRow = React.createClass({
   render(){
     var { props } = this;
     var src_name = props.src_name.split(',');
+    var _order_status = Config.order_status[props.status] || {};
     return (
       <tr className={props.active_order_id == props.order_id ? 'active' : ''} onClick={this.clickHandler}>
         <td>
@@ -171,7 +172,7 @@ var OrderRow = React.createClass({
           实际售价：{props.discount_price/100} <br />
           应收金额：{props.total_amount/100}
         </td>
-        <td><div className="bg-success round">{props.status}</div></td>
+        <td><div style={{color: _order_status.color || 'inherit'}}>{_order_status.value}</div></td>
         <td>todo</td>
         <td><div className="time">{props.delivery_time}</div></td>
         <td>{props.is_submit == '1' ? '是' : '否'}</td>
@@ -214,7 +215,7 @@ class ManagePannel extends Component {
     this.alterStation = this.alterStation.bind(this);
     this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
     this.state = {
-      page_size: 8,
+      page_size: 5,
     }
   }
   render(){

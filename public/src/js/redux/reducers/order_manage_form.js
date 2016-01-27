@@ -34,7 +34,7 @@ var initial_state = {
 function mainForm(state = initial_state, action) {
   switch(action.type) {
     case UPDATE_PATH:
-      return initial_state;
+      return {...initial_state}
     case FormActions.GOT_ORDER_SRCS:
       let l1 = [], l2 = [];
       //level最多为2级

@@ -11,10 +11,11 @@ import StdModal from 'common/std_modal';
 import LineRouter from 'common/line_router';
 import { tableLoader } from 'common/loading';
 
-import { Noty } from 'utils/index';
+import { Noty, parseTime } from 'utils/index';
 import { DELIVERY_MAP } from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
+import { go } from 'history_instance';
 
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from 'common/order_detail_modal';
@@ -132,7 +133,7 @@ class OrderRow extends Component {
         <td>
           <input onChange={this.checkOrderHandler.bind(this)} checked={props.checked} type="checkbox" />
         </td>
-        <td>{props.delivery_time}</td>
+        <td>{parseTime(props.delivery_time)}</td>
         <td>{props.owner_name}<br />{props.owner_mobile}</td>
         <td className="text-left">
           姓名：{props.recipient_name}<br />
@@ -143,7 +144,7 @@ class OrderRow extends Component {
           建筑：{props.recipient_landmark}
         </td>
         <td>{props.coupon}</td>
-        <td>{props.submit_time}</td>
+        <td>{parseTime(props.submit_time)}</td>
         <td><a onClick={props.viewOrderDetail} href="javascript:;">{props.order_id}</a></td>
         <td>{DELIVERY_MAP[props.delivery_type] || props.delivery_type}</td>
         <td><div className="remark-in-table">{props.remarks}</div></td>
@@ -165,7 +166,7 @@ class DeliverChangePannel extends Component {
   constructor(props){
     super(props);
     this.state = {
-      page_size: 8,
+      page_size: 5,
     }
     this.checkOrderHandler = this.checkOrderHandler.bind(this);
     this.activeOrderHandler = this.activeOrderHandler.bind(this);
@@ -308,9 +309,10 @@ class ChangeModal extends Component {
   onConfirm(){
     var { exchangeOrders, search, checked_order_ids } = this.props;
     exchangeOrders(checked_order_ids).done(function(){
-      search();
+      // search();
       this.hide();
       Noty('success', '转换成功！')
+      go('/dm/delivery');
     }.bind(this)).fail(() => {
       Noty('error', '转换异常')
     })

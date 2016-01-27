@@ -17,7 +17,7 @@ import RadioGroup from 'common/radio_group';
 import { order_status, DELIVERY_MAP, YES_OR_NO } from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
-import { form, Noty, dateFormat } from 'utils/index';
+import { form, Noty, dateFormat, parseTime } from 'utils/index';
 
 import * as OrderActions from 'actions/orders';
 import * as AreaActions from 'actions/area';
@@ -27,6 +27,7 @@ import { getPayModes } from 'actions/order_manage_form';
 
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from 'common/order_detail_modal';
+import ScanModal from 'common/scan_modal';
 
 class TopHeader extends Component {
   render(){
@@ -79,14 +80,13 @@ class FilterHeader extends Component {
             <DatePicker editable redux-form={end_time} className="short-input" />
             <Select {...pay_modes_id} options={all_pay_modes} default-text="选择支付方式" className="space"/>
             <Select {...order_status} options={all_order_status} default-text="选择订单状态" className="space"/>
-            <Select {...deliveryman_id} options={all_deliveryman} default-text="选择配送员" className="space"/>
+            <Select {...deliveryman_id} options={all_deliveryman.map(n => ({id: n.deliveryman_id, text: n.deliveryman_name}))} default-text="选择配送员" className="space"/>
             <Select {...delivery_id} options={delivery_stations} default-text="选择配送中心" className="space"/>
           </div>
           <div className="form-group form-inline">
             <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space-right"/>
             <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space"/>
-            <button className="btn btn-default btn-xs space">扫描前请点击</button>
-            <button className="btn btn-theme btn-xs space">扫描完成</button>
+            <button onClick={this.onScanHandler.bind(this)} className="btn btn-theme btn-xs space">扫描</button>
           </div>
         </div>
       </div>
@@ -94,9 +94,10 @@ class FilterHeader extends Component {
   }
   componentDidMount(){
     setTimeout(function(){
-      var { getProvinces, getPayModes } = this.props;
+      var { getProvinces, getPayModes, getAllDeliveryman } = this.props;
       getProvinces();
       getPayModes();
+      getAllDeliveryman();
       LazyLoad('noty');
     }.bind(this),0)
   }
@@ -116,6 +117,9 @@ class FilterHeader extends Component {
       .always(()=>{
         this.setState({search_ing: false});
       });
+  }
+  onScanHandler(){
+    this.props.showScanModal();
   }
 }
 FilterHeader.propTypes = {
@@ -149,14 +153,21 @@ class OrderRow extends Component {
     return (
       <tr onClick={this.clickHandler.bind(this)} className={props.active_order_id == props.order_id ? 'active' : ''}>
         <td>
-          <input onChange={this.checkOrderHandler.bind(this)} checked={props.checked} type="checkbox" />
+          <input onChange={this.checkOrderHandler.bind(this)} checked={props.checked} disabled={props.status == 'COMPLETED'} type="checkbox" />
         </td>
         <td>
-          <a onClick={this.showSignedModal.bind(this)} href="javascript:;">[签收]</a><br/>
-          <a onClick={this.showUnSignedModal.bind(this)} href="javascript:;">[未签收]</a>
+          {
+            props.status == 'DELIVERY'
+              ? [
+                  <a onClick={this.showSignedModal.bind(this)} key="signin" href="javascript:;">[签收]</a>,
+                  <br key="br" />,
+                  <a onClick={this.showUnSignedModal.bind(this)} key="unsignin" href="javascript:;">[未签收]</a>
+                ]
+              : null
+          }
         </td>
-        <td>{props.delivery_time}</td>
-        <td>todo</td>
+        <td>{parseTime(props.delivery_time)}</td>
+        <td>{props.total_amount}</td>
         <td>{props.owner_name}<br />{props.owner_mobile}</td>
         <td className="text-left">
           姓名：{props.recipient_name}<br />
@@ -169,16 +180,18 @@ class OrderRow extends Component {
         <td><a onClick={props.viewOrderDetail} href="javascript:;">{props.order_id}</a></td>
         <td>{props.delivery_type}</td>
         <td><div className="remark-in-table">{props.remarks}</div></td>
-        <td>todo</td>
-        <td><div className="order-status" style={{background: _order_status.bg}}>{_order_status.value}</div></td>
+        <td>{parseTime(props.signin_time)}</td>
+        <td><div className="order-status" style={{color: _order_status.color || 'inherit'}}>{_order_status.value}</div></td>
       </tr>
     )
   }
-  showSignedModal(){
+  showSignedModal(e){
     this.props.showSignedModal(this.props);
+    e.stopPropagation();
   }
-  showUnSignedModal(){
+  showUnSignedModal(e){
     this.props.showUnSignedModal(this.props);
+    e.stopPropagation();
   }
   checkOrderHandler(e){
     var { order_id, checkOrderHandler } = this.props;
@@ -193,20 +206,26 @@ class DeliveryDistributePannel extends Component {
   constructor(props){
     super(props);
     this.state = {
-      page_size: 8,
+      page_size: 5,
     }
     this.showSignedModal = this.showSignedModal.bind(this);
     this.showUnSignedModal = this.showUnSignedModal.bind(this);
     this.checkOrderHandler = this.checkOrderHandler.bind(this);
     this.activeOrderHandler = this.activeOrderHandler.bind(this);
     this.viewOrderDetail = this.viewOrderDetail.bind(this);
+    this.showScanModal = this.showScanModal.bind(this);
+    this.search = this.search.bind(this);
   }
   render(){
-    var { filter, area, deliveryman, orders, main, signOrder, unsignOrder } = this.props;
+    var { filter, area, deliveryman, orders, main, signOrder, unsignOrder, searchByScan } = this.props;
     var { submitting } = main;
     var { loading, page_no, total, list, check_order_info, active_order_id } = orders;
-    var { showSignedModal, showUnSignedModal, checkOrderHandler, viewOrderDetail, activeOrderHandler } = this;
+    var { search, showSignedModal, showUnSignedModal, showScanModal, checkOrderHandler, viewOrderDetail, activeOrderHandler } = this;
 
+    var {scan, scan_list} = main; //扫描
+    if(scan){
+      list = scan_list;
+    }
     var content = list.map((n, i) => {
       return <OrderRow key={n.order_id} {...{...n, active_order_id, showSignedModal, showUnSignedModal, viewOrderDetail, checkOrderHandler, activeOrderHandler}} />;
     })
@@ -215,7 +234,7 @@ class DeliveryDistributePannel extends Component {
 
         <TopHeader />
         <FilterHeader
-          {...{...this.props, ...filter, ...area, all_deliveryman: deliveryman.list}}
+          {...{...this.props, ...filter, ...area, showScanModal, all_deliveryman: deliveryman.list}}
           page_size={this.state.page_size}
         />
 
@@ -245,12 +264,16 @@ class DeliveryDistributePannel extends Component {
               </table>
             </div>
 
-            <Pagination 
-              page_no={page_no} 
-              total_count={total} 
-              page_size={this.state.page_size} 
-              onPageChange={this.onPageChange}
-            />
+            {
+              scan
+                ? null
+                : <Pagination 
+                    page_no={page_no} 
+                    total_count={total} 
+                    page_size={this.state.page_size} 
+                    onPageChange={this.onPageChange}
+                  />
+            }
           </div>
         </div>
 
@@ -264,19 +287,24 @@ class DeliveryDistributePannel extends Component {
           : null }
 
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} />
-        <SignedModal ref="SignedModal" {...{...check_order_info, submitting, signOrder}} />
-        <UnSignedModal ref="UnSignedModal" {...{...check_order_info, submitting, unsignOrder}} />
+        <SignedModal ref="SignedModal" {...{submitting, signOrder, callback: search}} />
+        <UnSignedModal ref="UnSignedModal" {...{submitting, unsignOrder, callback: search}} />
+        <ScanModal ref="ScanModal" submitting={submitting} search={searchByScan}  />
       </div>
     )
   }
   onPageChange(page){
-    this.setState({page_no: page});
+    this.search(page);
   }
   componentDidMount() {
-    var { getOrderList, orders } = this.props;
-    getOrderList({page_no: orders.page_no, page_size: this.state.page_size});
+    this.search();
 
     LazyLoad('noty');
+  }
+  search(page){
+    var { getOrderDistributeList, orders } = this.props;
+    page = typeof page == 'undefined' ? orders.page_no : page;
+    getOrderDistributeList({page_no: page, page_size: this.state.page_size});
   }
   activeOrderHandler(order_id){
     if(this.props.orders.active_order_id != order_id)
@@ -292,11 +320,15 @@ class DeliveryDistributePannel extends Component {
     this.refs.detail_modal.show();
   }
   showSignedModal(n){
-    this.refs.SignedModal.show();
+    this.refs.SignedModal.show(n);
   }
   showUnSignedModal(n){
-    this.refs.UnSignedModal.show();
+    this.refs.UnSignedModal.show(n);
   }
+  showScanModal(){
+    this.refs.ScanModal.show();
+  }
+
 }
 
 function mapStateToProps({distributeManage}){
@@ -320,6 +352,8 @@ var SignedModal = React.createClass({
       CASH: 'CASH', //现金赔偿
       REFUND: 'REFUND', //全额退款
 
+      order: {},
+
       signin_date: dateFormat(new Date()),
       // signin_hour: '',  // 直接 TimeInput.val()获取
       late_minutes: 0,
@@ -332,7 +366,7 @@ var SignedModal = React.createClass({
   render: function(){
     var { signin_date, late_minutes, refund_method, refund_money, refund_reson} = this.state;
     return (
-      <StdModal submitting={this.props.submitting} onConfirm={this.submitHandler} title="订单完成页面" ref="modal">
+      <StdModal submitting={this.props.submitting} onConfirm={this.submitHandler} onCancel={this.hideCallback} title="订单完成页面" ref="modal">
         <div className="form-group mg-15 form-inline">
           <label>签收时间：</label>
           <DatePicker value={signin_date} onChange={this.onSignInDateChange} className="short-input" />
@@ -350,13 +384,13 @@ var SignedModal = React.createClass({
             </div>
             <div className="col-xs-6">
               <label>货到付款金额：</label>
-              <input value={this.props.total_amount || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+              <input value={this.state.order.total_amount || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
             </div>
           </div>
         </div>
         <div className="form-group mg-15">
           <label className="">
-            <input value={this.state.CASH} onClick={this.checkMethod} type="radio" name="method" />
+            <input value={this.state.CASH} onClick={this.checkMethod} checked={this.state.CASH == refund_method} type="radio" name="method" />
             {' 现金赔偿（迟到30mins以内）'}
           </label>
           {
@@ -372,7 +406,7 @@ var SignedModal = React.createClass({
         </div>
         <div className="form-group mg-15">
           <label className="">
-            <input value={this.state.REFUND} onClick={this.checkMethod} type="radio" name="method" />
+            <input value={this.state.REFUND} onClick={this.checkMethod} checked={this.state.REFUND == refund_method} type="radio" name="method" />
             {' 全额退款（迟到时间>=30mins）'}
           </label>
           {
@@ -383,9 +417,9 @@ var SignedModal = React.createClass({
                   vertical={true}
                   name="refund_reson"
                   radios={[
-                    {value: 'XXX1', text: '迟到30mins以上'}, 
-                    {value: 'XXX2', text: '款式不符'}, 
-                    {value: 'XXX3', text: '尺寸、规格不符'}]}
+                    {value: '迟到30mins以上', text: '迟到30mins以上'}, 
+                    {value: '款式不符', text: '款式不符'}, 
+                    {value: '尺寸、规格不符', text: '尺寸、规格不符'}]}
                   onChange={this.checkReason}
                 />
               </div>
@@ -396,7 +430,7 @@ var SignedModal = React.createClass({
     )
   },
   submitHandler(){
-    var { CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date } = this.state;
+    var { order, CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date } = this.state;
     var signin_hour = this.refs.timeinput.val();
     if(!form.isNumber(late_minutes) || late_minutes < 0){
       Noty('warning', '迟到时间输入有误');return;
@@ -418,18 +452,19 @@ var SignedModal = React.createClass({
         }
       }
     }
-    this.props.signOrder({
+    this.props.signOrder(order.order_id, {
       late_minutes: late_minutes,
       payfor_type: refund_method,
       payfor_amount: refund_money,
       payfor_reason: refund_reson,
       signin_time: signin_date + ' ' + signin_hour
     }).done(function(){
-      this.hide();
+      this.refs.modal.hide();
+      this.props.callback();
       Noty('success', '签收成功！');
     }.bind(this))
-    .fail(function(){
-      Noty('error', '提交失败')
+    .fail(function(msg, code){
+      Noty('error', msg || '提交失败')
     })
   },
   onSignInDateChange: function(value){
@@ -448,13 +483,13 @@ var SignedModal = React.createClass({
   checkReason: function(value){
     this.setState({ refund_reson: value });
   },
-  show: function(){
+  show: function(order){
     this.refs.modal.show();
+    this.setState({order});
+  },
+  hideCallback: function(){
     this.refs.timeinput.reset();
     this.setState(this.getInitialState());
-  },
-  hide: function(){
-    this.refs.modal.hide();
   },
 });
 
@@ -464,10 +499,12 @@ var UnSignedModal = React.createClass({
       NOTFOUND: 'NOTFOUND',
       OTHER: 'OTHER',
 
+      order: {},
+
       reason_type: '',
       notfound_reason: '联系不上用户，无人签收',
       other_reason: '',
-      real_pay: '',
+      real_pay: 0,
       black_list: '0',
     };
   },
@@ -475,7 +512,7 @@ var UnSignedModal = React.createClass({
   render: function(){
     var { notfound_reason } = this.state;
     return (
-      <StdModal submitting={this.props.submitting} onConfirm={this.submitHandler} title="订单未完成页面" ref="modal">
+      <StdModal submitting={this.props.submitting} onConfirm={this.submitHandler} onCancel={this.hideCallback} title="订单未完成页面" ref="modal">
         <div className=" mg-15">
           <label className="strong-label">未签收原因：</label>
           <div className="form-group form-inline">
@@ -501,7 +538,7 @@ var UnSignedModal = React.createClass({
           <div className="row">
             <div className="col-xs-6">
               <label>货到付款金额：</label>
-              <input value={this.props.total_amount || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+              <input value={this.state.order.total_amount || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
             </div>
             <div className="col-xs-6">
               <label>实收金额：</label>
@@ -514,6 +551,7 @@ var UnSignedModal = React.createClass({
           {'　'}
           <RadioGroup 
             value={this.state.black_list} 
+            className="inline-block"
             radios={[{value: "1", text: '是'}, {value: "0", text: '否'}]}
             onChange={this.checkBlackList}
           />
@@ -523,7 +561,7 @@ var UnSignedModal = React.createClass({
     )
   },
   submitHandler(){
-    var { reason_type, OTHER, notfound_reason, other_reason, real_pay, black_list } = this.state;
+    var { order, reason_type, OTHER, notfound_reason, other_reason, real_pay, black_list } = this.state;
     if(!reason_type){
       Noty('warning', '请选择未签收原因');return;
     }
@@ -533,16 +571,17 @@ var UnSignedModal = React.createClass({
     if( !form.isNumber( real_pay ) ){
       Noty('warning', '请填写正确的实收金额');return;
     }
-    this.props.unsignOrder({
+    this.props.unsignOrder(order.order_id, {
       COD_amount: real_pay * 100,
       unsignin_reason: reason_type == OTHER ? other_reason : notfound_reason,
       is_blacklist: black_list,
     }).done(function(){
-      this.hide();
+      this.refs.modal.hide();
+      this.props.callback();
       Noty('success', '操作成功！');
     }.bind(this))
-    .fail(function(){
-      Noty('error', '提交失败')
+    .fail(function(msg, code){
+      Noty('error', msg || '提交失败')
     })
   },
   checkReason: function(e){
@@ -552,11 +591,11 @@ var UnSignedModal = React.createClass({
   checkBlackList: function(value){
     this.setState({ black_list: value });
   },
-  show: function(){
+  show: function(order){
     this.refs.modal.show();
-    this.setState(this.getInitialState());
+    this.setState({order});
   },
-  hide: function(){
-    this.refs.modal.hide();
+  hideCallback: function(){
+    this.setState(this.getInitialState());
   },
 })

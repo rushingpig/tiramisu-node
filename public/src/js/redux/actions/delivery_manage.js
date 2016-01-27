@@ -59,3 +59,8 @@ export function rePrint(order_id){
     }
   })
 }
+
+export const GET_DELIVERY_SCAN_LIST = 'GET_DELIVERY_SCAN_LIST';
+export function searchByScan(order_ids){
+  return POST(Url.order_delivery.toString(), {order_ids}, GET_DELIVERY_SCAN_LIST);
+}

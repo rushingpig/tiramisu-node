@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
+import { findDOMNode } from 'react-dom';
 import nav_config from 'config/nav.config';
 import Util from 'utils/index';
 import {Link} from 'react-router';
+import history from 'history_instance';
 
 export default class Nav extends Component {
   render(){
@@ -50,7 +52,7 @@ export default class Nav extends Component {
     });
 
     return (
-      <nav>
+      <nav id="nav">
         <ul className='nav'>{treeDOM}</ul>
       </nav>
     )

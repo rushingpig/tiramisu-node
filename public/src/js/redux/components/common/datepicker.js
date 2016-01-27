@@ -5,13 +5,14 @@ var DatePicker = React.createClass({
   getDefaultProps: function() {
     return {
       className: '',
-      'redux-form': {},
+      'redux-form': null,
       editable: false,
     };
   },
   getInitialState: function() {
+    var redux_form = this.props['redux-form'];
     return {
-      date: this.props['redux-form'].value,
+      date: redux_form ? redux_form.value : this.props.value,
     }
   },
   componentWillReceiveProps: function(nextProps) {
@@ -28,24 +29,12 @@ var DatePicker = React.createClass({
             this.initDatePicker().update();
         });
       }.bind(this))
-    }
-    if(nextProps.value != this.props.value){
+
+    }else if(nextProps.value != this.props.value){
       this.setState({ date: nextProps.value })
     }
   },
   componentDidMount: function() {
-    // $(function(){
-    //   var dom_date = this.refs.date,
-    //     $date = $(dom_date).datepicker({
-    //       format: 'yyyy-mm-dd',
-    //     }).on('changeDate', function(e) {
-    //       setTimeout(function(){
-    //         dom_date.value = e.target.value;
-    //         dom_date.focus();
-    //       })
-    //       $date.data('datepicker').hide();
-    //     });
-    // }.bind(this));
     $(function(){
       this.initDatePicker();
     }.bind(this));
@@ -71,22 +60,20 @@ var DatePicker = React.createClass({
     return $date;
   },
   render: function(){
-    if(!this.props.editable){
+    var spreadProps = {onChange: function(){}};
+    if(!this.props.editable && this.props['redux-form']){
       this.props['redux-form'].onChange = function(){};
+      spreadProps = this.props['redux-form'];
     }
     //redux-from 中包含value
     return (
       <div style={{'display': 'inline-block'}}>
-        <input ref="date" {...this.props['redux-form']}
+        <input ref="date" {...spreadProps}
            value={this.state.date} 
            className={`form-control input-xs ${this.props.className}`} />
       </div>
     );
   }
 });
-
-// DatePicker.propTypes = {
-//   'redux-form': PropTypes.object.isRequired
-// };
 
 export default DatePicker;

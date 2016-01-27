@@ -204,6 +204,20 @@ function reactReplace(input = '', reg_or_string, reactElement){
   return results;
 }
 
+function parseTime(date_time){
+  date_time = date_time || '';
+  date_time = date_time.split(' ');
+  if(date_time.length >= 2){
+    return (
+      <div className="time">
+        { date_time[0] }
+        <br key="br" />
+        { date_time[1] }
+      </div>
+    )
+  }
+}
+
 export default {
   core: {
     isArray: core_isArray,
@@ -236,4 +250,5 @@ export default {
   colour,        //着色
   formCompile,   ////去除表单中的“” 和 "-1" 等无用字段，（主要用于filter 表单中）
   reactReplace,  //将特定字符串转换成 React元素组
+  parseTime,     //将时间：2016-01-05 13:00～14:00 ===> 2016-01-05（换行）13:00～14:00
 };

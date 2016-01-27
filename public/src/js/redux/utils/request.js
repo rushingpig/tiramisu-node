@@ -74,16 +74,19 @@ export function POST(url, send_data, action_type){
       key: REQUEST.ING,
     });
     return post(url, send_data)
-      .done(function(){
+      .done(function(data){
         dispatch({
           type: action_type,
-          key: REQUEST.SUCCESS
+          key: REQUEST.SUCCESS,
+          data
         })
       })
-      .fail(function(){
+      .fail(function(msg, code){
         dispatch({
           type: action_type,
-          key: REQUEST.FAIL
+          key: REQUEST.FAIL,
+          msg,
+          code
         })
       })
   }

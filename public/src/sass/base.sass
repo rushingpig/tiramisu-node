@@ -209,3 +209,45 @@ hr.dotted
 .order-status
   @extend .round
   width: 80px
+
+@keyframes rotate
+  0% {transform: rotateX(0deg)}
+  100% {transform: rotateX(360deg)}
+
+@mixin rotate-loading($delay: 0)
+  animation: rotate 2s linear $delay infinite
+
+.rotate-loading
+  position: relative
+  margin-right: 2px
+  perspective: 500
+  display: inline-block
+  width: 3px
+  height: 11px
+  background: $theme-font-color
+.rotate-loading-1
+  @extend .rotate-loading
+  @include rotate-loading(0s)
+.rotate-loading-2
+  @extend .rotate-loading
+  @include rotate-loading(0.15s)
+.rotate-loading-3
+  @extend .rotate-loading
+  @include rotate-loading(0.3s)
+  margin-right: 0
+
+.deleteable-row
+  .del-btn
+    float: right
+    height: 0
+    overflow: hidden
+    font-size: 16px
+    line-height: 16px
+    font-weight: bold
+    cursor: pointer
+    color: #CCC
+  &:hover
+    .del-btn
+      //width: 20px
+      height: 16px
+      color: #ECA2A2

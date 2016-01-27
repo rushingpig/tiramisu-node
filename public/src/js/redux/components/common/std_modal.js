@@ -36,8 +36,8 @@ export default class StdModal extends Component {
     </div>
     )
   }
-  show(){
-    $(this.refs.__modal).modal('show');
+  show(callback){
+    $(this.refs.__modal).modal('show').on('shown.bs.modal', callback);
   }
   hide(){
     if(this.props.submitting){
@@ -45,6 +45,9 @@ export default class StdModal extends Component {
     }
     this.props.onCancel();
     $(this.refs.__modal).modal('hide');
+  }
+  componentWillUnmount(){
+    $(this.refs.__modal).off('shown.bs.modal');
   }
 }
 
@@ -57,6 +60,6 @@ StdModal.defaultProps = {
   title: 'TODO',
   submitting: false,
   onConfirm: function(){},
-  onCancel: function(){},
+  onCancel: function(){},  //modal关闭前需执行的callback
   footer: true, //是否需要 modal-footer
 }

@@ -11,6 +11,7 @@ var dateUtils = require('./DateUtils'),
     toolUtils = require('./ToolUtils'),
     IncomingMessage = require('http').IncomingMessage,
     logger = require('./LogHelper').systemLog(),
+    Constant = require('./Constant'),
     res_obj = require('../util/res_obj');
 module.exports = {
     /**
@@ -113,5 +114,11 @@ module.exports = {
             code = code.toString() + '0';
         }
         return code;
+    },
+    isOrderCanCancel : (order_status) => {
+        return !(order_status === Constant.OS.INLINE
+            || order_status === Constant.OS.DELIVERY
+            || order_status === Constant.OS.COMPLETED
+            || order_status === Constant.OS.EXCEPTION);
     },
 };

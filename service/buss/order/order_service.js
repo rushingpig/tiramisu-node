@@ -104,7 +104,6 @@ OrderService.prototype.addOrder = (req, res, next) => {
                 total_amount : total_amount,
                 total_original_price : total_original_price,
                 total_discount_price : total_discount_price,
-                submit_time : new Date(),
                 greeting_card : greeting_card
             };
             orderObj = systemUtils.assembleInsertObj(req,orderObj);
@@ -142,11 +141,9 @@ OrderService.prototype.addOrder = (req, res, next) => {
                 order_id : orderId,
                 option : '添加订单'
             };
-            return orderDao.insertOrderFulltext(order_fulltext_obj)
-                .then(()=>{
+            return orderDao.insertOrderFulltext(order_fulltext_obj).then(()=>{
                     return orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
-                })
-                .then(()=>{
+                }).then(()=>{
                 return orderDao.batchInsertOrderSku(params);
             });
         }).then((_re)=>{
@@ -508,7 +505,7 @@ OrderService.prototype.listOrders = (entrance,isBatchScan)=>{
                 owner_mobile : req.query.owner_mobile,
                 delivery_id : req.query.delivery_id,
                 deliveryman_id : req.query.deliveryman_id,
-                is_print : req.query.is_print,
+                print_status : req.query.print_status,
                 is_greeting_card : req.query.is_greeting_card
             };
         }
@@ -526,7 +523,7 @@ OrderService.prototype.listOrders = (entrance,isBatchScan)=>{
             query_data.status = Constant.OS.STATION;
         }else if (entrance === Constant.OSR.DELIVER_LIST){
             query_data.order_sorted_rules = entrance;
-            query_data.status = Constant.OS.CONVERT;
+            query_data.status = [Constant.OS.CONVERT,Constant.OS.INLINE];
         }else if (entrance === Constant.OSR.RECEIVE_LIST){
             query_data.order_sorted_rules = entrance;
             query_data.status = [Constant.OS.DELIVERY,Constant.OS.COMPLETED,Constant.OS.EXCEPTION];
@@ -647,7 +644,10 @@ OrderService.prototype.cancelOrder = (req,res,next)=>{
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
         } else if (updated_time !== _res[0].updated_time) {
             throw new TiramisuError(res_obj.OPTION_EXPIRED);
+        }else if(!systemUtils.isOrderCanCancel(_res[0].status)){
+            throw new TiramisuError(res_obj.ORDER_CANNOT_CANCEL);
         }
+
         let order_update_obj = {
             status : Constant.OS.CANCEL
         };

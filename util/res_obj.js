@@ -44,6 +44,10 @@ module.exports = {
         code : '2004',
         msg : '订单不处于分配配送站状态,不能被转换...'
     },
+    ORDER_CANNOT_CANCEL : {
+        code : '2005',
+        msg : '订单已生产或配送中,不能取消...'
+    },
     NO_MORE_PAGE_RESULTS : {
         code : '9998',
         msg : 'no more results...',

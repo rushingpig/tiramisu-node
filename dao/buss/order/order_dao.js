@@ -226,7 +226,7 @@ let columns = [
     let sql = "select " + columns + " from ?? bo";
     params.push(tables.buss_order);
     if(query_data.keywords){
-        sql += " inner join ?? bof on match(bof.show_order_id,bof.landmark,bof.owner_mobile,bof.owner_name,bof.recipient_name,bof.recipient_address,bof.recipient_mobile) against(? IN BOOLEAN MODE) and bof.order_id = bo.id";
+        sql += " inner join ?? bof on match(bof.owner_name,bof.owner_mobile,bof.recipient_name,bof.recipient_mobile,bof.recipient_address,bof.landmark,bof.show_order_id) against(? IN BOOLEAN MODE) and bof.order_id = bo.id";
         params.push(tables.buss_order_fulltext);
         params.push('+'+query_data.keywords+'*');
     }
@@ -296,7 +296,7 @@ let columns = [
         sql += " and bo.deliveryman_id = ?";
         params.push(query_data.deliveryman_id);
     }
-    if(parseInt(query_data.is_print) === 1){   //  查询已经打印过的订单
+    if(parseInt(query_data.print_status) === 1){   //  查询已经打印过的订单
         sql += " and (bo.print_status = ? or bo.print_status = ?)";
         params.push(constant.PS.UNPRINTABLE);
         params.push(constant.PS.AUDITING);

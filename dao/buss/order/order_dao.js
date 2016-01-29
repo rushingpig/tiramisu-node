@@ -9,7 +9,7 @@
 var baseDao = require('../../base_dao'),
     util = require('util'),
     toolUtils = require('../../../common/ToolUtils'),
-    dbHelper = require('../../../common/DbHelper'),
+    dbHelper = require('../../../common/DBHelper'),
     logger = require('../../../common/LogHelper').systemLog(),
     constant = require('../../../common/Constant'),
     del_flag = baseDao.del_flag,

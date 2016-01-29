@@ -554,8 +554,8 @@ OrderService.prototype.listOrders = (entrance,isBatchScan)=>{
                     delivery_type : Constant.DTD[curr.delivery_type],
                     delivery_name : curr.delivery_name,
                     discount_price : curr.total_discount_price,
-                    is_deal : Constant.YESORNOD[curr.is_deal],
-                    is_submit : Constant.YESORNOD[curr.is_submit],
+                    is_deal : curr.is_deal,
+                    is_submit : curr.is_submit,
                     merchant_id : curr.merchant_id,
                     coupon : curr.coupon,
                     print_status : curr.print_status,
@@ -632,7 +632,8 @@ OrderService.prototype.history = (req,res,next)=>{
  * @param next
  */
 OrderService.prototype.cancelOrder = (req,res,next)=>{
-    req.checkParams('orderId').notEmpty().isLength(16);
+    req.checkParams('orderId').isOrderId();
+    req.checkBody('cancel_reason').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
         res.api(res_obj.INVALID_PARAMS,errors);
@@ -649,7 +650,8 @@ OrderService.prototype.cancelOrder = (req,res,next)=>{
         }
 
         let order_update_obj = {
-            status : Constant.OS.CANCEL
+            status : Constant.OS.CANCEL,
+            cancel_reason : req.body.cancel_reason
         };
         return orderDao.updateOrder(systemUtils.assembleUpdateObj(req,order_update_obj),orderId);
     }).then((result)=>{

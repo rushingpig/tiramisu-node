@@ -1,7 +1,8 @@
 import { combineReducers } from 'redux';
-import * as Actions from 'actions/area';
+import {area as AREA} from 'actions/action_types';
 import { UPDATE_PATH } from 'redux-simple-router';
 import { map } from 'utils/index';
+import { AreaActionTypes1 } from 'actions/action_types';
 
 var initial_state = {
   provinces: [],
@@ -14,11 +15,12 @@ function _t(data){
   return map(data, (text, id) => ({id, text}))
 }
 
-export function area(if_reset){
+export function area(Actions = AreaActionTypes1){
   return function area(state = initial_state, action){
     switch (action.type) {
-      case Actions.UPDATE_PATH:
-        return if_reset ? initial_state : state;
+      case UPDATE_PATH:
+        return initial_state;
+
       case Actions.GOT_PROVINCES:
         return {...state, provinces: _t(action.data) };
       case Actions.PROVINCE_RESET:

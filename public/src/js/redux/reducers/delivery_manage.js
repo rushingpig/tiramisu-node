@@ -64,5 +64,5 @@ export default combineReducers({
   orders,
   deliveryman,
   main,
-  area: area(true)
+  area: area()
 })

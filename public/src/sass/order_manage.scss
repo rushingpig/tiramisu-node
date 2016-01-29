@@ -10,14 +10,14 @@
   }
 
   .time {
-    width: 82px;
+    min-width: 82px;
   }
   // .address-in-table {
   //   width: 200px;
   //   text-indent: 10px;
   // }
   .address-detail-td {
-    width: 170px;
+    min-width: 170px;
     display: table;
     span {
       display: table-cell;
@@ -27,12 +27,12 @@
 
   .address-all {
     @extend .inline-block;
-    width: 120px;
+    min-width: 120px;
     white-space: noraml;
   }
 
   .remark-in-table {
-    width: 120px;
+    min-width: 120px;
     @extend .text-overflow;
   }
   .bordered {

@@ -3,7 +3,7 @@ import {findDOMNode} from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import * as AreaActions from 'actions/area';
+import AreaActions from 'actions/area';
 import * as OrderFormActions from 'actions/order_manage_form';
 
 import DatePicker from 'common/datepicker';
@@ -31,7 +31,7 @@ class ManageOrderDetailPannel extends Component {
     var { mainForm, history_orders, area, dispatch, products, params } = this.props;
     var editable = !!(params && params.id);
 
-    var actions = {...bindActionCreators(AreaActions, dispatch), ...bindActionCreators(OrderFormActions, dispatch)};
+    var actions = {...bindActionCreators(AreaActions(), dispatch), ...bindActionCreators(OrderFormActions, dispatch)};
     return (
       <div className="order-manage">
         <TopHeader />

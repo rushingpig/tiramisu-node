@@ -20,7 +20,7 @@ import LazyLoad from 'utils/lazy_load';
 import { form, Noty, dateFormat, parseTime } from 'utils/index';
 
 import * as OrderActions from 'actions/orders';
-import * as AreaActions from 'actions/area';
+import AreaActions from 'actions/area';
 import * as DeliverymanActions from 'actions/deliveryman';
 import * as DeliveryDistributeActions from 'actions/delivery_distribute';
 import { getPayModes } from 'actions/order_manage_form';
@@ -77,16 +77,16 @@ class FilterHeader extends Component {
             {' 开始时间'}
             <DatePicker editable redux-form={begin_time} className="short-input" />
             {' 配送时间'}
-            <DatePicker editable redux-form={end_time} className="short-input" />
-            <Select {...pay_modes_id} options={all_pay_modes} default-text="选择支付方式" className="space"/>
-            <Select {...order_status} options={all_order_status} default-text="选择订单状态" className="space"/>
-            <Select {...deliveryman_id} options={all_deliveryman.map(n => ({id: n.deliveryman_id, text: n.deliveryman_name}))} default-text="选择配送员" className="space"/>
-            <Select {...delivery_id} options={delivery_stations} default-text="选择配送中心" className="space"/>
+            <DatePicker editable redux-form={end_time} className="short-input space-right" />
+            <Select {...pay_modes_id} options={all_pay_modes} default-text="选择支付方式" className="space-right"/>
+            <Select {...order_status} options={all_order_status} default-text="选择订单状态" className="space-right"/>
+            <Select {...deliveryman_id} options={all_deliveryman.map(n => ({id: n.deliveryman_id, text: n.deliveryman_name}))} default-text="选择配送员" className="space-right"/>
+            <Select {...delivery_id} options={delivery_stations} default-text="选择配送中心" className="space-right"/>
           </div>
           <div className="form-group form-inline">
             <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space-right"/>
-            <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space"/>
-            <button onClick={this.onScanHandler.bind(this)} className="btn btn-theme btn-xs space">扫描</button>
+            <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space-right"/>
+            <button onClick={this.onScanHandler.bind(this)} className="btn btn-theme btn-xs space-right">扫描</button>
           </div>
         </div>
       </div>
@@ -337,7 +337,7 @@ function mapStateToProps({distributeManage}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  return bindActionCreators({...OrderActions, ...AreaActions, ...DeliverymanActions, ...DeliveryDistributeActions, getPayModes}, dispatch);
+  return bindActionCreators({...OrderActions, ...AreaActions(), ...DeliverymanActions, ...DeliveryDistributeActions, getPayModes}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeliveryDistributePannel);

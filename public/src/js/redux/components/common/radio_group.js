@@ -38,6 +38,11 @@ RadioGroup.defaultProps = {
 RadioGroup.PropTypes = {
   name: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
-  radios: PropTypes.array.isRequired,  //得按顺序，所以得用数组
+  radios: PropTypes.arrayOf(
+      PropTypes.shape({
+        value: PropTypes.string.isRequired,
+        text: PropTypes.string.isRequired,
+      })
+    ).isRequired,  //得按顺序，所以得用数组
   onChange: PropTypes.func.isRequired,
 }

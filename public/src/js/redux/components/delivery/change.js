@@ -21,7 +21,7 @@ import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from 'common/order_detail_modal';
 
 import * as OrderActions from 'actions/orders';
-import * as AreaActions from 'actions/area';
+import AreaActions from 'actions/area';
 import * as ChangeActions from 'actions/delivery_change';
 
 
@@ -67,10 +67,10 @@ class FilterHeader extends Component {
           {' 开始时间'}
           <DatePicker editable redux-form={begin_time} className="short-input" />
           {' 配送时间'}
-          <DatePicker editable redux-form={end_time} className="short-input" />
-          <Select {...delivery_id} options={this.state.delivery_stations} default-text="选择配送中心" className="space"/>
-          <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space"/>
-          <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space"/>
+          <DatePicker editable redux-form={end_time} className="short-input space-right" />
+          <Select {...delivery_id} options={this.state.delivery_stations} default-text="选择配送中心" className="space-right"/>
+          <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space-right"/>
+          <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space-right"/>
           <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
             <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
           </button>
@@ -149,7 +149,7 @@ class OrderRow extends Component {
         <td>{DELIVERY_MAP[props.delivery_type] || props.delivery_type}</td>
         <td><div className="remark-in-table">{props.remarks}</div></td>
         <td>{props.updated_by}</td>
-        <td><div className="time">{props.updated_time}</div></td>
+        <td>{parseTime(props.updated_time)}</td>
       </tr>
     )
   }
@@ -280,7 +280,7 @@ function mapStateToProps({deliveryChange}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  return bindActionCreators({...OrderActions, ...AreaActions, ...ChangeActions}, dispatch);
+  return bindActionCreators({...OrderActions, ...AreaActions(), ...ChangeActions}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeliverChangePannel);

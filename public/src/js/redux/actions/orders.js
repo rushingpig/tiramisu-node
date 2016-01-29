@@ -132,6 +132,13 @@ export function activeOrder(id){
   }, GET_ORDER_DETAIL_PRODUCTS);*/
 }
 
+export const SHOW_PRODUCTS_DETAIL = 'SHOW_PRODUCTS_DETAIL';  //允许订单对应的产品详情显示出来
+export function showProductsDetail(){
+  return {
+    type: SHOW_PRODUCTS_DETAIL
+  }
+}
+
 export const GET_ORDER_OPT_RECORD = 'GET_ORDER_OPT_RECORD';
 export function getOrderOptRecord(order_id, data){
   return GET(Url.order_opt_record.toString(order_id), data, GET_ORDER_OPT_RECORD);

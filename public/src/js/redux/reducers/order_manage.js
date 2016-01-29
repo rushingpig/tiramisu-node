@@ -1,10 +1,13 @@
 import { map } from 'utils/index';
 import { combineReducers } from 'redux';
-import { GOT_ORDER_SRCS } from 'actions/order_manage_form';
+import * as Actions from 'actions/order_manage';
+import { GOT_ORDER_SRCS, GOT_DELIVERY_STATIONS } from 'actions/order_manage_form';
+import { AreaActionTypes2 } from 'actions/action_types';
 import { pay_status } from 'config/app.config';
 
-import { area } from './area_select';
+import { area } from 'reducers/area_select';
 import { orders, operationRecord } from './orders';
+import { REQUEST } from 'config/app.config';
 
 var filter_state = {
   search_ing: false,
@@ -31,9 +34,36 @@ function filter(state = filter_state, action){
   }
 }
 
+
+var main_state = {
+  submitting: false,
+
+  delivery_stations: [],  //这个用于AlterDeliveryModal和AlterStationModal中
+}
+function main(state = main_state, action){
+  switch(action.type){
+    case Actions.CANCEL_ORDER:
+    case Actions.ORDER_EXCEPTION:
+      if(action.key == REQUEST.ING){
+        return {...state, submitting: true }
+      }else if(action.key == REQUEST.SUCCESS || action.key == REQUEST.FAIL){
+        return {...state, submitting: false }
+      }else{
+        console.error('nali?')
+      }
+
+    case GOT_DELIVERY_STATIONS:
+      return {...state, delivery_stations: map(action.data, (text, id) => ({id, text})) }
+    default:
+      return state;
+  }
+}
+
 export default combineReducers({
   filter,
-  area: area(false),
+  area: area(),
   orders,
-  operationRecord
+  operationRecord,
+  main,
+  alter_delivery_area: area(AreaActionTypes2)
 })

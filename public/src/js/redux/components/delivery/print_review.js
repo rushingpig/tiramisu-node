@@ -44,10 +44,10 @@ class FilterHeader extends Component {
           {' 开始时间'}
           <DatePicker date={start_date} className="short-input" />
           {' 结束时间'}
-          <DatePicker date={delivery_date} className="short-input" />
-          <Select default-text="是否处理" className="space"/>
-          <Select default-text="是否通过" className="space"/>
-          <Select default-text="是否打印" className="space"/>
+          <DatePicker date={delivery_date} className="short-input space-right" />
+          <Select default-text="是否处理" className="space-right"/>
+          <Select default-text="是否通过" className="space-right"/>
+          <Select default-text="是否打印" className="space-right"/>
 
           <button onClick={this.searchHandler.bind(this)} className="btn btn-theme btn-xs">
             <i className="fa fa-search" style={{'padding': '0 3px'}}></i>

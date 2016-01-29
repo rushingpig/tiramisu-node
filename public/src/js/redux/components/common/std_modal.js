@@ -7,9 +7,9 @@ export default class StdModal extends Component {
     this.hide = this.hide.bind(this);
   }
   render(){
-    var { size, title, submitting, onConfirm, footer } = this.props;
+    var { size, title, submitting, loading, onConfirm, footer } = this.props;
     return (
-    <div ref="__modal" aria-hidden="false" aria-labelledby="myModalLabel" role="dialog" className="modal fade" >
+    <div ref="__modal" aria-hidden="false" aria-labelledby="myModalLabel" role="dialog" className={`modal ${loading ? 'loading' : ''} fade`} >
       <div className="modal-backdrop fade"></div>
       <div className={`modal-dialog modal-${size}`}>
         <div className="modal-content">
@@ -18,6 +18,7 @@ export default class StdModal extends Component {
             <h4 className="modal-title">{title}</h4>
           </div>
           <div className="modal-body">
+            {loading && <div className="loading-wrap text-center"><i className="fa fa-spin fa-lg fa-spinner"></i></div>}
             {this.props.children}
           </div>
           {
@@ -26,7 +27,7 @@ export default class StdModal extends Component {
                 <button onClick={this.hide} type="button" className="btn btn-sm btn-default" data-dismiss="modal">取消</button>
                 <button 
                   onClick={onConfirm} 
-                  disabled={submitting} 
+                  disabled={submitting || loading} 
                   data-submitting={submitting} type="button" className="btn btn-sm btn-theme">确定</button>
               </div>
             : null

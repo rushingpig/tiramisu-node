@@ -12,6 +12,7 @@ var orders_state = {
   checked_orders: [],
   active_order_id: undefined,
   check_order_info: null,
+  show_products_detail: false,
 }
 
 export function orders(state = orders_state, action){
@@ -52,7 +53,10 @@ export function orders(state = orders_state, action){
       })()
 
     case OrderActions.ACTIVE_ORDER:
-      return {...state, active_order_id: action.active_order_id}
+      return {...state, active_order_id: action.active_order_id, show_products_detail: false}
+
+    case OrderActions.SHOW_PRODUCTS_DETAIL:
+      return {...state, show_products_detail: true}
 
     case OrderActions.GET_ORDER_DETAIL_PRODUCTS:
       return {...state, check_order_info: action.data}

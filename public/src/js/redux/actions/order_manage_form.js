@@ -1,7 +1,6 @@
 import {post, put, GET, POST, TEST} from 'utils/request'; //Promise
 import Url from 'config/url';
 import { getValues } from 'redux-form';
-import { GOT_PROVINCES, GOT_CITIES, GOT_DISTRICTS } from 'actions/area';
 
 export const GOT_ORDER_SRCS = 'GOT_ORDER_SRCS';
 export function getOrderSrcs(){

@@ -67,7 +67,7 @@
 
 	var _reactRedux = __webpack_require__(216);
 
-	var _storesConfigureStore = __webpack_require__(326);
+	var _storesConfigureStore = __webpack_require__(328);
 
 	var _storesConfigureStore2 = _interopRequireDefault(_storesConfigureStore);
 
@@ -75,7 +75,7 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _reduxSimpleRouter = __webpack_require__(333);
+	var _reduxSimpleRouter = __webpack_require__(335);
 
 	(0, _reduxSimpleRouter.syncReduxAndRouter)(_history_instance2['default'], _storesConfigureStore2['default']);
 
@@ -19036,23 +19036,23 @@
 
 	var _componentsOrderManage2 = _interopRequireDefault(_componentsOrderManage);
 
-	var _componentsOrderManage_order_detail_pannel = __webpack_require__(298);
+	var _componentsOrderManage_order_detail_pannel = __webpack_require__(305);
 
 	var _componentsOrderManage_order_detail_pannel2 = _interopRequireDefault(_componentsOrderManage_order_detail_pannel);
 
-	var _componentsDeliveryChange = __webpack_require__(310);
+	var _componentsDeliveryChange = __webpack_require__(317);
 
 	var _componentsDeliveryChange2 = _interopRequireDefault(_componentsDeliveryChange);
 
-	var _componentsDeliveryDelivery_manage = __webpack_require__(312);
+	var _componentsDeliveryDelivery_manage = __webpack_require__(319);
 
 	var _componentsDeliveryDelivery_manage2 = _interopRequireDefault(_componentsDeliveryDelivery_manage);
 
-	var _componentsDeliveryDistribute_manage = __webpack_require__(320);
+	var _componentsDeliveryDistribute_manage = __webpack_require__(323);
 
 	var _componentsDeliveryDistribute_manage2 = _interopRequireDefault(_componentsDeliveryDistribute_manage);
 
-	var _componentsDeliveryPrint_review = __webpack_require__(324);
+	var _componentsDeliveryPrint_review = __webpack_require__(326);
 
 	var _componentsDeliveryPrint_review2 = _interopRequireDefault(_componentsDeliveryPrint_review);
 
@@ -19341,16 +19341,16 @@
 	  DELIVERY_TIME_MAP: ['09:00~10:00', '09:30~10:30', '10:00~11:00', '10:30~11:30', '11:00~12:00', '11:30~12:30', '12:00~13:00', '12:30~13:30', '13:00~14:00', '13:30~14:30', '14:00~15:00', '14:30~15:30', '15:00~16:00', '15:30~16:30', '16:00~17:00', '16:30~17:30', '17:00~18:00', '17:30~18:30', '18:00~19:00', '18:30~19:30', '19:00~20:00', '20:30~21:30', '21:00~22:00', '21:30~22:30', '22:00~23:00'],
 
 	  order_status: {
-	    CANCEL: { value: '取消', color: '#BDB8B8' },
-	    UNTREATED: { value: '未处理', color: '#585353' },
-	    TREATED: { value: '已处理', color: '#585353' },
-	    STATION: { value: '已分配配送站', color: '' },
-	    CONVERT: { value: '已转换', color: '' },
-	    INLINE: { value: '生产中', color: '' },
-	    DELIVERY: { value: '已分配配送员', color: '' },
+	    CANCEL: { value: '取消', key: -10, color: '#BDB8B8' },
+	    UNTREATED: { value: '未处理', key: 0, color: '#585353' },
+	    TREATED: { value: '已处理', key: 10, color: '#585353' },
+	    STATION: { value: '已分配配送站', key: 20, color: '' },
+	    CONVERT: { value: '已转换', key: 30, color: '' },
+	    INLINE: { value: '生产中', key: 40, color: '' },
+	    DELIVERY: { value: '已分配配送员', key: 50, color: '' },
 
-	    COMPLETED: { value: '订单完成', color: '#0f0' },
-	    EXCEPTION: { value: '订单异常', color: '#f00' }
+	    COMPLETED: { value: '订单完成', key: 100, color: '#0f0' },
+	    EXCEPTION: { value: '订单异常', key: 100, color: '#f00' }
 	  },
 	  pay_status: {
 	    'COD': '货到付款',
@@ -25154,26 +25154,26 @@
 	            ),
 	            _react2['default'].createElement(
 	              'div',
-	              { className: 'registration' },
-	              'Not a member yet?',
+	              { className: 'registration hidden' },
+	              '没有账号?',
 	              _react2['default'].createElement(
 	                'a',
 	                { className: '', href: 'registration.html' },
-	                'Signup'
+	                '注册'
 	              )
 	            ),
 	            _react2['default'].createElement(
 	              'label',
-	              { className: 'checkbox' },
+	              { className: 'checkbox hidden' },
 	              _react2['default'].createElement('input', { type: 'checkbox', value: 'remember-me' }),
-	              ' Remember me',
+	              ' 记住我',
 	              _react2['default'].createElement(
 	                'span',
 	                { className: 'pull-right' },
 	                _react2['default'].createElement(
 	                  'a',
 	                  { 'data-toggle': 'modal', href: '#myModal' },
-	                  ' Forgot Password?'
+	                  ' 忘记密码?'
 	                )
 	              )
 	            )
@@ -25198,7 +25198,7 @@
 	                  _react2['default'].createElement(
 	                    'h4',
 	                    { className: 'modal-title' },
-	                    'Forgot Password ?'
+	                    '忘记密码 ?'
 	                  )
 	                ),
 	                _react2['default'].createElement(
@@ -25207,9 +25207,9 @@
 	                  _react2['default'].createElement(
 	                    'p',
 	                    null,
-	                    'Enter your e-mail address below to reset your password.'
+	                    '在下面输入你的邮箱地址以重置密码.'
 	                  ),
-	                  _react2['default'].createElement('input', { type: 'text', name: 'email', placeholder: 'Email', autoComplete: 'off', className: 'form-control placeholder-no-fix' })
+	                  _react2['default'].createElement('input', { type: 'text', name: '邮箱', placeholder: 'Email', autoComplete: 'off', className: 'form-control placeholder-no-fix' })
 	                ),
 	                _react2['default'].createElement(
 	                  'div',
@@ -25217,12 +25217,12 @@
 	                  _react2['default'].createElement(
 	                    'button',
 	                    { 'data-dismiss': 'modal', className: 'btn btn-default', type: 'button' },
-	                    'Cancel'
+	                    '取消'
 	                  ),
 	                  _react2['default'].createElement(
 	                    'button',
 	                    { className: 'btn btn-primary', type: 'button' },
-	                    'Submit'
+	                    '确定'
 	                  )
 	                )
 	              )
@@ -28078,6 +28078,7 @@
 	    order_sign: '/order/:orderId/signin',
 	    order_unsign: '/order/:orderId/unsignin',
 	    order_opt_record: '/order/:orderId/history',
+	    order_exception: '//order/:orderId/exception',
 
 	    //产品
 	    categories: '/product/categories',
@@ -28148,69 +28149,77 @@
 
 	var _reduxForm = __webpack_require__(241);
 
-	var _actionsArea = __webpack_require__(283);
+	var _reactAddonsLinkedStateMixin = __webpack_require__(283);
 
-	var AreaActions = _interopRequireWildcard(_actionsArea);
+	var _reactAddonsLinkedStateMixin2 = _interopRequireDefault(_reactAddonsLinkedStateMixin);
 
-	var _actionsOrders = __webpack_require__(284);
+	var _actionsArea = __webpack_require__(287);
+
+	var _actionsArea2 = _interopRequireDefault(_actionsArea);
+
+	var _actionsAction_types = __webpack_require__(288);
+
+	var _actionsOrders = __webpack_require__(289);
 
 	var OrderActions = _interopRequireWildcard(_actionsOrders);
 
-	var _actionsOrder_manage_form = __webpack_require__(285);
+	var _actionsOrder_manage = __webpack_require__(290);
 
-	var _commonDatepicker = __webpack_require__(286);
+	var OrderManageActions = _interopRequireWildcard(_actionsOrder_manage);
+
+	var _actionsOrder_manage_form = __webpack_require__(291);
+
+	var _commonDatepicker = __webpack_require__(292);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonSelect = __webpack_require__(287);
+	var _commonSelect = __webpack_require__(293);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonPagination = __webpack_require__(288);
+	var _commonPagination = __webpack_require__(294);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _configAppConfig2 = _interopRequireDefault(_configAppConfig);
-
 	var _history_instance = __webpack_require__(211);
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _commonLine_router = __webpack_require__(289);
+	var _commonLine_router = __webpack_require__(295);
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _commonSearch_input = __webpack_require__(290);
+	var _commonSearch_input = __webpack_require__(296);
 
 	var _commonSearch_input2 = _interopRequireDefault(_commonSearch_input);
 
-	var _commonLoading = __webpack_require__(291);
+	var _commonLoading = __webpack_require__(297);
 
-	var _commonStd_modal = __webpack_require__(292);
+	var _commonStd_modal = __webpack_require__(298);
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
-	var _utilsLazy_load = __webpack_require__(293);
+	var _utilsLazy_load = __webpack_require__(299);
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
 	var _utilsIndex = __webpack_require__(160);
 
-	var _commonOrder_products_detail = __webpack_require__(294);
+	var _commonOrder_products_detail = __webpack_require__(300);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(295);
+	var _commonOrder_detail_modal = __webpack_require__(301);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
-	var _manage_alter_station_modal = __webpack_require__(296);
+	var _manage_alter_delivery_modal = __webpack_require__(302);
 
-	var _manage_alter_station_modal2 = _interopRequireDefault(_manage_alter_station_modal);
+	var _manage_alter_delivery_modal2 = _interopRequireDefault(_manage_alter_delivery_modal);
 
-	var _commonOrder_srcs_selects = __webpack_require__(297);
+	var _commonOrder_srcs_selects = __webpack_require__(304);
 
 	var _commonOrder_srcs_selects2 = _interopRequireDefault(_commonOrder_srcs_selects);
 
@@ -28264,7 +28273,7 @@
 	    this.state = {
 	      submit_opts: [{ id: 1, text: '已提交' }, { id: 0, text: '未提交' }],
 	      deal_opts: [{ id: 1, text: '已处理' }, { id: 0, text: '未处理' }],
-	      selected_order_src_level1_id: _configAppConfig2['default'].SELECT_DEFAULT_VALUE,
+	      selected_order_src_level1_id: _configAppConfig.SELECT_DEFAULT_VALUE,
 	      search_ing: false
 	    };
 	  }
@@ -28299,13 +28308,13 @@
 	          ' 开始时间',
 	          _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': begin_time, className: 'short-input' }),
 	          ' 配送时间',
-	          _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': end_time, className: 'short-input' }),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, is_submit, { options: this.state.submit_opts, 'default-text': '是否提交', className: 'space' })),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, is_deal, { options: this.state.deal_opts, 'default-text': '是否处理', className: 'space' })),
+	          _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': end_time, className: 'short-input space-right' }),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, is_submit, { options: this.state.submit_opts, 'default-text': '是否提交', className: 'space-right' })),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, is_deal, { options: this.state.deal_opts, 'default-text': '是否处理', className: 'space-right' })),
 	          _react2['default'].createElement(_commonOrder_srcs_selects2['default'], { all_order_srcs: all_order_srcs, src_id: src_id }),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), options: provinces, ref: 'province', 'default-text': '选择省份', className: 'space' })),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, city_id, { options: cities, 'default-text': '选择城市', ref: 'city', className: 'space' })),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, status, { options: all_order_status, 'default-text': '订单状态', className: 'space' })),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), options: provinces, ref: 'province', 'default-text': '选择省份', className: 'space-right' })),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, city_id, { options: cities, 'default-text': '选择城市', ref: 'city', className: 'space-right' })),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, status, { options: all_order_status, 'default-text': '订单状态', className: 'space-right' })),
 	          _react2['default'].createElement(
 	            'button',
 	            { disabled: search_ing, 'data-submitting': search_ing, onClick: this.search.bind(this), className: 'btn btn-theme btn-xs' },
@@ -28371,7 +28380,7 @@
 	    var props = this.props;
 
 	    var src_name = props.src_name.split(',');
-	    var _order_status = _configAppConfig2['default'].order_status[props.status] || {};
+	    var _order_status = _configAppConfig.order_status[props.status] || {};
 	    return _react2['default'].createElement(
 	      'tr',
 	      { className: props.active_order_id == props.order_id ? 'active' : '', onClick: this.clickHandler },
@@ -28392,8 +28401,24 @@
 	        _react2['default'].createElement('br', null),
 	        _react2['default'].createElement(
 	          'a',
-	          { onClick: this.alterStation, href: 'javascript:;', className: 'nowrap' },
+	          { onClick: this.alterDelivery, href: 'javascript:;', className: 'nowrap hidden' },
 	          '[修改配送]'
+	        ),
+	        _react2['default'].createElement(
+	          'a',
+	          { onClick: this.alterStation, href: 'javascript:;', className: 'nowrap hidden' },
+	          '[分配配送站]'
+	        ),
+	        _react2['default'].createElement(
+	          'a',
+	          { onClick: this.cancelOrder, href: 'javascript:;', className: 'nowrap' },
+	          '[订单取消]'
+	        ),
+	        _react2['default'].createElement('br', null),
+	        _react2['default'].createElement(
+	          'a',
+	          { onClick: this.orderException, href: 'javascript:;', className: 'nowrap' },
+	          '[订单异常]'
 	        )
 	      ),
 	      _react2['default'].createElement(
@@ -28446,7 +28471,7 @@
 	          )
 	        ),
 	        '建筑：',
-	        props.landmark
+	        props.recipient_landmark
 	      ),
 	      _react2['default'].createElement(
 	        'td',
@@ -28499,7 +28524,7 @@
 	      _react2['default'].createElement(
 	        'td',
 	        null,
-	        'todo'
+	        props.delivery_name
 	      ),
 	      _react2['default'].createElement(
 	        'td',
@@ -28566,13 +28591,21 @@
 	      )
 	    );
 	  },
-	  clickHandler: function clickHandler() {
+	  activeOrder: function activeOrder() {
 	    var _props2 = this.props;
 	    var order_id = _props2.order_id;
 	    var active_order_id = _props2.active_order_id;
 	    var activeOrder = _props2.activeOrder;
 
-	    order_id != active_order_id && activeOrder(order_id);
+	    if (order_id != active_order_id) {
+	      activeOrder(order_id).done(function (data) {
+	        // debugger;
+	      });
+	    }
+	  },
+	  clickHandler: function clickHandler() {
+	    this.activeOrder();
+	    this.props.showProductsDetail();
 	  },
 	  editHandler: function editHandler(e) {
 	    _history_instance2['default'].push('/om/index/' + this.props.order_id);
@@ -28580,14 +28613,31 @@
 	  },
 	  viewOrderDetail: function viewOrderDetail(e) {
 	    this.props.viewOrderDetail(this.props);
-	    // e.stopPropagation();
+	    this.activeOrder();
+	    e.stopPropagation();
+	  },
+	  alterDelivery: function alterDelivery(e) {
+	    this.props.showAlterDelivery();
+	    this.activeOrder();
+	    e.stopPropagation();
 	  },
 	  alterStation: function alterStation(e) {
-	    this.props.alterStation(this.props);
+	    this.props.showAlterStation();
+	    this.activeOrder();
 	    e.stopPropagation();
 	  },
 	  viewOrderOperationRecord: function viewOrderOperationRecord(e) {
 	    this.props.viewOrderOperationRecord(this.props);
+	    e.stopPropagation();
+	  },
+	  cancelOrder: function cancelOrder(e) {
+	    this.props.showCancelOrder(this.props);
+	    this.activeOrder();
+	    e.stopPropagation();
+	  },
+	  orderException: function orderException(e) {
+	    this.props.showOrderException(this.props);
+	    this.activeOrder();
 	    e.stopPropagation();
 	  }
 	});
@@ -28600,8 +28650,12 @@
 
 	    _get(Object.getPrototypeOf(ManagePannel.prototype), 'constructor', this).call(this, props);
 	    this.viewOrderDetail = this.viewOrderDetail.bind(this);
-	    this.alterStation = this.alterStation.bind(this);
+	    this.showAlterDelivery = this.showAlterDelivery.bind(this);
+	    this.showAlterStation = this.showAlterStation.bind(this);
+	    this.showCancelOrder = this.showCancelOrder.bind(this);
+	    this.showOrderException = this.showOrderException.bind(this);
 	    this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
+	    this.search = this.search.bind(this);
 	    this.state = {
 	      page_size: 5
 	    };
@@ -28613,11 +28667,18 @@
 	      var _props3 = this.props;
 	      var filter = _props3.filter;
 	      var area = _props3.area;
+	      var alter_delivery_area = _props3.alter_delivery_area;
+	      var _props3$main = _props3.main;
+	      var submitting = _props3$main.submitting;
+	      var delivery_stations = _props3$main.delivery_stations;
 	      var activeOrder = _props3.activeOrder;
+	      var showProductsDetail = _props3.showProductsDetail;
 	      var operationRecord = _props3.operationRecord;
 	      var dispatch = _props3.dispatch;
 	      var getOrderList = _props3.getOrderList;
 	      var getOrderOptRecord = _props3.getOrderOptRecord;
+	      var cancelOrder = _props3.cancelOrder;
+	      var orderException = _props3.orderException;
 	      var _props$orders = this.props.orders;
 	      var loading = _props$orders.loading;
 	      var page_no = _props$orders.page_no;
@@ -28625,19 +28686,25 @@
 	      var list = _props$orders.list;
 	      var check_order_info = _props$orders.check_order_info;
 	      var active_order_id = _props$orders.active_order_id;
+	      var show_products_detail = _props$orders.show_products_detail;
 	      var viewOrderDetail = this.viewOrderDetail;
-	      var alterStation = this.alterStation;
+	      var showAlterDelivery = this.showAlterDelivery;
+	      var showAlterStation = this.showAlterStation;
+	      var showCancelOrder = this.showCancelOrder;
+	      var showOrderException = this.showOrderException;
 	      var viewOrderOperationRecord = this.viewOrderOperationRecord;
+	      var search = this.search;
 
 	      var content = list.map(function (n, i) {
-	        return _react2['default'].createElement(OrderRow, _extends({ key: n.order_id }, _extends({}, n, { active_order_id: active_order_id, viewOrderDetail: viewOrderDetail, alterStation: alterStation, viewOrderOperationRecord: viewOrderOperationRecord, activeOrder: activeOrder })));
+	        return _react2['default'].createElement(OrderRow, _extends({ key: n.order_id
+	        }, _extends({}, n, { active_order_id: active_order_id, showProductsDetail: showProductsDetail, viewOrderDetail: viewOrderDetail, showAlterDelivery: showAlterDelivery, showAlterStation: showAlterStation, showCancelOrder: showCancelOrder, showOrderException: showOrderException, viewOrderOperationRecord: viewOrderOperationRecord, activeOrder: activeOrder })));
 	      });
 	      return _react2['default'].createElement(
 	        'div',
 	        { className: 'order-manage' },
 	        _react2['default'].createElement(TopHeader, null),
 	        _react2['default'].createElement(FilterHeader, _extends({}, _extends({}, filter, area), {
-	          actions: _extends({}, (0, _redux.bindActionCreators)(_extends({}, AreaActions, { getOrderSrcs: _actionsOrder_manage_form.getOrderSrcs }), dispatch), { getOrderList: getOrderList }),
+	          actions: _extends({}, (0, _redux.bindActionCreators)(_extends({}, (0, _actionsArea2['default'])(), { getOrderSrcs: _actionsOrder_manage_form.getOrderSrcs }), dispatch), { getOrderList: getOrderList }),
 	          page_size: this.state.page_size })),
 	        _react2['default'].createElement(
 	          'div',
@@ -28784,7 +28851,7 @@
 	            })
 	          )
 	        ),
-	        check_order_info ? _react2['default'].createElement(
+	        show_products_detail && check_order_info ? _react2['default'].createElement(
 	          'div',
 	          { className: 'panel' },
 	          _react2['default'].createElement(
@@ -28800,7 +28867,12 @@
 	        ) : null,
 	        _react2['default'].createElement(_commonOrder_detail_modal2['default'], { ref: 'detail_modal', data: check_order_info || {} }),
 	        _react2['default'].createElement(OperationRecordModal, _extends({ ref: 'OperationRecordModal' }, _extends({ getOrderOptRecord: getOrderOptRecord }, operationRecord))),
-	        _react2['default'].createElement('div', { ref: 'modal-wrap' })
+	        _react2['default'].createElement(CancelOrderModal, _extends({ ref: 'CancelOrderModal' }, { submitting: submitting, cancelOrder: cancelOrder, callback: search })),
+	        _react2['default'].createElement(OrderExceptionModal, _extends({ ref: 'OrderExceptionModal' }, { submitting: submitting, orderException: orderException, callback: search })),
+	        _react2['default'].createElement(AlterStationModal, _extends({ ref: 'AlterStationModal'
+	        }, _extends({ submitting: submitting, delivery_stations: delivery_stations, order: check_order_info, show_products_detail: show_products_detail }, alter_delivery_area, { actions: this.props, callback: search }))),
+	        _react2['default'].createElement(_manage_alter_delivery_modal2['default'], _extends({ ref: 'AlterDeliveryModal'
+	        }, _extends({ submitting: submitting, delivery_stations: delivery_stations, order: check_order_info, show_products_detail: show_products_detail }, alter_delivery_area, { actions: this.props, callback: search })))
 	      );
 	    }
 	  }, {
@@ -28811,12 +28883,12 @@
 	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      this.search(this.props.orders.page_no);
+	      this.search();
 	    }
 	  }, {
 	    key: 'search',
 	    value: function search(page) {
-	      page = typeof page == 'undefined' ? this.props.page_no : page;
+	      page = typeof page == 'undefined' ? this.props.orders.page_no : page;
 	      this.props.getOrderList({ page_no: page, page_size: this.state.page_size });
 	    }
 	  }, {
@@ -28825,14 +28897,29 @@
 	      this.refs.detail_modal.show();
 	    }
 	  }, {
-	    key: 'alterStation',
-	    value: function alterStation(n) {
-	      (0, _reactDom.render)(_react2['default'].createElement(_manage_alter_station_modal2['default'], { data: n, 'data-id': new Date().getTime() }), this.refs['modal-wrap']);
+	    key: 'showAlterDelivery',
+	    value: function showAlterDelivery() {
+	      this.refs.AlterDeliveryModal.show();
+	    }
+	  }, {
+	    key: 'showAlterStation',
+	    value: function showAlterStation() {
+	      this.refs.AlterStationModal.show();
+	    }
+	  }, {
+	    key: 'showCancelOrder',
+	    value: function showCancelOrder(order) {
+	      this.refs.CancelOrderModal.show(order);
+	    }
+	  }, {
+	    key: 'showOrderException',
+	    value: function showOrderException(order) {
+	      this.refs.OrderExceptionModal.show(order);
 	    }
 	  }, {
 	    key: 'viewOrderOperationRecord',
-	    value: function viewOrderOperationRecord(n) {
-	      this.refs.OperationRecordModal.show(n);
+	    value: function viewOrderOperationRecord(order) {
+	      this.refs.OperationRecordModal.show(order);
 	    }
 	  }]);
 
@@ -28847,7 +28934,7 @@
 
 	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 	function mapDispatchToProps(dispatch) {
-	  var actions = (0, _redux.bindActionCreators)(OrderActions, dispatch);
+	  var actions = (0, _redux.bindActionCreators)(_extends({}, OrderActions, (0, _actionsArea2['default'])(_actionsAction_types.AreaActionTypes2), { getDeliveryStations: _actionsOrder_manage_form.getDeliveryStations }, OrderManageActions), dispatch);
 	  actions.dispatch = dispatch;
 	  return actions;
 	}
@@ -28858,6 +28945,207 @@
 	/***************   *******   *****************/
 	/***************   子模态框   *****************/
 	/***************   *******   *****************/
+
+	var CancelOrderModal = _react2['default'].createClass({
+	  displayName: 'CancelOrderModal',
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      reason: '',
+	      tips: '请填写取消原因或从下方选择原因',
+	      order: {},
+	      reasons: ['客户打电话取消', '订单信息有误', '无法生产并与客户沟通']
+	    };
+	  },
+	  mixins: [_reactAddonsLinkedStateMixin2['default']],
+	  render: function render() {
+	    var _this3 = this;
+
+	    var reasons = this.state.reasons.map(function (n, i) {
+	      return _react2['default'].createElement(
+	        'button',
+	        { onClick: _this3.chooseReason.bind(_this3, n), key: i, className: 'btn btn-default btn-xs space' },
+	        n
+	      );
+	    });
+	    return _react2['default'].createElement(
+	      _commonStd_modal2['default'],
+	      { submitting: this.props.submitting, title: '取消订单', onConfirm: this.onConfirm, onCancel: this.hideCallback, ref: 'modal' },
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group round', style: { border: '1px solid #ccc' } },
+	        _react2['default'].createElement('textarea', {
+	          valueLink: this.linkState('reason'),
+	          className: 'form-control',
+	          style: { 'border': 'none', maxWidth: '100%' },
+	          placeholder: this.state.tips,
+	          rows: '3'
+	        }),
+	        _react2['default'].createElement('hr', { className: 'dotted', style: { margin: '10px 0' } }),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'text-center', style: { 'paddingBottom': 10 } },
+	          reasons
+	        )
+	      )
+	    );
+	  },
+	  chooseReason: function chooseReason(reason) {
+	    this.setState({ reason: reason });
+	  },
+	  onConfirm: function onConfirm() {
+	    var _state = this.state;
+	    var reason = _state.reason;
+	    var tips = _state.tips;
+	    var order = _state.order;
+
+	    if (reason) {
+	      this.props.cancelOrder(order.order_id, { cancel_reason: reason }).done((function () {
+	        this.refs.modal.hide();
+	        this.props.callback();
+	      }).bind(this)).fail((function () {
+	        (0, _utilsIndex.Noty)('error', '异常错误');
+	      }).bind(this));
+	    } else {
+	      (0, _utilsIndex.Noty)('warning', tips);
+	    }
+	  },
+	  componentDidMount: function componentDidMount() {},
+	  show: function show(order) {
+	    this.setState({ order: order }, function () {
+	      this.refs.modal.show();
+	    });
+	  },
+	  hideCallback: function hideCallback() {
+	    this.setState(this.getInitialState());
+	  }
+	});
+
+	var AlterStationModal = _react2['default'].createClass({
+	  displayName: 'AlterStationModal',
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      delivery_id: undefined
+	    };
+	  },
+	  mixins: [_reactAddonsLinkedStateMixin2['default']],
+	  render: function render() {
+	    return _react2['default'].createElement(
+	      _commonStd_modal2['default'],
+	      { submitting: this.props.submitting, title: '取消订单', onCancel: this.hideCallback, ref: 'modal' },
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group' },
+	        _react2['default'].createElement(
+	          'label',
+	          null,
+	          '收货地址：'
+	        ),
+	        this.props.order && this.props.order.recipient_address
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group form-inline' },
+	        _react2['default'].createElement(
+	          'label',
+	          null,
+	          '配送中心：'
+	        ),
+	        _react2['default'].createElement(_commonSelect2['default'], { valueLink: this.linkState('delivery_id'), options: [] }),
+	        '　',
+	        _react2['default'].createElement(
+	          'button',
+	          { className: 'btn btn-xs btn-theme' },
+	          '自动分配'
+	        )
+	      )
+	    );
+	  },
+	  componentDidMount: function componentDidMount() {},
+	  show: function show() {
+	    this.refs.modal.show();
+	  },
+	  hideCallback: function hideCallback() {
+	    // this.refs.modal.hide();
+	    this.setState(this.getInitialState());
+	  }
+	});
+
+	var OrderExceptionModal = _react2['default'].createClass({
+	  displayName: 'OrderExceptionModal',
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      reason: '',
+	      tips: '请填写异常原因或从下方选择原因',
+	      order: {},
+	      reasons: ['配送站分配有误', '蛋糕无法派送']
+	    };
+	  },
+	  mixins: [_reactAddonsLinkedStateMixin2['default']],
+	  render: function render() {
+	    var _this4 = this;
+
+	    var reasons = this.state.reasons.map(function (n, i) {
+	      return _react2['default'].createElement(
+	        'button',
+	        { onClick: _this4.chooseReason.bind(_this4, n), key: i, className: 'btn btn-default btn-xs space' },
+	        n
+	      );
+	    });
+	    return _react2['default'].createElement(
+	      _commonStd_modal2['default'],
+	      { submitting: this.props.submitting, onConfirm: this.onConfirm, title: '订单异常', onCancel: this.hideCallback, ref: 'modal' },
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group round', style: { border: '1px solid #ccc' } },
+	        _react2['default'].createElement('textarea', {
+	          valueLink: this.linkState('reason'),
+	          className: 'form-control',
+	          style: { 'border': 'none', maxWidth: '100%' },
+	          placeholder: this.state.tips,
+	          rows: '3'
+	        }),
+	        _react2['default'].createElement('hr', { className: 'dotted', style: { margin: '10px 0' } }),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'text-center', style: { 'paddingBottom': 10 } },
+	          reasons
+	        )
+	      )
+	    );
+	  },
+	  chooseReason: function chooseReason(reason) {
+	    this.setState({ reason: reason });
+	  },
+	  onConfirm: function onConfirm() {
+	    var _state2 = this.state;
+	    var reason = _state2.reason;
+	    var tips = _state2.tips;
+	    var order = _state2.order;
+
+	    if (reason) {
+	      this.props.orderException(order.order_id, { cancel_reason: reason }).done((function () {
+	        this.refs.modal.hide();
+	        this.props.callback();
+	      }).bind(this)).fail((function () {
+	        (0, _utilsIndex.Noty)('error', '异常错误');
+	      }).bind(this));
+	    } else {
+	      (0, _utilsIndex.Noty)('warning', tips);
+	    }
+	  },
+	  componentDidMount: function componentDidMount() {},
+	  show: function show(order) {
+	    this.setState({ order: order }, function () {
+	      this.refs.modal.show();
+	    });
+	  },
+	  hideCallback: function hideCallback() {
+	    this.setState(this.getInitialState());
+	  }
+	});
 
 	var OperationRecordModal = _react2['default'].createClass({
 	  displayName: 'OperationRecordModal',
@@ -28974,9 +29262,9 @@
 	    this.search(page);
 	  },
 	  search: function search(page_no) {
-	    var _state = this.state;
-	    var page_size = _state.page_size;
-	    var sort_type = _state.sort_type;
+	    var _state3 = this.state;
+	    var page_size = _state3.page_size;
+	    var sort_type = _state3.sort_type;
 
 	    this.props.getOrderOptRecord(this.state.data.order_id, {
 	      page_no: page_no,
@@ -31783,18 +32071,242 @@
 /* 283 */
 /***/ function(module, exports, __webpack_require__) {
 
+	module.exports = __webpack_require__(284);
+
+/***/ },
+/* 284 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule LinkedStateMixin
+	 * @typechecks static-only
+	 */
+
+	'use strict';
+
+	var ReactLink = __webpack_require__(285);
+	var ReactStateSetters = __webpack_require__(286);
+
+	/**
+	 * A simple mixin around ReactLink.forState().
+	 */
+	var LinkedStateMixin = {
+	  /**
+	   * Create a ReactLink that's linked to part of this component's state. The
+	   * ReactLink will have the current value of this.state[key] and will call
+	   * setState() when a change is requested.
+	   *
+	   * @param {string} key state key to update. Note: you may want to use keyOf()
+	   * if you're using Google Closure Compiler advanced mode.
+	   * @return {ReactLink} ReactLink instance linking to the state.
+	   */
+	  linkState: function (key) {
+	    return new ReactLink(this.state[key], ReactStateSetters.createStateKeySetter(this, key));
+	  }
+	};
+
+	module.exports = LinkedStateMixin;
+
+/***/ },
+/* 285 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule ReactLink
+	 * @typechecks static-only
+	 */
+
+	'use strict';
+
+	/**
+	 * ReactLink encapsulates a common pattern in which a component wants to modify
+	 * a prop received from its parent. ReactLink allows the parent to pass down a
+	 * value coupled with a callback that, when invoked, expresses an intent to
+	 * modify that value. For example:
+	 *
+	 * React.createClass({
+	 *   getInitialState: function() {
+	 *     return {value: ''};
+	 *   },
+	 *   render: function() {
+	 *     var valueLink = new ReactLink(this.state.value, this._handleValueChange);
+	 *     return <input valueLink={valueLink} />;
+	 *   },
+	 *   _handleValueChange: function(newValue) {
+	 *     this.setState({value: newValue});
+	 *   }
+	 * });
+	 *
+	 * We have provided some sugary mixins to make the creation and
+	 * consumption of ReactLink easier; see LinkedValueUtils and LinkedStateMixin.
+	 */
+
+	var React = __webpack_require__(3);
+
+	/**
+	 * @param {*} value current value of the link
+	 * @param {function} requestChange callback to request a change
+	 */
+	function ReactLink(value, requestChange) {
+	  this.value = value;
+	  this.requestChange = requestChange;
+	}
+
+	/**
+	 * Creates a PropType that enforces the ReactLink API and optionally checks the
+	 * type of the value being passed inside the link. Example:
+	 *
+	 * MyComponent.propTypes = {
+	 *   tabIndexLink: ReactLink.PropTypes.link(React.PropTypes.number)
+	 * }
+	 */
+	function createLinkTypeChecker(linkType) {
+	  var shapes = {
+	    value: typeof linkType === 'undefined' ? React.PropTypes.any.isRequired : linkType.isRequired,
+	    requestChange: React.PropTypes.func.isRequired
+	  };
+	  return React.PropTypes.shape(shapes);
+	}
+
+	ReactLink.PropTypes = {
+	  link: createLinkTypeChecker
+	};
+
+	module.exports = ReactLink;
+
+/***/ },
+/* 286 */
+/***/ function(module, exports) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule ReactStateSetters
+	 */
+
+	'use strict';
+
+	var ReactStateSetters = {
+	  /**
+	   * Returns a function that calls the provided function, and uses the result
+	   * of that to set the component's state.
+	   *
+	   * @param {ReactCompositeComponent} component
+	   * @param {function} funcReturningState Returned callback uses this to
+	   *                                      determine how to update state.
+	   * @return {function} callback that when invoked uses funcReturningState to
+	   *                    determined the object literal to setState.
+	   */
+	  createStateSetter: function (component, funcReturningState) {
+	    return function (a, b, c, d, e, f) {
+	      var partialState = funcReturningState.call(component, a, b, c, d, e, f);
+	      if (partialState) {
+	        component.setState(partialState);
+	      }
+	    };
+	  },
+
+	  /**
+	   * Returns a single-argument callback that can be used to update a single
+	   * key in the component's state.
+	   *
+	   * Note: this is memoized function, which makes it inexpensive to call.
+	   *
+	   * @param {ReactCompositeComponent} component
+	   * @param {string} key The key in the state that you should update.
+	   * @return {function} callback of 1 argument which calls setState() with
+	   *                    the provided keyName and callback argument.
+	   */
+	  createStateKeySetter: function (component, key) {
+	    // Memoize the setters.
+	    var cache = component.__keySetters || (component.__keySetters = {});
+	    return cache[key] || (cache[key] = createStateKeySetter(component, key));
+	  }
+	};
+
+	function createStateKeySetter(component, key) {
+	  // Partial state is allocated outside of the function closure so it can be
+	  // reused with every call, avoiding memory allocation when this function
+	  // is called.
+	  var partialState = {};
+	  return function stateKeySetter(value) {
+	    partialState[key] = value;
+	    component.setState(partialState);
+	  };
+	}
+
+	ReactStateSetters.Mixin = {
+	  /**
+	   * Returns a function that calls the provided function, and uses the result
+	   * of that to set the component's state.
+	   *
+	   * For example, these statements are equivalent:
+	   *
+	   *   this.setState({x: 1});
+	   *   this.createStateSetter(function(xValue) {
+	   *     return {x: xValue};
+	   *   })(1);
+	   *
+	   * @param {function} funcReturningState Returned callback uses this to
+	   *                                      determine how to update state.
+	   * @return {function} callback that when invoked uses funcReturningState to
+	   *                    determined the object literal to setState.
+	   */
+	  createStateSetter: function (funcReturningState) {
+	    return ReactStateSetters.createStateSetter(this, funcReturningState);
+	  },
+
+	  /**
+	   * Returns a single-argument callback that can be used to update a single
+	   * key in the component's state.
+	   *
+	   * For example, these statements are equivalent:
+	   *
+	   *   this.setState({x: 1});
+	   *   this.createStateKeySetter('x')(1);
+	   *
+	   * Note: this is memoized function, which makes it inexpensive to call.
+	   *
+	   * @param {string} key The key in the state that you should update.
+	   * @return {function} callback of 1 argument which calls setState() with
+	   *                    the provided keyName and callback argument.
+	   */
+	  createStateKeySetter: function (key) {
+	    return ReactStateSetters.createStateKeySetter(this, key);
+	  }
+	};
+
+	module.exports = ReactStateSetters;
+
+/***/ },
+/* 287 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
-	exports.getProvinces = getProvinces;
-	exports.provinceReset = provinceReset;
-	exports.getCities = getCities;
-	exports.cityReset = cityReset;
-	exports.getDistricts = getDistricts;
-	exports.getDeliveryShops = getDeliveryShops;
-	exports.districtReset = districtReset;
+	exports['default'] = Area;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -31806,90 +32318,113 @@
 
 	var _configUrl2 = _interopRequireDefault(_configUrl);
 
-	var GOT_PROVINCES = 'GOT_PROVINCES';
-	exports.GOT_PROVINCES = GOT_PROVINCES;
-	var PROVINCE_RESET = 'PROVINCE_RESET';
-	exports.PROVINCE_RESET = PROVINCE_RESET;
-	var GOT_CITIES = 'GOT_CITIES';
-	exports.GOT_CITIES = GOT_CITIES;
-	var CITY_RESET = 'CITY_RESET';
-	exports.CITY_RESET = CITY_RESET;
-	var GOT_DISTRICTS = 'GOT_DISTRICTS';
-	exports.GOT_DISTRICTS = GOT_DISTRICTS;
-	var GOT_AREA_FAIL = 'GOT_AREA_FAIL';
+	var _actionsAction_types = __webpack_require__(288);
 
-	exports.GOT_AREA_FAIL = GOT_AREA_FAIL;
+	function Area() {
+	  var ActionTypes = arguments.length <= 0 || arguments[0] === undefined ? _actionsAction_types.AreaActionTypes1 : arguments[0];
 
-	function getProvinces() {
-	  return _resolve(_configUrl2['default'].provinces.toString(), GOT_PROVINCES);
-	  // return {
-	  //   type: GOT_PROVINCES,
-	  //   data: {1: '广东省', 2: '湖北省', 3: '湖南省'}
-	  // }
-	}
-
-	function provinceReset() {
-	  return {
-	    type: PROVINCE_RESET
-	  };
-	}
-
-	function getCities(province_id) {
-	  return _resolve(_configUrl2['default'].cities.toString(province_id), GOT_CITIES);
-	  // return {
-	  //   type: GOT_CITIES,
-	  //   data: {1: '深圳市', 2: '武汉市', 3: '长沙市'}
-	  // }
-	}
-
-	function cityReset() {
-	  return {
-	    type: CITY_RESET
-	  };
-	}
-
-	function getDistricts(city_id) {
-	  return _resolve(_configUrl2['default'].districts.toString(city_id), GOT_DISTRICTS);
-	  // return {
-	  //   type: GOT_DISTRICTS,
-	  //   data: {1: '南山区', 2: '宝安区', 3: '福田区'}
-	  // }
-	}
-
-	function _resolve(url, signal) {
-	  return function (dispatch) {
-	    return (0, _utilsRequest.get)(url).done(function (json) {
-	      dispatch({
-	        type: signal,
-	        data: json
+	  function _resolve(url, signal) {
+	    return function (dispatch) {
+	      return (0, _utilsRequest.get)(url).done(function (json) {
+	        dispatch({
+	          type: signal,
+	          data: json
+	        });
+	      }).fail(function (msg) {
+	        dispatch({
+	          type: ActionTypes.GOT_AREA_FAIL,
+	          msg: msg
+	        });
 	      });
-	    }).fail(function (msg) {
-	      dispatch({
-	        type: GOT_AREA_FAIL,
-	        msg: msg
-	      });
-	    });
+	    };
 	  };
-	}
-
-	var GOT_DELIVERY_SHOPS = 'GOT_DELIVERY_SHOPS';
-	exports.GOT_DELIVERY_SHOPS = GOT_DELIVERY_SHOPS;
-
-	function getDeliveryShops(district_id) {
-	  return (0, _utilsRequest.GET)(_configUrl2['default'].shops.toString(district_id), null, GOT_DELIVERY_SHOPS);
-	}
-
-	var DISTRICT_RESET = 'DISTRICT_RESET';exports.DISTRICT_RESET = DISTRICT_RESET;
-	//清空shop
-
-	function districtReset() {
 	  return {
-	    type: DISTRICT_RESET
+	    getProvinces: function getProvinces() {
+	      return _resolve(_configUrl2['default'].provinces.toString(), ActionTypes.GOT_PROVINCES);
+	      // return {
+	      //   type: ActionTypes.GOT_PROVINCES,
+	      //   data: {1: '广东省', 2: '湖北省', 3: '湖南省'}
+	      // }
+	    },
+
+	    provinceReset: function provinceReset() {
+	      return {
+	        type: ActionTypes.PROVINCE_RESET
+	      };
+	    },
+
+	    getCities: function getCities(province_id) {
+	      return _resolve(_configUrl2['default'].cities.toString(province_id), ActionTypes.GOT_CITIES);
+	      // return {
+	      //   type: ActionTypes.GOT_CITIES,
+	      //   data: {1: '深圳市', 2: '武汉市', 3: '长沙市'}
+	      // }
+	    },
+
+	    cityReset: function cityReset() {
+	      return {
+	        type: ActionTypes.CITY_RESET
+	      };
+	    },
+
+	    getDistricts: function getDistricts(city_id) {
+	      return _resolve(_configUrl2['default'].districts.toString(city_id), ActionTypes.GOT_DISTRICTS);
+	      // return {
+	      //   type: ActionTypes.GOT_DISTRICTS,
+	      //   data: {1: '南山区', 2: '宝安区', 3: '福田区'}
+	      // }
+	    },
+
+	    getDeliveryShops: function getDeliveryShops(district_id) {
+	      return (0, _utilsRequest.GET)(_configUrl2['default'].shops.toString(district_id), null, ActionTypes.GOT_DELIVERY_SHOPS);
+	    },
+
+	    //清空shop
+	    districtReset: function districtReset() {
+	      return {
+	        type: ActionTypes.DISTRICT_RESET
+	      };
+	    }
 	  };
 	}
+
+	module.exports = exports['default'];
 
 /***/ },
-/* 284 */
+/* 288 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports['default'] = {
+	  AreaActionTypes1: {
+	    GOT_PROVINCES: 'GOT_PROVINCES',
+	    PROVINCE_RESET: 'PROVINCE_RESET',
+	    GOT_CITIES: 'GOT_CITIES',
+	    CITY_RESET: 'CITY_RESET',
+	    GOT_DISTRICTS: 'GOT_DISTRICTS',
+	    GOT_AREA_FAIL: 'GOT_AREA_FAIL',
+	    GOT_DELIVERY_SHOPS: 'GOT_DELIVERY_SHOPS',
+	    DISTRICT_RESET: 'DISTRICT_RESET'
+	  },
+	  AreaActionTypes2: {
+	    GOT_PROVINCES: 'GOT_PROVINCES_2',
+	    PROVINCE_RESET: 'PROVINCE_RESET_2',
+	    GOT_CITIES: 'GOT_CITIES_2',
+	    CITY_RESET: 'CITY_RESET_2',
+	    GOT_DISTRICTS: 'GOT_DISTRICTS_2',
+	    GOT_AREA_FAIL: 'GOT_AREA_FAIL_2',
+	    GOT_DELIVERY_SHOPS: 'GOT_DELIVERY_SHOP_2S',
+	    DISTRICT_RESET: 'DISTRICT_RESET_2'
+	  }
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31907,6 +32442,7 @@
 	exports.checkAllOrders = checkAllOrders;
 	exports.checkOrder = checkOrder;
 	exports.activeOrder = activeOrder;
+	exports.showProductsDetail = showProductsDetail;
 	exports.getOrderOptRecord = getOrderOptRecord;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -32061,6 +32597,15 @@
 	  }, GET_ORDER_DETAIL_PRODUCTS);*/
 	}
 
+	var SHOW_PRODUCTS_DETAIL = 'SHOW_PRODUCTS_DETAIL';exports.SHOW_PRODUCTS_DETAIL = SHOW_PRODUCTS_DETAIL;
+	//允许订单对应的产品详情显示出来
+
+	function showProductsDetail() {
+	  return {
+	    type: SHOW_PRODUCTS_DETAIL
+	  };
+	}
+
 	var GET_ORDER_OPT_RECORD = 'GET_ORDER_OPT_RECORD';
 	exports.GET_ORDER_OPT_RECORD = GET_ORDER_OPT_RECORD;
 
@@ -32118,7 +32663,49 @@
 	}
 
 /***/ },
-/* 285 */
+/* 290 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.cancelOrder = cancelOrder;
+	exports.orderException = orderException;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _utilsRequest = __webpack_require__(234);
+
+	//Promise
+
+	var _configUrl = __webpack_require__(239);
+
+	var _configUrl2 = _interopRequireDefault(_configUrl);
+
+	var CANCEL_ORDER = 'CANCEL_ORDER';
+	exports.CANCEL_ORDER = CANCEL_ORDER;
+
+	function cancelOrder(order_id, data) {
+	  debugger;
+	  return (0, _utilsRequest.TEST)(null, [{ type: CANCEL_ORDER, key: 0 }, //立即派发
+	  { type: CANCEL_ORDER, key: 1 } //2000毫秒后派发
+	  ], 2000);
+	}
+
+	var ORDER_EXCEPTION = 'ORDER_EXCEPTION';
+	exports.ORDER_EXCEPTION = ORDER_EXCEPTION;
+
+	function orderException(order_id, data) {
+	  debugger;
+	  return (0, _utilsRequest.TEST)(null, [{ type: ORDER_EXCEPTION, key: 0 }, //立即派发
+	  { type: ORDER_EXCEPTION, key: 1 } //2000毫秒后派发
+	  ], 2000);
+	}
+
+/***/ },
+/* 291 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32150,8 +32737,6 @@
 	var _configUrl2 = _interopRequireDefault(_configUrl);
 
 	var _reduxForm = __webpack_require__(241);
-
-	var _actionsArea = __webpack_require__(283);
 
 	var GOT_ORDER_SRCS = 'GOT_ORDER_SRCS';
 	exports.GOT_ORDER_SRCS = GOT_ORDER_SRCS;
@@ -32395,7 +32980,7 @@
 	}
 
 /***/ },
-/* 286 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32489,7 +33074,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 287 */
+/* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32533,7 +33118,7 @@
 	module.exports = Select;
 
 /***/ },
-/* 288 */
+/* 294 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -32787,7 +33372,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 289 */
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32880,7 +33465,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 290 */
+/* 296 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32967,7 +33552,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 291 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -33071,7 +33656,7 @@
 	}
 
 /***/ },
-/* 292 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -33112,12 +33697,13 @@
 	      var size = _props.size;
 	      var title = _props.title;
 	      var submitting = _props.submitting;
+	      var loading = _props.loading;
 	      var onConfirm = _props.onConfirm;
 	      var footer = _props.footer;
 
 	      return _react2["default"].createElement(
 	        "div",
-	        { ref: "__modal", "aria-hidden": "false", "aria-labelledby": "myModalLabel", role: "dialog", className: "modal fade" },
+	        { ref: "__modal", "aria-hidden": "false", "aria-labelledby": "myModalLabel", role: "dialog", className: "modal " + (loading ? 'loading' : '') + " fade" },
 	        _react2["default"].createElement("div", { className: "modal-backdrop fade" }),
 	        _react2["default"].createElement(
 	          "div",
@@ -33142,6 +33728,11 @@
 	            _react2["default"].createElement(
 	              "div",
 	              { className: "modal-body" },
+	              loading && _react2["default"].createElement(
+	                "div",
+	                { className: "loading-wrap text-center" },
+	                _react2["default"].createElement("i", { className: "fa fa-spin fa-lg fa-spinner" })
+	              ),
 	              this.props.children
 	            ),
 	            footer ? _react2["default"].createElement(
@@ -33156,7 +33747,7 @@
 	                "button",
 	                {
 	                  onClick: onConfirm,
-	                  disabled: submitting,
+	                  disabled: submitting || loading,
 	                  "data-submitting": submitting, type: "button", className: "btn btn-sm btn-theme" },
 	                "确定"
 	              )
@@ -33206,7 +33797,7 @@
 	//是否需要 modal-footer
 
 /***/ },
-/* 293 */
+/* 299 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -33218,7 +33809,7 @@
 	var root = window.xfxb.root;
 	var config = {
 	  noty: {
-	    css: 'http://cdn.bootcss.com/animate.css/3.2.3/animate.min.css',
+	    css: '/plugins/animate/animate.min.css',
 	    js: root + 'lib/jquery.noty.packaged.min.js'
 	  },
 	  chinese_py: {
@@ -33258,7 +33849,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 294 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -33440,7 +34031,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 295 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33465,7 +34056,7 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _commonLoading = __webpack_require__(291);
+	var _commonLoading = __webpack_require__(297);
 
 	var DetailModal = (function (_Component) {
 	  _inherits(DetailModal, _Component);
@@ -33806,7 +34397,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 296 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33814,6 +34405,244 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactAddonsLinkedStateMixin = __webpack_require__(283);
+
+	var _reactAddonsLinkedStateMixin2 = _interopRequireDefault(_reactAddonsLinkedStateMixin);
+
+	var _commonDatepicker = __webpack_require__(292);
+
+	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
+
+	var _commonSelect = __webpack_require__(293);
+
+	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+
+	var _commonStd_modal = __webpack_require__(298);
+
+	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
+
+	var _commonRadio_group = __webpack_require__(303);
+
+	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var AlterDeliveryModal = _react2['default'].createClass({
+	  displayName: 'AlterDeliveryModal',
+
+	  propTypes: {
+	    actions: _react.PropTypes.object.isRequired,
+	    provinces: _react.PropTypes.array.isRequired
+	  },
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+	    if (nextProps.order //拿到订单详细数据
+	     && !nextProps.show_products_detail //非普通点击查询(编辑)
+	    ) {
+	        var _nextProps$order = nextProps.order;
+	        var delivery_type = _nextProps$order.delivery_type;
+	        var delivery_time = _nextProps$order.delivery_time;
+	        var province_id = _nextProps$order.province_id;
+	        var city_id = _nextProps$order.city_id;
+	        var regionalism_id = _nextProps$order.regionalism_id;
+	        var recipient_address = _nextProps$order.recipient_address;
+	        var delivery_id = _nextProps$order.delivery_id;
+
+	        delivery_time = delivery_time.split(' ');
+	        this.setState({
+	          delivery_type: delivery_type,
+	          delivery_date: delivery_time[0],
+	          delivery_hour: delivery_time[1],
+	          province_id: province_id,
+	          city_id: city_id,
+	          regionalism_id: regionalism_id,
+	          recipient_address: recipient_address,
+	          delivery_id: delivery_id
+	        });
+
+	        // var { getProvinces, getCities, getDistricts, getDeliveryShops, getDeliveryStations } = this.props.actions;
+	        // setTimeout(function(){
+	        //   $.when(
+	        //     getProvinces(),
+	        //     getCities(province_id),
+	        //     getDistricts(city_id),
+	        //     getDeliveryShops(regionalism_id),
+	        //     getDeliveryStations()
+	        //   ).done(function(){
+	        //     this.setState({loading: false})
+	        //   }.bind(this))
+	        // }.bind(this), 4000)
+	      }
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      delivery_type: 'DELIVERY',
+	      delivery_date: '',
+	      delivery_hour: '',
+	      province_id: undefined,
+	      city_id: undefined,
+	      regionalism_id: undefined,
+	      recipient_address: '',
+	      delivery_id: undefined,
+
+	      loading: true,
+
+	      all_delivery_hours: _configAppConfig.DELIVERY_TIME_MAP.map(function (n) {
+	        return { id: n, text: n };
+	      })
+	    };
+	  },
+	  render: function render() {
+	    var _state = this.state;
+	    var delivery_type = _state.delivery_type;
+	    var delivery_date = _state.delivery_date;
+	    var delivery_hour = _state.delivery_hour;
+	    var recipient_address = _state.recipient_address;
+	    var all_delivery_hours = _state.all_delivery_hours;
+	    var delivery_id = _state.delivery_id;
+	    var loading = _state.loading;
+	    var _props = this.props;
+	    var delivery_shops = _props.delivery_shops;
+	    var delivery_stations = _props.delivery_stations;
+	    var provinces = _props.provinces;
+	    var cities = _props.cities;
+	    var districts = _props.districts;
+	    var _props$order = _props.order;
+	    var order = _props$order === undefined ? {} : _props$order;
+
+	    var _order_status = _configAppConfig.order_status[order && order.order_status];
+	    return _react2['default'].createElement(
+	      _commonStd_modal2['default'],
+	      { submitting: this.props.submitting, loading: loading, onCancel: this.hideCallback, title: '修改配送', ref: 'modal' },
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group form-inline' },
+	        _order_status && _order_status.key > 30 ? _react2['default'].createElement(
+	          'span',
+	          { className: 'gray' },
+	          '订单尚未生产，可直接更改！'
+	        ) : _react2['default'].createElement(
+	          'span',
+	          { className: 'text-danger' },
+	          '订单已转换，请与配送站确认是否能修改信息再提交！'
+	        )
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group form-inline' },
+	        _react2['default'].createElement(
+	          'label',
+	          null,
+	          '　　配送方式：'
+	        ),
+	        _react2['default'].createElement(_commonRadio_group2['default'], {
+	          value: delivery_type,
+	          className: 'inline-block',
+	          radios: [{ value: _configAppConfig.DELIVERY_TO_HOME, text: '配送上门' }, { value: _configAppConfig.DELIVERY_TO_STORE, text: '门店自提' }],
+	          onChange: this.onDeliveryTypeChange,
+	          name: 'delivery_type'
+	        })
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group form-inline' },
+	        _react2['default'].createElement(
+	          'label',
+	          null,
+	          '　　配送时间：'
+	        ),
+	        _react2['default'].createElement(_commonDatepicker2['default'], { value: delivery_date, onChange: this.onDeliveryDateChange }),
+	        ' ',
+	        _react2['default'].createElement(_commonSelect2['default'], { valueLink: this.linkState('delivery_hour'), options: all_delivery_hours, className: 'input-xs' })
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group form-inline' },
+	        _react2['default'].createElement(
+	          'label',
+	          null,
+	          '修改配送地址：'
+	        ),
+	        _react2['default'].createElement(_commonSelect2['default'], { ref: 'province', value: this.state.province_id, onChange: this.onProvinceChange, options: provinces }),
+	        ' ',
+	        _react2['default'].createElement(_commonSelect2['default'], { ref: 'city', value: this.state.city_id, onChange: this.onCityChange, options: cities }),
+	        ' ',
+	        _react2['default'].createElement(_commonSelect2['default'], { ref: 'district', value: this.state.regionalism_id, onChange: this.onDistrictChange, options: districts }),
+	        ' ',
+	        delivery_type == _configAppConfig.DELIVERY_TO_HOME ? _react2['default'].createElement('input', { ref: 'recipient_address', valueLink: this.linkState('recipient_address'), className: 'form-control input-xs', type: 'text' }) : _react2['default'].createElement(_commonSelect2['default'], { ref: 'shop', valueLink: this.linkState('recipient_address'), options: delivery_shops })
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group form-inline' },
+	        _react2['default'].createElement(
+	          'label',
+	          null,
+	          '修改配送中心：'
+	        ),
+	        _react2['default'].createElement(_commonSelect2['default'], { valueLink: this.linkState('delivery_id'), options: delivery_stations, className: 'input-xs' })
+	      )
+	    );
+	  },
+	  mixins: [_reactAddonsLinkedStateMixin2['default']],
+	  componentDidMount: function componentDidMount() {},
+	  onDeliveryTypeChange: function onDeliveryTypeChange(delivery_type) {
+	    this.setState({ delivery_type: delivery_type });
+	  },
+	  onDeliveryDateChange: function onDeliveryDateChange(delivery_date) {
+	    this.setState({ delivery_date: delivery_date });
+	  },
+	  onProvinceChange: function onProvinceChange(e) {
+	    var value = e.target.value;
+
+	    this.props.actions.provinceReset();
+	    this.setState({ province_id: e.target.value });
+	    if (value != this.refs.province.props['default-value']) this.props.actions.getCities(value);
+	  },
+	  onCityChange: function onCityChange(e) {
+	    var value = e.target.value;
+
+	    this.props.actions.cityReset();
+	    this.setState({ city_id: e.target.value });
+	    if (value != this.refs.city.props['default-value']) this.props.actions.getDistricts(value);
+	  },
+	  onDistrictChange: function onDistrictChange(e) {
+	    var value = e.target.value;
+
+	    this.props.actions.districtReset();
+	    this.setState({ regionalism_id: e.target.value });
+	    if (value != this.refs.district.props['default-value']) this.props.actions.getDeliveryShops(value);
+	  },
+	  show: function show() {
+	    this.refs.modal.show();
+	  },
+	  hideCallback: function hideCallback() {
+	    this.setState(this.getInitialState());
+	    // this.refs.modal.hide();
+	  }
+	});
+
+	exports['default'] = AlterDeliveryModal;
+	module.exports = exports['default'];
+
+/***/ },
+/* 303 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -33829,175 +34658,79 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _commonDatepicker = __webpack_require__(286);
+	var RadioGroup = (function (_Component) {
+	  _inherits(RadioGroup, _Component);
 
-	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
+	  function RadioGroup(props) {
+	    _classCallCheck(this, RadioGroup);
 
-	var _commonSelect = __webpack_require__(287);
-
-	var _commonSelect2 = _interopRequireDefault(_commonSelect);
-
-	var AlterStationModal = (function (_Component) {
-	  _inherits(AlterStationModal, _Component);
-
-	  function AlterStationModal(props) {
-	    _classCallCheck(this, AlterStationModal);
-
-	    _get(Object.getPrototypeOf(AlterStationModal.prototype), 'constructor', this).call(this, props);
-	    this.show = this.show.bind(this);
-	    this.hide = this.hide.bind(this);
+	    _get(Object.getPrototypeOf(RadioGroup.prototype), 'constructor', this).call(this, props);
+	    this.onCheck = this.onCheck.bind(this);
 	  }
 
-	  // DetailModal.PropTypes = {
-	  //   dispatch: PropTypes.func.isRequired,
-	  // }
-
-	  _createClass(AlterStationModal, [{
-	    key: 'componentWillReceiveProps',
-	    value: function componentWillReceiveProps(nextProps) {
-	      if (nextProps['data-id'] != this.props['data-id']) {
-	        this.show();
-	      }
-	    }
-	  }, {
+	  _createClass(RadioGroup, [{
 	    key: 'render',
 	    value: function render() {
+	      var _this = this;
+
+	      var _props = this.props;
+	      var radios = _props.radios;
+	      var space = _props.space;
+	      var value = _props.value;
+	      var vertical = _props.vertical;
+	      var name = _props.name;
+
+	      var content = radios.map(function (n, i) {
+	        var item = _react2['default'].createElement(
+	          'label',
+	          { style: { marginRight: space }, key: n.value },
+	          _react2['default'].createElement('input', { value: n.value, checked: _this.props.value == n.value, name: name, onChange: _this.onCheck, type: 'radio' }),
+	          ' ' + n.text
+	        );
+	        return vertical ? _react2['default'].createElement(
+	          'div',
+	          { key: n.value },
+	          item
+	        ) : item;
+	      });
+
+	      //onChange少不了，有bug
 	      return _react2['default'].createElement(
 	        'div',
-	        { ref: 'modal', 'aria-hidden': 'false', 'aria-labelledby': 'myModalLabel', role: 'dialog', className: 'modal fade' },
-	        _react2['default'].createElement('div', { className: 'modal-backdrop fade' }),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'modal-dialog' },
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'modal-content' },
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'modal-header' },
-	              _react2['default'].createElement(
-	                'button',
-	                { onClick: this.hide, 'aria-hidden': 'true', 'data-dismiss': 'modal', className: 'close', type: 'button' },
-	                '×'
-	              ),
-	              _react2['default'].createElement(
-	                'h4',
-	                { className: 'modal-title' },
-	                '修改配送'
-	              )
-	            ),
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'modal-body strong-label' },
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'span',
-	                  { className: 'gray' },
-	                  '订单尚未生产，可直接更改！'
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '　　配送方式：'
-	                ),
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  _react2['default'].createElement('input', { type: 'radio', checked: true, name: 'delivery_type' }),
-	                  ' 配送上门'
-	                ),
-	                '　',
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  _react2['default'].createElement('input', { type: 'radio', checked: false, name: 'delivery_type' }),
-	                  ' 门店自提'
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '　　配送时间：'
-	                ),
-	                _react2['default'].createElement(_commonDatepicker2['default'], null),
-	                ' ',
-	                _react2['default'].createElement(_commonSelect2['default'], { options: [], className: 'input-xs' })
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '修改配送地址：'
-	                ),
-	                _react2['default'].createElement(_commonSelect2['default'], { options: [], className: 'input-xs' }),
-	                ' ',
-	                _react2['default'].createElement('input', { className: 'form-control input-xs' })
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '修改配送时间：'
-	                ),
-	                _react2['default'].createElement(_commonSelect2['default'], { options: [], className: 'input-xs' })
-	              )
-	            ),
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'modal-footer' },
-	              _react2['default'].createElement(
-	                'button',
-	                { onClick: this.onCancel, type: 'button', className: 'btn btn-sm btn-default', 'data-dismiss': 'modal' },
-	                '取消'
-	              ),
-	              _react2['default'].createElement(
-	                'button',
-	                { onClick: this.onConfirm, type: 'button', className: 'btn btn-sm btn-theme' },
-	                '确定'
-	              )
-	            )
-	          )
-	        )
+	        _extends({}, this.props, { onChange: function () {} }),
+	        content
 	      );
 	    }
 	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      this.show();
-	    }
-	  }, {
-	    key: 'show',
-	    value: function show() {
-	      $(this.refs.modal).modal('show');
-	    }
-	  }, {
-	    key: 'hide',
-	    value: function hide() {
-	      $(this.refs.modal).modal('hide');
+	    key: 'onCheck',
+	    value: function onCheck(e) {
+	      this.props.onChange(e.target.value);
 	    }
 	  }]);
 
-	  return AlterStationModal;
+	  return RadioGroup;
 	})(_react.Component);
 
-	exports['default'] = AlterStationModal;
+	exports['default'] = RadioGroup;
+
+	RadioGroup.defaultProps = {
+	  space: 16,
+	  vertical: false
+	};
+
+	RadioGroup.PropTypes = {
+	  name: _react.PropTypes.string.isRequired,
+	  value: _react.PropTypes.string.isRequired,
+	  radios: _react.PropTypes.arrayOf(_react.PropTypes.shape({
+	    value: _react.PropTypes.string.isRequired,
+	    text: _react.PropTypes.string.isRequired
+	  })).isRequired, //得按顺序，所以得用数组
+	  onChange: _react.PropTypes.func.isRequired
+	};
 	module.exports = exports['default'];
 
 /***/ },
-/* 297 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34024,7 +34757,7 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _commonSelect = __webpack_require__(287);
+	var _commonSelect = __webpack_require__(293);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
@@ -34097,7 +34830,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 298 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34130,35 +34863,35 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _actionsArea = __webpack_require__(283);
+	var _actionsArea = __webpack_require__(287);
 
-	var AreaActions = _interopRequireWildcard(_actionsArea);
+	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
-	var _actionsOrder_manage_form = __webpack_require__(285);
+	var _actionsOrder_manage_form = __webpack_require__(291);
 
 	var OrderFormActions = _interopRequireWildcard(_actionsOrder_manage_form);
 
-	var _commonDatepicker = __webpack_require__(286);
+	var _commonDatepicker = __webpack_require__(292);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonAlert = __webpack_require__(299);
+	var _commonAlert = __webpack_require__(306);
 
 	var _commonAlert2 = _interopRequireDefault(_commonAlert);
 
-	var _commonLine_router = __webpack_require__(289);
+	var _commonLine_router = __webpack_require__(295);
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _manage_order_form_create = __webpack_require__(300);
+	var _manage_order_form_create = __webpack_require__(307);
 
 	var _manage_order_form_create2 = _interopRequireDefault(_manage_order_form_create);
 
-	var _manage_order_form_edit = __webpack_require__(304);
+	var _manage_order_form_edit = __webpack_require__(311);
 
 	var _manage_order_form_edit2 = _interopRequireDefault(_manage_order_form_edit);
 
-	var _manage_order_products = __webpack_require__(305);
+	var _manage_order_products = __webpack_require__(312);
 
 	var _manage_order_products2 = _interopRequireDefault(_manage_order_products);
 
@@ -34209,7 +34942,7 @@
 
 	      var editable = !!(params && params.id);
 
-	      var actions = _extends({}, (0, _redux.bindActionCreators)(AreaActions, dispatch), (0, _redux.bindActionCreators)(OrderFormActions, dispatch));
+	      var actions = _extends({}, (0, _redux.bindActionCreators)((0, _actionsArea2['default'])(), dispatch), (0, _redux.bindActionCreators)(OrderFormActions, dispatch));
 	      return _react2['default'].createElement(
 	        'div',
 	        { className: 'order-manage' },
@@ -34287,7 +35020,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 299 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -34348,7 +35081,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 300 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34359,7 +35092,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _manage_order_form = __webpack_require__(301);
+	var _manage_order_form = __webpack_require__(308);
 
 	var _manage_order_form2 = _interopRequireDefault(_manage_order_form);
 
@@ -34377,7 +35110,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 301 */
+/* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34408,23 +35141,23 @@
 
 	var _reduxForm = __webpack_require__(241);
 
-	var _utilsMyMap = __webpack_require__(302);
+	var _utilsMyMap = __webpack_require__(309);
 
 	var _utilsMyMap2 = _interopRequireDefault(_utilsMyMap);
 
-	var _commonDatepicker = __webpack_require__(286);
+	var _commonDatepicker = __webpack_require__(292);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonSelect = __webpack_require__(287);
+	var _commonSelect = __webpack_require__(293);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonPagination = __webpack_require__(288);
+	var _commonPagination = __webpack_require__(294);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _utilsLazy_load = __webpack_require__(293);
+	var _utilsLazy_load = __webpack_require__(299);
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
@@ -34436,7 +35169,7 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _manage_history_orders = __webpack_require__(303);
+	var _manage_history_orders = __webpack_require__(310);
 
 	var _manage_history_orders2 = _interopRequireDefault(_manage_history_orders);
 
@@ -35023,7 +35756,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 302 */
+/* 309 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -35062,7 +35795,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 303 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35089,19 +35822,19 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _actionsOrders = __webpack_require__(284);
+	var _actionsOrders = __webpack_require__(289);
 
 	var OrderManageActions = _interopRequireWildcard(_actionsOrders);
 
-	var _commonPagination = __webpack_require__(288);
+	var _commonPagination = __webpack_require__(294);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _commonStd_modal = __webpack_require__(292);
+	var _commonStd_modal = __webpack_require__(298);
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
-	var _commonLoading = __webpack_require__(291);
+	var _commonLoading = __webpack_require__(297);
 
 	var _configAppConfig = __webpack_require__(157);
 
@@ -35109,7 +35842,7 @@
 
 	var _utilsIndex = __webpack_require__(160);
 
-	var _commonOrder_products_detail = __webpack_require__(294);
+	var _commonOrder_products_detail = __webpack_require__(300);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
@@ -35453,7 +36186,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 304 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35464,7 +36197,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _manage_order_form = __webpack_require__(301);
+	var _manage_order_form = __webpack_require__(308);
 
 	var _manage_order_form2 = _interopRequireDefault(_manage_order_form);
 
@@ -35479,7 +36212,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 305 */
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -35511,11 +36244,11 @@
 
 	var _reactDom = __webpack_require__(154);
 
-	var _manage_add_products_modal = __webpack_require__(306);
+	var _manage_add_products_modal = __webpack_require__(313);
 
 	var _manage_add_products_modal2 = _interopRequireDefault(_manage_add_products_modal);
 
-	var _actionsOrder_products = __webpack_require__(309);
+	var _actionsOrder_products = __webpack_require__(316);
 
 	var ProductsActions = _interopRequireWildcard(_actionsOrder_products);
 
@@ -35797,7 +36530,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 306 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35824,25 +36557,25 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _commonSelect = __webpack_require__(287);
+	var _commonSelect = __webpack_require__(293);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonNumber_picker = __webpack_require__(307);
+	var _commonNumber_picker = __webpack_require__(314);
 
 	var _commonNumber_picker2 = _interopRequireDefault(_commonNumber_picker);
 
-	var _commonPagination = __webpack_require__(288);
+	var _commonPagination = __webpack_require__(294);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _commonSelect_group = __webpack_require__(308);
+	var _commonSelect_group = __webpack_require__(315);
 
 	var _commonSelect_group2 = _interopRequireDefault(_commonSelect_group);
 
-	var _commonLoading = __webpack_require__(291);
+	var _commonLoading = __webpack_require__(297);
 
-	var _actionsOrder_products = __webpack_require__(309);
+	var _actionsOrder_products = __webpack_require__(316);
 
 	var OrderProductsActions = _interopRequireWildcard(_actionsOrder_products);
 
@@ -36421,7 +37154,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 307 */
+/* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36506,7 +37239,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 308 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -36586,7 +37319,7 @@
 	module.exports = SelectGroup;
 
 /***/ },
-/* 309 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36743,7 +37476,7 @@
 	}
 
 /***/ },
-/* 310 */
+/* 317 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36778,27 +37511,27 @@
 
 	var _reduxForm = __webpack_require__(241);
 
-	var _commonDatepicker = __webpack_require__(286);
+	var _commonDatepicker = __webpack_require__(292);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonSelect = __webpack_require__(287);
+	var _commonSelect = __webpack_require__(293);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonPagination = __webpack_require__(288);
+	var _commonPagination = __webpack_require__(294);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _commonStd_modal = __webpack_require__(292);
+	var _commonStd_modal = __webpack_require__(298);
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
-	var _commonLine_router = __webpack_require__(289);
+	var _commonLine_router = __webpack_require__(295);
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _commonLoading = __webpack_require__(291);
+	var _commonLoading = __webpack_require__(297);
 
 	var _utilsIndex = __webpack_require__(160);
 
@@ -36808,27 +37541,27 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _utilsLazy_load = __webpack_require__(293);
+	var _utilsLazy_load = __webpack_require__(299);
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
-	var _commonOrder_products_detail = __webpack_require__(294);
+	var _commonOrder_products_detail = __webpack_require__(300);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(295);
+	var _commonOrder_detail_modal = __webpack_require__(301);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
-	var _actionsOrders = __webpack_require__(284);
+	var _actionsOrders = __webpack_require__(289);
 
 	var OrderActions = _interopRequireWildcard(_actionsOrders);
 
-	var _actionsArea = __webpack_require__(283);
+	var _actionsArea = __webpack_require__(287);
 
-	var AreaActions = _interopRequireWildcard(_actionsArea);
+	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
-	var _actionsDelivery_change = __webpack_require__(311);
+	var _actionsDelivery_change = __webpack_require__(318);
 
 	var ChangeActions = _interopRequireWildcard(_actionsDelivery_change);
 
@@ -36896,10 +37629,10 @@
 	          ' 开始时间',
 	          _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': begin_time, className: 'short-input' }),
 	          ' 配送时间',
-	          _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': end_time, className: 'short-input' }),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: this.state.delivery_stations, 'default-text': '选择配送中心', className: 'space' })),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), options: provinces, ref: 'province', 'default-text': '选择省份', className: 'space' })),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, city_id, { options: cities, 'default-text': '选择城市', ref: 'city', className: 'space' })),
+	          _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': end_time, className: 'short-input space-right' }),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: this.state.delivery_stations, 'default-text': '选择配送中心', className: 'space-right' })),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), options: provinces, ref: 'province', 'default-text': '选择省份', className: 'space-right' })),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, city_id, { options: cities, 'default-text': '选择城市', ref: 'city', className: 'space-right' })),
 	          _react2['default'].createElement(
 	            'button',
 	            { disabled: search_ing, 'data-submitting': search_ing, onClick: this.search.bind(this), className: 'btn btn-theme btn-xs' },
@@ -37065,11 +37798,7 @@
 	        _react2['default'].createElement(
 	          'td',
 	          null,
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'time' },
-	            props.updated_time
-	          )
+	          (0, _utilsIndex.parseTime)(props.updated_time)
 	        )
 	      );
 	    }
@@ -37316,7 +38045,7 @@
 
 	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 	function mapDispatchToProps(dispatch) {
-	  return (0, _redux.bindActionCreators)(_extends({}, OrderActions, AreaActions, ChangeActions), dispatch);
+	  return (0, _redux.bindActionCreators)(_extends({}, OrderActions, (0, _actionsArea2['default'])(), ChangeActions), dispatch);
 	}
 
 	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DeliverChangePannel);
@@ -37411,7 +38140,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 311 */
+/* 318 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37460,7 +38189,7 @@
 	}
 
 /***/ },
-/* 312 */
+/* 319 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37493,33 +38222,33 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _reactAddonsLinkedStateMixin = __webpack_require__(313);
+	var _reactAddonsLinkedStateMixin = __webpack_require__(283);
 
 	var _reactAddonsLinkedStateMixin2 = _interopRequireDefault(_reactAddonsLinkedStateMixin);
 
 	var _reduxForm = __webpack_require__(241);
 
-	var _commonDatepicker = __webpack_require__(286);
+	var _commonDatepicker = __webpack_require__(292);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonSelect = __webpack_require__(287);
+	var _commonSelect = __webpack_require__(293);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonPagination = __webpack_require__(288);
+	var _commonPagination = __webpack_require__(294);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _commonStd_modal = __webpack_require__(292);
+	var _commonStd_modal = __webpack_require__(298);
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
-	var _commonLine_router = __webpack_require__(289);
+	var _commonLine_router = __webpack_require__(295);
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _commonLoading = __webpack_require__(291);
+	var _commonLoading = __webpack_require__(297);
 
 	var _configAppConfig = __webpack_require__(157);
 
@@ -37527,37 +38256,37 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _utilsLazy_load = __webpack_require__(293);
+	var _utilsLazy_load = __webpack_require__(299);
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
 	var _utilsIndex = __webpack_require__(160);
 
-	var _actionsOrders = __webpack_require__(284);
+	var _actionsOrders = __webpack_require__(289);
 
 	var OrderActions = _interopRequireWildcard(_actionsOrders);
 
-	var _actionsArea = __webpack_require__(283);
+	var _actionsArea = __webpack_require__(287);
 
-	var AreaActions = _interopRequireWildcard(_actionsArea);
+	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
-	var _actionsDeliveryman = __webpack_require__(317);
+	var _actionsDeliveryman = __webpack_require__(320);
 
 	var DeliverymanActions = _interopRequireWildcard(_actionsDeliveryman);
 
-	var _actionsDelivery_manage = __webpack_require__(318);
+	var _actionsDelivery_manage = __webpack_require__(321);
 
 	var DeliveryManageActions = _interopRequireWildcard(_actionsDelivery_manage);
 
-	var _commonOrder_products_detail = __webpack_require__(294);
+	var _commonOrder_products_detail = __webpack_require__(300);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(295);
+	var _commonOrder_detail_modal = __webpack_require__(301);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
-	var _commonScan_modal = __webpack_require__(319);
+	var _commonScan_modal = __webpack_require__(322);
 
 	var _commonScan_modal2 = _interopRequireDefault(_commonScan_modal);
 
@@ -37635,12 +38364,12 @@
 	            ' 开始时间',
 	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': begin_time, className: 'short-input' }),
 	            ' 配送时间',
-	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': end_time, className: 'short-input' }),
-	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_type, { options: delivery_types, 'default-text': '选择配送方式', className: 'space' })),
-	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, print_status, { options: all_print_status, 'default-text': '是否打印', className: 'space' })),
-	            _react2['default'].createElement(_commonSelect2['default'], { 'default-text': '是否有祝福贺卡', className: 'space' }),
-	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), options: provinces, ref: 'province', 'default-text': '选择省份', className: 'space' })),
-	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, city_id, { options: cities, 'default-text': '选择城市', ref: 'city', className: 'space' })),
+	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': end_time, className: 'short-input space-right' }),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_type, { options: delivery_types, 'default-text': '选择配送方式', className: 'space-right' })),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, print_status, { options: all_print_status, 'default-text': '是否打印', className: 'space-right' })),
+	            _react2['default'].createElement(_commonSelect2['default'], { 'default-text': '是否有祝福贺卡', className: 'space-right' }),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), options: provinces, ref: 'province', 'default-text': '选择省份', className: 'space-right' })),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, city_id, { options: cities, 'default-text': '选择城市', ref: 'city', className: 'space-right' })),
 	            _react2['default'].createElement(
 	              'button',
 	              { onClick: this.search.bind(this), className: 'btn btn-theme btn-xs' },
@@ -38187,7 +38916,7 @@
 
 	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 	function mapDispatchToProps(dispatch) {
-	  return (0, _redux.bindActionCreators)(_extends({}, OrderActions, AreaActions, DeliverymanActions, DeliveryManageActions), dispatch);
+	  return (0, _redux.bindActionCreators)(_extends({}, OrderActions, (0, _actionsArea2['default'])(), DeliverymanActions, DeliveryManageActions), dispatch);
 	}
 
 	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DeliveryManagePannel);
@@ -38600,237 +39329,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 313 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__(314);
-
-/***/ },
-/* 314 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule LinkedStateMixin
-	 * @typechecks static-only
-	 */
-
-	'use strict';
-
-	var ReactLink = __webpack_require__(315);
-	var ReactStateSetters = __webpack_require__(316);
-
-	/**
-	 * A simple mixin around ReactLink.forState().
-	 */
-	var LinkedStateMixin = {
-	  /**
-	   * Create a ReactLink that's linked to part of this component's state. The
-	   * ReactLink will have the current value of this.state[key] and will call
-	   * setState() when a change is requested.
-	   *
-	   * @param {string} key state key to update. Note: you may want to use keyOf()
-	   * if you're using Google Closure Compiler advanced mode.
-	   * @return {ReactLink} ReactLink instance linking to the state.
-	   */
-	  linkState: function (key) {
-	    return new ReactLink(this.state[key], ReactStateSetters.createStateKeySetter(this, key));
-	  }
-	};
-
-	module.exports = LinkedStateMixin;
-
-/***/ },
-/* 315 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule ReactLink
-	 * @typechecks static-only
-	 */
-
-	'use strict';
-
-	/**
-	 * ReactLink encapsulates a common pattern in which a component wants to modify
-	 * a prop received from its parent. ReactLink allows the parent to pass down a
-	 * value coupled with a callback that, when invoked, expresses an intent to
-	 * modify that value. For example:
-	 *
-	 * React.createClass({
-	 *   getInitialState: function() {
-	 *     return {value: ''};
-	 *   },
-	 *   render: function() {
-	 *     var valueLink = new ReactLink(this.state.value, this._handleValueChange);
-	 *     return <input valueLink={valueLink} />;
-	 *   },
-	 *   _handleValueChange: function(newValue) {
-	 *     this.setState({value: newValue});
-	 *   }
-	 * });
-	 *
-	 * We have provided some sugary mixins to make the creation and
-	 * consumption of ReactLink easier; see LinkedValueUtils and LinkedStateMixin.
-	 */
-
-	var React = __webpack_require__(3);
-
-	/**
-	 * @param {*} value current value of the link
-	 * @param {function} requestChange callback to request a change
-	 */
-	function ReactLink(value, requestChange) {
-	  this.value = value;
-	  this.requestChange = requestChange;
-	}
-
-	/**
-	 * Creates a PropType that enforces the ReactLink API and optionally checks the
-	 * type of the value being passed inside the link. Example:
-	 *
-	 * MyComponent.propTypes = {
-	 *   tabIndexLink: ReactLink.PropTypes.link(React.PropTypes.number)
-	 * }
-	 */
-	function createLinkTypeChecker(linkType) {
-	  var shapes = {
-	    value: typeof linkType === 'undefined' ? React.PropTypes.any.isRequired : linkType.isRequired,
-	    requestChange: React.PropTypes.func.isRequired
-	  };
-	  return React.PropTypes.shape(shapes);
-	}
-
-	ReactLink.PropTypes = {
-	  link: createLinkTypeChecker
-	};
-
-	module.exports = ReactLink;
-
-/***/ },
-/* 316 */
-/***/ function(module, exports) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule ReactStateSetters
-	 */
-
-	'use strict';
-
-	var ReactStateSetters = {
-	  /**
-	   * Returns a function that calls the provided function, and uses the result
-	   * of that to set the component's state.
-	   *
-	   * @param {ReactCompositeComponent} component
-	   * @param {function} funcReturningState Returned callback uses this to
-	   *                                      determine how to update state.
-	   * @return {function} callback that when invoked uses funcReturningState to
-	   *                    determined the object literal to setState.
-	   */
-	  createStateSetter: function (component, funcReturningState) {
-	    return function (a, b, c, d, e, f) {
-	      var partialState = funcReturningState.call(component, a, b, c, d, e, f);
-	      if (partialState) {
-	        component.setState(partialState);
-	      }
-	    };
-	  },
-
-	  /**
-	   * Returns a single-argument callback that can be used to update a single
-	   * key in the component's state.
-	   *
-	   * Note: this is memoized function, which makes it inexpensive to call.
-	   *
-	   * @param {ReactCompositeComponent} component
-	   * @param {string} key The key in the state that you should update.
-	   * @return {function} callback of 1 argument which calls setState() with
-	   *                    the provided keyName and callback argument.
-	   */
-	  createStateKeySetter: function (component, key) {
-	    // Memoize the setters.
-	    var cache = component.__keySetters || (component.__keySetters = {});
-	    return cache[key] || (cache[key] = createStateKeySetter(component, key));
-	  }
-	};
-
-	function createStateKeySetter(component, key) {
-	  // Partial state is allocated outside of the function closure so it can be
-	  // reused with every call, avoiding memory allocation when this function
-	  // is called.
-	  var partialState = {};
-	  return function stateKeySetter(value) {
-	    partialState[key] = value;
-	    component.setState(partialState);
-	  };
-	}
-
-	ReactStateSetters.Mixin = {
-	  /**
-	   * Returns a function that calls the provided function, and uses the result
-	   * of that to set the component's state.
-	   *
-	   * For example, these statements are equivalent:
-	   *
-	   *   this.setState({x: 1});
-	   *   this.createStateSetter(function(xValue) {
-	   *     return {x: xValue};
-	   *   })(1);
-	   *
-	   * @param {function} funcReturningState Returned callback uses this to
-	   *                                      determine how to update state.
-	   * @return {function} callback that when invoked uses funcReturningState to
-	   *                    determined the object literal to setState.
-	   */
-	  createStateSetter: function (funcReturningState) {
-	    return ReactStateSetters.createStateSetter(this, funcReturningState);
-	  },
-
-	  /**
-	   * Returns a single-argument callback that can be used to update a single
-	   * key in the component's state.
-	   *
-	   * For example, these statements are equivalent:
-	   *
-	   *   this.setState({x: 1});
-	   *   this.createStateKeySetter('x')(1);
-	   *
-	   * Note: this is memoized function, which makes it inexpensive to call.
-	   *
-	   * @param {string} key The key in the state that you should update.
-	   * @return {function} callback of 1 argument which calls setState() with
-	   *                    the provided keyName and callback argument.
-	   */
-	  createStateKeySetter: function (key) {
-	    return ReactStateSetters.createStateKeySetter(this, key);
-	  }
-	};
-
-	module.exports = ReactStateSetters;
-
-/***/ },
-/* 317 */
+/* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38865,7 +39364,7 @@
 	}
 
 /***/ },
-/* 318 */
+/* 321 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38966,7 +39465,7 @@
 	}
 
 /***/ },
-/* 319 */
+/* 322 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38991,7 +39490,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _commonStd_modal = __webpack_require__(292);
+	var _commonStd_modal = __webpack_require__(298);
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
@@ -39173,7 +39672,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 320 */
+/* 323 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39206,39 +39705,39 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _reactAddonsLinkedStateMixin = __webpack_require__(313);
+	var _reactAddonsLinkedStateMixin = __webpack_require__(283);
 
 	var _reactAddonsLinkedStateMixin2 = _interopRequireDefault(_reactAddonsLinkedStateMixin);
 
 	var _reduxForm = __webpack_require__(241);
 
-	var _commonDatepicker = __webpack_require__(286);
+	var _commonDatepicker = __webpack_require__(292);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonSelect = __webpack_require__(287);
+	var _commonSelect = __webpack_require__(293);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonTime_input = __webpack_require__(321);
+	var _commonTime_input = __webpack_require__(324);
 
 	var _commonTime_input2 = _interopRequireDefault(_commonTime_input);
 
-	var _commonPagination = __webpack_require__(288);
+	var _commonPagination = __webpack_require__(294);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _commonLine_router = __webpack_require__(289);
+	var _commonLine_router = __webpack_require__(295);
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _commonStd_modal = __webpack_require__(292);
+	var _commonStd_modal = __webpack_require__(298);
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
-	var _commonLoading = __webpack_require__(291);
+	var _commonLoading = __webpack_require__(297);
 
-	var _commonRadio_group = __webpack_require__(322);
+	var _commonRadio_group = __webpack_require__(303);
 
 	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
 
@@ -39248,39 +39747,39 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _utilsLazy_load = __webpack_require__(293);
+	var _utilsLazy_load = __webpack_require__(299);
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
 	var _utilsIndex = __webpack_require__(160);
 
-	var _actionsOrders = __webpack_require__(284);
+	var _actionsOrders = __webpack_require__(289);
 
 	var OrderActions = _interopRequireWildcard(_actionsOrders);
 
-	var _actionsArea = __webpack_require__(283);
+	var _actionsArea = __webpack_require__(287);
 
-	var AreaActions = _interopRequireWildcard(_actionsArea);
+	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
-	var _actionsDeliveryman = __webpack_require__(317);
+	var _actionsDeliveryman = __webpack_require__(320);
 
 	var DeliverymanActions = _interopRequireWildcard(_actionsDeliveryman);
 
-	var _actionsDelivery_distribute = __webpack_require__(323);
+	var _actionsDelivery_distribute = __webpack_require__(325);
 
 	var DeliveryDistributeActions = _interopRequireWildcard(_actionsDelivery_distribute);
 
-	var _actionsOrder_manage_form = __webpack_require__(285);
+	var _actionsOrder_manage_form = __webpack_require__(291);
 
-	var _commonOrder_products_detail = __webpack_require__(294);
+	var _commonOrder_products_detail = __webpack_require__(300);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(295);
+	var _commonOrder_detail_modal = __webpack_require__(301);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
-	var _commonScan_modal = __webpack_require__(319);
+	var _commonScan_modal = __webpack_require__(322);
 
 	var _commonScan_modal2 = _interopRequireDefault(_commonScan_modal);
 
@@ -39356,22 +39855,22 @@
 	            ' 开始时间',
 	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': begin_time, className: 'short-input' }),
 	            ' 配送时间',
-	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': end_time, className: 'short-input' }),
-	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_modes_id, { options: all_pay_modes, 'default-text': '选择支付方式', className: 'space' })),
-	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, order_status, { options: all_order_status, 'default-text': '选择订单状态', className: 'space' })),
+	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': end_time, className: 'short-input space-right' }),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_modes_id, { options: all_pay_modes, 'default-text': '选择支付方式', className: 'space-right' })),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, order_status, { options: all_order_status, 'default-text': '选择订单状态', className: 'space-right' })),
 	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, deliveryman_id, { options: all_deliveryman.map(function (n) {
 	                return { id: n.deliveryman_id, text: n.deliveryman_name };
-	              }), 'default-text': '选择配送员', className: 'space' })),
-	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: delivery_stations, 'default-text': '选择配送中心', className: 'space' }))
+	              }), 'default-text': '选择配送员', className: 'space-right' })),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: delivery_stations, 'default-text': '选择配送中心', className: 'space-right' }))
 	          ),
 	          _react2['default'].createElement(
 	            'div',
 	            { className: 'form-group form-inline' },
 	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), options: provinces, ref: 'province', 'default-text': '选择省份', className: 'space-right' })),
-	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, city_id, { options: cities, 'default-text': '选择城市', ref: 'city', className: 'space' })),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, city_id, { options: cities, 'default-text': '选择城市', ref: 'city', className: 'space-right' })),
 	            _react2['default'].createElement(
 	              'button',
-	              { onClick: this.onScanHandler.bind(this), className: 'btn btn-theme btn-xs space' },
+	              { onClick: this.onScanHandler.bind(this), className: 'btn btn-theme btn-xs space-right' },
 	              '扫描'
 	            )
 	          )
@@ -39834,7 +40333,7 @@
 
 	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 	function mapDispatchToProps(dispatch) {
-	  return (0, _redux.bindActionCreators)(_extends({}, OrderActions, AreaActions, DeliverymanActions, DeliveryDistributeActions, { getPayModes: _actionsOrder_manage_form.getPayModes }), dispatch);
+	  return (0, _redux.bindActionCreators)(_extends({}, OrderActions, (0, _actionsArea2['default'])(), DeliverymanActions, DeliveryDistributeActions, { getPayModes: _actionsOrder_manage_form.getPayModes }), dispatch);
 	}
 
 	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DeliveryDistributePannel);
@@ -40200,7 +40699,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 321 */
+/* 324 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40317,101 +40816,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 322 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var RadioGroup = (function (_Component) {
-	  _inherits(RadioGroup, _Component);
-
-	  function RadioGroup(props) {
-	    _classCallCheck(this, RadioGroup);
-
-	    _get(Object.getPrototypeOf(RadioGroup.prototype), 'constructor', this).call(this, props);
-	    this.onCheck = this.onCheck.bind(this);
-	  }
-
-	  _createClass(RadioGroup, [{
-	    key: 'render',
-	    value: function render() {
-	      var _this = this;
-
-	      var _props = this.props;
-	      var radios = _props.radios;
-	      var space = _props.space;
-	      var value = _props.value;
-	      var vertical = _props.vertical;
-	      var name = _props.name;
-
-	      var content = radios.map(function (n, i) {
-	        var item = _react2['default'].createElement(
-	          'label',
-	          { style: { marginRight: space }, key: n.value },
-	          _react2['default'].createElement('input', { value: n.value, checked: _this.props.value == n.value, name: name, onChange: _this.onCheck, type: 'radio' }),
-	          ' ' + n.text
-	        );
-	        return vertical ? _react2['default'].createElement(
-	          'div',
-	          { key: n.value },
-	          item
-	        ) : item;
-	      });
-
-	      //onChange少不了，有bug
-	      return _react2['default'].createElement(
-	        'div',
-	        _extends({}, this.props, { onChange: function () {} }),
-	        content
-	      );
-	    }
-	  }, {
-	    key: 'onCheck',
-	    value: function onCheck(e) {
-	      this.props.onChange(e.target.value);
-	    }
-	  }]);
-
-	  return RadioGroup;
-	})(_react.Component);
-
-	exports['default'] = RadioGroup;
-
-	RadioGroup.defaultProps = {
-	  space: 16,
-	  vertical: false
-	};
-
-	RadioGroup.PropTypes = {
-	  name: _react.PropTypes.string.isRequired,
-	  value: _react.PropTypes.string.isRequired,
-	  radios: _react.PropTypes.array.isRequired, //得按顺序，所以得用数组
-	  onChange: _react.PropTypes.func.isRequired
-	};
-	module.exports = exports['default'];
-
-/***/ },
-/* 323 */
+/* 325 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40465,7 +40870,7 @@
 	}
 
 /***/ },
-/* 324 */
+/* 326 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40498,35 +40903,35 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _reactAddonsLinkedStateMixin = __webpack_require__(313);
+	var _reactAddonsLinkedStateMixin = __webpack_require__(283);
 
 	var _reactAddonsLinkedStateMixin2 = _interopRequireDefault(_reactAddonsLinkedStateMixin);
 
-	var _commonDatepicker = __webpack_require__(286);
+	var _commonDatepicker = __webpack_require__(292);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonSelect = __webpack_require__(287);
+	var _commonSelect = __webpack_require__(293);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonPagination = __webpack_require__(288);
+	var _commonPagination = __webpack_require__(294);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _commonStd_modal = __webpack_require__(292);
+	var _commonStd_modal = __webpack_require__(298);
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
-	var _commonLine_router = __webpack_require__(289);
+	var _commonLine_router = __webpack_require__(295);
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _commonRadio_group = __webpack_require__(322);
+	var _commonRadio_group = __webpack_require__(303);
 
 	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
 
-	var _commonLoading = __webpack_require__(291);
+	var _commonLoading = __webpack_require__(297);
 
 	var _utilsIndex = __webpack_require__(160);
 
@@ -40536,23 +40941,23 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _utilsLazy_load = __webpack_require__(293);
+	var _utilsLazy_load = __webpack_require__(299);
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
-	var _commonOrder_products_detail = __webpack_require__(294);
+	var _commonOrder_products_detail = __webpack_require__(300);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(295);
+	var _commonOrder_detail_modal = __webpack_require__(301);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
-	var _actionsOrders = __webpack_require__(284);
+	var _actionsOrders = __webpack_require__(289);
 
 	var OrderActions = _interopRequireWildcard(_actionsOrders);
 
-	var _actionsDelivery_print_review = __webpack_require__(325);
+	var _actionsDelivery_print_review = __webpack_require__(327);
 
 	var DeliverPrintReviewActions = _interopRequireWildcard(_actionsDelivery_print_review);
 
@@ -40606,10 +41011,10 @@
 	          ' 开始时间',
 	          _react2['default'].createElement(_commonDatepicker2['default'], { date: start_date, className: 'short-input' }),
 	          ' 结束时间',
-	          _react2['default'].createElement(_commonDatepicker2['default'], { date: delivery_date, className: 'short-input' }),
-	          _react2['default'].createElement(_commonSelect2['default'], { 'default-text': '是否处理', className: 'space' }),
-	          _react2['default'].createElement(_commonSelect2['default'], { 'default-text': '是否通过', className: 'space' }),
-	          _react2['default'].createElement(_commonSelect2['default'], { 'default-text': '是否打印', className: 'space' }),
+	          _react2['default'].createElement(_commonDatepicker2['default'], { date: delivery_date, className: 'short-input space-right' }),
+	          _react2['default'].createElement(_commonSelect2['default'], { 'default-text': '是否处理', className: 'space-right' }),
+	          _react2['default'].createElement(_commonSelect2['default'], { 'default-text': '是否通过', className: 'space-right' }),
+	          _react2['default'].createElement(_commonSelect2['default'], { 'default-text': '是否打印', className: 'space-right' }),
 	          _react2['default'].createElement(
 	            'button',
 	            { onClick: this.searchHandler.bind(this), className: 'btn btn-theme btn-xs' },
@@ -41020,7 +41425,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 325 */
+/* 327 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41088,7 +41493,7 @@
 	}
 
 /***/ },
-/* 326 */
+/* 328 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41101,15 +41506,15 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _reduxLogger = __webpack_require__(327);
+	var _reduxLogger = __webpack_require__(329);
 
 	var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
 
-	var _reduxThunk = __webpack_require__(328);
+	var _reduxThunk = __webpack_require__(330);
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-	var _reducersIndex = __webpack_require__(329);
+	var _reducersIndex = __webpack_require__(331);
 
 	var _reducersIndex2 = _interopRequireDefault(_reducersIndex);
 
@@ -41131,7 +41536,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 327 */
+/* 329 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -41276,7 +41681,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 328 */
+/* 330 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -41298,7 +41703,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 329 */
+/* 331 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41313,35 +41718,35 @@
 
 	var _reduxForm = __webpack_require__(241);
 
-	var _login = __webpack_require__(330);
+	var _login = __webpack_require__(332);
 
 	var _login2 = _interopRequireDefault(_login);
 
-	var _order_manage = __webpack_require__(331);
+	var _order_manage = __webpack_require__(333);
 
 	var _order_manage2 = _interopRequireDefault(_order_manage);
 
-	var _order_manage_form = __webpack_require__(335);
+	var _order_manage_form = __webpack_require__(337);
 
 	var _order_manage_form2 = _interopRequireDefault(_order_manage_form);
 
-	var _delivery_change = __webpack_require__(341);
+	var _delivery_change = __webpack_require__(343);
 
 	var _delivery_change2 = _interopRequireDefault(_delivery_change);
 
-	var _delivery_manage = __webpack_require__(342);
+	var _delivery_manage = __webpack_require__(344);
 
 	var _delivery_manage2 = _interopRequireDefault(_delivery_manage);
 
-	var _distribute_manage = __webpack_require__(344);
+	var _distribute_manage = __webpack_require__(346);
 
 	var _distribute_manage2 = _interopRequireDefault(_distribute_manage);
 
-	var _delivery_print_review = __webpack_require__(345);
+	var _delivery_print_review = __webpack_require__(347);
 
 	var _delivery_print_review2 = _interopRequireDefault(_delivery_print_review);
 
-	var _reduxSimpleRouter = __webpack_require__(333);
+	var _reduxSimpleRouter = __webpack_require__(335);
 
 	var rootReducer = (0, _redux.combineReducers)({
 	  login: _login2['default'],
@@ -41359,7 +41764,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 330 */
+/* 332 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41417,7 +41822,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 331 */
+/* 333 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41428,17 +41833,25 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
 	var _utilsIndex = __webpack_require__(160);
 
 	var _redux = __webpack_require__(223);
 
-	var _actionsOrder_manage_form = __webpack_require__(285);
+	var _actionsOrder_manage = __webpack_require__(290);
+
+	var Actions = _interopRequireWildcard(_actionsOrder_manage);
+
+	var _actionsOrder_manage_form = __webpack_require__(291);
+
+	var _actionsAction_types = __webpack_require__(288);
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _area_select = __webpack_require__(332);
+	var _reducersArea_select = __webpack_require__(334);
 
-	var _orders = __webpack_require__(334);
+	var _orders = __webpack_require__(336);
 
 	var filter_state = {
 	  search_ing: false,
@@ -41470,16 +41883,46 @@
 	  }
 	}
 
+	var main_state = {
+	  submitting: false,
+
+	  delivery_stations: [] };
+	//这个用于AlterDeliveryModal和AlterStationModal中
+	function main(state, action) {
+	  if (state === undefined) state = main_state;
+
+	  switch (action.type) {
+	    case Actions.CANCEL_ORDER:
+	    case Actions.ORDER_EXCEPTION:
+	      if (action.key == _configAppConfig.REQUEST.ING) {
+	        return _extends({}, state, { submitting: true });
+	      } else if (action.key == _configAppConfig.REQUEST.SUCCESS || action.key == _configAppConfig.REQUEST.FAIL) {
+	        return _extends({}, state, { submitting: false });
+	      } else {
+	        console.error('nali?');
+	      }
+
+	    case _actionsOrder_manage_form.GOT_DELIVERY_STATIONS:
+	      return _extends({}, state, { delivery_stations: (0, _utilsIndex.map)(action.data, function (text, id) {
+	          return { id: id, text: text };
+	        }) });
+	    default:
+	      return state;
+	  }
+	}
+
 	exports['default'] = (0, _redux.combineReducers)({
 	  filter: filter,
-	  area: (0, _area_select.area)(false),
+	  area: (0, _reducersArea_select.area)(),
 	  orders: _orders.orders,
-	  operationRecord: _orders.operationRecord
+	  operationRecord: _orders.operationRecord,
+	  main: main,
+	  alter_delivery_area: (0, _reducersArea_select.area)(_actionsAction_types.AreaActionTypes2)
 	});
 	module.exports = exports['default'];
 
 /***/ },
-/* 332 */
+/* 334 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41492,15 +41935,11 @@
 
 	exports.area = area;
 
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
 	var _redux = __webpack_require__(223);
 
-	var _actionsArea = __webpack_require__(283);
+	var _actionsAction_types = __webpack_require__(288);
 
-	var Actions = _interopRequireWildcard(_actionsArea);
-
-	var _reduxSimpleRouter = __webpack_require__(333);
+	var _reduxSimpleRouter = __webpack_require__(335);
 
 	var _utilsIndex = __webpack_require__(160);
 
@@ -41517,13 +41956,16 @@
 	  });
 	}
 
-	function area(if_reset) {
+	function area() {
+	  var Actions = arguments.length <= 0 || arguments[0] === undefined ? _actionsAction_types.AreaActionTypes1 : arguments[0];
+
 	  return function area(state, action) {
 	    if (state === undefined) state = initial_state;
 
 	    switch (action.type) {
-	      case Actions.UPDATE_PATH:
-	        return if_reset ? initial_state : state;
+	      case _reduxSimpleRouter.UPDATE_PATH:
+	        return initial_state;
+
 	      case Actions.GOT_PROVINCES:
 	        return _extends({}, state, { provinces: _t(action.data) });
 	      case Actions.PROVINCE_RESET:
@@ -41547,7 +41989,7 @@
 	}
 
 /***/ },
-/* 333 */
+/* 335 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41747,7 +42189,7 @@
 
 
 /***/ },
-/* 334 */
+/* 336 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41763,15 +42205,15 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-	var _actionsOrders = __webpack_require__(284);
+	var _actionsOrders = __webpack_require__(289);
 
 	var OrderActions = _interopRequireWildcard(_actionsOrders);
 
-	var _actionsDelivery_manage = __webpack_require__(318);
+	var _actionsDelivery_manage = __webpack_require__(321);
 
-	var _actionsDelivery_distribute = __webpack_require__(323);
+	var _actionsDelivery_distribute = __webpack_require__(325);
 
-	var _reduxSimpleRouter = __webpack_require__(333);
+	var _reduxSimpleRouter = __webpack_require__(335);
 
 	var orders_state = {
 	  loading: true,
@@ -41781,7 +42223,8 @@
 	  checked_order_ids: [],
 	  checked_orders: [],
 	  active_order_id: undefined,
-	  check_order_info: null
+	  check_order_info: null,
+	  show_products_detail: false
 	};
 
 	function orders(state, action) {
@@ -41826,7 +42269,10 @@
 	      })();
 
 	    case OrderActions.ACTIVE_ORDER:
-	      return _extends({}, state, { active_order_id: action.active_order_id });
+	      return _extends({}, state, { active_order_id: action.active_order_id, show_products_detail: false });
+
+	    case OrderActions.SHOW_PRODUCTS_DETAIL:
+	      return _extends({}, state, { show_products_detail: true });
 
 	    case OrderActions.GET_ORDER_DETAIL_PRODUCTS:
 	      return _extends({}, state, { check_order_info: action.data });
@@ -41859,7 +42305,7 @@
 	}
 
 /***/ },
-/* 335 */
+/* 337 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41878,31 +42324,31 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _area_select = __webpack_require__(332);
+	var _area_select = __webpack_require__(334);
 
-	var _actionsOrder_manage_form = __webpack_require__(285);
+	var _actionsOrder_manage_form = __webpack_require__(291);
 
 	var FormActions = _interopRequireWildcard(_actionsOrder_manage_form);
 
-	var _actionsOrder_products = __webpack_require__(309);
+	var _actionsOrder_products = __webpack_require__(316);
 
 	var OrderProductsActions = _interopRequireWildcard(_actionsOrder_products);
 
-	var _reduxSimpleRouter = __webpack_require__(333);
+	var _reduxSimpleRouter = __webpack_require__(335);
 
-	var _actionsArea = __webpack_require__(283);
+	var _actionsArea = __webpack_require__(287);
 
-	var AreaActions = _interopRequireWildcard(_actionsArea);
+	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
 	var _utilsIndex = __webpack_require__(160);
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _clone = __webpack_require__(336);
+	var _clone = __webpack_require__(338);
 
 	var _clone2 = _interopRequireDefault(_clone);
 
-	var _storesConfigureStore = __webpack_require__(326);
+	var _storesConfigureStore = __webpack_require__(328);
 
 	var _storesConfigureStore2 = _interopRequireDefault(_storesConfigureStore);
 
@@ -41974,9 +42420,16 @@
 	        data.delivery_hours = tmp[1];
 
 	        //
-	        _storesConfigureStore2['default'].dispatch(AreaActions.getCities(data.province_id));
-	        _storesConfigureStore2['default'].dispatch(AreaActions.getDistricts(data.city_id));
-	        _storesConfigureStore2['default'].dispatch(AreaActions.getDeliveryShops(data.regionalism_id));
+
+	        var _AreaActions = (0, _actionsArea2['default'])();
+
+	        var getCities = _AreaActions.getCities;
+	        var getDistricts = _AreaActions.getDistricts;
+	        var getDeliveryShops = _AreaActions.getDeliveryShops;
+
+	        _storesConfigureStore2['default'].dispatch(getCities(data.province_id));
+	        _storesConfigureStore2['default'].dispatch(getDistricts(data.city_id));
+	        _storesConfigureStore2['default'].dispatch(getDeliveryShops(data.regionalism_id));
 
 	        return _extends({}, state, { data: data });
 	      })();
@@ -42142,7 +42595,7 @@
 	}
 
 	var orderAddReducer = (0, _redux.combineReducers)({
-	  area: (0, _area_select.area)(true),
+	  area: (0, _area_select.area)(),
 	  mainForm: mainForm,
 	  products: products_choosing,
 	  history_orders: history_orders
@@ -42152,7 +42605,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 336 */
+/* 338 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {var clone = (function() {
@@ -42316,10 +42769,10 @@
 	  module.exports = clone;
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(337).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(339).Buffer))
 
 /***/ },
-/* 337 */
+/* 339 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -42330,9 +42783,9 @@
 	 */
 	/* eslint-disable no-proto */
 
-	var base64 = __webpack_require__(338)
-	var ieee754 = __webpack_require__(339)
-	var isArray = __webpack_require__(340)
+	var base64 = __webpack_require__(340)
+	var ieee754 = __webpack_require__(341)
+	var isArray = __webpack_require__(342)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -43867,10 +44320,10 @@
 	  return i
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(337).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(339).Buffer, (function() { return this; }())))
 
 /***/ },
-/* 338 */
+/* 340 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -44000,7 +44453,7 @@
 
 
 /***/ },
-/* 339 */
+/* 341 */
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -44090,7 +44543,7 @@
 
 
 /***/ },
-/* 340 */
+/* 342 */
 /***/ function(module, exports) {
 
 	module.exports = Array.isArray || function (arr) {
@@ -44099,7 +44552,7 @@
 
 
 /***/ },
-/* 341 */
+/* 343 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44116,15 +44569,15 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _actionsDelivery_change = __webpack_require__(311);
+	var _actionsDelivery_change = __webpack_require__(318);
 
 	var ChangeActions = _interopRequireWildcard(_actionsDelivery_change);
 
-	var _actionsOrder_manage_form = __webpack_require__(285);
+	var _actionsOrder_manage_form = __webpack_require__(291);
 
-	var _reducersOrders = __webpack_require__(334);
+	var _reducersOrders = __webpack_require__(336);
 
-	var _reducersArea_select = __webpack_require__(332);
+	var _reducersArea_select = __webpack_require__(334);
 
 	var _configAppConfig = __webpack_require__(157);
 
@@ -44158,12 +44611,12 @@
 	exports['default'] = (0, _redux.combineReducers)({
 	  filter: filter,
 	  orders: _reducersOrders.orders,
-	  area: (0, _reducersArea_select.area)(true)
+	  area: (0, _reducersArea_select.area)()
 	});
 	module.exports = exports['default'];
 
 /***/ },
-/* 342 */
+/* 344 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44178,21 +44631,21 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _reducersOrders = __webpack_require__(334);
+	var _reducersOrders = __webpack_require__(336);
 
-	var _reducersArea_select = __webpack_require__(332);
+	var _reducersArea_select = __webpack_require__(334);
 
-	var _reducersDeliveryman = __webpack_require__(343);
+	var _reducersDeliveryman = __webpack_require__(345);
 
-	var _actionsDelivery_manage = __webpack_require__(318);
+	var _actionsDelivery_manage = __webpack_require__(321);
 
 	var Actions = _interopRequireWildcard(_actionsDelivery_manage);
 
-	var _actionsOrders = __webpack_require__(284);
+	var _actionsOrders = __webpack_require__(289);
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _reduxSimpleRouter = __webpack_require__(333);
+	var _reduxSimpleRouter = __webpack_require__(335);
 
 	var filter_state = {
 	  search_ing: false
@@ -44255,12 +44708,12 @@
 	  orders: _reducersOrders.orders,
 	  deliveryman: _reducersDeliveryman.deliveryman,
 	  main: main,
-	  area: (0, _reducersArea_select.area)(true)
+	  area: (0, _reducersArea_select.area)()
 	});
 	module.exports = exports['default'];
 
 /***/ },
-/* 343 */
+/* 345 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44275,7 +44728,7 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-	var _actionsDeliveryman = __webpack_require__(317);
+	var _actionsDeliveryman = __webpack_require__(320);
 
 	var Actions = _interopRequireWildcard(_actionsDeliveryman);
 
@@ -44298,7 +44751,7 @@
 	}
 
 /***/ },
-/* 344 */
+/* 346 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44317,21 +44770,21 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _reducersOrders = __webpack_require__(334);
+	var _reducersOrders = __webpack_require__(336);
 
-	var _reducersDeliveryman = __webpack_require__(343);
+	var _reducersDeliveryman = __webpack_require__(345);
 
-	var _reducersArea_select = __webpack_require__(332);
+	var _reducersArea_select = __webpack_require__(334);
 
-	var _actionsOrder_manage_form = __webpack_require__(285);
+	var _actionsOrder_manage_form = __webpack_require__(291);
 
-	var _actionsOrders = __webpack_require__(284);
+	var _actionsOrders = __webpack_require__(289);
 
-	var _actionsDelivery_distribute = __webpack_require__(323);
+	var _actionsDelivery_distribute = __webpack_require__(325);
 
 	var Actions = _interopRequireWildcard(_actionsDelivery_distribute);
 
-	var _reduxSimpleRouter = __webpack_require__(333);
+	var _reduxSimpleRouter = __webpack_require__(335);
 
 	var filter_state = {
 	  search_ing: false,
@@ -44401,13 +44854,13 @@
 	  filter: filter,
 	  orders: _reducersOrders.orders,
 	  main: main,
-	  area: (0, _reducersArea_select.area)(true),
+	  area: (0, _reducersArea_select.area)(),
 	  deliveryman: _reducersDeliveryman.deliveryman
 	});
 	module.exports = exports['default'];
 
 /***/ },
-/* 345 */
+/* 347 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44424,7 +44877,7 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _actionsDelivery_print_review = __webpack_require__(325);
+	var _actionsDelivery_print_review = __webpack_require__(327);
 
 	var Actions = _interopRequireWildcard(_actionsDelivery_print_review);
 

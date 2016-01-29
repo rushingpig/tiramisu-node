@@ -29,16 +29,16 @@ var Login = React.createClass({
                 <i className="fa fa-check"></i>
             </button>
 
-            <div className="registration">
-              Not a member yet?
+            <div className="registration hidden">
+              没有账号?
               <a className="" href="registration.html">
-                Signup
+                注册
               </a>
             </div>
-            <label className="checkbox">
-              <input type="checkbox" value="remember-me" /> Remember me
+            <label className="checkbox hidden">
+              <input type="checkbox" value="remember-me" /> 记住我
               <span className="pull-right">
-                <a data-toggle="modal" href="#myModal"> Forgot Password?</a>
+                <a data-toggle="modal" href="#myModal"> 忘记密码?</a>
               </span>
             </label>
           </div>
@@ -48,15 +48,15 @@ var Login = React.createClass({
               <div className="modal-content">
                 <div className="modal-header">
                   <button type="button" className="close" data-dismiss="modal" aria-hidden="true">×</button>
-                  <h4 className="modal-title">Forgot Password ?</h4>
+                  <h4 className="modal-title">忘记密码 ?</h4>
                 </div>
                 <div className="modal-body">
-                  <p>Enter your e-mail address below to reset your password.</p>
-                  <input type="text" name="email" placeholder="Email" autoComplete="off" className="form-control placeholder-no-fix"/>
+                  <p>在下面输入你的邮箱地址以重置密码.</p>
+                  <input type="text" name="邮箱" placeholder="Email" autoComplete="off" className="form-control placeholder-no-fix"/>
                 </div>
                 <div className="modal-footer">
-                  <button data-dismiss="modal" className="btn btn-default" type="button">Cancel</button>
-                  <button className="btn btn-primary" type="button">Submit</button>
+                  <button data-dismiss="modal" className="btn btn-default" type="button">取消</button>
+                  <button className="btn btn-primary" type="button">确定</button>
                 </div>
               </div>
             </div>

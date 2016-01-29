@@ -3,7 +3,7 @@ import { area } from './area_select';
 import * as FormActions from 'actions/order_manage_form';
 import * as OrderProductsActions from 'actions/order_products';
 import { UPDATE_PATH } from 'redux-simple-router';
-import * as AreaActions from 'actions/area';
+import AreaActions from 'actions/area';
 import { map } from 'utils/index';
 import { 
   DELIVERY_TO_HOME,
@@ -72,9 +72,10 @@ function mainForm(state = initial_state, action) {
         data.delivery_hours = tmp[1];
 
         //
-        store.dispatch(AreaActions.getCities(data.province_id));
-        store.dispatch(AreaActions.getDistricts(data.city_id));
-        store.dispatch(AreaActions.getDeliveryShops(data.regionalism_id));
+        var {getCities, getDistricts, getDeliveryShops} = AreaActions();
+        store.dispatch(getCities(data.province_id));
+        store.dispatch(getDistricts(data.city_id));
+        store.dispatch(getDeliveryShops(data.regionalism_id));
         
         return {...state, data}
       })();
@@ -227,7 +228,7 @@ function history_orders(state = history_orders_state, action){
 }
 
 const orderAddReducer = combineReducers({
-  area: area(true),
+  area: area(),
   mainForm,
   products: products_choosing,
   history_orders,

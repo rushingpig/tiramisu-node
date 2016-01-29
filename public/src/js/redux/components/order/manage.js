@@ -3,26 +3,29 @@ import { render, findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { reduxForm } from 'redux-form';
+import LinkedStateMixin from 'react-addons-linked-state-mixin';
 
-import * as AreaActions from 'actions/area';
+import AreaActions from 'actions/area';
+import { AreaActionTypes2 } from 'actions/action_types';
 import * as OrderActions from 'actions/orders';
-import { getOrderSrcs } from 'actions/order_manage_form';
+import * as OrderManageActions from 'actions/order_manage';
+import { getOrderSrcs, getDeliveryStations } from 'actions/order_manage_form';
 
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import Pagination from 'common/pagination';
-import Config from 'config/app.config';
+import {order_status, SELECT_DEFAULT_VALUE, DELIVERY_TO_HOME, DELIVERY_TO_STORE} from 'config/app.config';
 import history from 'history_instance';
 import LineRouter from 'common/line_router';
 import SearchInput from 'common/search_input';
 import { tableLoader, get_table_empty } from 'common/loading';
 import StdModal from 'common/std_modal';
 import LazyLoad from 'utils/lazy_load';
-import { colour } from 'utils/index';
+import { colour, Noty } from 'utils/index';
 
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from 'common/order_detail_modal';
-import ManageAlterStationModal from './manage_alter_station_modal';
+import AlterDeliveryModal from './manage_alter_delivery_modal';
 import OrderSrcsSelects from 'common/order_srcs_selects';
 
 class TopHeader extends Component {
@@ -51,7 +54,7 @@ class FilterHeader extends Component {
     this.state = {
       submit_opts: [{id: 1, text: '已提交'}, {id: 0, text: '未提交'}],
       deal_opts: [{id: 1, text: '已处理'}, {id: 0, text: '未处理'}],
-      selected_order_src_level1_id: Config.SELECT_DEFAULT_VALUE,
+      selected_order_src_level1_id: SELECT_DEFAULT_VALUE,
       search_ing: false,
     }
   }
@@ -82,13 +85,13 @@ class FilterHeader extends Component {
           {' 开始时间'}
           <DatePicker editable redux-form={begin_time} className="short-input" />
           {' 配送时间'}
-          <DatePicker editable redux-form={end_time} className="short-input" />
-          <Select {...is_submit} options={this.state.submit_opts} default-text="是否提交" className="space"/>
-          <Select {...is_deal} options={this.state.deal_opts} default-text="是否处理" className="space"/>
+          <DatePicker editable redux-form={end_time} className="short-input space-right" />
+          <Select {...is_submit} options={this.state.submit_opts} default-text="是否提交" className="space-right"/>
+          <Select {...is_deal} options={this.state.deal_opts} default-text="是否处理" className="space-right"/>
           <OrderSrcsSelects {...{all_order_srcs, src_id}} />
-          <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space"/>
-          <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space"/>
-          <Select {...status} options={all_order_status} default-text="订单状态" className="space"/>
+          <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space-right"/>
+          <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space-right"/>
+          <Select {...status} options={all_order_status} default-text="订单状态" className="space-right"/>
           <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
             <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
           </button>
@@ -144,13 +147,16 @@ var OrderRow = React.createClass({
   render(){
     var { props } = this;
     var src_name = props.src_name.split(',');
-    var _order_status = Config.order_status[props.status] || {};
+    var _order_status = order_status[props.status] || {};
     return (
       <tr className={props.active_order_id == props.order_id ? 'active' : ''} onClick={this.clickHandler}>
         <td>
           <a onClick={this.editHandler} href="javascript:;">[编辑]</a><br/>
           <a onClick={this.viewOrderDetail} href="javascript:;">[查看]</a><br/>
-          <a onClick={this.alterStation} href="javascript:;" className="nowrap">[修改配送]</a>
+          <a onClick={this.alterDelivery} href="javascript:;" className="nowrap hidden">[修改配送]</a>
+          <a onClick={this.alterStation} href="javascript:;" className="nowrap hidden">[分配配送站]</a>
+          <a onClick={this.cancelOrder} href="javascript:;" className="nowrap">[订单取消]</a><br/>
+          <a onClick={this.orderException} href="javascript:;" className="nowrap">[订单异常]</a>
         </td>
         <td>{props.merchant_id}</td>
         <td>{props.order_id}</td>
@@ -162,7 +168,7 @@ var OrderRow = React.createClass({
           <div className="address-detail-td">
             <span className="inline-block">地址：</span><span className="address-all">{props.recipient_address}</span>
           </div>
-          建筑：{props.landmark}
+          建筑：{props.recipient_landmark}
         </td>
         <td>{props.delivery_type}</td>
         <td className="nowrap">{src_name[0]}<br /><span className="bordered">{src_name[1]}</span></td>
@@ -173,7 +179,7 @@ var OrderRow = React.createClass({
           应收金额：{props.total_amount/100}
         </td>
         <td><div style={{color: _order_status.color || 'inherit'}}>{_order_status.value}</div></td>
-        <td>todo</td>
+        <td>{props.delivery_name}</td>
         <td><div className="time">{props.delivery_time}</div></td>
         <td>{props.is_submit == '1' ? '是' : '否'}</td>
         <td>{props.is_deal == '1' ? '是' : '否'}</td>
@@ -186,9 +192,17 @@ var OrderRow = React.createClass({
       </tr>
     )
   },
-  clickHandler(){
+  activeOrder(){
     var { order_id, active_order_id, activeOrder } = this.props;
-    order_id != active_order_id && activeOrder(order_id);
+    if(order_id != active_order_id){
+      activeOrder(order_id).done(function(data){
+        // debugger;
+      });
+    }
+  },
+  clickHandler(){
+    this.activeOrder();
+    this.props.showProductsDetail();
   },
   editHandler(e){
     history.push('/om/index/' + this.props.order_id);
@@ -196,14 +210,31 @@ var OrderRow = React.createClass({
   },
   viewOrderDetail(e){
     this.props.viewOrderDetail(this.props);
-    // e.stopPropagation();
+    this.activeOrder();
+    e.stopPropagation();
+  },
+  alterDelivery(e){
+    this.props.showAlterDelivery();
+    this.activeOrder();
+    e.stopPropagation();
   },
   alterStation(e){
-    this.props.alterStation(this.props);
+    this.props.showAlterStation();
+    this.activeOrder();
     e.stopPropagation();
   },
   viewOrderOperationRecord(e){
     this.props.viewOrderOperationRecord(this.props);
+    e.stopPropagation();
+  },
+  cancelOrder(e){
+    this.props.showCancelOrder(this.props);
+    this.activeOrder();
+    e.stopPropagation();
+  },
+  orderException(e){
+    this.props.showOrderException(this.props);
+    this.activeOrder();
     e.stopPropagation();
   }
 })
@@ -212,26 +243,33 @@ class ManagePannel extends Component {
   constructor(props){
     super(props);
     this.viewOrderDetail = this.viewOrderDetail.bind(this);
-    this.alterStation = this.alterStation.bind(this);
+    this.showAlterDelivery = this.showAlterDelivery.bind(this);
+    this.showAlterStation = this.showAlterStation.bind(this);
+    this.showCancelOrder = this.showCancelOrder.bind(this);
+    this.showOrderException = this.showOrderException.bind(this);
     this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
+    this.search = this.search.bind(this);
     this.state = {
       page_size: 5,
     }
   }
   render(){
-    var { filter, area, activeOrder, operationRecord, dispatch, getOrderList, getOrderOptRecord } = this.props;
-    var { loading, page_no, total, list, check_order_info, active_order_id } = this.props.orders;
-    var { viewOrderDetail, alterStation, viewOrderOperationRecord } = this;
+    var { filter, area, alter_delivery_area, 
+      main: {submitting, delivery_stations},
+      activeOrder, showProductsDetail, operationRecord, dispatch, getOrderList, getOrderOptRecord, cancelOrder, orderException } = this.props;
+    var { loading, page_no, total, list, check_order_info, active_order_id, show_products_detail } = this.props.orders;
+    var { viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, search } = this;
 
     var content = list.map((n, i) => {
-      return <OrderRow key={n.order_id} {...{...n, active_order_id, viewOrderDetail, alterStation, viewOrderOperationRecord, activeOrder}} />;
+      return <OrderRow key={n.order_id} 
+        {...{...n, active_order_id, showProductsDetail, viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, activeOrder}} />;
     })
     return (
       <div className="order-manage">
 
         <TopHeader />
         <FilterHeader {...{...filter, ...area}}
-           actions={{...bindActionCreators({...AreaActions, getOrderSrcs}, dispatch), getOrderList}}
+           actions={{...bindActionCreators({...AreaActions(), getOrderSrcs}, dispatch), getOrderList}}
            page_size={this.state.page_size} />
 
         <div className="panel">
@@ -279,7 +317,7 @@ class ManagePannel extends Component {
           </div>
         </div>
 
-        { check_order_info
+        { show_products_detail && check_order_info
           ? <div className="panel">
               <div className="panel-body">
                 <div>订单管理 >> 产品详情</div>
@@ -290,7 +328,12 @@ class ManagePannel extends Component {
 
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} />
         <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, ...operationRecord}} />
-        <div ref="modal-wrap"></div>
+        <CancelOrderModal ref="CancelOrderModal" {...{submitting, cancelOrder, callback: search}} />
+        <OrderExceptionModal ref="OrderExceptionModal" {...{submitting, orderException, callback: search}} />
+        <AlterStationModal ref="AlterStationModal" 
+          {...{submitting, delivery_stations, order: check_order_info, show_products_detail, ...alter_delivery_area, actions: this.props, callback: search}} />
+        <AlterDeliveryModal ref="AlterDeliveryModal" 
+          {...{submitting, delivery_stations, order: check_order_info, show_products_detail, ...alter_delivery_area, actions: this.props, callback: search}} />
       </div>
     )
   }
@@ -298,20 +341,29 @@ class ManagePannel extends Component {
     this.search(page);
   }
   componentDidMount() {
-    this.search(this.props.orders.page_no);
+    this.search();
   }
   search(page){
-    page = typeof page == 'undefined' ? this.props.page_no : page;
+    page = typeof page == 'undefined' ? this.props.orders.page_no : page;
     this.props.getOrderList({page_no: page, page_size: this.state.page_size});
   }
   viewOrderDetail(){
     this.refs.detail_modal.show();
   }
-  alterStation(n){
-    render(<ManageAlterStationModal data={n} data-id={new Date().getTime()} />, this.refs['modal-wrap'])
+  showAlterDelivery(){
+    this.refs.AlterDeliveryModal.show();
   }
-  viewOrderOperationRecord(n){
-    this.refs.OperationRecordModal.show(n);
+  showAlterStation(){
+    this.refs.AlterStationModal.show();
+  }
+  showCancelOrder(order){
+    this.refs.CancelOrderModal.show(order);
+  }
+  showOrderException(order){
+    this.refs.OrderExceptionModal.show(order);
+  }
+  viewOrderOperationRecord(order){
+    this.refs.OperationRecordModal.show(order);
   }
 }
 
@@ -321,7 +373,7 @@ function mapStateToProps({orderManage}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  var actions = bindActionCreators(OrderActions, dispatch);
+  var actions = bindActionCreators({...OrderActions, ...AreaActions(AreaActionTypes2), getDeliveryStations, ...OrderManageActions}, dispatch);
   actions.dispatch = dispatch;
   return actions;
 }
@@ -333,6 +385,169 @@ export default connect(mapStateToProps, mapDispatchToProps)(ManagePannel);
 /***************   *******   *****************/
 /***************   子模态框   *****************/
 /***************   *******   *****************/
+
+var CancelOrderModal = React.createClass({
+  getInitialState: function() {
+    return {
+      reason: '',
+      tips: '请填写取消原因或从下方选择原因',
+      order: {},
+      reasons: ['客户打电话取消', '订单信息有误', '无法生产并与客户沟通'],
+    };
+  },
+  mixins: [LinkedStateMixin],
+  render(){
+    var reasons = this.state.reasons.map((n, i) => {
+      return <button onClick={this.chooseReason.bind(this, n)} key={i} className="btn btn-default btn-xs space">{n}</button>
+    })
+    return (
+      <StdModal submitting={this.props.submitting} title="取消订单" onConfirm={this.onConfirm} onCancel={this.hideCallback} ref="modal">
+        <div className="form-group round" style={{border: '1px solid #ccc'}}>
+          <textarea 
+            valueLink={this.linkState('reason')}
+            className="form-control" 
+            style={{'border': 'none', maxWidth: '100%'}} 
+            placeholder={this.state.tips}
+            rows="3"
+            >
+          </textarea>
+          <hr className="dotted" style={{margin: '10px 0'}}/>
+          <div className="text-center" style={{'paddingBottom': 10}}>
+            {reasons}
+          </div>
+        </div>
+      </StdModal>
+    )
+  },
+  chooseReason(reason){
+    this.setState({reason})
+  },
+  onConfirm(){
+    var { reason, tips, order } = this.state;
+    if(reason){
+      this.props.cancelOrder(order.order_id, {cancel_reason: reason})
+        .done(function(){
+          this.refs.modal.hide();
+          this.props.callback();
+        }.bind(this))
+        .fail(function(){
+          Noty('error', '异常错误');
+        }.bind(this));
+    }else{
+      Noty('warning', tips);
+    }
+  },
+  componentDidMount(){
+
+  },
+  show(order){
+    this.setState({order}, function(){
+      this.refs.modal.show();
+    })
+  },
+  hideCallback(){
+    this.setState(this.getInitialState());
+  }
+});
+
+var AlterStationModal = React.createClass({
+  getInitialState: function() {
+    return {
+      delivery_id: undefined,
+    };
+  },
+  mixins: [LinkedStateMixin],
+  render(){
+    return (
+      <StdModal submitting={this.props.submitting} title="取消订单" onCancel={this.hideCallback} ref="modal">
+        <div className="form-group">
+          <label>收货地址：</label>
+          {this.props.order && this.props.order.recipient_address}
+        </div>
+        <div className="form-group form-inline">
+          <label>配送中心：</label>
+          <Select valueLink={this.linkState('delivery_id')} options={[]} />
+          {'　'}
+          <button className="btn btn-xs btn-theme">自动分配</button>
+        </div>
+      </StdModal>
+    )
+  },
+  componentDidMount(){
+
+  },
+  show(){
+    this.refs.modal.show();
+  },
+  hideCallback(){
+    // this.refs.modal.hide();
+    this.setState(this.getInitialState());
+  }
+})
+
+var OrderExceptionModal = React.createClass({
+  getInitialState: function() {
+    return {
+      reason: '',
+      tips: '请填写异常原因或从下方选择原因',
+      order: {},
+      reasons: ['配送站分配有误', '蛋糕无法派送'],
+    };
+  },
+  mixins: [LinkedStateMixin],
+  render(){
+    var reasons = this.state.reasons.map((n, i) => {
+      return <button onClick={this.chooseReason.bind(this, n)} key={i} className="btn btn-default btn-xs space">{n}</button>
+    })
+    return (
+      <StdModal submitting={this.props.submitting} onConfirm={this.onConfirm} title="订单异常" onCancel={this.hideCallback} ref="modal">
+        <div className="form-group round" style={{border: '1px solid #ccc'}}>
+          <textarea 
+            valueLink={this.linkState('reason')}
+            className="form-control" 
+            style={{'border': 'none', maxWidth: '100%'}} 
+            placeholder={this.state.tips}
+            rows="3"
+            >
+          </textarea>
+          <hr className="dotted" style={{margin: '10px 0'}}/>
+          <div className="text-center" style={{'paddingBottom': 10}}>
+            {reasons}
+          </div>
+        </div>
+      </StdModal>
+    )
+  },
+  chooseReason(reason){
+    this.setState({reason})
+  },
+  onConfirm(){
+    var { reason, tips, order } = this.state;
+    if(reason){
+      this.props.orderException(order.order_id, {cancel_reason: reason})
+        .done(function(){
+          this.refs.modal.hide();
+          this.props.callback();
+        }.bind(this))
+        .fail(function(){
+          Noty('error', '异常错误');
+        }.bind(this));
+    }else{
+      Noty('warning', tips);
+    }
+  },
+  componentDidMount(){
+
+  },
+  show(order){
+    this.setState({order}, function(){
+      this.refs.modal.show();
+    })
+  },
+  hideCallback(){
+    this.setState(this.getInitialState());
+  }
+});
 
 var OperationRecordModal = React.createClass({
   getInitialState() {

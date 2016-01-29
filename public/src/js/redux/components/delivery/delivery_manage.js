@@ -18,7 +18,7 @@ import LazyLoad from 'utils/lazy_load';
 import { Noty, map, reactReplace } from 'utils/index';
 
 import * as OrderActions from 'actions/orders';
-import * as AreaActions from 'actions/area';
+import AreaActions from 'actions/area';
 import * as DeliverymanActions from 'actions/deliveryman';
 import * as DeliveryManageActions from 'actions/delivery_manage';
 
@@ -71,12 +71,12 @@ class FilterHeader extends Component {
             {' 开始时间'}
             <DatePicker editable redux-form={begin_time} className="short-input" />
             {' 配送时间'}
-            <DatePicker editable redux-form={end_time} className="short-input" />
-            <Select {...delivery_type} options={delivery_types} default-text="选择配送方式" className="space"/>
-            <Select {...print_status} options={all_print_status} default-text="是否打印" className="space"/>
-            <Select default-text="是否有祝福贺卡" className="space"/>
-            <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space"/>
-            <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space"/>
+            <DatePicker editable redux-form={end_time} className="short-input space-right" />
+            <Select {...delivery_type} options={delivery_types} default-text="选择配送方式" className="space-right"/>
+            <Select {...print_status} options={all_print_status} default-text="是否打印" className="space-right"/>
+            <Select default-text="是否有祝福贺卡" className="space-right"/>
+            <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space-right"/>
+            <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space-right"/>
             <button onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
               <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
             </button>
@@ -369,7 +369,7 @@ function mapStateToProps({deliveryManage}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  return bindActionCreators({...OrderActions, ...AreaActions, ...DeliverymanActions, ...DeliveryManageActions}, dispatch);
+  return bindActionCreators({...OrderActions, ...AreaActions(), ...DeliverymanActions, ...DeliveryManageActions}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeliveryManagePannel);

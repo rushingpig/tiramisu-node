@@ -42,6 +42,7 @@ const URL = (function(){
     order_sign: '/order/:orderId/signin',
     order_unsign: '/order/:orderId/unsignin',
     order_opt_record: '/order/:orderId/history',
+    order_exception: '//order/:orderId/exception',
 
     //产品
     categories: '/product/categories',

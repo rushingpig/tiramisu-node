@@ -32,5 +32,5 @@ function filter(state = filter_state, action){
 export default combineReducers({
   filter,
   orders,
-  area: area(true)
+  area: area()
 })

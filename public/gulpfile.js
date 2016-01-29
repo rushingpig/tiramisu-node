@@ -116,18 +116,20 @@ gulp.task('template:pre', function(){
     .pipe(rename({
       extname: '.hbs'
     }))
+    .pipe(rev())
     .pipe(gulp.dest(config.views));
 });
 
 gulp.task('template:deploy', function(){
   return gulp.src(s('index.html'))
     .pipe(replace(/\{\{root\}\}/g, config.root))
-    .pipe(replace(/\{\{app\.js\}\}/, config.root + '/js/app.min.js?rev=@@hash'))
+    .pipe(replace(/\{\{app\.js\}\}/, config.root + 'js/app.min.js?rev=@@hash'))
     .pipe(replace(/\{\{webpack-dev-server\.js\}\}/, ''))
     .pipe(gulp.dest('./'))
     .pipe(rename({
       extname: '.hbs'
     }))
+    .pipe(rev())  //这个rev插件有bug，只能放这了
     .pipe(gulp.dest(config.views));
 });
 gulp.task('template:local', function(){
@@ -161,11 +163,11 @@ gulp.task("webpack:react", function(callback) {
   });
 });
 
-gulp.task("rev", function(){
-  return gulp.src('./index.html')
-    .pipe(rev())
-    .pipe(gulp.dest('.'));
-});
+// gulp.task("rev", function(){
+//   return gulp.src('./index.html')
+//     .pipe(rev())
+//     .pipe(gulp.dest('.'));
+// });
 
 //@1: 第一步操作
 gulp.task("webpack-dev-server", function(callback) {
@@ -196,4 +198,4 @@ gulp.task('default', ['css', 'sass', 'scripts', 'lib', 'images', 'template:pre',
 
 });
 
-gulp.task('deploy', gulpSequence('webpack:react', 'scripts', 'lib', 'template:deploy', 'rev'));
+gulp.task('deploy', gulpSequence('webpack:react', 'css', 'sass', 'scripts', 'images', 'lib', 'template:deploy'));

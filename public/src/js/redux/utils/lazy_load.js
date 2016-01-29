@@ -1,7 +1,7 @@
 var root = window.xfxb.root;
 var config = {
   noty: {
-    css: 'http://cdn.bootcss.com/animate.css/3.2.3/animate.min.css',
+    css: '/plugins/animate/animate.min.css',
     js: root + 'lib/jquery.noty.packaged.min.js',
   },
   chinese_py: {

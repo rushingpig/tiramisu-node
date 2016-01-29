@@ -19,4 +19,5 @@ module.exports = {
     signinOrder : require('./buss/delivery/signin_order'),
     unsigninOrder : require('./buss/delivery/unsignin_order'),
     deliveryman : require('./buss/delivery/deliveryman'),
+    allocateStation : require('./buss/order/allocate_station')
 };

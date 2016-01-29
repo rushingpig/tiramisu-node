@@ -19,6 +19,7 @@ var res_obj = require('../../../util/res_obj'),
     listOrder = schema.listOrder,
     exchangeOrder = schema.exchangeOrder,
     printApply = schema.printApply,
+    allocateStation = schema.allocateStation,
     del_flag = require('../../../dao/base_dao').del_flag,
     dao = require('../../../dao'),
     OrderDao = dao.order,
@@ -113,6 +114,9 @@ OrderService.prototype.addOrder = (req, res, next) => {
                 throw new TiramisuError(res_obj.FAIL);
             }
             let params = [];
+            if(toolUtils.isEmptyArray(products)){
+                throw new TiramisuError(res_obj.ORDER_NO_PRODUCT);
+            }
             products.forEach((curr)=>{
                 let arr = [];
                 arr.push(orderId);
@@ -263,7 +267,8 @@ OrderService.prototype.editOrder = function(is_submit){
             total_discount_price = req.body.total_discount_price,
             products = req.body.products,
             delivery_name = req.body.delivery_name,
-            greeting_card = req.body.greeting_card;
+            greeting_card = req.body.greeting_card,
+            prefix_address = req.body.prefix_address;
 
         let recipient_obj = {
             regionalism_id: regionalism_id,
@@ -310,6 +315,9 @@ OrderService.prototype.editOrder = function(is_submit){
                 },
                 add_skus = [],delete_skuIds = [],update_skus = [];
             let option = '';
+            if(delivery_type != current_order.delivery_type){
+                option += '修改{配送方式}为{' + Constant.DTD[delivery_name] + '}\n';
+            }
             if(delivery_id != current_order.delivery_id){
                 option += '修改{配送站}为{'+delivery_name+'}\n';
             }
@@ -385,7 +393,7 @@ OrderService.prototype.editOrder = function(is_submit){
                 owner_mobile : owner_mobile,
                 recipient_name : systemUtils.encodeForFulltext(recipient_name),
                 recipient_mobile : recipient_mobile,
-                recipient_address : systemUtils.encodeForFulltext(recipient_address),
+                recipient_address : systemUtils.encodeForFulltext(prefix_address+recipient_address),
                 landmark : systemUtils.encodeForFulltext(recipient_landmark)
             };
             let orderPromise = orderDao.editOrder(systemUtils.assembleUpdateObj(req,order_obj),orderId,systemUtils.assembleUpdateObj(req,recipient_obj),recipient_id,products,add_skus,delete_skuIds,update_skus);
@@ -662,5 +670,62 @@ OrderService.prototype.cancelOrder = (req,res,next)=>{
     });
 };
 
+OrderService.prototype.allocateStation = (req,res,next)=>{
+    req.checkParams('orderId').notEmpty().isOrderId();
+    req.checkBody(allocateStation);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let order_id = systemUtils.getDBOrderId(req.params.orderId),
+        delivery_id = req.body.delivery_id,
+        regionalism_id = req.body.regionalism_id,
+        delivery_type = req.body.delivery_type,
+        delivery_time = req.body.delivery_time,
+        address = req.body.recipient_address,
+        prefix_address = req.body.prefix_address,
+        updated_time = req.body.updated_time;
+
+    let recipient_obj = {regionalism_id, delivery_type,address};
+    let order_obj = {delivery_id, delivery_time};
+    let promise = orderDao.findOrderById(order_id).then((_res)=> {
+        if (toolUtils.isEmptyArray(_res)) {
+            throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
+        } else if (updated_time !== _res[0].updated_time) {
+            throw new TiramisuError(res_obj.OPTION_EXPIRED);
+        }
+        //===========for history begin=============
+        let current_order = _res[0],
+            order_history_obj = {order_id};
+        let option = '';
+        if(delivery_type != current_order.delivery_type){
+            option += '修改{配送方式}为{' + Constant.DTD[delivery_name] + '}\n';
+        }
+        if (delivery_id != current_order.delivery_id) {
+            option += '修改{配送站}为{' + delivery_name + '}\n';
+        }
+        if (delivery_time != current_order.delivery_time) {
+            option += '修改{配送时间}为{' + delivery_time + '}\n';
+        }
+        if (regionalism_id != current_order.regionalism_id || recipient_address != current_order.recipient_address) {
+            option += '修改收货地址\n';
+        }
+        order_history_obj.option = option;
+        //===========for history end=============
+        let order_fulltext_obj = {
+            order_id : order_id,
+            recipient_address : systemUtils.encodeForFulltext(prefix_address + address)
+        };
+        let orderPromise = orderDao.updateOrder(systemUtils.assembleUpdateObj(req,order_obj),order_id);
+        let recipientPromise = orderDao.updateRecipient(systemUtils.assembleUpdateObj(req,recipient_obj),current_order.recipient_id);
+        let orderHistoryPromise = orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
+        let orderFulltextPromise = orderDao.updateOrderFulltext(order_fulltext_obj,order_id);
+        return Promise.all([orderPromise,orderHistoryPromise,orderFulltextPromise,recipientPromise]);
+    }).then(()=>{
+        res.api();
+    });
+    systemUtils.wrapService(res,next,promise);
+};
 
 module.exports = new OrderService();

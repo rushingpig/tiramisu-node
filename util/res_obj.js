@@ -48,6 +48,10 @@ module.exports = {
         code : '2005',
         msg : '订单已生产或配送中,不能取消...'
     },
+    ORDER_NO_PRODUCT : {
+        code : '2006',
+        msg : '订单没有产品,请添加产品...'
+    },
     NO_MORE_PAGE_RESULTS : {
         code : '9998',
         msg : 'no more results...',

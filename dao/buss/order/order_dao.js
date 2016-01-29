@@ -416,15 +416,7 @@ OrderDao.prototype.editOrder = function(order_obj,order_id,recipient_obj,recipie
 OrderDao.prototype.updateRecipient = function(recipient_obj,recipient_id){
     let sql = this.base_update_sql + " where id = ?",
         params = [tables.buss_recipient,recipient_obj,recipient_id];
-    return baseDao.trans().then((trans)=>{
-        trans.query(sql,params,(err)=>{
-            if(err){
-                trans.rollback();
-                throw new Error('when update recipient with recipient_id:['+recipient_id+"] exception");
-            }
-            return trans;
-        });
-    });
+    return baseDao.update(sql,params);
 };
 /**
  * find order status and updated_time to control concurrency

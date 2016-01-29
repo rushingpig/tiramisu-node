@@ -69,7 +69,7 @@ a.post('/order/reprint/apply',deliveryService.applyForRePrint); // 申请重新�
 //*********************
 //******** PUT ********
 //*********************
-
+a.put('/order/:orderId/delivery',orderService.allocateStation);  // 修改配送站 或者  分配配送站
 a.put('/order/:orderId/validate',deliveryService.validate); // 检验重新打印的验证码
 a.put('/order/:orderId',orderService.editOrder(false));     // 保存
 a.put('/order/:orderId/submit',orderService.editOrder(true)); // 提交
@@ -78,11 +78,11 @@ a.put('/order/reprint/apply/:apply_id',deliveryService.auditReprintApply);  // �
 a.put('/order/:orderId/signin',deliveryService.signinOrder);    // 签收订单
 a.put('/order/:orderId/unsignin',deliveryService.unsigninOrder);    // 未签收订单
 a.put('/delivery/deliveryman',deliveryService.allocateDeliveryman); // 分配配送员
-
+a.put('/order/:orderId/cancel',orderService.cancelOrder);   // 取消订单
 //************************
 //******** DELETE ********
 //************************
-a.delete('/order/:orderId',orderService.cancelOrder);   // 取消订单
+
 
 
 //=====================router for business end======================

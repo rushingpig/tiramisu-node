@@ -52,6 +52,10 @@ module.exports = {
         code : '2006',
         msg : '订单没有产品,请添加产品...'
     },
+    NO_OPTIONAL_STATION : {
+        code : '3001',
+        msg : '没有可选的配送站...'
+    },
     NO_MORE_PAGE_RESULTS : {
         code : '9998',
         msg : 'no more results...',

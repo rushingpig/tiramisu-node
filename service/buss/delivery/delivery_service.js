@@ -651,4 +651,44 @@ DeliveryService.prototype.validate = (req,res,next)=>{
     });
     systemUtils.wrapService(res,next,promise);
 };
+/**
+ * auto allocate station by the lng and lat
+ * @param req
+ * @param res
+ * @param next
+ */
+DeliveryService.prototype.autoAllocateStation = (req,res,next)=>{
+    req.checkBody('lng','请传入有效的经度...').notEmpty();
+    req.checkBody('lat','请传入有效的纬度...').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let lng = req.body.lng,lat = req.body.lat;
+    let promise = deliveryDao.findAllStations().then((result)=>{
+        if(toolUtils.isEmptyArray(result)){
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        let res_data = {};
+        try{
+            for(let i = 0;i < result.length;i++){
+                if(systemUtils.isInDeliveryScope(lng,lat,JSON.parse(result[i].coords))){
+                    res_data.delivery_id = result[i].id;
+                    res_data.delivery_name = result[i].name;
+                    break;
+                }
+            }
+        }catch(e){
+            throw new TiramisuError(res_obj.FAIL,'数据库表里配送站配送范围坐标异常...');
+        }
+
+        if(!res_data.delivery_id){
+            throw new TiramisuError(res_obj.NO_OPTIONAL_STATION);
+        }
+        res.api(res_data);
+
+    });
+    systemUtils.wrapService(res,next,promise);
+};
 module.exports = new DeliveryService();

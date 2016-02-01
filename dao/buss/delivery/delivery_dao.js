@@ -22,8 +22,8 @@ function DeliveryDao(){
  * query for stations
  */
 DeliveryDao.prototype.findAllStations = function(){
-    let sql = 'select ?? from ?? where 1=1 and del_flag = ?';
-    let params = [this.baseColumns,tables.buss_delivery_station,del_flag.SHOW];
+    let sql = 'select * from ?? where 1=1 and del_flag = ?';
+    let params = [tables.buss_delivery_station,del_flag.SHOW];
     return baseDao.select(sql,params);
 };
 /**

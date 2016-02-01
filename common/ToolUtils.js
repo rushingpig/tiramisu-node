@@ -202,4 +202,16 @@ ToolUtils.hash = function (input) {
 
     return retValue;
 };
+/**
+ * get the client ip
+ * @param req
+ * @returns {*|string}
+ */
+ToolUtils.getClientIP = function(req){
+    return req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress ||
+        req.ip;
+};
 module.exports = ToolUtils;

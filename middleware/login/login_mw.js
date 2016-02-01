@@ -11,8 +11,14 @@ var res_obj = require('../../util/res_obj');
 
 function LoginMiddleware() {
 }
+/**
+ * the filter to make sure the user has been logined
+ * @param req
+ * @param res
+ * @param next
+ */
 LoginMiddleware.loginFilter = function (req, res, next) {
-    if(config.exclude_paths.indexOf(req.path) !== -1){  //  exclude the login path
+    if(config.exclude_paths.indexOf(req.path) !== -1 || /^(\/v1\/i)+.*/.test(req.path)){  //  exclude the login path and Router => "/v1/i/"
         next();
     }else if (!req.session.user) {
         if(req.xhr){
@@ -24,7 +30,12 @@ LoginMiddleware.loginFilter = function (req, res, next) {
         next();
     }
 };
-
+/**
+ * to config the req session by the config options
+ * @param req
+ * @param res
+ * @param next
+ */
 LoginMiddleware.sessionFilter = function(req,res,next){
     let session = req.session;
     session.cookie.maxAge = config.session_options.cookieMaxAge;

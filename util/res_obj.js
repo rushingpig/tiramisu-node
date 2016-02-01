@@ -56,6 +56,10 @@ module.exports = {
         code : '3001',
         msg : '没有可选的配送站...'
     },
+    NO_WHITE_LIST_IP : {
+        code : '9994',
+        msg : 'the client ip is not in the white list ...'
+    },
     NO_MORE_PAGE_RESULTS : {
         code : '9998',
         msg : 'no more results...',

@@ -14,6 +14,7 @@ middleware.login = require('./login/login_mw');
 middleware.system = require('./sys/system_mw');
 middleware.db = require('./sys/db_init_mw');
 middleware.ajax = require('./ajax/ajax_mw');
+middleware.whiteIPList = require('./sys/whiteIP_mw');
 
 
 module.exports = middleware;

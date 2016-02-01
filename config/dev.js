@@ -109,8 +109,9 @@ var mysql_options = {
 };
 
 //  exclude path arrays of login filter
-var exclude_paths = ['/','/v1/a/login'];
+var exclude_paths = ['/','/v1/a/login','/payment'];
 
+var white_ips = ['1','127.0.0.1'];
 var log4js_options = {
     reloadSecs: 3000 ,   // the interval to reload the log4js config file
     cwd : './log/'
@@ -132,6 +133,7 @@ module .exports = {
     login_required: login_required,
     mysql_options : mysql_options,
     log4js_options : log4js_options,
-    exclude_paths : exclude_paths
+    exclude_paths : exclude_paths,
+    white_ips : white_ips
 };
 

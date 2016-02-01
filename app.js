@@ -42,6 +42,7 @@ app.use(validator(config.exp_validator_custom));
 app.use(cookieParser());
 app.use(middleware.system.wrapperResponse);
 app.use('/v1/a/*',middleware.system.debugReqAndResParams);
+app.use('/v1/i/*',middleware.whiteIPList.isInWhiteList);
 app.use(session(config.exp_session_options));
 app.use(express.static(path.join(__dirname, 'public'),config.exp_static_options));
 if (config.login_required) {
@@ -50,7 +51,7 @@ if (config.login_required) {
 middleware.db.initdb();
 
 
-////  do authentication
+//  do authentication
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use('local',new LocalStrategy(middleware.passport.getLocalstrategyConfig(),middleware.passport.localStrategy));

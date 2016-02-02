@@ -64,7 +64,10 @@ module.exports = {
             logger.error('the obj[ ' + obj + ']to be assemble for update should be an instance of object and has it\'s own property...');
             throw new Error('the obj[ ' + obj + ']to be assemble for update should be an instance of object and has it\'s own property...');
         }
-        obj.created_by = req.session.user.id;
+        if (req.session.user) {
+          // If we are a login user, update the created_by value to the user_id
+          obj.created_by = req.session.user.id;
+        }
         obj.created_time = new Date();
         if (!ignoreUpdatedTime) {
             obj.updated_time = new Date();

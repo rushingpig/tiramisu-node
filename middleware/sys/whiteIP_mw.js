@@ -24,7 +24,6 @@ function WhiteIPMiddleware(){
  */
 WhiteIPMiddleware.isInWhiteList = (req,res,next) => {
     let clientIP = toolUtils.getClientIP(req).split(':').pop();
-    console.log(clientIP,'=========');
     if(config.white_ips.indexOf(clientIP.toString()) !== -1){
         next();
     }else{

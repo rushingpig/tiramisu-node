@@ -71,7 +71,8 @@ a.post('/order/reprint/apply',deliveryService.applyForRePrint); // 申请重新�
 //*********************
 //******** PUT ********
 //*********************
-a.put('/order/:orderId/delivery',orderService.allocateStation);  // 修改配送站 或者  分配配送站
+a.put('/order/:orderId/station',orderService.allocateStation);    // 分配配送站
+a.put('/order/:orderId/delivery',orderService.changeDelivery);  // 修改配送站
 a.put('/order/:orderId/validate',deliveryService.validate); // 检验重新打印的验证码
 a.put('/order/:orderId',orderService.editOrder(false));     // 保存
 a.put('/order/:orderId/submit',orderService.editOrder(true)); // 提交

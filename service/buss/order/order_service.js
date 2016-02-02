@@ -669,8 +669,60 @@ OrderService.prototype.cancelOrder = (req,res,next)=>{
         res.api();
     });
 };
-
+/**
+ * allocate station of the order
+ * @param req
+ * @param res
+ * @param next
+ */
 OrderService.prototype.allocateStation = (req,res,next)=>{
+    req.checkParams('orderId').notEmpty().isOrderId();
+    req.checkBody('delivery_id').isInt();
+    req.checkBody('delivery_name').notEmpty();
+    req.checkBody('updated_time').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let order_id = systemUtils.getDBOrderId(req.params.orderId),
+        delivery_id = req.body.delivery_id,
+        delivery_name = req.body.delivery_name,
+        updated_time = req.body.updated_time;
+
+    let order_obj = {delivery_id};
+    let promise = orderDao.findOrderById(order_id).then((_res)=> {
+        if (toolUtils.isEmptyArray(_res)) {
+            throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
+        } else if (updated_time !== _res[0].updated_time) {
+            throw new TiramisuError(res_obj.OPTION_EXPIRED);
+        }
+        //===========for history begin=============
+        let current_order = _res[0],
+            order_history_obj = {order_id};
+        let option = '';
+
+        if (delivery_id != current_order.delivery_id) {
+            option += '修改{配送站}为{' + delivery_name + '}\n';
+        }
+
+        order_history_obj.option = option;
+        //===========for history end=============
+        let orderPromise = orderDao.updateOrder(systemUtils.assembleUpdateObj(req,order_obj),order_id);
+        let orderHistoryPromise = orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
+        return Promise.all([orderPromise,orderHistoryPromise]);
+    }).then(()=>{
+        res.api();
+    });
+    systemUtils.wrapService(res,next,promise);
+};
+/**
+ * modify the info of the order about delivery
+ * @param req
+ * @param res
+ * @param next
+ */
+OrderService.prototype.changeDelivery = (req,res,next)=>{
     req.checkParams('orderId').notEmpty().isOrderId();
     req.checkBody(allocateStation);
     let errors = req.validationErrors();
@@ -680,6 +732,7 @@ OrderService.prototype.allocateStation = (req,res,next)=>{
     }
     let order_id = systemUtils.getDBOrderId(req.params.orderId),
         delivery_id = req.body.delivery_id,
+        delivery_name = req.body.delivery_name,
         regionalism_id = req.body.regionalism_id,
         delivery_type = req.body.delivery_type,
         delivery_time = req.body.delivery_time,
@@ -700,7 +753,7 @@ OrderService.prototype.allocateStation = (req,res,next)=>{
             order_history_obj = {order_id};
         let option = '';
         if(delivery_type != current_order.delivery_type){
-            option += '修改{配送方式}为{' + Constant.DTD[delivery_name] + '}\n';
+            option += '修改{配送方式}为{' + Constant.DTD[delivery_type] + '}\n';
         }
         if (delivery_id != current_order.delivery_id) {
             option += '修改{配送站}为{' + delivery_name + '}\n';

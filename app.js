@@ -80,7 +80,6 @@ app.use('/v1/a/*',(err,req,res,next)=>{
         res.status(err.status);
         res.api(res_obj.GET_LOST,null);
     }else{
-        // do not use res.api();when the body is not json object,then an error will occur result in the function api has not been binding to res
         res.status(500);
         let resObj = res_obj.FAIL;
         resObj.err = err.message;

@@ -42,7 +42,12 @@ module.exports = {
     isInt: true
   },
   'pay_status': {
-    notEmpty: true
+    notEmpty: true,
+    isIn: {
+      options: [
+        ['COD', 'PAYED']
+      ]
+    }
   },
   'delivery_time': {
     notEmpty: true
@@ -59,14 +64,15 @@ module.exports = {
     notEmpty: true,
     isFloat: true
   },
+  'delivery_id': {
+    notEmpty: true,
+    isInt: true
+  },
   // Optional
   'greeting_card': {
     optional: true
   },
   'recipient_landmark': {
-    optional: true
-  },
-  'delivery_id': {
     optional: true
   },
   'remarks': {

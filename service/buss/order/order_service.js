@@ -167,7 +167,7 @@ OrderService.prototype.addExternalOrder = (req, res, next) => {
     params.recipient_name,
     params.recipient_mobile,
     params.recipient_landmark,
-    params.delivery_type || 'DELIVERY',
+    params.delivery_type,
     params.recipient_address)
     .then((recipientId) => {
       let orderObj = {
@@ -186,7 +186,9 @@ OrderService.prototype.addExternalOrder = (req, res, next) => {
         total_amount: params.total_amount,
         total_original_price: params.total_original_price,
         total_discount_price: params.total_discount_price,
-        greeting_card: params.greeting_card
+        greeting_card: params.greeting_card,
+        // TODO: change to future defined user/program
+        created_by: 1
       };
       orderObj = systemUtils.assembleInsertObj(req, orderObj);
       return orderDao.insertOrder(orderObj);
@@ -221,7 +223,8 @@ OrderService.prototype.addExternalOrder = (req, res, next) => {
       };
       let order_history_obj = {
         order_id: orderId,
-        option: '添加订单'
+        option: '添加订单',
+        created_by: 1
       };
       return orderDao.insertOrderFulltext(order_fulltext_obj).then(() => {
         return orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
@@ -460,7 +463,7 @@ OrderService.prototype.editOrder = function (is_submit) {
       if (is_submit) {
         option += '提交订单';
       } else {
-        option += '保存订单'
+        option += '保存订单';
       }
       order_history_obj.option = option;
       //===========for history end=============

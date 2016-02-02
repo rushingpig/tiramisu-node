@@ -12,6 +12,7 @@ const Constant = {};
  * @type {{}}
  */
 Constant.DT = {
+  // TODO: wrong spelling
     TAKETHEIR : 'TAKETHEIR',
     DELIVERY : 'DELIVERY'
 };

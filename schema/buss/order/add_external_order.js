@@ -1,7 +1,14 @@
 'use strict';
+var constant = require('../../../common/Constant');
+
 module.exports = {
   'delivery_type': {
-    notEmpty: true
+    notEmpty: true,
+    isIn: {
+      options: [
+        [constant.DT.TAKETHEIR, constant.DT.DELIVERY]
+      ]
+    }
   },
   'owner_name': {
     notEmpty: true

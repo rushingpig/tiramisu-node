@@ -20,14 +20,17 @@ var service = require('../../service'),
 
 var v = express.Router(config.exp_router_options);
 var a = express.Router(config.exp_router_options);
+var routerI = express.Router(config.exp_router_options);
 
 // router for normal http request
 router.use('/v',v);
 // router for xhr ajax request
 router.use('/a',a);
+// router for internal(whitelisted) http requests
+router.use('/i', routerI);
 
 // add order from external source
-v.post('/order', orderService.addExternalOrder);
+routerI.post('/order', orderService.addExternalOrder);
 //=====================router for business begin====================
 
 //*********************

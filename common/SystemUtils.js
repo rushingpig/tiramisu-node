@@ -61,8 +61,8 @@ module.exports = {
             throw new Error('the req object[' + req + 'must be the instance of IncomingMessage...');
         }
         if (toolUtils.isEmptyObject(obj)) {
-            throw new Error('the obj[ ' + obj + ']to be assemble for update should be an instance of object and has it\'s own property...');
             logger.error('the obj[ ' + obj + ']to be assemble for update should be an instance of object and has it\'s own property...');
+            throw new Error('the obj[ ' + obj + ']to be assemble for update should be an instance of object and has it\'s own property...');
         }
         obj.created_by = req.session.user.id;
         obj.created_time = new Date();
@@ -77,8 +77,8 @@ module.exports = {
             throw new Error('the req object[' + req + 'must be the instance of IncomingMessage...');
         }
         if (toolUtils.isEmptyObject(obj)) {
-            throw new Error('the obj[ ' + obj + ']to be assemble for update should be an instance of object and has it\'s own property...');
             logger.error('the obj[ ' + obj + ']to be assemble for update should be an instance of object and has it\'s own property...');
+            throw new Error('the obj[ ' + obj + ']to be assemble for update should be an instance of object and has it\'s own property...');
         }
         obj.updated_by = req.session.user.id;
         obj.updated_time = new Date();

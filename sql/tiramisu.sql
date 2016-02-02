@@ -11,7 +11,7 @@
  Target Server Version : 50626
  File Encoding         : utf-8
 
- Date: 01/12/2016 17:40:49 PM
+ Date: 02/02/2016 14:38:17 PM
 */
 
 SET NAMES utf8;
@@ -48,6 +48,9 @@ CREATE TABLE `buss_delivery_station` (
   `updated_by` int(11) DEFAULT NULL,
   `updated_time` datetime DEFAULT NULL,
   `del_flag` tinyint(1) DEFAULT '1',
+  `capacity` varchar(255) DEFAULT NULL COMMENT '产能  多少 个/天',
+  `deadline` varchar(255) DEFAULT NULL COMMENT '截止接单时间',
+  `coords` text COMMENT '配送的范围坐标列表',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='配送站';
 
@@ -55,7 +58,7 @@ CREATE TABLE `buss_delivery_station` (
 --  Records of `buss_delivery_station`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_delivery_station` VALUES ('1', '440307', '龙岗配送中心', null, null, '1', '2015-12-17 09:21:07', null, null, '0');
+INSERT INTO `buss_delivery_station` VALUES ('1', '110101', '沙井配送站', null, null, '1', '2015-12-17 09:21:07', null, null, '1', null, null, '[{\"longitude\":113.756041,\"latitude\":22.728996},{\"longitude\":113.810729,\"latitude\":22.625355},{\"longitude\":113.831934,\"latitude\":22.644414},{\"longitude\":113.836686,\"latitude\":22.646666},{\"longitude\":113.841811,\"latitude\":22.647604},{\"longitude\":113.846217,\"latitude\":22.650168},{\"longitude\":113.846751,\"latitude\":22.650264},{\"longitude\":113.849038,\"latitude\":22.650247},{\"longitude\":113.849644,\"latitude\":22.653791},{\"longitude\":113.848467,\"latitude\":22.654216},{\"longitude\":113.850493,\"latitude\":22.658939},{\"longitude\":113.883739,\"latitude\":22.65934},{\"longitude\":113.929984,\"latitude\":22.661908},{\"longitude\":113.964156,\"latitude\":22.684484},{\"longitude\":113.980541,\"latitude\":22.689352},{\"longitude\":113.975043,\"latitude\":22.697588},{\"longitude\":113.984242,\"latitude\":22.700189},{\"longitude\":113.989416,\"latitude\":22.703456},{\"longitude\":113.997896,\"latitude\":22.730859},{\"longitude\":113.998435,\"latitude\":22.739825},{\"longitude\":113.960257,\"latitude\":22.773352},{\"longitude\":113.951346,\"latitude\":22.793145},{\"longitude\":113.942794,\"latitude\":22.803273},{\"longitude\":113.916779,\"latitude\":22.819597},{\"longitude\":113.894896,\"latitude\":22.823927},{\"longitude\":113.886596,\"latitude\":22.80249},{\"longitude\":113.882661,\"latitude\":22.797751},{\"longitude\":113.869339,\"latitude\":22.796552},{\"longitude\":113.858856,\"latitude\":22.800649},{\"longitude\":113.843208,\"latitude\":22.797718},{\"longitude\":113.831709,\"latitude\":22.798251},{\"longitude\":113.823409,\"latitude\":22.795485},{\"longitude\":113.819133,\"latitude\":22.788655},{\"longitude\":113.813061,\"latitude\":22.787606},{\"longitude\":113.809737,\"latitude\":22.790438},{\"longitude\":113.80715,\"latitude\":22.788389},{\"longitude\":113.808838,\"latitude\":22.78474},{\"longitude\":113.80794,\"latitude\":22.781341},{\"longitude\":113.803341,\"latitude\":22.779609},{\"longitude\":113.799442,\"latitude\":22.776576},{\"longitude\":113.800736,\"latitude\":22.769045},{\"longitude\":113.799298,\"latitude\":22.760914},{\"longitude\":113.791034,\"latitude\":22.754649},{\"longitude\":113.772421,\"latitude\":22.746383}]');
 COMMIT;
 
 -- ----------------------------
@@ -71,7 +74,7 @@ CREATE TABLE `buss_order` (
   `pay_modes_id` int(10) unsigned DEFAULT NULL,
   `owner_name` varchar(255) DEFAULT NULL COMMENT '下单人姓名',
   `owner_mobile` varchar(255) DEFAULT NULL COMMENT '下单人手机',
-  `status` enum('CANCEL','UNTREATED','STATION','CONVERT','INLINE','DELIVERY','COMPLETED','EXCEPTION') NOT NULL DEFAULT 'UNTREATED' COMMENT '取消，未处理，分配配送站，已转换，生产中，配送员配送中，已完成，异常',
+  `status` enum('CANCEL','UNTREATED','TREATED','STATION','CONVERT','INLINE','DELIVERY','COMPLETED','EXCEPTION') NOT NULL DEFAULT 'UNTREATED' COMMENT '取消，未处理，分配配送站，已转换，生产中，配送员配送中，已完成，异常',
   `pay_status` enum('COD','REFUNDING','REFUNDED','PAYED') NOT NULL DEFAULT 'PAYED' COMMENT '货到付款，退款中，已退款，已付款',
   `is_submit` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否提交（0：false，1：true）',
   `is_deal` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否处理（0：false，1：true）',
@@ -89,7 +92,7 @@ CREATE TABLE `buss_order` (
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
   `merchant_id` int(11) DEFAULT NULL COMMENT '商户订单',
   `coupon` varchar(50) DEFAULT NULL COMMENT '团购券号',
-  `is_print` tinyint(1) DEFAULT '0' COMMENT '0:打印，1:未打印',
+  `print_status` enum('PRINTABLE','UNPRINTABLE','AUDITING','REPRINTABLE') DEFAULT 'PRINTABLE' COMMENT '可打印，不可打印，审核中，可重打印',
   `COD_amount` int(10) unsigned DEFAULT NULL COMMENT '未签收时货到付款实收',
   `unsignin_reason` varchar(255) DEFAULT NULL COMMENT '未签收理由',
   `late_minutes` int(10) unsigned DEFAULT NULL COMMENT '迟到分钟数',
@@ -98,16 +101,21 @@ CREATE TABLE `buss_order` (
   `payfor_type` enum('CASH','FULL_REFUND') DEFAULT NULL COMMENT '赔偿方式',
   `signin_time` datetime DEFAULT NULL COMMENT '签收时间',
   `submit_time` datetime DEFAULT NULL COMMENT '客服操作人员点击“提交”按钮时间',
+  `deliveryman_id` int(10) unsigned DEFAULT NULL COMMENT '配送员ID',
+  `exchange_time` datetime DEFAULT NULL COMMENT '订单转换时间',
+  `print_time` datetime DEFAULT NULL COMMENT '订单打印时间',
+  `greeting_card` varchar(255) DEFAULT NULL COMMENT '所有的祝福贺卡集合',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `IDX_UNQ_MID` (`merchant_id`),
   KEY `IDX_STATUS` (`status`),
   KEY `IDX_OWNER_MOBILE` (`owner_mobile`)
-) ENGINE=InnoDB AUTO_INCREMENT=10000012 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单详情表';
+) ENGINE=InnoDB AUTO_INCREMENT=10000019 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单详情表';
 
 -- ----------------------------
 --  Records of `buss_order`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_order` VALUES ('10000011', '5', '1', '1', null, '1', 'pigo残', '13480801761', 'CONVERT', 'PAYED', '0', '0', '2015-12-17 09:00~10:00', null, '备注信息', '0', '2000', '2000', '1000', '1', '2016-01-12 15:23:15', '1', '2016-01-12 16:51:27', '1', null, null, '0', null, null, null, null, null, null, null, '2016-01-12 15:23:15');
+INSERT INTO `buss_order` VALUES ('10000007', '8', '1', '2', null, '1', '朱正林', '13480801761', 'DELIVERY', 'COD', '1', '1', '2016-01-29 10:00:10:30', null, '少糖', null, '32000', null, null, '1', '2016-01-29 09:55:34', '1', '2016-01-29 18:07:54', '1', '1', null, 'REPRINTABLE', null, null, null, null, null, null, null, '2016-01-29 11:09:31', '1', '2016-01-29 11:11:12', '2016-01-29 11:24:21', null), ('10000008', '9', '1', '2', null, '1', '朱正林', '13480801761', 'TREATED', 'COD', '0', '1', '2016-01-13 11:00~12:00', null, '多趟', null, '5000', null, null, '1', '2016-01-29 13:25:13', '1', '2016-01-29 13:25:24', '1', '2', null, 'PRINTABLE', null, null, null, null, null, null, null, null, null, null, null, null), ('10000009', '10', '1', '5', null, '2', '朱正林', '13457575966', 'TREATED', 'COD', '0', '1', '2015-12-29 11:00~12:00', null, '备注', '0', '0', '0', '0', '1', '2016-01-29 15:42:56', null, '2016-01-29 15:42:56', '1', null, null, 'PRINTABLE', null, null, null, null, null, null, null, null, null, null, null, null), ('10000010', '11', '1', '5', null, '2', '朱正林', '13457575966', 'TREATED', 'COD', '0', '1', '2015-12-29 11:00~12:00', null, '备注', '0', '0', '0', '0', '1', '2016-01-29 15:51:03', null, '2016-01-29 15:51:03', '1', null, null, 'PRINTABLE', null, null, null, null, null, null, null, null, null, null, null, null), ('10000011', '12', '1', '2', null, '1', '朱正林', '13480801761', 'TREATED', 'COD', '0', '1', '2015-12-30 09:30~10:30', null, null, '0', '0', '0', '0', '1', '2016-01-29 15:58:12', null, '2016-01-29 15:58:12', '1', null, null, 'PRINTABLE', null, null, null, null, null, null, null, null, null, null, null, null), ('10000012', '13', '1', '4', null, '1', 'zzl', '13480801761', 'TREATED', 'COD', '0', '1', '2016-01-07 09:00~10:00', null, null, '0', '0', '0', '0', '1', '2016-01-29 15:59:33', null, '2016-01-29 15:59:33', '1', null, null, 'PRINTABLE', null, null, null, null, null, null, null, null, null, null, null, null), ('10000013', '14', '1', '4', null, '1', 'zzl', '13480801761', 'TREATED', 'COD', '0', '1', '2016-01-07 09:00~10:00', null, null, '0', '5000', '1200', '5000', '1', '2016-01-29 15:59:46', null, '2016-01-29 15:59:46', '1', null, null, 'PRINTABLE', null, null, null, null, null, null, null, null, null, null, null, null), ('10000014', '15', '1', '2', null, '1', '张三', '13309879988', 'TREATED', 'COD', '0', '1', '2016-01-05 13:00～14:00', null, '备注test', '1', '480', null, null, '1', '2016-02-02 13:30:11', null, '2016-02-02 13:30:11', '1', null, null, 'PRINTABLE', null, null, null, null, null, null, null, null, null, null, null, null), ('10000015', '15', '1', '2', null, '1', '张三', '13309879988', 'TREATED', 'COD', '0', '1', '2016-01-05 13:00～14:00', null, '备注test', '1', '480', null, null, '1', '2016-02-02 13:31:03', null, '2016-02-02 13:31:03', '1', null, null, 'PRINTABLE', null, null, null, null, null, null, null, null, null, null, null, null), ('10000016', '16', '1', '2', null, '1', '张三', '13309879988', 'TREATED', 'COD', '0', '1', '2016-01-05 13:00～14:00', null, '备注test', '1', '480', null, null, '1', '2016-02-02 13:31:22', null, '2016-02-02 13:31:22', '1', null, null, 'PRINTABLE', null, null, null, null, null, null, null, null, null, null, null, null), ('10000017', '17', '1', '2', null, '1', '张三', '13309879988', 'TREATED', 'COD', '0', '1', '2016-01-05 13:00～14:00', null, '备注test', '1', '480', null, null, '1', '2016-02-02 13:31:23', null, '2016-02-02 13:31:23', '1', null, null, 'PRINTABLE', null, null, null, null, null, null, null, null, null, null, null, null), ('10000018', '18', '1', '2', null, '1', '张三', '13309879988', 'TREATED', 'COD', '0', '1', '2016-01-05 13:00～14:00', null, '备注test', '1', '480', null, null, '1', '2016-02-02 13:31:25', null, '2016-02-02 13:31:25', '1', null, null, 'PRINTABLE', null, null, null, null, null, null, null, null, null, null, null, null);
 COMMIT;
 
 -- ----------------------------
@@ -125,14 +133,14 @@ CREATE TABLE `buss_order_fulltext` (
   `show_order_id` varchar(16) DEFAULT NULL,
   `del_flag` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`order_id`),
-  FULLTEXT KEY `IDX_FT` (`owner_name`,`owner_mobile`,`recipient_name`,`recipient_mobile`,`recipient_address`,`landmark`,`show_order_id`)
+  FULLTEXT KEY `IDX_FL` (`owner_name`,`owner_mobile`,`recipient_name`,`recipient_mobile`,`recipient_address`,`landmark`,`show_order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='供订单全文搜索';
 
 -- ----------------------------
 --  Records of `buss_order_fulltext`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_order_fulltext` VALUES ('10000011', 'p i g o E6AE8B ', '13480801761', 'E69CB1 E6ADA3 E69E97 ', '13480801761', 'E4B8BD E99B85 E69FA5 E5B094 E9A1BF E98592 E5BA97 ', 'E4B8AD E585B4 E5A4A7 E58EA6 b b b b b b b b b b b b ', '2016011210000011', '1');
+INSERT INTO `buss_order_fulltext` VALUES ('10000007', 'E69CB1 E6ADA3 E69E97 ', '13480801761', 'E89DB4 E89DB6 ', '18612345678', 'E5B9BF E4B89C E6B7B1 E59CB3 E4B8BD E99B85 E69FA5 E5B094 E9A1BF ', '', '2016012910000007', '1'), ('10000008', 'E69CB1 E6ADA3 E69E97 ', '13480801761', 'E89DB4 E89DB6 ', '13566564646', '- - E8AFB7 E98089 E68BA9 - - ', '', '2016012910000008', '1'), ('10000009', 'E69CB1 E6ADA3 E69E97 ', '13457575966', 'E89DB4 E89DB6 ', '13457575966', 'E4B88A E6B5B7 E4B88A E6B5B7 E5B882 E99D99 E5AE89 E58CBA E98592 E5BA97 ', 'E59BBE E4B9A6 E9A686 ', '2016012910000009', '1'), ('10000010', 'E69CB1 E6ADA3 E69E97 ', '13457575966', 'E89DB4 E89DB6 ', '13457575966', 'E4B88A E6B5B7 E4B88A E6B5B7 E5B882 E99D99 E5AE89 E58CBA E98592 E5BA97 ', 'E59BBE E4B9A6 E9A686 ', '2016012910000010', '1'), ('10000013', 'z z l ', '13480801761', 'z z l ', '13480801761', 'E5A4A9 E6B4A5 E5A4A9 E6B4A5 E5B882 E5928C E5B9B3 E58CBA d d ', 'd d ', '2016012910000013', '1'), ('10000014', 'E5BCA0 E4B889 ', '13309879988', 'E5BCA0 E4B889 ', '13309879988', 'E5B9BF E4B89C E6B7B1 E59CB3 e e e e E8A197 ', 'w w w E5BBBA E7AD91 ', '2016020210000014', '1'), ('10000015', 'E5BCA0 E4B889 ', '13309879988', 'E5BCA0 E4B889 ', '13309879988', 'E5B9BF E4B89C E6B7B1 E59CB3 e e e e E8A197 ', 'w w w E5BBBA E7AD91 ', '2016020210000015', '1'), ('10000016', 'E5BCA0 E4B889 ', '13309879988', 'E5BCA0 E4B889 ', '13309879988', 'E5B9BF E4B89C E6B7B1 E59CB3 e e e e E8A197 ', 'w w w E5BBBA E7AD91 ', '2016020210000016', '1'), ('10000017', 'E5BCA0 E4B889 ', '13309879988', 'E5BCA0 E4B889 ', '13309879988', 'E5B9BF E4B89C E6B7B1 E59CB3 e e e e E8A197 ', 'w w w E5BBBA E7AD91 ', '2016020210000017', '1'), ('10000018', 'E5BCA0 E4B889 ', '13309879988', 'E5BCA0 E4B889 ', '13309879988', 'E5B9BF E4B89C E6B7B1 E59CB3 e e e e E8A197 ', 'w w w E5BBBA E7AD91 ', '2016020210000018', '1');
 COMMIT;
 
 -- ----------------------------
@@ -142,22 +150,18 @@ DROP TABLE IF EXISTS `buss_order_history`;
 CREATE TABLE `buss_order_history` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '订单号',
   `order_id` int(10) unsigned DEFAULT NULL COMMENT '数据库order id',
-  `owner_name` varchar(255) NOT NULL,
-  `owner_mobile` varchar(255) NOT NULL,
   `option` varchar(255) NOT NULL COMMENT '操作记录',
   `created_by` varchar(255) NOT NULL COMMENT '创建人',
   `created_time` datetime NOT NULL COMMENT '创建时间',
-  `updated_by` varchar(255) DEFAULT NULL COMMENT '记录更新操作者',
-  `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10000018 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单详情历史记录表';
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单详情历史记录表';
 
 -- ----------------------------
 --  Records of `buss_order_history`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_order_history` VALUES ('10000014', '10000011', '张三', '13309879988', '添加订单', '1', '2016-01-12 15:23:15', null, '2016-01-12 15:23:15', '1'), ('10000015', '10000011', 'pigo残', '13480801761', '修改{配送时间}为{2015-12-17 09:00~10:00}\n修改收货地址\n增加{流氓双拼}\n删除{榴芒双拼}\n保存订单', '1', '2016-01-12 15:26:49', null, '2016-01-12 15:26:49', '1'), ('10000016', '10000011', 'pigo残', '13480801761', '删除{榴芒双拼}\n保存订单', '1', '2016-01-12 16:50:18', null, '2016-01-12 16:50:18', '1'), ('10000017', '10000011', 'pigo残', '13480801761', '增加{芒果茫茫}\n删除{榴芒双拼}\n删除{榴芒双拼}\n保存订单', '1', '2016-01-12 16:51:27', null, '2016-01-12 16:51:27', '1');
+INSERT INTO `buss_order_history` VALUES ('26', '10000007', '添加订单', '1', '2016-01-29 09:55:34', '1'), ('27', '10000007', '修改收货地址\n保存订单', '1', '2016-01-29 10:03:48', '1'), ('28', '10000007', '提交订单', '1', '2016-01-29 11:09:31', '1'), ('29', '10000007', '转换订单', '1', '2016-01-29 11:11:12', '1'), ('30', '10000007', '分配配送员:\n配送员1     8675', '1', '2016-01-29 11:14:03', '1'), ('31', '10000007', '打印订单', '1', '2016-01-29 11:18:27', '1'), ('32', '10000007', '打印订单', '1', '2016-01-29 11:24:21', '1'), ('33', '10000007', '分配配送员:\n系统管理员     8675', '1', '2016-01-29 11:27:01', '1'), ('34', '10000008', '添加订单', '1', '2016-01-29 13:25:13', '1'), ('35', '10000008', '修改收货地址\n保存订单', '1', '2016-01-29 13:25:24', '1'), ('36', '10000009', '添加订单', '1', '2016-01-29 15:42:56', '1'), ('37', '10000010', '添加订单', '1', '2016-01-29 15:51:03', '1'), ('38', '10000013', '添加订单', '1', '2016-01-29 15:59:46', '1'), ('39', '10000007', '修改{配送时间}为{2016-01-29 10:00:10:30}\n修改收货地址\n', '1', '2016-01-29 17:10:58', '1'), ('40', '10000007', '修改收货地址\n', '1', '2016-01-29 17:12:09', '1'), ('41', '10000007', '修改收货地址\n', '1', '2016-01-29 18:07:54', '1'), ('42', '10000014', '添加订单', '1', '2016-02-02 13:30:11', '1'), ('43', '10000015', '添加订单', '1', '2016-02-02 13:31:03', '1'), ('44', '10000016', '添加订单', '1', '2016-02-02 13:31:22', '1'), ('45', '10000017', '添加订单', '1', '2016-02-02 13:31:23', '1'), ('46', '10000018', '添加订单', '1', '2016-02-02 13:31:25', '1');
 COMMIT;
 
 -- ----------------------------
@@ -188,7 +192,7 @@ CREATE TABLE `buss_order_sku` (
 --  Records of `buss_order_sku`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_order_sku` VALUES ('10000011', '1', '2', '巧克力牌xxx', '祝福语xxx', '1', '自定义名称xxx', '自定义描述xxx', '180', null, '0', null, null, null, null), ('10000011', '2', '3', '哈哈大', '哈哈', '0', '呵呵名称', '呵呵', '800', null, '0', null, null, null, '2016-01-12 16:50:18'), ('10000011', '3', '3', '生日快乐', '生日快乐', '0', '自定义名称', '自定义描述', '800', null, '1', null, null, '1', '2016-01-12 16:51:27'), ('10000011', '4', '3', '哈哈大', '哈哈', '0', '呵呵名称', '呵呵', '800', null, '1', '1', '2016-01-12 16:51:27', null, '2016-01-12 16:51:27');
+INSERT INTO `buss_order_sku` VALUES ('10000007', '1', '2', '', '', '1', '', '', '80', '160', '1', null, null, '1', '2016-01-29 11:09:31'), ('10000007', '3', '1', '生日快乐', '生日快乐', '1', '无', '', '60', '60', '1', null, null, '1', '2016-01-29 11:09:31'), ('10000007', '4', '2', '', '', '1', '', '', '50', '100', '1', null, null, '1', '2016-01-29 11:09:31'), ('10000008', '4', '1', '', '', '1', '', '', '50', '50', '1', null, null, '1', '2016-01-29 13:25:24'), ('10000013', '4', '1', '', '', '1', '', '', '50', '50', '1', null, null, null, null), ('10000015', '1', '2', '巧克力牌xxx', '祝福语xxx', '1', '自定义名称xxx', '自定义描述xxx', '180', '360', '1', null, null, null, null), ('10000015', '2', '5', '巧克力牌xxx', '祝福语xxx', '1', '自定义名称xxx', '自定义描述xxx', '300', '1500', '1', null, null, null, null), ('10000016', '1', '2', '巧克力牌xxx', '祝福语xxx', '1', '自定义名称xxx', '自定义描述xxx', '180', '360', '1', null, null, null, null), ('10000016', '2', '5', '巧克力牌xxx', '祝福语xxx', '1', '自定义名称xxx', '自定义描述xxx', '300', '1500', '1', null, null, null, null), ('10000017', '1', '2', '巧克力牌xxx', '祝福语xxx', '1', '自定义名称xxx', '自定义描述xxx', '180', '360', '1', null, null, null, null), ('10000017', '2', '5', '巧克力牌xxx', '祝福语xxx', '1', '自定义名称xxx', '自定义描述xxx', '300', '1500', '1', null, null, null, null), ('10000018', '1', '2', '巧克力牌xxx', '祝福语xxx', '1', '自定义名称xxx', '自定义描述xxx', '180', '360', '1', null, null, null, null), ('10000018', '2', '5', '巧克力牌xxx', '祝福语xxx', '1', '自定义名称xxx', '自定义描述xxx', '300', '1500', '1', null, null, null, null);
 COMMIT;
 
 -- ----------------------------
@@ -254,22 +258,23 @@ CREATE TABLE `buss_print_apply` (
   `status` enum('UNAUDIT','AUDITED','AUDITFAILED') NOT NULL DEFAULT 'UNAUDIT' COMMENT '''待审核'',''审核通过'',''审核不通过''',
   `audit_opinion` varchar(100) DEFAULT NULL COMMENT '审核意见',
   `validate_code` varchar(6) DEFAULT NULL COMMENT '短信验证码',
-  `is_reprint` tinyint(1) DEFAULT '0' COMMENT '是否已经重新打印',
   `reprint_time` datetime DEFAULT NULL COMMENT '重新打印时间',
   `created_by` int(11) unsigned NOT NULL COMMENT '申请人',
   `created_time` datetime DEFAULT NULL,
   `updated_by` int(11) unsigned DEFAULT NULL COMMENT '审核人',
   `updated_time` datetime DEFAULT NULL,
+  `is_reprint` tinyint(1) DEFAULT '0' COMMENT '是否已经重新打印',
+  `del_flag` tinyint(1) DEFAULT '1' COMMENT '删除标志',
   PRIMARY KEY (`id`),
   KEY `IDX_ORDERID` (`order_id`),
-  KEY `IDX_QUERY` (`status`,`is_reprint`,`created_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='申请重新打印订单表';
+  KEY `IDX_QUERY` (`status`,`created_time`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='申请重新打印订单表';
 
 -- ----------------------------
 --  Records of `buss_print_apply`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_print_apply` VALUES ('19', '10000002', '2016010610000002', '手抖了', '13480801761', '13523535353', 'AUDITED', '准许重新打印', null, '0', null, '1', '2016-01-06 10:55:20', null, null), ('20', '10000002', '2016010610000002', '手抖了', '13480801761', '13523535353', 'UNAUDIT', null, null, '0', null, '1', '2016-01-06 10:55:21', null, null), ('21', '10000002', '2016010610000002', '手抖了', '13480801761', '13523535353', 'AUDITED', '准许重新打印', '133499', '0', null, '1', '2016-01-06 10:55:21', null, null);
+INSERT INTO `buss_print_apply` VALUES ('1', '10000007', '2016012910000007', '手抖了', '13480801761', '13556654544', 'AUDITED', '原谅你了', '719495', null, '1', '2016-01-29 11:25:38', '1', '2016-01-29 11:30:56', '0', '1');
 COMMIT;
 
 -- ----------------------------
@@ -345,7 +350,7 @@ CREATE TABLE `buss_product_sku` (
 --  Records of `buss_product_sku`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_product_sku` VALUES ('1', '1', '1磅', '美团', '800', '0', '0', null, '3', null, null, null, null, null), ('2', '1', '2磅', '大众', '700', '0', '0', null, '2', null, null, null, null, null), ('3', '1', '1磅', '大众', '600', '0', '0', null, '0', null, null, null, null, null), ('4', '2', '1磅', '美团', '500', '0', '0', null, '1', null, null, null, null, null);
+INSERT INTO `buss_product_sku` VALUES ('1', '1', '1磅', '美团', '8000', '0', '0', null, '3', null, null, null, null, null), ('2', '1', '2磅', '大众', '7000', '0', '0', null, '2', null, null, null, null, null), ('3', '1', '1磅', '大众', '6000', '0', '0', null, '0', null, null, null, null, null), ('4', '2', '1磅', '美团', '5000', '0', '0', null, '1', null, null, null, null, null);
 COMMIT;
 
 -- ----------------------------
@@ -366,13 +371,13 @@ CREATE TABLE `buss_recipient` (
   `updated_time` datetime DEFAULT NULL,
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '删除标志',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='收货人信息和收件方式';
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='收货人信息和收件方式';
 
 -- ----------------------------
 --  Records of `buss_recipient`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_recipient` VALUES ('5', '110100', '朱正林', '13480801761', '中兴大厦bbbbbbbbbbbb', 'TAKETHEIR', '丽雅查尔顿酒店', '1', '2016-01-12 15:23:15', '1', '2016-01-12 16:51:27', '1');
+INSERT INTO `buss_recipient` VALUES ('5', '330204', '张三', '13309879988', 'www建筑', 'DELIVERY', 'eeee街', '1', '2016-01-21 18:54:47', null, '2016-01-21 18:54:47', '1'), ('6', '440305', '蝴蝶', '18612345678', '中兴大厦', 'DELIVERY', '丽雅查尔顿酒店', '1', '2016-01-29 09:53:41', null, '2016-01-29 09:53:41', '1'), ('7', '440305', '蝴蝶', '18612345678', '中兴大厦', 'DELIVERY', '丽雅查尔顿酒店', '1', '2016-01-29 09:53:51', null, '2016-01-29 09:53:51', '1'), ('8', '110106', '蝴蝶', '18612345678', '', 'TAKETHEIR', '丽雅查尔顿', '1', '2016-01-29 09:55:34', '1', '2016-01-29 18:07:54', '1'), ('9', '440305', '蝴蝶', '13566564646', '', 'TAKETHEIR', '--请选择--', '1', '2016-01-29 13:25:13', '1', '2016-01-29 13:25:24', '1'), ('10', '310106', '蝴蝶', '13457575966', '图书馆', 'DELIVERY', '酒店', '1', '2016-01-29 15:42:56', null, '2016-01-29 15:42:56', '1'), ('11', '310106', '蝴蝶', '13457575966', '图书馆', 'DELIVERY', '酒店', '1', '2016-01-29 15:51:03', null, '2016-01-29 15:51:03', '1'), ('12', '120101', '朱正林', '13480801761', '额', 'DELIVERY', '嗯', '1', '2016-01-29 15:58:12', null, '2016-01-29 15:58:12', '1'), ('13', '120101', 'zzl', '13480801761', 'dd', 'DELIVERY', 'dd', '1', '2016-01-29 15:59:33', null, '2016-01-29 15:59:33', '1'), ('14', '120101', 'zzl', '13480801761', 'dd', 'DELIVERY', 'dd', '1', '2016-01-29 15:59:46', null, '2016-01-29 15:59:46', '1'), ('15', '330204', '张三', '13309879988', 'www建筑', 'DELIVERY', 'eeee街', '1', '2016-02-02 13:31:03', null, '2016-02-02 13:31:03', '1'), ('16', '330204', '张三', '13309879988', 'www建筑', 'DELIVERY', 'eeee街', '1', '2016-02-02 13:31:22', null, '2016-02-02 13:31:22', '1'), ('17', '330204', '张三', '13309879988', 'www建筑', 'DELIVERY', 'eeee街', '1', '2016-02-02 13:31:23', null, '2016-02-02 13:31:23', '1'), ('18', '330204', '张三', '13309879988', 'www建筑', 'DELIVERY', 'eeee街', '1', '2016-02-02 13:31:25', null, '2016-02-02 13:31:25', '1');
 COMMIT;
 
 -- ----------------------------
@@ -398,7 +403,7 @@ CREATE TABLE `buss_shop` (
 --  Records of `buss_shop`
 -- ----------------------------
 BEGIN;
-INSERT INTO `buss_shop` VALUES ('1', '440307', '龙岗区龙岗店', '龙岗店', '8:00~23:00', null, null, null, '1', '2015-12-21 10:15:44', '1');
+INSERT INTO `buss_shop` VALUES ('1', '110101', '龙岗区龙岗店', '龙岗店', '8:00~23:00', null, null, null, '1', '2015-12-21 10:15:44', '1');
 COMMIT;
 
 -- ----------------------------
@@ -518,23 +523,6 @@ CREATE TABLE `sys_role_menu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色-菜单';
 
 -- ----------------------------
---  Table structure for `sys_role_station`
--- ----------------------------
-DROP TABLE IF EXISTS `sys_role_station`;
-CREATE TABLE `sys_role_station` (
-  `role_id` int(10) unsigned NOT NULL,
-  `station_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`role_id`,`station_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Records of `sys_role_station`
--- ----------------------------
-BEGIN;
-INSERT INTO `sys_role_station` VALUES ('1', '1');
-COMMIT;
-
--- ----------------------------
 --  Table structure for `sys_user`
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_user`;
@@ -559,18 +547,20 @@ CREATE TABLE `sys_user` (
   `updated_time` datetime NOT NULL COMMENT '更新时间',
   `remarks` varchar(255) DEFAULT NULL COMMENT '备注信息',
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '删除标记',
+  `city_id` int(10) unsigned DEFAULT NULL COMMENT '所属城市',
+  `station_id` int(11) DEFAULT NULL COMMENT '配送站ID',
   PRIMARY KEY (`id`),
   KEY `sys_user_office_id` (`office_id`),
   KEY `sys_user_login_name` (`username`),
   KEY `sys_user_update_date` (`updated_time`),
   KEY `sys_user_del_flag` (`del_flag`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='用户表';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='用户表';
 
 -- ----------------------------
 --  Records of `sys_user`
 -- ----------------------------
 BEGIN;
-INSERT INTO `sys_user` VALUES ('1', '2', 'admin', '202cb962ac59075b964b07152d234b70', '0001', '系统管理员', 'admin@xfxb.net', '8675', '8675', null, null, '0:0:0:0:0:0:0:1', '2015-11-20 19:49:08', '1', '1', '2013-05-27 08:00:00', '1', '2013-05-27 08:00:00', '最高管理员', '0');
+INSERT INTO `sys_user` VALUES ('1', '2', 'admin', '202cb962ac59075b964b07152d234b70', '0001', '系统管理员', 'admin@xfxb.net', '8675', '8675', null, null, '0:0:0:0:0:0:0:1', '2015-11-20 19:49:08', '1', '1', '2013-05-27 08:00:00', '1', '2013-05-27 08:00:00', '最高管理员', '0', '110100', '1'), ('2', '2', 'user1', '202cb962ac59075b964b07152d234b70', '0001', '配送员1', 'admin@xfxb.net', '8675', '8675', null, null, '0:0:0:0:0:0:0:1', '2015-11-20 19:49:08', '1', '1', '2013-05-27 08:00:00', '1', '2013-05-27 08:00:00', '最高管理员', '0', '110100', '1');
 COMMIT;
 
 -- ----------------------------

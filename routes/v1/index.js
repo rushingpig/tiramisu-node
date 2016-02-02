@@ -26,7 +26,8 @@ router.use('/v',v);
 // router for xhr ajax request
 router.use('/a',a);
 
-
+// add order from external source
+v.post('/order', orderService.addExternalOrder);
 //=====================router for business begin====================
 
 //*********************

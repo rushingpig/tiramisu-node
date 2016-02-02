@@ -5,7 +5,7 @@
  * @email  : zhenglin.zhu@xfxb.net
  * @version: v0.0.1
  */
-"use strict";
+'use strict';
 var mocha = require('mocha');
 var chai = require('chai');
 var expect = chai.expect,
@@ -138,12 +138,12 @@ describe('test for order module...', function () {
             "amount": 1500
           }
         ]
-      },
-        res_body = {
+      };
+      const res_body = {
           "code": "0000",
           "msg": "everything goes well -> enjoy yourself...",
           "data": {}
-        };
+      };
       agent.post('/v1/a/order')
         .type('application/json')
         .send(req_body)

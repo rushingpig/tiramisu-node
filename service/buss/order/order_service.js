@@ -51,8 +51,7 @@ OrderService.prototype.addOrder = (req, res, next) => {
   req.checkBody(addOrder);
   let errors = req.validationErrors();
   if (errors) {
-    res.api(res_obj.INVALID_PARAMS, errors);
-    return;
+    return res.api(res_obj.INVALID_PARAMS, errors);
   }
   let delivery_type = req.body.delivery_type,
     owner_name = req.body.owner_name,
@@ -76,8 +75,6 @@ OrderService.prototype.addOrder = (req, res, next) => {
     prefix_address = req.body.prefix_address,
     greeting_card = req.body.greeting_card;
 
-
-
   let promise = OrderService.prototype.addRecipient(req,
     regionalism_id,
     recipient_name,
@@ -85,9 +82,6 @@ OrderService.prototype.addOrder = (req, res, next) => {
     recipient_landmark,
     delivery_type,
     recipient_address).then((recipientId) => {
-      if (!recipientId) {
-        throw new TiramisuError(res_obj.FAIL);
-      }
       let orderObj = {
         recipient_id: recipientId,
         delivery_id: delivery_id,
@@ -149,6 +143,90 @@ OrderService.prototype.addOrder = (req, res, next) => {
         return orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
       }).then(() => {
         return orderDao.batchInsertOrderSku(params);
+      });
+    }).then((_re) => {
+      if (!_re) {
+        throw new TiramisuError(res_obj.FAIL);
+      }
+      res.api();
+    });
+  systemUtils.wrapService(res, next, promise);
+};
+
+OrderService.prototype.addExternalOrder = (req, res, next) => {
+  req.checkBody(schema.addExternalOrder);
+  let errors = req.validationErrors();
+  if (errors) {
+    return res.api(res_obj.INVALID_PARAMS, errors);
+  }
+  let params = req.body;
+
+  let promise = OrderService.prototype.addRecipient(
+    req,
+    params.regionalism_id,
+    params.recipient_name,
+    params.recipient_mobile,
+    params.recipient_landmark,
+    params.delivery_type || 'DELIVERY',
+    params.recipient_address)
+    .then((recipientId) => {
+      let orderObj = {
+        recipient_id: recipientId,
+        delivery_id: params.delivery_id,
+        src_id: params.src_id,
+        pay_modes_id: params.pay_modes_id,
+        pay_status: params.pay_status,
+        owner_name: params.owner_name,
+        owner_mobile: params.owner_mobile,
+        is_submit: 0,
+        is_deal: 1,
+        status: Constant.OS.TREATED,
+        remarks: params.remarks,
+        delivery_time: params.delivery_time,
+        total_amount: params.total_amount,
+        total_original_price: params.total_original_price,
+        total_discount_price: params.total_discount_price,
+        greeting_card: params.greeting_card
+      };
+      orderObj = systemUtils.assembleInsertObj(req, orderObj);
+      return orderDao.insertOrder(orderObj);
+    }).then((orderId) => {
+      let orders = [];
+      if (toolUtils.isEmptyArray(params.products)) {
+        throw new TiramisuError(res_obj.ORDER_NO_PRODUCT);
+      }
+      params.products.forEach(product => {
+        orders.push([
+          orderId,
+          product.sku_id,
+          product.num,
+          product.choco_board || '',
+          product.greeting_card || '',
+          product.atlas || 0,
+          product.custom_name || '',
+          product.custom_desc || '',
+          product.discount_price || 0,
+          product.amount || 0
+        ]);
+      });
+      let order_fulltext_obj = {
+        order_id: orderId,
+        show_order_id: systemUtils.getShowOrderId(orderId, new Date()),
+        owner_name: systemUtils.encodeForFulltext(params.owner_name),
+        owner_mobile: params.owner_mobile,
+        recipient_name: systemUtils.encodeForFulltext(params.recipient_name),
+        recipient_mobile: params.recipient_mobile,
+        recipient_address: systemUtils.encodeForFulltext(params.prefix_address + params.recipient_address),
+        landmark: systemUtils.encodeForFulltext(params.recipient_landmark)
+      };
+      let order_history_obj = {
+        order_id: orderId,
+        option: '添加订单'
+      };
+      return orderDao.insertOrderFulltext(order_fulltext_obj).then(() => {
+        return orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
+      }).then(() => {
+        return orderDao.batchInsertOrderSku(orders);
       });
     }).then((_re) => {
       if (!_re) {

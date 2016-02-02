@@ -42,7 +42,10 @@ const URL = (function(){
     order_sign: '/order/:orderId/signin',
     order_unsign: '/order/:orderId/unsignin',
     order_opt_record: '/order/:orderId/history',
-    order_exception: '//order/:orderId/exception',
+    order_exception: '/order/:orderId/exception',
+    cancel_order: '/order/:orderId/cancel',
+    alter_delivery: '/order/:orderId/delivery',
+    alter_station: '/order/:orderId/station',
 
     //产品
     categories: '/product/categories',
@@ -66,6 +69,7 @@ const URL = (function(){
     //地址
     stations: '/stations', //配送站
     shops: '/district/:districtId/shops', //门店
+    auto_loc: '/delivery/autoAllocate', //自动分配配送站
   };
 
   for(var a in url){

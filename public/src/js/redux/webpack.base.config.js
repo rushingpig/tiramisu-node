@@ -12,6 +12,7 @@ module.exports = {
   resolve: {
     alias: {
       'utils': path.join(__dirname, './utils'),
+      'mixins': path.join(__dirname, './mixins'),
       'reducers': path.join(__dirname, './reducers'),
       'common': path.join(__dirname, './components/common'),
       'actions': path.join(__dirname, './actions'),

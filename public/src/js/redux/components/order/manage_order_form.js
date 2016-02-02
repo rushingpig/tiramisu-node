@@ -2,18 +2,18 @@ import React, {Component, PropTypes} from 'react';
 import {render, findDOMNode} from 'react-dom';
 import { reduxForm } from 'redux-form';
 
-import MyMap from 'utils/MyMap';
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import Pagination from 'common/pagination';
 import LazyLoad from 'utils/lazy_load';
-import Utils from 'utils/index';
+import { Noty } from 'utils/index';
 import history from 'history_instance';
 
 import HistoryOrders from './manage_history_orders';
 
 import { DELIVERY_TO_HOME, DELIVERY_TO_STORE,
   SELECT_DEFAULT_VALUE, INVOICE } from 'config/app.config';
+import autoMatchDeliveryStations from 'mixins/map';
 
 const validate = (values, {form}) => {
   const errors = {};
@@ -32,7 +32,7 @@ const validate = (values, {form}) => {
   _v('owner_mobile');
   _v('recipient_name');
   _v('recipient_mobile');
-  _v('recipient_landmark');
+  // _v('recipient_landmark');
   _v('delivery_date');
 
   _v_selsect('regionalism_id');
@@ -48,7 +48,7 @@ const validate = (values, {form}) => {
   //自提时，则不需建筑物字段, 但地址则为相应的门店地址
   }else if(values.delivery_type == DELIVERY_TO_STORE){
     delete errors.recipient_landmark;
-    _v_selsect('recipient_address'); //门店
+    _v_selsect('recipient_shop_address'); //门店
   }
 
   console.log(errors);
@@ -64,6 +64,7 @@ class ManageAddForm extends Component {
       selected_order_src_level1_id: SELECT_DEFAULT_VALUE,
     };
     this._check = this._check.bind(this);
+    this.autoMatchDeliveryStations = autoMatchDeliveryStations.bind(this);
   }
   render(){
     var {
@@ -75,7 +76,8 @@ class ManageAddForm extends Component {
         owner_mobile,
         recipient_name, //下单人姓名
         recipient_mobile,
-        recipient_address, //收货人详细地址----》送货上门 ，当门店自提时，则是门店地址
+        recipient_address, //收货人详细地址----》配送上门 ，
+        recipient_shop_address, //收货人详细地址----》门店自提(实际上是门店地址)
         province_id,
         city_id,
         regionalism_id,    //区ID
@@ -161,11 +163,8 @@ class ManageAddForm extends Component {
         <Select ref="province" options={provinces} {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} />{' '}
         <Select ref="city" options={cities} {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} />{' '}
         <Select ref="district" options={districts} {...regionalism_id} onChange={this.onDistrictChange.bind(this, regionalism_id.onChange)} className={`${regionalism_id.error}`} />{' '}
-        {
-          delivery_type.value == DELIVERY_TO_HOME
-            ? <input ref="recipient_address" {...recipient_address} className={`form-control input-xs ${recipient_address.error}`} type="text" />
-            : <Select ref="shop" options={delivery_shops} {...recipient_address} className={`${recipient_address.error}`} />
-        }
+        <input ref="recipient_address" {...recipient_address} className={`form-control input-xs ${recipient_address.error} ${delivery_type.value == DELIVERY_TO_HOME ? '' : 'hidden'}`} type="text" />
+        <Select ref="shop" options={delivery_shops} {...recipient_shop_address} className={`${recipient_shop_address.error} ${delivery_type.value == DELIVERY_TO_HOME ? 'hidden' : ''}`} />
       </div>
       {
         delivery_type.value == DELIVERY_TO_HOME
@@ -177,7 +176,7 @@ class ManageAddForm extends Component {
       }
       <div className="form-group form-inline">
         <label>{'　配送中心：'}</label>
-        <Select {...delivery_id} options={delivery_stations} className={`form-select ${delivery_id.error}`} ref="delivery_center" />
+        <Select {...delivery_id} options={delivery_stations} className={`form-select transition ${delivery_id.error}`} ref="delivery_center" />
       </div>
       <div className="form-group form-inline">
         <label>{'　订单来源：'}</label>
@@ -280,7 +279,7 @@ class ManageAddForm extends Component {
 
         callback.call(this, form_data);
       }else{
-        Utils.Noty('warning', '请填写完整');
+        Noty('warning', '请填写完整');
       }
     }, 0);
   }
@@ -290,29 +289,29 @@ class ManageAddForm extends Component {
   handleCreateOrder(form_data){
     this.props.actions.createOrder(form_data)
       .done(function(){
-        Utils.Noty('success', '保存成功');
+        Noty('success', '保存成功');
         history.push('/om/index');
       })
       .fail(function(){
-        Utils.Noty('error', '保存异常');
+        Noty('error', '保存异常');
       });
   }
   handleSaveOrder(form_data){
     this.props.actions.saveOrder(form_data)
       .done(function(){
-        Utils.Noty('success', '保存成功')
+        Noty('success', '保存成功')
         this.props.actions.getOrderById(form_data.order_id).fail(function(){history.go(0);}.bind(this));
       }.bind(this))
       .fail(function(){
-        Utils.Noty('error', '保存异常');
+        Noty('error', '保存异常');
       });
   }
   handleSubmitOrder(form_data){
     this.props.actions.submitOrder(form_data).done(function(){
-      Utils.Noty('success', '已成功提交！');
+      Noty('success', '已成功提交！');
       history.push('/om/index');
     }).fail(function(){
-      Utils.Noty('error', '操作异常');
+      Noty('error', '操作异常');
     });
   }
   componentDidMount(){
@@ -320,45 +319,15 @@ class ManageAddForm extends Component {
     getProvinces();
     getOrderSrcs();
     getPayModes();
-
-    var self = this;
-
-    //初始化地图
-    // MyMap.create( (map) => {
-    //   self._bmap = map;
-    // });
-
     getDeliveryStations();
 
-    // $(this.refs.recipient_address).on('blur', (e) => {
-    //   var detail = e.target.value;
-    //   if(detail){
-    //     let province = $(findDOMNode(self.refs.province)).find('option:selected').text();
-    //     let city = $(findDOMNode(self.refs.city)).find('option:selected').text();
-    //     let district = $(findDOMNode(self.refs.district)).find('option:selected').text();
-    //     let default_text = self.refs.province.props['default-text'];
-    //     if(province != default_text && city != default_text && district != default_text){
-    //       if(BMap){
-    //         let map = self._bmap;
-    //         map.centerAndZoom(city);
-    //         let localSearch = new BMap.LocalSearch(map);
-    //         localSearch.setSearchCompleteCallback( (searchResult) => {
-    //           var poi = searchResult.getPoi(0);
-    //           if(poi){
-    //             console.log(poi.point.lng + "," + poi.point.lat);
-    //             getDeliveryStations({
-    //               lng: poi.point.lng,
-    //               lat: poi.point.lat
-    //             })
-    //           }
-    //         });
-    //         localSearch.search(district + detail);
-    //       }else{
-    //         alert('地图服务加载失败，请稍后再试');
-    //       }
-    //     }
-    //   }
-    // });
+    this.autoMatchDeliveryStations(delivery_id => {
+      if(delivery_id){
+        $(findDOMNode(this.refs.delivery_center)).val(delivery_id);
+      }else{
+        $(findDOMNode(this.refs.delivery_center)).val(SELECT_DEFAULT_VALUE);
+      }
+    });
 
     LazyLoad('noty');
   }
@@ -432,6 +401,7 @@ export default function initManageOrderForm( initFunc ){
       'recipient_name', //下单人姓名
       'recipient_mobile',
       'recipient_address', //收货人详细地址----》送货上门
+      'recipient_shop_address', //收货人详细地址----》门店自提(实际上是门店地址)
       'province_id',
       'city_id',
       'regionalism_id',    //分店ID ----》自取

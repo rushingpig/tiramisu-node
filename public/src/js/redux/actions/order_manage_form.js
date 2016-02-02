@@ -22,6 +22,11 @@ export function getDeliveryStations() {
   return GET(Url.stations.toString(), null, GOT_DELIVERY_STATIONS);
 }
 
+export const AUTO_GOT_DELIVERY_STATIONS = 'AUTO_GOT_DELIVERY_STATIONS';
+export function autoGetDeliveryStations(data) {
+  return POST(Url.auto_loc.toString(), data, AUTO_GOT_DELIVERY_STATIONS);
+}
+
 export const GOT_PAY_MODES = 'GOT_PAY_MODES';
 export function getPayModes(){
   return GET(Url.pay_modes.toString(), null, GOT_PAY_MODES);
@@ -119,6 +124,10 @@ export function createOrder(form_data){
         })
       })
   }
+  // return TEST(null, [
+  //   {type: SAVE_ORDER_INFO_ING},  //立即派发
+  //   {type: SAVE_ORDER_INFO_SUCCESS}   //2000毫秒后派发
+  // ], 2000);
 }
 
 //保存和创建的逻辑大体一致，就是url不同

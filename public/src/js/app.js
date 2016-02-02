@@ -67,7 +67,7 @@
 
 	var _reactRedux = __webpack_require__(216);
 
-	var _storesConfigureStore = __webpack_require__(328);
+	var _storesConfigureStore = __webpack_require__(329);
 
 	var _storesConfigureStore2 = _interopRequireDefault(_storesConfigureStore);
 
@@ -75,7 +75,7 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _reduxSimpleRouter = __webpack_require__(335);
+	var _reduxSimpleRouter = __webpack_require__(336);
 
 	(0, _reduxSimpleRouter.syncReduxAndRouter)(_history_instance2['default'], _storesConfigureStore2['default']);
 
@@ -19036,23 +19036,23 @@
 
 	var _componentsOrderManage2 = _interopRequireDefault(_componentsOrderManage);
 
-	var _componentsOrderManage_order_detail_pannel = __webpack_require__(305);
+	var _componentsOrderManage_order_detail_pannel = __webpack_require__(307);
 
 	var _componentsOrderManage_order_detail_pannel2 = _interopRequireDefault(_componentsOrderManage_order_detail_pannel);
 
-	var _componentsDeliveryChange = __webpack_require__(317);
+	var _componentsDeliveryChange = __webpack_require__(318);
 
 	var _componentsDeliveryChange2 = _interopRequireDefault(_componentsDeliveryChange);
 
-	var _componentsDeliveryDelivery_manage = __webpack_require__(319);
+	var _componentsDeliveryDelivery_manage = __webpack_require__(320);
 
 	var _componentsDeliveryDelivery_manage2 = _interopRequireDefault(_componentsDeliveryDelivery_manage);
 
-	var _componentsDeliveryDistribute_manage = __webpack_require__(323);
+	var _componentsDeliveryDistribute_manage = __webpack_require__(324);
 
 	var _componentsDeliveryDistribute_manage2 = _interopRequireDefault(_componentsDeliveryDistribute_manage);
 
-	var _componentsDeliveryPrint_review = __webpack_require__(326);
+	var _componentsDeliveryPrint_review = __webpack_require__(327);
 
 	var _componentsDeliveryPrint_review2 = _interopRequireDefault(_componentsDeliveryPrint_review);
 
@@ -26455,6 +26455,7 @@
 	exports.get = get;
 	exports.post = post;
 	exports.put = put;
+	exports.del = del;
 	exports.GET = GET;
 	exports.POST = POST;
 	exports.PUT = PUT;
@@ -26513,6 +26514,12 @@
 	function put(url, data) {
 	  return new _promise2['default'](function (resolve, reject) {
 	    _superagent2['default'].put(url).send(data).set('X-Requested-With', 'XMLHttpRequest').end(_end_callback(resolve, reject));
+	  });
+	}
+
+	function del(url, data) {
+	  return new _promise2['default'](function (resolve, reject) {
+	    _superagent2['default'].del(url).send(data).set('X-Requested-With', 'XMLHttpRequest').end(_end_callback(resolve, reject));
 	  });
 	}
 
@@ -28078,7 +28085,10 @@
 	    order_sign: '/order/:orderId/signin',
 	    order_unsign: '/order/:orderId/unsignin',
 	    order_opt_record: '/order/:orderId/history',
-	    order_exception: '//order/:orderId/exception',
+	    order_exception: '/order/:orderId/exception',
+	    cancel_order: '/order/:orderId/cancel',
+	    alter_delivery: '/order/:orderId/delivery',
+	    alter_station: '/order/:orderId/station',
 
 	    //产品
 	    categories: '/product/categories',
@@ -28101,9 +28111,10 @@
 
 	    //地址
 	    stations: '/stations', //配送站
-	    shops: '/district/:districtId/shops' };
+	    shops: '/district/:districtId/shops', //门店
+	    auto_loc: '/delivery/autoAllocate' };
 
-	  //门店
+	  //自动分配配送站
 	  for (var a in url) {
 	    url[a] = new SiteUrl(url[a]);
 	  }
@@ -28207,19 +28218,21 @@
 
 	var _utilsIndex = __webpack_require__(160);
 
-	var _commonOrder_products_detail = __webpack_require__(300);
+	var _mixinsMap = __webpack_require__(300);
+
+	var _commonOrder_products_detail = __webpack_require__(302);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(301);
+	var _commonOrder_detail_modal = __webpack_require__(303);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
-	var _manage_alter_delivery_modal = __webpack_require__(302);
+	var _manage_alter_delivery_modal = __webpack_require__(304);
 
 	var _manage_alter_delivery_modal2 = _interopRequireDefault(_manage_alter_delivery_modal);
 
-	var _commonOrder_srcs_selects = __webpack_require__(304);
+	var _commonOrder_srcs_selects = __webpack_require__(306);
 
 	var _commonOrder_srcs_selects2 = _interopRequireDefault(_commonOrder_srcs_selects);
 
@@ -28401,24 +28414,20 @@
 	        _react2['default'].createElement('br', null),
 	        _react2['default'].createElement(
 	          'a',
-	          { onClick: this.alterDelivery, href: 'javascript:;', className: 'nowrap hidden' },
+	          { onClick: this.alterDelivery, href: 'javascript:;', className: 'nowrap' },
 	          '[修改配送]'
-	        ),
-	        _react2['default'].createElement(
-	          'a',
-	          { onClick: this.alterStation, href: 'javascript:;', className: 'nowrap hidden' },
-	          '[分配配送站]'
-	        ),
-	        _react2['default'].createElement(
-	          'a',
-	          { onClick: this.cancelOrder, href: 'javascript:;', className: 'nowrap' },
-	          '[订单取消]'
 	        ),
 	        _react2['default'].createElement('br', null),
 	        _react2['default'].createElement(
 	          'a',
-	          { onClick: this.orderException, href: 'javascript:;', className: 'nowrap' },
-	          '[订单异常]'
+	          { onClick: this.alterStation, href: 'javascript:;', className: 'nowrap' },
+	          '[分配配送站]'
+	        ),
+	        _react2['default'].createElement('br', null),
+	        _react2['default'].createElement(
+	          'a',
+	          { onClick: this.cancelOrder, href: 'javascript:;', className: 'nowrap' },
+	          '[订单取消]'
 	        )
 	      ),
 	      _react2['default'].createElement(
@@ -28580,7 +28589,7 @@
 	        _react2['default'].createElement(
 	          'div',
 	          { className: 'time' },
-	          props.updated_date,
+	          props.updated_time,
 	          _react2['default'].createElement('br', null),
 	          _react2['default'].createElement(
 	            'a',
@@ -28596,10 +28605,19 @@
 	    var order_id = _props2.order_id;
 	    var active_order_id = _props2.active_order_id;
 	    var activeOrder = _props2.activeOrder;
+	    var prepareDeliveryDataOK = _props2.prepareDeliveryDataOK;
+	    var getProvinces = _props2.getProvinces;
+	    var getCities = _props2.getCities;
+	    var getDistricts = _props2.getDistricts;
+	    var getDeliveryShops = _props2.getDeliveryShops;
+	    var getDeliveryStations = _props2.getDeliveryStations;
 
 	    if (order_id != active_order_id) {
 	      activeOrder(order_id).done(function (data) {
-	        // debugger;
+	        //这里拉取数据完全是为了给“修改配送”modal使用
+	        setTimeout((function () {
+	          $.when(getProvinces(), getCities(data.province_id), getDistricts(data.city_id), getDeliveryShops(data.regionalism_id), getDeliveryStations()).done(prepareDeliveryDataOK);
+	        }).bind(this), 400);
 	      });
 	    }
 	  },
@@ -28636,6 +28654,7 @@
 	    e.stopPropagation();
 	  },
 	  orderException: function orderException(e) {
+	    //已被弃用
 	    this.props.showOrderException(this.props);
 	    this.activeOrder();
 	    e.stopPropagation();
@@ -28664,13 +28683,16 @@
 	  _createClass(ManagePannel, [{
 	    key: 'render',
 	    value: function render() {
+	      var _this3 = this;
+
 	      var _props3 = this.props;
 	      var filter = _props3.filter;
 	      var area = _props3.area;
 	      var alter_delivery_area = _props3.alter_delivery_area;
+	      var delivery_stations = _props3.delivery_stations;
 	      var _props3$main = _props3.main;
 	      var submitting = _props3$main.submitting;
-	      var delivery_stations = _props3$main.delivery_stations;
+	      var prepare_delivery_data_ok = _props3$main.prepare_delivery_data_ok;
 	      var activeOrder = _props3.activeOrder;
 	      var showProductsDetail = _props3.showProductsDetail;
 	      var operationRecord = _props3.operationRecord;
@@ -28697,7 +28719,7 @@
 
 	      var content = list.map(function (n, i) {
 	        return _react2['default'].createElement(OrderRow, _extends({ key: n.order_id
-	        }, _extends({}, n, { active_order_id: active_order_id, showProductsDetail: showProductsDetail, viewOrderDetail: viewOrderDetail, showAlterDelivery: showAlterDelivery, showAlterStation: showAlterStation, showCancelOrder: showCancelOrder, showOrderException: showOrderException, viewOrderOperationRecord: viewOrderOperationRecord, activeOrder: activeOrder })));
+	        }, _extends({}, n, { active_order_id: active_order_id }, _this3.props, { viewOrderDetail: viewOrderDetail, showAlterDelivery: showAlterDelivery, showAlterStation: showAlterStation, showCancelOrder: showCancelOrder, showOrderException: showOrderException, viewOrderOperationRecord: viewOrderOperationRecord })));
 	      });
 	      return _react2['default'].createElement(
 	        'div',
@@ -28870,9 +28892,11 @@
 	        _react2['default'].createElement(CancelOrderModal, _extends({ ref: 'CancelOrderModal' }, { submitting: submitting, cancelOrder: cancelOrder, callback: search })),
 	        _react2['default'].createElement(OrderExceptionModal, _extends({ ref: 'OrderExceptionModal' }, { submitting: submitting, orderException: orderException, callback: search })),
 	        _react2['default'].createElement(AlterStationModal, _extends({ ref: 'AlterStationModal'
-	        }, _extends({ submitting: submitting, delivery_stations: delivery_stations, order: check_order_info, show_products_detail: show_products_detail }, alter_delivery_area, { actions: this.props, callback: search }))),
+	        }, _extends({ submitting: submitting }, delivery_stations, { order: check_order_info, active_order_id: active_order_id, show_products_detail: show_products_detail, loading: !prepare_delivery_data_ok
+	        }, alter_delivery_area, { actions: this.props, callback: search }))),
 	        _react2['default'].createElement(_manage_alter_delivery_modal2['default'], _extends({ ref: 'AlterDeliveryModal'
-	        }, _extends({ submitting: submitting, delivery_stations: delivery_stations, order: check_order_info, show_products_detail: show_products_detail }, alter_delivery_area, { actions: this.props, callback: search })))
+	        }, _extends({ submitting: submitting }, delivery_stations, { order: check_order_info, active_order_id: active_order_id, show_products_detail: show_products_detail, loading: !prepare_delivery_data_ok
+	        }, alter_delivery_area, { actions: this.props, callback: search })))
 	      );
 	    }
 	  }, {
@@ -28934,7 +28958,10 @@
 
 	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 	function mapDispatchToProps(dispatch) {
-	  var actions = (0, _redux.bindActionCreators)(_extends({}, OrderActions, (0, _actionsArea2['default'])(_actionsAction_types.AreaActionTypes2), { getDeliveryStations: _actionsOrder_manage_form.getDeliveryStations }, OrderManageActions), dispatch);
+	  var actions = (0, _redux.bindActionCreators)(_extends({}, OrderActions, (0, _actionsArea2['default'])(_actionsAction_types.AreaActionTypes2), {
+	    getDeliveryStations: _actionsOrder_manage_form.getDeliveryStations,
+	    autoGetDeliveryStations: _actionsOrder_manage_form.autoGetDeliveryStations
+	  }, OrderManageActions), dispatch);
 	  actions.dispatch = dispatch;
 	  return actions;
 	}
@@ -28959,12 +28986,12 @@
 	  },
 	  mixins: [_reactAddonsLinkedStateMixin2['default']],
 	  render: function render() {
-	    var _this3 = this;
+	    var _this4 = this;
 
 	    var reasons = this.state.reasons.map(function (n, i) {
 	      return _react2['default'].createElement(
 	        'button',
-	        { onClick: _this3.chooseReason.bind(_this3, n), key: i, className: 'btn btn-default btn-xs space' },
+	        { onClick: _this4.chooseReason.bind(_this4, n), key: i, className: 'btn btn-default btn-xs space' },
 	        n
 	      );
 	    });
@@ -29024,16 +29051,33 @@
 	var AlterStationModal = _react2['default'].createClass({
 	  displayName: 'AlterStationModal',
 
+	  propTypes: {
+	    actions: _react.PropTypes.shape({
+	      autoGetDeliveryStations: _react.PropTypes.func.isRequired
+	    })
+	  },
 	  getInitialState: function getInitialState() {
 	    return {
-	      delivery_id: undefined
+	      delivery_id: undefined,
+	      handling: false
 	    };
+	  },
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+	    if (nextProps.order) {
+	      this.setState({ delivery_id: nextProps.order.delivery_id });
+	    }
 	  },
 	  mixins: [_reactAddonsLinkedStateMixin2['default']],
 	  render: function render() {
+	    var _props4 = this.props;
+	    var submitting = _props4.submitting;
+	    var loading = _props4.loading;
+	    var order = _props4.order;
+	    var handling = this.state.handling;
+
 	    return _react2['default'].createElement(
 	      _commonStd_modal2['default'],
-	      { submitting: this.props.submitting, title: '取消订单', onCancel: this.hideCallback, ref: 'modal' },
+	      { loading: loading, disabled: handling, submitting: submitting, onConfirm: this.onConfirm, title: '分配配送站', onCancel: this.hideCallback, ref: 'modal' },
 	      _react2['default'].createElement(
 	        'div',
 	        { className: 'form-group' },
@@ -29042,7 +29086,7 @@
 	          null,
 	          '收货地址：'
 	        ),
-	        this.props.order && this.props.order.recipient_address
+	        order && order.province_name + ' ' + order.city_name + ' ' + order.regionalism_name + ' ' + order.recipient_address
 	      ),
 	      _react2['default'].createElement(
 	        'div',
@@ -29052,23 +29096,63 @@
 	          null,
 	          '配送中心：'
 	        ),
-	        _react2['default'].createElement(_commonSelect2['default'], { valueLink: this.linkState('delivery_id'), options: [] }),
+	        _react2['default'].createElement(_commonSelect2['default'], { ref: 'delivery_center', valueLink: this.linkState('delivery_id'), className: 'transition', options: this.props.delivery_stations }),
 	        '　',
 	        _react2['default'].createElement(
 	          'button',
-	          { className: 'btn btn-xs btn-theme' },
+	          { onClick: this.autoMatchHandler, disabled: handling, 'data-submitting': handling, className: 'btn btn-xs btn-theme' },
 	          '自动分配'
 	        )
 	      )
 	    );
 	  },
-	  componentDidMount: function componentDidMount() {},
+	  componentDidMount: function componentDidMount() {
+	    setTimeout((function () {
+	      (0, _mixinsMap.createMap)(this);
+	    }).bind(this), 100);
+	  },
+	  autoMatchHandler: function autoMatchHandler(e) {
+	    var order = this.props.order;
+
+	    this.setState({ handling: true }, function () {
+	      var _this5 = this;
+
+	      _mixinsMap.autoMatch.call(this, order.city_name, order.regionalism_name + order.recipient_address).done(function (delivery_id) {
+	        if (delivery_id) _this5.setState({ delivery_id: delivery_id });
+	      }).fail(function (msg) {
+	        return (0, _utilsIndex.Noty)('warning', msg);
+	      }).always(function () {
+	        _this5.setState({ handling: false });
+	      });
+	    });
+	  },
+	  onConfirm: function onConfirm() {
+	    var delivery_id = this.state.delivery_id;
+
+	    var delivery_name = $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).find('option:selected').html();
+	    if (!delivery_id || delivery_id == _configAppConfig.SELECT_DEFAULT_VALUE) {
+	      (0, _utilsIndex.Noty)('warning', '请选择配送中心');return;
+	    }
+	    var _props5 = this.props;
+	    var alterStation = _props5.actions.alterStation;
+	    var active_order_id = _props5.active_order_id;
+	    var callback = _props5.callback;
+	    var updated_time = _props5.order.updated_time;
+
+	    alterStation(active_order_id, { delivery_id: delivery_id, delivery_name: delivery_name, updated_time: updated_time }).done((function () {
+	      callback();
+	      this.refs.modal.hide();
+	    }).bind(this)).fail(function () {
+	      (0, _utilsIndex.Noty)('error', '服务器异常');
+	    });
+	  },
 	  show: function show() {
 	    this.refs.modal.show();
 	  },
 	  hideCallback: function hideCallback() {
 	    // this.refs.modal.hide();
 	    this.setState(this.getInitialState());
+	    this.props.actions.resetDeliveryStations();
 	  }
 	});
 
@@ -29085,12 +29169,12 @@
 	  },
 	  mixins: [_reactAddonsLinkedStateMixin2['default']],
 	  render: function render() {
-	    var _this4 = this;
+	    var _this6 = this;
 
 	    var reasons = this.state.reasons.map(function (n, i) {
 	      return _react2['default'].createElement(
 	        'button',
-	        { onClick: _this4.chooseReason.bind(_this4, n), key: i, className: 'btn btn-default btn-xs space' },
+	        { onClick: _this6.chooseReason.bind(_this6, n), key: i, className: 'btn btn-default btn-xs space' },
 	        n
 	      );
 	    });
@@ -29162,10 +29246,10 @@
 	    var order_id = _state$data.order_id;
 	    var owner_mobile = _state$data.owner_mobile;
 	    var owner_name = _state$data.owner_name;
-	    var _props4 = this.props;
-	    var page_no = _props4.page_no;
-	    var total = _props4.total;
-	    var list = _props4.list;
+	    var _props6 = this.props;
+	    var page_no = _props6.page_no;
+	    var total = _props6.total;
+	    var list = _props6.list;
 
 	    var content = list.map(function (n, i) {
 	      return _react2['default'].createElement(
@@ -32673,6 +32757,10 @@
 	});
 	exports.cancelOrder = cancelOrder;
 	exports.orderException = orderException;
+	exports.alterDelivery = alterDelivery;
+	exports.alterStation = alterStation;
+	exports.prepareDeliveryDataOK = prepareDeliveryDataOK;
+	exports.resetDeliveryStations = resetDeliveryStations;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -32688,20 +32776,65 @@
 	exports.CANCEL_ORDER = CANCEL_ORDER;
 
 	function cancelOrder(order_id, data) {
-	  debugger;
-	  return (0, _utilsRequest.TEST)(null, [{ type: CANCEL_ORDER, key: 0 }, //立即派发
-	  { type: CANCEL_ORDER, key: 1 } //2000毫秒后派发
-	  ], 2000);
+	  return (0, _utilsRequest.PUT)(_configUrl2['default'].cancel_order.toString(order_id), data, CANCEL_ORDER);
+	  // return TEST(null, [
+	  //   {type: CANCEL_ORDER, key: 0},  //立即派发
+	  //   {type: CANCEL_ORDER, key: 1}   //2000毫秒后派发
+	  // ], 2000);
 	}
 
+	//已被弃用
 	var ORDER_EXCEPTION = 'ORDER_EXCEPTION';
 	exports.ORDER_EXCEPTION = ORDER_EXCEPTION;
 
 	function orderException(order_id, data) {
-	  debugger;
-	  return (0, _utilsRequest.TEST)(null, [{ type: ORDER_EXCEPTION, key: 0 }, //立即派发
-	  { type: ORDER_EXCEPTION, key: 1 } //2000毫秒后派发
-	  ], 2000);
+	  return (0, _utilsRequest.PUT)(_configUrl2['default'].order_exception.toString(order_id), data, ORDER_EXCEPTION);
+	  // return TEST(null, [
+	  //   {type: ORDER_EXCEPTION, key: 0},  //立即派发
+	  //   {type: ORDER_EXCEPTION, key: 1}   //2000毫秒后派发
+	  // ], 2000);
+	}
+
+	var ALTER_DELIVERY = 'ALTER_DELIVERY';
+	exports.ALTER_DELIVERY = ALTER_DELIVERY;
+	//修改配送
+
+	function alterDelivery(order_id, data) {
+	  return (0, _utilsRequest.PUT)(_configUrl2['default'].alter_delivery.toString(order_id), data, ALTER_DELIVERY);
+	  // return TEST(null, [
+	  //   {type: ALTER_DELIVERY, key: 0},  //立即派发
+	  //   {type: ALTER_DELIVERY, key: 1}   //2000毫秒后派发
+	  // ], 2000);
+	}
+
+	var ALTER_STATION = 'ALTER_STATION';
+	exports.ALTER_STATION = ALTER_STATION;
+	//分配配送站
+
+	function alterStation(order_id, data) {
+	  return (0, _utilsRequest.PUT)(_configUrl2['default'].alter_station.toString(order_id), data, ALTER_STATION);
+	  // return TEST(null, [
+	  //   {type: ALTER_STATION, key: 0},  //立即派发
+	  //   {type: ALTER_STATION, key: 1}   //2000毫秒后派发
+	  // ], 2000);
+	}
+
+	var PREPARE_DELIVERY_DATA_OK = 'PREPARE_DELIVERY_DATA_OK';
+	exports.PREPARE_DELIVERY_DATA_OK = PREPARE_DELIVERY_DATA_OK;
+
+	function prepareDeliveryDataOK() {
+	  return {
+	    type: PREPARE_DELIVERY_DATA_OK
+	  };
+	}
+
+	var RESET_DELIVERY_STATIONS = 'RESET_DELIVERY_STATIONS';
+	exports.RESET_DELIVERY_STATIONS = RESET_DELIVERY_STATIONS;
+
+	function resetDeliveryStations() {
+	  return {
+	    type: RESET_DELIVERY_STATIONS
+	  };
 	}
 
 /***/ },
@@ -32718,6 +32851,7 @@
 
 	exports.getOrderSrcs = getOrderSrcs;
 	exports.getDeliveryStations = getDeliveryStations;
+	exports.autoGetDeliveryStations = autoGetDeliveryStations;
 	exports.getPayModes = getPayModes;
 	exports.getHistoryOrders = getHistoryOrders;
 	exports.checkHistoryOrder = checkHistoryOrder;
@@ -32760,6 +32894,13 @@
 
 	function getDeliveryStations() {
 	  return (0, _utilsRequest.GET)(_configUrl2['default'].stations.toString(), null, GOT_DELIVERY_STATIONS);
+	}
+
+	var AUTO_GOT_DELIVERY_STATIONS = 'AUTO_GOT_DELIVERY_STATIONS';
+	exports.AUTO_GOT_DELIVERY_STATIONS = AUTO_GOT_DELIVERY_STATIONS;
+
+	function autoGetDeliveryStations(data) {
+	  return (0, _utilsRequest.POST)(_configUrl2['default'].auto_loc.toString(), data, AUTO_GOT_DELIVERY_STATIONS);
 	}
 
 	var GOT_PAY_MODES = 'GOT_PAY_MODES';
@@ -32872,6 +33013,10 @@
 	      });
 	    });
 	  };
+	  // return TEST(null, [
+	  //   {type: SAVE_ORDER_INFO_ING},  //立即派发
+	  //   {type: SAVE_ORDER_INFO_SUCCESS}   //2000毫秒后派发
+	  // ], 2000);
 	}
 
 	//保存和创建的逻辑大体一致，就是url不同
@@ -33698,12 +33843,13 @@
 	      var title = _props.title;
 	      var submitting = _props.submitting;
 	      var loading = _props.loading;
+	      var disabled = _props.disabled;
 	      var onConfirm = _props.onConfirm;
 	      var footer = _props.footer;
 
 	      return _react2["default"].createElement(
 	        "div",
-	        { ref: "__modal", "aria-hidden": "false", "aria-labelledby": "myModalLabel", role: "dialog", className: "modal " + (loading ? 'loading' : '') + " fade" },
+	        { ref: "__modal", "aria-hidden": "false", "aria-labelledby": "myModalLabel", role: "dialog", className: "modal fade" },
 	        _react2["default"].createElement("div", { className: "modal-backdrop fade" }),
 	        _react2["default"].createElement(
 	          "div",
@@ -33747,7 +33893,7 @@
 	                "button",
 	                {
 	                  onClick: onConfirm,
-	                  disabled: submitting || loading,
+	                  disabled: submitting || loading || disabled,
 	                  "data-submitting": submitting, type: "button", className: "btn btn-sm btn-theme" },
 	                "确定"
 	              )
@@ -33850,6 +33996,163 @@
 
 /***/ },
 /* 300 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports['default'] = autoMatchDeliveryStations;
+	exports.createMap = createMap;
+	exports.autoMatch = autoMatch;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _utilsMyMap = __webpack_require__(301);
+
+	var _utilsMyMap2 = _interopRequireDefault(_utilsMyMap);
+
+	var _reactDom = __webpack_require__(154);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _utilsPromise = __webpack_require__(238);
+
+	var _utilsPromise2 = _interopRequireDefault(_utilsPromise);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	//完整封装
+
+	function autoMatchDeliveryStations(callback) {
+	  var self = this;
+
+	  createMap(self);
+
+	  $(this.refs.recipient_address).on('blur', function (e) {
+	    var detail = e.target.value;
+	    if (detail) {
+	      var province = self.findSelectedOptionText('province');
+	      var city = self.findSelectedOptionText('city');
+	      var district = self.findSelectedOptionText('district');
+	      var default_text = self.refs.province.props['default-text'];
+	      if (province != default_text && city != default_text && district != default_text) {
+	        autoMatch.call(self, city, district + detail).done(callback).fail(function (msg) {
+	          (0, _utilsIndex.Noty)('warning', msg || 'error');
+	        });
+	      }
+	    }
+	  });
+	}
+
+	//step: 1
+
+	function createMap(t) {
+	  //初始化地图
+	  _utilsMyMap2['default'].create(function (map) {
+	    t._bmap = map;
+	  });
+	}
+
+	//step: 2
+
+	function autoMatch(city, address) {
+	  var self = this;
+	  var autoGetDeliveryStations = this.props.actions.autoGetDeliveryStations;
+	  var delivery_center = this.refs.delivery_center;
+
+	  if (!city || !address) {
+	    (0, _utilsIndex.Noty)('error', '地址数据有误');
+	  }
+	  return new _utilsPromise2['default'](function (resolve, reject) {
+	    if (BMap) {
+	      var map = self._bmap;
+	      map.centerAndZoom(city);
+	      var localSearch = new BMap.LocalSearch(map);
+	      localSearch.setSearchCompleteCallback(function (searchResult) {
+	        var poi = searchResult && searchResult.getPoi(0);
+	        if (poi) {
+	          console.log(poi.point.lng + "," + poi.point.lat);
+	          autoGetDeliveryStations({
+	            lng: poi.point.lng,
+	            lat: poi.point.lat
+	          }).done(function (data) {
+	            setTimeout(function () {
+	              if (data && data.delivery_id) {
+	                var $dc = $((0, _reactDom.findDOMNode)(delivery_center)).addClass('success-form-animate');
+	                resolve(data.delivery_id); //成功，且有数据
+	                setTimeout(function () {
+	                  $dc.removeClass('success-form-animate');
+	                }, 820);
+	              } else {
+	                reject('服务器异常');
+	              }
+	            }, 0);
+	          }).fail(function (msg, code) {
+	            setTimeout(function () {
+	              if (code && code == '3001') {
+	                resolve(); //成功，但没有数据
+	              } else {
+	                  reject('自动检索配送中心异常，请重试');
+	                }
+	            }, 0);
+	          });
+	        } else {
+	          reject('没有检索到该收货地址');
+	        }
+	      });
+	      localSearch.search(address);
+	    } else {
+	      reject('地图服务加载失败，请稍后再试');
+	    }
+	  });
+	}
+
+/***/ },
+/* 301 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	var MyMap = function MyMap() {
+	  this.callback = null;
+	  this.d = $.Deferred();
+	  this.map = null;
+	  this.init_flag = 0;
+	};
+
+	MyMap.prototype._initialize = function () {
+	  var container = document.createElement('div');
+	  container.style.display = 'none';
+	  var id = 'bmap' + new Date().getTime();
+	  container.setAttribute('id', id);
+	  document.body.appendChild(container);
+	  this.map = new BMap.Map(id);
+	  this.d.resolve(this.map);
+	};
+
+	MyMap.prototype.create = function (callback) {
+	  if (!this.init_flag) {
+	    this.init_flag = 1;
+	    window._bmap_callback = this._initialize.bind(this);
+
+	    var script = document.createElement("script");
+	    script.src = "http://api.map.baidu.com/api?v=2.0&ak=dxF5GZW6CHlR4GCQ9kKynOcc&callback=_bmap_callback"; //此为v2.0版本的引用方式 
+	    // http://api.map.baidu.com/api?v=1.4&ak=您的密钥&callback=initialize"; //此为v1.4版本及以前版本的引用方式 
+	    document.body.appendChild(script);
+	  }
+	  this.d.done(callback);
+	};
+
+	exports['default'] = new MyMap();
+	module.exports = exports['default'];
+
+/***/ },
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -34031,7 +34334,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 301 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34397,7 +34700,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 302 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34411,6 +34714,8 @@
 	var _react = __webpack_require__(2);
 
 	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(154);
 
 	var _reactAddonsLinkedStateMixin = __webpack_require__(283);
 
@@ -34428,11 +34733,15 @@
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
-	var _commonRadio_group = __webpack_require__(303);
+	var _commonRadio_group = __webpack_require__(305);
 
 	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
 
 	var _utilsIndex = __webpack_require__(160);
+
+	var _mixinsMap = __webpack_require__(300);
+
+	var _mixinsMap2 = _interopRequireDefault(_mixinsMap);
 
 	var _configAppConfig = __webpack_require__(157);
 
@@ -34445,42 +34754,31 @@
 	  },
 	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
 	    if (nextProps.order //拿到订单详细数据
-	     && !nextProps.show_products_detail //非普通点击查询(编辑)
+	     && nextProps.order != this.props.order && !nextProps.show_products_detail //非普通点击查询(编辑)
 	    ) {
-	        var _nextProps$order = nextProps.order;
-	        var delivery_type = _nextProps$order.delivery_type;
-	        var delivery_time = _nextProps$order.delivery_time;
-	        var province_id = _nextProps$order.province_id;
-	        var city_id = _nextProps$order.city_id;
-	        var regionalism_id = _nextProps$order.regionalism_id;
-	        var recipient_address = _nextProps$order.recipient_address;
-	        var delivery_id = _nextProps$order.delivery_id;
-
-	        delivery_time = delivery_time.split(' ');
-	        this.setState({
-	          delivery_type: delivery_type,
-	          delivery_date: delivery_time[0],
-	          delivery_hour: delivery_time[1],
-	          province_id: province_id,
-	          city_id: city_id,
-	          regionalism_id: regionalism_id,
-	          recipient_address: recipient_address,
-	          delivery_id: delivery_id
-	        });
-
-	        // var { getProvinces, getCities, getDistricts, getDeliveryShops, getDeliveryStations } = this.props.actions;
-	        // setTimeout(function(){
-	        //   $.when(
-	        //     getProvinces(),
-	        //     getCities(province_id),
-	        //     getDistricts(city_id),
-	        //     getDeliveryShops(regionalism_id),
-	        //     getDeliveryStations()
-	        //   ).done(function(){
-	        //     this.setState({loading: false})
-	        //   }.bind(this))
-	        // }.bind(this), 4000)
+	        this.initSetState(nextProps.order);
 	      }
+	  },
+	  initSetState: function initSetState(order) {
+	    var delivery_type = order.delivery_type;
+	    var delivery_time = order.delivery_time;
+	    var province_id = order.province_id;
+	    var city_id = order.city_id;
+	    var regionalism_id = order.regionalism_id;
+	    var recipient_address = order.recipient_address;
+	    var delivery_id = order.delivery_id;
+
+	    delivery_time = delivery_time.split(' ');
+	    this.setState({
+	      delivery_type: delivery_type,
+	      delivery_date: delivery_time[0],
+	      delivery_hour: delivery_time[1],
+	      province_id: province_id,
+	      city_id: city_id,
+	      regionalism_id: regionalism_id,
+	      recipient_address: recipient_address,
+	      delivery_id: delivery_id
+	    });
 	  },
 	  getInitialState: function getInitialState() {
 	    return {
@@ -34492,8 +34790,6 @@
 	      regionalism_id: undefined,
 	      recipient_address: '',
 	      delivery_id: undefined,
-
-	      loading: true,
 
 	      all_delivery_hours: _configAppConfig.DELIVERY_TIME_MAP.map(function (n) {
 	        return { id: n, text: n };
@@ -34508,7 +34804,6 @@
 	    var recipient_address = _state.recipient_address;
 	    var all_delivery_hours = _state.all_delivery_hours;
 	    var delivery_id = _state.delivery_id;
-	    var loading = _state.loading;
 	    var _props = this.props;
 	    var delivery_shops = _props.delivery_shops;
 	    var delivery_stations = _props.delivery_stations;
@@ -34517,11 +34812,12 @@
 	    var districts = _props.districts;
 	    var _props$order = _props.order;
 	    var order = _props$order === undefined ? {} : _props$order;
+	    var loading = _props.loading;
 
 	    var _order_status = _configAppConfig.order_status[order && order.order_status];
 	    return _react2['default'].createElement(
 	      _commonStd_modal2['default'],
-	      { submitting: this.props.submitting, loading: loading, onCancel: this.hideCallback, title: '修改配送', ref: 'modal' },
+	      { submitting: this.props.submitting, onConfirm: this.onConfirm, loading: loading, onCancel: this.hideCallback, title: '修改配送', ref: 'modal' },
 	      _react2['default'].createElement(
 	        'div',
 	        { className: 'form-group form-inline' },
@@ -34587,12 +34883,62 @@
 	          null,
 	          '修改配送中心：'
 	        ),
-	        _react2['default'].createElement(_commonSelect2['default'], { valueLink: this.linkState('delivery_id'), options: delivery_stations, className: 'input-xs' })
+	        _react2['default'].createElement(_commonSelect2['default'], { ref: 'delivery_center', valueLink: this.linkState('delivery_id'), options: delivery_stations, className: 'input-xs transition' })
 	      )
 	    );
 	  },
-	  mixins: [_reactAddonsLinkedStateMixin2['default']],
-	  componentDidMount: function componentDidMount() {},
+	  mixins: [_reactAddonsLinkedStateMixin2['default'], { autoMatchDeliveryStations: _mixinsMap2['default'] }],
+	  componentDidMount: function componentDidMount() {
+	    setTimeout((function () {
+	      var _this = this;
+
+	      this.autoMatchDeliveryStations(function (delivery_id) {
+	        if (delivery_id) {
+	          _this.setState({ delivery_id: delivery_id });
+	        } else {
+	          (0, _utilsIndex.Noty)('warning', '没有可匹配的配送站');
+	          _this.setState({ delivery_id: _configAppConfig.SELECT_DEFAULT_VALUE });
+	        }
+	      });
+	    }).bind(this), 100);
+	  },
+	  onConfirm: function onConfirm() {
+	    var _state2 = this.state;
+	    var delivery_type = _state2.delivery_type;
+	    var delivery_date = _state2.delivery_date;
+	    var delivery_hour = _state2.delivery_hour;
+	    var regionalism_id = _state2.regionalism_id;
+	    var recipient_address = _state2.recipient_address;
+	    var delivery_id = _state2.delivery_id;
+	    var order = _state2.order;
+
+	    if (!delivery_date || delivery_hour == _configAppConfig.SELECT_DEFAULT_VALUE) {
+	      (0, _utilsIndex.Noty)('warning', '请填写正确的配送时间');return;
+	    } else if (!regionalism_id || regionalism_id == _configAppConfig.SELECT_DEFAULT_VALUE || !recipient_address.trim()) {
+	      (0, _utilsIndex.Noty)('warning', '请填写完整的配送地址');return;
+	    } else if (delivery_id == _configAppConfig.SELECT_DEFAULT_VALUE) {
+	      (0, _utilsIndex.Noty)('warning', '请选择配送中心');return;
+	    }
+	    var prefix_address = this.findSelectedOptionText('province') + this.findSelectedOptionText('city') + this.findSelectedOptionText('district');
+	    this.props.actions.alterDelivery(this.props.active_order_id, {
+	      delivery_type: delivery_type,
+	      delivery_time: delivery_date + ' ' + delivery_hour,
+	      prefix_address: prefix_address,
+	      regionalism_id: regionalism_id,
+	      recipient_address: recipient_address,
+	      delivery_id: delivery_id,
+	      delivery_name: this.findSelectedOptionText('delivery_center'),
+	      updated_time: this.props.order.updated_time
+	    }).done((function () {
+	      this.props.callback();
+	      this.refs.modal.hide();
+	    }).bind(this)).fail(function () {
+	      (0, _utilsIndex.Noty)('error', '服务器异常');
+	    });
+	  },
+	  findSelectedOptionText: function findSelectedOptionText(_refs) {
+	    return $((0, _reactDom.findDOMNode)(this.refs[_refs])).find('option:selected').html();
+	  },
 	  onDeliveryTypeChange: function onDeliveryTypeChange(delivery_type) {
 	    this.setState({ delivery_type: delivery_type });
 	  },
@@ -34603,7 +34949,7 @@
 	    var value = e.target.value;
 
 	    this.props.actions.provinceReset();
-	    this.setState({ province_id: e.target.value });
+	    this.setState({ province_id: value });
 	    if (value != this.refs.province.props['default-value']) this.props.actions.getCities(value);
 	  },
 	  onCityChange: function onCityChange(e) {
@@ -34622,10 +34968,18 @@
 	  },
 	  show: function show() {
 	    this.refs.modal.show();
+	    var _props2 = this.props;
+	    var order = _props2.order;
+	    var active_order_id = _props2.active_order_id;
+
+	    if (order && order.order_id == active_order_id) {
+	      this.initSetState(order);
+	    }
 	  },
 	  hideCallback: function hideCallback() {
 	    this.setState(this.getInitialState());
 	    // this.refs.modal.hide();
+	    this.props.actions.resetDeliveryStations();
 	  }
 	});
 
@@ -34633,7 +34987,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 303 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34730,7 +35084,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 304 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34830,7 +35184,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 305 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34875,7 +35229,7 @@
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonAlert = __webpack_require__(306);
+	var _commonAlert = __webpack_require__(308);
 
 	var _commonAlert2 = _interopRequireDefault(_commonAlert);
 
@@ -34883,15 +35237,15 @@
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _manage_order_form_create = __webpack_require__(307);
+	var _manage_order_form_create = __webpack_require__(309);
 
 	var _manage_order_form_create2 = _interopRequireDefault(_manage_order_form_create);
 
-	var _manage_order_form_edit = __webpack_require__(311);
+	var _manage_order_form_edit = __webpack_require__(312);
 
 	var _manage_order_form_edit2 = _interopRequireDefault(_manage_order_form_edit);
 
-	var _manage_order_products = __webpack_require__(312);
+	var _manage_order_products = __webpack_require__(313);
 
 	var _manage_order_products2 = _interopRequireDefault(_manage_order_products);
 
@@ -34934,6 +35288,7 @@
 	    value: function render() {
 	      var _props = this.props;
 	      var mainForm = _props.mainForm;
+	      var delivery_stations = _props.delivery_stations;
 	      var history_orders = _props.history_orders;
 	      var area = _props.area;
 	      var dispatch = _props.dispatch;
@@ -34943,6 +35298,8 @@
 	      var editable = !!(params && params.id);
 
 	      var actions = _extends({}, (0, _redux.bindActionCreators)((0, _actionsArea2['default'])(), dispatch), (0, _redux.bindActionCreators)(OrderFormActions, dispatch));
+
+	      mainForm = _extends({}, mainForm, delivery_stations);
 	      return _react2['default'].createElement(
 	        'div',
 	        { className: 'order-manage' },
@@ -35020,7 +35377,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 306 */
+/* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35081,7 +35438,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 307 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35092,7 +35449,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _manage_order_form = __webpack_require__(308);
+	var _manage_order_form = __webpack_require__(310);
 
 	var _manage_order_form2 = _interopRequireDefault(_manage_order_form);
 
@@ -35110,7 +35467,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 308 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35141,10 +35498,6 @@
 
 	var _reduxForm = __webpack_require__(241);
 
-	var _utilsMyMap = __webpack_require__(309);
-
-	var _utilsMyMap2 = _interopRequireDefault(_utilsMyMap);
-
 	var _commonDatepicker = __webpack_require__(292);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
@@ -35163,17 +35516,19 @@
 
 	var _utilsIndex = __webpack_require__(160);
 
-	var _utilsIndex2 = _interopRequireDefault(_utilsIndex);
-
 	var _history_instance = __webpack_require__(211);
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _manage_history_orders = __webpack_require__(310);
+	var _manage_history_orders = __webpack_require__(311);
 
 	var _manage_history_orders2 = _interopRequireDefault(_manage_history_orders);
 
 	var _configAppConfig = __webpack_require__(157);
+
+	var _mixinsMap = __webpack_require__(300);
+
+	var _mixinsMap2 = _interopRequireDefault(_mixinsMap);
 
 	var validate = function validate(values, _ref) {
 	  var form = _ref.form;
@@ -35192,7 +35547,7 @@
 	  _v('owner_mobile');
 	  _v('recipient_name');
 	  _v('recipient_mobile');
-	  _v('recipient_landmark');
+	  // _v('recipient_landmark');
 	  _v('delivery_date');
 
 	  _v_selsect('regionalism_id');
@@ -35208,7 +35563,7 @@
 	    //自提时，则不需建筑物字段, 但地址则为相应的门店地址
 	  } else if (values.delivery_type == _configAppConfig.DELIVERY_TO_STORE) {
 	      delete errors.recipient_landmark;
-	      _v_selsect('recipient_address'); //门店
+	      _v_selsect('recipient_shop_address'); //门店
 	    }
 
 	  console.log(errors);
@@ -35228,6 +35583,7 @@
 	      selected_order_src_level1_id: _configAppConfig.SELECT_DEFAULT_VALUE
 	    };
 	    this._check = this._check.bind(this);
+	    this.autoMatchDeliveryStations = _mixinsMap2['default'].bind(this);
 	  }
 
 	  _createClass(ManageAddForm, [{
@@ -35247,7 +35603,9 @@
 	      var //下单人姓名
 	      recipient_mobile = _props$fields.recipient_mobile;
 	      var recipient_address = _props$fields.recipient_address;
-	      var //收货人详细地址----》送货上门 ，当门店自提时，则是门店地址
+	      var //收货人详细地址----》配送上门 ，
+	      recipient_shop_address = _props$fields.recipient_shop_address;
+	      var //收货人详细地址----》门店自提(实际上是门店地址)
 	      province_id = _props$fields.province_id;
 	      var city_id = _props$fields.city_id;
 	      var regionalism_id = _props$fields.regionalism_id;
@@ -35409,7 +35767,8 @@
 	          ' ',
 	          _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'district', options: districts }, regionalism_id, { onChange: this.onDistrictChange.bind(this, regionalism_id.onChange), className: '' + regionalism_id.error })),
 	          ' ',
-	          delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? _react2['default'].createElement('input', _extends({ ref: 'recipient_address' }, recipient_address, { className: 'form-control input-xs ' + recipient_address.error, type: 'text' })) : _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'shop', options: delivery_shops }, recipient_address, { className: '' + recipient_address.error }))
+	          _react2['default'].createElement('input', _extends({ ref: 'recipient_address' }, recipient_address, { className: 'form-control input-xs ' + recipient_address.error + ' ' + (delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? '' : 'hidden'), type: 'text' })),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'shop', options: delivery_shops }, recipient_shop_address, { className: recipient_shop_address.error + ' ' + (delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? 'hidden' : '') }))
 	        ),
 	        delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? _react2['default'].createElement(
 	          'div',
@@ -35429,7 +35788,7 @@
 	            null,
 	            '　配送中心：'
 	          ),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: delivery_stations, className: 'form-select ' + delivery_id.error, ref: 'delivery_center' }))
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: delivery_stations, className: 'form-select transition ' + delivery_id.error, ref: 'delivery_center' }))
 	        ),
 	        _react2['default'].createElement(
 	          'div',
@@ -35566,7 +35925,7 @@
 
 	          callback.call(_this2, form_data);
 	        } else {
-	          _utilsIndex2['default'].Noty('warning', '请填写完整');
+	          (0, _utilsIndex.Noty)('warning', '请填写完整');
 	        }
 	      }, 0);
 	    }
@@ -35579,37 +35938,39 @@
 	    key: 'handleCreateOrder',
 	    value: function handleCreateOrder(form_data) {
 	      this.props.actions.createOrder(form_data).done(function () {
-	        _utilsIndex2['default'].Noty('success', '保存成功');
+	        (0, _utilsIndex.Noty)('success', '保存成功');
 	        _history_instance2['default'].push('/om/index');
 	      }).fail(function () {
-	        _utilsIndex2['default'].Noty('error', '保存异常');
+	        (0, _utilsIndex.Noty)('error', '保存异常');
 	      });
 	    }
 	  }, {
 	    key: 'handleSaveOrder',
 	    value: function handleSaveOrder(form_data) {
 	      this.props.actions.saveOrder(form_data).done((function () {
-	        _utilsIndex2['default'].Noty('success', '保存成功');
+	        (0, _utilsIndex.Noty)('success', '保存成功');
 	        this.props.actions.getOrderById(form_data.order_id).fail((function () {
 	          _history_instance2['default'].go(0);
 	        }).bind(this));
 	      }).bind(this)).fail(function () {
-	        _utilsIndex2['default'].Noty('error', '保存异常');
+	        (0, _utilsIndex.Noty)('error', '保存异常');
 	      });
 	    }
 	  }, {
 	    key: 'handleSubmitOrder',
 	    value: function handleSubmitOrder(form_data) {
 	      this.props.actions.submitOrder(form_data).done(function () {
-	        _utilsIndex2['default'].Noty('success', '已成功提交！');
+	        (0, _utilsIndex.Noty)('success', '已成功提交！');
 	        _history_instance2['default'].push('/om/index');
 	      }).fail(function () {
-	        _utilsIndex2['default'].Noty('error', '操作异常');
+	        (0, _utilsIndex.Noty)('error', '操作异常');
 	      });
 	    }
 	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
+	      var _this3 = this;
+
 	      var _props$actions2 = this.props.actions;
 	      var getProvinces = _props$actions2.getProvinces;
 	      var getOrderSrcs = _props$actions2.getOrderSrcs;
@@ -35619,45 +35980,15 @@
 	      getProvinces();
 	      getOrderSrcs();
 	      getPayModes();
-
-	      var self = this;
-
-	      //初始化地图
-	      // MyMap.create( (map) => {
-	      //   self._bmap = map;
-	      // });
-
 	      getDeliveryStations();
 
-	      // $(this.refs.recipient_address).on('blur', (e) => {
-	      //   var detail = e.target.value;
-	      //   if(detail){
-	      //     let province = $(findDOMNode(self.refs.province)).find('option:selected').text();
-	      //     let city = $(findDOMNode(self.refs.city)).find('option:selected').text();
-	      //     let district = $(findDOMNode(self.refs.district)).find('option:selected').text();
-	      //     let default_text = self.refs.province.props['default-text'];
-	      //     if(province != default_text && city != default_text && district != default_text){
-	      //       if(BMap){
-	      //         let map = self._bmap;
-	      //         map.centerAndZoom(city);
-	      //         let localSearch = new BMap.LocalSearch(map);
-	      //         localSearch.setSearchCompleteCallback( (searchResult) => {
-	      //           var poi = searchResult.getPoi(0);
-	      //           if(poi){
-	      //             console.log(poi.point.lng + "," + poi.point.lat);
-	      //             getDeliveryStations({
-	      //               lng: poi.point.lng,
-	      //               lat: poi.point.lat
-	      //             })
-	      //           }
-	      //         });
-	      //         localSearch.search(district + detail);
-	      //       }else{
-	      //         alert('地图服务加载失败，请稍后再试');
-	      //       }
-	      //     }
-	      //   }
-	      // });
+	      this.autoMatchDeliveryStations(function (delivery_id) {
+	        if (delivery_id) {
+	          $((0, _reactDom.findDOMNode)(_this3.refs.delivery_center)).val(delivery_id);
+	        } else {
+	          $((0, _reactDom.findDOMNode)(_this3.refs.delivery_center)).val(_configAppConfig.SELECT_DEFAULT_VALUE);
+	        }
+	      });
 
 	      (0, _utilsLazy_load2['default'])('noty');
 	    }
@@ -35741,6 +36072,7 @@
 	    form: 'add_order', //表单命名空间
 	    fields: ['delivery_type', 'owner_name', 'owner_mobile', 'recipient_name', //下单人姓名
 	    'recipient_mobile', 'recipient_address', //收货人详细地址----》送货上门
+	    'recipient_shop_address', //收货人详细地址----》门店自提(实际上是门店地址)
 	    'province_id', 'city_id', 'regionalism_id', //分店ID ----》自取
 	    'recipient_landmark', //标志性建筑
 	    'delivery_id', //配送中心
@@ -35756,46 +36088,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 309 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var MyMap = function MyMap() {
-	  this.callback = null;
-	  this.d = $.Deferred();
-	};
-
-	MyMap.prototype._initialize = function () {
-	  var container = document.createElement('div');
-	  container.style.display = 'none';
-	  var id = 'bmap' + new Date().getTime();
-	  container.setAttribute('id', id);
-	  document.body.appendChild(container);
-	  var mp = new BMap.Map(id);
-	  this.d.resolve(mp);
-	};
-
-	MyMap.prototype.create = function (callback) {
-	  window._bmap_callback = this._initialize.bind(this);
-
-	  var script = document.createElement("script");
-	  script.src = "http://api.map.baidu.com/api?v=2.0&ak=dxF5GZW6CHlR4GCQ9kKynOcc&callback=_bmap_callback"; //此为v2.0版本的引用方式 
-	  // http://api.map.baidu.com/api?v=1.4&ak=您的密钥&callback=initialize"; //此为v1.4版本及以前版本的引用方式 
-	  document.body.appendChild(script);
-
-	  this.d.done(callback);
-	};
-
-	exports['default'] = new MyMap();
-	module.exports = exports['default'];
-
-/***/ },
-/* 310 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35842,7 +36135,7 @@
 
 	var _utilsIndex = __webpack_require__(160);
 
-	var _commonOrder_products_detail = __webpack_require__(300);
+	var _commonOrder_products_detail = __webpack_require__(302);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
@@ -36186,7 +36479,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 311 */
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36197,7 +36490,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _manage_order_form = __webpack_require__(308);
+	var _manage_order_form = __webpack_require__(310);
 
 	var _manage_order_form2 = _interopRequireDefault(_manage_order_form);
 
@@ -36212,7 +36505,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 312 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -36244,11 +36537,11 @@
 
 	var _reactDom = __webpack_require__(154);
 
-	var _manage_add_products_modal = __webpack_require__(313);
+	var _manage_add_products_modal = __webpack_require__(314);
 
 	var _manage_add_products_modal2 = _interopRequireDefault(_manage_add_products_modal);
 
-	var _actionsOrder_products = __webpack_require__(316);
+	var _actionsOrder_products = __webpack_require__(317);
 
 	var ProductsActions = _interopRequireWildcard(_actionsOrder_products);
 
@@ -36530,7 +36823,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 313 */
+/* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36561,7 +36854,7 @@
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonNumber_picker = __webpack_require__(314);
+	var _commonNumber_picker = __webpack_require__(315);
 
 	var _commonNumber_picker2 = _interopRequireDefault(_commonNumber_picker);
 
@@ -36569,13 +36862,13 @@
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _commonSelect_group = __webpack_require__(315);
+	var _commonSelect_group = __webpack_require__(316);
 
 	var _commonSelect_group2 = _interopRequireDefault(_commonSelect_group);
 
 	var _commonLoading = __webpack_require__(297);
 
-	var _actionsOrder_products = __webpack_require__(316);
+	var _actionsOrder_products = __webpack_require__(317);
 
 	var OrderProductsActions = _interopRequireWildcard(_actionsOrder_products);
 
@@ -37154,7 +37447,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 314 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37239,7 +37532,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 315 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37319,7 +37612,7 @@
 	module.exports = SelectGroup;
 
 /***/ },
-/* 316 */
+/* 317 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37476,7 +37769,7 @@
 	}
 
 /***/ },
-/* 317 */
+/* 318 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37545,11 +37838,11 @@
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
-	var _commonOrder_products_detail = __webpack_require__(300);
+	var _commonOrder_products_detail = __webpack_require__(302);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(301);
+	var _commonOrder_detail_modal = __webpack_require__(303);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
@@ -37561,7 +37854,7 @@
 
 	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
-	var _actionsDelivery_change = __webpack_require__(318);
+	var _actionsDelivery_change = __webpack_require__(319);
 
 	var ChangeActions = _interopRequireWildcard(_actionsDelivery_change);
 
@@ -38140,7 +38433,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 318 */
+/* 319 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38189,7 +38482,7 @@
 	}
 
 /***/ },
-/* 319 */
+/* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38270,23 +38563,23 @@
 
 	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
-	var _actionsDeliveryman = __webpack_require__(320);
+	var _actionsDeliveryman = __webpack_require__(321);
 
 	var DeliverymanActions = _interopRequireWildcard(_actionsDeliveryman);
 
-	var _actionsDelivery_manage = __webpack_require__(321);
+	var _actionsDelivery_manage = __webpack_require__(322);
 
 	var DeliveryManageActions = _interopRequireWildcard(_actionsDelivery_manage);
 
-	var _commonOrder_products_detail = __webpack_require__(300);
+	var _commonOrder_products_detail = __webpack_require__(302);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(301);
+	var _commonOrder_detail_modal = __webpack_require__(303);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
-	var _commonScan_modal = __webpack_require__(322);
+	var _commonScan_modal = __webpack_require__(323);
 
 	var _commonScan_modal2 = _interopRequireDefault(_commonScan_modal);
 
@@ -39329,7 +39622,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 320 */
+/* 321 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39364,7 +39657,7 @@
 	}
 
 /***/ },
-/* 321 */
+/* 322 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39465,7 +39758,7 @@
 	}
 
 /***/ },
-/* 322 */
+/* 323 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39672,7 +39965,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 323 */
+/* 324 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39719,7 +40012,7 @@
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonTime_input = __webpack_require__(324);
+	var _commonTime_input = __webpack_require__(325);
 
 	var _commonTime_input2 = _interopRequireDefault(_commonTime_input);
 
@@ -39737,7 +40030,7 @@
 
 	var _commonLoading = __webpack_require__(297);
 
-	var _commonRadio_group = __webpack_require__(303);
+	var _commonRadio_group = __webpack_require__(305);
 
 	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
 
@@ -39761,25 +40054,25 @@
 
 	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
-	var _actionsDeliveryman = __webpack_require__(320);
+	var _actionsDeliveryman = __webpack_require__(321);
 
 	var DeliverymanActions = _interopRequireWildcard(_actionsDeliveryman);
 
-	var _actionsDelivery_distribute = __webpack_require__(325);
+	var _actionsDelivery_distribute = __webpack_require__(326);
 
 	var DeliveryDistributeActions = _interopRequireWildcard(_actionsDelivery_distribute);
 
 	var _actionsOrder_manage_form = __webpack_require__(291);
 
-	var _commonOrder_products_detail = __webpack_require__(300);
+	var _commonOrder_products_detail = __webpack_require__(302);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(301);
+	var _commonOrder_detail_modal = __webpack_require__(303);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
-	var _commonScan_modal = __webpack_require__(322);
+	var _commonScan_modal = __webpack_require__(323);
 
 	var _commonScan_modal2 = _interopRequireDefault(_commonScan_modal);
 
@@ -40699,7 +40992,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 324 */
+/* 325 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40816,7 +41109,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 325 */
+/* 326 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40870,7 +41163,7 @@
 	}
 
 /***/ },
-/* 326 */
+/* 327 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40927,7 +41220,7 @@
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _commonRadio_group = __webpack_require__(303);
+	var _commonRadio_group = __webpack_require__(305);
 
 	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
 
@@ -40945,11 +41238,11 @@
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
-	var _commonOrder_products_detail = __webpack_require__(300);
+	var _commonOrder_products_detail = __webpack_require__(302);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(301);
+	var _commonOrder_detail_modal = __webpack_require__(303);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
@@ -40957,7 +41250,7 @@
 
 	var OrderActions = _interopRequireWildcard(_actionsOrders);
 
-	var _actionsDelivery_print_review = __webpack_require__(327);
+	var _actionsDelivery_print_review = __webpack_require__(328);
 
 	var DeliverPrintReviewActions = _interopRequireWildcard(_actionsDelivery_print_review);
 
@@ -41425,7 +41718,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 327 */
+/* 328 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41493,7 +41786,7 @@
 	}
 
 /***/ },
-/* 328 */
+/* 329 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41506,15 +41799,15 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _reduxLogger = __webpack_require__(329);
+	var _reduxLogger = __webpack_require__(330);
 
 	var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
 
-	var _reduxThunk = __webpack_require__(330);
+	var _reduxThunk = __webpack_require__(331);
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-	var _reducersIndex = __webpack_require__(331);
+	var _reducersIndex = __webpack_require__(332);
 
 	var _reducersIndex2 = _interopRequireDefault(_reducersIndex);
 
@@ -41536,7 +41829,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 329 */
+/* 330 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -41681,7 +41974,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 330 */
+/* 331 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -41703,7 +41996,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 331 */
+/* 332 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41718,35 +42011,35 @@
 
 	var _reduxForm = __webpack_require__(241);
 
-	var _login = __webpack_require__(332);
+	var _login = __webpack_require__(333);
 
 	var _login2 = _interopRequireDefault(_login);
 
-	var _order_manage = __webpack_require__(333);
+	var _order_manage = __webpack_require__(334);
 
 	var _order_manage2 = _interopRequireDefault(_order_manage);
 
-	var _order_manage_form = __webpack_require__(337);
+	var _order_manage_form = __webpack_require__(339);
 
 	var _order_manage_form2 = _interopRequireDefault(_order_manage_form);
 
-	var _delivery_change = __webpack_require__(343);
+	var _delivery_change = __webpack_require__(345);
 
 	var _delivery_change2 = _interopRequireDefault(_delivery_change);
 
-	var _delivery_manage = __webpack_require__(344);
+	var _delivery_manage = __webpack_require__(346);
 
 	var _delivery_manage2 = _interopRequireDefault(_delivery_manage);
 
-	var _distribute_manage = __webpack_require__(346);
+	var _distribute_manage = __webpack_require__(348);
 
 	var _distribute_manage2 = _interopRequireDefault(_distribute_manage);
 
-	var _delivery_print_review = __webpack_require__(347);
+	var _delivery_print_review = __webpack_require__(349);
 
 	var _delivery_print_review2 = _interopRequireDefault(_delivery_print_review);
 
-	var _reduxSimpleRouter = __webpack_require__(335);
+	var _reduxSimpleRouter = __webpack_require__(336);
 
 	var rootReducer = (0, _redux.combineReducers)({
 	  login: _login2['default'],
@@ -41764,7 +42057,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 332 */
+/* 333 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41822,7 +42115,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 333 */
+/* 334 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41832,6 +42125,8 @@
 	});
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
@@ -41845,13 +42140,19 @@
 
 	var _actionsOrder_manage_form = __webpack_require__(291);
 
+	var _actionsOrders = __webpack_require__(289);
+
 	var _actionsAction_types = __webpack_require__(288);
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _reducersArea_select = __webpack_require__(334);
+	var _reducersArea_select = __webpack_require__(335);
 
-	var _orders = __webpack_require__(336);
+	var _reducersDelivery_stations = __webpack_require__(337);
+
+	var _reducersDelivery_stations2 = _interopRequireDefault(_reducersDelivery_stations);
+
+	var _reducersOrders = __webpack_require__(338);
 
 	var filter_state = {
 	  search_ing: false,
@@ -41886,14 +42187,16 @@
 	var main_state = {
 	  submitting: false,
 
-	  delivery_stations: [] };
-	//这个用于AlterDeliveryModal和AlterStationModal中
+	  prepare_delivery_data_ok: false };
+	//AlterDeliveryModal和AlterStationModal辅助数据是否已经获取完毕
+	// delivery_stations: [],  //这个用于AlterDeliveryModal和AlterStationModal中
 	function main(state, action) {
 	  if (state === undefined) state = main_state;
 
 	  switch (action.type) {
 	    case Actions.CANCEL_ORDER:
 	    case Actions.ORDER_EXCEPTION:
+	    case Actions.ALTER_DELIVERY:
 	      if (action.key == _configAppConfig.REQUEST.ING) {
 	        return _extends({}, state, { submitting: true });
 	      } else if (action.key == _configAppConfig.REQUEST.SUCCESS || action.key == _configAppConfig.REQUEST.FAIL) {
@@ -41902,10 +42205,11 @@
 	        console.error('nali?');
 	      }
 
-	    case _actionsOrder_manage_form.GOT_DELIVERY_STATIONS:
-	      return _extends({}, state, { delivery_stations: (0, _utilsIndex.map)(action.data, function (text, id) {
-	          return { id: id, text: text };
-	        }) });
+	    case Actions.PREPARE_DELIVERY_DATA_OK:
+	      return _extends({}, state, { prepare_delivery_data_ok: true });
+	    case _actionsOrders.GET_ORDER_DETAIL_PRODUCTS:
+	      return _extends({}, state, { prepare_delivery_data_ok: false }); //重新拉取订单详情时，先置否，等待拉取 prepare_delivery_data
+
 	    default:
 	      return state;
 	  }
@@ -41914,15 +42218,16 @@
 	exports['default'] = (0, _redux.combineReducers)({
 	  filter: filter,
 	  area: (0, _reducersArea_select.area)(),
-	  orders: _orders.orders,
-	  operationRecord: _orders.operationRecord,
+	  orders: _reducersOrders.orders,
+	  operationRecord: _reducersOrders.operationRecord,
 	  main: main,
-	  alter_delivery_area: (0, _reducersArea_select.area)(_actionsAction_types.AreaActionTypes2)
+	  alter_delivery_area: (0, _reducersArea_select.area)(_actionsAction_types.AreaActionTypes2),
+	  delivery_stations: _reducersDelivery_stations2['default']
 	});
 	module.exports = exports['default'];
 
 /***/ },
-/* 334 */
+/* 335 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41939,7 +42244,7 @@
 
 	var _actionsAction_types = __webpack_require__(288);
 
-	var _reduxSimpleRouter = __webpack_require__(335);
+	var _reduxSimpleRouter = __webpack_require__(336);
 
 	var _utilsIndex = __webpack_require__(160);
 
@@ -41989,7 +42294,7 @@
 	}
 
 /***/ },
-/* 335 */
+/* 336 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42189,7 +42494,66 @@
 
 
 /***/ },
-/* 336 */
+/* 337 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	var _actionsOrder_manage_form = __webpack_require__(291);
+
+	var FormActions = _interopRequireWildcard(_actionsOrder_manage_form);
+
+	var _actionsOrder_manage = __webpack_require__(290);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var initial_state = {
+	  delivery_stations: [],
+	  delivery_stations_backup: []
+	};
+
+	function delivery_stations(state, action) {
+	  if (state === undefined) state = initial_state;
+
+	  switch (action.type) {
+	    case _actionsOrder_manage.RESET_DELIVERY_STATIONS:
+	      return _extends({}, state, { delivery_stations: state.delivery_stations_backup });
+	    case FormActions.GOT_DELIVERY_STATIONS:
+	      var __delivery_stations = (0, _utilsIndex.map)(action.data, function (text, id) {
+	        return { id: id, text: text };
+	      });
+	      return _extends({}, state, { delivery_stations: __delivery_stations, delivery_stations_backup: __delivery_stations });
+	    case FormActions.AUTO_GOT_DELIVERY_STATIONS:
+	      return (function () {
+	        var d = action.data;
+	        if (action.key == _configAppConfig.REQUEST.SUCCESS) {
+	          return _extends({}, state, { delivery_stations: [{ id: d.delivery_id, text: d.delivery_name }] });
+	        } else if (action.key == _configAppConfig.REQUEST.FAIL) {
+	          return _extends({}, state, { delivery_stations: state.delivery_stations_backup });
+	        } else {
+	          return state;
+	        }
+	      })();
+	    default:
+	      return state;
+	  }
+	}
+
+	exports['default'] = delivery_stations;
+	module.exports = exports['default'];
+
+/***/ },
+/* 338 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42209,11 +42573,11 @@
 
 	var OrderActions = _interopRequireWildcard(_actionsOrders);
 
-	var _actionsDelivery_manage = __webpack_require__(321);
+	var _actionsDelivery_manage = __webpack_require__(322);
 
-	var _actionsDelivery_distribute = __webpack_require__(325);
+	var _actionsDelivery_distribute = __webpack_require__(326);
 
-	var _reduxSimpleRouter = __webpack_require__(335);
+	var _reduxSimpleRouter = __webpack_require__(336);
 
 	var orders_state = {
 	  loading: true,
@@ -42305,7 +42669,7 @@
 	}
 
 /***/ },
-/* 337 */
+/* 339 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42324,17 +42688,17 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _area_select = __webpack_require__(334);
+	var _area_select = __webpack_require__(335);
 
 	var _actionsOrder_manage_form = __webpack_require__(291);
 
 	var FormActions = _interopRequireWildcard(_actionsOrder_manage_form);
 
-	var _actionsOrder_products = __webpack_require__(316);
+	var _actionsOrder_products = __webpack_require__(317);
 
 	var OrderProductsActions = _interopRequireWildcard(_actionsOrder_products);
 
-	var _reduxSimpleRouter = __webpack_require__(335);
+	var _reduxSimpleRouter = __webpack_require__(336);
 
 	var _actionsArea = __webpack_require__(287);
 
@@ -42342,13 +42706,17 @@
 
 	var _utilsIndex = __webpack_require__(160);
 
+	var _reducersDelivery_stations = __webpack_require__(337);
+
+	var _reducersDelivery_stations2 = _interopRequireDefault(_reducersDelivery_stations);
+
 	var _configAppConfig = __webpack_require__(157);
 
-	var _clone = __webpack_require__(338);
+	var _clone = __webpack_require__(340);
 
 	var _clone2 = _interopRequireDefault(_clone);
 
-	var _storesConfigureStore = __webpack_require__(328);
+	var _storesConfigureStore = __webpack_require__(329);
 
 	var _storesConfigureStore2 = _interopRequireDefault(_storesConfigureStore);
 
@@ -42360,7 +42728,6 @@
 	    return { id: n, text: n };
 	  }),
 	  all_order_srcs: [],
-	  delivery_stations: [],
 	  all_pay_modes: [],
 
 	  save_ing: false,
@@ -42390,10 +42757,7 @@
 	        }
 	      });
 	      return _extends({}, state, { all_order_srcs: !l2.length ? [l1] : [l1, l2] });
-	    case FormActions.GOT_DELIVERY_STATIONS:
-	      return _extends({}, state, { delivery_stations: (0, _utilsIndex.map)(action.data, function (text, id) {
-	          return { id: id, text: text };
-	        }) });
+
 	    case FormActions.GOT_PAY_MODES:
 	      return _extends({}, state, { all_pay_modes: (0, _utilsIndex.map)(action.data, function (text, id) {
 	          return { id: id, text: text };
@@ -42598,14 +42962,15 @@
 	  area: (0, _area_select.area)(),
 	  mainForm: mainForm,
 	  products: products_choosing,
-	  history_orders: history_orders
+	  history_orders: history_orders,
+	  delivery_stations: _reducersDelivery_stations2['default']
 	});
 
 	exports['default'] = orderAddReducer;
 	module.exports = exports['default'];
 
 /***/ },
-/* 338 */
+/* 340 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {var clone = (function() {
@@ -42769,10 +43134,10 @@
 	  module.exports = clone;
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(339).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(341).Buffer))
 
 /***/ },
-/* 339 */
+/* 341 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -42783,9 +43148,9 @@
 	 */
 	/* eslint-disable no-proto */
 
-	var base64 = __webpack_require__(340)
-	var ieee754 = __webpack_require__(341)
-	var isArray = __webpack_require__(342)
+	var base64 = __webpack_require__(342)
+	var ieee754 = __webpack_require__(343)
+	var isArray = __webpack_require__(344)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -44320,10 +44685,10 @@
 	  return i
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(339).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(341).Buffer, (function() { return this; }())))
 
 /***/ },
-/* 340 */
+/* 342 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -44453,7 +44818,7 @@
 
 
 /***/ },
-/* 341 */
+/* 343 */
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -44543,7 +44908,7 @@
 
 
 /***/ },
-/* 342 */
+/* 344 */
 /***/ function(module, exports) {
 
 	module.exports = Array.isArray || function (arr) {
@@ -44552,7 +44917,7 @@
 
 
 /***/ },
-/* 343 */
+/* 345 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44569,15 +44934,15 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _actionsDelivery_change = __webpack_require__(318);
+	var _actionsDelivery_change = __webpack_require__(319);
 
 	var ChangeActions = _interopRequireWildcard(_actionsDelivery_change);
 
 	var _actionsOrder_manage_form = __webpack_require__(291);
 
-	var _reducersOrders = __webpack_require__(336);
+	var _reducersOrders = __webpack_require__(338);
 
-	var _reducersArea_select = __webpack_require__(334);
+	var _reducersArea_select = __webpack_require__(335);
 
 	var _configAppConfig = __webpack_require__(157);
 
@@ -44616,7 +44981,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 344 */
+/* 346 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44631,13 +44996,13 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _reducersOrders = __webpack_require__(336);
+	var _reducersOrders = __webpack_require__(338);
 
-	var _reducersArea_select = __webpack_require__(334);
+	var _reducersArea_select = __webpack_require__(335);
 
-	var _reducersDeliveryman = __webpack_require__(345);
+	var _reducersDeliveryman = __webpack_require__(347);
 
-	var _actionsDelivery_manage = __webpack_require__(321);
+	var _actionsDelivery_manage = __webpack_require__(322);
 
 	var Actions = _interopRequireWildcard(_actionsDelivery_manage);
 
@@ -44645,7 +45010,7 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _reduxSimpleRouter = __webpack_require__(335);
+	var _reduxSimpleRouter = __webpack_require__(336);
 
 	var filter_state = {
 	  search_ing: false
@@ -44713,7 +45078,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 345 */
+/* 347 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44728,7 +45093,7 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-	var _actionsDeliveryman = __webpack_require__(320);
+	var _actionsDeliveryman = __webpack_require__(321);
 
 	var Actions = _interopRequireWildcard(_actionsDeliveryman);
 
@@ -44751,7 +45116,7 @@
 	}
 
 /***/ },
-/* 346 */
+/* 348 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44770,21 +45135,21 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _reducersOrders = __webpack_require__(336);
+	var _reducersOrders = __webpack_require__(338);
 
-	var _reducersDeliveryman = __webpack_require__(345);
+	var _reducersDeliveryman = __webpack_require__(347);
 
-	var _reducersArea_select = __webpack_require__(334);
+	var _reducersArea_select = __webpack_require__(335);
 
 	var _actionsOrder_manage_form = __webpack_require__(291);
 
 	var _actionsOrders = __webpack_require__(289);
 
-	var _actionsDelivery_distribute = __webpack_require__(325);
+	var _actionsDelivery_distribute = __webpack_require__(326);
 
 	var Actions = _interopRequireWildcard(_actionsDelivery_distribute);
 
-	var _reduxSimpleRouter = __webpack_require__(335);
+	var _reduxSimpleRouter = __webpack_require__(336);
 
 	var filter_state = {
 	  search_ing: false,
@@ -44860,7 +45225,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 347 */
+/* 349 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44877,7 +45242,7 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _actionsDelivery_print_review = __webpack_require__(327);
+	var _actionsDelivery_print_review = __webpack_require__(328);
 
 	var Actions = _interopRequireWildcard(_actionsDelivery_print_review);
 

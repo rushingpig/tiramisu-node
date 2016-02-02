@@ -79,6 +79,11 @@ a
   font-size: 12px !important
 .font-lg
   font-size: 15px !important
+.transition
+  transition: all .8s ease-in-out
+.success-form-animate
+  border: 1px solid rgba(69, 255, 69, 0.84)
+  box-shadow: 0 0 7px 2px rgba(150,218,150,.55)
 
 /**************************/
 /********* 组件类 **********/
@@ -252,19 +257,18 @@ hr.dotted
       height: 16px
       color: #ECA2A2
 
-.modal.loading
-  .modal-body
-    .loading-wrap
+.modal
+  .loading-wrap
+    position: absolute
+    width: 100%
+    height: 100%
+    top: 0
+    left: 0
+    z-index: 10
+    background: rgba(253, 253, 253, 0.88)
+    i
       position: absolute
-      width: 100%
-      height: 100%
-      top: 0
-      left: 0
-      z-index: 10
-      background: rgba(253, 253, 253, 0.88)
-      i
-        position: absolute
-        top: 50%
-        margin-top: -10px
-        color: $theme-font-color
+      top: 50%
+      margin-top: -10px
+      color: $theme-font-color
 

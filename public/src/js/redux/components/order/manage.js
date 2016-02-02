@@ -9,7 +9,7 @@ import AreaActions from 'actions/area';
 import { AreaActionTypes2 } from 'actions/action_types';
 import * as OrderActions from 'actions/orders';
 import * as OrderManageActions from 'actions/order_manage';
-import { getOrderSrcs, getDeliveryStations } from 'actions/order_manage_form';
+import { getOrderSrcs, getDeliveryStations, autoGetDeliveryStations } from 'actions/order_manage_form';
 
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
@@ -22,6 +22,7 @@ import { tableLoader, get_table_empty } from 'common/loading';
 import StdModal from 'common/std_modal';
 import LazyLoad from 'utils/lazy_load';
 import { colour, Noty } from 'utils/index';
+import { createMap, autoMatch } from 'mixins/map';
 
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from 'common/order_detail_modal';
@@ -153,10 +154,9 @@ var OrderRow = React.createClass({
         <td>
           <a onClick={this.editHandler} href="javascript:;">[编辑]</a><br/>
           <a onClick={this.viewOrderDetail} href="javascript:;">[查看]</a><br/>
-          <a onClick={this.alterDelivery} href="javascript:;" className="nowrap hidden">[修改配送]</a>
-          <a onClick={this.alterStation} href="javascript:;" className="nowrap hidden">[分配配送站]</a>
-          <a onClick={this.cancelOrder} href="javascript:;" className="nowrap">[订单取消]</a><br/>
-          <a onClick={this.orderException} href="javascript:;" className="nowrap">[订单异常]</a>
+          <a onClick={this.alterDelivery} href="javascript:;" className="nowrap">[修改配送]</a><br/>
+          <a onClick={this.alterStation} href="javascript:;" className="nowrap">[分配配送站]</a><br/>
+          <a onClick={this.cancelOrder} href="javascript:;" className="nowrap">[订单取消]</a>
         </td>
         <td>{props.merchant_id}</td>
         <td>{props.order_id}</td>
@@ -188,15 +188,27 @@ var OrderRow = React.createClass({
         <td><div className="remark-in-table">{props.remarks}</div></td>
         <td>{props.updated_by}</td>
         <td>{props.created_by}</td>
-        <td><div className="time">{props.updated_date}<br/><a onClick={this.viewOrderOperationRecord} href="javascript:;">操作记录</a></div></td>
+        <td><div className="time">{props.updated_time}<br/><a onClick={this.viewOrderOperationRecord} href="javascript:;">操作记录</a></div></td>
       </tr>
     )
   },
   activeOrder(){
-    var { order_id, active_order_id, activeOrder } = this.props;
+    var { 
+      order_id, active_order_id, activeOrder, prepareDeliveryDataOK,
+      getProvinces, getCities, getDistricts, getDeliveryShops, getDeliveryStations
+    } = this.props;
     if(order_id != active_order_id){
       activeOrder(order_id).done(function(data){
-        // debugger;
+        //这里拉取数据完全是为了给“修改配送”modal使用
+        setTimeout(function(){
+          $.when(
+            getProvinces(),
+            getCities(data.province_id),
+            getDistricts(data.city_id),
+            getDeliveryShops(data.regionalism_id),
+            getDeliveryStations()
+          ).done(prepareDeliveryDataOK)
+        }.bind(this), 400)
       });
     }
   },
@@ -233,6 +245,7 @@ var OrderRow = React.createClass({
     e.stopPropagation();
   },
   orderException(e){
+    //已被弃用
     this.props.showOrderException(this.props);
     this.activeOrder();
     e.stopPropagation();
@@ -254,15 +267,15 @@ class ManagePannel extends Component {
     }
   }
   render(){
-    var { filter, area, alter_delivery_area, 
-      main: {submitting, delivery_stations},
+    var { filter, area, alter_delivery_area, delivery_stations,
+      main: {submitting, prepare_delivery_data_ok},
       activeOrder, showProductsDetail, operationRecord, dispatch, getOrderList, getOrderOptRecord, cancelOrder, orderException } = this.props;
     var { loading, page_no, total, list, check_order_info, active_order_id, show_products_detail } = this.props.orders;
     var { viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, search } = this;
 
     var content = list.map((n, i) => {
       return <OrderRow key={n.order_id} 
-        {...{...n, active_order_id, showProductsDetail, viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, activeOrder}} />;
+        {...{...n, active_order_id, ...this.props, viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord}} />;
     })
     return (
       <div className="order-manage">
@@ -331,9 +344,11 @@ class ManagePannel extends Component {
         <CancelOrderModal ref="CancelOrderModal" {...{submitting, cancelOrder, callback: search}} />
         <OrderExceptionModal ref="OrderExceptionModal" {...{submitting, orderException, callback: search}} />
         <AlterStationModal ref="AlterStationModal" 
-          {...{submitting, delivery_stations, order: check_order_info, show_products_detail, ...alter_delivery_area, actions: this.props, callback: search}} />
+          {...{submitting, ...delivery_stations, order: check_order_info, active_order_id, show_products_detail, loading: !prepare_delivery_data_ok,
+            ...alter_delivery_area, actions: this.props, callback: search}} />
         <AlterDeliveryModal ref="AlterDeliveryModal" 
-          {...{submitting, delivery_stations, order: check_order_info, show_products_detail, ...alter_delivery_area, actions: this.props, callback: search}} />
+          {...{submitting, ...delivery_stations, order: check_order_info, active_order_id, show_products_detail, loading: !prepare_delivery_data_ok,
+            ...alter_delivery_area, actions: this.props, callback: search}} />
       </div>
     )
   }
@@ -373,7 +388,13 @@ function mapStateToProps({orderManage}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  var actions = bindActionCreators({...OrderActions, ...AreaActions(AreaActionTypes2), getDeliveryStations, ...OrderManageActions}, dispatch);
+  var actions = bindActionCreators({
+    ...OrderActions, 
+    ...AreaActions(AreaActionTypes2), 
+    getDeliveryStations, 
+    autoGetDeliveryStations,
+    ...OrderManageActions
+  }, dispatch);
   actions.dispatch = dispatch;
   return actions;
 }
@@ -451,30 +472,75 @@ var CancelOrderModal = React.createClass({
 });
 
 var AlterStationModal = React.createClass({
+  propTypes: {
+    actions: PropTypes.shape({
+      autoGetDeliveryStations: PropTypes.func.isRequired,
+    })
+  },
   getInitialState: function() {
     return {
       delivery_id: undefined,
+      handling: false,
     };
+  },
+  componentWillReceiveProps(nextProps){
+    if(nextProps.order){
+      this.setState({delivery_id: nextProps.order.delivery_id})
+    }
   },
   mixins: [LinkedStateMixin],
   render(){
+    var { submitting, loading, order } = this.props;
+    var { handling } = this.state;
     return (
-      <StdModal submitting={this.props.submitting} title="取消订单" onCancel={this.hideCallback} ref="modal">
+      <StdModal loading={loading} disabled={handling} submitting={submitting} onConfirm={this.onConfirm} title="分配配送站" onCancel={this.hideCallback} ref="modal">
         <div className="form-group">
           <label>收货地址：</label>
-          {this.props.order && this.props.order.recipient_address}
+          {order && `${order.province_name} ${order.city_name} ${order.regionalism_name} ${order.recipient_address}`}
         </div>
         <div className="form-group form-inline">
           <label>配送中心：</label>
-          <Select valueLink={this.linkState('delivery_id')} options={[]} />
+          <Select ref="delivery_center" valueLink={this.linkState('delivery_id')} className="transition" options={this.props.delivery_stations} />
           {'　'}
-          <button className="btn btn-xs btn-theme">自动分配</button>
+          <button onClick={this.autoMatchHandler} disabled={handling} data-submitting={handling} className="btn btn-xs btn-theme">自动分配</button>
         </div>
       </StdModal>
     )
   },
   componentDidMount(){
-
+    setTimeout(function(){
+      createMap(this);
+    }.bind(this), 100)
+  },
+  autoMatchHandler(e){
+    var {order} = this.props;
+    this.setState({handling: true}, function(){
+      autoMatch.call(this, order.city_name, order.regionalism_name + order.recipient_address)
+        .done((delivery_id) => {
+          if(delivery_id)
+            this.setState({delivery_id})
+        })
+        .fail( msg => Noty('warning', msg))
+        .always(() => {
+          this.setState({handling: false})
+        })
+    })
+  },
+  onConfirm(){
+    var { delivery_id } = this.state;
+    var delivery_name = $(findDOMNode(this.refs.delivery_center)).find('option:selected').html();
+    if(!delivery_id || delivery_id == SELECT_DEFAULT_VALUE){
+      Noty('warning', '请选择配送中心'); return;
+    }
+    var { actions: {alterStation}, active_order_id, callback, order: {updated_time} } = this.props;
+    alterStation(active_order_id, {delivery_id, delivery_name, updated_time})
+      .done(function(){
+        callback();
+        this.refs.modal.hide();
+      }.bind(this))
+      .fail(function(){
+        Noty('error', '服务器异常')
+      })
   },
   show(){
     this.refs.modal.show();
@@ -482,6 +548,7 @@ var AlterStationModal = React.createClass({
   hideCallback(){
     // this.refs.modal.hide();
     this.setState(this.getInitialState());
+    this.props.actions.resetDeliveryStations();
   }
 })
 

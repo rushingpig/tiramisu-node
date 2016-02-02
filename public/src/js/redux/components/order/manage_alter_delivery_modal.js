@@ -1,11 +1,16 @@
 import React, { Component, PropTypes } from 'react';
+import { findDOMNode } from 'react-dom';
 import LinkedStateMixin from 'react-addons-linked-state-mixin';
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import StdModal from 'common/std_modal';
 import RadioGroup from 'common/radio_group';
-import { map } from 'utils/index';
-import { order_status as ORDER_STATUS, DELIVERY_TIME_MAP, DELIVERY_TO_HOME, DELIVERY_TO_STORE } from 'config/app.config';
+import { map, Noty } from 'utils/index';
+import autoMatchDeliveryStations from 'mixins/map';
+
+import { order_status as ORDER_STATUS, SELECT_DEFAULT_VALUE,
+ DELIVERY_TIME_MAP, DELIVERY_TO_HOME, DELIVERY_TO_STORE }
+  from 'config/app.config';
 
 var AlterDeliveryModal = React.createClass({
   propTypes: {
@@ -15,34 +20,25 @@ var AlterDeliveryModal = React.createClass({
   componentWillReceiveProps(nextProps){
     if(
       nextProps.order //拿到订单详细数据
+      && nextProps.order != this.props.order 
       && !nextProps.show_products_detail //非普通点击查询(编辑)
     ){
-      var {delivery_type, delivery_time, province_id, city_id, regionalism_id, recipient_address, delivery_id} = nextProps.order;
-      delivery_time = delivery_time.split(' ');
-      this.setState({
-        delivery_type,
-        delivery_date: delivery_time[0],
-        delivery_hour: delivery_time[1],
-        province_id,
-        city_id,
-        regionalism_id,
-        recipient_address,
-        delivery_id
-      });
-
-      // var { getProvinces, getCities, getDistricts, getDeliveryShops, getDeliveryStations } = this.props.actions;
-      // setTimeout(function(){
-      //   $.when(
-      //     getProvinces(),
-      //     getCities(province_id),
-      //     getDistricts(city_id),
-      //     getDeliveryShops(regionalism_id),
-      //     getDeliveryStations()
-      //   ).done(function(){
-      //     this.setState({loading: false})
-      //   }.bind(this))
-      // }.bind(this), 4000)
+      this.initSetState(nextProps.order);
     }
+  },
+  initSetState(order){
+    var {delivery_type, delivery_time, province_id, city_id, regionalism_id, recipient_address, delivery_id} = order;
+      delivery_time = delivery_time.split(' ');
+    this.setState({
+      delivery_type,
+      delivery_date: delivery_time[0],
+      delivery_hour: delivery_time[1],
+      province_id,
+      city_id,
+      regionalism_id,
+      recipient_address,
+      delivery_id
+    });
   },
   getInitialState: function() {
     return {
@@ -55,17 +51,15 @@ var AlterDeliveryModal = React.createClass({
       recipient_address: '',
       delivery_id: undefined,
 
-      loading: true,
-
       all_delivery_hours: DELIVERY_TIME_MAP.map(n => ({id: n, text: n})),
     };
   },
   render(){
-    var { delivery_type, delivery_date, delivery_hour, recipient_address, all_delivery_hours, delivery_id, loading } = this.state;
-    var { delivery_shops, delivery_stations, provinces, cities, districts, order = {}} = this.props;
+    var { delivery_type, delivery_date, delivery_hour, recipient_address, all_delivery_hours, delivery_id } = this.state;
+    var { delivery_shops, delivery_stations, provinces, cities, districts, order = {}, loading} = this.props;
     var _order_status = ORDER_STATUS[order && order.order_status];
     return (
-      <StdModal submitting={this.props.submitting} loading={loading} onCancel={this.hideCallback} title="修改配送" ref="modal">
+      <StdModal submitting={this.props.submitting} onConfirm={this.onConfirm} loading={loading} onCancel={this.hideCallback} title="修改配送" ref="modal">
         <div className="form-group form-inline">
           {
             _order_status && _order_status.key > 30
@@ -101,14 +95,64 @@ var AlterDeliveryModal = React.createClass({
         </div>
         <div className="form-group form-inline">
           <label>{'修改配送中心：'}</label>
-          <Select valueLink={this.linkState('delivery_id')} options={delivery_stations} className="input-xs" />
+          <Select ref="delivery_center" valueLink={this.linkState('delivery_id')} options={delivery_stations} className="input-xs transition" />
         </div>
       </StdModal>
     )
   },
-  mixins: [LinkedStateMixin],
+  mixins: [LinkedStateMixin, {autoMatchDeliveryStations}],
   componentDidMount(){
-    
+    setTimeout(function(){
+      this.autoMatchDeliveryStations(delivery_id => {
+        if(delivery_id){
+          this.setState({delivery_id})
+        }else{
+          Noty('warning', '没有可匹配的配送站');
+          this.setState({delivery_id: SELECT_DEFAULT_VALUE})
+        }
+      });
+    }.bind(this), 100)
+  },
+  onConfirm(){
+    var {
+      delivery_type,
+      delivery_date,
+      delivery_hour,
+      regionalism_id,
+      recipient_address,
+      delivery_id,
+      order
+    } = this.state;
+    if(!delivery_date || delivery_hour == SELECT_DEFAULT_VALUE){
+      Noty('warning', '请填写正确的配送时间'); return;
+    }else if(!regionalism_id || regionalism_id == SELECT_DEFAULT_VALUE || !recipient_address.trim()){
+      Noty('warning', '请填写完整的配送地址'); return;
+    }else if(delivery_id == SELECT_DEFAULT_VALUE){
+      Noty('warning', '请选择配送中心'); return;
+    }
+    var prefix_address = (
+      this.findSelectedOptionText('province') +
+      this.findSelectedOptionText('city') +
+      this.findSelectedOptionText('district')
+    )
+    this.props.actions.alterDelivery(this.props.active_order_id, {
+      delivery_type,
+      delivery_time: delivery_date + ' ' + delivery_hour,
+      prefix_address,
+      regionalism_id,
+      recipient_address,
+      delivery_id,
+      delivery_name: this.findSelectedOptionText('delivery_center'),
+      updated_time: this.props.order.updated_time,
+    }).done(function(){
+      this.props.callback();
+      this.refs.modal.hide();
+    }.bind(this)).fail(function(){
+      Noty('error', '服务器异常')
+    })
+  },
+  findSelectedOptionText(_refs){
+    return $(findDOMNode(this.refs[_refs])).find('option:selected').html();
   },
   onDeliveryTypeChange(delivery_type){
     this.setState({delivery_type})
@@ -119,7 +163,7 @@ var AlterDeliveryModal = React.createClass({
   onProvinceChange(e){
     var {value} = e.target;
     this.props.actions.provinceReset();
-    this.setState({province_id: e.target.value})
+    this.setState({province_id: value})
     if(value != this.refs.province.props['default-value'])
       this.props.actions.getCities(value);
   },
@@ -139,10 +183,15 @@ var AlterDeliveryModal = React.createClass({
   },
   show(){
     this.refs.modal.show();
+    var {order, active_order_id} = this.props;
+    if(order && order.order_id == active_order_id){
+      this.initSetState(order);
+    }
   },
   hideCallback(){
     this.setState(this.getInitialState());
     // this.refs.modal.hide();
+    this.props.actions.resetDeliveryStations();
   },
 })
 

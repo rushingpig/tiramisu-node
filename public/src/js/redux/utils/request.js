@@ -53,6 +53,15 @@ export function put(url, data){
   });
 }
 
+export function del(url, data){
+  return new Promise(function(resolve, reject){
+    req.del(url)
+      .send(data)
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .end(_end_callback(resolve, reject));
+  });
+}
+
 //最简封装
 export function GET(url, query_data, action_type){
   return (dispatch) => {

@@ -5,11 +5,15 @@ import * as OrderProductsActions from 'actions/order_products';
 import { UPDATE_PATH } from 'redux-simple-router';
 import AreaActions from 'actions/area';
 import { map } from 'utils/index';
+
+import delivery_stations from 'reducers/delivery_stations';
+
 import { 
   DELIVERY_TO_HOME,
   DELIVERY_TIME_MAP,
   pay_status,
   INVOICE,
+  REQUEST,
 } from 'config/app.config';
 import clone from 'clone';
 import store from 'stores/configureStore';
@@ -18,7 +22,6 @@ var initial_state = {
   all_pay_status: map(pay_status, (text, id) => ({id, text})),
   all_delivery_time: DELIVERY_TIME_MAP.map(n => ({id: n, text: n})),
   all_order_srcs: [],
-  delivery_stations: [],
   all_pay_modes: [],
 
   save_ing: false,
@@ -47,8 +50,7 @@ function mainForm(state = initial_state, action) {
         }
       })
       return {...state, all_order_srcs: !l2.length ? [l1] : [l1, l2] }
-    case FormActions.GOT_DELIVERY_STATIONS:
-      return {...state, delivery_stations: map(action.data, (text, id) => ({id, text})) }
+    
     case FormActions.GOT_PAY_MODES:
       return {...state, all_pay_modes: map(action.data, (text, id) => ({id, text})) }
 
@@ -232,6 +234,7 @@ const orderAddReducer = combineReducers({
   mainForm,
   products: products_choosing,
   history_orders,
+  delivery_stations,
 })
 
 export default orderAddReducer

@@ -28,10 +28,12 @@ class TopHeader extends Component {
 
 class ManageOrderDetailPannel extends Component {
   render(){
-    var { mainForm, history_orders, area, dispatch, products, params } = this.props;
+    var { mainForm, delivery_stations, history_orders, area, dispatch, products, params } = this.props;
     var editable = !!(params && params.id);
 
     var actions = {...bindActionCreators(AreaActions(), dispatch), ...bindActionCreators(OrderFormActions, dispatch)};
+
+    mainForm = {...mainForm, ...delivery_stations};
     return (
       <div className="order-manage">
         <TopHeader />

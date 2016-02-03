@@ -90,7 +90,7 @@ CREATE TABLE `buss_order` (
   `updated_by` varchar(255) DEFAULT NULL COMMENT '记录更新操作者',
   `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
-  `merchant_id` int(11) DEFAULT NULL COMMENT '商户订单',
+  `merchant_id` VARCHAR(36) DEFAULT NULL COMMENT '外部商户订单',
   `coupon` varchar(50) DEFAULT NULL COMMENT '团购券号',
   `print_status` enum('PRINTABLE','UNPRINTABLE','AUDITING','REPRINTABLE') DEFAULT 'PRINTABLE' COMMENT '可打印，不可打印，审核中，可重打印',
   `COD_amount` int(10) unsigned DEFAULT NULL COMMENT '未签收时货到付款实收',

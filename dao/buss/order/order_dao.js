@@ -6,7 +6,11 @@ var baseDao = require('../../base_dao'),
   logger = require('../../../common/LogHelper').systemLog(),
   constant = require('../../../common/Constant'),
   del_flag = baseDao.del_flag,
-  tables = require('../../../config').tables;
+  tables = require('../../../config').tables,
+  errorMessage = require('../../../util/res_obj'),
+  TiramisuError = require('../../../error/tiramisu_error');
+
+
 function OrderDao() {
   this.baseColumns = ['id', 'name'];
   this.base_insert_sql = 'insert into ?? set ?';
@@ -24,7 +28,14 @@ OrderDao.prototype.findAllOrderSrc = function () {
  * new order
  */
 OrderDao.prototype.insertOrder = function (orderObj) {
-  return baseDao.insert(this.base_insert_sql, [tables.buss_order, orderObj]);
+  return baseDao
+    .insert(this.base_insert_sql, [tables.buss_order, orderObj])
+    .then(result => {
+      return new Promise((resolve, reject) => resolve(result));})
+    .catch(err => {
+      if (err.code === 'ER_DUP_ENTRY') {
+        throw new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, orderObj.merchant_id);}
+      throw err;});
 };
 /**
  * new recipient record

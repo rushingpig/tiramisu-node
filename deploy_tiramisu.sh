@@ -11,37 +11,37 @@ pm2=`which pm2`
 npm=`which npm`
 
 function init(){
-	cd "${project_path}"
-	${git} pull
-	${npm} install
+  ${git} pull && \
+  ${npm} install && \
+  ${npm} prune
 }
 
 function start(){
-	${pm2} start "${project_name}"
+  ${pm2} start "${project_name}"
 }
 
 function stop(){
-	${pm2} stop "${project_name}"
+  ${pm2} stop "${project_name}"
 }
 
 function restart(){
-	${pm2} restart "${project_name}"
+  ${pm2} restart "${project_name}"
 }
 function reload(){
-	${pm2} reload "${project_name}"
+  ${pm2} reload "${project_name}"
 }
 
 function usage(){
-	echo "Usage:::::::::: sh|./ $0 { start | restart | stop | reload }"
-	exit 1
+  echo "Usage:::::::::: sh|./ $0 { start | restart | stop | reload }"
+  exit 1
 }
 
 case "$1" in
-	start | restart | stop | reload)
-		init
-		$1
-	;;
-	*)
-		usage
-	;;
+  start | restart | stop | reload)
+    init
+    $1
+  ;;
+  *)
+    usage
+  ;;
 esac

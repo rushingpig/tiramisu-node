@@ -1,11 +1,4 @@
-/**
- * @des    : the config for test environment
- * @author : pigo.can
- * @date   : 15/12/2 上午10:03
- * @email  : rushingpig@163.com
- * @version: v1.0
- */
-"use strict";
+'use strict';
 //  express static config options
 var exp_static_options = {
   dotfiles: "ignore",
@@ -94,7 +87,7 @@ var mysql_options = {
   waitForConnections: true,
   queueLimit: 100,
   connectionLimit: 50,
-  host: '112.74.135.190',
+  host: 'rds6612933l1ooqks2sj.mysql.rds.aliyuncs.com',
   port: 3307,
   user: 'tiramisu_qa',
   password: 'tiramisuqa',
@@ -104,8 +97,7 @@ var mysql_options = {
   supportBigNumbers: true,
   multipleStatements: true,  //  if in the production recommend to be false
   dateStrings: true, //  Force date types (TIMESTAMP, DATETIME, DATE) to be returned as strings rather then inflated into JavaScript Date objects.
-  debug: false, //  when in production or test environment ,it should be set to false. it just be used in dev
-
+  debug: true, //  when in production ,it should be set to false. it just be used in dev/test
 };
 
 //  exclude path arrays of login filter

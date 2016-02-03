@@ -1,22 +1,10 @@
-/**
- * @des    :
- * @author : pigo.can
- * @date   : 15/12/10 下午6:31
- * @email  : zhenglin.zhu@xfxb.net
- * @version: v0.0.1
- */
-"use strict";
+'use strict';
 var path = require('path');
 var fs = require('fs');
 var pool = require('../../dao/base_dao').pool;
 
-function DBInitMiddleware() {
+function DBInitMiddleware() {}
 
-}
-/**
- * private
- * @constructor
- */
 function loadSQL() {
   let filePath = path.join(__dirname, '../../sql/tiramisu.sql');
   let sql = fs.readFileSync(filePath, {
@@ -24,14 +12,14 @@ function loadSQL() {
     encoding: 'utf-8'
   });
   return sql;
-
 }
 
-
-DBInitMiddleware.initdb = () => {
-  if (!(process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test')) {
-    pool.getConnection((err, conn) => {
-      conn.query(loadSQL(), (err) => {
+DBInitMiddleware.initdb = (callback) => {
+  callback = callback || function () {};
+  if (['dev', 'production', 'test'].indexOf(process.env.NODE_ENV) === -1) {
+    pool.query(
+      loadSQL(),
+      (err) => {
         if (err) {
           console.log(err);
           console.log('=============================================');
@@ -42,10 +30,9 @@ DBInitMiddleware.initdb = () => {
           console.log('==============init db success=================');
           console.log('==============================================');
         }
-      });
+        callback();
     });
   }
-  return;
 };
 
 module.exports = DBInitMiddleware;

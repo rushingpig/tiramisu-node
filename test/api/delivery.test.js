@@ -25,62 +25,59 @@ var expect = chai.expect,
     }
 )();
 
+module.exports = function () {
+  describe('test for delivery module...', function () {
+      /**
+       * the funtion for callback
+       * @param done
+       * @returns {Function}
+       */
+      function err(done) {
+          return function (err, res) {
+              if (err) {
+                  return done(err);
+              }
+              done();
+          }
+      }
 
-describe('test for delivery module...', function () {
-    /**
-     * the funtion for callback
-     * @param done
-     * @returns {Function}
-     */
-    function err(done) {
-        return function (err, res) {
-            if (err) {
-                return done(err);
-            }
-            done();
-        }
-    }
+      /**
+       * in order to get the session with login
+       */
+      before(function (done) {
+          agent
+              .post('/v1/a/login')
+              .type('application/json')
+              .send({
+                  username: 'admin',
+                  password: '123'
+              })
+              .expect(200, {
+                  "code": "0000",
+                  "msg": "everything goes well -> enjoy yourself...",
+                  "data": {}
+              }, err(done));
+      });
 
-    /**
-     * in order to get the session with login
-     */
-    before(function (done) {
-        agent
-            .post('/v1/a/login')
-            .type('application/json')
-            .send({
-                username: 'admin',
-                password: '123'
-            })
-            .expect(200, {
-                "code": "0000",
-                "msg": "everything goes well -> enjoy yourself...",
-                "data": {}
-            }, err(done));
-    });
+      beforeEach(function (done) {
+          done();
+      });
+      /**
+       * logout to delete session
+       */
+      after(function (done) {
+          agent
+              .get('/logout')
+              .expect(302, err(done));
+      });
 
-    beforeEach(function (done) {
-        done();
-    });
-    /**
-     * logout to delete session
-     */
-    after(function (done) {
-        agent
-            .get('/logout')
-            .expect(302, err(done));
-    });
-
-    describe('GET /v1/a/provinces', function () {
-        it('get the list of the all provinces', function (done) {
-            agent
-                .get('/v1/a/provinces')
-                .expect('Content-Type', /json/)
-                .expect(200)
-                .end(err(done));
-        });
-    });
-
-    describe
-
-});
+      describe('GET /v1/a/provinces', function () {
+          it('get the list of the all provinces', function (done) {
+              agent
+                  .get('/v1/a/provinces')
+                  .expect('Content-Type', /json/)
+                  .expect(200)
+                  .end(err(done));
+          });
+      });
+  });};

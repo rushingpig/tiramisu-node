@@ -1,183 +1,79 @@
-/**
- * @des    : the tool module for Array | Number | String | Object and so on
- * @author : pigo.can
- * @date   : 15/12/17 上午9:54
- * @email  : zhenglin.zhu@xfxb.net
- * @version: v0.0.1
- */
-"use strict";
+'use strict';
+var validator = require('validate.js');
+var stringValidator = require('validator');
 var ToolUtils = {};
 
 ToolUtils.isEmptyArray = function (array) {
-  return !Array.isArray(array) || !array || array.length === 0;
+  return !array || (validator.isArray(array) && validator.isEmpty(array));
 };
+
 ToolUtils.isEmptyObject = function (object) {
-  return !object || ToolUtils.isEmptyArray(Object.keys(object));
+  return !object || (validator.isObject(object) && validator.isEmpty(object));
 };
+
 ToolUtils.isInt = function (param) {
-  return /^[0-9]+$/g.test(param) && Number.isInteger(parseInt(param));
+  return stringValidator.isInt(param, {min: 0});
 };
 
 ToolUtils.sum = function (arr) {
-  if (!ToolUtils.isArray(arr)) {
-    return result;
-  }
-  if (arr.length == 0) {
+  if (ToolUtils.isEmptyArray(arr)) {
     return 0;
   }
-  let result = arr[0];
-  let length = arr.length;
-  for (let i = 1; i < length; i++) {
-    result += arr[i];
-  }
-  return result;
-
+  return arr.reduce((prev, curr) => prev + curr);
 };
 
 ToolUtils.avg = function (arr) {
-  let result = 0;
-  if (!ToolUtils.isArray(arr)) {
-    return result;
+  if (ToolUtils.isEmptyArray(arr)) {
+    return 0;
   }
-  let length = arr.length;
-  if (length == 0) {
-    return result;
-  }
-  result = ToolUtils.sum(arr) / length;
-  return result;
+  return ToolUtils.sum(arr) / arr.length;
 };
 
-ToolUtils.contains = function (arr, x) {
+ToolUtils.contains = validator.contains;
 
-  var result = false;
-
-  if (!ToolUtils.isArray(arr)) {
-
-    return result;
-
-  }
-
-  var length = arr.length;
-
-  if (length == 0) {
-
-    return result;
-
-  }
-
-  for (var i = 0; i < length; i++) {
-
-    if (arr[i] == x) {
-
-      return true;
-
-    }
-
-  }
-
-  return result;
-
-};
-
-
-ToolUtils.isArray = function (arr) {
-  return Array.isArray(arr) && arr != undefined && arr.constructor == Array
-};
-
+ToolUtils.isArray = validator.isArray;
 
 ToolUtils.length = function (arr) {
-
-  var result = 0;
-
-  if (!ToolUtils.isArray(arr)) {
-
-    return result;
-
-  }
-
-  result = arr.length;
-
-  return result;
-
+  return validator.isArray(arr)? arr.length: 0;
 };
-
 
 ToolUtils.hasNext = function (arr) {
-  let result = false;
-  if (!ToolUtils.isArray(arr)) {
-    return result;
-  }
-  result = arr.length > 0 ? true : false;
-  return result;
+  return ToolUtils.length(arr) > 0;
 };
 
-
 ToolUtils.shuffle = function (arr) {
-  if (!ToolUtils.isArray(arr)) {
+  if (!validator.isArray(arr)) {
     return arr;
   }
   let length = arr.length;
-  for (var i = 0; i < length; i++) {
-    var pos = parseInt(Math.random() * (length - i));
-    var save = arr[i];
+  arr.forEach((value, i) => {
+    let pos = Math.floor(Math.random() * (length - i));
+    let save = arr[i];
     arr[i] = arr[pos];
     arr[pos] = save;
-  }
+  });
   return arr;
 };
-
 
 ToolUtils.unique = function (arr) {
   if (!ToolUtils.isArray(arr)) {
     return arr;
   }
-  let u = [];
-  var length = arr.length;
-  for (var i = 0; i < length; i++) {
-    var o = arr[i];
-    if (!ToolUtils.contains(u, o)) {
-      u.push(o);
-    }
-  }
-  return u;
+  return Array.from(new Set(arr));
 };
-
 
 ToolUtils.min = function (arr) {
-  var result = 0;
-  if (!ToolUtils.isArray(arr)) {
-    return result;
+  if (ToolUtils.isEmptyArray(arr)) {
+    return 0;
   }
-  var length = arr.length;
-  if (length == 0) {
-    return result;
-  }
-  result = arr[0];
-  for (var i = 1; i < length; i++) {
-    var o = arr[i];
-    if (o < result) {
-      result = o;
-    }
-  }
-  return result;
+  return arr.recude((prev, curr) => prev > curr? curr: prev);
 };
+
 ToolUtils.max = function (arr) {
-  let result = 0;
-  if (!ToolUtils.isArray(arr)) {
-    return result;
+  if (ToolUtils.isEmptyArray(arr)) {
+    return 0;
   }
-  let length = arr.length;
-  if (length == 0) {
-    return result;
-  }
-  result = arr[0];
-  for (let i = 1; i < length; i++) {
-    let o = arr[i];
-    if (o > result) {
-      result = o;
-    }
-  }
-  return result;
+  return arr.recude((prev, curr) => prev < curr? curr: prev);
 };
 
 ToolUtils.hash = function (input) {
@@ -214,4 +110,5 @@ ToolUtils.getClientIP = function (req) {
     req.connection.socket.remoteAddress ||
     req.ip;
 };
+
 module.exports = ToolUtils;

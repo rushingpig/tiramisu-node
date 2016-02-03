@@ -1,14 +1,7 @@
-/**
- * @des    : wrap the response of express (an instance of http.ServerResponse)
- * @author : pigo.can
- * @date   : 15/12/9 下午1:17
- * @email  : zhenglin.zhu@xfxb.net
- * @version: v1.0
- */
-"use strict";
+'use strict';
 var clone = require('clone');
-var res_obj = require('../../util/res_obj'),
-  toolUtils = require('../../common/ToolUtils');
+var res_obj = require('../../util/res_obj');
+var toolUtils = require('../../common/ToolUtils');
 
 function SystemMiddleware(type) {
   this.type = type;
@@ -41,12 +34,15 @@ SystemMiddleware.prototype = {
   },
   debugReqAndResParams: function (req, res, next) {
     let tiramisu_env = process.env.NODE_ENV;
-    if (!tiramisu_env || 'dev' === tiramisu_env || 'development' === tiramisu_env) {
+    if (!tiramisu_env || ['dev', 'development'].indexOf(tiramisu_env) !== -1) {
       console.log('******************** 请༗求༗参༗数༗ **********************');
-      let requestMethod = req.method.toLowerCase();
-      if ('get' === requestMethod) {
-        let query_or_params = toolUtils.isEmptyObject(req.query) ? req.params : req.query;
-        console.log('query/params -> \n', query_or_params);
+      if ('get' === req.method.toLowerCase()) {
+        if (req.params) {
+          console.log('params -> \n', req.params);
+        }
+        if (req.query) {
+          console.log('query -> \n', req.query);
+        }
       } else {
         console.log('body -> \n', JSON.stringify(req.body, null, 2));
       }
@@ -69,7 +65,7 @@ SystemMiddleware.prototype = {
  * @returns {Function}
  */
 function api(res) {
-  return function (res_tpl, data, err) {     // in order to use arguments,do not use [=>] to instead of [function] keyword
+  return function (res_tpl, data, err) {
     let temp = {
       code: '',
       msg: '',
@@ -93,7 +89,7 @@ function api(res) {
     } catch (err) {
       temp = clone(res_obj.FAIL);
       temp.data = {};
-      return res.json(temp)
+      return res.json(temp);
     }
   };
 }

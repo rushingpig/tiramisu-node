@@ -186,7 +186,7 @@ OrderService.prototype.addExternalOrder = (req, res, next) => {
         total_amount: params.total_amount,
         total_original_price: params.total_original_price,
         total_discount_price: params.total_discount_price,
-        greeting_card: params.greeting_card,
+        merchant_id: params.merchant_id,
         // TODO: change to future defined user/program
         created_by: 1
       };

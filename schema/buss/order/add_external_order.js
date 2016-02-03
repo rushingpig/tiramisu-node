@@ -68,6 +68,9 @@ module.exports = {
     notEmpty: true,
     isInt: true
   },
+  'merchant_id': {
+    notEmpty: true
+  },
   // Optional
   'greeting_card': {
     optional: true
@@ -77,5 +80,5 @@ module.exports = {
   },
   'remarks': {
     optional: true
-  },
+  }
 };

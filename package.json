@@ -30,7 +30,8 @@
     "pingpp": "^2.0.6",
     "serve-favicon": "~2.3.0",
     "shelljs": "0.5.3",
-    "uuid": "^2.0.1"
+    "uuid": "^2.0.1",
+    "validator.js": "^1.2.3"
   },
   "devDependencies": {
     "chai": "^3.4.1",

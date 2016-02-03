@@ -48,8 +48,6 @@ app.use(express.static(path.join(__dirname, 'public'),config.exp_static_options)
 if (config.login_required) {
     app.use(middleware.login.loginFilter);
 }
-middleware.db.initdb();
-
 
 //  do authentication
 app.use(passport.initialize());

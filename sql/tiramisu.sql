@@ -360,7 +360,7 @@ DROP TABLE IF EXISTS `buss_recipient`;
 CREATE TABLE `buss_recipient` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `regionalism_id` int(11) DEFAULT NULL COMMENT '行政区域ID',
-  `name` varchar(10) DEFAULT NULL COMMENT '收货人姓名',
+  `name` varchar(48) DEFAULT NULL COMMENT '收货人姓名',
   `mobile` varchar(12) DEFAULT NULL COMMENT '收货人手机号',
   `landmark` varchar(255) DEFAULT NULL COMMENT '标志性建筑',
   `delivery_type` enum('TAKETHEIR','DELIVERY') DEFAULT 'DELIVERY' COMMENT '''门店自提'',''送货上门''',

@@ -95,15 +95,11 @@ module.exports = {
     return obj;
   },
   encodeForFulltext: (obj) => {
-    let str = '';
-    if (!obj || typeof obj !== 'string' || obj.length === 0) {
-      logger.warn('the object to be encode is not valid string ...');
-    } else {
-      for (let i = 0; i < obj.length; i++) {
-        str += (encodeURIComponent(obj.charAt(i)).replace(/%/g, '') + ' ');
-      }
+    if (typeof obj === 'string') {
+      return obj.replace(/%/g, '').split('').map(encodeURIComponent).join(' ');
     }
-    return str;
+    logger.warn('the object to be encode is not valid string ...');
+    return obj;
   },
   genValidateCode: (code_length) => {
     code_length = code_length || 6;

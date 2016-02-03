@@ -10,42 +10,42 @@ var path = require('path');
 var fs = require('fs');
 var pool = require('../../dao/base_dao').pool;
 
-function DBInitMiddleware(){
+function DBInitMiddleware() {
 
 }
 /**
  * private
  * @constructor
  */
-function loadSQL(){
-    let filePath = path.join(__dirname,'../../sql/tiramisu.sql');
-    let sql = fs.readFileSync(filePath,{
-        flag : 'rs',
-        encoding : 'utf-8'
-    });
-    return sql;
+function loadSQL() {
+  let filePath = path.join(__dirname, '../../sql/tiramisu.sql');
+  let sql = fs.readFileSync(filePath, {
+    flag: 'rs',
+    encoding: 'utf-8'
+  });
+  return sql;
 
 }
 
 
-DBInitMiddleware.initdb = ()=>{
-    if(!(process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test')){
-        pool.getConnection((err,conn)=> {
-            conn.query(loadSQL(), (err)=> {
-                if (err) {
-                    console.log(err);
-                    console.log('=============================================');
-                    console.log('==============init db failed=================');
-                    console.log('=============================================');
-                } else {
-                    console.log('==============================================');
-                    console.log('==============init db success=================');
-                    console.log('==============================================');
-                }
-            });
-        });
-    }
-    return;
+DBInitMiddleware.initdb = () => {
+  if (!(process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test')) {
+    pool.getConnection((err, conn) => {
+      conn.query(loadSQL(), (err) => {
+        if (err) {
+          console.log(err);
+          console.log('=============================================');
+          console.log('==============init db failed=================');
+          console.log('=============================================');
+        } else {
+          console.log('==============================================');
+          console.log('==============init db success=================');
+          console.log('==============================================');
+        }
+      });
+    });
+  }
+  return;
 };
 
 module.exports = DBInitMiddleware;

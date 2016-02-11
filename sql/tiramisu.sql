@@ -124,7 +124,7 @@ COMMIT;
 DROP TABLE IF EXISTS `buss_order_fulltext`;
 CREATE TABLE `buss_order_fulltext` (
   `order_id` int(10) unsigned NOT NULL,
-  `owner_name` varchar(50) DEFAULT NULL,
+  `owner_name` varchar(255) DEFAULT NULL,
   `owner_mobile` varchar(40) DEFAULT NULL,
   `recipient_name` varchar(50) DEFAULT NULL,
   `recipient_mobile` varchar(40) DEFAULT NULL,

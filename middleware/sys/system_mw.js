@@ -37,10 +37,10 @@ SystemMiddleware.prototype = {
     if (!tiramisu_env || ['dev', 'development'].indexOf(tiramisu_env) !== -1) {
       console.log('******************** 请༗求༗参༗数༗ **********************');
       if ('get' === req.method.toLowerCase()) {
-        if (req.params) {
+        if (!toolUtils.isEmptyObject(req.params)) {
           console.log('params -> \n', req.params);
         }
-        if (req.query) {
+        if (!toolUtils.isEmptyObject(req.query)) {
           console.log('query -> \n', req.query);
         }
       } else {

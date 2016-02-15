@@ -90,6 +90,10 @@ module.exports = {
   DUPLICATE_EXTERNAL_ORDER: {
     code: '2007',
     msg: 'This order is in system already'
+  },
+  INSERT_FULLTEXT_ERROR: {
+    code: '2008',
+    msg: 'error when inserting fulltext'
   }
 };
 

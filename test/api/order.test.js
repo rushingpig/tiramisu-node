@@ -334,5 +334,54 @@ module.exports = function () {
         .send(req_body)
         .expect(200, res_body, err(done));
     });
+
+    it.skip('POST /v1/i/order too long recipient_name E20160214084947042597960', function (done) {
+      const req_body = {
+        "regionalism_id": "430602",
+        "recipient_name": "李雪良（儿子李慧送）",
+        "recipient_mobile": "13873088723",
+        "recipient_landmark": "",
+        "recipient_address": "岳阳火车站后面",
+        "delivery_id": -1,
+        "src_id": 6,
+        "pay_modes_id": 3,
+        "pay_status": "PAYED",
+        "owner_name": "李慧",
+        "owner_mobile": "13873088723",
+        "remarks": "其他加盟城市满138减59",
+        "delivery_time": "2016-02-15 10:30~11:30",
+        "delivery_type": "DELIVERY",
+        "total_amount": 7900,
+        "total_original_price": 13800,
+        "total_discount_price": 5900,
+        "merchant_id": "E20160214084947042597960",
+        "products": [
+          {
+            "sku_id": 23947,
+            "num": 1,
+            "choco_board": "爸爸，祝您生日快乐",
+            "greeting_card": null,
+            "discount_price": 0,
+            "amount": 138
+          }
+        ]
+      };
+      const res_body = {
+        "code": "9997",
+        "err": [
+          {
+            "msg": "Invalid param",
+            "param": "owner_name",
+            "value": ""
+          }
+        ],
+        "msg": "非法请求参数...",
+        data: {}
+      };
+      agent.post('/v1/i/order')
+        .type('application/json')
+        .send(req_body)
+        .expect(200, res_body, err(done));
+    });
   });
 };

@@ -88,11 +88,11 @@
     }
   }
   .dropdown-menu-usermenu {
-    background: $theme-color;
+    background: $theme-black;
     min-width: 200px;
 
     &:after {
-      border-bottom: 6px solid $theme-color;
+      border-bottom: 6px solid $theme-black;
       border-left: 6px solid transparent;
       border-right: 6px solid transparent;
       content: "";

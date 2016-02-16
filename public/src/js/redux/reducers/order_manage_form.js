@@ -4,7 +4,8 @@ import * as FormActions from 'actions/order_manage_form';
 import * as OrderProductsActions from 'actions/order_products';
 import { UPDATE_PATH } from 'redux-simple-router';
 import AreaActions from 'actions/area';
-import { map } from 'utils/index';
+import { updateAddOrderForm  } from 'actions/form';
+import { map, delay } from 'utils/index';
 
 import delivery_stations from 'reducers/delivery_stations';
 
@@ -169,6 +170,7 @@ function products_choosing(state = products_choosing_state, action){
           new_item.amount = n.discount_price * n.num / 100;
           return new_item;
         })
+        delay(() => store.dispatch(updateAddOrderForm())); //商品数变化，通知add_order表单更新，支付方式、支付状态的默认值与所选商品数是紧密相关的
         return {...state, confirm_list: confirm_list };
       })();
 
@@ -199,6 +201,7 @@ function products_choosing(state = products_choosing_state, action){
       new_confirm_list.splice(new_confirm_list.findIndex( n => n.sku_id == sku_id), 1);
       new_selected_list = clone(state.selected_list);
       new_selected_list.splice(new_selected_list.findIndex( n => n.sku_id == sku_id), 1);
+      delay(() => store.dispatch(updateAddOrderForm())); //商品数变化，通知add_order表单更新，支付方式、支付状态的默认值与所选商品数是紧密相关的
       return {...state, confirm_list: new_confirm_list, selected_list: new_selected_list }
 
     case FormActions.GOT_ORDER_BY_ID:

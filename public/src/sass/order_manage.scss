@@ -2,27 +2,18 @@
   .top-header {
     
   }
-  .search {
-    margin-top: 12px;
-    .panel-body {
-      padding: 12px 10px;
-    }
-  }
+  // .search {
+  //   margin-top: 12px;
+  //   .panel-body {
+  //     padding: 12px 10px;
+  //   }
+  // }
 
   .time {
     min-width: 82px;
   }
-  // .address-in-table {
-  //   width: 200px;
-  //   text-indent: 10px;
-  // }
   .address-detail-td {
     min-width: 170px;
-    display: table;
-    span {
-      display: table-cell;
-      vertical-align: top;
-    }
   }
 
   .address-all {

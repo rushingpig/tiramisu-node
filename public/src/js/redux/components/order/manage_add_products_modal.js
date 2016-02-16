@@ -123,7 +123,7 @@ export default class ProductsModal extends Component {
     );
   }
   onPageChange(page){
-    this.setState({ page_no: page })
+    this.setState({ page_no: page }, this.search)
   }
   onCancel(){
     this.props.dispatch(OrderProductsActions.cancelAllSelectedProducts());

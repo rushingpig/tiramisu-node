@@ -10,17 +10,21 @@
 
 .panel {
     border: none;
+    margin-bottom: 12px;
 }
 
 .panel-heading {
     border-bottom: 1px dotted rgba(0, 0, 0, 0.2);
-    padding: 15px;
+    padding: 10px;
     text-transform: uppercase;
     color: #535351;
     font-size: 14px;
     font-weight: bold;
 }
 
+.panel-body {
+    padding: 10px;
+}
 /*dropdown shadow*/
 
 .btn-group.open .dropdown-toggle, .btn-white.active, .btn:active, .btn.active {
@@ -70,6 +74,7 @@
 
 /*pagination*/
 .pagination {
+    margin-bottom: 5px;
     font-size: 12px;
     // margin-right: 20px;
     margin-top: 0;
@@ -245,7 +250,7 @@ button, .btn:focus, .btn.focus, .btn:active:focus, .btn:active.focus, .btn.activ
 .table > thead > tr > th,
 .table > thead > tr > td {
     white-space: nowrap;
-    font-size: 14px;
+    font-size: 13px;
 }
 .table > tbody + tbody{
     border-top: none;
@@ -255,6 +260,9 @@ button, .btn:focus, .btn.focus, .btn:active:focus, .btn:active.focus, .btn.activ
 }
 .table > tbody > tr.active > td, .table > tbody > tr.active:hover > td {
     background-color: #FBF0E1;
+}
+table.no-padding tbody>tr>td{
+    padding: 0;
 }
 
 .input-xs, .input-group-xs > .form-control, .input-group-xs > .input-group-addon, .input-group-xs > .input-group-btn > .btn{

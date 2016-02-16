@@ -67,7 +67,8 @@ export default {
     'COD': '货到付款',
     'REFUNDING': '退款中',
     'REFUNDED': '已退款',
-    'PAYED': '已付款'
+    'PAYED': '已付款',
+    'PARTPAYED': '部分付款',
   },
   INVOICE: {
     YES: 1,

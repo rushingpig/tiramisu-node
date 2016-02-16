@@ -33,7 +33,7 @@ class TopHeader extends Component {
   render(){
     return (
       <div className="clearfix top-header">
-        <button onClick={this.addOrder.bind(this)} className="btn btn-theme pull-left">添加订单</button>
+        <button onClick={this.addOrder.bind(this)} className="btn btn-sm btn-theme pull-left">添加订单</button>
         <LineRouter 
           routes={[{name: '总订单页面', link: '/om/index'}, {name: '处理页面', link: ''}]}
           className="pull-right" />
@@ -163,15 +163,19 @@ var OrderRow = React.createClass({
         <td>{props.owner_name}<br />{props.owner_mobile}</td>
         <td><div className="time">{props.created_time}</div></td>
         <td className="text-left">
-          姓名：{props.recipient_name}<br />
-          电话：{props.recipient_mobile}<br />
           <div className="address-detail-td">
-            <span className="inline-block">地址：</span><span className="address-all">{props.recipient_address}</span>
+            <table className="no-padding">
+              <tbody>
+                <tr><td className="nowrap">姓名：</td><td>{props.recipient_name}</td></tr>
+                <tr><td className="nowrap">电话：</td><td>{props.recipient_mobile}</td></tr>
+                <tr><td className="nowrap v-top">地址：</td><td>{props.recipient_address}</td></tr>
+                <tr><td className="nowrap">建筑：</td><td>{props.recipient_landmark}</td></tr>
+              </tbody>
+            </table>
           </div>
-          建筑：{props.recipient_landmark}
         </td>
         <td>{props.delivery_type}</td>
-        <td className="nowrap">{src_name[0]}<br /><span className="bordered">{src_name[1]}</span></td>
+        <td className="nowrap">{src_name[0]}<br /><span className="bordered bg-warning">{src_name[1]}</span></td>
         <td><strong className="strong">{props.pay_status}</strong></td>
         <td className="nowrap text-left">
           原价：{props.original_price/100} <br />

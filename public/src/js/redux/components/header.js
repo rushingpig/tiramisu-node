@@ -62,7 +62,7 @@ class Header extends Component {
     // })
   }
   logout(){
-    console.log('=====> logout...')
+    location.href="/logout";
   }
   componentDidMount(){
     // $('body').on('click', this.hideDropDown);

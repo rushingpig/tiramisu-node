@@ -185,8 +185,8 @@ class ManageAddForm extends Component {
           ? <Select {...src_id} options={all_order_srcs[0]} key="order_srcs_level1" className={`form-select ${src_id.error}`} />
           : [
               (order_srcs_level2.length 
-                ? <Select value={selected_order_src_level1_id} options={all_order_srcs[0]} onChange={this.orderSrcsLevel1Change.bind(this)} key="order_srcs_level1" className="form-select" />
-                : <Select {...src_id} value={selected_order_src_level1_id} options={all_order_srcs[0]} onChange={this.orderSrcsLevel1Change.bind(this)} key="order_srcs_level1" className="form-select" />),
+                ? <Select value={selected_order_src_level1_id} options={all_order_srcs[0]} onChange={this.orderSrcsLevel1Change.bind(this)} key="order_srcs_level1" className={`form-select ${src_id.error}`} />
+                : <Select {...src_id} value={selected_order_src_level1_id} options={all_order_srcs[0]} onChange={this.orderSrcsLevel1Change.bind(this, src_id.onChange)} key="order_srcs_level1" className={`form-select ${src_id.error}`} />),
               ' ',
               (order_srcs_level2.length ? <Select {...src_id} options={order_srcs_level2} key="order_srcs_level2" className={`form-select ${src_id.error}`} />  : null)
             ]
@@ -194,11 +194,11 @@ class ManageAddForm extends Component {
       </div>
       <div className="form-group form-inline">
         <label>{'　支付方式：'}</label>
-       <Select {...pay_modes_id} options={all_pay_modes} className={`form-select ${pay_modes_id.error}`} />
+       <Select {...pay_modes_id} options={all_pay_modes} onChange={this.onPayModesChange.bind(this, pay_modes_id.onChange)} className={`form-select ${pay_modes_id.error}`} />
       </div>
       <div className="form-group form-inline">
         <label>{'　支付状态：'}</label>
-        <Select {...pay_status} options={all_pay_status} className={`form-select ${pay_status.error}`} />
+        <Select {...pay_status} options={all_pay_status} ref="pay_status" className={`form-select ${pay_status.error}`} />
       </div>
       <div className="form-group form-inline">
         <label>{'　配送时间：'}</label>
@@ -352,8 +352,18 @@ class ManageAddForm extends Component {
       this.props.actions.getDeliveryShops(value);
     callback(e);
   }
-  orderSrcsLevel1Change(e){
-    this.setState({selected_order_src_level1_id: e.target.value})
+  onPayModesChange(callback, e){
+    // $(findDOMNode(this.refs.pay_status)).val('COD');
+    // console.log('pay_modes change');
+    callback(e);
+  }
+  orderSrcsLevel1Change(){
+    if(arguments.length == 1){
+      this.setState({selected_order_src_level1_id: arguments[0].target.value})
+    }else{
+      this.setState({selected_order_src_level1_id: arguments[1].target.value})
+      arguments[0](arguments[1]);
+    }
   }
   addProducts(){
     this.refs.productsModal.show();
@@ -415,6 +425,7 @@ export default function initManageOrderForm( initFunc ){
       'delivery_hours',
       'remarks',
       'invoice',
+      '_update', //业务无关的私有field，用于触发整个form的更新
     ],
     validate,
     touchOnBlur: true,

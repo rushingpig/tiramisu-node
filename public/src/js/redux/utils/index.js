@@ -218,6 +218,10 @@ function parseTime(date_time){
   }
 }
 
+function delay(task) {
+  setTimeout(task, 0);
+}
+
 export default {
   core: {
     isArray: core_isArray,
@@ -244,6 +248,7 @@ export default {
   map,
 
   toFixed,
+  delay,
 
   Noty,          //提示信息小窗口：param：（type， text);
 

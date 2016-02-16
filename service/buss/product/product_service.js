@@ -56,13 +56,13 @@ ProductService.prototype.listProducts = (req, res, next) => {
         list: [],
         page_no : page_no
     }, temp_obj = {};
-    let promise = productDao.findProductsCount(product_name, category_id, page_no, page_size).then((data)=> {
+    let promise = productDao.findProductsCount(product_name, category_id).then((data)=> {
         if (toolUtils.isEmptyArray(data.results)) {
             throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);
         }
         let preSql = data.sql, preParams = data.params;
         res_data.total = data.results[0].total;
-        return productDao.findProducts(preSql, preParams);
+        return productDao.findProducts(preSql, preParams,page_no,page_size);
     }).then((_re)=> {
         if (toolUtils.isEmptyArray(_re)) {
             throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);

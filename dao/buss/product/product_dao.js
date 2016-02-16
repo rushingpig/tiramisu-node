@@ -28,7 +28,7 @@ ProductDao.prototype.findAllCatetories = function(){
 /**
  * query for the product list
  */
-ProductDao.prototype.findProductsCount = function(product_name,category_id,page_no,page_size){
+ProductDao.prototype.findProductsCount = function(product_name,category_id){
     let sql = "",params = [];
     sql += "select bp.id,bps.size,bp.name,bp.original_price,bpc.name as category_name ";
     sql += " from ?? bp";
@@ -60,11 +60,11 @@ ProductDao.prototype.findProductsCount = function(product_name,category_id,page_
  * @param preSql
  * @param preParams
  */
-ProductDao.prototype.findProducts = function(preSql,preParams){
+ProductDao.prototype.findProducts = function(preSql,preParams,page_no,page_size){
     let sql = "select t.name,t.category_name,t.original_price,bps2.* from (";
     sql += preSql;
     sql += ")t left join  buss_product_sku bps2 on t.id = bps2.product_id and t.size = bps2.size order by bps2.sort asc";
-    return baseDao.select(sql,preParams);
+    return baseDao.select(dbHelper.paginate(sql,page_no,page_size),preParams);
 };
 /**
  * find the products under the order id

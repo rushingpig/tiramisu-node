@@ -159,4 +159,14 @@ DeliveryDao.prototype.findDeliverymansByStation = function(city_id){
     return baseDao.select(sql,params);
 
 };
+/**
+ * find the station info by the id
+ * @param station_id
+ * @returns {Promise}
+ */
+DeliveryDao.prototype.findStationById = function(station_id){
+    let sql = "select * from ?? where del_flag = ?";
+    let params = [tables.buss_delivery_station,del_flag.SHOW];
+    return baseDao.select(sql,params);
+};
 module.exports = DeliveryDao;

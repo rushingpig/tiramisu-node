@@ -18,10 +18,10 @@ export default {
   NAV_COLLAPSED_COOKIE_YES: 'yes',
 
   DELIVERY_TO_HOME: 'DELIVERY', //配送上门
-  DELIVERY_TO_STORE: 'TAKETHEIR', //门店自提
+  DELIVERY_TO_STORE: 'COLLECT', //门店自提
   DELIVERY_MAP: {
     'DELIVERY': '配送上门',
-    'TAKETHEIR': '门店自提',
+    'COLLECT': '门店自提',
   },
   DELIVERY_TIME_MAP: [
     '09:00~10:00',

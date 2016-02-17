@@ -12,7 +12,7 @@ const Constant = {};
  * @type {{}}
  */
 Constant.DT = {
-    TAKETHEIR : 'TAKETHEIR',
+    COLLECT : 'COLLECT',
     DELIVERY : 'DELIVERY'
 };
 /**
@@ -32,10 +32,10 @@ Constant.OS = {
 };
 /**
  * delivery type description
- * @type {{TAKETHEIR: string, DELIVERY: string}}
+ * @type {{COLLECT: string, DELIVERY: string}}
  */
 Constant.DTD = {
-    TAKETHEIR : '门店自提',
+    COLLECT : '门店自提',
     DELIVERY : '送货上门'
 };
 /**

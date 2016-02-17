@@ -6,7 +6,7 @@ module.exports = {
     notEmpty: true,
     isIn: {
       options: [
-        [constant.DT.TAKETHEIR, constant.DT.DELIVERY]
+        [constant.DT.COLLECT, constant.DT.DELIVERY]
       ]
     }
   },

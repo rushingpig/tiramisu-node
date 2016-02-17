@@ -68,7 +68,7 @@ ProductService.prototype.listProducts = (req, res, next) => {
             throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);
         }
         _re.forEach((curr)=> {
-            let key = curr.product_id + curr.size;
+            let key = curr.product_id + curr.size + curr.name;
             if (!temp_obj.hasOwnProperty(key)) {
                 temp_obj[key] = {
                     category_name: curr.category_name,

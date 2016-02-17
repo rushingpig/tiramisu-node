@@ -12,6 +12,16 @@ copy a one local config to connect to your own machine's mysql database
 cp config/dev.js config/local.js
 ```
 
+# update frontend compile js
+```bash
+sudo npm install -g gulp
+cd public
+npm install
+```
+```bash
+gulp deploy
+```
+
 # Run the tests
 ```bash
 npm test

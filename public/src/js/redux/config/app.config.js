@@ -10,6 +10,7 @@ export default {
 
   SUCCESS_CODE: '0000',
   NO_MORE_CODE: '9998',
+  EXPIRE_CODE: '1001', //session 过期
 
   SELECT_DEFAULT_VALUE: '-1',
   NAV_COLLAPSED_CLASS: 'left-side-collapsed',

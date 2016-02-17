@@ -40,6 +40,8 @@ export default formReducer.normalize({
         return getMode('微信').id; //微信支付id
       }else if(isSrc('电话', allValues.src_id)){
         return getMode('货到付款（现金）').id;
+      }else{
+        return value;
       }
     },
     pay_status: (value, preValue, allValues, preAllValues) => {
@@ -53,6 +55,8 @@ export default formReducer.normalize({
         }
       }else if(isSrc('电话', allValues.src_id)){
         return 'COD'; //货到付款
+      }else{
+        return value
       }
     },
   }

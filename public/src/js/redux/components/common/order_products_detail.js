@@ -7,7 +7,7 @@ function ProductRow(product){
       <td>￥{product.original_price/100}</td>
       <td>{product.size}</td>
       <td>{product.num}</td>
-      <td>￥{product.discount_price}</td>
+      <td>￥{product.discount_price/100}</td>
       <td>{product.choco_board}</td>
       <td>{product.greeting_card}</td>
       <td>{product.atlas}</td>

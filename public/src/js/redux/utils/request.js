@@ -1,6 +1,6 @@
 import req from 'superagent';
 import Promise from './promise';
-import { SUCCESS_CODE, NO_MORE_CODE, REQUEST } from 'config/app.config';
+import { SUCCESS_CODE, NO_MORE_CODE, REQUEST, EXPIRE_CODE } from 'config/app.config';
 import { core } from 'utils/index';
 
 function _end_callback(resolve, reject){
@@ -11,13 +11,16 @@ function _end_callback(resolve, reject){
       return;
     }
     if(res.ok){
-      if(res.body.code === SUCCESS_CODE){
-        resolve(res.body.data);
-      }else if(res.body.code === NO_MORE_CODE){
-        resolve(res.body.data);
+      var {code, msg, data} = res.body;
+      if(code === SUCCESS_CODE){
+        resolve(data);
+      }else if(code === NO_MORE_CODE){
+        resolve(data);
+      }else if(code === EXPIRE_CODE){
+        location.href = location.href;
       }else{
-        console.error(res.body.msg || 'request error');
-        reject(res.body.msg, res.body.code);
+        console.error(msg || 'request error');
+        reject(msg, code);
       }
     }else{
       reject(res.text || 'error');

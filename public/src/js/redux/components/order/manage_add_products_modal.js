@@ -29,7 +29,7 @@ export default class ProductsModal extends Component {
       return <ProductSet data={n} key={i} dispatch={dispatch} />;
     });
     var selected_list = selected_list.map(function(n, i){
-      return <ProductSelectedRow data={n} key={n.sku_id} dispatch={dispatch} />;
+      return <ProductSelectedRow data={n} key={n.sku_id + '' + i} dispatch={dispatch} />;
     });
     return (
     <div ref="modal" aria-hidden="false" aria-labelledby="myModalLabel" role="dialog" className="modal fade" >
@@ -181,7 +181,7 @@ class ProductSet extends Component {
         return null;
       }
       return (
-        <tr key={n.sku_id} className={active ? "" : "hidden"}>
+        <tr key={n.sku_id + '' + i} className={active ? "" : "hidden"}>
           <td><input type="checkbox" checked={n.checked} disabled /></td>
           <td colSpan="3"></td>
           <td>{n.website}</td>

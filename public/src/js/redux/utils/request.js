@@ -125,6 +125,20 @@ export function PUT(url, send_data, action_type){
 }
 
 /**
+ * 模拟普通ajax的过程
+ * @param  {Boolean} ajax_status true代表成功，false代表失败
+ * @param  {[type]} ajax_time   ajax 持续时间
+ */
+export function test(ajax_status, ajax_time){
+  return dispatch => {
+    return new Promise(function(resolve, reject){
+      setTimeout(function(){
+        ajax_status ? resolve() : reject();
+      }, ajax_time || 2000);
+    })
+  }
+}
+/**
  * @param {Object} data
  * @param {Array<String/Object>, String/Object} 
  *    signal : 当为Array时，会直接先派发第一个信号，然后延时后派发第二个信号，用于模拟提交的过程

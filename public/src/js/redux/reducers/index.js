@@ -6,8 +6,7 @@ import deliveryChange from './delivery_change';
 import deliveryManage from './delivery_manage';
 import distributeManage from './distribute_manage';
 import deliveryPrintReview from './delivery_print_review';
-import form from 'reducers/form';
-// import {reducer as form} from 'redux-form';
+import form from './form';
 import { routeReducer } from 'redux-simple-router';
 
 const rootReducer = combineReducers({

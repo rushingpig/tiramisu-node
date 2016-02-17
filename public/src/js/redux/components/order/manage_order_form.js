@@ -10,6 +10,7 @@ import { Noty } from 'utils/index';
 import history from 'history_instance';
 
 import HistoryOrders from './manage_history_orders';
+import { isSrc } from 'reducers/form';
 
 import { DELIVERY_TO_HOME, DELIVERY_TO_STORE,
   SELECT_DEFAULT_VALUE, INVOICE } from 'config/app.config';
@@ -62,6 +63,10 @@ class ManageAddForm extends Component {
     this.state = {
       invoices: [{id: INVOICE.NO, text: '不需要'}, {id: INVOICE.YES, text: '需要'}],
       selected_order_src_level1_id: SELECT_DEFAULT_VALUE,
+      groupbuy_psd: '',
+      groupbuy_check_ing: false,
+      groupbuy_success: undefined, //验券是否成功
+      groupbuy_msg: '', //验券结果
     };
     this._check = this._check.bind(this);
     this.autoMatchDeliveryStations = autoMatchDeliveryStations.bind(this);
@@ -101,8 +106,9 @@ class ManageAddForm extends Component {
       all_delivery_time, all_pay_status, all_order_srcs, 
       delivery_stations, all_pay_modes} = this.props['form-data'];
     var {provinces, cities, districts, delivery_shops} = this.props.area;
-    var {invoices, selected_order_src_level1_id} = this.state;
+    var {invoices, selected_order_src_level1_id, groupbuy_psd, groupbuy_check_ing, groupbuy_msg, groupbuy_success} = this.state;
 
+    var isThird = isSrc('第三方预约', src_id.value); //是否第三方，显示团购密码组件
     
     //{{表单处于编辑状态时的额外处理
     if(editable && !this.editable_initial){
@@ -146,7 +152,7 @@ class ManageAddForm extends Component {
       </div>
       <div className="form-group form-inline">
         <label>{'下单人手机：'}</label>
-        <input {...owner_mobile} ref="owner_mobile" className={`form-control input-xs ${ owner_mobile.error }`} type="text" />{'　'}
+        <input {...owner_mobile} ref="owner_mobile" className={`form-control input-xs ${ owner_mobile.error }`} type="text" />{' '}
         <button onClick={this.showHistoryModal.bind(this)} className="btn btn-default btn-xs">查询历史订单</button>{' '}
         <button className="btn btn-default btn-xs">拨号</button>
       </div>
@@ -160,7 +166,7 @@ class ManageAddForm extends Component {
       </div>
       <div className="form-group form-inline">
         <label>{delivery_type.value == DELIVERY_TO_HOME ? '收货人地址：' : '　选择分店：'}</label>
-        <Select ref="province" options={provinces} {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} />{' '}
+        <Select ref="province" options={provinces} {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} className="form-select" />{' '}
         <Select ref="city" options={cities} {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} />{' '}
         <Select ref="district" options={districts} {...regionalism_id} onChange={this.onDistrictChange.bind(this, regionalism_id.onChange)} className={`${regionalism_id.error}`} />{' '}
         <input ref="recipient_address" {...recipient_address} className={`form-control input-xs ${recipient_address.error} ${delivery_type.value == DELIVERY_TO_HOME ? '' : 'hidden'}`} type="text" />
@@ -196,6 +202,19 @@ class ManageAddForm extends Component {
         <label>{'　支付方式：'}</label>
        <Select {...pay_modes_id} options={all_pay_modes} onChange={this.onPayModesChange.bind(this, pay_modes_id.onChange)} className={`form-select ${pay_modes_id.error}`} />
       </div>
+      {
+        isThird
+          ? (
+              <div className="form-group form-inline">
+                <label>{'　团购密码：'}</label>
+                <input value={groupbuy_psd} onChange={this.onGroupbuyPsdChange.bind(this)} className="form-control input-xs" type="text" />{' '}
+                <button onClick={this.checkGroupbuyPsd.bind(this)} data-submitting={groupbuy_check_ing} disabled={groupbuy_check_ing} className="btn btn-default btn-xs">验劵</button>
+                {' '}
+                <span className={groupbuy_success ? 'text-success' : 'text-danger'}>{groupbuy_msg}</span>
+              </div>
+            )
+          : null
+      }
       <div className="form-group form-inline">
         <label>{'　支付状态：'}</label>
         <Select {...pay_status} options={all_pay_status} ref="pay_status" className={`form-select ${pay_status.error}`} />
@@ -370,6 +389,27 @@ class ManageAddForm extends Component {
   }
   showHistoryModal(){
     this.refs.history_orders_modal.show();
+  }
+  onGroupbuyPsdChange(e){
+    this.setState({ groupbuy_psd: e.target.value })
+  }
+  checkGroupbuyPsd(){
+    var { groupbuy_psd } = this.state;
+    if(groupbuy_psd){
+      this.setState({ groupbuy_check_ing: true });
+      this.props.actions.checkGroupbuyPsd(groupbuy_psd)
+        .done(() => {
+          this.setState({ groupbuy_success: true, groupbuy_msg: '团购券正常使用！'})
+        })
+        .fail(() => {
+          this.setState({ groupbuy_success: false, groupbuy_msg: '团购券验证有误，请手动确认！'})
+        })
+        .always(() => {
+          this.setState({ groupbuy_check_ing: false })
+        })
+    }else{
+      Noty('warning', '请填写团购密码');
+    }
   }
 }
 

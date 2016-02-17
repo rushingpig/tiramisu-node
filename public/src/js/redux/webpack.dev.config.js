@@ -3,6 +3,7 @@ var baseConfig = require('./webpack.base.config');
 var assign = require('object-assign');
 
 module.exports = assign({
+  // devtool: 'cheap-module-source-map',
   devtool: 'source-map',
   plugins: [
     new webpack.DefinePlugin({

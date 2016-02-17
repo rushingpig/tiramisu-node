@@ -1,4 +1,4 @@
-import {post, put, GET, POST, TEST} from 'utils/request'; //Promise
+import {post, put, GET, POST, test, TEST} from 'utils/request'; //Promise
 import Url from 'config/url';
 import { getValues } from 'redux-form';
 
@@ -78,6 +78,13 @@ export function checkHistoryOrder(id){
     })
     return GET(Url.order_detail.toString(id), null, GET_HISTORY_ORDER_DETAIL_PRODUCTS)(dispatch);
   }
+}
+
+export function checkGroupbuyPsd(password){
+  // return dispatch => {
+  //   return post(Url.check_groupbuy_psd, {password});
+  // }
+  return test(true); //模拟成功
 }
 
 function _getFormData(form_data, getState){

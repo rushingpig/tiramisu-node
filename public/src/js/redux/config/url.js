@@ -46,6 +46,7 @@ const URL = (function(){
     cancel_order: '/order/:orderId/cancel',
     alter_delivery: '/order/:orderId/delivery',
     alter_station: '/order/:orderId/station',
+    check_groupbuy_psd: '/order/password',
 
     //产品
     categories: '/product/categories',

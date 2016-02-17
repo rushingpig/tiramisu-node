@@ -21,6 +21,7 @@ var res_obj = require('../../../util/res_obj'),
   printApply = schema.printApply,
   allocateStation = schema.allocateStation,
   del_flag = require('../../../dao/base_dao').del_flag,
+  baseDao = require('../../../dao/base_dao'),
   dao = require('../../../dao'),
   OrderDao = dao.order,
   orderDao = new OrderDao();
@@ -53,103 +54,7 @@ OrderService.prototype.addOrder = (req, res, next) => {
   if (errors) {
     return res.api(res_obj.INVALID_PARAMS, errors);
   }
-  let delivery_type = req.body.delivery_type,
-    owner_name = req.body.owner_name,
-    owner_mobile = req.body.owner_mobile,
-    recipient_name = req.body.recipient_name,
-    recipient_mobile = req.body.recipient_mobile,
-    regionalism_id = req.body.regionalism_id,
-    recipient_address = req.body.recipient_address,
-    recipient_landmark = req.body.recipient_landmark,
-    delivery_id = req.body.delivery_id,
-    src_id = req.body.src_id,
-    pay_modes_id = req.body.pay_modes_id,
-    pay_status = req.body.pay_status,
-    delivery_time = req.body.delivery_time,
-    invoice = req.body.invoice,
-    remarks = req.body.remarks,
-    total_amount = req.body.total_amount,
-    total_original_price = req.body.original_price,
-    total_discount_price = req.body.discount_price,
-    products = req.body.products,
-    prefix_address = req.body.prefix_address,
-    greeting_card = req.body.greeting_card;
-
-  let promise = OrderService.prototype.addRecipient(req,
-    regionalism_id,
-    recipient_name,
-    recipient_mobile,
-    recipient_landmark,
-    delivery_type,
-    recipient_address).then((recipientId) => {
-      let orderObj = {
-        recipient_id: recipientId,
-        delivery_id: delivery_id,
-        src_id: src_id,
-        pay_modes_id: pay_modes_id,
-        pay_status: pay_status,
-        owner_name: owner_name,
-        owner_mobile: owner_mobile,
-        is_submit: 0,
-        is_deal: 1,
-        status: Constant.OS.TREATED,
-        remarks: remarks,
-        invoice: invoice,
-        delivery_time: delivery_time,
-        total_amount: total_amount,
-        total_original_price: total_original_price,
-        total_discount_price: total_discount_price,
-        greeting_card: greeting_card
-      };
-      orderObj = systemUtils.assembleInsertObj(req, orderObj);
-      return orderDao.insertOrder(orderObj);
-    }).then((orderId) => {
-      if (!orderId) {
-        throw new TiramisuError(res_obj.FAIL);
-      }
-      let params = [];
-      if (toolUtils.isEmptyArray(products)) {
-        throw new TiramisuError(res_obj.ORDER_NO_PRODUCT);
-      }
-      products.forEach((curr) => {
-        let arr = [];
-        arr.push(orderId);
-        arr.push(curr.sku_id);
-        arr.push(curr.num);
-        arr.push(curr.choco_board || '');
-        arr.push(curr.greeting_card || '');
-        arr.push(curr.atlas);
-        arr.push(curr.custom_name || '');
-        arr.push(curr.custom_desc || '');
-        arr.push(curr.discount_price || 0);
-        arr.push(curr.amount || 0);
-        params.push(arr);
-      });
-      let order_fulltext_obj = {
-        order_id: orderId,
-        show_order_id: systemUtils.getShowOrderId(orderId, new Date()),
-        owner_name: systemUtils.encodeForFulltext(owner_name),
-        owner_mobile: owner_mobile,
-        recipient_name: systemUtils.encodeForFulltext(recipient_name),
-        recipient_mobile: recipient_mobile,
-        recipient_address: systemUtils.encodeForFulltext(prefix_address + recipient_address),
-        landmark: systemUtils.encodeForFulltext(recipient_landmark)
-      };
-      let order_history_obj = {
-        order_id: orderId,
-        option: '添加订单'
-      };
-      return orderDao.insertOrderFulltext(order_fulltext_obj).then(() => {
-        return orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
-      }).then(() => {
-        return orderDao.batchInsertOrderSku(params);
-      });
-    }).then((_re) => {
-      if (!_re) {
-        throw new TiramisuError(res_obj.FAIL);
-      }
-      res.api();
-    });
+  let promise = orderDao.insertOrderInTransaction(req).then(()=>{res.api()});
   systemUtils.wrapService(res, next, promise);
 };
 

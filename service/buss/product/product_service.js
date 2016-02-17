@@ -56,6 +56,7 @@ ProductService.prototype.listProducts = (req, res, next) => {
         list: [],
         page_no : page_no
     }, temp_obj = {};
+    // 要通过子查询进行分页
     let promise = productDao.findProductsCount(product_name, category_id).then((data)=> {
         if (toolUtils.isEmptyArray(data.results)) {
             throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);

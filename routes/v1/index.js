@@ -40,6 +40,7 @@ a.get('/provinces',addressService.getProvinces);    // 获取所有省份信息
 a.get('/province/:provinceId/cities',addressService.getCities); // 获取指定省份下的所有城市信息
 //a.get(/^\/city\/(\d+)\/districts$/,addressService.getDistricts);
 a.get('/city/:cityId/districts',addressService.getDistricts);   // 获取指定城市下的所有行政区域信息
+a.get('/city/:cityId/stations',addressService.getStationsByCityId);   // 获取指定城市下的所有行政区域信息
 a.get('/stations',deliveryService.getDeliveryStationList);  // 获取所有配送站信息
 a.get('/station/:stationId',deliveryService.getStationInfo);   // 获取指定配送站信息
 a.get('/order/srcs',orderService.getOrderSrcList);  // 获取所有订单来源信息
@@ -87,6 +88,8 @@ a.put('/order/:orderId/signin',deliveryService.signinOrder);    // 签收订单
 a.put('/order/:orderId/unsignin',deliveryService.unsigninOrder);    // 未签收订单
 a.put('/delivery/deliveryman',deliveryService.allocateDeliveryman); // 分配配送员
 a.put('/order/:orderId/cancel',orderService.cancelOrder);   // 取消订单
+
+//a.put('/station/:stationId', orderService.modifyStation);   //修改配送站信息
 //************************
 //******** DELETE ********
 //************************

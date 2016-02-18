@@ -8,6 +8,7 @@
 "use strict";
 var util = require('util');
 var tables = require('../../config').tables;
+var dbHelper = require('../../common/DBHelper');
 var baseDao = require('../base_dao'),
     del_flag = baseDao.del_flag;
 function AddressDao(table){
@@ -26,6 +27,22 @@ AddressDao.prototype.findCitiesByProvinceId = function(provinceId){
 AddressDao.prototype.findDistrictsByCityId = function(cityId){
     let sql = this.baseSql + ' and parent_id = ?';
     return baseDao.select(sql,[this.baseColumns,3,del_flag.SHOW,cityId]);
+};
+AddressDao.prototype.findStationsByCityId = function(query_obj){
+    let sql = util.format("select b.id 'id',a.name 'district_name',b.name 'station_name',b.address 'address' " +
+        "from %s a join %s b on a.id = b.regionalism_id " +
+        "where a.level_type = ? and a.del_flag = ? and a.parent_id = ?", this.table, tables.buss_delivery_station);
+    console.log(sql);
+    let countSql = dbHelper.countSql(sql);
+    let pagination_sql = dbHelper.paginate(sql,query_obj.page_no,query_obj.page_size);
+    let params = [3, del_flag.SHOW, query_obj.cityId];
+    return baseDao.select(countSql, params).then((count_result) => {
+        return baseDao.select(pagination_sql, params).then((pagination_result) => {
+            return {
+                count_result, pagination_result
+            };
+        });
+    });
 };
 
 

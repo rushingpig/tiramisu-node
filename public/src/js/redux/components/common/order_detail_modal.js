@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { DELIVERY_MAP, pay_status } from 'config/app.config';
 import { get_table_empty } from 'common/loading';
+import { findDOMNode } from 'react-dom';
 
 export default class DetailModal extends Component {
   constructor(props){
@@ -32,7 +33,7 @@ export default class DetailModal extends Component {
     })
     return (
     <div ref="modal" aria-hidden="false" aria-labelledby="myModalLabel" role="dialog" className="modal fade" >
-      <div className="modal-backdrop fade"></div>
+      <div ref="modal-backdrop" className="modal-backdrop fade"></div>
       <div className="modal-dialog modal-lg">
         <div className="modal-content">
           <div className="modal-header">
@@ -106,9 +107,12 @@ export default class DetailModal extends Component {
     </div>
     )
   }
-  // componentDidMount(){
-  //   this.show();
-  // }
+  componentDidMount(){
+    $(this.refs['modal-backdrop']).on('click', this.hide);
+  }
+  componentWillUnmount(){
+    $(this.refs['modal-backdrop']).off('click', this.hide);
+  }
   show(){
     $(this.refs.modal).modal('show');
   }

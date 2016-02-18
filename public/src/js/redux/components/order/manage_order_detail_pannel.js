@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 
 import AreaActions from 'actions/area';
 import * as OrderFormActions from 'actions/order_manage_form';
+import * as FormActions from 'actions/form';
 
 import DatePicker from 'common/datepicker';
 import Alert from 'common/alert';
@@ -19,7 +20,7 @@ class TopHeader extends Component {
     return (
       <div className="clearfix top-header">
         <LineRouter 
-          routes={[{name: '总订单页面', link: '/om/index'}, {name: '编辑订单', link: ''}]}
+          routes={[{name: '总订单页面', link: '/om/index'}, {name: (this.props.editable ? '编辑' : '添加') + '订单', link: ''}]}
           className="pull-right" />
       </div>
     )
@@ -31,12 +32,16 @@ class ManageOrderDetailPannel extends Component {
     var { mainForm, delivery_stations, history_orders, area, dispatch, products, params } = this.props;
     var editable = !!(params && params.id);
 
-    var actions = {...bindActionCreators(AreaActions(), dispatch), ...bindActionCreators(OrderFormActions, dispatch)};
+    var actions = {
+      ...bindActionCreators(AreaActions(), dispatch), 
+      ...bindActionCreators(OrderFormActions, dispatch),
+      ...bindActionCreators(FormActions, dispatch),
+    };
 
     mainForm = {...mainForm, ...delivery_stations};
     return (
       <div className="order-manage">
-        <TopHeader />
+        <TopHeader editable={editable} />
         <div className="panel">
           <header className="panel-heading">订单详情</header>
           <div className="panel-body">

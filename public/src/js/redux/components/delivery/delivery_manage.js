@@ -15,7 +15,7 @@ import { tableLoader } from 'common/loading';
 import { order_status, YES_OR_NO, DELIVERY_MAP, PRINT_STATUS } from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
-import { Noty, map, reactReplace } from 'utils/index';
+import { Noty, map, reactReplace, form } from 'utils/index';
 
 import * as OrderActions from 'actions/orders';
 import AreaActions from 'actions/area';
@@ -67,7 +67,7 @@ class FilterHeader extends Component {
       <div className="panel search">
         <div className="panel-body">
           <div className="form-group form-inline">
-            <input {...keywords} className="form-control input-xs" placeholder="关键字" />
+            <input {...keywords} className="form-control input-xs v-mg" placeholder="关键字" />
             {' 开始时间'}
             <DatePicker editable redux-form={begin_time} className="short-input" />
             {' 配送时间'}
@@ -437,17 +437,28 @@ var EditModal = React.createClass({
     if(deliveryman.load_success && !this._hasInitial){
       this._hasInitial = true;
       var { list } = deliveryman;
-      var { makePy } = window;
-      var new_data = list.map(function(n){
-        if(makePy)
-          n.py = makePy(n.deliveryman_name);
-        else
-          n.py = [];
-        return n;
-      })
-      this.setState({
-        all_deliveryman: list, filter_results: new_data, selected_deliveryman_id: list.length && list[0].deliveryman_id
-      })
+      var build = function(){
+        var new_data = list.map(function(n){
+          n.py = window.makePy(n.deliveryman_name);
+          return n;
+        })
+        this.setState({
+          all_deliveryman: list, filter_results: new_data, selected_deliveryman_id: list.length && list[0].deliveryman_id
+        })
+      }.bind(this);
+
+      if(window.makePy){
+        build();
+      }else{
+        //异步加载的chinese_py库可能还未加载完成，所以需要定时检测
+        this._build_timer = setInterval(() => {
+          if(window.makePy){
+            build();
+            clearInterval(this._build_timer);
+            delete this._build_timer;
+          }
+        }, 100);
+      }
     }
   },
   render: function(){
@@ -462,7 +473,7 @@ var EditModal = React.createClass({
           <div className="input-group input-group-sm">
             <span className="input-group-addon"><i className="fa fa-filter"></i></span>
             <input onChange={this.filterHandler} type="text" 
-              className="form-control" style={{'width': '200'}} placeholder="输入配送员姓名或手机号码检索" />
+              className="form-control" style={{'width': '200'}} placeholder="配送员拼音首字母 或 手机号码" />
           </div>
         </div>
         <center className="form-inline mg-15" style={{'padding': '33px 0', 'textIndent': -15}}>
@@ -583,13 +594,17 @@ var ApplyPrintModal = React.createClass({
     )
   },
   saveHandler: function(){
+    var { applicant_mobile } = this.state;
+    if(!form.isMobile(applicant_mobile)){
+      Noty('warning', '错误的电话号！');return;
+    }
     this.props.applyPrint({...this.state, order_id: this.state.order_id})
       .done(function(){
         this.props.callback();
         this.refs.modal.hide();
       }.bind(this))
-      .fail(function(){
-        Noty('error', '服务器异常')
+      .fail(function(msg, code){
+        Noty('error', msg || '服务器异常')
       })
   },
   show: function(order_id){
@@ -598,7 +613,7 @@ var ApplyPrintModal = React.createClass({
     });
   },
   hideCallback: function(){
-    this.setState(this.getInitialState());
+    // this.setState(this.getInitialState());
   },
 })
 
@@ -634,6 +649,7 @@ var RePrintModal = React.createClass({
     this.props.validatePrintCode(order_id, this.state.validate_code)
       .done(function(){
         this.props.rePrint(order_id).done(function(){
+          this.refs.modal.hide();
           setTimeout(this.props.callback, 1000);
         }.bind(this));
         this.refs.modal.hide();

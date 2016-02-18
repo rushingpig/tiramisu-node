@@ -14,6 +14,7 @@ var baseDao = require('../base_dao'),
 function AddressDao(table){
     this.table = table || tables.dict_regionalism;
     this.baseSql = util.format('select ?? from %s where 1=1 and level_type = ? and del_flag = ?',this.table);
+    this.base_update_sql = "update ?? set ?";
     this.baseColumns = ['id','name'];
 }
 // if you want to use 'this'(object) in the statement ,don not use '=>'
@@ -32,7 +33,6 @@ AddressDao.prototype.findStationsByCityId = function(query_obj){
     let sql = util.format("select b.id 'id',a.name 'district_name',b.name 'station_name',b.address 'address' " +
         "from %s a join %s b on a.id = b.regionalism_id " +
         "where a.level_type = ? and a.del_flag = ? and a.parent_id = ?", this.table, tables.buss_delivery_station);
-    console.log(sql);
     let countSql = dbHelper.countSql(sql);
     let pagination_sql = dbHelper.paginate(sql,query_obj.page_no,query_obj.page_size);
     let params = [3, del_flag.SHOW, query_obj.cityId];
@@ -44,6 +44,9 @@ AddressDao.prototype.findStationsByCityId = function(query_obj){
         });
     });
 };
-
+AddressDao.prototype.updateStationByStationId = function(stationId, update_obj){
+    let sql = this.base_update_sql + ' where id = ? ';
+    return baseDao.update(sql,[tables.buss_delivery_station, update_obj, stationId]);
+};
 
 module.exports = AddressDao;

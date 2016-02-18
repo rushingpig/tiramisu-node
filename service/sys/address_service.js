@@ -115,7 +115,19 @@ AddressService.prototype.getStationsByCityId = (req,res,next)=>{
  * @param next
  */
 AddressService.prototype.modifyStation = (req,res,next)=>{
-
+    req.checkParams('stationId').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,null);
+        return;
+    }
+    let stationId = req.query.stationId;
+    let update_obj = {
+        coords: req.body.coords
+    };
+    addressDao.updateStationByStationId(stationId, systemUtils.assembleUpdateObj(req, update_obj)).then(() => {
+        res.api();
+    });
 };
 
 

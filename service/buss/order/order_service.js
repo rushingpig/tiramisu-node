@@ -628,12 +628,13 @@ OrderService.prototype.history = (req, res, next) => {
 OrderService.prototype.cancelOrder = (req, res, next) => {
   req.checkParams('orderId').isOrderId();
   req.checkBody('cancel_reason').notEmpty();
+  req.checkBody('updated_time','请带上订单的最后更新时间').isDate();
   let errors = req.validationErrors();
   if (errors) {
     res.api(res_obj.INVALID_PARAMS, errors);
     return;
   }
-  let orderId = systemUtils.getDBOrderId(req.params.orderId);
+  let orderId = systemUtils.getDBOrderId(req.params.orderId),updated_time = req.body.updated_time;
   let promise = orderDao.findOrderById(orderId).then((_res) => {
     if (toolUtils.isEmptyArray(_res)) {
       throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
@@ -654,6 +655,7 @@ OrderService.prototype.cancelOrder = (req, res, next) => {
     }
     res.api();
   });
+  systemUtils.wrapService(res,next,promise);
 };
 
 /**

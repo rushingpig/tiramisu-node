@@ -92,7 +92,7 @@ var mysql_options = {
     user            : 'tiramisu_qa',
     password        : 'tiramisuqa',
     database        : 'tiramisu',
-    charset         : 'utf8_general_ci',
+    charset         : 'utf8mb4',
     timezone        : 'local',
     supportBigNumbers : true,
     multipleStatements : true,  //  if in the production recommend to be false
@@ -120,6 +120,8 @@ var ping_xx = {
     apiKey: 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
 };
 
+var sms_host = "http://127.0.0.1:3000/sms/internal";
+
 var login_required = true;
 
 module .exports = {
@@ -133,6 +135,7 @@ module .exports = {
     mysql_options : mysql_options,
     log4js_options : log4js_options,
     exclude_paths : exclude_paths,
-    white_ips : white_ips
+    white_ips : white_ips,
+    sms_host : sms_host
 };
 

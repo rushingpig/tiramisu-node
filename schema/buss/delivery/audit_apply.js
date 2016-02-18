@@ -8,9 +8,6 @@
 "use strict";
 module.exports = {
 
-    'audit_opinion' : {
-        notEmpty : true
-    },
     'status' : {
         notEmpty : true
     },

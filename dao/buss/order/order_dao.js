@@ -273,11 +273,15 @@ OrderDao.prototype.findOrderList = function (query_data) {
         sql += " and bo.delivery_time <= ?";
         params.push(query_data.end_time + ' 24:00~24:00');
     }
-    if (query_data.is_deal) {
-        sql += " and bo.is_deal > 0";
+    if (query_data.is_deal == 0) {
+        sql += " and bo.is_deal = 0";
+    }else if(query_data.is_deal == 1){
+        sql += " and bo.is_deal = 1";
     }
-    if (query_data.is_submit) {
-        sql += " and bo.is_submit > 0"
+    if (query_data.is_submit == 0) {
+        sql += " and bo.is_submit = 0"
+    }else if(query_data.is_submit == 1){
+        sql += " and bo.is_submit = 1";
     }
     if (query_data.src_id) {
         sql += " and src_id = ?";

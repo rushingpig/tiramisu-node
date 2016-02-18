@@ -750,7 +750,7 @@ OrderService.prototype.changeDelivery = (req,res,next)=>{
         if (delivery_time != current_order.delivery_time) {
             option += '修改{配送时间}为{' + delivery_time + '}\n';
         }
-        if (regionalism_id != current_order.regionalism_id || recipient_address != current_order.recipient_address) {
+        if (regionalism_id != current_order.regionalism_id || address != current_order.recipient_address) {
             option += '修改收货地址\n';
         }
         order_history_obj.option = option;

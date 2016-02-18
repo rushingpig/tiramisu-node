@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>西丽配送站</title>
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/jquery-ui.css">
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="http://api.map.baidu.com/library/SearchControl/1.4/src/SearchControl_min.css">
+  <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=dxF5GZW6CHlR4GCQ9kKynOcc"></script>
+  <script type="text/javascript" src="http://api.map.baidu.com/library/SearchControl/1.4/src/SearchControl_min.js"></script>
+</head>
+
+<body>
+	<div class="container">
+	    <div class="row clearfix">
+	    	<div class="col-sm-2">
+	          	<button id="createPoline" class="btn btn-primary btn-md btn-block">1.闭合折线</button>
+	          	<button id="createData" class="btn btn-success btn-md btn-block">2.导出数据</button>
+	    	</div>
+	      	<div class="col-sm-8">
+	        	<div class="form-group">
+	          		<textarea id="dataArray" class="form-control" type="text" placeholder='请输入数据 格式如：[{"lng":number,"lat":number}}]'></textarea>
+	       	 	</div>
+	      	</div>
+	     	 <div class="col-sm-2">
+	          	<button id="confirm" class="btn btn-info btn-md btn-block">确认输入</button>
+	          	<button id="clearMark" class="btn btn-danger btn-md btn-block">清除标记</button>
+	      	</div>
+	  	</div>
+	  	<div class="row clearfix">
+	  		<div class="col-md-8 input-group col-md-offset-2">
+		    	<input type="search" class="form-control" id="findStation" placeholder="请输入您要查询的配送站">
+		    	<span class="input-group-btn ">
+		    		<button type="submit" id="searchStation" class="btn btn-default">查找</button>
+		    	</span>
+		    </div>
+		    <div class="col-md-8 input-group col-md-offset-2">
+		    	<select class="form-control" id="findProvince">
+		    		<option value="-1">省份</option>
+				</select>
+				<select class="form-control" id="findCities">
+		    		<option value="-1">城市</option>
+				</select>
+				<button id="searchCityStation" class="btn btn-primary btn-md btn-block">查询</button>
+		    </div>
+	  	</div>
+	  	<div class="row clearfix">
+	  		<table id="tableStation" class="table table-hover">
+	  			<thead>
+	  				<tr>
+	  					<th>
+	  						<div class="checkbox">
+							    <label>
+							      <input type="checkbox"> 
+							    </label>
+						  	</div>
+	  					</th>
+	  					<th>区域</th>
+	  					<th>名称</th>
+	  					<th>地址</th>
+	  					<th>操作</th>
+	  				</tr>
+	  			</thead>
+	  			<tbody>
+	  			
+	  			</tbody>
+	  		</table>
+	  	</div>
+	</div>
+
+    <div id="searchBox"></div>
+
+  	<div id="container"></div>
+
+  	<script type="text/javascript" src="js/jquery.js"></script>
+  	<script type="text/javascript" src="js/jquery-ui.js"></script>
+  	<script type="text/javascript" src="js/index.js"></script>
+</body>
+
+</html>

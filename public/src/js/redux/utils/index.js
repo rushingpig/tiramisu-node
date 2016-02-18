@@ -192,7 +192,7 @@ function formCompile(form_data){
   return form_data;
 }
 
-function reactReplace(input = '', reg_or_string, reactElement){
+function reactReplace(input, reg_or_string, reactElement){
   input = (input || '').split(reg_or_string);
   var results = [];
   for(var i=0,len=input.length; i<len; i++){

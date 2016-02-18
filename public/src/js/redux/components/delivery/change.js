@@ -13,9 +13,8 @@ import { tableLoader } from 'common/loading';
 
 import { Noty, parseTime } from 'utils/index';
 import { DELIVERY_MAP } from 'config/app.config';
-import history from 'history_instance';
+import history, { go } from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
-import { go } from 'history_instance';
 
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from 'common/order_detail_modal';
@@ -63,7 +62,7 @@ class FilterHeader extends Component {
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <input {...keywords} className="form-control input-xs" placeholder="关键字" />
+          <input {...keywords} className="form-control input-xs v-mg" placeholder="关键字" />
           {' 开始时间'}
           <DatePicker editable redux-form={begin_time} className="short-input" />
           {' 配送时间'}

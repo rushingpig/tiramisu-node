@@ -17,7 +17,10 @@ var dao = require('../../../dao'),
     dateUtils = require('../../../common/DateUtils'),
     TiramisuError = require('../../../error/tiramisu_error'),
     toolUtils = require('../../../common/ToolUtils'),
-    schema = require('../../../schema');
+    schema = require('../../../schema'),
+    request = require('request'),
+    config = require('../../../config'),
+    logger = require('../../../common/LogHelper').systemLog();
 function DeliveryService(){
     
 }
@@ -195,8 +198,26 @@ DeliveryService.prototype.auditReprintApply = (req,res,next)=>{
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
         }
     }).then(()=>{
-        //  when update success then send sms
-        //TODO send sms to the applicant
+
+        let body = {
+            "timestamp" : Date.now(),
+            "method" : "order.print.approved",
+            "phone" : applicant_mobile,
+            "params" : {
+                "order_id" : order_id,
+                "code" : validate_code
+            }
+        };
+        request.post({
+            url : config.sms_host,
+            body : body,
+            json : true
+        },(err,res,body)=>{
+            if(err || body || res.statusCode !== 200){
+                logger.error('给用户['+applicant_mobile+']发送审核打印短信异常====>['+err+']');
+                throw new TiramisuError(res_obj.FAIL,'发送短信失败');
+            }
+        });
     });
     if(req.body.status == Constant.OPS.AUDITED){
         order_update_obj.print_status = Constant.PS.REPRINTABLE;

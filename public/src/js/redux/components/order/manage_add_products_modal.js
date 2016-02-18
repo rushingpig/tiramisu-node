@@ -48,7 +48,7 @@ export default class ProductsModal extends Component {
               {' '}
               <button onClick={this.search.bind(this)} className="btn btn-xs btn-default"><i className="fa fa-search"></i>{' 查询'}</button>
             </div>
-            <div className="table-responsive">
+            <div className="table-responsive table-modal">
               <table className="table table-hover table-click text-center">
                 <thead>
                 <tr>
@@ -117,7 +117,7 @@ export default class ProductsModal extends Component {
     var { sku_name, category_id, page_no, page_size } = this.state;
     this.props.dispatch(
       OrderProductsActions.searchProducts({
-        sku_name, page_no, page_size,
+        name: sku_name, page_no, page_size,
         category_id: category_id == SELECT_DEFAULT_VALUE ? undefined : category_id
       })
     );
@@ -161,18 +161,19 @@ class ProductSet extends Component {
     //is_local_site, is_delivery : "1" / "0"
     var { product_id, name, size, category_name, original_price, skus } = this.props.data;
     var hasOthers = skus.length != 1;
+    var sku0 = skus[0];
 
     var head = (
-      <tr key={skus[0].sku_id} className={hasOthers ? "clickable" : ""} onClick={hasOthers ? this.toggle : null} >
-        <td><input type="checkbox" checked={skus[0].checked} disabled /></td>
+      <tr key={sku0.sku_id} className={hasOthers ? "clickable" : ""} onClick={hasOthers ? this.toggle : null} >
+        <td><input type="checkbox" checked={sku0.checked} onClick={choose.bind(this, sku0)} disabled={sku0.checked} /></td>
         <td>{name}</td>
         <td>{size}</td>
         <td>{category_name}</td>
-        <td>{skus[0].website}</td>
-        <td>￥{ toFixed(skus[0].discount_price / 100, 2) }</td>
-        <td>{yes_or_no(skus[0].is_local_site)}</td>
-        <td>{yes_or_no(skus[0].is_delivery)}</td>
-        <td><a onClick={choose.bind(this, skus[0])} href="javascript:;">[选择]</a></td>
+        <td>{sku0.website}</td>
+        <td>￥{ toFixed(sku0.discount_price / 100, 2) }</td>
+        <td>{yes_or_no(sku0.is_local_site)}</td>
+        <td>{yes_or_no(sku0.is_delivery)}</td>
+        <td><a onClick={choose.bind(this, sku0)} href="javascript:;">[选择]</a></td>
       </tr>
     );
 
@@ -182,7 +183,7 @@ class ProductSet extends Component {
       }
       return (
         <tr key={n.sku_id + '' + i} className={active ? "" : "hidden"}>
-          <td><input type="checkbox" checked={n.checked} disabled /></td>
+          <td><input type="checkbox" checked={n.checked} onClick={choose.bind(this, n)} disabled={n.checked} /></td>
           <td colSpan="3"></td>
           <td>{n.website}</td>
           <td>￥{ toFixed(n.discount_price / 100, 2) }</td>

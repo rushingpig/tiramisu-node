@@ -4,7 +4,7 @@ import * as Actions from 'actions/order_manage';
 import { GOT_ORDER_SRCS, GOT_DELIVERY_STATIONS } from 'actions/order_manage_form';
 import { GET_ORDER_DETAIL_PRODUCTS } from 'actions/orders';
 import { AreaActionTypes2 } from 'actions/action_types';
-import { pay_status, REQUEST } from 'config/app.config';
+import { order_status, REQUEST } from 'config/app.config';
 
 import { area } from 'reducers/area_select';
 import delivery_stations from 'reducers/delivery_stations';
@@ -13,7 +13,7 @@ import { orders, operationRecord } from 'reducers/orders';
 var filter_state = {
   search_ing: false,
   all_order_srcs: [],
-  all_order_status: map(pay_status, (text, id) => ({id, text})),
+  all_order_status: map(order_status, ({value}, id) => ({id, text: value})),
 }
 
 function filter(state = filter_state, action){

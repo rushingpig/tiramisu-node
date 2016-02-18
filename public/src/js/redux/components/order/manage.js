@@ -82,7 +82,7 @@ class FilterHeader extends Component {
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <input {...keywords} className="form-control input-xs" placeholder="关键字" />
+          <input {...keywords} className="form-control input-xs v-mg" placeholder="关键字" />
           {' 开始时间'}
           <DatePicker editable redux-form={begin_time} className="short-input" />
           {' 配送时间'}
@@ -162,6 +162,7 @@ var OrderRow = React.createClass({
         <td>{props.order_id}</td>
         <td>{props.owner_name}<br />{props.owner_mobile}</td>
         <td><div className="time">{props.created_time}</div></td>
+        {/*收货人信息*/}
         <td className="text-left">
           <div className="address-detail-td">
             <table className="no-padding">
@@ -175,6 +176,7 @@ var OrderRow = React.createClass({
           </div>
         </td>
         <td>{props.delivery_type}</td>
+        {/*订单来源*/}
         <td className="nowrap">{src_name[0]}<br /><span className="bordered bg-warning">{src_name[1]}</span></td>
         <td><strong className="strong">{props.pay_status}</strong></td>
         <td className="nowrap text-left">
@@ -182,6 +184,7 @@ var OrderRow = React.createClass({
           实际售价：{props.discount_price/100} <br />
           应收金额：{props.total_amount/100}
         </td>
+        {/*订单状态*/}
         <td><div style={{color: _order_status.color || 'inherit'}}>{_order_status.value}</div></td>
         <td>{props.delivery_name}</td>
         <td><div className="time">{props.delivery_time}</div></td>
@@ -448,9 +451,9 @@ var CancelOrderModal = React.createClass({
     this.setState({reason})
   },
   onConfirm(){
-    var { reason, tips, order } = this.state;
+    var { reason, tips, order: {order_id, updated_time} } = this.state;
     if(reason){
-      this.props.cancelOrder(order.order_id, {cancel_reason: reason})
+      this.props.cancelOrder(order_id, {cancel_reason: reason, updated_time })
         .done(function(){
           this.refs.modal.hide();
           this.props.callback();

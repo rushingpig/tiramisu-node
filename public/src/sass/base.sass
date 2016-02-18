@@ -43,14 +43,21 @@ a
   &:focus
     @extend .no-text-deco
     outline: none
+.top-header
+  margin-bottom: 8px
 
 /**************************/
 /********* 修饰类 **********/
 /**************************/
 .inline-block
   display: inline-block !important
+.mg-8
+  margin-bottom: 8px //等同于form-group的margin-bottom
 .mg-15
   margin-bottom: 15px
+.v-mg
+  margin-top: 4px
+  margin-bottom: 4px
 
 .space
   margin-left: 6px
@@ -207,6 +214,9 @@ hr.dotted
         border-left: 5px solid transparent
         border-right: 5px solid transparent
         display: inline-block
+
+.table-modal //modal里面的table最大高度
+  max-height: 380px
 
 .time-input
   @extend .tc

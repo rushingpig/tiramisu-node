@@ -40,7 +40,7 @@ class FilterHeader extends Component {
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <input className="form-control input-xs" placeholder="订单号" />
+          <input className="form-control input-xs v-mg" placeholder="订单号" />
           {' 开始时间'}
           <DatePicker date={start_date} className="short-input" />
           {' 结束时间'}

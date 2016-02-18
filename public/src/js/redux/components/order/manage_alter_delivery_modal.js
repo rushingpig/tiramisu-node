@@ -82,16 +82,18 @@ var AlterDeliveryModal = React.createClass({
           <DatePicker value={delivery_date} onChange={this.onDeliveryDateChange} />{' '}
           <Select valueLink={this.linkState('delivery_hour')} options={all_delivery_hours} className="input-xs" />
         </div>
-        <div className="form-group form-inline">
-          <label>{'修改配送地址：'}</label>
-          <Select ref="province" value={this.state.province_id} onChange={this.onProvinceChange} options={provinces} />{' '}
-          <Select ref="city" value={this.state.city_id} onChange={this.onCityChange} options={cities} />{' '}
-          <Select ref="district" value={this.state.regionalism_id} onChange={this.onDistrictChange} options={districts} />{' '}
-          {
-            delivery_type == DELIVERY_TO_HOME
-              ? <input ref="recipient_address" valueLink={this.linkState('recipient_address')} className="form-control input-xs" type="text" />
-              : <Select ref="shop" valueLink={this.linkState('recipient_address')} options={delivery_shops} />
-          }
+        <div className="form-inline">
+          <label className="v-top" style={{lineHeight: '27px', fontWeight: 'normal'}}>{'修改配送地址：'}</label>
+          <div className="inline-block" style={{maxWidth: 470}}>
+            <Select ref="province" value={this.state.province_id} onChange={this.onProvinceChange} options={provinces} className="mg-8" />{' '}
+            <Select ref="city" value={this.state.city_id} onChange={this.onCityChange} options={cities} className="mg-8" />{' '}
+            <Select ref="district" value={this.state.regionalism_id} onChange={this.onDistrictChange} options={districts} className="mg-8" />{' '}
+            {
+              delivery_type == DELIVERY_TO_HOME
+                ? <input ref="recipient_address" valueLink={this.linkState('recipient_address')} onBlur={this.onAddressChange} className="form-control input-xs mg-8" type="text" />
+                : <Select ref="shop" valueLink={this.linkState('recipient_address')} options={delivery_shops} className="mg-8" />
+            }
+          </div>
         </div>
         <div className="form-group form-inline">
           <label>{'修改配送中心：'}</label>
@@ -102,16 +104,16 @@ var AlterDeliveryModal = React.createClass({
   },
   mixins: [LinkedStateMixin, {autoMatchDeliveryStations}],
   componentDidMount(){
-    setTimeout(function(){
-      this.autoMatchDeliveryStations(delivery_id => {
-        if(delivery_id){
-          this.setState({delivery_id})
-        }else{
-          Noty('warning', '没有可匹配的配送站');
-          this.setState({delivery_id: SELECT_DEFAULT_VALUE})
-        }
-      });
-    }.bind(this), 100)
+    // setTimeout(function(){
+    //   this.autoMatchDeliveryStations(delivery_id => {
+    //     if(delivery_id){
+    //       this.setState({delivery_id})
+    //     }else{
+    //       Noty('warning', '没有可匹配的配送站');
+    //       this.setState({delivery_id: SELECT_DEFAULT_VALUE})
+    //     }
+    //   });
+    // }.bind(this), 100)
   },
   onConfirm(){
     var {
@@ -180,6 +182,16 @@ var AlterDeliveryModal = React.createClass({
     this.setState({regionalism_id: e.target.value})
     if(value != this.refs.district.props['default-value'])
       this.props.actions.getDeliveryShops(value);
+  },
+  onAddressChange(){
+    this.autoMatchDeliveryStations(delivery_id => {
+      if(delivery_id){
+        this.setState({delivery_id})
+      }else{
+        Noty('warning', '没有可匹配的配送站');
+        this.setState({delivery_id: SELECT_DEFAULT_VALUE})
+      }
+    }); 
   },
   show(){
     this.refs.modal.show();

@@ -5,98 +5,117 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <title>打印送货单</title>
+    <style type="text/css">
+        body {
+            font-size: .85em;
+            font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
+            color: #232323;
+            background-color: #fff;
+        }
+
+        header, footer, nav, section {
+            display: block;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        fieldset {
+            border: 1px solid #aaa;
+            padding: 5px 10px 10px 10px;
+            margin: 5px auto 12px auto;
+        }
+
+        legend {
+            font-weight: bold;
+        }
+
+        fieldset input {
+            border: 1px solid #95B8E7;
+            line-height: 18px;
+        }
+
+        textarea {
+            min-height: 75px;
+        }
+
+        .editor-label {
+            margin: 1em 0 0 0;
+        }
+
+        .editor-field {
+            margin: 0.5em 0 0 0;
+        }
+
+        .Content {
+            width: 710px;
+            /*border:1px solid red;*/
+            margin-left: 0px;
+            margin-top: 20px;
+        }
+
+        tr {
+            /*width: 30px;*/
+            margin: 0 auto;
+            height: 16px;
+            font-size: 14px;
+            padding: 0;
+            line-height: 16px;
+        }
+
+        td {
+            height: 16px;
+            margin: 0;
+            padding: 0;
+            line-height: 16px;
+            font-size: 14px;
+        }
+    </style>
     <script type="text/javascript">
         function init() {
             window.opener = null;
             window.open('', '_self');
             window.setTimeout("window.close()", 1*1000*60*30); //30分钟自动关闭
         }
-
     </script>
+    <script src="/lib/vendor/jquery-1.11.3.min.js"></script>
+    <script src="/plugins/barcode/jquery-barcode.min.js"></script>
 </head>
 
 <body onload="init()">
-<style type="text/css">
-    body {
-        font-size: .85em;
-        font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
-        color: #232323;
-        background-color: #fff;
-    }
-
-    header, footer, nav, section {
-        display: block;
-    }
-
-    a {
-        text-decoration: none;
-    }
-
-    fieldset {
-        border: 1px solid #aaa;
-        padding: 5px 10px 10px 10px;
-        margin: 5px auto 12px auto;
-    }
-
-    legend {
-        font-weight: bold;
-    }
-
-    fieldset input {
-        border: 1px solid #95B8E7;
-        line-height: 18px;
-    }
-
-    textarea {
-        min-height: 75px;
-    }
-
-    .editor-label {
-        margin: 1em 0 0 0;
-    }
-
-    .editor-field {
-        margin: 0.5em 0 0 0;
-    }
-
-    .Content {
-        width: 710px;
-        /*border:1px solid red;*/
-        margin-left: 0px;
-        margin-top: 20px;
-    }
-
-    tr {
-        /*width: 30px;*/
-        margin: 0 auto;
-        height: 16px;
-        font-size: 14px;
-        padding: 0;
-        line-height: 16px;
-    }
-
-    td {
-        height: 16px;
-        margin: 0;
-        padding: 0;
-        line-height: 16px;
-        font-size: 14px;
-    }
-</style>
 {{#if list}}
 {{#list}}
 <div class="Content">
     <div class="tb">
         <div>
-            <div style="float: left; height: 40px; width: 190px;">
+            <div style="float: left; height: 40px; width: 168px;">
 
 
                 <div style="font-size: 23px; margin-left:15px; font-weight: bold; line-height: 23px; height: 23px; font-family: '幼圆'">幸福西饼</div>
                 <div style="font-size: 17px; margin-left:15px; font-weight: bold; line-height: 17px; height: 17px; font-family: '幼圆'; ">BLISS CAKE</div>
             </div>
-            <div style="float: left; width: 485px;">
+            <div style="float: left; width: 425px;">
                 <span style="font-size: 30px; font-weight: bold; line-height: 40px; height: 40px; font-family: '华文中宋'">幸福西饼网络商城配送签收单</span>
             </div>
+            <div id="barcode{{@index}}" style="float: left;margin-bottom: 2px;">
+            </div>
+            <script type="text/javascript">
+                $(function(){
+                    $('#barcode{{@index}}').barcode('{{order_id}}', 'ean13', {
+                        addQuietZone: "1",
+                        barHeight: "40",
+                        barWidth: "1",
+                        bgColor: "#FFFFFF",
+                        color: "#000000",
+                        moduleSize: "5",
+                        output: "css",
+                        showHRI: false,
+                        posX: "0",
+                        posY: "0",
+                    })
+                })
+            </script>
         </div>
 
         <div style="width: 740px">
@@ -284,7 +303,7 @@
 <br/><br/><br/>
 {{/list}}
 {{/if}}
-<object style="position: absolute; left: -9000px; top: -9000px;" type="application/x-bang5taoplugin" id="b5tplugin" height="0" width="0"></object>
+<!--<object style="position: absolute; left: -9000px; top: -9000px;" type="application/x-bang5taoplugin" id="b5tplugin" height="0" width="0"></object>-->
 </body>
 </html>
 <!--

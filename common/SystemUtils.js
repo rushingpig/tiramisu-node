@@ -108,7 +108,7 @@ module.exports = {
   genValidateCode: (code_length) => {
     code_length = code_length || 6;
     let code = Math.floor(Math.random() * Math.pow(10, code_length));
-    for (let i = 0; i < code_length - code.toString().length; i++) {
+    for (let i = 0; i < code_length - code.toString().length;) {
       code = code.toString() + '0';
     }
     return code;

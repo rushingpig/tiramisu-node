@@ -67,7 +67,7 @@
 
 	var _reactRedux = __webpack_require__(216);
 
-	var _storesConfigureStore = __webpack_require__(331);
+	var _storesConfigureStore = __webpack_require__(332);
 
 	var _storesConfigureStore2 = _interopRequireDefault(_storesConfigureStore);
 
@@ -75,7 +75,7 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _reduxSimpleRouter = __webpack_require__(338);
+	var _reduxSimpleRouter = __webpack_require__(339);
 
 	(0, _reduxSimpleRouter.syncReduxAndRouter)(_history_instance2['default'], _storesConfigureStore2['default']);
 
@@ -19040,19 +19040,19 @@
 
 	var _componentsOrderManage_order_detail_pannel2 = _interopRequireDefault(_componentsOrderManage_order_detail_pannel);
 
-	var _componentsDeliveryChange = __webpack_require__(320);
+	var _componentsDeliveryChange = __webpack_require__(321);
 
 	var _componentsDeliveryChange2 = _interopRequireDefault(_componentsDeliveryChange);
 
-	var _componentsDeliveryDelivery_manage = __webpack_require__(322);
+	var _componentsDeliveryDelivery_manage = __webpack_require__(323);
 
 	var _componentsDeliveryDelivery_manage2 = _interopRequireDefault(_componentsDeliveryDelivery_manage);
 
-	var _componentsDeliveryDistribute_manage = __webpack_require__(326);
+	var _componentsDeliveryDistribute_manage = __webpack_require__(327);
 
 	var _componentsDeliveryDistribute_manage2 = _interopRequireDefault(_componentsDeliveryDistribute_manage);
 
-	var _componentsDeliveryPrint_review = __webpack_require__(329);
+	var _componentsDeliveryPrint_review = __webpack_require__(330);
 
 	var _componentsDeliveryPrint_review2 = _interopRequireDefault(_componentsDeliveryPrint_review);
 
@@ -19334,10 +19334,10 @@
 	  NAV_COLLAPSED_COOKIE_YES: 'yes',
 
 	  DELIVERY_TO_HOME: 'DELIVERY', //配送上门
-	  DELIVERY_TO_STORE: 'TAKETHEIR', //门店自提
+	  DELIVERY_TO_STORE: 'COLLECT', //门店自提
 	  DELIVERY_MAP: {
 	    'DELIVERY': '配送上门',
-	    'TAKETHEIR': '门店自提'
+	    'COLLECT': '门店自提'
 	  },
 	  DELIVERY_TIME_MAP: ['09:00~10:00', '09:30~10:30', '10:00~11:00', '10:30~11:30', '11:00~12:00', '11:30~12:30', '12:00~13:00', '12:30~13:30', '13:00~14:00', '13:30~14:30', '14:00~15:00', '14:30~15:30', '15:00~16:00', '15:30~16:30', '16:00~17:00', '16:30~17:30', '17:00~18:00', '17:30~18:30', '18:00~19:00', '18:30~19:30', '19:00~20:00', '20:30~21:30', '21:00~22:00', '21:30~22:30', '22:00~23:00'],
 
@@ -19848,8 +19848,6 @@
 	}
 
 	function reactReplace(input, reg_or_string, reactElement) {
-	  if (input === undefined) input = '';
-
 	  input = (input || '').split(reg_or_string);
 	  var results = [];
 	  for (var i = 0, len = input.length; i < len; i++) {
@@ -28349,7 +28347,7 @@
 	        _react2['default'].createElement(
 	          'div',
 	          { className: 'panel-body form-inline' },
-	          _react2['default'].createElement('input', _extends({}, keywords, { className: 'form-control input-xs', placeholder: '关键字' })),
+	          _react2['default'].createElement('input', _extends({}, keywords, { className: 'form-control input-xs v-mg', placeholder: '关键字' })),
 	          ' 开始时间',
 	          _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': begin_time, className: 'short-input' }),
 	          ' 配送时间',
@@ -29102,10 +29100,12 @@
 	    var _state = this.state;
 	    var reason = _state.reason;
 	    var tips = _state.tips;
-	    var order = _state.order;
+	    var _state$order = _state.order;
+	    var order_id = _state$order.order_id;
+	    var updated_time = _state$order.updated_time;
 
 	    if (reason) {
-	      this.props.cancelOrder(order.order_id, { cancel_reason: reason }).done((function () {
+	      this.props.cancelOrder(order_id, { cancel_reason: reason, updated_time: updated_time }).done((function () {
 	        this.refs.modal.hide();
 	        this.props.callback();
 	      }).bind(this)).fail((function () {
@@ -29445,6 +29445,7 @@
 	  }
 	});
 	module.exports = exports['default'];
+	/*收货人信息*/ /*订单来源*/ /*订单状态*/
 
 /***/ },
 /* 241 */
@@ -32768,11 +32769,24 @@
 	  };
 	}
 
+	var RESET_ORDER_OPT_RECORD = 'RESET_ORDER_OPT_RECORD';exports.RESET_ORDER_OPT_RECORD = RESET_ORDER_OPT_RECORD;
+	//先重置历史数据
 	var GET_ORDER_OPT_RECORD = 'GET_ORDER_OPT_RECORD';
 	exports.GET_ORDER_OPT_RECORD = GET_ORDER_OPT_RECORD;
 
 	function getOrderOptRecord(order_id, data) {
-	  return (0, _utilsRequest.GET)(_configUrl2['default'].order_opt_record.toString(order_id), data, GET_ORDER_OPT_RECORD);
+	  return function (dispatch) {
+	    dispatch({
+	      type: RESET_ORDER_OPT_RECORD
+	    });
+	    return (0, _utilsRequest.get)(_configUrl2['default'].order_opt_record.toString(order_id), data).done(function (jsonobj) {
+	      dispatch({
+	        type: GET_ORDER_OPT_RECORD,
+	        data: jsonobj
+	      });
+	    });
+	  };
+	  // return GET(Url.order_opt_record.toString(order_id), data, GET_ORDER_OPT_RECORD);
 	  /*return {
 	    type: GET_ORDER_OPT_RECORD,
 	    data: {
@@ -34447,6 +34461,8 @@
 
 	var _commonLoading = __webpack_require__(297);
 
+	var _reactDom = __webpack_require__(154);
+
 	var DetailModal = (function (_Component) {
 	  _inherits(DetailModal, _Component);
 
@@ -34535,7 +34551,7 @@
 	      return _react2['default'].createElement(
 	        'div',
 	        { ref: 'modal', 'aria-hidden': 'false', 'aria-labelledby': 'myModalLabel', role: 'dialog', className: 'modal fade' },
-	        _react2['default'].createElement('div', { className: 'modal-backdrop fade' }),
+	        _react2['default'].createElement('div', { ref: 'modal-backdrop', className: 'modal-backdrop fade' }),
 	        _react2['default'].createElement(
 	          'div',
 	          { className: 'modal-dialog modal-lg' },
@@ -34759,10 +34775,16 @@
 	        )
 	      );
 	    }
-
-	    // componentDidMount(){
-	    //   this.show();
-	    // }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      $(this.refs['modal-backdrop']).on('click', this.hide);
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      $(this.refs['modal-backdrop']).off('click', this.hide);
+	    }
 	  }, {
 	    key: 'show',
 	    value: function show() {
@@ -34947,19 +34969,23 @@
 	      ),
 	      _react2['default'].createElement(
 	        'div',
-	        { className: 'form-group form-inline' },
+	        { className: 'form-inline' },
 	        _react2['default'].createElement(
 	          'label',
-	          null,
+	          { className: 'v-top', style: { lineHeight: '27px', fontWeight: 'normal' } },
 	          '修改配送地址：'
 	        ),
-	        _react2['default'].createElement(_commonSelect2['default'], { ref: 'province', value: this.state.province_id, onChange: this.onProvinceChange, options: provinces }),
-	        ' ',
-	        _react2['default'].createElement(_commonSelect2['default'], { ref: 'city', value: this.state.city_id, onChange: this.onCityChange, options: cities }),
-	        ' ',
-	        _react2['default'].createElement(_commonSelect2['default'], { ref: 'district', value: this.state.regionalism_id, onChange: this.onDistrictChange, options: districts }),
-	        ' ',
-	        delivery_type == _configAppConfig.DELIVERY_TO_HOME ? _react2['default'].createElement('input', { ref: 'recipient_address', valueLink: this.linkState('recipient_address'), className: 'form-control input-xs', type: 'text' }) : _react2['default'].createElement(_commonSelect2['default'], { ref: 'shop', valueLink: this.linkState('recipient_address'), options: delivery_shops })
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'inline-block', style: { maxWidth: 470 } },
+	          _react2['default'].createElement(_commonSelect2['default'], { ref: 'province', value: this.state.province_id, onChange: this.onProvinceChange, options: provinces, className: 'mg-8' }),
+	          ' ',
+	          _react2['default'].createElement(_commonSelect2['default'], { ref: 'city', value: this.state.city_id, onChange: this.onCityChange, options: cities, className: 'mg-8' }),
+	          ' ',
+	          _react2['default'].createElement(_commonSelect2['default'], { ref: 'district', value: this.state.regionalism_id, onChange: this.onDistrictChange, options: districts, className: 'mg-8' }),
+	          ' ',
+	          delivery_type == _configAppConfig.DELIVERY_TO_HOME ? _react2['default'].createElement('input', { ref: 'recipient_address', valueLink: this.linkState('recipient_address'), onBlur: this.onAddressChange, className: 'form-control input-xs mg-8', type: 'text' }) : _react2['default'].createElement(_commonSelect2['default'], { ref: 'shop', valueLink: this.linkState('recipient_address'), options: delivery_shops, className: 'mg-8' })
+	        )
 	      ),
 	      _react2['default'].createElement(
 	        'div',
@@ -34975,18 +35001,16 @@
 	  },
 	  mixins: [_reactAddonsLinkedStateMixin2['default'], { autoMatchDeliveryStations: _mixinsMap2['default'] }],
 	  componentDidMount: function componentDidMount() {
-	    setTimeout((function () {
-	      var _this = this;
-
-	      this.autoMatchDeliveryStations(function (delivery_id) {
-	        if (delivery_id) {
-	          _this.setState({ delivery_id: delivery_id });
-	        } else {
-	          (0, _utilsIndex.Noty)('warning', '没有可匹配的配送站');
-	          _this.setState({ delivery_id: _configAppConfig.SELECT_DEFAULT_VALUE });
-	        }
-	      });
-	    }).bind(this), 100);
+	    // setTimeout(function(){
+	    //   this.autoMatchDeliveryStations(delivery_id => {
+	    //     if(delivery_id){
+	    //       this.setState({delivery_id})
+	    //     }else{
+	    //       Noty('warning', '没有可匹配的配送站');
+	    //       this.setState({delivery_id: SELECT_DEFAULT_VALUE})
+	    //     }
+	    //   });
+	    // }.bind(this), 100)
 	  },
 	  onConfirm: function onConfirm() {
 	    var _state2 = this.state;
@@ -35051,6 +35075,18 @@
 	    this.props.actions.districtReset();
 	    this.setState({ regionalism_id: e.target.value });
 	    if (value != this.refs.district.props['default-value']) this.props.actions.getDeliveryShops(value);
+	  },
+	  onAddressChange: function onAddressChange() {
+	    var _this = this;
+
+	    this.autoMatchDeliveryStations(function (delivery_id) {
+	      if (delivery_id) {
+	        _this.setState({ delivery_id: delivery_id });
+	      } else {
+	        (0, _utilsIndex.Noty)('warning', '没有可匹配的配送站');
+	        _this.setState({ delivery_id: _configAppConfig.SELECT_DEFAULT_VALUE });
+	      }
+	    });
 	  },
 	  show: function show() {
 	    this.refs.modal.show();
@@ -35311,11 +35347,15 @@
 
 	var OrderFormActions = _interopRequireWildcard(_actionsOrder_manage_form);
 
+	var _actionsForm = __webpack_require__(308);
+
+	var FormActions = _interopRequireWildcard(_actionsForm);
+
 	var _commonDatepicker = __webpack_require__(292);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonAlert = __webpack_require__(308);
+	var _commonAlert = __webpack_require__(309);
 
 	var _commonAlert2 = _interopRequireDefault(_commonAlert);
 
@@ -35323,15 +35363,15 @@
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _manage_order_form_create = __webpack_require__(309);
+	var _manage_order_form_create = __webpack_require__(310);
 
 	var _manage_order_form_create2 = _interopRequireDefault(_manage_order_form_create);
 
-	var _manage_order_form_edit = __webpack_require__(314);
+	var _manage_order_form_edit = __webpack_require__(315);
 
 	var _manage_order_form_edit2 = _interopRequireDefault(_manage_order_form_edit);
 
-	var _manage_order_products = __webpack_require__(315);
+	var _manage_order_products = __webpack_require__(316);
 
 	var _manage_order_products2 = _interopRequireDefault(_manage_order_products);
 
@@ -35351,7 +35391,7 @@
 	        'div',
 	        { className: 'clearfix top-header' },
 	        _react2['default'].createElement(_commonLine_router2['default'], {
-	          routes: [{ name: '总订单页面', link: '/om/index' }, { name: '编辑订单', link: '' }],
+	          routes: [{ name: '总订单页面', link: '/om/index' }, { name: (this.props.editable ? '编辑' : '添加') + '订单', link: '' }],
 	          className: 'pull-right' })
 	      );
 	    }
@@ -35383,13 +35423,13 @@
 
 	      var editable = !!(params && params.id);
 
-	      var actions = _extends({}, (0, _redux.bindActionCreators)((0, _actionsArea2['default'])(), dispatch), (0, _redux.bindActionCreators)(OrderFormActions, dispatch));
+	      var actions = _extends({}, (0, _redux.bindActionCreators)((0, _actionsArea2['default'])(), dispatch), (0, _redux.bindActionCreators)(OrderFormActions, dispatch), (0, _redux.bindActionCreators)(FormActions, dispatch));
 
 	      mainForm = _extends({}, mainForm, delivery_stations);
 	      return _react2['default'].createElement(
 	        'div',
 	        { className: 'order-manage' },
-	        _react2['default'].createElement(TopHeader, null),
+	        _react2['default'].createElement(TopHeader, { editable: editable }),
 	        _react2['default'].createElement(
 	          'div',
 	          { className: 'panel' },
@@ -35466,6 +35506,32 @@
 /* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.updateAddOrderForm = updateAddOrderForm;
+	exports.triggerFormUpdate = triggerFormUpdate;
+
+	var _reduxForm = __webpack_require__(241);
+
+	//可以手动触发redux-form的normalize动作
+
+	function updateAddOrderForm() {
+	  return (0, _reduxForm.focus)('add_order', '_update'); //form_name, field_name
+	}
+
+	//手动更改指定form的表单值
+
+	function triggerFormUpdate(form_name, field_name, field_value) {
+	  return (0, _reduxForm.blur)(form_name, field_name, field_value);
+	}
+
+/***/ },
+/* 309 */
+/***/ function(module, exports, __webpack_require__) {
+
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -35524,7 +35590,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 309 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35535,7 +35601,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _manage_order_form = __webpack_require__(310);
+	var _manage_order_form = __webpack_require__(311);
 
 	var _manage_order_form2 = _interopRequireDefault(_manage_order_form);
 
@@ -35553,7 +35619,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 310 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35606,11 +35672,11 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _manage_history_orders = __webpack_require__(311);
+	var _manage_history_orders = __webpack_require__(312);
 
 	var _manage_history_orders2 = _interopRequireDefault(_manage_history_orders);
 
-	var _reducersForm = __webpack_require__(312);
+	var _reducersForm = __webpack_require__(313);
 
 	var _configAppConfig = __webpack_require__(157);
 
@@ -36096,6 +36162,7 @@
 	      var getOrderSrcs = _props$actions2.getOrderSrcs;
 	      var getDeliveryStations = _props$actions2.getDeliveryStations;
 	      var getPayModes = _props$actions2.getPayModes;
+	      var triggerFormUpdate = _props$actions2.triggerFormUpdate;
 
 	      getProvinces();
 	      getOrderSrcs();
@@ -36103,11 +36170,9 @@
 	      getDeliveryStations();
 
 	      this.autoMatchDeliveryStations(function (delivery_id) {
-	        if (delivery_id) {
-	          $((0, _reactDom.findDOMNode)(_this3.refs.delivery_center)).val(delivery_id);
-	        } else {
-	          $((0, _reactDom.findDOMNode)(_this3.refs.delivery_center)).val(_configAppConfig.SELECT_DEFAULT_VALUE);
-	        }
+	        delivery_id = delivery_id || _configAppConfig.SELECT_DEFAULT_VALUE;
+	        $((0, _reactDom.findDOMNode)(_this3.refs.delivery_center)).val(delivery_id);
+	        triggerFormUpdate('add_order', 'delivery_id', delivery_id); //手动更改表单值后，需要使用该方法，主动触发redux-form进行更新，否则数据将不会同步
 	      });
 
 	      (0, _utilsLazy_load2['default'])('noty');
@@ -36246,7 +36311,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 311 */
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36637,7 +36702,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 312 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36651,7 +36716,9 @@
 
 	// import store from 'stores/configureStore'; //循环引用
 
-	var _storesGetter = __webpack_require__(313);
+	var _storesGetter = __webpack_require__(314);
+
+	var _configAppConfig = __webpack_require__(157);
 
 	function preCheck() {
 	  var pathname = location.pathname;
@@ -36698,39 +36765,57 @@
 	  //表单数据再处理，（可以在这里改变form的值）
 	  add_order: {
 	    pay_modes_id: function pay_modes_id(value, preValue, allValues, preAllValues) {
-	      if (isSrc('第三方预约', allValues.src_id)) {
-	        return getMode('团购密码').id; //团购密码id（TODO）
-	      } else if (isSrc('有赞', allValues.src_id)) {
-	          return getMode('微信').id; //微信支付id
-	        } else if (isSrc('电话', allValues.src_id)) {
-	            return getMode('货到付款（现金）').id;
-	          } else {
-	            return value;
-	          }
+	      var src_id = allValues.src_id;
+
+	      if (src_id) {
+	        if (isSrc('第三方预约', src_id)) {
+	          return getMode('团购券').id; //团购券id（TODO）
+	        } else if (isSrc('有赞', src_id)) {
+	            return getMode('微信').id; //微信支付id
+	          } else if (isSrc('电话', src_id)) {
+	              var mode_cash = getMode('货到付款（现金）');
+	              var mode_card = getMode('货到付款（POS）');
+	              if (value == mode_cash.id || value == mode_card.id) {
+	                return value;
+	              } else {
+	                return mode_cash.id;
+	              }
+	            } else {
+	              return _configAppConfig.SELECT_DEFAULT_VALUE;
+	            }
+	      } else {
+	        return value;
+	      }
 	    },
 	    pay_status: function pay_status(value, preValue, allValues, preAllValues) {
-	      if (isSrc('第三方预约', allValues.src_id) || isSrc('有赞', allValues.src_id) || isSrc('幸福商城', allValues.src_id)) {
-	        var _getGlobalState3 = (0, _storesGetter.getGlobalState)();
+	      var src_id = allValues.src_id;
 
-	        var confirm_list = _getGlobalState3.orderManageForm.products.confirm_list;
+	      if (src_id) {
+	        if (isSrc('第三方预约', src_id) || isSrc('有赞', src_id) || isSrc('幸福商城', src_id)) {
+	          var _getGlobalState3 = (0, _storesGetter.getGlobalState)();
 
-	        //属于第三方预约
-	        if (confirm_list.length > 1) {
-	          return 'PARTPAYED'; //部分付款（TODO）
-	        } else {
-	            return 'PAYED'; //已付款（TODO）
-	          }
-	      } else if (isSrc('电话', allValues.src_id)) {
-	          return 'COD'; //货到付款
-	        } else {
-	            return value;
-	          }
+	          var confirm_list = _getGlobalState3.orderManageForm.products.confirm_list;
+
+	          //属于第三方预约
+	          if (confirm_list.length > 1 || confirm_list[0] && confirm_list[0].num > 1) {
+	            return 'PARTPAYED'; //部分付款（TODO）
+	          } else {
+	              return 'PAYED'; //已付款（TODO）
+	            }
+	        } else if (isSrc('电话', src_id)) {
+	            return 'COD'; //货到付款
+	          } else {
+	              return _configAppConfig.SELECT_DEFAULT_VALUE;
+	            }
+	      } else {
+	        return value;
+	      }
 	    }
 	  }
 	});
 
 /***/ },
-/* 313 */
+/* 314 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -36751,7 +36836,7 @@
 	}
 
 /***/ },
-/* 314 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36762,7 +36847,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _manage_order_form = __webpack_require__(310);
+	var _manage_order_form = __webpack_require__(311);
 
 	var _manage_order_form2 = _interopRequireDefault(_manage_order_form);
 
@@ -36777,7 +36862,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 315 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -36809,11 +36894,11 @@
 
 	var _reactDom = __webpack_require__(154);
 
-	var _manage_add_products_modal = __webpack_require__(316);
+	var _manage_add_products_modal = __webpack_require__(317);
 
 	var _manage_add_products_modal2 = _interopRequireDefault(_manage_add_products_modal);
 
-	var _actionsOrder_products = __webpack_require__(319);
+	var _actionsOrder_products = __webpack_require__(320);
 
 	var ProductsActions = _interopRequireWildcard(_actionsOrder_products);
 
@@ -37095,7 +37180,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 316 */
+/* 317 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37126,7 +37211,7 @@
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonNumber_picker = __webpack_require__(317);
+	var _commonNumber_picker = __webpack_require__(318);
 
 	var _commonNumber_picker2 = _interopRequireDefault(_commonNumber_picker);
 
@@ -37134,13 +37219,13 @@
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _commonSelect_group = __webpack_require__(318);
+	var _commonSelect_group = __webpack_require__(319);
 
 	var _commonSelect_group2 = _interopRequireDefault(_commonSelect_group);
 
 	var _commonLoading = __webpack_require__(297);
 
-	var _actionsOrder_products = __webpack_require__(319);
+	var _actionsOrder_products = __webpack_require__(320);
 
 	var OrderProductsActions = _interopRequireWildcard(_actionsOrder_products);
 
@@ -37227,7 +37312,7 @@
 	              ),
 	              _react2['default'].createElement(
 	                'div',
-	                { className: 'table-responsive' },
+	                { className: 'table-responsive table-modal' },
 	                _react2['default'].createElement(
 	                  'table',
 	                  { className: 'table table-hover table-click text-center' },
@@ -37404,7 +37489,7 @@
 	      var page_size = _state.page_size;
 
 	      this.props.dispatch(OrderProductsActions.searchProducts({
-	        sku_name: sku_name, page_no: page_no, page_size: page_size,
+	        name: sku_name, page_no: page_no, page_size: page_size,
 	        category_id: category_id == _configAppConfig.SELECT_DEFAULT_VALUE ? undefined : category_id
 	      }));
 	    }
@@ -37480,14 +37565,15 @@
 	      var skus = _props$data.skus;
 
 	      var hasOthers = skus.length != 1;
+	      var sku0 = skus[0];
 
 	      var head = _react2['default'].createElement(
 	        'tr',
-	        { key: skus[0].sku_id, className: hasOthers ? "clickable" : "", onClick: hasOthers ? this.toggle : null },
+	        { key: sku0.sku_id, className: hasOthers ? "clickable" : "", onClick: hasOthers ? this.toggle : null },
 	        _react2['default'].createElement(
 	          'td',
 	          null,
-	          _react2['default'].createElement('input', { type: 'checkbox', checked: skus[0].checked, disabled: true })
+	          _react2['default'].createElement('input', { type: 'checkbox', checked: sku0.checked, onClick: choose.bind(this, sku0), disabled: sku0.checked })
 	        ),
 	        _react2['default'].createElement(
 	          'td',
@@ -37507,30 +37593,30 @@
 	        _react2['default'].createElement(
 	          'td',
 	          null,
-	          skus[0].website
+	          sku0.website
 	        ),
 	        _react2['default'].createElement(
 	          'td',
 	          null,
 	          '￥',
-	          (0, _utilsIndex.toFixed)(skus[0].discount_price / 100, 2)
+	          (0, _utilsIndex.toFixed)(sku0.discount_price / 100, 2)
 	        ),
 	        _react2['default'].createElement(
 	          'td',
 	          null,
-	          yes_or_no(skus[0].is_local_site)
+	          yes_or_no(sku0.is_local_site)
 	        ),
 	        _react2['default'].createElement(
 	          'td',
 	          null,
-	          yes_or_no(skus[0].is_delivery)
+	          yes_or_no(sku0.is_delivery)
 	        ),
 	        _react2['default'].createElement(
 	          'td',
 	          null,
 	          _react2['default'].createElement(
 	            'a',
-	            { onClick: choose.bind(this, skus[0]), href: 'javascript:;' },
+	            { onClick: choose.bind(this, sku0), href: 'javascript:;' },
 	            '[选择]'
 	          )
 	        )
@@ -37547,7 +37633,7 @@
 	          _react2['default'].createElement(
 	            'td',
 	            null,
-	            _react2['default'].createElement('input', { type: 'checkbox', checked: n.checked, disabled: true })
+	            _react2['default'].createElement('input', { type: 'checkbox', checked: n.checked, onClick: choose.bind(_this, n), disabled: n.checked })
 	          ),
 	          _react2['default'].createElement('td', { colSpan: '3' }),
 	          _react2['default'].createElement(
@@ -37719,7 +37805,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 317 */
+/* 318 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37804,7 +37890,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 318 */
+/* 319 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37884,7 +37970,7 @@
 	module.exports = SelectGroup;
 
 /***/ },
-/* 319 */
+/* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38041,7 +38127,7 @@
 	}
 
 /***/ },
-/* 320 */
+/* 321 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38126,7 +38212,7 @@
 
 	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
-	var _actionsDelivery_change = __webpack_require__(321);
+	var _actionsDelivery_change = __webpack_require__(322);
 
 	var ChangeActions = _interopRequireWildcard(_actionsDelivery_change);
 
@@ -38190,7 +38276,7 @@
 	        _react2['default'].createElement(
 	          'div',
 	          { className: 'panel-body form-inline' },
-	          _react2['default'].createElement('input', _extends({}, keywords, { className: 'form-control input-xs', placeholder: '关键字' })),
+	          _react2['default'].createElement('input', _extends({}, keywords, { className: 'form-control input-xs v-mg', placeholder: '关键字' })),
 	          ' 开始时间',
 	          _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': begin_time, className: 'short-input' }),
 	          ' 配送时间',
@@ -38705,7 +38791,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 321 */
+/* 322 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38754,7 +38840,7 @@
 	}
 
 /***/ },
-/* 322 */
+/* 323 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38835,11 +38921,11 @@
 
 	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
-	var _actionsDeliveryman = __webpack_require__(323);
+	var _actionsDeliveryman = __webpack_require__(324);
 
 	var DeliverymanActions = _interopRequireWildcard(_actionsDeliveryman);
 
-	var _actionsDelivery_manage = __webpack_require__(324);
+	var _actionsDelivery_manage = __webpack_require__(325);
 
 	var DeliveryManageActions = _interopRequireWildcard(_actionsDelivery_manage);
 
@@ -38851,7 +38937,7 @@
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
-	var _commonScan_modal = __webpack_require__(325);
+	var _commonScan_modal = __webpack_require__(326);
 
 	var _commonScan_modal2 = _interopRequireDefault(_commonScan_modal);
 
@@ -38925,7 +39011,7 @@
 	          _react2['default'].createElement(
 	            'div',
 	            { className: 'form-group form-inline' },
-	            _react2['default'].createElement('input', _extends({}, keywords, { className: 'form-control input-xs', placeholder: '关键字' })),
+	            _react2['default'].createElement('input', _extends({}, keywords, { className: 'form-control input-xs v-mg', placeholder: '关键字' })),
 	            ' 开始时间',
 	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': begin_time, className: 'short-input' }),
 	            ' 配送时间',
@@ -39568,21 +39654,37 @@
 	    };
 	  },
 	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+	    var _this2 = this;
+
 	    var deliveryman = nextProps.deliveryman;
 
 	    //只需要初始化一次
 	    if (deliveryman.load_success && !this._hasInitial) {
 	      this._hasInitial = true;
 	      var list = deliveryman.list;
-	      var makePy = window.makePy;
 
-	      var new_data = list.map(function (n) {
-	        if (makePy) n.py = makePy(n.deliveryman_name);else n.py = [];
-	        return n;
-	      });
-	      this.setState({
-	        all_deliveryman: list, filter_results: new_data, selected_deliveryman_id: list.length && list[0].deliveryman_id
-	      });
+	      var build = (function () {
+	        var new_data = list.map(function (n) {
+	          n.py = window.makePy(n.deliveryman_name);
+	          return n;
+	        });
+	        this.setState({
+	          all_deliveryman: list, filter_results: new_data, selected_deliveryman_id: list.length && list[0].deliveryman_id
+	        });
+	      }).bind(this);
+
+	      if (window.makePy) {
+	        build();
+	      } else {
+	        //异步加载的chinese_py库可能还未加载完成，所以需要定时检测
+	        this._build_timer = setInterval(function () {
+	          if (window.makePy) {
+	            build();
+	            clearInterval(_this2._build_timer);
+	            delete _this2._build_timer;
+	          }
+	        }, 100);
+	      }
 	    }
 	  },
 	  render: function render() {
@@ -39616,7 +39718,7 @@
 	            _react2['default'].createElement('i', { className: 'fa fa-filter' })
 	          ),
 	          _react2['default'].createElement('input', { onChange: this.filterHandler, type: 'text',
-	            className: 'form-control', style: { 'width': '200' }, placeholder: '输入配送员姓名或手机号码检索' })
+	            className: 'form-control', style: { 'width': '200' }, placeholder: '配送员拼音首字母 或 手机号码' })
 	        )
 	      ),
 	      _react2['default'].createElement(
@@ -39719,11 +39821,11 @@
 	    });
 	  },
 	  componentDidMount: function componentDidMount() {
-	    var _this2 = this;
+	    var _this3 = this;
 
 	    //稍微延时一下，
 	    setTimeout(function () {
-	      _this2.props.getAllDeliveryman();
+	      _this3.props.getAllDeliveryman();
 	    }, 200);
 	  },
 	  show: function show(orders) {
@@ -39805,11 +39907,16 @@
 	    );
 	  },
 	  saveHandler: function saveHandler() {
+	    var applicant_mobile = this.state.applicant_mobile;
+
+	    if (!_utilsIndex.form.isMobile(applicant_mobile)) {
+	      (0, _utilsIndex.Noty)('warning', '错误的电话号！');return;
+	    }
 	    this.props.applyPrint(_extends({}, this.state, { order_id: this.state.order_id })).done((function () {
 	      this.props.callback();
 	      this.refs.modal.hide();
-	    }).bind(this)).fail(function () {
-	      (0, _utilsIndex.Noty)('error', '服务器异常');
+	    }).bind(this)).fail(function (msg, code) {
+	      (0, _utilsIndex.Noty)('error', msg || '服务器异常');
 	    });
 	  },
 	  show: function show(order_id) {
@@ -39818,7 +39925,7 @@
 	    });
 	  },
 	  hideCallback: function hideCallback() {
-	    this.setState(this.getInitialState());
+	    // this.setState(this.getInitialState());
 	  }
 	});
 
@@ -39874,6 +39981,7 @@
 
 	    this.props.validatePrintCode(order_id, this.state.validate_code).done((function () {
 	      this.props.rePrint(order_id).done((function () {
+	        this.refs.modal.hide();
 	        setTimeout(this.props.callback, 1000);
 	      }).bind(this));
 	      this.refs.modal.hide();
@@ -39894,7 +40002,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 323 */
+/* 324 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39929,7 +40037,7 @@
 	}
 
 /***/ },
-/* 324 */
+/* 325 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40011,15 +40119,17 @@
 	}
 
 	function rePrint(order_id) {
-	  return new _utilsPromise2['default'](function (resolve, reject) {
-	    try {
-	      window.open(_configUrl2['default'].reprint.toString(order_id));
-	      resolve();
-	    } catch (e) {
-	      console.error(e);
-	      reject('打印出错');
-	    }
-	  });
+	  return function (dispatch) {
+	    return new _utilsPromise2['default'](function (resolve, reject) {
+	      try {
+	        window.open(_configUrl2['default'].reprint.toString(order_id));
+	        resolve();
+	      } catch (e) {
+	        console.error(e);
+	        reject('打印出错');
+	      }
+	    });
+	  };
 	}
 
 	var GET_DELIVERY_SCAN_LIST = 'GET_DELIVERY_SCAN_LIST';
@@ -40030,7 +40140,7 @@
 	}
 
 /***/ },
-/* 325 */
+/* 326 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40237,7 +40347,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 326 */
+/* 327 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40284,7 +40394,7 @@
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonTime_input = __webpack_require__(327);
+	var _commonTime_input = __webpack_require__(328);
 
 	var _commonTime_input2 = _interopRequireDefault(_commonTime_input);
 
@@ -40326,11 +40436,11 @@
 
 	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
-	var _actionsDeliveryman = __webpack_require__(323);
+	var _actionsDeliveryman = __webpack_require__(324);
 
 	var DeliverymanActions = _interopRequireWildcard(_actionsDeliveryman);
 
-	var _actionsDelivery_distribute = __webpack_require__(328);
+	var _actionsDelivery_distribute = __webpack_require__(329);
 
 	var DeliveryDistributeActions = _interopRequireWildcard(_actionsDelivery_distribute);
 
@@ -40344,7 +40454,7 @@
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
-	var _commonScan_modal = __webpack_require__(325);
+	var _commonScan_modal = __webpack_require__(326);
 
 	var _commonScan_modal2 = _interopRequireDefault(_commonScan_modal);
 
@@ -40416,7 +40526,7 @@
 	          _react2['default'].createElement(
 	            'div',
 	            { className: 'form-group form-inline' },
-	            _react2['default'].createElement('input', _extends({}, keywords, { className: 'form-control input-xs', placeholder: '关键字' })),
+	            _react2['default'].createElement('input', _extends({}, keywords, { className: 'form-control input-xs v-mg', placeholder: '关键字' })),
 	            ' 开始时间',
 	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': begin_time, className: 'short-input' }),
 	            ' 配送时间',
@@ -41264,7 +41374,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 327 */
+/* 328 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41381,7 +41491,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 328 */
+/* 329 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41435,7 +41545,7 @@
 	}
 
 /***/ },
-/* 329 */
+/* 330 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41522,7 +41632,7 @@
 
 	var OrderActions = _interopRequireWildcard(_actionsOrders);
 
-	var _actionsDelivery_print_review = __webpack_require__(330);
+	var _actionsDelivery_print_review = __webpack_require__(331);
 
 	var DeliverPrintReviewActions = _interopRequireWildcard(_actionsDelivery_print_review);
 
@@ -41572,7 +41682,7 @@
 	        _react2['default'].createElement(
 	          'div',
 	          { className: 'panel-body form-inline' },
-	          _react2['default'].createElement('input', { className: 'form-control input-xs', placeholder: '订单号' }),
+	          _react2['default'].createElement('input', { className: 'form-control input-xs v-mg', placeholder: '订单号' }),
 	          ' 开始时间',
 	          _react2['default'].createElement(_commonDatepicker2['default'], { date: start_date, className: 'short-input' }),
 	          ' 结束时间',
@@ -41990,7 +42100,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 330 */
+/* 331 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42058,7 +42168,7 @@
 	}
 
 /***/ },
-/* 331 */
+/* 332 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42071,15 +42181,15 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _reduxLogger = __webpack_require__(332);
+	var _reduxLogger = __webpack_require__(333);
 
 	var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
 
-	var _reduxThunk = __webpack_require__(333);
+	var _reduxThunk = __webpack_require__(334);
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-	var _reducersIndex = __webpack_require__(334);
+	var _reducersIndex = __webpack_require__(335);
 
 	var _reducersIndex2 = _interopRequireDefault(_reducersIndex);
 
@@ -42101,7 +42211,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 332 */
+/* 333 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -42246,7 +42356,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 333 */
+/* 334 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -42268,7 +42378,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 334 */
+/* 335 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42281,15 +42391,15 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _login = __webpack_require__(335);
+	var _login = __webpack_require__(336);
 
 	var _login2 = _interopRequireDefault(_login);
 
-	var _order_manage = __webpack_require__(336);
+	var _order_manage = __webpack_require__(337);
 
 	var _order_manage2 = _interopRequireDefault(_order_manage);
 
-	var _order_manage_form = __webpack_require__(341);
+	var _order_manage_form = __webpack_require__(342);
 
 	var _order_manage_form2 = _interopRequireDefault(_order_manage_form);
 
@@ -42309,11 +42419,11 @@
 
 	var _delivery_print_review2 = _interopRequireDefault(_delivery_print_review);
 
-	var _form = __webpack_require__(312);
+	var _form = __webpack_require__(313);
 
 	var _form2 = _interopRequireDefault(_form);
 
-	var _reduxSimpleRouter = __webpack_require__(338);
+	var _reduxSimpleRouter = __webpack_require__(339);
 
 	var rootReducer = (0, _redux.combineReducers)({
 	  login: _login2['default'],
@@ -42331,7 +42441,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 335 */
+/* 336 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42389,7 +42499,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 336 */
+/* 337 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42420,19 +42530,20 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _reducersArea_select = __webpack_require__(337);
+	var _reducersArea_select = __webpack_require__(338);
 
-	var _reducersDelivery_stations = __webpack_require__(339);
+	var _reducersDelivery_stations = __webpack_require__(340);
 
 	var _reducersDelivery_stations2 = _interopRequireDefault(_reducersDelivery_stations);
 
-	var _reducersOrders = __webpack_require__(340);
+	var _reducersOrders = __webpack_require__(341);
 
 	var filter_state = {
 	  search_ing: false,
 	  all_order_srcs: [],
-	  all_order_status: (0, _utilsIndex.map)(_configAppConfig.pay_status, function (text, id) {
-	    return { id: id, text: text };
+	  all_order_status: (0, _utilsIndex.map)(_configAppConfig.order_status, function (_ref, id) {
+	    var value = _ref.value;
+	    return { id: id, text: value };
 	  })
 	};
 
@@ -42501,7 +42612,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 337 */
+/* 338 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42518,7 +42629,7 @@
 
 	var _actionsAction_types = __webpack_require__(288);
 
-	var _reduxSimpleRouter = __webpack_require__(338);
+	var _reduxSimpleRouter = __webpack_require__(339);
 
 	var _utilsIndex = __webpack_require__(160);
 
@@ -42568,7 +42679,7 @@
 	}
 
 /***/ },
-/* 338 */
+/* 339 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42768,7 +42879,7 @@
 
 
 /***/ },
-/* 339 */
+/* 340 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42827,7 +42938,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 340 */
+/* 341 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42847,11 +42958,11 @@
 
 	var OrderActions = _interopRequireWildcard(_actionsOrders);
 
-	var _actionsDelivery_manage = __webpack_require__(324);
+	var _actionsDelivery_manage = __webpack_require__(325);
 
-	var _actionsDelivery_distribute = __webpack_require__(328);
+	var _actionsDelivery_distribute = __webpack_require__(329);
 
-	var _reduxSimpleRouter = __webpack_require__(338);
+	var _reduxSimpleRouter = __webpack_require__(339);
 
 	var orders_state = {
 	  loading: true,
@@ -42935,6 +43046,8 @@
 	  if (state === undefined) state = operation_record;
 
 	  switch (action.type) {
+	    case OrderActions.RESET_ORDER_OPT_RECORD:
+	      return _extends({}, operation_record);
 	    case OrderActions.GET_ORDER_OPT_RECORD:
 	      return _extends({}, state, action.data);
 	    default:
@@ -42943,7 +43056,7 @@
 	}
 
 /***/ },
-/* 341 */
+/* 342 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42962,27 +43075,27 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _area_select = __webpack_require__(337);
+	var _area_select = __webpack_require__(338);
 
 	var _actionsOrder_manage_form = __webpack_require__(291);
 
 	var FormActions = _interopRequireWildcard(_actionsOrder_manage_form);
 
-	var _actionsOrder_products = __webpack_require__(319);
+	var _actionsOrder_products = __webpack_require__(320);
 
 	var OrderProductsActions = _interopRequireWildcard(_actionsOrder_products);
 
-	var _reduxSimpleRouter = __webpack_require__(338);
+	var _reduxSimpleRouter = __webpack_require__(339);
 
 	var _actionsArea = __webpack_require__(287);
 
 	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
-	var _actionsForm = __webpack_require__(342);
+	var _actionsForm = __webpack_require__(308);
 
 	var _utilsIndex = __webpack_require__(160);
 
-	var _reducersDelivery_stations = __webpack_require__(339);
+	var _reducersDelivery_stations = __webpack_require__(340);
 
 	var _reducersDelivery_stations2 = _interopRequireDefault(_reducersDelivery_stations);
 
@@ -42992,7 +43105,7 @@
 
 	var _clone2 = _interopRequireDefault(_clone);
 
-	var _storesConfigureStore = __webpack_require__(331);
+	var _storesConfigureStore = __webpack_require__(332);
 
 	var _storesConfigureStore2 = _interopRequireDefault(_storesConfigureStore);
 
@@ -43250,25 +43363,6 @@
 
 	exports['default'] = orderAddReducer;
 	module.exports = exports['default'];
-
-/***/ },
-/* 342 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports.updateAddOrderForm = updateAddOrderForm;
-
-	var _reduxForm = __webpack_require__(241);
-
-	//模拟form：add_order 更新
-
-	function updateAddOrderForm() {
-	  return (0, _reduxForm.focus)('add_order', '_update'); //form_name, field_name
-	}
 
 /***/ },
 /* 343 */
@@ -45235,15 +45329,15 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _actionsDelivery_change = __webpack_require__(321);
+	var _actionsDelivery_change = __webpack_require__(322);
 
 	var ChangeActions = _interopRequireWildcard(_actionsDelivery_change);
 
 	var _actionsOrder_manage_form = __webpack_require__(291);
 
-	var _reducersOrders = __webpack_require__(340);
+	var _reducersOrders = __webpack_require__(341);
 
-	var _reducersArea_select = __webpack_require__(337);
+	var _reducersArea_select = __webpack_require__(338);
 
 	var _configAppConfig = __webpack_require__(157);
 
@@ -45297,13 +45391,13 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _reducersOrders = __webpack_require__(340);
+	var _reducersOrders = __webpack_require__(341);
 
-	var _reducersArea_select = __webpack_require__(337);
+	var _reducersArea_select = __webpack_require__(338);
 
 	var _reducersDeliveryman = __webpack_require__(350);
 
-	var _actionsDelivery_manage = __webpack_require__(324);
+	var _actionsDelivery_manage = __webpack_require__(325);
 
 	var Actions = _interopRequireWildcard(_actionsDelivery_manage);
 
@@ -45311,7 +45405,7 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _reduxSimpleRouter = __webpack_require__(338);
+	var _reduxSimpleRouter = __webpack_require__(339);
 
 	var filter_state = {
 	  search_ing: false
@@ -45394,7 +45488,7 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-	var _actionsDeliveryman = __webpack_require__(323);
+	var _actionsDeliveryman = __webpack_require__(324);
 
 	var Actions = _interopRequireWildcard(_actionsDeliveryman);
 
@@ -45436,21 +45530,21 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _reducersOrders = __webpack_require__(340);
+	var _reducersOrders = __webpack_require__(341);
 
 	var _reducersDeliveryman = __webpack_require__(350);
 
-	var _reducersArea_select = __webpack_require__(337);
+	var _reducersArea_select = __webpack_require__(338);
 
 	var _actionsOrder_manage_form = __webpack_require__(291);
 
 	var _actionsOrders = __webpack_require__(289);
 
-	var _actionsDelivery_distribute = __webpack_require__(328);
+	var _actionsDelivery_distribute = __webpack_require__(329);
 
 	var Actions = _interopRequireWildcard(_actionsDelivery_distribute);
 
-	var _reduxSimpleRouter = __webpack_require__(338);
+	var _reduxSimpleRouter = __webpack_require__(339);
 
 	var filter_state = {
 	  search_ing: false,
@@ -45543,7 +45637,7 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _actionsDelivery_print_review = __webpack_require__(330);
+	var _actionsDelivery_print_review = __webpack_require__(331);
 
 	var Actions = _interopRequireWildcard(_actionsDelivery_print_review);
 

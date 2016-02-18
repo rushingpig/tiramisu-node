@@ -6,6 +6,7 @@
     "start": "node ./bin/www",
     "test": "./node_modules/.bin/_mocha",
     "dev": "NODE_ENV=dev node ./bin/www",
+    "win_dev": "set NODE_ENV=dev node ./bin/www",
     "team_dev": "./public/nginx/nginx.sh"
   },
   "dependencies": {
@@ -28,6 +29,7 @@
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "pingpp": "^2.0.6",
+    "request": "2.69.0",
     "serve-favicon": "~2.3.0",
     "shelljs": "0.5.3",
     "uuid": "^2.0.1",

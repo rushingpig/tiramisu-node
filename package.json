@@ -6,6 +6,7 @@
     "start": "node ./bin/www",
     "test": "./node_modules/.bin/_mocha",
     "dev": "NODE_ENV=dev node ./bin/www",
+    "win_dev": "set NODE_ENV=dev node ./bin/www",
     "team_dev": "./public/nginx/nginx.sh"
   },
   "dependencies": {

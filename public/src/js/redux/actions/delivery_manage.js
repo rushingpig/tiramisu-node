@@ -49,15 +49,17 @@ export function validatePrintCode(order_id, validate_code) {
 }
 
 export function rePrint(order_id){
-  return new Promise(function(resolve, reject){
-    try{
-      window.open(Url.reprint.toString(order_id));
-      resolve();
-    }catch(e){
-      console.error(e);
-      reject('打印出错');
-    }
-  })
+  return dispatch => {
+    return new Promise(function(resolve, reject){
+      try{
+        window.open(Url.reprint.toString(order_id));
+        resolve();
+      }catch(e){
+        console.error(e);
+        reject('打印出错');
+      }
+    })
+  }
 }
 
 export const GET_DELIVERY_SCAN_LIST = 'GET_DELIVERY_SCAN_LIST';

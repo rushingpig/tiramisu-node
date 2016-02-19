@@ -79,6 +79,8 @@ var operation_record = {
 
 export function operationRecord(state = operation_record, action){
   switch(action.type){
+    case OrderActions.RESET_ORDER_OPT_RECORD:
+      return {...operation_record};
     case OrderActions.GET_ORDER_OPT_RECORD:
       return {...state, ...action.data}
     default:

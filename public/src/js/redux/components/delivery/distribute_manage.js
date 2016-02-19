@@ -73,7 +73,7 @@ class FilterHeader extends Component {
       <div className="panel search">
         <div className="panel-body">
           <div className="form-group form-inline">
-            <input {...keywords} className="form-control input-xs" placeholder="关键字" />
+            <input {...keywords} className="form-control input-xs v-mg" placeholder="关键字" />
             {' 开始时间'}
             <DatePicker editable redux-form={begin_time} className="short-input" />
             {' 配送时间'}

@@ -1,4 +1,4 @@
-import { GET, TEST } from 'utils/request'; //Promise
+import { get, GET, TEST } from 'utils/request'; //Promise
 import Url from 'config/url';
 import { getValues } from 'redux-form';
 import { NO_MORE_CODE } from 'config/app.config';
@@ -139,9 +139,22 @@ export function showProductsDetail(){
   }
 }
 
+export const RESET_ORDER_OPT_RECORD = 'RESET_ORDER_OPT_RECORD'; //先重置历史数据
 export const GET_ORDER_OPT_RECORD = 'GET_ORDER_OPT_RECORD';
 export function getOrderOptRecord(order_id, data){
-  return GET(Url.order_opt_record.toString(order_id), data, GET_ORDER_OPT_RECORD);
+  return dispatch => {
+    dispatch({
+      type: RESET_ORDER_OPT_RECORD,
+    })
+    return get(Url.order_opt_record.toString(order_id), data)
+      .done(function(jsonobj){
+        dispatch({
+          type: GET_ORDER_OPT_RECORD,
+          data: jsonobj,
+        })
+      })
+  }
+  // return GET(Url.order_opt_record.toString(order_id), data, GET_ORDER_OPT_RECORD);
   /*return {
     type: GET_ORDER_OPT_RECORD,
     data: {

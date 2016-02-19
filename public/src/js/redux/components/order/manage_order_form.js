@@ -334,18 +334,16 @@ class ManageAddForm extends Component {
     });
   }
   componentDidMount(){
-    var {getProvinces, getOrderSrcs, getDeliveryStations, getPayModes} = this.props.actions;
+    var {getProvinces, getOrderSrcs, getDeliveryStations, getPayModes, triggerFormUpdate} = this.props.actions;
     getProvinces();
     getOrderSrcs();
     getPayModes();
     getDeliveryStations();
 
     this.autoMatchDeliveryStations(delivery_id => {
-      if(delivery_id){
-        $(findDOMNode(this.refs.delivery_center)).val(delivery_id);
-      }else{
-        $(findDOMNode(this.refs.delivery_center)).val(SELECT_DEFAULT_VALUE);
-      }
+      delivery_id = delivery_id || SELECT_DEFAULT_VALUE;
+      $(findDOMNode(this.refs.delivery_center)).val(delivery_id);
+      triggerFormUpdate('add_order', 'delivery_id', delivery_id); //手动更改表单值后，需要使用该方法，主动触发redux-form进行更新，否则数据将不会同步
     });
 
     LazyLoad('noty');

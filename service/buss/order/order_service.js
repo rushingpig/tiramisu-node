@@ -698,7 +698,10 @@ OrderService.prototype.allocateStation = (req,res,next)=>{
         order_history_obj.option = option;
         //===========for history end=============
         let orderPromise = orderDao.updateOrder(systemUtils.assembleUpdateObj(req,order_obj),order_id);
-        let orderHistoryPromise = orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
+        let orderHistoryPromise = null;
+        if(option){
+          orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
+        }
         return Promise.all([orderPromise,orderHistoryPromise]);
     }).then(()=>{
         res.api();

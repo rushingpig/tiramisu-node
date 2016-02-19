@@ -228,27 +228,35 @@ $(document).ready(function($) {
    * 查询城市的配送站
    */
   $('#searchCityStation').click(function(event) {
-
+    
+    $('#tableStation tbody').empty();
     var cityId = $('#findCities option:selected').attr('value');
     $.ajax({
-      url: 'http://localhost:3001/city/' + cityId + '/stations',
+      url: 'http://localhost:3001/v1/a/city/' + cityId + '/stations',
       type: 'GET',
       dataType: 'json',
-      data: {cityId : cityId,page_no: 1,page_size:15},
-      success: function(data){
+      data: {
+        cityId: cityId,
+        page_no: 0,
+        page_size: 15
+      },
+      success: function(data) {
         var stations = data.data.pagination_result;
-        for(var key in stations){
-          var html = '<tr><td>'+ stations[key].district_name + '</td>'+
-            '<td>'+stations[key].station_name+ '</td>'+
-            '<td>'+stations[key].address+ '</td></tr>'
-          $(html).appendTo('#tableStation tbody');
-        }
+        var html = '';
+        stations.forEach(function(item, index) {
+          html += '<tr>' +
+            '<td><input type="checkbox"/></td>' +
+            '<td>' + item.district_name + '</td>' +
+            '<td>' + item.station_name + '</td>' +
+            '<td>' + item.address + '</td>' +
+            '<td><a href="#">编辑</a></td>' +
+            '</tr>';
+        });
+        $(html).appendTo('#tableStation tbody');
       }
     })
-    
+
   });
-
-
 
 
 

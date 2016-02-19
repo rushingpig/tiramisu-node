@@ -21,53 +21,51 @@ $(document).ready(function($) {
   /**
     为地图添加点击事件   
   */
-  // map.addEventListener('click', function(event) {
-  //   var point = changeToPoint(event.point);
-  //   points.push(point);
-  //   Polyline.setPath(points);
+  map.addEventListener('click', function(event) {
+    var point = changeToPoint(event.point);
+    points.push(point);
+    Polyline.setPath(points);
 
-  //   var marker = new BMap.Marker(point);
-  //   markers.push(marker);
-  //   marker.enableDragging();
-  //   marker.id = index++;
-  //   map.addOverlay(marker);
+    var marker = new BMap.Marker(point);
+    markers.push(marker);
+    marker.enableDragging();
+    marker.id = index++;
+    map.addOverlay(marker);
 
-  //   marker.addEventListener('dragging', function() {
-  //     var newPosition = this.getPosition();
-  //     var point = changeToPoint(newPosition);
-  //     points[this.id] = point;
+    marker.addEventListener('dragging', function() {
+      var newPosition = this.getPosition();
+      var point = changeToPoint(newPosition);
+      points[this.id] = point;
 
-  //     Polyline.setPath(points);
-  //   });
+      Polyline.setPath(points);
+    });
 
-  // });
+  });
+
   /**
    * 由地理坐标转化为Point
    */
+  
   function changeToPoint(coord) {
     var lng = coord.lng;
     var lat = coord.lat;
     return new BMap.Point(lng, lat);
   }
+
   /**
    * 开启标志maker编辑功能
    */
+  
   function openMarkerEdit() {
     markers.forEach(function(item, index) {
       item.enableDragging();
     });
   }
-  /**
-   * 点击按钮生成闭合折线
-   */
-  $('#createPoline').click(function() {
-    if (index >= 1) {
-      Polyline.setPath(points.concat(points[0]));
-    }
-  });
+
   /**
    * 清除所有标记
    */
+  
   $('#clearMark').click(function() {
     if (confirm('确认已导出数据!是否要清除标记')) {
       map.clearOverlays();
@@ -78,19 +76,11 @@ $(document).ready(function($) {
       map.addOverlay(Polyline);
     }
   });
-  /**
-   * 导出数据 
-   */
-  $('#createData').click(function() {
-    if (confirm('请确认折线已闭合')) {
-      Polyline.getPath().pop();
-      document.getElementById('dataArray').value = JSON.stringify(Polyline.getPath());
-      console.log(JSON.stringify(Polyline.getPath(), null, '  '));
-    }
-  });
+
   /**
    * 由数据生成地图区域
    */
+  var old;
   function drawPoline(dataArray) {
     if (Array.isArray(dataArray)) {
       dataArray.forEach(function(item) {
@@ -113,6 +103,9 @@ $(document).ready(function($) {
       });
 
       Polyline.setPath(points.concat(points[0]));
+
+      old = Polyline.getPath();
+      console.log(old);
     }
   }
   /**
@@ -121,15 +114,6 @@ $(document).ready(function($) {
   $('#confirm').click(function() {
     var testData = document.getElementById('dataArray').value;
     drawPoline(JSON.parse(testData));
-  });
-  /**
-   * 搜索定位
-   */
-  var searchBox = document.getElementById('searchBox');
-  var searchControl = new BMapLib.SearchControl({
-    container: "searchBox",
-    map: map,
-    type: LOCAL_SEARCH
   });
 
   /**
@@ -268,7 +252,7 @@ $(document).ready(function($) {
          */
         $('.edit').each(function(index, el) {
           $(el).click(function(event) {
-
+            console.log(Polyline.getPath()); 
             event.preventDefault();
             event.stopPropagation();
 
@@ -308,6 +292,7 @@ $(document).ready(function($) {
   /**
    * 修改配送站
    */
+  var news ;
   $('#modifiyStation').click(function(event) {
 
     Polyline.setPath(points.concat(points[0]));
@@ -316,15 +301,18 @@ $(document).ready(function($) {
     newData.forEach(function(item, index) {
       item.longitude = item.lng;
       item.latitude = item.lat;
+      delete item.lng;
+      delete item.lat;
     });
-    var newData = JSON.stringify();
-
+    news = newData;
+    console.log(newData)
+      console.log(old === news)
     $.ajax({
       url: 'http://localhost:3001/v1/a/station/' + 1 + '/coords',
       type: 'put',
       dataType: 'json',
       data: {
-        coords: newData
+        coords: JSON.stringify(newData)
       },
       success: function() {
         console.log('修改配送站成功')
@@ -334,6 +322,7 @@ $(document).ready(function($) {
 
 
   });
+
 
 
 

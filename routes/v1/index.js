@@ -89,7 +89,7 @@ a.put('/order/:orderId/unsignin',deliveryService.unsigninOrder);    // 未签收
 a.put('/delivery/deliveryman',deliveryService.allocateDeliveryman); // 分配配送员
 a.put('/order/:orderId/cancel',orderService.cancelOrder);   // 取消订单
 
-a.put('/station/:stationId/coords', orderService.modifyStation);   //修改配送站配送区域信息
+a.put('/station/:stationId/coords', addressService.modifyStation);   //修改配送站配送区域信息
 //************************
 //******** DELETE ********
 //************************

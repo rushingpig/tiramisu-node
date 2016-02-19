@@ -125,9 +125,10 @@ AddressService.prototype.modifyStation = (req,res,next)=>{
     let update_obj = {
         coords: req.body.coords
     };
-    addressDao.updateStationByStationId(stationId, systemUtils.assembleUpdateObj(req, update_obj)).then(() => {
+    let promise = addressDao.updateStationByStationId(stationId, systemUtils.assembleUpdateObj(req, update_obj)).then(() => {
         res.api();
     });
+    systemUtils.wrapService(res, next, promise);
 };
 
 

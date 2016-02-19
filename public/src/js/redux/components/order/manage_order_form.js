@@ -16,9 +16,10 @@ import { DELIVERY_TO_HOME, DELIVERY_TO_STORE,
   SELECT_DEFAULT_VALUE, INVOICE } from 'config/app.config';
 import autoMatchDeliveryStations from 'mixins/map';
 
-const validate = (values, {form}) => {
+const validate = (values, props) => {
   const errors = {};
   var msg = 'error';
+  var { form } = props;
   function _v(key){
     // touched 为true 表示用户点击处理过
     if (form[key] && form[key].touched && !values[key])
@@ -67,6 +68,8 @@ class ManageAddForm extends Component {
       groupbuy_check_ing: false,
       groupbuy_success: undefined, //验券是否成功
       groupbuy_msg: '', //验券结果
+      auto_match_delivery_center: false,
+      auto_match_msg: '',
     };
     this._check = this._check.bind(this);
     this.autoMatchDeliveryStations = autoMatchDeliveryStations.bind(this);
@@ -183,19 +186,34 @@ class ManageAddForm extends Component {
       <div className="form-group form-inline">
         <label>{'　配送中心：'}</label>
         <Select {...delivery_id} options={delivery_stations} className={`form-select transition ${delivery_id.error}`} ref="delivery_center" />
+        {' '}
+        <span className={this.state.auto_match_delivery_center ? 'text-success' : 'text-danger'}>
+          {this.state.auto_match_msg}
+        </span>
       </div>
       <div className="form-group form-inline">
         <label>{'　订单来源：'}</label>
         {
-          all_order_srcs.length == 1 //2级
-          ? <Select {...src_id} options={all_order_srcs[0]} key="order_srcs_level1" className={`form-select ${src_id.error}`} />
-          : [
-              (order_srcs_level2.length 
-                ? <Select value={selected_order_src_level1_id} options={all_order_srcs[0]} onChange={this.orderSrcsLevel1Change.bind(this)} key="order_srcs_level1" className={`form-select ${src_id.error}`} />
-                : <Select {...src_id} value={selected_order_src_level1_id} options={all_order_srcs[0]} onChange={this.orderSrcsLevel1Change.bind(this, src_id.onChange)} key="order_srcs_level1" className={`form-select ${src_id.error}`} />),
-              ' ',
-              (order_srcs_level2.length ? <Select {...src_id} options={order_srcs_level2} key="order_srcs_level2" className={`form-select ${src_id.error}`} />  : null)
-            ]
+          order_srcs_level2.length 
+            ? [
+              <Select 
+                  value={selected_order_src_level1_id} 
+                  options={all_order_srcs[0]} 
+                  onChange={this.orderSrcsLevel1Change.bind(this)} 
+                  key="order_srcs_level1" 
+                  className="form-select" />, ' ',
+              <Select 
+                  {...src_id} 
+                  options={order_srcs_level2} 
+                  key="order_srcs_level2" 
+                  className={`form-select ${src_id.error}`} />
+              ]
+            : <Select 
+                value={selected_order_src_level1_id} 
+                options={all_order_srcs[0]} 
+                onChange={this.orderSrcsLevel1Change.bind(this)} 
+                key="order_srcs_level1" 
+                className={`form-select ${src_id.error}`} />
         }
       </div>
       <div className="form-group form-inline">
@@ -344,9 +362,20 @@ class ManageAddForm extends Component {
       delivery_id = delivery_id || SELECT_DEFAULT_VALUE;
       $(findDOMNode(this.refs.delivery_center)).val(delivery_id);
       triggerFormUpdate('add_order', 'delivery_id', delivery_id); //手动更改表单值后，需要使用该方法，主动触发redux-form进行更新，否则数据将不会同步
+    }, () => {
+      triggerFormUpdate('add_order', 'delivery_id', SELECT_DEFAULT_VALUE)
     });
 
     LazyLoad('noty');
+
+    $(findDOMNode(this.refs.delivery_center)).on('click', this.clearMsg.bind(this))
+  }
+  componentWillUnmount(){
+    $(findDOMNode(this.refs.delivery_center)).off('click', this.clearMsg.bind(this))
+  }
+  clearMsg(){
+    $(findDOMNode(this.refs.delivery_center)).removeClass('alert-success alert-danger')
+    this.setState({auto_match_msg: ''})
   }
   onProvinceChange(callback, e){
     var {value} = e.target;
@@ -374,13 +403,16 @@ class ManageAddForm extends Component {
     // console.log('pay_modes change');
     callback(e);
   }
-  orderSrcsLevel1Change(){
-    if(arguments.length == 1){
-      this.setState({selected_order_src_level1_id: arguments[0].target.value})
+  orderSrcsLevel1Change(e){
+    var { value } = e.target;
+    var all_order_srcs = this.props['form-data'].all_order_srcs;
+    //如果没有二级订单来源，则表明只是一个一级来源
+    if(all_order_srcs[1] && !all_order_srcs[1].filter(n => n.parent_id == value).length){
+      this.props.actions.triggerFormUpdate('add_order', 'src_id', value); //此时只能模拟form表单更新
     }else{
-      this.setState({selected_order_src_level1_id: arguments[1].target.value})
-      arguments[0](arguments[1]);
+      this.props.actions.resetFormUpdate('add_order', 'src_id');
     }
+    this.setState({selected_order_src_level1_id: value});
   }
   addProducts(){
     this.refs.productsModal.show();

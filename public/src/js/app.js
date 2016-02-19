@@ -19036,7 +19036,7 @@
 
 	var _componentsOrderManage2 = _interopRequireDefault(_componentsOrderManage);
 
-	var _componentsOrderManage_order_detail_pannel = __webpack_require__(307);
+	var _componentsOrderManage_order_detail_pannel = __webpack_require__(308);
 
 	var _componentsOrderManage_order_detail_pannel2 = _interopRequireDefault(_componentsOrderManage_order_detail_pannel);
 
@@ -28250,19 +28250,19 @@
 
 	var _mixinsMap = __webpack_require__(300);
 
-	var _commonOrder_products_detail = __webpack_require__(302);
+	var _commonOrder_products_detail = __webpack_require__(303);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(303);
+	var _commonOrder_detail_modal = __webpack_require__(304);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
-	var _manage_alter_delivery_modal = __webpack_require__(304);
+	var _manage_alter_delivery_modal = __webpack_require__(305);
 
 	var _manage_alter_delivery_modal2 = _interopRequireDefault(_manage_alter_delivery_modal);
 
-	var _commonOrder_srcs_selects = __webpack_require__(306);
+	var _commonOrder_srcs_selects = __webpack_require__(307);
 
 	var _commonOrder_srcs_selects2 = _interopRequireDefault(_commonOrder_srcs_selects);
 
@@ -29137,7 +29137,9 @@
 	  getInitialState: function getInitialState() {
 	    return {
 	      delivery_id: undefined,
-	      handling: false
+	      handling: false,
+	      auto_match_delivery_center: false,
+	      auto_match_msg: ''
 	    };
 	  },
 	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
@@ -29180,6 +29182,12 @@
 	          'button',
 	          { onClick: this.autoMatchHandler, disabled: handling, 'data-submitting': handling, className: 'btn btn-xs btn-theme' },
 	          '自动分配'
+	        ),
+	        ' ',
+	        _react2['default'].createElement(
+	          'span',
+	          { className: this.state.auto_match_delivery_center ? 'text-success' : 'text-danger' },
+	          this.state.auto_match_msg
 	        )
 	      )
 	    );
@@ -29188,6 +29196,14 @@
 	    setTimeout((function () {
 	      (0, _mixinsMap.createMap)(this);
 	    }).bind(this), 100);
+	    $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).on('click', this.clearMsg);
+	  },
+	  componentWillUnmount: function componentWillUnmount() {
+	    $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).off('click', this.clearMsg);
+	  },
+	  clearMsg: function clearMsg() {
+	    $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).removeClass('alert-success alert-danger');
+	    this.setState({ auto_match_msg: '' });
 	  },
 	  autoMatchHandler: function autoMatchHandler(e) {
 	    var order = this.props.order;
@@ -29197,8 +29213,6 @@
 
 	      _mixinsMap.autoMatch.call(this, order.city_name, order.regionalism_name + order.recipient_address).done(function (delivery_id) {
 	        if (delivery_id) _this5.setState({ delivery_id: delivery_id });
-	      }).fail(function (msg) {
-	        return (0, _utilsIndex.Noty)('warning', msg);
 	      }).always(function () {
 	        _this5.setState({ handling: false });
 	      });
@@ -34106,6 +34120,8 @@
 	exports['default'] = autoMatchDeliveryStations;
 	exports.createMap = createMap;
 	exports.autoMatch = autoMatch;
+	exports.autoMatchSuccess = autoMatchSuccess;
+	exports.autoMatchFail = autoMatchFail;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -34123,9 +34139,11 @@
 
 	var _utilsIndex = __webpack_require__(160);
 
+	var _actionsForm = __webpack_require__(302);
+
 	//完整封装
 
-	function autoMatchDeliveryStations(callback) {
+	function autoMatchDeliveryStations(success_cb, fail_cb) {
 	  var self = this;
 
 	  createMap(self);
@@ -34138,9 +34156,7 @@
 	      var district = self.findSelectedOptionText('district');
 	      var default_text = self.refs.province.props['default-text'];
 	      if (province != default_text && city != default_text && district != default_text) {
-	        autoMatch.call(self, city, district + detail).done(callback).fail(function (msg) {
-	          (0, _utilsIndex.Noty)('warning', msg || 'error');
-	        });
+	        autoMatch.call(self, city, district + detail).done(success_cb).fail(fail_cb);
 	      }
 	    }
 	  });
@@ -34160,11 +34176,11 @@
 	function autoMatch(city, address) {
 	  var self = this;
 	  var autoGetDeliveryStations = this.props.actions.autoGetDeliveryStations;
-	  var delivery_center = this.refs.delivery_center;
 
 	  if (!city || !address) {
 	    (0, _utilsIndex.Noty)('error', '地址数据有误');
 	  }
+
 	  return new _utilsPromise2['default'](function (resolve, reject) {
 	    if (BMap) {
 	      var map = self._bmap;
@@ -34180,33 +34196,44 @@
 	          }).done(function (data) {
 	            setTimeout(function () {
 	              if (data && data.delivery_id) {
-	                var $dc = $((0, _reactDom.findDOMNode)(delivery_center)).addClass('success-form-animate');
 	                resolve(data.delivery_id); //成功，且有数据
-	                setTimeout(function () {
-	                  $dc.removeClass('success-form-animate');
-	                }, 820);
 	              } else {
-	                reject('服务器异常');
-	              }
+	                  reject('服务器异常');
+	                }
 	            }, 0);
 	          }).fail(function (msg, code) {
 	            setTimeout(function () {
 	              if (code && code == '3001') {
-	                resolve(); //成功，但没有数据
+	                reject(); //成功，但没有数据
 	              } else {
 	                  reject('自动检索配送中心异常，请重试');
 	                }
 	            }, 0);
 	          });
 	        } else {
-	          reject('没有检索到该收货地址');
+	          reject();
 	        }
 	      });
 	      localSearch.search(address);
 	    } else {
 	      reject('地图服务加载失败，请稍后再试');
 	    }
-	  });
+	  }).done(autoMatchSuccess.bind(this)).fail(autoMatchFail.bind(this)).done(addEffect.bind(this, 'alert-success')).fail(addEffect.bind(this, 'alert-danger'));
+	}
+
+	function addEffect(animate_name) {
+	  var $dc = $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).removeClass('alert-success alert-danger').addClass(animate_name);
+	  // setTimeout(function(){
+	  //   $dc.removeClass(animate_name);
+	  // }, 1000);
+	}
+
+	function autoMatchSuccess() {
+	  this.setState({ auto_match_delivery_center: true, auto_match_msg: '已成功匹配！' });
+	}
+
+	function autoMatchFail(msg) {
+	  this.setState({ auto_match_delivery_center: false, auto_match_msg: msg || '无法准确定位配送中心，请与客户联系后手动选择！' });
 	}
 
 /***/ },
@@ -34253,6 +34280,37 @@
 
 /***/ },
 /* 302 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.updateAddOrderForm = updateAddOrderForm;
+	exports.triggerFormUpdate = triggerFormUpdate;
+	exports.resetFormUpdate = resetFormUpdate;
+
+	var _reduxForm = __webpack_require__(241);
+
+	//可以手动触发redux-form的normalize动作
+
+	function updateAddOrderForm() {
+	  return (0, _reduxForm.focus)('add_order', '_update'); //form_name, field_name
+	}
+
+	//手动更改指定form的表单值
+
+	function triggerFormUpdate(form_name, field_name, field_value) {
+	  return (0, _reduxForm.blur)(form_name, field_name, field_value);
+	}
+
+	function resetFormUpdate(form_name, field_name, field_value) {
+	  return (0, _reduxForm.reset)(form_name, field_name, -1);
+	}
+
+/***/ },
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -34434,7 +34492,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 303 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34808,7 +34866,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 304 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34841,7 +34899,7 @@
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
-	var _commonRadio_group = __webpack_require__(305);
+	var _commonRadio_group = __webpack_require__(306);
 
 	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
 
@@ -34901,7 +34959,10 @@
 
 	      all_delivery_hours: _configAppConfig.DELIVERY_TIME_MAP.map(function (n) {
 	        return { id: n, text: n };
-	      })
+	      }),
+
+	      auto_match_delivery_center: false,
+	      auto_match_msg: ''
 	    };
 	  },
 	  render: function render() {
@@ -34995,22 +35056,26 @@
 	          null,
 	          '修改配送中心：'
 	        ),
-	        _react2['default'].createElement(_commonSelect2['default'], { ref: 'delivery_center', valueLink: this.linkState('delivery_id'), options: delivery_stations, className: 'input-xs transition' })
+	        _react2['default'].createElement(_commonSelect2['default'], { ref: 'delivery_center', valueLink: this.linkState('delivery_id'), options: delivery_stations, className: 'input-xs transition' }),
+	        ' ',
+	        _react2['default'].createElement(
+	          'span',
+	          { className: this.state.auto_match_delivery_center ? 'text-success' : 'text-danger' },
+	          this.state.auto_match_msg
+	        )
 	      )
 	    );
 	  },
 	  mixins: [_reactAddonsLinkedStateMixin2['default'], { autoMatchDeliveryStations: _mixinsMap2['default'] }],
 	  componentDidMount: function componentDidMount() {
-	    // setTimeout(function(){
-	    //   this.autoMatchDeliveryStations(delivery_id => {
-	    //     if(delivery_id){
-	    //       this.setState({delivery_id})
-	    //     }else{
-	    //       Noty('warning', '没有可匹配的配送站');
-	    //       this.setState({delivery_id: SELECT_DEFAULT_VALUE})
-	    //     }
-	    //   });
-	    // }.bind(this), 100)
+	    $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).on('click', this.clearMsg);
+	  },
+	  componentWillUnmount: function componentWillUnmount() {
+	    $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).off('click', this.clearMsg);
+	  },
+	  clearMsg: function clearMsg() {
+	    $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).removeClass('alert-success alert-danger');
+	    this.setState({ auto_match_msg: '' });
 	  },
 	  onConfirm: function onConfirm() {
 	    var _state2 = this.state;
@@ -35082,11 +35147,12 @@
 	    this.autoMatchDeliveryStations(function (delivery_id) {
 	      if (delivery_id) {
 	        _this.setState({ delivery_id: delivery_id });
+	        _mixinsMap.autoMatchSuccess.call(_this);
 	      } else {
-	        (0, _utilsIndex.Noty)('warning', '没有可匹配的配送站');
 	        _this.setState({ delivery_id: _configAppConfig.SELECT_DEFAULT_VALUE });
+	        _mixinsMap.autoMatchFail.call(_this);
 	      }
-	    });
+	    }, _mixinsMap.autoMatchFail.bind(this));
 	  },
 	  show: function show() {
 	    this.refs.modal.show();
@@ -35109,7 +35175,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 305 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35206,7 +35272,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 306 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35306,7 +35372,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 307 */
+/* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35347,7 +35413,7 @@
 
 	var OrderFormActions = _interopRequireWildcard(_actionsOrder_manage_form);
 
-	var _actionsForm = __webpack_require__(308);
+	var _actionsForm = __webpack_require__(302);
 
 	var FormActions = _interopRequireWildcard(_actionsForm);
 
@@ -35501,32 +35567,6 @@
 
 	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ManageOrderDetailPannel);
 	module.exports = exports['default'];
-
-/***/ },
-/* 308 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports.updateAddOrderForm = updateAddOrderForm;
-	exports.triggerFormUpdate = triggerFormUpdate;
-
-	var _reduxForm = __webpack_require__(241);
-
-	//可以手动触发redux-form的normalize动作
-
-	function updateAddOrderForm() {
-	  return (0, _reduxForm.focus)('add_order', '_update'); //form_name, field_name
-	}
-
-	//手动更改指定form的表单值
-
-	function triggerFormUpdate(form_name, field_name, field_value) {
-	  return (0, _reduxForm.blur)(form_name, field_name, field_value);
-	}
 
 /***/ },
 /* 309 */
@@ -35684,11 +35724,11 @@
 
 	var _mixinsMap2 = _interopRequireDefault(_mixinsMap);
 
-	var validate = function validate(values, _ref) {
-	  var form = _ref.form;
-
+	var validate = function validate(values, props) {
 	  var errors = {};
 	  var msg = 'error';
+	  var form = props.form;
+
 	  function _v(key) {
 	    // touched 为true 表示用户点击处理过
 	    if (form[key] && form[key].touched && !values[key]) errors[key] = msg;
@@ -35738,8 +35778,10 @@
 	      groupbuy_psd: '',
 	      groupbuy_check_ing: false,
 	      groupbuy_success: undefined, //验券是否成功
-	      groupbuy_msg: '' };
-	    //验券结果
+	      groupbuy_msg: '', //验券结果
+	      auto_match_delivery_center: false,
+	      auto_match_msg: ''
+	    };
 	    this._check = this._check.bind(this);
 	    this.autoMatchDeliveryStations = _mixinsMap2['default'].bind(this);
 	  }
@@ -35952,7 +35994,13 @@
 	            null,
 	            '　配送中心：'
 	          ),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: delivery_stations, className: 'form-select transition ' + delivery_id.error, ref: 'delivery_center' }))
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: delivery_stations, className: 'form-select transition ' + delivery_id.error, ref: 'delivery_center' })),
+	          ' ',
+	          _react2['default'].createElement(
+	            'span',
+	            { className: this.state.auto_match_delivery_center ? 'text-success' : 'text-danger' },
+	            this.state.auto_match_msg
+	          )
 	        ),
 	        _react2['default'].createElement(
 	          'div',
@@ -35962,8 +36010,20 @@
 	            null,
 	            '　订单来源：'
 	          ),
-	          all_order_srcs.length == 1 //2级
-	          ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, { options: all_order_srcs[0], key: 'order_srcs_level1', className: 'form-select ' + src_id.error })) : [order_srcs_level2.length ? _react2['default'].createElement(_commonSelect2['default'], { value: selected_order_src_level1_id, options: all_order_srcs[0], onChange: this.orderSrcsLevel1Change.bind(this), key: 'order_srcs_level1', className: 'form-select ' + src_id.error }) : _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, { value: selected_order_src_level1_id, options: all_order_srcs[0], onChange: this.orderSrcsLevel1Change.bind(this, src_id.onChange), key: 'order_srcs_level1', className: 'form-select ' + src_id.error })), ' ', order_srcs_level2.length ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, { options: order_srcs_level2, key: 'order_srcs_level2', className: 'form-select ' + src_id.error })) : null]
+	          order_srcs_level2.length ? [_react2['default'].createElement(_commonSelect2['default'], {
+	            value: selected_order_src_level1_id,
+	            options: all_order_srcs[0],
+	            onChange: this.orderSrcsLevel1Change.bind(this),
+	            key: 'order_srcs_level1',
+	            className: 'form-select' }), ' ', _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, {
+	            options: order_srcs_level2,
+	            key: 'order_srcs_level2',
+	            className: 'form-select ' + src_id.error }))] : _react2['default'].createElement(_commonSelect2['default'], {
+	            value: selected_order_src_level1_id,
+	            options: all_order_srcs[0],
+	            onChange: this.orderSrcsLevel1Change.bind(this),
+	            key: 'order_srcs_level1',
+	            className: 'form-select ' + src_id.error })
 	        ),
 	        _react2['default'].createElement(
 	          'div',
@@ -36173,9 +36233,24 @@
 	        delivery_id = delivery_id || _configAppConfig.SELECT_DEFAULT_VALUE;
 	        $((0, _reactDom.findDOMNode)(_this3.refs.delivery_center)).val(delivery_id);
 	        triggerFormUpdate('add_order', 'delivery_id', delivery_id); //手动更改表单值后，需要使用该方法，主动触发redux-form进行更新，否则数据将不会同步
+	      }, function () {
+	        triggerFormUpdate('add_order', 'delivery_id', _configAppConfig.SELECT_DEFAULT_VALUE);
 	      });
 
 	      (0, _utilsLazy_load2['default'])('noty');
+
+	      $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).on('click', this.clearMsg.bind(this));
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).off('click', this.clearMsg.bind(this));
+	    }
+	  }, {
+	    key: 'clearMsg',
+	    value: function clearMsg() {
+	      $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).removeClass('alert-success alert-danger');
+	      this.setState({ auto_match_msg: '' });
 	    }
 	  }, {
 	    key: 'onProvinceChange',
@@ -36213,13 +36288,19 @@
 	    }
 	  }, {
 	    key: 'orderSrcsLevel1Change',
-	    value: function orderSrcsLevel1Change() {
-	      if (arguments.length == 1) {
-	        this.setState({ selected_order_src_level1_id: arguments[0].target.value });
+	    value: function orderSrcsLevel1Change(e) {
+	      var value = e.target.value;
+
+	      var all_order_srcs = this.props['form-data'].all_order_srcs;
+	      //如果没有二级订单来源，则表明只是一个一级来源
+	      if (all_order_srcs[1] && !all_order_srcs[1].filter(function (n) {
+	        return n.parent_id == value;
+	      }).length) {
+	        this.props.actions.triggerFormUpdate('add_order', 'src_id', value); //此时只能模拟form表单更新
 	      } else {
-	        this.setState({ selected_order_src_level1_id: arguments[1].target.value });
-	        arguments[0](arguments[1]);
-	      }
+	          this.props.actions.resetFormUpdate('add_order', 'src_id');
+	        }
+	      this.setState({ selected_order_src_level1_id: value });
 	    }
 	  }, {
 	    key: 'addProducts',
@@ -36358,7 +36439,7 @@
 
 	var _utilsIndex = __webpack_require__(160);
 
-	var _commonOrder_products_detail = __webpack_require__(302);
+	var _commonOrder_products_detail = __webpack_require__(303);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
@@ -36710,6 +36791,9 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	exports.isSrc = isSrc;
 
 	var _reduxForm = __webpack_require__(241);
@@ -36723,7 +36807,7 @@
 	function preCheck() {
 	  var pathname = location.pathname;
 
-	  return (pathname == '/om/index/add' || pathname == '/om/index/edit') && (0, _storesGetter.getGlobalState)();
+	  return pathname.startsWith('/om/index') && (0, _storesGetter.getGlobalState)();
 	}
 
 	function isSrc(name, src_id) {
@@ -36761,58 +36845,121 @@
 	  })[0] || {};
 	}
 
-	exports['default'] = _reduxForm.reducer.normalize({
-	  //表单数据再处理，（可以在这里改变form的值）
-	  add_order: {
-	    pay_modes_id: function pay_modes_id(value, preValue, allValues, preAllValues) {
-	      var src_id = allValues.src_id;
-
-	      if (src_id) {
-	        if (isSrc('第三方预约', src_id)) {
-	          return getMode('团购券').id; //团购券id（TODO）
-	        } else if (isSrc('有赞', src_id)) {
-	            return getMode('微信').id; //微信支付id
-	          } else if (isSrc('电话', src_id)) {
-	              var mode_cash = getMode('货到付款（现金）');
-	              var mode_card = getMode('货到付款（POS）');
-	              if (value == mode_cash.id || value == mode_card.id) {
-	                return value;
-	              } else {
-	                return mode_cash.id;
-	              }
-	            } else {
-	              return _configAppConfig.SELECT_DEFAULT_VALUE;
-	            }
-	      } else {
-	        return value;
-	      }
-	    },
-	    pay_status: function pay_status(value, preValue, allValues, preAllValues) {
-	      var src_id = allValues.src_id;
-
-	      if (src_id) {
-	        if (isSrc('第三方预约', src_id) || isSrc('有赞', src_id) || isSrc('幸福商城', src_id)) {
-	          var _getGlobalState3 = (0, _storesGetter.getGlobalState)();
-
-	          var confirm_list = _getGlobalState3.orderManageForm.products.confirm_list;
-
-	          //属于第三方预约
-	          if (confirm_list.length > 1 || confirm_list[0] && confirm_list[0].num > 1) {
-	            return 'PARTPAYED'; //部分付款（TODO）
-	          } else {
-	              return 'PAYED'; //已付款（TODO）
-	            }
-	        } else if (isSrc('电话', src_id)) {
-	            return 'COD'; //货到付款
-	          } else {
-	              return _configAppConfig.SELECT_DEFAULT_VALUE;
-	            }
-	      } else {
-	        return value;
-	      }
+	exports['default'] = _reduxForm.reducer.plugin({
+	  add_order: function add_order(state, action) {
+	    switch (action.type) {
+	      case _reduxForm.actionTypes.BLUR:
+	      case _reduxForm.actionTypes.CHANGE:
+	      case _reduxForm.actionTypes.RESET:
+	        if (action.field == 'src_id' || action.key == 'src_id') {
+	          state.pay_modes_id = _extends({}, state.pay_modes_id, getPayModesId(state, action));
+	          state.pay_status = _extends({}, state.pay_status, getPayStatus(state, action));
+	        }
+	        return _extends({}, state);
+	      default:
+	        return state;
 	    }
 	  }
 	});
+
+	function getPayModesId(state) {
+	  var src_id = state.src_id.value;
+	  var pay_modes_id = state.pay_modes_id.value;
+	  if (src_id) {
+	    if (isSrc('第三方预约', src_id)) {
+	      return { value: getMode('团购券').id }; //团购券id（TODO）
+	    } else if (isSrc('有赞', src_id)) {
+	        return { value: getMode('微信').id }; //微信支付id
+	      } else if (isSrc('电话', src_id)) {
+	          var mode_cash = getMode('货到付款（现金）');
+	          var mode_card = getMode('货到付款（POS）');
+	          if (pay_modes_id != mode_cash.id || pay_modes_id != mode_card.id) {
+	            return { value: mode_cash.id };
+	          }
+	        } else {
+	          return { touched: false, value: _configAppConfig.SELECT_DEFAULT_VALUE, visited: false };
+	        }
+	  }
+	}
+
+	function getPayStatus(state) {
+	  var src_id = state.src_id.value;
+	  var pay_status = state.pay_status.value;
+	  if (src_id) {
+	    if (isSrc('第三方预约', src_id) || isSrc('有赞', src_id)) {
+	      var _getGlobalState3 = (0, _storesGetter.getGlobalState)();
+
+	      var confirm_list = _getGlobalState3.orderManageForm.products.confirm_list;
+
+	      //属于第三方预约
+	      if (confirm_list.length > 1 || confirm_list[0] && confirm_list[0].num > 1) {
+	        return { value: 'PARTPAYED' }; //部分付款（TODO）
+	      } else {
+	          return { value: 'PAYED' }; //已付款（TODO）
+	        }
+	    } else if (isSrc('电话', src_id)) {
+	        return { value: 'COD' }; //货到付款
+	      } else {
+	          return { touched: false, value: _configAppConfig.SELECT_DEFAULT_VALUE, visited: false };
+	        }
+	  }
+	}
+	/*
+	export default formReducer.normalize({
+	  //表单数据再处理，（可以在这里改变form的值）
+	  add_order: {
+	    pay_modes_id: (value, preValue, allValues, preAllValues) => {
+	      var { src_id } = allValues;
+	      if(src_id){
+	        if(isSrc('第三方预约', src_id)){
+	          return getMode('团购券').id; //团购券id（TODO）
+	        }else if(isSrc('有赞', src_id)){  
+	          return getMode('微信').id; //微信支付id
+	        }else if(isSrc('电话', src_id)){
+	          var mode_cash = getMode('货到付款（现金）');
+	          var mode_card = getMode('货到付款（POS）');
+	          if(value == mode_cash.id || value == mode_card.id){
+	            return value;
+	          }else{
+	            if(preValue == mode_cash.id || preValue == mode_card.id){
+	              return preValue;
+	            }else{
+	              return mode_cash.id;
+	            }
+	          }
+	        }else{
+	          //说明手动更改
+	          // return allValues.src_id != preAllValues.src_id ? SELECT_DEFAULT_VALUE : value;
+	          return value;
+	        }
+	      }else{
+	        return value;
+	      }
+	    },
+	    pay_status: (value, preValue, allValues, preAllValues) => {
+	      var { src_id } = allValues;
+	      if(src_id){
+	        if(isSrc('第三方预约', src_id) || isSrc('有赞', src_id)){
+	          var { orderManageForm: { products: { confirm_list }}} = getGlobalState();
+	          //属于第三方预约
+	          if(confirm_list.length > 1 || (confirm_list[0] && confirm_list[0].num > 1)){
+	            return 'PARTPAYED'; //部分付款（TODO）
+	          }else{
+	            return 'PAYED'; //已付款（TODO）
+	          }
+	        }else if(isSrc('电话', src_id)){
+	          return 'COD'; //货到付款
+	        }else{
+	          //说明手动更改
+	          // return allValues.src_id != preAllValues.src_id ? SELECT_DEFAULT_VALUE : value;
+	          return value;
+	        }
+	      }else{
+	        return value;
+	      }
+	    },
+	  }
+	});*/
 
 /***/ },
 /* 314 */
@@ -38196,11 +38343,11 @@
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
-	var _commonOrder_products_detail = __webpack_require__(302);
+	var _commonOrder_products_detail = __webpack_require__(303);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(303);
+	var _commonOrder_detail_modal = __webpack_require__(304);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
@@ -38929,11 +39076,11 @@
 
 	var DeliveryManageActions = _interopRequireWildcard(_actionsDelivery_manage);
 
-	var _commonOrder_products_detail = __webpack_require__(302);
+	var _commonOrder_products_detail = __webpack_require__(303);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(303);
+	var _commonOrder_detail_modal = __webpack_require__(304);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
@@ -40412,7 +40559,7 @@
 
 	var _commonLoading = __webpack_require__(297);
 
-	var _commonRadio_group = __webpack_require__(305);
+	var _commonRadio_group = __webpack_require__(306);
 
 	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
 
@@ -40446,11 +40593,11 @@
 
 	var _actionsOrder_manage_form = __webpack_require__(291);
 
-	var _commonOrder_products_detail = __webpack_require__(302);
+	var _commonOrder_products_detail = __webpack_require__(303);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(303);
+	var _commonOrder_detail_modal = __webpack_require__(304);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
@@ -41602,7 +41749,7 @@
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _commonRadio_group = __webpack_require__(305);
+	var _commonRadio_group = __webpack_require__(306);
 
 	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
 
@@ -41620,11 +41767,11 @@
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
-	var _commonOrder_products_detail = __webpack_require__(302);
+	var _commonOrder_products_detail = __webpack_require__(303);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(303);
+	var _commonOrder_detail_modal = __webpack_require__(304);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
@@ -43091,7 +43238,7 @@
 
 	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
-	var _actionsForm = __webpack_require__(308);
+	var _actionsForm = __webpack_require__(302);
 
 	var _utilsIndex = __webpack_require__(160);
 

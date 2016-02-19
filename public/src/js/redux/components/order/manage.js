@@ -488,6 +488,8 @@ var AlterStationModal = React.createClass({
     return {
       delivery_id: undefined,
       handling: false,
+      auto_match_delivery_center: false,
+      auto_match_msg: '',
     };
   },
   componentWillReceiveProps(nextProps){
@@ -510,6 +512,10 @@ var AlterStationModal = React.createClass({
           <Select ref="delivery_center" valueLink={this.linkState('delivery_id')} className="transition" options={this.props.delivery_stations} />
           {'　'}
           <button onClick={this.autoMatchHandler} disabled={handling} data-submitting={handling} className="btn btn-xs btn-theme">自动分配</button>
+          {' '}
+          <span className={this.state.auto_match_delivery_center ? 'text-success' : 'text-danger'}>
+            {this.state.auto_match_msg}
+          </span>
         </div>
       </StdModal>
     )
@@ -518,6 +524,14 @@ var AlterStationModal = React.createClass({
     setTimeout(function(){
       createMap(this);
     }.bind(this), 100)
+    $(findDOMNode(this.refs.delivery_center)).on('click', this.clearMsg)
+  },
+  componentWillUnmount(){
+    $(findDOMNode(this.refs.delivery_center)).off('click', this.clearMsg)
+  },
+  clearMsg(){
+    $(findDOMNode(this.refs.delivery_center)).removeClass('alert-success alert-danger')
+    this.setState({auto_match_msg: ''})
   },
   autoMatchHandler(e){
     var {order} = this.props;
@@ -527,7 +541,6 @@ var AlterStationModal = React.createClass({
           if(delivery_id)
             this.setState({delivery_id})
         })
-        .fail( msg => Noty('warning', msg))
         .always(() => {
           this.setState({handling: false})
         })

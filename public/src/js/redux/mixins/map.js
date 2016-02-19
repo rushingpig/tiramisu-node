@@ -3,9 +3,10 @@ import {findDOMNode} from 'react-dom';
 import { SELECT_DEFAULT_VALUE } from 'config/app.config';
 import Promise from 'utils/promise';
 import { Noty } from 'utils/index';
+import { triggerFormUpdate } from 'actions/form';
 
 //完整封装
-export default function autoMatchDeliveryStations(callback){
+export default function autoMatchDeliveryStations(success_cb, fail_cb){
   var self = this;
 
   createMap(self);
@@ -18,9 +19,7 @@ export default function autoMatchDeliveryStations(callback){
       let district = self.findSelectedOptionText('district');
       let default_text = self.refs.province.props['default-text'];
       if(province != default_text && city != default_text && district != default_text){
-        autoMatch.call(self, city, district + detail).done(callback).fail(function(msg){
-          Noty('warning', msg || 'error');
-        });
+        autoMatch.call(self, city, district + detail).done(success_cb).fail(fail_cb);
       }
     }
   });
@@ -36,10 +35,10 @@ export function createMap(t){
 export function autoMatch(city, address){
   var self = this;
   var { autoGetDeliveryStations } = this.props.actions;
-  var { delivery_center } = this.refs;
   if(!city || !address){
     Noty('error', '地址数据有误');
   }
+  
   return new Promise((resolve, reject) => {
     if(BMap){
       let map = self._bmap;
@@ -56,12 +55,7 @@ export function autoMatch(city, address){
           .done(function(data){
             setTimeout(function(){
               if(data && data.delivery_id){
-                var $dc = $(findDOMNode(delivery_center))
-                  .addClass('success-form-animate');
                 resolve(data.delivery_id); //成功，且有数据
-                setTimeout(function(){
-                  $dc.removeClass('success-form-animate');
-                }, 820)
               }else{
                 reject('服务器异常');
               }
@@ -70,14 +64,14 @@ export function autoMatch(city, address){
           .fail(function(msg, code){
             setTimeout(function(){
               if(code && code == '3001'){
-                resolve(); //成功，但没有数据
+                reject(); //成功，但没有数据
               }else{
                 reject('自动检索配送中心异常，请重试');
               }
             }, 0);
           })
         }else{
-          reject('没有检索到该收货地址');
+          reject();
         }
       });
       localSearch.search(address);
@@ -85,4 +79,23 @@ export function autoMatch(city, address){
       reject('地图服务加载失败，请稍后再试');
     }
   })
+  .done(autoMatchSuccess.bind(this))
+  .fail(autoMatchFail.bind(this))
+  .done(addEffect.bind(this, 'alert-success'))
+  .fail(addEffect.bind(this, 'alert-danger'))
+}
+
+function addEffect(animate_name){
+  var $dc = $(findDOMNode(this.refs.delivery_center)).removeClass('alert-success alert-danger').addClass(animate_name);
+  // setTimeout(function(){
+  //   $dc.removeClass(animate_name);
+  // }, 1000);
+}
+
+export function autoMatchSuccess(){
+  this.setState({auto_match_delivery_center: true, auto_match_msg: '已成功匹配！'});
+}
+
+export function autoMatchFail(msg){
+  this.setState({auto_match_delivery_center: false, auto_match_msg: msg || '无法准确定位配送中心，请与客户联系后手动选择！'});
 }

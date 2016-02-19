@@ -6,7 +6,7 @@ import Select from 'common/select';
 import StdModal from 'common/std_modal';
 import RadioGroup from 'common/radio_group';
 import { map, Noty } from 'utils/index';
-import autoMatchDeliveryStations from 'mixins/map';
+import autoMatchDeliveryStations, { autoMatchSuccess, autoMatchFail} from 'mixins/map';
 
 import { order_status as ORDER_STATUS, SELECT_DEFAULT_VALUE,
  DELIVERY_TIME_MAP, DELIVERY_TO_HOME, DELIVERY_TO_STORE }
@@ -52,6 +52,9 @@ var AlterDeliveryModal = React.createClass({
       delivery_id: undefined,
 
       all_delivery_hours: DELIVERY_TIME_MAP.map(n => ({id: n, text: n})),
+
+      auto_match_delivery_center: false,
+      auto_match_msg: '',
     };
   },
   render(){
@@ -98,22 +101,24 @@ var AlterDeliveryModal = React.createClass({
         <div className="form-group form-inline">
           <label>{'修改配送中心：'}</label>
           <Select ref="delivery_center" valueLink={this.linkState('delivery_id')} options={delivery_stations} className="input-xs transition" />
+          {' '}
+          <span className={this.state.auto_match_delivery_center ? 'text-success' : 'text-danger'}>
+            {this.state.auto_match_msg}
+          </span>
         </div>
       </StdModal>
     )
   },
   mixins: [LinkedStateMixin, {autoMatchDeliveryStations}],
   componentDidMount(){
-    // setTimeout(function(){
-    //   this.autoMatchDeliveryStations(delivery_id => {
-    //     if(delivery_id){
-    //       this.setState({delivery_id})
-    //     }else{
-    //       Noty('warning', '没有可匹配的配送站');
-    //       this.setState({delivery_id: SELECT_DEFAULT_VALUE})
-    //     }
-    //   });
-    // }.bind(this), 100)
+    $(findDOMNode(this.refs.delivery_center)).on('click', this.clearMsg)
+  },
+  componentWillUnmount(){
+    $(findDOMNode(this.refs.delivery_center)).off('click', this.clearMsg)
+  },
+  clearMsg(){
+    $(findDOMNode(this.refs.delivery_center)).removeClass('alert-success alert-danger')
+    this.setState({auto_match_msg: ''})
   },
   onConfirm(){
     var {
@@ -186,12 +191,13 @@ var AlterDeliveryModal = React.createClass({
   onAddressChange(){
     this.autoMatchDeliveryStations(delivery_id => {
       if(delivery_id){
-        this.setState({delivery_id})
+        this.setState({delivery_id});
+        autoMatchSuccess.call(this);
       }else{
-        Noty('warning', '没有可匹配的配送站');
-        this.setState({delivery_id: SELECT_DEFAULT_VALUE})
+        this.setState({delivery_id: SELECT_DEFAULT_VALUE});
+        autoMatchFail.call(this);
       }
-    }); 
+    }, autoMatchFail.bind(this)); 
   },
   show(){
     this.refs.modal.show();

@@ -313,18 +313,20 @@ $(document).ready(function($) {
     Polyline.setPath(points.concat(points[0]));
     Polyline.getPath().pop();
     var newData = Polyline.getPath();
-    newData.forEach(function(item,index){
+    newData.forEach(function(item, index) {
       item.longitude = item.lng;
       item.latitude = item.lat;
     });
     var newData = JSON.stringify();
 
     $.ajax({
-      url: '/v1/a/station/' + 1 + '/coords',
+      url: 'http://localhost:3001/v1/a/station/' + 1 + '/coords',
       type: 'put',
       dataType: 'json',
-      data: {coords:newData},
-      success: function(){
+      data: {
+        coords: newData
+      },
+      success: function() {
         console.log('修改配送站成功')
       }
     })

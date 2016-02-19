@@ -6,8 +6,8 @@ $(document).ready(function($) {
   map.enableDragging();
 
   var index = 0;
-  var points = [],
-    markers = [];
+  var points = [];
+  var markers = [];
   var attr = {
     fillColor: '',
     strokeColor: 'red',
@@ -21,26 +21,26 @@ $(document).ready(function($) {
   /**
     为地图添加点击事件   
   */
-  map.addEventListener('click', function(event) {
-    var point = changeToPoint(event.point);
-    points.push(point);
-    Polyline.setPath(points);
+  // map.addEventListener('click', function(event) {
+  //   var point = changeToPoint(event.point);
+  //   points.push(point);
+  //   Polyline.setPath(points);
 
-    var marker = new BMap.Marker(point);
-    markers.push(marker);
-    marker.enableDragging();
-    marker.id = index++;
-    map.addOverlay(marker);
+  //   var marker = new BMap.Marker(point);
+  //   markers.push(marker);
+  //   marker.enableDragging();
+  //   marker.id = index++;
+  //   map.addOverlay(marker);
 
-    marker.addEventListener('dragging', function() {
-      var newPosition = this.getPosition();
-      var point = changeToPoint(newPosition);
-      points[this.id] = point;
+  //   marker.addEventListener('dragging', function() {
+  //     var newPosition = this.getPosition();
+  //     var point = changeToPoint(newPosition);
+  //     points[this.id] = point;
 
-      Polyline.setPath(points);
-    });
+  //     Polyline.setPath(points);
+  //   });
 
-  });
+  // });
   /**
    * 由地理坐标转化为Point
    */
@@ -48,6 +48,14 @@ $(document).ready(function($) {
     var lng = coord.lng;
     var lat = coord.lat;
     return new BMap.Point(lng, lat);
+  }
+  /**
+   * 开启标志maker编辑功能
+   */
+  function openMarkerEdit() {
+    markers.forEach(function(item, index) {
+      item.enableDragging();
+    });
   }
   /**
    * 点击按钮生成闭合折线
@@ -91,17 +99,17 @@ $(document).ready(function($) {
         var marker = new BMap.Marker(point);
         marker.id = index++;
 
-        // marker.enableDragging();
+        marker.enableDragging();
         map.addOverlay(marker);
 
         map.centerAndZoom(point, 13);
-        // marker.addEventListener('dragging', function() {
-        //   var newPosition = this.getPosition();
-        //   var point = changeToPoint(newPosition);
-        //   points[this.id] = point;
+        marker.addEventListener('dragging', function() {
+          var newPosition = this.getPosition();
+          var point = changeToPoint(newPosition);
+          points[this.id] = point;
 
-        //   Polyline.setPath(points);
-        // });
+          Polyline.setPath(points);
+        });
       });
 
       Polyline.setPath(points.concat(points[0]));
@@ -229,26 +237,101 @@ $(document).ready(function($) {
    */
   $('#searchCityStation').click(function(event) {
 
+    $('#tableStation tbody').empty();
     var cityId = $('#findCities option:selected').attr('value');
     $.ajax({
-      url: 'http://localhost:3001/city/' + cityId + '/stations',
+      url: 'http://localhost:3001/v1/a/city/' + cityId + '/stations',
       type: 'GET',
       dataType: 'json',
-      data: {cityId : cityId,page_no: 1,page_size:15},
-      success: function(data){
+      data: {
+        cityId: cityId,
+        page_no: 0,
+        page_size: 15
+      },
+      success: function(data) {
         var stations = data.data.pagination_result;
-        for(var key in stations){
-          var html = '<tr><td>'+ stations[key].district_name + '</td>'+
-            '<td>'+stations[key].station_name+ '</td>'+
-            '<td>'+stations[key].address+ '</td></tr>'
-          $(html).appendTo('#tableStation tbody');
-        }
+        var html = '';
+        stations.forEach(function(item, index) {
+          html += '<tr>' +
+            '<td><input type="checkbox"/></td>' +
+            '<td class="district-name">' + item.district_name + '</td>' +
+            '<td class="station-name">' + item.station_name + '</td>' +
+            '<td class="address">' + item.address + '</td>' +
+            '<td><a class="edit" href="">编辑</a></td>' +
+            '</tr>';
+        });
+        $(html).appendTo('#tableStation tbody');
+
+
+        /**
+         * 为配送站开启编辑
+         */
+        $('.edit').each(function(index, el) {
+          $(el).click(function(event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            var stationName = $(this).parent('td').siblings('.station-name').text();
+            var stationId = stations.indexOf(stationName);
+            console.log(stationName)
+
+            if (stationName !== '') {
+              $.ajax({
+                url: 'http://localhost:3001/v1/a/station/' + stationId,
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                  station_name: stationName
+                },
+                success: function(data) {
+                  var dots = JSON.parse(data.data.coords);
+                  for (var key in dots) {
+
+                    dots[key].lng = dots[key].longitude;
+                    dots[key].lat = dots[key].latitude;
+                  }
+                  drawPoline(dots);
+                  openMarkerEdit();
+                }
+              });
+            };
+
+          });
+        });
+
       }
     })
-    
+
   });
 
+  /**
+   * 修改配送站
+   */
+  $('#modifiyStation').click(function(event) {
 
+    Polyline.setPath(points.concat(points[0]));
+    Polyline.getPath().pop();
+    var newData = Polyline.getPath();
+    newData.forEach(function(item,index){
+      item.longitude = item.lng;
+      item.latitude = item.lat;
+    });
+    var newData = JSON.stringify();
+
+    $.ajax({
+      url: '/v1/a/station/' + 1 + '/coords',
+      type: 'put',
+      dataType: 'json',
+      data: {coords:newData},
+      success: function(){
+        console.log('修改配送站成功')
+      }
+    })
+
+
+
+  });
 
 
 

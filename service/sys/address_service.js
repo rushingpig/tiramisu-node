@@ -121,7 +121,7 @@ AddressService.prototype.modifyStation = (req,res,next)=>{
         res.api(res_obj.INVALID_PARAMS,null);
         return;
     }
-    let stationId = req.query.stationId;
+    let stationId = req.params.stationId;
     let update_obj = {
         coords: req.body.coords
     };

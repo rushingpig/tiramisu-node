@@ -19,27 +19,15 @@ $(document).ready(function($) {
   map.addOverlay(Polyline);
 
   /**
-    为地图添加点击事件   
+    为地图添加点击事件   添加配送站时会用到
   */
   map.addEventListener('click', function(event) {
+
     var point = changeToPoint(event.point);
     points.push(point);
     Polyline.setPath(points);
 
-    var marker = new BMap.Marker(point);
-    markers.push(marker);
-    // marker.enableDragging();
-    marker.id = index++;
-    map.addOverlay(marker);
-
-    marker.addEventListener('dragging', function() {
-      var newPosition = this.getPosition();
-      var point = changeToPoint(newPosition);
-      points[this.id] = point;
-
-      Polyline.setPath(points);
-    });
-
+    addMarker(point);
   });
 
   /**
@@ -61,7 +49,34 @@ $(document).ready(function($) {
       item.enableDragging();
     });
   }
+  /**
+   * 开启标志maker禁止编辑功能
+   */
 
+  function closeMarkerEdit() {
+    markers.forEach(function(item, index) {
+      item.disableDragging();
+    });
+  }
+  /**
+   * 添加标志marker
+   */
+  function addMarker(point) {
+    var marker = new BMap.Marker(point);
+    markers.push(marker);
+    // marker.enableDragging();
+    marker.id = index++;
+    map.addOverlay(marker);
+
+    marker.addEventListener('dragging', function() {
+      var newPosition = this.getPosition();
+      var point = changeToPoint(newPosition);
+      points[this.id] = point;
+
+      Polyline.setPath(points);
+    });
+
+  }
   /**
    * 清除所有标记
    */
@@ -80,14 +95,13 @@ $(document).ready(function($) {
   /**
    * 由数据生成地图区域
    */
-  var old;
-
   function drawPoline(dataArray) {
     if (Array.isArray(dataArray)) {
       dataArray.forEach(function(item) {
         var point = changeToPoint(item);
         points.push(point);
         var marker = new BMap.Marker(point);
+        markers.push(marker);
         marker.id = index++;
 
         marker.enableDragging();
@@ -98,6 +112,7 @@ $(document).ready(function($) {
           var newPosition = this.getPosition();
           var point = changeToPoint(newPosition);
           points[this.id] = point;
+          points.push()
 
           Polyline.setPath(points);
         });
@@ -106,7 +121,6 @@ $(document).ready(function($) {
       Polyline.setPath(points.concat(points[0]));
 
       old = Polyline.getPath();
-      console.log(old);
     }
   }
   /**
@@ -128,7 +142,6 @@ $(document).ready(function($) {
    * @return {[null]}         
    */
   function ajax(url, type, data, success, error) {
-
     $.ajax({
       url: url,
       type: type,
@@ -137,7 +150,6 @@ $(document).ready(function($) {
       success: success,
       error: error,
     });
-
   }
 
   /**
@@ -282,11 +294,10 @@ $(document).ready(function($) {
   /**
    * 修改配送站
    */
-  var news;
   $('#modifiyStation').click(function(event) {
-
+    closeMarkerEdit();
     Polyline.setPath(points.concat(points[0]));
-    // Polyline.getPath().pop();
+    Polyline.getPath().pop();
     var newData = Polyline.getPath();
     newData.forEach(function(item, index) {
       item.longitude = item.lng;
@@ -294,10 +305,8 @@ $(document).ready(function($) {
       delete item.lng;
       delete item.lat;
     });
-    news = newData;
-    console.log(newData)
-    console.log(old === news)
 
+    console.log(markers)
     ajax('http://localhost:3001/v1/a/station/' + 1 + '/coords', 'put', {
       coords: JSON.stringify(newData)
     });

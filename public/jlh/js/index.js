@@ -21,14 +21,15 @@ $(document).ready(function($) {
   /**
     为地图添加点击事件   添加配送站时会用到
   */
-  map.addEventListener('click', function(event) {
+  // map.addEventListener('click', function(event) {
 
-    var point = changeToPoint(event.point);
-    points.push(point);
-    Polyline.setPath(points);
+  //   var point = changeToPoint(event.point);
+  //   points.push(point);
+  //   Polyline.setPath(points);
 
-    addMarker(point);
-  });
+  //   addMarker(point);
+  //   openMarkerEdit();
+  // });
 
   /**
    * 由地理坐标转化为Point
@@ -64,7 +65,6 @@ $(document).ready(function($) {
   function addMarker(point) {
     var marker = new BMap.Marker(point);
     markers.push(marker);
-    // marker.enableDragging();
     marker.id = index++;
     map.addOverlay(marker);
 
@@ -99,28 +99,12 @@ $(document).ready(function($) {
     if (Array.isArray(dataArray)) {
       dataArray.forEach(function(item) {
         var point = changeToPoint(item);
+        map.centerAndZoom(point, 12);
         points.push(point);
-        var marker = new BMap.Marker(point);
-        markers.push(marker);
-        marker.id = index++;
 
-        marker.enableDragging();
-        map.addOverlay(marker);
-
-        map.centerAndZoom(point, 13);
-        marker.addEventListener('dragging', function() {
-          var newPosition = this.getPosition();
-          var point = changeToPoint(newPosition);
-          points[this.id] = point;
-          points.push()
-
-          Polyline.setPath(points);
-        });
+        addMarker(point);
       });
-
       Polyline.setPath(points.concat(points[0]));
-
-      old = Polyline.getPath();
     }
   }
   /**
@@ -182,6 +166,7 @@ $(document).ready(function($) {
       dots[key].lat = dots[key].latitude;
     }
     drawPoline(dots);
+    openMarkerEdit();
   };
 
 
@@ -246,7 +231,7 @@ $(document).ready(function($) {
         '<td class="district-name">' + item.district_name + '</td>' +
         '<td class="station-name">' + item.station_name + '</td>' +
         '<td class="address">' + item.address + '</td>' +
-        '<td><a class="edit" href="">编辑</a></td>' +
+        '<td><a class="edit" data-toggle="modal" data-target="#mapContainer">编辑</a></td>' +
         '</tr>';
     });
     $(html).appendTo('#tableStation tbody');
@@ -255,10 +240,6 @@ $(document).ready(function($) {
     //为配送站开启编辑
     $('.edit').each(function(index, el) {
       $(el).click(function(event) {
-
-        event.preventDefault();
-        event.stopPropagation();
-
         var stationName = $(this).parent('td').siblings('.station-name').text();
         var stationId = stations.indexOf(stationName);
 
@@ -296,6 +277,8 @@ $(document).ready(function($) {
    */
   $('#modifiyStation').click(function(event) {
     closeMarkerEdit();
+    $(this).attr('disabled', 'disabled');
+    
     Polyline.setPath(points.concat(points[0]));
     Polyline.getPath().pop();
     var newData = Polyline.getPath();
@@ -306,7 +289,6 @@ $(document).ready(function($) {
       delete item.lat;
     });
 
-    console.log(markers)
     ajax('http://localhost:3001/v1/a/station/' + 1 + '/coords', 'put', {
       coords: JSON.stringify(newData)
     });

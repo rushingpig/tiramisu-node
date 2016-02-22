@@ -8,8 +8,8 @@ body {
   padding: 0px;
 }
 #container{
-  width: 100%;
-  height: 100%;
+  width: 868px;
+  height: 600px;
 }
 #dataArray{
   height: 80px;
@@ -47,3 +47,5 @@ body {
 #tableStation{
   background-color: #eee;
 }
+#tableStation thead th,
+#tableStation td{text-align: center;}

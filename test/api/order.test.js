@@ -254,21 +254,12 @@ module.exports = function () {
           }
         ]
       };
-      const res_body_first = {
-        "code": "0000",
-        "msg": "everything goes well -> enjoy yourself...",
-        "data": {}
-      };
       const res_body_second = {
         "code": "2007",
         "msg": "This order is in system already",
         "data": {},
         "err": 'e123'
       };
-      agent.post('/v1/i/order')
-        .type('application/json')
-        .send(req_body)
-        .expect(200, res_body_first, err(function () { }));
       agent.post('/v1/i/order')
         .type('application/json')
         .send(req_body)

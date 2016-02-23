@@ -11,11 +11,12 @@ import Pagination from 'common/pagination';
 import StdModal from 'common/std_modal';
 import LineRouter from 'common/line_router';
 import { tableLoader } from 'common/loading';
+import RecipientInfo from 'common/recipient_info';
 
 import { order_status, YES_OR_NO, DELIVERY_MAP, PRINT_STATUS } from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
-import { Noty, map, reactReplace, form } from 'utils/index';
+import { Noty, map, reactReplace, form, parseTime, dateFormat } from 'utils/index';
 
 import * as OrderActions from 'actions/orders';
 import AreaActions from 'actions/area';
@@ -25,6 +26,7 @@ import * as DeliveryManageActions from 'actions/delivery_manage';
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from 'common/order_detail_modal';
 import ScanModal from 'common/scan_modal';
+import OperationRecordModal from 'common/operation_record_modal.js';
 
 class TopHeader extends Component {
   render(){
@@ -77,9 +79,9 @@ class FilterHeader extends Component {
             <Select default-text="是否有祝福贺卡" className="space-right"/>
             <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space-right"/>
             <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space-right"/>
-            <button onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
-              <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
-            </button>
+            <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
+            <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
+          </button>
           </div>
           <div className="form-group form-inline">
             <button onClick={this.printHandler.bind(this)} className="btn btn-theme space-right btn-xs">批量打印</button>
@@ -141,6 +143,15 @@ FilterHeader = reduxForm({
     'province_id',
     'city_id',
   ]
+}, state => {
+  var now = dateFormat(new Date());
+  return {
+    //赋初始值
+    initialValues: {
+      begin_time: now,
+      end_time: now,
+    }
+  }
 })( FilterHeader );
 
 class OrderRow extends Component {
@@ -167,19 +178,14 @@ class OrderRow extends Component {
         <td>{props.deliveryman_name}<br />{props.deliveryman_mobile}</td>
         <td><div className="time">{delivery_time[0]}<br/>{delivery_time[1]}</div></td>
         <td>{props.owner_name}<br />{props.owner_mobile}</td>
-        <td className="text-left">
-          姓名：{props.recipient_name}<br />
-          电话：{props.recipient_mobile}<br />
-          <div className="address-detail-td">
-            <span className="inline-block">地址：</span><span className="address-all">{props.recipient_address}</span>
-          </div>
-          建筑：{props.recipient_landmark}
-        </td>
+        <RecipientInfo data={props} />
         <td className="text-left">{reactReplace(props.greeting_card, '|', <br />)}</td>
         <td>{props.exchange_time}</td>
         <td><div className="order-status" style={{color: _order_status.color}}>{_order_status.value}</div></td>
         <td><a onClick={props.viewOrderDetail} href="javascript:;">{props.order_id}</a></td>
         <td>{props.remarks}</td>
+        <td>{props.updated_by}</td>
+        <td><a onClick={this.viewOrderOperationRecord.bind(this)} className="inline-block time" href="javascript:;">{props.updated_time}</a></td>
       </tr>
     )
   }
@@ -199,6 +205,10 @@ class OrderRow extends Component {
   clickHandler(){
     this.props.activeOrderHandler(this.props.order_id);
   }
+  viewOrderOperationRecord(e){
+    this.props.viewOrderOperationRecord(this.props);
+    e.stopPropagation();
+  }
 }
 
 class DeliveryManagePannel extends Component {
@@ -214,21 +224,28 @@ class DeliveryManagePannel extends Component {
     this.checkOrderHandler = this.checkOrderHandler.bind(this);
     this.activeOrderHandler = this.activeOrderHandler.bind(this);
     this.viewOrderDetail = this.viewOrderDetail.bind(this);
+    this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
     this.printHandler = this.printHandler.bind(this);
     this.search = this.search.bind(this);
     this.showScanModal = this.showScanModal.bind(this);
   }
   render(){
-    var { filter, area, deliveryman, main, getAllDeliveryman, applyDeliveryman, startPrint, applyPrint, validatePrintCode, rePrint, searchByScan } = this.props;
+    var { filter, area, deliveryman, main, getAllDeliveryman, applyDeliveryman, startPrint, applyPrint, validatePrintCode, rePrint, searchByScan,
+    getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
     var { loading, page_no, total, list, checked_orders, check_order_info, active_order_id } = this.props.orders;
-    var { showBatchPrintModal, printHandler, showEditModal, showScanModal, showBatchEditModal, checkOrderHandler, viewOrderDetail, activeOrderHandler } = this;
+    var { showBatchPrintModal, printHandler, showEditModal, showScanModal, showBatchEditModal,
+       checkOrderHandler, viewOrderDetail, activeOrderHandler, viewOrderOperationRecord } = this;
 
     var {scan, scan_list} = main; //扫描
     if(scan){
       list = scan_list;
     }
     var content = list.map((n, i) => {
-      return <OrderRow key={n.order_id} {...{...n, active_order_id, showEditModal, printHandler, checkOrderHandler, viewOrderDetail, activeOrderHandler}} />;
+      return <OrderRow 
+        key={n.order_id} 
+        {...{...n, active_order_id, showEditModal, printHandler, 
+          checkOrderHandler, viewOrderDetail, activeOrderHandler, viewOrderOperationRecord}} 
+      />;
     })
     return (
       <div className="order-manage">
@@ -258,6 +275,8 @@ class DeliveryManagePannel extends Component {
                   <th>订单状态</th>
                   <th>订单号</th>
                   <th>备注</th>
+                  <th>操作人</th>
+                  <th>操作时间</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -294,6 +313,7 @@ class DeliveryManagePannel extends Component {
         <ApplyPrintModal ref="ApplyPrintModal" {...{applyPrint, submitting: main.submitting}} callback={this.search} />
         <RePrintModal ref="RePrintModal" {...{validatePrintCode, rePrint, submitting: main.submitting}} callback={this.search} />
         <ScanModal ref="ScanModal" submitting={main.submitting} search={searchByScan} />
+        <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
       </div>
     )
   }
@@ -347,7 +367,9 @@ class DeliveryManagePannel extends Component {
   viewOrderDetail(){
     this.refs.detail_modal.show();
   }
-
+  viewOrderOperationRecord(order){
+    this.refs.OperationRecordModal.show(order);
+  }
   onPageChange(page){
     this.search(page);
   }

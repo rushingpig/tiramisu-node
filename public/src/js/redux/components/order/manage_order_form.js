@@ -6,7 +6,7 @@ import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import Pagination from 'common/pagination';
 import LazyLoad from 'utils/lazy_load';
-import { Noty } from 'utils/index';
+import { Noty, form as uForm } from 'utils/index';
 import history from 'history_instance';
 
 import HistoryOrders from './manage_history_orders';
@@ -29,16 +29,22 @@ const validate = (values, props) => {
     if(form[key] && form[key].touched && (!values[key] || values[key] == SELECT_DEFAULT_VALUE))
       errors[key] = msg;
   }
+  function _v_mobile(key){
+    if (form[key] && form[key].touched && !values[key] || (form[key] && !form[key].focus && values[key] && !uForm.isMobile(values[key]))){
+      errors[key] = msg;
+    }
+  }
 
   _v('owner_name');
-  _v('owner_mobile');
   _v('recipient_name');
-  _v('recipient_mobile');
   // _v('recipient_landmark');
   _v('delivery_date');
 
+  _v_mobile('owner_mobile');
+  _v_mobile('recipient_mobile');
+
   _v_selsect('regionalism_id');
-  _v_selsect('delivery_id');
+  // _v_selsect('delivery_id');
   _v_selsect('src_id');
   _v_selsect('pay_modes_id');
   _v_selsect('pay_status');
@@ -157,7 +163,7 @@ class ManageAddForm extends Component {
         <label>{'下单人手机：'}</label>
         <input {...owner_mobile} ref="owner_mobile" className={`form-control input-xs ${ owner_mobile.error }`} type="text" />{' '}
         <button onClick={this.showHistoryModal.bind(this)} className="btn btn-default btn-xs">查询历史订单</button>{' '}
-        <button className="btn btn-default btn-xs">拨号</button>
+        <button className="btn btn-default btn-xs" disabled>拨号</button>
       </div>
       <div className="form-group form-inline">
         <label>{'收货人姓名：'}</label>
@@ -247,7 +253,7 @@ class ManageAddForm extends Component {
         <textarea {...remarks} className="form-control input-xs" rows="2" cols="40"></textarea>
         {'　　'}
         <label>{'发票备注：'}</label>
-        <Select {...invoice} options={invoices} className={`${invoice.error}`} no-default="true" />
+        <textarea {...invoice} placeholder="" rows="2" cols="22" className={`form-control input-xs ${invoice.error}`} />
       </div>
 
       <hr className="dotted" />
@@ -266,7 +272,8 @@ class ManageAddForm extends Component {
               <button
                   key="submitBtn"
                   onClick={handleSubmit(this._check.bind(this, this.handleSubmitOrder))}
-                  disabled={save_ing} className="btn btn-theme btn-xs">提交</button>
+                  data-submitting={submit_ing}
+                  disabled={submit_ing} className="btn btn-theme btn-xs">提交</button>
             ]
           : <button 
                 onClick={handleSubmit(this._check.bind(this, this.handleCreateOrder))} 
@@ -329,8 +336,8 @@ class ManageAddForm extends Component {
         Noty('success', '保存成功');
         history.push('/om/index');
       })
-      .fail(function(){
-        Noty('error', '保存异常');
+      .fail(function(msg, code){
+        Noty('error', msg || '保存异常');
       });
   }
   handleSaveOrder(form_data){
@@ -339,16 +346,16 @@ class ManageAddForm extends Component {
         Noty('success', '保存成功')
         this.props.actions.getOrderById(form_data.order_id).fail(function(){history.go(0);}.bind(this));
       }.bind(this))
-      .fail(function(){
-        Noty('error', '保存异常');
+      .fail(function(msg){
+        Noty('error', msg || '保存异常');
       });
   }
   handleSubmitOrder(form_data){
     this.props.actions.submitOrder(form_data).done(function(){
       Noty('success', '已成功提交！');
       history.push('/om/index');
-    }).fail(function(){
-      Noty('error', '操作异常');
+    }).fail(function(msg){
+      Noty('error', msg || '操作异常');
     });
   }
   componentDidMount(){

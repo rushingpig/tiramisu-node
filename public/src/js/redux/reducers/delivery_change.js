@@ -2,7 +2,7 @@ import { dateFormat, map } from 'utils/index';
 import { combineReducers } from 'redux';
 import * as ChangeActions from 'actions/delivery_change';
 import { GET_DELIVERY_STATIONS } from 'actions/order_manage_form';
-import { orders } from 'reducers/orders';
+import { orders, operationRecord } from 'reducers/orders';
 import { area } from 'reducers/area_select';
 import { REQUEST } from 'config/app.config';
 
@@ -31,6 +31,7 @@ function filter(state = filter_state, action){
 
 export default combineReducers({
   filter,
+  area: area(),
   orders,
-  area: area()
+  operationRecord,
 })

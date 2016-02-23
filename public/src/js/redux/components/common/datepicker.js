@@ -60,10 +60,13 @@ var DatePicker = React.createClass({
     return $date;
   },
   render: function(){
-    var spreadProps = {onChange: function(){}};
-    if(!this.props.editable && this.props['redux-form']){
-      this.props['redux-form'].onChange = function(){};
-      spreadProps = this.props['redux-form'];
+    var redux_form = this.props['redux-form'];
+    var editable = this.props.editable;
+    var spreadProps;
+    if(redux_form){
+      spreadProps = editable ? redux_form : { ...redux_form, onChange: function(){} };
+    }else{
+      spreadProps = { onChange: editable ? this.props.onChange : function(){} };
     }
     //redux-from 中包含value
     return (

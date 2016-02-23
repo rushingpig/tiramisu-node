@@ -110,3 +110,10 @@ export function productAttrChange(data){
     data
   }
 }
+
+export const UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE = 'UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE';
+export function updateConfirmProductDiscountPrice(){
+  return {
+    type: UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE
+  }
+}

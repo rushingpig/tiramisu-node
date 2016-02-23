@@ -5,7 +5,9 @@ import * as OrderProductsActions from 'actions/order_products';
 import { UPDATE_PATH } from 'redux-simple-router';
 import AreaActions from 'actions/area';
 import { updateAddOrderForm  } from 'actions/form';
-import { map, delay } from 'utils/index';
+import { map, delay, core } from 'utils/index';
+import { getValues } from 'redux-form';
+import { pay_status as PAY_STATUS } from 'config/app.config';
 
 import delivery_stations from 'reducers/delivery_stations';
 
@@ -17,7 +19,7 @@ import {
   REQUEST,
 } from 'config/app.config';
 import clone from 'clone';
-import store from 'stores/configureStore';
+import {getGlobalStore} from 'stores/getter';
 
 var initial_state = {
   all_pay_status: map(pay_status, (text, id) => ({id, text})),
@@ -36,13 +38,15 @@ var initial_state = {
 }
 
 function mainForm(state = initial_state, action) {
+  var store = getGlobalStore();
   switch(action.type) {
     case UPDATE_PATH:
       return {...initial_state}
     case FormActions.GOT_ORDER_SRCS:
       let l1 = [], l2 = [];
+      var order_src_data = core.isArray(action.data) ? action.data : [];
       //level最多为2级
-      action.data.forEach(n => {
+      order_src_data.forEach(n => {
         n.text = n.name;  //转换
         if(n.level == 1){
           l1.push(n);
@@ -100,6 +104,8 @@ var products_choosing_state = {
 };
 function products_choosing(state = products_choosing_state, action){
   var sku_id, new_selected_list;
+  var store = getGlobalStore();
+
   switch(action.type){
     case UPDATE_PATH:
       return products_choosing_state;
@@ -158,7 +164,7 @@ function products_choosing(state = products_choosing_state, action){
       return (function(){
         var base = {
           discount_price: 0,
-          choco_board: '', //巧克力牌
+          choco_board: '生日快乐', //巧克力牌
           greeting_card: '', //祝福语
           atlas: true, //产品图册
           custom_name: '',  //自定义名称
@@ -167,14 +173,20 @@ function products_choosing(state = products_choosing_state, action){
         var confirm_list = state.selected_list.map(function(n){
           var new_item = {...n, ...base};
           new_item.discount_price = n.discount_price / 100 || 0;
-          new_item.amount = n.discount_price * n.num / 100;
+          new_item.amount = new_item.discount_price * n.num;
           return new_item;
         })
         delay(() => store.dispatch(updateAddOrderForm())); //商品数变化，通知add_order表单更新，支付方式、支付状态的默认值与所选商品数是紧密相关的
+        delay(() => store.dispatch(OrderProductsActions.updateConfirmProductDiscountPrice())); //更新商品应收金额
         return {...state, confirm_list: confirm_list };
       })();
 
     case OrderProductsActions.CANCEL_ALL_SELECTED_PRODUCTS:
+      state.search_results.list.forEach(function(n){
+        n.skus.forEach(function(m){
+          m.checked = state.confirm_list.some(j => m.sku_id == j.sku_id);
+        })
+      });
       return {...state, selected_list: [...clone(state.confirm_list)] };
 
     case OrderProductsActions.CONFIRM_PRODUCT_ATTR_CHANGE:
@@ -202,7 +214,26 @@ function products_choosing(state = products_choosing_state, action){
       new_selected_list = clone(state.selected_list);
       new_selected_list.splice(new_selected_list.findIndex( n => n.sku_id == sku_id), 1);
       delay(() => store.dispatch(updateAddOrderForm())); //商品数变化，通知add_order表单更新，支付方式、支付状态的默认值与所选商品数是紧密相关的
+      delay(() => store.dispatch(OrderProductsActions.updateConfirmProductDiscountPrice())); //更新商品应收金额
       return {...state, confirm_list: new_confirm_list, selected_list: new_selected_list }
+
+    case OrderProductsActions.UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE:
+      return (function(){
+        var global_state = store.getState();
+        var order = getValues(global_state.form.add_order);
+        var pay_status = PAY_STATUS[order.pay_status];
+        var {confirm_list} = state;
+        if(pay_status == '已付款'){
+          confirm_list.forEach(function(n){
+            n.amount = 0;
+          })
+        }else if(pay_status == '部分付款'){
+          confirm_list.forEach(function(n, i){
+            n.amount = i == 0 ? 0 : n.discount_price;
+          })
+        }
+        return {...state};
+      }())
 
     case FormActions.GOT_ORDER_BY_ID:
       return {...state, confirm_list: action.data.products, selected_list: action.data.products };

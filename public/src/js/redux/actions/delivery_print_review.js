@@ -1,12 +1,14 @@
 import { GET, PUT, TEST } from 'utils/request'; //Promise
 import Url from 'config/url';
-import { Noty } from 'utils/index';
+import { formCompile } from 'utils/index';
+import { getValues } from 'redux-form';
 
 export const GET_PRINT_REVIEW_LIST = 'GET_PRINT_REVIEW_LIST';
 export function getPrintReviewList(data){
   return (dispatch, getState) => {
-    // var filter_data = getValues(getState().form.order_manage_filter);
-    return GET(Url.print_review_list.toString(), data, GET_PRINT_REVIEW_LIST)(dispatch)
+    var filter_data = getValues(getState().form.print_review);
+    filter_data = formCompile(filter_data);
+    return GET(Url.print_review_list.toString(), {...data, ...filter_data}, GET_PRINT_REVIEW_LIST)(dispatch)
   }
 /*
   return TEST({

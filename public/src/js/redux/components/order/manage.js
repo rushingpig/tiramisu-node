@@ -20,14 +20,17 @@ import LineRouter from 'common/line_router';
 import SearchInput from 'common/search_input';
 import { tableLoader, get_table_empty } from 'common/loading';
 import StdModal from 'common/std_modal';
+import RecipientInfo from 'common/recipient_info';
+
 import LazyLoad from 'utils/lazy_load';
-import { colour, Noty } from 'utils/index';
+import { colour, Noty, core } from 'utils/index';
 import { createMap, autoMatch } from 'mixins/map';
 
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from 'common/order_detail_modal';
 import AlterDeliveryModal from './manage_alter_delivery_modal';
 import OrderSrcsSelects from 'common/order_srcs_selects';
+import OperationRecordModal from 'common/operation_record_modal.js';
 
 class TopHeader extends Component {
   render(){
@@ -147,7 +150,7 @@ FilterHeader = reduxForm({
 var OrderRow = React.createClass({
   render(){
     var { props } = this;
-    var src_name = props.src_name.split(',');
+    var src_name = core.isArray(props.src_name) ? props.src_name.split(',') : ['', ''];
     var _order_status = order_status[props.status] || {};
     return (
       <tr className={props.active_order_id == props.order_id ? 'active' : ''} onClick={this.clickHandler}>
@@ -163,26 +166,15 @@ var OrderRow = React.createClass({
         <td>{props.owner_name}<br />{props.owner_mobile}</td>
         <td><div className="time">{props.created_time}</div></td>
         {/*收货人信息*/}
-        <td className="text-left">
-          <div className="address-detail-td">
-            <table className="no-padding">
-              <tbody>
-                <tr><td className="nowrap">姓名：</td><td>{props.recipient_name}</td></tr>
-                <tr><td className="nowrap">电话：</td><td>{props.recipient_mobile}</td></tr>
-                <tr><td className="nowrap v-top">地址：</td><td>{props.recipient_address}</td></tr>
-                <tr><td className="nowrap">建筑：</td><td>{props.recipient_landmark}</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </td>
+        <RecipientInfo data={props} />
         <td>{props.delivery_type}</td>
         {/*订单来源*/}
         <td className="nowrap">{src_name[0]}<br /><span className="bordered bg-warning">{src_name[1]}</span></td>
         <td><strong className="strong">{props.pay_status}</strong></td>
         <td className="nowrap text-left">
-          原价：{props.original_price/100} <br />
-          实际售价：{props.discount_price/100} <br />
-          应收金额：{props.total_amount/100}
+          原价：￥{props.original_price/100} <br />
+          实际售价：￥{props.discount_price/100} <br />
+          应收金额：￥{props.total_amount/100}
         </td>
         {/*订单状态*/}
         <td><div style={{color: _order_status.color || 'inherit'}}>{_order_status.value}</div></td>
@@ -195,7 +187,7 @@ var OrderRow = React.createClass({
         <td><div className="remark-in-table">{props.remarks}</div></td>
         <td>{props.updated_by}</td>
         <td>{props.created_by}</td>
-        <td><div className="time">{props.updated_time}<br/><a onClick={this.viewOrderOperationRecord} href="javascript:;">操作记录</a></div></td>
+        <td><a onClick={this.viewOrderOperationRecord} className="inline-block time" href="javascript:;">{props.updated_time}</a></td>
       </tr>
     )
   },
@@ -276,7 +268,7 @@ class ManagePannel extends Component {
   render(){
     var { filter, area, alter_delivery_area, delivery_stations,
       main: {submitting, prepare_delivery_data_ok},
-      activeOrder, showProductsDetail, operationRecord, dispatch, getOrderList, getOrderOptRecord, cancelOrder, orderException } = this.props;
+      activeOrder, showProductsDetail, operationRecord, dispatch, getOrderList, getOrderOptRecord, resetOrderOptRecord, cancelOrder, orderException } = this.props;
     var { loading, page_no, total, list, check_order_info, active_order_id, show_products_detail } = this.props.orders;
     var { viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, search } = this;
 
@@ -347,7 +339,7 @@ class ManagePannel extends Component {
           : null }
 
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} />
-        <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, ...operationRecord}} />
+        <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
         <CancelOrderModal ref="CancelOrderModal" {...{submitting, cancelOrder, callback: search}} />
         <OrderExceptionModal ref="OrderExceptionModal" {...{submitting, orderException, callback: search}} />
         <AlterStationModal ref="AlterStationModal" 
@@ -634,86 +626,4 @@ var OrderExceptionModal = React.createClass({
   hideCallback(){
     this.setState(this.getInitialState());
   }
-});
-
-var OperationRecordModal = React.createClass({
-  getInitialState() {
-    return {
-      sort_type: 'DESC', //ASC
-      page_size: 8,
-      data: {},
-    };
-  },
-  render(){
-    var { order_id, owner_mobile, owner_name } = this.state.data;
-    var { page_no, total, list } = this.props;
-    var content = list.map( (n, i) => {
-      return (
-        <tr key={n.order_id + '' + i}>
-          <td>{n.created_by}</td>
-          <td className="text-left">{colour(n.option)}</td>
-          <td>{n.created_time}</td>
-        </tr>
-      )
-    })
-    return (
-      <StdModal title="操作历史记录" footer={false} ref="modal">
-        <div className="">
-          <label>订单号：</label>
-          {order_id}
-        </div>
-        <div className="form-group">
-          <label>下单人信息：</label>
-          {owner_name + '　' + owner_mobile}
-        </div>
-        <div className="table-responsive">
-          <table className="table table-hover table-bordered text-left">
-            <thead>
-            <tr>
-              <th>操作人</th>
-              <th>操作记录</th>
-              <th className={`sorting ${this.state.sort_type.toLowerCase()}`} onClick={this.changeSortType}>操作时间</th>
-            </tr>
-            </thead>
-            <tbody>
-            {content.length ? content : get_table_empty()}
-            </tbody>
-          </table>
-        </div>
-
-        <Pagination 
-          page_no={page_no} 
-          total_count={total} 
-          page_size={this.state.page_size} 
-          onPageChange={this.onPageChange}
-        />
-      </StdModal>
-    )
-  },
-  changeSortType(){
-    if(this.state.sort_type == 'DESC')
-      this.setState({ sort_type: 'ASC' }, this.search.bind(this, this.props.page_no))
-    else
-      this.setState({ sort_type: 'DESC' }, this.search.bind(this, this.props.page_no))
-  },
-  onPageChange(page){
-    this.search(page);
-  },
-  search(page_no){
-    var { page_size, sort_type } = this.state;
-    this.props.getOrderOptRecord(this.state.data.order_id, {
-      page_no: page_no,
-      page_size,
-      sort_type
-    });
-  },
-  show(data){
-    this.refs.modal.show();
-    this.setState({ data }, function(){
-      this.search(this.props.page_no);
-    });
-  },
-  hide(){
-    this.refs.modal.hide();
-  },
 });

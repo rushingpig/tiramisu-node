@@ -1,7 +1,9 @@
 import { reducer as formReducer, actionTypes } from 'redux-form';
 // import store from 'stores/configureStore'; //循环引用
-import { getGlobalState } from 'stores/getter';
-import { SELECT_DEFAULT_VALUE } from 'config/app.config';
+import { getGlobalStore, getGlobalState } from 'stores/getter';
+import { SELECT_DEFAULT_VALUE, pay_status as PAY_STATUS } from 'config/app.config';
+import { updateConfirmProductDiscountPrice } from 'actions/order_products';
+import { delay } from 'utils/index';
 
 function preCheck(){
   var { pathname } = location;
@@ -33,57 +35,103 @@ function getMode(mode_name){
 
 export default formReducer.plugin({
   add_order: (state, action) => {
-    switch(action.type) {
-      case actionTypes.BLUR:
-      case actionTypes.CHANGE:
-      case actionTypes.RESET:
-        if(action.field == 'src_id' || action.key == 'src_id'){
-          state.pay_modes_id = {...state.pay_modes_id, ...getPayModesId(state, action)};
-          state.pay_status = {...state.pay_status, ...getPayStatus(state, action)};
+    if(action && action.form == 'add_order'){
+      //电话号码
+      if(action.field == 'owner_mobile'){
+        switch(action.type){
+          case actionTypes.FOCUS:
+            state.owner_mobile.focus = true;
+            return {...state}
+          case actionTypes.BLUR:
+            state.owner_mobile.focus = false;
+            return {...state}
+          default:
+            return state;
         }
-        return {...state};
-      default:
-        return state;
+      }else if(action.field == 'recipient_mobile'){
+        switch(action.type){
+          case actionTypes.FOCUS:
+            state.recipient_mobile.focus = true;
+            return {...state}
+          case actionTypes.BLUR:
+            state.recipient_mobile.focus = false;
+            return {...state}
+          default:
+            return state;
+        }
+      }else{
+        //订单来源，支付方式，支付状态，产品应收 联动
+        switch(action.type) {
+          case actionTypes.BLUR:
+          case actionTypes.CHANGE:
+          case actionTypes.RESET:
+            if(action.field == 'src_id' || action.key == 'src_id'){
+              state.pay_modes_id = {...state.pay_modes_id, ...getPayModesId(state, action)};
+              state.pay_status = {...state.pay_status, ...getPayStatus(state, action)};
+            }
+            delay(() => {
+              var p = PAY_STATUS[state.pay_status.value];
+              if( p == '已付款' || p == '部分付款'){
+                getGlobalStore().dispatch(updateConfirmProductDiscountPrice());
+              }
+            })
+            return {...state};
+          default:
+            return state;
+        }
+      }
+    }else{
+      return state;
     }
   }
 })
 
-function getPayModesId(state){
+function getPayModesId(state, action){
   var src_id = state.src_id.value;
   var pay_modes_id = state.pay_modes_id.value;
   if(src_id){
-    if(isSrc('第三方预约', src_id)){
-      return { value: getMode('团购券').id }; //团购券id（TODO）
-    }else if(isSrc('有赞', src_id)){  
-      return { value: getMode('微信').id }; //微信支付id
-    }else if(isSrc('电话', src_id)){
-      var mode_cash = getMode('货到付款（现金）');
-      var mode_card = getMode('货到付款（POS）');
-      if(pay_modes_id != mode_cash.id || pay_modes_id != mode_card.id){
-        return { value: mode_cash.id };
-      }
+    if(action.type == actionTypes.RESET){
+      return {value: SELECT_DEFAULT_VALUE};
     }else{
-      return {touched: false, value: SELECT_DEFAULT_VALUE, visited: false};
+      if(isSrc('第三方预约', src_id)){
+        return { value: getMode('团购券').id }; //团购券id（TODO）
+      }else if(isSrc('有赞', src_id)){  
+        return { value: getMode('微信支付').id }; //微信支付id
+      }else if(isSrc('电话', src_id)){
+        // var mode_cash = getMode('货到付款（现金）');
+        // var mode_card = getMode('货到付款（POS）');
+        var mode_cash = getMode('现金');
+        var mode_card = getMode('现金');
+        if(pay_modes_id != mode_cash.id || pay_modes_id != mode_card.id){
+          return { value: mode_cash.id };
+        }
+      }else{
+        return {touched: false, value: SELECT_DEFAULT_VALUE, visited: false};
+      }
     }
   }
 }
 
-function getPayStatus(state){
+function getPayStatus(state, action){
   var src_id = state.src_id.value;
   var pay_status = state.pay_status.value;
   if(src_id){
-    if(isSrc('第三方预约', src_id) || isSrc('有赞', src_id)){
-      var { orderManageForm: { products: { confirm_list }}} = getGlobalState();
-      //属于第三方预约
-      if(confirm_list.length > 1 || (confirm_list[0] && confirm_list[0].num > 1)){
-        return { value: 'PARTPAYED' }; //部分付款（TODO）
-      }else{
-        return { value: 'PAYED' }; //已付款（TODO）
-      }
-    }else if(isSrc('电话', src_id)){
-      return { value: 'COD' }; //货到付款
+    if(action.type == actionTypes.RESET){
+      return {value: SELECT_DEFAULT_VALUE};
     }else{
-      return {touched: false, value: SELECT_DEFAULT_VALUE, visited: false};
+      if(isSrc('第三方预约', src_id) || isSrc('有赞', src_id)){
+        var { orderManageForm: { products: { confirm_list }}} = getGlobalState();
+        //属于第三方预约
+        if(confirm_list.length > 1 || (confirm_list[0] && confirm_list[0].num > 1)){
+          return { value: 'PARTPAYED' }; //部分付款（TODO）
+        }else{
+          return { value: 'PAYED' }; //已付款（TODO）
+        }
+      }else if(isSrc('电话', src_id)){
+        return { value: 'COD' }; //货到付款
+      }else{
+        return {touched: false, value: SELECT_DEFAULT_VALUE, visited: false};
+      }
     }
   }
 }

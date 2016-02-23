@@ -22,7 +22,7 @@ export function orders(state = orders_state, action){
       return {...orders_state, loading: false }
       
     case OrderActions.GET_ORDER_LIST:
-      return {...state, ...action.data, loading: false}
+      return {...orders_state, ...action.data, loading: false, }
 
     case OrderActions.CHECK_ORDER:
       return (function(){

@@ -11,13 +11,14 @@ import StdModal from 'common/std_modal';
 import LineRouter from 'common/line_router';
 import { tableLoader } from 'common/loading';
 
-import { Noty, parseTime } from 'utils/index';
+import { Noty, parseTime, dateFormat } from 'utils/index';
 import { DELIVERY_MAP } from 'config/app.config';
 import history, { go } from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
 
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from 'common/order_detail_modal';
+import OperationRecordModal from 'common/operation_record_modal.js';
 
 import * as OrderActions from 'actions/orders';
 import AreaActions from 'actions/area';
@@ -65,7 +66,7 @@ class FilterHeader extends Component {
           <input {...keywords} className="form-control input-xs v-mg" placeholder="关键字" />
           {' 开始时间'}
           <DatePicker editable redux-form={begin_time} className="short-input" />
-          {' 配送时间'}
+          {' 结束时间'}
           <DatePicker editable redux-form={end_time} className="short-input space-right" />
           <Select {...delivery_id} options={this.state.delivery_stations} default-text="选择配送中心" className="space-right"/>
           <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space-right"/>
@@ -122,6 +123,15 @@ FilterHeader = reduxForm({
     'province_id',
     'city_id',
   ]
+}, state => {
+  var now = dateFormat(new Date());
+  return {
+    //赋初始值
+    initialValues: {
+      begin_time: now,
+      end_time: now,
+    }
+  }
 })( FilterHeader );
 
 class OrderRow extends Component {
@@ -148,7 +158,7 @@ class OrderRow extends Component {
         <td>{DELIVERY_MAP[props.delivery_type] || props.delivery_type}</td>
         <td><div className="remark-in-table">{props.remarks}</div></td>
         <td>{props.updated_by}</td>
-        <td>{parseTime(props.updated_time)}</td>
+        <td><a onClick={this.viewOrderOperationRecord.bind(this)} className="inline-block time" href="javascript:;">{props.updated_time}</a></td>
       </tr>
     )
   }
@@ -158,6 +168,10 @@ class OrderRow extends Component {
   }
   clickHandler(){
     this.props.activeOrderHandler(this.props.order_id);
+  }
+  viewOrderOperationRecord(e){
+    this.props.viewOrderOperationRecord(this.props);
+    e.stopPropagation();
   }
 }
 
@@ -171,16 +185,17 @@ class DeliverChangePannel extends Component {
     this.activeOrderHandler = this.activeOrderHandler.bind(this);
     this.changeHandler = this.changeHandler.bind(this);
     this.viewOrderDetail = this.viewOrderDetail.bind(this);
+    this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
     this.search = this.search.bind(this);
   }
   render(){
-    var { filter, area, exchangeOrders } = this.props;
+    var { filter, area, exchangeOrders, getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
     var { change_submitting } = filter;
     var { loading, page_no, total, list, checked_order_ids, check_order_info, active_order_id } = this.props.orders;
-    var { search, changeHandler, checkOrderHandler, viewOrderDetail, activeOrderHandler } = this;
+    var { search, changeHandler, checkOrderHandler, viewOrderDetail, activeOrderHandler, viewOrderOperationRecord } = this;
 
     var content = list.map((n, i) => {
-      return <OrderRow key={n.order_id} {...{...n, active_order_id, activeOrderHandler, checkOrderHandler, viewOrderDetail}} />;
+      return <OrderRow key={n.order_id} {...{...n, active_order_id, activeOrderHandler, checkOrderHandler, viewOrderDetail, viewOrderOperationRecord}} />;
     })
     return (
       <div className="order-manage">
@@ -237,6 +252,7 @@ class DeliverChangePannel extends Component {
 
         <ChangeModal {...{exchangeOrders, search, change_submitting, checked_order_ids}} ref="changeModal" />
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} />
+        <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
       </div>
     )
   }
@@ -259,6 +275,9 @@ class DeliverChangePannel extends Component {
   }
   viewOrderDetail(){
     this.refs.detail_modal.show();
+  }
+  viewOrderOperationRecord(order){
+    this.refs.OperationRecordModal.show(order);
   }
   onPageChange(page){
     this.setState({page_no: page});

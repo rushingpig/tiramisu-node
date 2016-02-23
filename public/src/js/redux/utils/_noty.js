@@ -3,6 +3,7 @@ export default function Noty(type, text){
     success: 2500,
     alert: 3500,
     warning: 4000,
+    error: 4000,
   }
   window.noty ? window.noty({
     layout: 'topRight',

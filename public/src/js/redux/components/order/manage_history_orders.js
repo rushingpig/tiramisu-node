@@ -4,9 +4,10 @@ import * as OrderManageActions from 'actions/orders';
 import Pagination from 'common/pagination';
 import StdModal from 'common/std_modal';
 import { get_table_empty } from 'common/loading';
+import RecipientInfo from 'common/recipient_info';
 
-import Config from 'config/app.config';
-import { form } from 'utils/index';
+import {order_status} from 'config/app.config';
+import { form, Noty } from 'utils/index';
 
 import OrderProductsDetail from 'common/order_products_detail';
 
@@ -14,26 +15,22 @@ import OrderProductsDetail from 'common/order_products_detail';
 class OrderRow extends Component {
   render(){
     var { props } = this;
+    var src_name = props.src_name.split(',');
+    var _order_status = order_status[props.status] || {};
     return (
       <tr className={props.active_order_id == props.order_id ? 'active' : ''} onClick={this.clickHandler.bind(this)}>
         <td>{props.order_id}</td>
         <td><div className="time">{props.created_time}</div></td>
         <td>{props.owner_name}<br />{props.owner_mobile}</td>
-        <td className="text-left">
-          姓名：{props.recipient_name}<br />
-          电话：{props.recipient_mobile}<br />
-          <div className="address-detail-td">
-            <span className="inline-block">地址：</span><span className="address-all">{props.recipient_address}</span>
-          </div>
-          建筑：todo
-        </td>
-        <td>{props.delivery_date}</td>
+        <RecipientInfo data={props} />
+        <td>{props.delivery_time}</td>
         <td><div className="remark-in-table">{props.remarks}</div></td>
-        <td className="nowrap">todo<br /><span className="bordered">todo</span></td>
-        <td><div className="bg-success round">{props.status}</div></td>
+        <td className="nowrap">{src_name[0]}<br /><span className="bordered bg-warning">{src_name[1]}</span></td>
+        {/*订单状态*/}
+        <td><div style={{color: _order_status.color || 'inherit'}}>{_order_status.value}</div></td>
         <td>todo</td>
         <td>{props.updated_by}</td>
-        <td><div className="time">{props.updated_date}</div></td>
+        <td><div className="time">{props.updated_time}</div></td>
       </tr>
     )
   }
@@ -131,10 +128,13 @@ class HistoryOrders extends Component {
   search(){
     var { getHistoryOrders, data: {page_no} } = this.props;
     var { phone_num, page_size } = this.state;
-    if(form.isMobile(phone_num))
+    if(!phone_num){
+      return;
+    }else if(form.isMobile(phone_num)){
       getHistoryOrders({owner_mobile: phone_num, page_no, page_size});
-    else
-      noty('warning', '错误的电话号码')
+    }else{
+      Noty('warning', '错误的电话号码')
+    }
   }
   show(){
     this.refs.modal.show();

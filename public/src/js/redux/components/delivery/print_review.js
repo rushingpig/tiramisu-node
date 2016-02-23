@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import LinkedStateMixin from 'react-addons-linked-state-mixin';
+import { reduxForm } from 'redux-form';
 
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
@@ -12,7 +13,7 @@ import LineRouter from 'common/line_router';
 import RadioGroup from 'common/radio_group';
 import { tableLoader } from 'common/loading';
 
-import { Noty } from 'utils/index';
+import { Noty, dateFormat } from 'utils/index';
 import { DELIVERY_MAP, PRINT_REVIEW_STATUS } from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
@@ -35,31 +36,68 @@ class TopHeader extends Component {
 }
 
 class FilterHeader extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      search_ing: false,
+    }
+  }
   render(){
-    var { start_date, delivery_date } = this.props;
+    var { 
+      fields: {
+        order_id,
+        begin_time,
+        end_time,
+        is_reprint,
+        status,
+      },
+      yes_or_no, all_review_status } = this.props;
+    var { search_ing } = this.state;
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <input className="form-control input-xs v-mg" placeholder="订单号" />
+          <input {...order_id} className="form-control input-xs v-mg" placeholder="订单号" />
           {' 开始时间'}
-          <DatePicker date={start_date} className="short-input" />
+          <DatePicker redux-form={begin_time} editable className="short-input" />
           {' 结束时间'}
-          <DatePicker date={delivery_date} className="short-input space-right" />
-          <Select default-text="是否处理" className="space-right"/>
-          <Select default-text="是否通过" className="space-right"/>
-          <Select default-text="是否打印" className="space-right"/>
+          <DatePicker redux-form={end_time} editable className="short-input space-right" />
+          <Select {...is_reprint} options={yes_or_no} default-text="是否打印" className="space-right"/>
+          <Select {...status} options={all_review_status} default-text="选择审核状态" className="space-right"/>
 
-          <button onClick={this.searchHandler.bind(this)} className="btn btn-theme btn-xs">
+          <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
             <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
           </button>
         </div>
       </div>
     )
   }
-  searchHandler(){
-
+  search(){
+    this.setState({search_ing: true});
+    this.props.search(0)
+      .always(()=>{
+        this.setState({search_ing: false});
+      });
   }
 }
+FilterHeader = reduxForm({
+  form: 'print_review',
+  fields: [
+    'order_id',
+    'begin_time',
+    'end_time',
+    'is_reprint',
+    'status',
+  ]
+}, state => {
+  var now = dateFormat(new Date());
+  return {
+    //赋初始值
+    initialValues: {
+      begin_time: now,
+      end_time: now,
+    }
+  }
+})( FilterHeader );
 
 class ReviewRow extends Component {
   render(){
@@ -113,7 +151,7 @@ class DeliverPrintReviewPannel extends Component {
       <div className="order-manage">
 
         <TopHeader />
-        <FilterHeader {...filter} />
+        <FilterHeader {...{...filter, search}} />
 
         <div className="panel">
           <header className="panel-heading">送货列表</header>
@@ -169,7 +207,7 @@ class DeliverPrintReviewPannel extends Component {
   search(page){
     var { getPrintReviewList, main } = this.props;
     page = typeof page == 'undefined' ? main.page_no : page;
-    getPrintReviewList({page_no: page, page_size: this.state.page_size});
+    return getPrintReviewList({page_no: page, page_size: this.state.page_size});
   }
 
 }

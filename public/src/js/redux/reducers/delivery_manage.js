@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { orders } from 'reducers/orders';
+import { orders, operationRecord } from 'reducers/orders';
 import { area } from 'reducers/area_select';
 import { deliveryman } from 'reducers/deliveryman';
 import * as Actions from 'actions/delivery_manage';
@@ -62,6 +62,7 @@ function main(state = main_state, action){
 export default combineReducers({
   filter,
   orders,
+  operationRecord,
   deliveryman,
   main,
   area: area()

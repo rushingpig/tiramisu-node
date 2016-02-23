@@ -19,7 +19,7 @@ $(document).ready(function($) {
   map.addOverlay(Polyline);
 
   /**
-    为地图添加点击事件   添加配送站时会用到
+    为地图添加点击事件  
   */
   // map.addEventListener('click', function(event) {
 
@@ -76,17 +76,27 @@ $(document).ready(function($) {
       Polyline.setPath(points);
     });
 
+    map.addEventListener('click', function(event) {
+
+      var point = changeToPoint(event.point);
+      points.push(point);
+      Polyline.setPath(points);
+
+      addMarker(point);
+      openMarkerEdit();
+    });
+
   }
   /**
    * 清除所有标记
    */
-  function clearMarkers(){
+  function clearMarkers() {
     map.clearOverlays();
-      index = 0;
-      markers = [];
-      points = [];
-      Polyline = new BMap.Polyline(points, attr);
-      map.addOverlay(Polyline);
+    index = 0;
+    markers = [];
+    points = [];
+    Polyline = new BMap.Polyline(points, attr);
+    map.addOverlay(Polyline);
   }
 
   /**
@@ -105,22 +115,7 @@ $(document).ready(function($) {
     }
   }
   /**
-   *点击确认输入
-   */
-  $('#confirm').click(function() {
-    var testData = document.getElementById('dataArray').value;
-    drawPoline(JSON.parse(testData));
-  });
-
-
-  /**
    * 封装ajax
-   * @param  {[string]} url     
-   * @param  {[string]} type    
-   * @param  {[object]} data    
-   * @param  {[funtion]} success 
-   * @param  {[function]} error   
-   * @return {[null]}         
    */
   function ajax(url, type, data, success, error) {
     $.ajax({
@@ -141,6 +136,8 @@ $(document).ready(function($) {
   var getStations = function(data) {
     for (key in data.data) {
       stations.push(data.data[key]);
+
+      console.log('getStations', data);
     }
   };
 
@@ -156,15 +153,16 @@ $(document).ready(function($) {
    */
 
   var getStationScope = function(data) {
-    clearMarkers();
+    clearMarkers(); //清除所有标注
     var dots = JSON.parse(data.data.coords);
     for (var key in dots) {
-
       dots[key].lng = dots[key].longitude;
       dots[key].lat = dots[key].latitude;
     }
     drawPoline(dots);
     openMarkerEdit();
+
+    console.log('getStationScope', data)
   };
 
 
@@ -189,6 +187,8 @@ $(document).ready(function($) {
     for (var key in provinces) {
       $('<option></option>').text(provinces[key]).attr('value', key).appendTo('#findProvince');
     }
+
+    console.log('getProvince', data);
   };
 
   ajax('http://localhost:3001/v1/a/provinces', 'GET', null, getProvince);
@@ -202,10 +202,13 @@ $(document).ready(function($) {
     for (var key in cities) {
       $('<option></option>').text(cities[key]).attr('value', key).appendTo('#findCities');
     }
+
+    console.log('getCities', data);
   };
 
   $('#findProvince').change(function(event) {
     var provinceId = event.target.value;
+
     $('#findProvince').each(function(index, el) {
       el.click(function() {
         provinceId = $(this).attr('value');
@@ -223,6 +226,7 @@ $(document).ready(function($) {
   var stationOfCity = function(data) {
     var html = '';
     var stations = data.data.pagination_result;
+
     stations.forEach(function(item, index) {
       html += '<tr>' +
         '<td><input type="checkbox"/></td>' +
@@ -232,23 +236,56 @@ $(document).ready(function($) {
         '<td><a class="edit" data-toggle="modal" data-target="#mapContainer">编辑</a></td>' +
         '</tr>';
     });
+
     $(html).appendTo('#tableStation tbody');
 
-
+    console.log('stationOfCity', data);
     //为配送站开启编辑
     $('.edit').each(function(index, el) {
       $(el).click(function(event) {
+
         var stationName = $(this).parent('td').siblings('.station-name').text();
-        var stationId = stations.indexOf(stationName);
-
-        if (stationName !== '') {
-
-          ajax('http://localhost:3001/v1/a/station/' + stationId, 'GET', {
-            station_name: stationName
-          }, getStationScope);
-
+        var address = $(this).parent('td').siblings('.address').text();
+        var stationId = stations.map(function(item, index) {
+          for (var key in item) {
+            if (item['station_name'] === stationName) {
+              return item['id'];
+            }
+          }
+        });
+        console.log(stationId)
+        if (stationName == '' || stationId == undefined) {
+          return;
         }
+        ajax('http://localhost:3001/v1/a/station/' + stationId, 'GET', {
+          station_name: stationName
+        }, getStationScope);
 
+
+        /**
+         * 修改配送站
+         */
+        $('#modifiyStation').click(function(event) {
+
+          $('#mapContainer').modal('hide');
+
+          $(this).attr('disabled', 'disabled');
+
+          Polyline.setPath(points.concat(points[0]));
+          Polyline.getPath().pop();
+
+          var newData = Polyline.getPath();
+          newData.forEach(function(item, index) {
+            item.longitude = item.lng;
+            item.latitude = item.lat;
+            delete item.lng;
+            delete item.lat;
+          });
+          ajax('http://localhost:3001/v1/a/station/' + stationId + '/coords', 'put', {
+            coords: JSON.stringify(newData)
+          });
+
+        });
       });
     });
 
@@ -271,29 +308,8 @@ $(document).ready(function($) {
   });
 
   /**
-   * 修改配送站
+   * 查询配送站
    */
-  $('#modifiyStation').click(function(event) {
-    closeMarkerEdit();
-
-    $(this).attr('disabled', 'disabled');
-    
-    Polyline.setPath(points.concat(points[0]));
-    Polyline.getPath().pop();
-    var newData = Polyline.getPath();
-    newData.forEach(function(item, index) {
-      item.longitude = item.lng;
-      item.latitude = item.lat;
-      delete item.lng;
-      delete item.lat;
-    });
-
-    ajax('http://localhost:3001/v1/a/station/' + 1 + '/coords', 'put', {
-      coords: JSON.stringify(newData)
-    });
-
-  });
-
 
 
 });

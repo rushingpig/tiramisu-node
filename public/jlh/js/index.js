@@ -148,6 +148,7 @@ $(document).ready(function($) {
       source: stations
     });
   });
+
   /**
    * 获取配送站配送范围
    */
@@ -165,20 +166,20 @@ $(document).ready(function($) {
     console.log('getStationScope', data)
   };
 
+  /**
+   * 根据配送站名称查找指定配送站的信息
+   */
+  $('#searchStation').click(function(e) {
+    e.preventDefault();
+    var stationName = $('#findStation').val();
 
-  $('#searchStation').click(function() {
-
-    var value = $('#findStation').val();
-    var stationId = stations.indexOf(value);
-
-    if (value !== '') {
-      ajax('http://localhost:3001/v1/a/station/' + stationId, 'GET', {
-        station_name: value
-      }, getStationScope);
+    if (stationName !== '') {
+      ajax('http://localhost:3001/v1/a/stations/getStationsByName', 'GET', {
+        station_name: stationName
+      },function(data){console.log(data)});
     }
   });
-
-
+// insertStationInfo(data.data.pagination_result)
   /**
    * 获取省份
    */
@@ -218,14 +219,12 @@ $(document).ready(function($) {
     ajax('http://localhost:3001/v1/a/province/' + provinceId + '/cities', 'GET', null, getCities);
 
   });
-
   /**
-   * 查询城市的配送站
+   * [插入配送站信息]
+   * @param  {[Array]} stations 
    */
-
-  var stationOfCity = function(data) {
+  function insertStationInfo(stations) {
     var html = '';
-    var stations = data.data.pagination_result;
 
     stations.forEach(function(item, index) {
       html += '<tr>' +
@@ -238,39 +237,47 @@ $(document).ready(function($) {
     });
 
     $(html).appendTo('#tableStation tbody');
+  }
+  
+  /**
+   * 查询城市的配送站
+   */
+
+  var stationOfCity = function(data) {
+
+    insertStationInfo(data.data.pagination_result);
 
     console.log('stationOfCity', data);
-    //为配送站开启编辑
+    //点击编辑开启该配送站的编辑
     $('.edit').each(function(index, el) {
       $(el).click(function(event) {
 
         var stationName = $(this).parent('td').siblings('.station-name').text();
-        var address = $(this).parent('td').siblings('.address').text();
+
         var stationId = stations.map(function(item, index) {
           for (var key in item) {
             if (item['station_name'] === stationName) {
               return item['id'];
             }
           }
-        });
+        })[0];
+
         console.log(stationId)
-        if (stationName == '' || stationId == undefined) {
+
+        if (stationName === '' || stationId == undefined) {
           return;
         }
         ajax('http://localhost:3001/v1/a/station/' + stationId, 'GET', {
           station_name: stationName
         }, getStationScope);
 
-
-        /**
-         * 修改配送站
-         */
+         // 修改配送站
         $('#modifiyStation').click(function(event) {
 
           $('#mapContainer').modal('hide');
 
           $(this).attr('disabled', 'disabled');
-
+          console.log(points);
           Polyline.setPath(points.concat(points[0]));
           Polyline.getPath().pop();
 

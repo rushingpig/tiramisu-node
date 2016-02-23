@@ -80,17 +80,14 @@ $(document).ready(function($) {
   /**
    * 清除所有标记
    */
-
-  $('#clearMark').click(function() {
-    if (confirm('确认已导出数据!是否要清除标记')) {
-      map.clearOverlays();
+  function clearMarkers(){
+    map.clearOverlays();
       index = 0;
       markers = [];
       points = [];
       Polyline = new BMap.Polyline(points, attr);
       map.addOverlay(Polyline);
-    }
-  });
+  }
 
   /**
    * 由数据生成地图区域
@@ -159,6 +156,7 @@ $(document).ready(function($) {
    */
 
   var getStationScope = function(data) {
+    clearMarkers();
     var dots = JSON.parse(data.data.coords);
     for (var key in dots) {
 
@@ -277,6 +275,7 @@ $(document).ready(function($) {
    */
   $('#modifiyStation').click(function(event) {
     closeMarkerEdit();
+
     $(this).attr('disabled', 'disabled');
     
     Polyline.setPath(points.concat(points[0]));

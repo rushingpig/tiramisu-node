@@ -91,6 +91,17 @@ module.exports = function () {
                 .send(req_body)
                 .expect(200, res_body, err(done));
         });
+
+        it('GET /v1/a/stations/getStationsByName correct request', function (done) {
+            agent
+                .get('/v1/a/stations/getStationsByName')
+                .query({station_name: '沙井配送站'})
+                .query({page_no: 0})
+                .query({page_size: 20})
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end(err(done));
+        });
     });
 };
 

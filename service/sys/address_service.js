@@ -143,12 +143,8 @@ AddressService.prototype.getStationsByName = (req,res,next)=>{
         res.api(res_obj.INVALID_PARAMS,null);
         return;
     }
-    let query_obj = {
-        station_name: req.query['station_name'],
-        page_no: req.query.page_no,
-        page_size: req.query.page_size
-    };
-    let promise = addressDao.getStationsByName(query_obj).then((result) => {
+    let station_name = req.query['station_name'];
+    let promise = addressDao.getStationsByName(station_name).then((result) => {
         if (!result || result.length == 0) {
             res.api(res_obj.NO_MORE_RESULTS, null);
             return;

@@ -239,12 +239,10 @@ OrderDao.prototype.findOrderList = function (query_data) {
         params.push(tables.buss_order_fulltext);
         params.push('+' + query_data.keywords + '*');
     }
-    sql += " left join ?? br on bo.recipient_id = br.id";
+    sql += " inner join ?? br on bo.recipient_id = br.id";
     params.push(tables.buss_recipient);
     if (query_data.city_id) {
-        sql += " inner join ?? bds on bo.delivery_id = bds.id";
-        sql += " inner join ?? dr2 on dr2.id = bds.regionalism_id and dr2.parent_id = ?";
-        params.push(tables.buss_delivery_station);
+        sql += " inner join ?? dr2 on dr2.id = br.regionalism_id and dr2.parent_id = ?";
         params.push(tables.dict_regionalism);
         params.push(query_data.city_id);
     }
@@ -534,7 +532,7 @@ OrderDao.prototype.insertOrderInTransaction = function (req) {
         greeting_card = req.body.greeting_card;
     let recipientObj = {
         regionalism_id: regionalism_id,
-        name: owner_name,
+        name: recipient_name,
         mobile: recipient_mobile,
         landmark: recipient_landmark,
         delivery_type: delivery_type,
@@ -634,6 +632,17 @@ OrderDao.prototype.insertOrderInTransaction = function (req) {
 
     });
 
+};
+/**
+ * batch update order_fulltext records
+ * @param orderIds
+ * @param updateObj
+ * @returns {Promise}
+ */
+OrderDao.prototype.batchUpdateOrderFulltext = function(orderIds,updateObj){
+    let sql = "update ?? set ? where order_id in" + dbHelper.genInSql(orderIds);
+    let params = [tables.buss_order_fulltext,updateObj];
+    return baseDao.update(sql,params);
 };
 module.exports = OrderDao;
 

@@ -559,7 +559,7 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
           owner_mobile: curr.owner_mobile,
           owner_name: curr.owner_name,
           pay_status: Constant.PSD[curr.pay_status],
-          recipient_address: delivery_adds.join(',') + curr.address,
+          recipient_address: delivery_adds.join(',') + '  '+curr.address,
           recipient_mobile: curr.recipient_mobile,
           recipient_name: curr.recipient_name,
           remarks: curr.remarks,

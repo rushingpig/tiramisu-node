@@ -46,6 +46,10 @@ module.exports = {
     code: '2006',
     msg: '订单没有产品,请添加产品...'
   },
+  NO_DELIVERYMAN : {
+    code : '2009',
+    msg : '没有分配配送员,不能直接打印...'
+  },
   NO_OPTIONAL_STATION: {
     code: '3001',
     msg: '没有可选的配送站...'

@@ -353,14 +353,19 @@ DeliveryService.prototype.allocateDeliveryman = (req,res,next)=>{
         status : Constant.OS.DELIVERY,
         deliveryman_id : req.body.deliveryman_id
     };
+    
     let orderIds = [],order_history_params = [],deliveryman_name = req.body.deliveryman_name,deliveryman_mobile = req.body.deliveryman_mobile;
+    let order_fulltext_obj = {
+        deliveryman_name : systemUtils.encodeForFulltext(deliveryman_name),
+        deliveryman_mobile : deliveryman_mobile
+    };
     req.body.order_ids.forEach((curr)=>{
         orderIds.push(systemUtils.getDBOrderId(curr));
         let param = [systemUtils.getDBOrderId(curr),'分配配送员:\n'+deliveryman_name + "     "+deliveryman_mobile,req.session.user.id,new Date()];
         order_history_params.push(param);
 
     });
-    let promise = deliveryDao.updateOrderWithDeliveryman(orderIds,systemUtils.assembleUpdateObj(req,update_obj)).then((result)=>{
+    let order_promise = deliveryDao.updateOrderWithDeliveryman(orderIds,systemUtils.assembleUpdateObj(req,update_obj)).then((result)=>{
         if(parseInt(result) <= 0){
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID,"指定的订单号无效...");
         }
@@ -369,9 +374,13 @@ DeliveryService.prototype.allocateDeliveryman = (req,res,next)=>{
         if(parseInt(result) <= 0){
             throw new TiramisuError(res_obj.FAIL,'批量记录订单操作历史记录异常...');
         }
-        res.api();
     });
-
+    let order_fulltext_promise = orderDao.batchUpdateOrderFulltext(orderIds,order_fulltext_obj).then((result)=>{
+        if(parseInt(result) <= 0){
+            throw new TiramisuError(res_obj.FAIL,'批量更新订单全文检索配送员信息异常...');
+        }
+    });
+    let promise = Promise.all([order_promise,order_fulltext_promise]).then(()=>{res.api()});
     systemUtils.wrapService(res,next,promise);
 };
 /**
@@ -548,6 +557,8 @@ DeliveryService.prototype.print = (req,res,next)=>{
                 throw new TiramisuError(res_obj.ORDER_NO_PRINT);
             }else if (print_status === Constant.PS.AUDITING){
                 throw new TiramisuError(res_obj.ORDER_AUDITING);
+            }else if(!curr.deliveryman_id){
+                throw new TiramisuError(res_obj.NO_DELIVERYMAN);
             }
         });
         let print_status_update_obj = {

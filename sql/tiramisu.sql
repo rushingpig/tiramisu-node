@@ -42,6 +42,7 @@ CREATE TABLE `buss_delivery_station` (
   `regionalism_id` int(11) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
+  `position` varchar(255) DEFAULT NULL,
   `remarks` varchar(255) DEFAULT NULL,
   `created_by` int(255) DEFAULT NULL,
   `created_time` datetime DEFAULT NULL,

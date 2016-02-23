@@ -87,10 +87,10 @@ var mysql_options = {
     waitForConnections : true,
     queueLimit      : 100,
     connectionLimit : 50,
-    host            : '112.74.135.190',
-    port            : 3307,
-    user            : 'tiramisu_qa',
-    password        : 'tiramisuqa',
+    host            : 'rdsp4y4r841mswksag22.mysql.rds.aliyuncs.com',
+    port            : 3306,
+    user            : 'xfxb_qa',
+    password        : 'Xfxbqa2016',
     database        : 'tiramisu',
     charset         : 'utf8mb4',
     timezone        : 'local',
@@ -108,7 +108,9 @@ var white_ips = [
   '1',
   '127.0.0.1',
   // xfxb_ecommerce
-  '112.74.135.144'
+  '112.74.135.144',
+  '10.46.89.45',
+  '120.76.25.32'
 ];
 
 var log4js_options = {

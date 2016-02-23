@@ -244,15 +244,15 @@ CREATE TABLE `buss_pay_modes` (
   `updated_time` datetime DEFAULT NULL COMMENT '更新时间',
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '删除标志',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='支付方式';
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='支付方式';
 
 -- ----------------------------
 --  Records of `buss_pay_modes`
 -- ----------------------------
 BEGIN;
 INSERT INTO `buss_pay_modes` VALUES
-  ('0', '现金', '1', '2015-12-18 12:52:51', null, null, '1'),
   ('1', '充值卡', '1', '2015-12-18 12:53:11', null, null, '1'),
+  ('2', '现金', '1', '2015-12-18 12:53:11', null, null, '1'),
   ('3', '支付宝', '1', '2015-12-18 12:53:11', null, null, '1'),
   ('4', '团购密码', '1', '2015-12-18 12:53:11', null, null, '1'),
   ('5', '银联', '1', '2015-12-18 12:53:11', null, null, '1'),
@@ -273,7 +273,7 @@ INSERT INTO `buss_pay_modes` VALUES
   ('19', '货到付款（POS）', '1', '2015-12-18 12:53:11', null, null, '1'),
   ('20', '银行卡', '1', '2015-12-18 12:53:11', null, null, '1'),
   ('21', '赠送', '1', '2015-12-18 12:53:11', null, null, '1'),
-  ('2', '优惠券全额', '1', '2015-12-18 12:53:11', null, null, '1');
+  ('22', '优惠券全额', '1', '2015-12-18 12:53:11', null, null, '1');
 COMMIT;
 
 -- ----------------------------
@@ -320,7 +320,7 @@ CREATE TABLE `buss_product` (
   `original_price` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX_NAME` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='产品实体';
+) ENGINE=InnoDB AUTO_INCREMENT=240 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='产品实体';
 
 -- ----------------------------
 --  Records of `buss_product`
@@ -615,7 +615,7 @@ CREATE TABLE `buss_product_sku` (
   UNIQUE KEY `IDX_PRODUCT_SIZE_WEBSITE` (`product_id`,`size`,`website`),
   KEY `IDX_PRODUCT` (`product_id`),
   CONSTRAINT `FK_PRODUCT` FOREIGN KEY (`product_id`) REFERENCES `buss_product` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='产品的各种附加属性';
+) ENGINE=InnoDB AUTO_INCREMENT=24248 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='产品的各种附加属性';
 
 -- ----------------------------
 --  Records of `buss_product_sku`

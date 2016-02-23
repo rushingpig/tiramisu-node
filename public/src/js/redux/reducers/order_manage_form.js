@@ -4,7 +4,7 @@ import * as FormActions from 'actions/order_manage_form';
 import * as OrderProductsActions from 'actions/order_products';
 import { UPDATE_PATH } from 'redux-simple-router';
 import AreaActions from 'actions/area';
-import { updateAddOrderForm  } from 'actions/form';
+import { updateAddOrderForm, initForm } from 'actions/form';
 import { map, delay, core } from 'utils/index';
 import { getValues } from 'redux-form';
 import { pay_status as PAY_STATUS } from 'config/app.config';
@@ -72,6 +72,7 @@ function mainForm(state = initial_state, action) {
       return {...state, submit_ing: true}
 
     case FormActions.GOT_ORDER_BY_ID:
+    case FormActions.GOT_COPY_ORDER_BY_ID:
       return (function(){
         var {data} = action;
         var tmp = data.delivery_time.split(' ');

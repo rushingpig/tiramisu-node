@@ -25,7 +25,11 @@ class OrderRow extends Component {
         <RecipientInfo data={props} />
         <td>{props.delivery_time}</td>
         <td><div className="remark-in-table">{props.remarks}</div></td>
-        <td className="nowrap">{src_name[0]}<br /><span className="bordered bg-warning">{src_name[1]}</span></td>
+        {/*订单来源*/}
+        <td className="nowrap">
+          {src_name[0]}
+          {src_name[1] ? [<br />, <span className="bordered bg-warning">{src_name[1]}</span>] : null}
+        </td>
         {/*订单状态*/}
         <td><div style={{color: _order_status.color || 'inherit'}}>{_order_status.value}</div></td>
         <td>todo</td>
@@ -44,7 +48,7 @@ class HistoryOrders extends Component {
     super(props);
     this.search = this.search.bind(this);
     this.show = this.show.bind(this);
-    this.hide = this.hide.bind(this);
+    this.hideCallback = this.hideCallback.bind(this);
     this.state = {
       page_size: 3,
       phone_num: this.props.phone_num
@@ -68,7 +72,7 @@ class HistoryOrders extends Component {
         {'　'}
         <button onClick={this.search} className="btn btn-default btn-xs">查询</button>
         {'　'}
-        <button className="btn btn-default btn-xs">复制订单</button>
+        <button onClick={this.copyOrder.bind(this)} className="btn btn-default btn-xs">复制订单</button>
       </div>
       <div className="table-responsive">
         <table className="table table-hover text-center">
@@ -136,19 +140,36 @@ class HistoryOrders extends Component {
       Noty('warning', '错误的电话号码')
     }
   }
+  copyOrder(){
+    var { data: {check_order_info}, getCopyOrderById, copyOrder } = this.props;
+    if(check_order_info){
+      getCopyOrderById(check_order_info.order_id)
+        .done(() => {
+          copyOrder();
+          this.refs.modal.hide();
+        })
+        .fail((msg) => {
+          Noty('error', msg || '服务器忙')
+        })
+    }else{
+      Noty('warning', '请点击选择你想要复制的订单');
+    }
+  }
   show(){
     this.refs.modal.show();
     this.search();
   }
-  hide(){
-    this.refs.modal.hide();
+  hideCallback(){
+    
   }
 }
 
 HistoryOrders.PropTypes = {
   data: PropTypes.object.isRequired,
   getHistoryOrders: PropTypes.func.isRequired,
-  checkHistoryOrder: PropTypes.func.isRequired
+  checkHistoryOrder: PropTypes.func.isRequired,
+  getCopyOrderById: PropTypes.func.isRequired,
+  copyOrder: PropTypes.func.isRequired,
 }
 
 export default HistoryOrders;

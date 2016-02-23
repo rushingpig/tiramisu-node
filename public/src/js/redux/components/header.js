@@ -27,8 +27,8 @@ class Header extends Component {
             <li className={this.state.usermenu_open ? 'open' : ''}>
               <a href="#" className="btn btn-default dropdown-toggle"
                   onClick={this.showUserMenu.bind(this)} data-toggle="dropdown" aria-expanded="false">
-                <img src="http://www.qq1234.org/uploads/allimg/141119/2252043613-8.png" alt="" />
-                oBama
+                {/*<img src="http://www.qq1234.org/uploads/allimg/141119/2252043613-8.png" alt="" />*/}
+                {xfxb.username || 'oBama'}
                 <span className="caret"></span>
               </a>
               <ul className="dropdown-menu dropdown-menu-usermenu pull-right">

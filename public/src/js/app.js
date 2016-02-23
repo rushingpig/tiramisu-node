@@ -67,7 +67,7 @@
 
 	var _reactRedux = __webpack_require__(216);
 
-	var _storesConfigureStore = __webpack_require__(334);
+	var _storesConfigureStore = __webpack_require__(335);
 
 	var _storesConfigureStore2 = _interopRequireDefault(_storesConfigureStore);
 
@@ -75,7 +75,7 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _reduxSimpleRouter = __webpack_require__(341);
+	var _reduxSimpleRouter = __webpack_require__(342);
 
 	(0, _reduxSimpleRouter.syncReduxAndRouter)(_history_instance2['default'], _storesConfigureStore2['default']);
 
@@ -19036,23 +19036,23 @@
 
 	var _componentsOrderManage2 = _interopRequireDefault(_componentsOrderManage);
 
-	var _componentsOrderManage_order_detail_pannel = __webpack_require__(310);
+	var _componentsOrderManage_order_detail_pannel = __webpack_require__(311);
 
 	var _componentsOrderManage_order_detail_pannel2 = _interopRequireDefault(_componentsOrderManage_order_detail_pannel);
 
-	var _componentsDeliveryChange = __webpack_require__(323);
+	var _componentsDeliveryChange = __webpack_require__(324);
 
 	var _componentsDeliveryChange2 = _interopRequireDefault(_componentsDeliveryChange);
 
-	var _componentsDeliveryDelivery_manage = __webpack_require__(325);
+	var _componentsDeliveryDelivery_manage = __webpack_require__(326);
 
 	var _componentsDeliveryDelivery_manage2 = _interopRequireDefault(_componentsDeliveryDelivery_manage);
 
-	var _componentsDeliveryDistribute_manage = __webpack_require__(329);
+	var _componentsDeliveryDistribute_manage = __webpack_require__(330);
 
 	var _componentsDeliveryDistribute_manage2 = _interopRequireDefault(_componentsDeliveryDistribute_manage);
 
-	var _componentsDeliveryPrint_review = __webpack_require__(332);
+	var _componentsDeliveryPrint_review = __webpack_require__(333);
 
 	var _componentsDeliveryPrint_review2 = _interopRequireDefault(_componentsDeliveryPrint_review);
 
@@ -24865,8 +24865,7 @@
 	                'a',
 	                { href: '#', className: 'btn btn-default dropdown-toggle',
 	                  onClick: this.showUserMenu.bind(this), 'data-toggle': 'dropdown', 'aria-expanded': 'false' },
-	                _react2['default'].createElement('img', { src: 'http://www.qq1234.org/uploads/allimg/141119/2252043613-8.png', alt: '' }),
-	                'oBama',
+	                xfxb.username || 'oBama',
 	                _react2['default'].createElement('span', { className: 'caret' })
 	              ),
 	              _react2['default'].createElement(
@@ -24974,6 +24973,7 @@
 
 	exports['default'] = Header;
 	module.exports = exports['default'];
+	/*<img src="http://www.qq1234.org/uploads/allimg/141119/2252043613-8.png" alt="" />*/
 
 /***/ },
 /* 214 */
@@ -28211,15 +28211,15 @@
 
 	var _actionsOrder_manage_form = __webpack_require__(291);
 
-	var _commonDatepicker = __webpack_require__(292);
+	var _commonDatepicker = __webpack_require__(294);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonSelect = __webpack_require__(293);
+	var _commonSelect = __webpack_require__(295);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonPagination = __webpack_require__(294);
+	var _commonPagination = __webpack_require__(296);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
@@ -28229,49 +28229,49 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _commonLine_router = __webpack_require__(295);
+	var _commonLine_router = __webpack_require__(297);
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _commonSearch_input = __webpack_require__(296);
+	var _commonSearch_input = __webpack_require__(298);
 
 	var _commonSearch_input2 = _interopRequireDefault(_commonSearch_input);
 
-	var _commonLoading = __webpack_require__(297);
+	var _commonLoading = __webpack_require__(299);
 
-	var _commonStd_modal = __webpack_require__(298);
+	var _commonStd_modal = __webpack_require__(300);
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
-	var _commonRecipient_info = __webpack_require__(299);
+	var _commonRecipient_info = __webpack_require__(301);
 
 	var _commonRecipient_info2 = _interopRequireDefault(_commonRecipient_info);
 
-	var _utilsLazy_load = __webpack_require__(300);
+	var _utilsLazy_load = __webpack_require__(302);
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
 	var _utilsIndex = __webpack_require__(160);
 
-	var _mixinsMap = __webpack_require__(301);
+	var _mixinsMap = __webpack_require__(303);
 
-	var _commonOrder_products_detail = __webpack_require__(304);
+	var _commonOrder_products_detail = __webpack_require__(305);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(305);
+	var _commonOrder_detail_modal = __webpack_require__(306);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
-	var _manage_alter_delivery_modal = __webpack_require__(306);
+	var _manage_alter_delivery_modal = __webpack_require__(307);
 
 	var _manage_alter_delivery_modal2 = _interopRequireDefault(_manage_alter_delivery_modal);
 
-	var _commonOrder_srcs_selects = __webpack_require__(308);
+	var _commonOrder_srcs_selects = __webpack_require__(309);
 
 	var _commonOrder_srcs_selects2 = _interopRequireDefault(_commonOrder_srcs_selects);
 
-	var _commonOperation_record_modalJs = __webpack_require__(309);
+	var _commonOperation_record_modalJs = __webpack_require__(310);
 
 	var _commonOperation_record_modalJs2 = _interopRequireDefault(_commonOperation_record_modalJs);
 
@@ -28431,7 +28431,7 @@
 	  render: function render() {
 	    var props = this.props;
 
-	    var src_name = _utilsIndex.core.isArray(props.src_name) ? props.src_name.split(',') : ['', ''];
+	    var src_name = props.src_name ? props.src_name.split(',') : ['', ''];
 	    var _order_status = _configAppConfig.order_status[props.status] || {};
 	    return _react2['default'].createElement(
 	      'tr',
@@ -28505,12 +28505,11 @@
 	        'td',
 	        { className: 'nowrap' },
 	        src_name[0],
-	        _react2['default'].createElement('br', null),
-	        _react2['default'].createElement(
+	        src_name[1] ? [_react2['default'].createElement('br', null), _react2['default'].createElement(
 	          'span',
 	          { className: 'bordered bg-warning' },
 	          src_name[1]
-	        )
+	        )] : null
 	      ),
 	      _react2['default'].createElement(
 	        'td',
@@ -32767,6 +32766,8 @@
 	exports.createOrder = createOrder;
 	exports.saveOrder = saveOrder;
 	exports.getOrderById = getOrderById;
+	exports.copyOrder = copyOrder;
+	exports.getCopyOrderById = getCopyOrderById;
 	exports.submitOrder = submitOrder;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -32780,6 +32781,8 @@
 	var _configUrl2 = _interopRequireDefault(_configUrl);
 
 	var _reduxForm = __webpack_require__(241);
+
+	var _actionsForm = __webpack_require__(292);
 
 	var GOT_ORDER_SRCS = 'GOT_ORDER_SRCS';
 	exports.GOT_ORDER_SRCS = GOT_ORDER_SRCS;
@@ -32964,56 +32967,69 @@
 
 	function getOrderById(id) {
 	  return (0, _utilsRequest.GET)(_configUrl2['default'].order_detail.toString(id), null, GOT_ORDER_BY_ID);
-	  // return dispatch => {
-	  //   dispatch({
-	  //     type: GOT_ORDER_BY_ID,
-	  //     data: {
-	  //       "pay_status": "PAYED",
-	  //       "owner_mobile": "13399998888",
-	  //       "recipient_mobile": "13399998888",
-	  //       "invoice": 0,
-	  //       "delivery_id": 1,
-	  //       "owner_name": "www",
-	  //       "delivery_type": "DELIVERY",
-	  //       "recipient_address": "xxxx街",
-	  //       "remarks": "ceec",
-	  //       "amount": 180,
-	  //       "src_id": "2",
-	  //       "regionalism_id": "110101",
-	  //       //todo{
-	  //       "province_id": "110000",
-	  //       "province_name": "北京市",
-	  //       "city_id": "110100",
-	  //       "city_name": "北京市",
-	  //       "regionalism_name": "东城区",
-	  //       //}
+	  // return TEST({
+	  //   type: GOT_ORDER_BY_ID,
+	  //   data: {
+	  //     "pay_status": "PAYED",
+	  //     "owner_mobile": "13399998888",
+	  //     "recipient_mobile": "13399998888",
+	  //     "invoice": 0,
+	  //     "delivery_id": 1,
+	  //     "owner_name": "www",
+	  //     "delivery_type": "DELIVERY",
+	  //     "recipient_address": "xxxx街",
+	  //     "remarks": "ceec",
+	  //     "amount": 180,
+	  //     "src_id": "2",
+	  //     "regionalism_id": "110101",
+	  //     //todo{
+	  //     "province_id": "110000",
+	  //     "province_name": "北京市",
+	  //     "city_id": "110100",
+	  //     "city_name": "北京市",
+	  //     "regionalism_name": "东城区",
+	  //     //}
 
-	  //       "recipient_landmark": "xxxx建筑物",
-	  //       "delivery_time": "2015-12-24 13:00～14:00",
-	  //       "recipient_name": "www",
-	  //       "pay_modes_id": "2",
-	  //       "products": [{
-	  //         "website": "website2",
-	  //         "name": "zhang",
-	  //         "size": "zhang1",
-	  //         "sku_id": 22,
-	  //         "discount_price": 180,
-	  //         "product_id": 1,
-	  //         "num": 1,
-	  //         "original_price": 20000,
-	  //         "is_local_site": "0",
-	  //         "is_delivery": "1",
-	  //         "category_name": "类型1",
-	  //         "choco_board": "巧克力牌xxx",
-	  //         "greeting_card": "祝福语xxx",
-	  //         "atlas": true,
-	  //         "custom_name": "自定义名称xxx",
-	  //         "custom_desc": "自定义描述xxx",
-	  //         "amount": 180
-	  //       }]
-	  //     }
-	  //   });
-	  // }
+	  //     "recipient_landmark": "xxxx建筑物",
+	  //     "delivery_time": "2015-12-24 13:00～14:00",
+	  //     "recipient_name": "www",
+	  //     "pay_modes_id": "2",
+	  //     "products": [{
+	  //       "website": "website2",
+	  //       "name": "zhang",
+	  //       "size": "zhang1",
+	  //       "sku_id": 22,
+	  //       "discount_price": 180,
+	  //       "product_id": 1,
+	  //       "num": 1,
+	  //       "original_price": 20000,
+	  //       "is_local_site": "0",
+	  //       "is_delivery": "1",
+	  //       "category_name": "类型1",
+	  //       "choco_board": "巧克力牌xxx",
+	  //       "greeting_card": "祝福语xxx",
+	  //       "atlas": true,
+	  //       "custom_name": "自定义名称xxx",
+	  //       "custom_desc": "自定义描述xxx",
+	  //       "amount": 180
+	  //     }]
+	  //   }
+	  // });
+	}
+
+	function copyOrder() {
+	  return function (dispatch, getState) {
+	    var new_order = getState().orderManageForm.mainForm.data;
+	    new_order.products = [];
+	    return (0, _actionsForm.initForm)('add_order', new_order)(dispatch); //注意这种action间的相互引用
+	  };
+	}
+
+	var GOT_COPY_ORDER_BY_ID = 'GOT_COPY_ORDER_BY_ID';
+	exports.GOT_COPY_ORDER_BY_ID = GOT_COPY_ORDER_BY_ID;
+
+	function getCopyOrderById(id) {
+	  return (0, _utilsRequest.GET)(_configUrl2['default'].order_detail.toString(id), null, GOT_COPY_ORDER_BY_ID);
 	}
 
 	var SUBMIT_ING = 'SUBMIT_ING';
@@ -33042,6 +33058,82 @@
 
 /***/ },
 /* 292 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.updateAddOrderForm = updateAddOrderForm;
+	exports.triggerFormUpdate = triggerFormUpdate;
+	exports.resetFormUpdate = resetFormUpdate;
+	exports.initForm = initForm;
+	exports.destroyForm = destroyForm;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _reduxForm = __webpack_require__(241);
+
+	// import * as RF from 'redux-form';
+
+	var _configFormFields = __webpack_require__(293);
+
+	var _configFormFields2 = _interopRequireDefault(_configFormFields);
+
+	//可以手动触发redux-form的normalize动作
+
+	function updateAddOrderForm() {
+	  return (0, _reduxForm.focus)('add_order', '_update'); //form_name, field_name
+	}
+
+	//手动更改指定form的表单值
+
+	function triggerFormUpdate(form_name, field_name, field_value) {
+	  return (0, _reduxForm.blur)(form_name, field_name, field_value);
+	}
+
+	function resetFormUpdate(form_name, field_name, field_value) {
+	  return (0, _reduxForm.reset)(form_name, field_name, -1);
+	}
+
+	function initForm(form_name, data) {
+	  return function (dispatch) {
+	    dispatch(destroyForm(form_name));
+	    dispatch((0, _reduxForm.initialize)(form_name, data, _configFormFields2['default'][form_name]));
+	  };
+	}
+
+	function destroyForm(form_name) {
+	  return (0, _reduxForm.destroy)(form_name);
+	}
+
+/***/ },
+/* 293 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports['default'] = {
+	  add_order: ['delivery_type', 'owner_name', 'owner_mobile', 'recipient_name', //下单人姓名
+	  'recipient_mobile', 'recipient_address', //收货人详细地址----》送货上门
+	  'recipient_shop_address', //收货人详细地址----》门店自提(实际上是门店地址)
+	  'province_id', 'city_id', 'regionalism_id', //分店ID ----》自取
+	  'recipient_landmark', //标志性建筑
+	  'delivery_id', //配送中心
+	  'src_id', //订单来源
+	  'pay_modes_id', 'pay_status',
+	  // 'delivery_time',
+	  'delivery_date', 'delivery_hours', 'remarks', 'invoice', '_update']
+	};
+	module.exports = exports['default'];
+	//业务无关的私有field，用于触发整个form的更新
+
+/***/ },
+/* 294 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33138,7 +33230,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 293 */
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33182,7 +33274,7 @@
 	module.exports = Select;
 
 /***/ },
-/* 294 */
+/* 296 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -33436,7 +33528,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 295 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33529,7 +33621,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 296 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -33616,7 +33708,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 297 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -33720,7 +33812,7 @@
 	}
 
 /***/ },
-/* 298 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -33862,7 +33954,7 @@
 	//是否需要 modal-footer
 
 /***/ },
-/* 299 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -33959,7 +34051,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 300 */
+/* 302 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -34011,7 +34103,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 301 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34027,7 +34119,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _utilsMyMap = __webpack_require__(302);
+	var _utilsMyMap = __webpack_require__(304);
 
 	var _utilsMyMap2 = _interopRequireDefault(_utilsMyMap);
 
@@ -34041,7 +34133,7 @@
 
 	var _utilsIndex = __webpack_require__(160);
 
-	var _actionsForm = __webpack_require__(303);
+	var _actionsForm = __webpack_require__(292);
 
 	//完整封装
 
@@ -34139,7 +34231,7 @@
 	}
 
 /***/ },
-/* 302 */
+/* 304 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -34181,38 +34273,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 303 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports.updateAddOrderForm = updateAddOrderForm;
-	exports.triggerFormUpdate = triggerFormUpdate;
-	exports.resetFormUpdate = resetFormUpdate;
-
-	var _reduxForm = __webpack_require__(241);
-
-	//可以手动触发redux-form的normalize动作
-
-	function updateAddOrderForm() {
-	  return (0, _reduxForm.focus)('add_order', '_update'); //form_name, field_name
-	}
-
-	//手动更改指定form的表单值
-
-	function triggerFormUpdate(form_name, field_name, field_value) {
-	  return (0, _reduxForm.blur)(form_name, field_name, field_value);
-	}
-
-	function resetFormUpdate(form_name, field_name, field_value) {
-	  return (0, _reduxForm.reset)(form_name, field_name, -1);
-	}
-
-/***/ },
-/* 304 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -34394,7 +34455,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 305 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34419,7 +34480,7 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _commonLoading = __webpack_require__(297);
+	var _commonLoading = __webpack_require__(299);
 
 	var _reactDom = __webpack_require__(154);
 
@@ -34768,7 +34829,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 306 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34789,25 +34850,25 @@
 
 	var _reactAddonsLinkedStateMixin2 = _interopRequireDefault(_reactAddonsLinkedStateMixin);
 
-	var _commonDatepicker = __webpack_require__(292);
+	var _commonDatepicker = __webpack_require__(294);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonSelect = __webpack_require__(293);
+	var _commonSelect = __webpack_require__(295);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonStd_modal = __webpack_require__(298);
+	var _commonStd_modal = __webpack_require__(300);
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
-	var _commonRadio_group = __webpack_require__(307);
+	var _commonRadio_group = __webpack_require__(308);
 
 	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
 
 	var _utilsIndex = __webpack_require__(160);
 
-	var _mixinsMap = __webpack_require__(301);
+	var _mixinsMap = __webpack_require__(303);
 
 	var _mixinsMap2 = _interopRequireDefault(_mixinsMap);
 
@@ -35077,7 +35138,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 307 */
+/* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35174,7 +35235,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 308 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35201,7 +35262,7 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _commonSelect = __webpack_require__(293);
+	var _commonSelect = __webpack_require__(295);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
@@ -35274,7 +35335,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 309 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35289,13 +35350,13 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _commonStd_modalJs = __webpack_require__(298);
+	var _commonStd_modalJs = __webpack_require__(300);
 
 	var _commonStd_modalJs2 = _interopRequireDefault(_commonStd_modalJs);
 
-	var _commonLoading = __webpack_require__(297);
+	var _commonLoading = __webpack_require__(299);
 
-	var _commonPaginationJs = __webpack_require__(294);
+	var _commonPaginationJs = __webpack_require__(296);
 
 	var _commonPaginationJs2 = _interopRequireDefault(_commonPaginationJs);
 
@@ -35441,7 +35502,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 310 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35482,31 +35543,31 @@
 
 	var OrderFormActions = _interopRequireWildcard(_actionsOrder_manage_form);
 
-	var _actionsForm = __webpack_require__(303);
+	var _actionsForm = __webpack_require__(292);
 
 	var FormActions = _interopRequireWildcard(_actionsForm);
 
-	var _commonDatepicker = __webpack_require__(292);
+	var _commonDatepicker = __webpack_require__(294);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonAlert = __webpack_require__(311);
+	var _commonAlert = __webpack_require__(312);
 
 	var _commonAlert2 = _interopRequireDefault(_commonAlert);
 
-	var _commonLine_router = __webpack_require__(295);
+	var _commonLine_router = __webpack_require__(297);
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _manage_order_form_create = __webpack_require__(312);
+	var _manage_order_form_create = __webpack_require__(313);
 
 	var _manage_order_form_create2 = _interopRequireDefault(_manage_order_form_create);
 
-	var _manage_order_form_edit = __webpack_require__(318);
+	var _manage_order_form_edit = __webpack_require__(319);
 
 	var _manage_order_form_edit2 = _interopRequireDefault(_manage_order_form_edit);
 
-	var _manage_order_products = __webpack_require__(319);
+	var _manage_order_products = __webpack_require__(320);
 
 	var _manage_order_products2 = _interopRequireDefault(_manage_order_products);
 
@@ -35638,7 +35699,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 311 */
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35699,7 +35760,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 312 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35710,7 +35771,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _manage_order_form = __webpack_require__(313);
+	var _manage_order_form = __webpack_require__(314);
 
 	var _manage_order_form2 = _interopRequireDefault(_manage_order_form);
 
@@ -35728,7 +35789,7 @@
 	// invoice: INVOICE.NO,
 
 /***/ },
-/* 313 */
+/* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35759,19 +35820,19 @@
 
 	var _reduxForm = __webpack_require__(241);
 
-	var _commonDatepicker = __webpack_require__(292);
+	var _commonDatepicker = __webpack_require__(294);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonSelect = __webpack_require__(293);
+	var _commonSelect = __webpack_require__(295);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonPagination = __webpack_require__(294);
+	var _commonPagination = __webpack_require__(296);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _utilsLazy_load = __webpack_require__(300);
+	var _utilsLazy_load = __webpack_require__(302);
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
@@ -35781,17 +35842,21 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _manage_history_orders = __webpack_require__(314);
+	var _manage_history_orders = __webpack_require__(315);
 
 	var _manage_history_orders2 = _interopRequireDefault(_manage_history_orders);
 
-	var _reducersForm = __webpack_require__(315);
+	var _reducersForm = __webpack_require__(316);
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _mixinsMap = __webpack_require__(301);
+	var _mixinsMap = __webpack_require__(303);
 
 	var _mixinsMap2 = _interopRequireDefault(_mixinsMap);
+
+	var _configFormFields = __webpack_require__(293);
+
+	var _configFormFields2 = _interopRequireDefault(_configFormFields);
 
 	var validate = function validate(values, props) {
 	  var errors = {};
@@ -35849,7 +35914,7 @@
 	    _get(Object.getPrototypeOf(ManageAddForm.prototype), 'constructor', this).call(this, props);
 	    this.state = {
 	      invoices: [{ id: _configAppConfig.INVOICE.NO, text: '不需要' }, { id: _configAppConfig.INVOICE.YES, text: '需要' }],
-	      selected_order_src_level1_id: _configAppConfig.SELECT_DEFAULT_VALUE,
+	      selected_order_src_level1_id: undefined,
 	      groupbuy_psd: '',
 	      groupbuy_check_ing: false,
 	      groupbuy_success: undefined, //验券是否成功
@@ -35906,6 +35971,8 @@
 	      var _props$actions = this.props.actions;
 	      var getHistoryOrders = _props$actions.getHistoryOrders;
 	      var checkHistoryOrder = _props$actions.checkHistoryOrder;
+	      var getCopyOrderById = _props$actions.getCopyOrderById;
+	      var copyOrder = _props$actions.copyOrder;
 	      var _props$formData = this.props['form-data'];
 	      var save_ing = _props$formData.save_ing;
 	      var save_success = _props$formData.save_success;
@@ -36094,7 +36161,7 @@
 	            options: order_srcs_level2,
 	            key: 'order_srcs_level2',
 	            className: 'form-select ' + src_id.error }))] : _react2['default'].createElement(_commonSelect2['default'], {
-	            value: selected_order_src_level1_id,
+	            value: typeof selected_order_src_level1_id == 'undefined' ? src_id.value : _configAppConfig.SELECT_DEFAULT_VALUE,
 	            options: all_order_srcs[0],
 	            onChange: this.orderSrcsLevel1Change.bind(this),
 	            key: 'order_srcs_level1',
@@ -36207,7 +36274,7 @@
 	          ref: 'history_orders_modal',
 	          phone_num: owner_mobile.value,
 	          data: history_orders
-	        }, { getHistoryOrders: getHistoryOrders, checkHistoryOrder: checkHistoryOrder }))
+	        }, { getHistoryOrders: getHistoryOrders, checkHistoryOrder: checkHistoryOrder, getCopyOrderById: getCopyOrderById, copyOrder: copyOrder }))
 	      );
 	    }
 	  }, {
@@ -36449,17 +36516,7 @@
 	function initManageOrderForm(initFunc) {
 	  return (0, _reduxForm.reduxForm)({
 	    form: 'add_order', //表单命名空间
-	    fields: ['delivery_type', 'owner_name', 'owner_mobile', 'recipient_name', //下单人姓名
-	    'recipient_mobile', 'recipient_address', //收货人详细地址----》送货上门
-	    'recipient_shop_address', //收货人详细地址----》门店自提(实际上是门店地址)
-	    'province_id', 'city_id', 'regionalism_id', //分店ID ----》自取
-	    'recipient_landmark', //标志性建筑
-	    'delivery_id', //配送中心
-	    'src_id', //订单来源
-	    'pay_modes_id', 'pay_status',
-	    // 'delivery_time',
-	    'delivery_date', 'delivery_hours', 'remarks', 'invoice', '_update'],
-	    //业务无关的私有field，用于触发整个form的更新
+	    fields: _configFormFields2['default'].add_order,
 	    validate: validate,
 	    touchOnBlur: true
 	  }, initFunc)(ManageAddForm);
@@ -36468,7 +36525,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 314 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36499,17 +36556,17 @@
 
 	var OrderManageActions = _interopRequireWildcard(_actionsOrders);
 
-	var _commonPagination = __webpack_require__(294);
+	var _commonPagination = __webpack_require__(296);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _commonStd_modal = __webpack_require__(298);
+	var _commonStd_modal = __webpack_require__(300);
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
-	var _commonLoading = __webpack_require__(297);
+	var _commonLoading = __webpack_require__(299);
 
-	var _commonRecipient_info = __webpack_require__(299);
+	var _commonRecipient_info = __webpack_require__(301);
 
 	var _commonRecipient_info2 = _interopRequireDefault(_commonRecipient_info);
 
@@ -36517,7 +36574,7 @@
 
 	var _utilsIndex = __webpack_require__(160);
 
-	var _commonOrder_products_detail = __webpack_require__(304);
+	var _commonOrder_products_detail = __webpack_require__(305);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
@@ -36580,12 +36637,11 @@
 	          'td',
 	          { className: 'nowrap' },
 	          src_name[0],
-	          _react2['default'].createElement('br', null),
-	          _react2['default'].createElement(
+	          src_name[1] ? [_react2['default'].createElement('br', null), _react2['default'].createElement(
 	            'span',
 	            { className: 'bordered bg-warning' },
 	            src_name[1]
-	          )
+	          )] : null
 	        ),
 	        _react2['default'].createElement(
 	          'td',
@@ -36636,7 +36692,7 @@
 	    _get(Object.getPrototypeOf(HistoryOrders.prototype), 'constructor', this).call(this, props);
 	    this.search = this.search.bind(this);
 	    this.show = this.show.bind(this);
-	    this.hide = this.hide.bind(this);
+	    this.hideCallback = this.hideCallback.bind(this);
 	    this.state = {
 	      page_size: 3,
 	      phone_num: this.props.phone_num
@@ -36679,7 +36735,7 @@
 	          '　',
 	          _react2['default'].createElement(
 	            'button',
-	            { className: 'btn btn-default btn-xs' },
+	            { onClick: this.copyOrder.bind(this), className: 'btn btn-default btn-xs' },
 	            '复制订单'
 	          )
 	        ),
@@ -36820,16 +36876,35 @@
 	      }
 	    }
 	  }, {
+	    key: 'copyOrder',
+	    value: function copyOrder() {
+	      var _this = this;
+
+	      var _props2 = this.props;
+	      var check_order_info = _props2.data.check_order_info;
+	      var getCopyOrderById = _props2.getCopyOrderById;
+	      var copyOrder = _props2.copyOrder;
+
+	      if (check_order_info) {
+	        getCopyOrderById(check_order_info.order_id).done(function () {
+	          copyOrder();
+	          _this.refs.modal.hide();
+	        }).fail(function (msg) {
+	          (0, _utilsIndex.Noty)('error', msg || '服务器忙');
+	        });
+	      } else {
+	        (0, _utilsIndex.Noty)('warning', '请点击选择你想要复制的订单');
+	      }
+	    }
+	  }, {
 	    key: 'show',
 	    value: function show() {
 	      this.refs.modal.show();
 	      this.search();
 	    }
 	  }, {
-	    key: 'hide',
-	    value: function hide() {
-	      this.refs.modal.hide();
-	    }
+	    key: 'hideCallback',
+	    value: function hideCallback() {}
 	  }]);
 
 	  return HistoryOrders;
@@ -36838,15 +36913,17 @@
 	HistoryOrders.PropTypes = {
 	  data: _react.PropTypes.object.isRequired,
 	  getHistoryOrders: _react.PropTypes.func.isRequired,
-	  checkHistoryOrder: _react.PropTypes.func.isRequired
+	  checkHistoryOrder: _react.PropTypes.func.isRequired,
+	  getCopyOrderById: _react.PropTypes.func.isRequired,
+	  copyOrder: _react.PropTypes.func.isRequired
 	};
 
 	exports['default'] = HistoryOrders;
 	module.exports = exports['default'];
-	/*订单状态*/
+	/*订单来源*/ /*订单状态*/
 
 /***/ },
-/* 315 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36859,17 +36936,33 @@
 
 	exports.isSrc = isSrc;
 
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
 	var _reduxForm = __webpack_require__(241);
+
+	var xxx = _interopRequireWildcard(_reduxForm);
 
 	// import store from 'stores/configureStore'; //循环引用
 
-	var _storesGetter = __webpack_require__(316);
+	var _storesGetter = __webpack_require__(317);
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _actionsOrder_products = __webpack_require__(317);
+	var _actionsOrder_products = __webpack_require__(318);
 
 	var _utilsIndex = __webpack_require__(160);
+
+	var _actionsForm = __webpack_require__(292);
+
+	var _configFormFields = __webpack_require__(293);
+
+	var _configFormFields2 = _interopRequireDefault(_configFormFields);
+
+	// setTimeout(() => {
+	//   console.dir(xxx);
+	// })
 
 	function preCheck() {
 	  var pathname = location.pathname;
@@ -36914,9 +37007,16 @@
 
 	exports['default'] = _reduxForm.reducer.plugin({
 	  add_order: function add_order(state, action) {
+	    //这里注意：所有的action都会进入，所以得使用以下判断, 以确保当前form为add_order
 	    if (action && action.form == 'add_order') {
-	      //电话号码
-	      if (action.field == 'owner_mobile') {
+	      //重新初始化表单
+	      if (action.type == _actionsForm.REDUX_FORM_REINIT) {
+	        _configFormFields2['default']['add_order'].forEach(function (n) {
+	          state[n].value = state[n].initial;
+	        });
+	        return _extends({}, state);
+	      } else if (action.field == 'owner_mobile') {
+	        //电话号码
 	        switch (action.type) {
 	          case _reduxForm.actionTypes.FOCUS:
 	            state.owner_mobile.focus = true;
@@ -37075,7 +37175,7 @@
 	});*/
 
 /***/ },
-/* 316 */
+/* 317 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -37096,7 +37196,7 @@
 	}
 
 /***/ },
-/* 317 */
+/* 318 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37263,7 +37363,7 @@
 	}
 
 /***/ },
-/* 318 */
+/* 319 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37274,7 +37374,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _manage_order_form = __webpack_require__(313);
+	var _manage_order_form = __webpack_require__(314);
 
 	var _manage_order_form2 = _interopRequireDefault(_manage_order_form);
 
@@ -37289,7 +37389,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 319 */
+/* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37321,11 +37421,11 @@
 
 	var _reactDom = __webpack_require__(154);
 
-	var _manage_add_products_modal = __webpack_require__(320);
+	var _manage_add_products_modal = __webpack_require__(321);
 
 	var _manage_add_products_modal2 = _interopRequireDefault(_manage_add_products_modal);
 
-	var _actionsOrder_products = __webpack_require__(317);
+	var _actionsOrder_products = __webpack_require__(318);
 
 	var ProductsActions = _interopRequireWildcard(_actionsOrder_products);
 
@@ -37612,7 +37712,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 320 */
+/* 321 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37639,25 +37739,25 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _commonSelect = __webpack_require__(293);
+	var _commonSelect = __webpack_require__(295);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonNumber_picker = __webpack_require__(321);
+	var _commonNumber_picker = __webpack_require__(322);
 
 	var _commonNumber_picker2 = _interopRequireDefault(_commonNumber_picker);
 
-	var _commonPagination = __webpack_require__(294);
+	var _commonPagination = __webpack_require__(296);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _commonSelect_group = __webpack_require__(322);
+	var _commonSelect_group = __webpack_require__(323);
 
 	var _commonSelect_group2 = _interopRequireDefault(_commonSelect_group);
 
-	var _commonLoading = __webpack_require__(297);
+	var _commonLoading = __webpack_require__(299);
 
-	var _actionsOrder_products = __webpack_require__(317);
+	var _actionsOrder_products = __webpack_require__(318);
 
 	var OrderProductsActions = _interopRequireWildcard(_actionsOrder_products);
 
@@ -38046,7 +38146,11 @@
 	        _react2['default'].createElement(
 	          'td',
 	          null,
-	          _react2['default'].createElement(
+	          sku0.checked ? _react2['default'].createElement(
+	            'span',
+	            { className: 'gray' },
+	            '[选择]'
+	          ) : _react2['default'].createElement(
 	            'a',
 	            { onClick: choose.bind(this, sku0), href: 'javascript:;' },
 	            '[选择]'
@@ -38237,7 +38341,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 321 */
+/* 322 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38322,7 +38426,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 322 */
+/* 323 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38402,7 +38506,7 @@
 	module.exports = SelectGroup;
 
 /***/ },
-/* 323 */
+/* 324 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -38437,27 +38541,27 @@
 
 	var _reduxForm = __webpack_require__(241);
 
-	var _commonDatepicker = __webpack_require__(292);
+	var _commonDatepicker = __webpack_require__(294);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonSelect = __webpack_require__(293);
+	var _commonSelect = __webpack_require__(295);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonPagination = __webpack_require__(294);
+	var _commonPagination = __webpack_require__(296);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _commonStd_modal = __webpack_require__(298);
+	var _commonStd_modal = __webpack_require__(300);
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
-	var _commonLine_router = __webpack_require__(295);
+	var _commonLine_router = __webpack_require__(297);
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _commonLoading = __webpack_require__(297);
+	var _commonLoading = __webpack_require__(299);
 
 	var _utilsIndex = __webpack_require__(160);
 
@@ -38467,19 +38571,19 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _utilsLazy_load = __webpack_require__(300);
+	var _utilsLazy_load = __webpack_require__(302);
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
-	var _commonOrder_products_detail = __webpack_require__(304);
+	var _commonOrder_products_detail = __webpack_require__(305);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(305);
+	var _commonOrder_detail_modal = __webpack_require__(306);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
-	var _commonOperation_record_modalJs = __webpack_require__(309);
+	var _commonOperation_record_modalJs = __webpack_require__(310);
 
 	var _commonOperation_record_modalJs2 = _interopRequireDefault(_commonOperation_record_modalJs);
 
@@ -38491,7 +38595,7 @@
 
 	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
-	var _actionsDelivery_change = __webpack_require__(324);
+	var _actionsDelivery_change = __webpack_require__(325);
 
 	var ChangeActions = _interopRequireWildcard(_actionsDelivery_change);
 
@@ -39100,7 +39204,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 324 */
+/* 325 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39149,7 +39253,7 @@
 	}
 
 /***/ },
-/* 325 */
+/* 326 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -39188,29 +39292,29 @@
 
 	var _reduxForm = __webpack_require__(241);
 
-	var _commonDatepicker = __webpack_require__(292);
+	var _commonDatepicker = __webpack_require__(294);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonSelect = __webpack_require__(293);
+	var _commonSelect = __webpack_require__(295);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonPagination = __webpack_require__(294);
+	var _commonPagination = __webpack_require__(296);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _commonStd_modal = __webpack_require__(298);
+	var _commonStd_modal = __webpack_require__(300);
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
-	var _commonLine_router = __webpack_require__(295);
+	var _commonLine_router = __webpack_require__(297);
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _commonLoading = __webpack_require__(297);
+	var _commonLoading = __webpack_require__(299);
 
-	var _commonRecipient_info = __webpack_require__(299);
+	var _commonRecipient_info = __webpack_require__(301);
 
 	var _commonRecipient_info2 = _interopRequireDefault(_commonRecipient_info);
 
@@ -39220,7 +39324,7 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _utilsLazy_load = __webpack_require__(300);
+	var _utilsLazy_load = __webpack_require__(302);
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
@@ -39234,27 +39338,27 @@
 
 	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
-	var _actionsDeliveryman = __webpack_require__(326);
+	var _actionsDeliveryman = __webpack_require__(327);
 
 	var DeliverymanActions = _interopRequireWildcard(_actionsDeliveryman);
 
-	var _actionsDelivery_manage = __webpack_require__(327);
+	var _actionsDelivery_manage = __webpack_require__(328);
 
 	var DeliveryManageActions = _interopRequireWildcard(_actionsDelivery_manage);
 
-	var _commonOrder_products_detail = __webpack_require__(304);
+	var _commonOrder_products_detail = __webpack_require__(305);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(305);
+	var _commonOrder_detail_modal = __webpack_require__(306);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
-	var _commonScan_modal = __webpack_require__(328);
+	var _commonScan_modal = __webpack_require__(329);
 
 	var _commonScan_modal2 = _interopRequireDefault(_commonScan_modal);
 
-	var _commonOperation_record_modalJs = __webpack_require__(309);
+	var _commonOperation_record_modalJs = __webpack_require__(310);
 
 	var _commonOperation_record_modalJs2 = _interopRequireDefault(_commonOperation_record_modalJs);
 
@@ -40347,7 +40451,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 326 */
+/* 327 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40382,7 +40486,7 @@
 	}
 
 /***/ },
-/* 327 */
+/* 328 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40485,7 +40589,7 @@
 	}
 
 /***/ },
-/* 328 */
+/* 329 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40510,7 +40614,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _commonStd_modal = __webpack_require__(298);
+	var _commonStd_modal = __webpack_require__(300);
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
@@ -40692,7 +40796,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 329 */
+/* 330 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40731,37 +40835,37 @@
 
 	var _reduxForm = __webpack_require__(241);
 
-	var _commonDatepicker = __webpack_require__(292);
+	var _commonDatepicker = __webpack_require__(294);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonSelect = __webpack_require__(293);
+	var _commonSelect = __webpack_require__(295);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonTime_input = __webpack_require__(330);
+	var _commonTime_input = __webpack_require__(331);
 
 	var _commonTime_input2 = _interopRequireDefault(_commonTime_input);
 
-	var _commonPagination = __webpack_require__(294);
+	var _commonPagination = __webpack_require__(296);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _commonLine_router = __webpack_require__(295);
+	var _commonLine_router = __webpack_require__(297);
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _commonStd_modal = __webpack_require__(298);
+	var _commonStd_modal = __webpack_require__(300);
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
-	var _commonLoading = __webpack_require__(297);
+	var _commonLoading = __webpack_require__(299);
 
-	var _commonRadio_group = __webpack_require__(307);
+	var _commonRadio_group = __webpack_require__(308);
 
 	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
 
-	var _commonRecipient_info = __webpack_require__(299);
+	var _commonRecipient_info = __webpack_require__(301);
 
 	var _commonRecipient_info2 = _interopRequireDefault(_commonRecipient_info);
 
@@ -40771,7 +40875,7 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _utilsLazy_load = __webpack_require__(300);
+	var _utilsLazy_load = __webpack_require__(302);
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
@@ -40785,29 +40889,29 @@
 
 	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
-	var _actionsDeliveryman = __webpack_require__(326);
+	var _actionsDeliveryman = __webpack_require__(327);
 
 	var DeliverymanActions = _interopRequireWildcard(_actionsDeliveryman);
 
-	var _actionsDelivery_distribute = __webpack_require__(331);
+	var _actionsDelivery_distribute = __webpack_require__(332);
 
 	var DeliveryDistributeActions = _interopRequireWildcard(_actionsDelivery_distribute);
 
 	var _actionsOrder_manage_form = __webpack_require__(291);
 
-	var _commonOrder_products_detail = __webpack_require__(304);
+	var _commonOrder_products_detail = __webpack_require__(305);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(305);
+	var _commonOrder_detail_modal = __webpack_require__(306);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
-	var _commonScan_modal = __webpack_require__(328);
+	var _commonScan_modal = __webpack_require__(329);
 
 	var _commonScan_modal2 = _interopRequireDefault(_commonScan_modal);
 
-	var _commonOperation_record_modalJs = __webpack_require__(309);
+	var _commonOperation_record_modalJs = __webpack_require__(310);
 
 	var _commonOperation_record_modalJs2 = _interopRequireDefault(_commonOperation_record_modalJs);
 
@@ -41761,7 +41865,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 330 */
+/* 331 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41878,7 +41982,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 331 */
+/* 332 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41932,7 +42036,7 @@
 	}
 
 /***/ },
-/* 332 */
+/* 333 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41971,31 +42075,31 @@
 
 	var _reduxForm = __webpack_require__(241);
 
-	var _commonDatepicker = __webpack_require__(292);
+	var _commonDatepicker = __webpack_require__(294);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonSelect = __webpack_require__(293);
+	var _commonSelect = __webpack_require__(295);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonPagination = __webpack_require__(294);
+	var _commonPagination = __webpack_require__(296);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
-	var _commonStd_modal = __webpack_require__(298);
+	var _commonStd_modal = __webpack_require__(300);
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
-	var _commonLine_router = __webpack_require__(295);
+	var _commonLine_router = __webpack_require__(297);
 
 	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
 
-	var _commonRadio_group = __webpack_require__(307);
+	var _commonRadio_group = __webpack_require__(308);
 
 	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
 
-	var _commonLoading = __webpack_require__(297);
+	var _commonLoading = __webpack_require__(299);
 
 	var _utilsIndex = __webpack_require__(160);
 
@@ -42005,15 +42109,15 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _utilsLazy_load = __webpack_require__(300);
+	var _utilsLazy_load = __webpack_require__(302);
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
-	var _commonOrder_products_detail = __webpack_require__(304);
+	var _commonOrder_products_detail = __webpack_require__(305);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(305);
+	var _commonOrder_detail_modal = __webpack_require__(306);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
@@ -42021,7 +42125,7 @@
 
 	var OrderActions = _interopRequireWildcard(_actionsOrders);
 
-	var _actionsDelivery_print_review = __webpack_require__(333);
+	var _actionsDelivery_print_review = __webpack_require__(334);
 
 	var DeliverPrintReviewActions = _interopRequireWildcard(_actionsDelivery_print_review);
 
@@ -42519,7 +42623,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 333 */
+/* 334 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42593,7 +42697,7 @@
 	}
 
 /***/ },
-/* 334 */
+/* 335 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42606,15 +42710,15 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _reduxLogger = __webpack_require__(335);
+	var _reduxLogger = __webpack_require__(336);
 
 	var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
 
-	var _reduxThunk = __webpack_require__(336);
+	var _reduxThunk = __webpack_require__(337);
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-	var _reducersIndex = __webpack_require__(337);
+	var _reducersIndex = __webpack_require__(338);
 
 	var _reducersIndex2 = _interopRequireDefault(_reducersIndex);
 
@@ -42636,7 +42740,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 335 */
+/* 336 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -42781,7 +42885,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 336 */
+/* 337 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -42803,7 +42907,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 337 */
+/* 338 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42816,39 +42920,39 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _login = __webpack_require__(338);
+	var _login = __webpack_require__(339);
 
 	var _login2 = _interopRequireDefault(_login);
 
-	var _order_manage = __webpack_require__(339);
+	var _order_manage = __webpack_require__(340);
 
 	var _order_manage2 = _interopRequireDefault(_order_manage);
 
-	var _order_manage_form = __webpack_require__(344);
+	var _order_manage_form = __webpack_require__(345);
 
 	var _order_manage_form2 = _interopRequireDefault(_order_manage_form);
 
-	var _delivery_change = __webpack_require__(350);
+	var _delivery_change = __webpack_require__(351);
 
 	var _delivery_change2 = _interopRequireDefault(_delivery_change);
 
-	var _delivery_manage = __webpack_require__(351);
+	var _delivery_manage = __webpack_require__(352);
 
 	var _delivery_manage2 = _interopRequireDefault(_delivery_manage);
 
-	var _distribute_manage = __webpack_require__(353);
+	var _distribute_manage = __webpack_require__(354);
 
 	var _distribute_manage2 = _interopRequireDefault(_distribute_manage);
 
-	var _delivery_print_review = __webpack_require__(354);
+	var _delivery_print_review = __webpack_require__(355);
 
 	var _delivery_print_review2 = _interopRequireDefault(_delivery_print_review);
 
-	var _form = __webpack_require__(315);
+	var _form = __webpack_require__(316);
 
 	var _form2 = _interopRequireDefault(_form);
 
-	var _reduxSimpleRouter = __webpack_require__(341);
+	var _reduxSimpleRouter = __webpack_require__(342);
 
 	var rootReducer = (0, _redux.combineReducers)({
 	  login: _login2['default'],
@@ -42866,7 +42970,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 338 */
+/* 339 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42924,7 +43028,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 339 */
+/* 340 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42955,13 +43059,13 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _reducersArea_select = __webpack_require__(340);
+	var _reducersArea_select = __webpack_require__(341);
 
-	var _reducersDelivery_stations = __webpack_require__(342);
+	var _reducersDelivery_stations = __webpack_require__(343);
 
 	var _reducersDelivery_stations2 = _interopRequireDefault(_reducersDelivery_stations);
 
-	var _reducersOrders = __webpack_require__(343);
+	var _reducersOrders = __webpack_require__(344);
 
 	var filter_state = {
 	  search_ing: false,
@@ -43038,7 +43142,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 340 */
+/* 341 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -43055,7 +43159,7 @@
 
 	var _actionsAction_types = __webpack_require__(288);
 
-	var _reduxSimpleRouter = __webpack_require__(341);
+	var _reduxSimpleRouter = __webpack_require__(342);
 
 	var _utilsIndex = __webpack_require__(160);
 
@@ -43105,7 +43209,7 @@
 	}
 
 /***/ },
-/* 341 */
+/* 342 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -43305,7 +43409,7 @@
 
 
 /***/ },
-/* 342 */
+/* 343 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -43364,7 +43468,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 343 */
+/* 344 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -43384,11 +43488,11 @@
 
 	var OrderActions = _interopRequireWildcard(_actionsOrders);
 
-	var _actionsDelivery_manage = __webpack_require__(327);
+	var _actionsDelivery_manage = __webpack_require__(328);
 
-	var _actionsDelivery_distribute = __webpack_require__(331);
+	var _actionsDelivery_distribute = __webpack_require__(332);
 
-	var _reduxSimpleRouter = __webpack_require__(341);
+	var _reduxSimpleRouter = __webpack_require__(342);
 
 	var orders_state = {
 	  loading: true,
@@ -43482,7 +43586,7 @@
 	}
 
 /***/ },
-/* 344 */
+/* 345 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -43501,23 +43605,23 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _area_select = __webpack_require__(340);
+	var _area_select = __webpack_require__(341);
 
 	var _actionsOrder_manage_form = __webpack_require__(291);
 
 	var FormActions = _interopRequireWildcard(_actionsOrder_manage_form);
 
-	var _actionsOrder_products = __webpack_require__(317);
+	var _actionsOrder_products = __webpack_require__(318);
 
 	var OrderProductsActions = _interopRequireWildcard(_actionsOrder_products);
 
-	var _reduxSimpleRouter = __webpack_require__(341);
+	var _reduxSimpleRouter = __webpack_require__(342);
 
 	var _actionsArea = __webpack_require__(287);
 
 	var _actionsArea2 = _interopRequireDefault(_actionsArea);
 
-	var _actionsForm = __webpack_require__(303);
+	var _actionsForm = __webpack_require__(292);
 
 	var _utilsIndex = __webpack_require__(160);
 
@@ -43525,15 +43629,15 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _reducersDelivery_stations = __webpack_require__(342);
+	var _reducersDelivery_stations = __webpack_require__(343);
 
 	var _reducersDelivery_stations2 = _interopRequireDefault(_reducersDelivery_stations);
 
-	var _clone = __webpack_require__(345);
+	var _clone = __webpack_require__(346);
 
 	var _clone2 = _interopRequireDefault(_clone);
 
-	var _storesGetter = __webpack_require__(316);
+	var _storesGetter = __webpack_require__(317);
 
 	var initial_state = {
 	  all_pay_status: (0, _utilsIndex.map)(_configAppConfig.pay_status, function (text, id) {
@@ -43593,6 +43697,7 @@
 	      return _extends({}, state, { submit_ing: true });
 
 	    case FormActions.GOT_ORDER_BY_ID:
+	    case FormActions.GOT_COPY_ORDER_BY_ID:
 	      return (function () {
 	        var data = action.data;
 
@@ -43827,7 +43932,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 345 */
+/* 346 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {var clone = (function() {
@@ -43991,10 +44096,10 @@
 	  module.exports = clone;
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(346).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(347).Buffer))
 
 /***/ },
-/* 346 */
+/* 347 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -44005,9 +44110,9 @@
 	 */
 	/* eslint-disable no-proto */
 
-	var base64 = __webpack_require__(347)
-	var ieee754 = __webpack_require__(348)
-	var isArray = __webpack_require__(349)
+	var base64 = __webpack_require__(348)
+	var ieee754 = __webpack_require__(349)
+	var isArray = __webpack_require__(350)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -45542,10 +45647,10 @@
 	  return i
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(346).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(347).Buffer, (function() { return this; }())))
 
 /***/ },
-/* 347 */
+/* 348 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -45675,7 +45780,7 @@
 
 
 /***/ },
-/* 348 */
+/* 349 */
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -45765,7 +45870,7 @@
 
 
 /***/ },
-/* 349 */
+/* 350 */
 /***/ function(module, exports) {
 
 	module.exports = Array.isArray || function (arr) {
@@ -45774,7 +45879,7 @@
 
 
 /***/ },
-/* 350 */
+/* 351 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45791,15 +45896,15 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _actionsDelivery_change = __webpack_require__(324);
+	var _actionsDelivery_change = __webpack_require__(325);
 
 	var ChangeActions = _interopRequireWildcard(_actionsDelivery_change);
 
 	var _actionsOrder_manage_form = __webpack_require__(291);
 
-	var _reducersOrders = __webpack_require__(343);
+	var _reducersOrders = __webpack_require__(344);
 
-	var _reducersArea_select = __webpack_require__(340);
+	var _reducersArea_select = __webpack_require__(341);
 
 	var _configAppConfig = __webpack_require__(157);
 
@@ -45839,7 +45944,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 351 */
+/* 352 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45854,13 +45959,13 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _reducersOrders = __webpack_require__(343);
+	var _reducersOrders = __webpack_require__(344);
 
-	var _reducersArea_select = __webpack_require__(340);
+	var _reducersArea_select = __webpack_require__(341);
 
-	var _reducersDeliveryman = __webpack_require__(352);
+	var _reducersDeliveryman = __webpack_require__(353);
 
-	var _actionsDelivery_manage = __webpack_require__(327);
+	var _actionsDelivery_manage = __webpack_require__(328);
 
 	var Actions = _interopRequireWildcard(_actionsDelivery_manage);
 
@@ -45868,7 +45973,7 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _reduxSimpleRouter = __webpack_require__(341);
+	var _reduxSimpleRouter = __webpack_require__(342);
 
 	var filter_state = {
 	  search_ing: false
@@ -45937,7 +46042,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 352 */
+/* 353 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45952,7 +46057,7 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-	var _actionsDeliveryman = __webpack_require__(326);
+	var _actionsDeliveryman = __webpack_require__(327);
 
 	var Actions = _interopRequireWildcard(_actionsDeliveryman);
 
@@ -45975,7 +46080,7 @@
 	}
 
 /***/ },
-/* 353 */
+/* 354 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45994,21 +46099,21 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _reducersOrders = __webpack_require__(343);
+	var _reducersOrders = __webpack_require__(344);
 
-	var _reducersDeliveryman = __webpack_require__(352);
+	var _reducersDeliveryman = __webpack_require__(353);
 
-	var _reducersArea_select = __webpack_require__(340);
+	var _reducersArea_select = __webpack_require__(341);
 
 	var _actionsOrder_manage_form = __webpack_require__(291);
 
 	var _actionsOrders = __webpack_require__(289);
 
-	var _actionsDelivery_distribute = __webpack_require__(331);
+	var _actionsDelivery_distribute = __webpack_require__(332);
 
 	var Actions = _interopRequireWildcard(_actionsDelivery_distribute);
 
-	var _reduxSimpleRouter = __webpack_require__(341);
+	var _reduxSimpleRouter = __webpack_require__(342);
 
 	var filter_state = {
 	  search_ing: false,
@@ -46085,7 +46190,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 354 */
+/* 355 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46102,7 +46207,7 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _actionsDelivery_print_review = __webpack_require__(333);
+	var _actionsDelivery_print_review = __webpack_require__(334);
 
 	var Actions = _interopRequireWildcard(_actionsDelivery_print_review);
 

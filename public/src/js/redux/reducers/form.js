@@ -1,9 +1,17 @@
 import { reducer as formReducer, actionTypes } from 'redux-form';
+import * as xxx from 'redux-form';
 // import store from 'stores/configureStore'; //循环引用
 import { getGlobalStore, getGlobalState } from 'stores/getter';
 import { SELECT_DEFAULT_VALUE, pay_status as PAY_STATUS } from 'config/app.config';
 import { updateConfirmProductDiscountPrice } from 'actions/order_products';
-import { delay } from 'utils/index';
+import { delay, each } from 'utils/index';
+
+import { REDUX_FORM_REINIT } from 'actions/form';
+import FormFields from 'config/form.fields';
+
+// setTimeout(() => {
+//   console.dir(xxx);
+// })
 
 function preCheck(){
   var { pathname } = location;
@@ -35,9 +43,16 @@ function getMode(mode_name){
 
 export default formReducer.plugin({
   add_order: (state, action) => {
+  //这里注意：所有的action都会进入，所以得使用以下判断, 以确保当前form为add_order
     if(action && action.form == 'add_order'){
-      //电话号码
-      if(action.field == 'owner_mobile'){
+      //重新初始化表单
+      if(action.type == REDUX_FORM_REINIT){
+        FormFields['add_order'].forEach( n => {
+          state[n].value = state[n].initial;
+        })
+        return {...state};
+      }else if(action.field == 'owner_mobile'){
+        //电话号码
         switch(action.type){
           case actionTypes.FOCUS:
             state.owner_mobile.focus = true;

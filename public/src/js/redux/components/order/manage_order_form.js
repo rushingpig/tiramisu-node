@@ -15,6 +15,7 @@ import { isSrc } from 'reducers/form';
 import { DELIVERY_TO_HOME, DELIVERY_TO_STORE,
   SELECT_DEFAULT_VALUE, INVOICE } from 'config/app.config';
 import autoMatchDeliveryStations from 'mixins/map';
+import FormFields from 'config/form.fields';
 
 const validate = (values, props) => {
   const errors = {};
@@ -69,7 +70,7 @@ class ManageAddForm extends Component {
     super(props);
     this.state = {
       invoices: [{id: INVOICE.NO, text: '不需要'}, {id: INVOICE.YES, text: '需要'}],
-      selected_order_src_level1_id: SELECT_DEFAULT_VALUE,
+      selected_order_src_level1_id: undefined,
       groupbuy_psd: '',
       groupbuy_check_ing: false,
       groupbuy_success: undefined, //验券是否成功
@@ -109,7 +110,7 @@ class ManageAddForm extends Component {
       history_orders,
     } = this.props;
 
-    var { getHistoryOrders, checkHistoryOrder } = this.props.actions;
+    var { getHistoryOrders, checkHistoryOrder, getCopyOrderById, copyOrder } = this.props.actions;
 
     var { save_ing, save_success, submit_ing, 
       all_delivery_time, all_pay_status, all_order_srcs, 
@@ -215,7 +216,7 @@ class ManageAddForm extends Component {
                   className={`form-select ${src_id.error}`} />
               ]
             : <Select 
-                value={selected_order_src_level1_id} 
+                value={typeof selected_order_src_level1_id == 'undefined' ? src_id.value : SELECT_DEFAULT_VALUE} 
                 options={all_order_srcs[0]} 
                 onChange={this.orderSrcsLevel1Change.bind(this)} 
                 key="order_srcs_level1" 
@@ -287,7 +288,7 @@ class ManageAddForm extends Component {
           ref="history_orders_modal"
           phone_num={owner_mobile.value} 
           data={history_orders}
-          {...{getHistoryOrders, checkHistoryOrder}} />
+          {...{getHistoryOrders, checkHistoryOrder, getCopyOrderById, copyOrder}} />
     </div>
     )
   }
@@ -481,29 +482,7 @@ ManageAddForm.PropTypes = {
 export default function initManageOrderForm( initFunc ){
   return reduxForm({
     form: 'add_order',  //表单命名空间
-    fields: [
-      'delivery_type',
-      'owner_name',
-      'owner_mobile',
-      'recipient_name', //下单人姓名
-      'recipient_mobile',
-      'recipient_address', //收货人详细地址----》送货上门
-      'recipient_shop_address', //收货人详细地址----》门店自提(实际上是门店地址)
-      'province_id',
-      'city_id',
-      'regionalism_id',    //分店ID ----》自取
-      'recipient_landmark', //标志性建筑
-      'delivery_id',     //配送中心
-      'src_id',          //订单来源
-      'pay_modes_id',
-      'pay_status',
-      // 'delivery_time',
-      'delivery_date',
-      'delivery_hours',
-      'remarks',
-      'invoice',
-      '_update', //业务无关的私有field，用于触发整个form的更新
-    ],
+    fields: FormFields.add_order,
     validate,
     touchOnBlur: true,
   }, initFunc)( ManageAddForm );

@@ -150,7 +150,7 @@ FilterHeader = reduxForm({
 var OrderRow = React.createClass({
   render(){
     var { props } = this;
-    var src_name = core.isArray(props.src_name) ? props.src_name.split(',') : ['', ''];
+    var src_name = props.src_name ? props.src_name.split(',') : ['', ''];
     var _order_status = order_status[props.status] || {};
     return (
       <tr className={props.active_order_id == props.order_id ? 'active' : ''} onClick={this.clickHandler}>
@@ -169,7 +169,10 @@ var OrderRow = React.createClass({
         <RecipientInfo data={props} />
         <td>{props.delivery_type}</td>
         {/*订单来源*/}
-        <td className="nowrap">{src_name[0]}<br /><span className="bordered bg-warning">{src_name[1]}</span></td>
+        <td className="nowrap">
+          {src_name[0]}
+          {src_name[1] ? [<br />, <span className="bordered bg-warning">{src_name[1]}</span>] : null}
+        </td>
         <td><strong className="strong">{props.pay_status}</strong></td>
         <td className="nowrap text-left">
           原价：￥{props.original_price/100} <br />

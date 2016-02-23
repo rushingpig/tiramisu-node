@@ -30,7 +30,8 @@ AddressDao.prototype.findDistrictsByCityId = function(cityId){
     return baseDao.select(sql,[this.baseColumns,3,del_flag.SHOW,cityId]);
 };
 AddressDao.prototype.findStationsByCityId = function(query_obj){
-    let sql = util.format("select b.id 'id',a.name 'district_name',b.name 'station_name',b.address 'address' " +
+    let sql = util.format("select b.id 'id',a.name 'district_name',b.name 'station_name'," +
+        "b.address 'address',b.position 'position' " +
         "from %s a join %s b on a.id = b.regionalism_id " +
         "where a.level_type = ? and a.del_flag = ? and a.parent_id = ?", this.table, tables.buss_delivery_station);
     let countSql = dbHelper.countSql(sql);

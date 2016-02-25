@@ -1,7 +1,8 @@
 'use strict';
-var request = require('supertest'),
-  app = require('../../app'),
-  agent = request.agent(app);
+var request = require('supertest');
+var assert = require('chai').assert;
+
+const agent = request.agent(require('../../app'));
 
 module.exports = function () {
   describe('/v1/a/order', function () {
@@ -30,14 +31,11 @@ module.exports = function () {
           username: 'admin',
           password: '123'
         })
-        .expect(
-          200,
-          {
-            "code": "0000",
-            "msg": "everything goes well -> enjoy yourself...",
-            "data": {}
-          },
-          err(done));
+        .end((err, res) => {
+           assert.strictEqual(res.body.code, '0000');
+	         assert.strictEqual(res.statusCode, 200);
+           done();
+        });
     });
     /**
      * logout to delete session

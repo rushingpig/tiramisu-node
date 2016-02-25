@@ -6,23 +6,10 @@
  * @version: v0.0.1
  */
 "use strict";
-var mocha = require('mocha');
-var chai = require('chai');
-var expect = chai.expect,
-    assert = chai.assert,
-    should = chai.should,
-    request = require('supertest'),
+var assert = require('chai').assert;
+var request = require('supertest'),
     app = require('../../app'),
     agent = request.agent(app);
-
-(
-    //  init the config of chaijs
-    function initChai() {
-        chai.config.showDiff = false;    // turn on reporter diff display
-        chai.config.truncateThreshold = 40;     // disable truncating
-        chai.config.includeStack = true;    // turn on stack trace
-    }
-)();
 
 module.exports = function () {
     describe('/v1/a', function () {
@@ -50,14 +37,11 @@ module.exports = function () {
                     username: 'admin',
                     password: '123'
                 })
-                .expect(
-                200,
-                {
-                    "code": "0000",
-                    "msg": "everything goes well -> enjoy yourself...",
-                    "data": {}
-                },
-                err(done));
+                .end((err, res) => {
+                  assert.strictEqual(res.body.code, '0000');
+                  assert.strictEqual(res.statusCode, 200);
+                  done();
+                });
         });
         /**
          * logout to delete session

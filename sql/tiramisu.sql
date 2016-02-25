@@ -226,7 +226,7 @@ CREATE TABLE `buss_order_src` (
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '删除标志（0：不显示；1：显示）',
   `merge_name` varchar(255) DEFAULT NULL COMMENT '合并后的名称，用“，”分隔',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单来源';
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单来源';
 
 -- ----------------------------
 --  Records of `buss_order_src`

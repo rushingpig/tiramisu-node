@@ -58,13 +58,53 @@ OrderService.prototype.addOrder = (req, res, next) => {
   systemUtils.wrapService(res, next, promise);
 };
 
+const srcIdMapping = new Map(
+  [
+    [ 10000,1 ],
+    [ 10001,2 ],
+    [ 10002,3 ],
+    [ 10003,4 ],
+    [ 10004,5 ],
+    [ 10005,6 ],
+    [ 10006,7 ],
+    [ 10007,8 ],
+    [ 10008,9 ],
+    [ 10009,10 ],
+    [ 10010,11 ],
+    [ 10011,12 ],
+    [ 10012,13 ],
+    [ 10013,14 ],
+    [ 10014,15 ],
+    [ 10015,16 ],
+    [ 10016,17 ],
+    [ 10017,18 ],
+    [ 10018,19 ],
+    [ 10019,20 ],
+    [ 10020,21 ],
+    [ 10021,22 ],
+    [ 10022,23 ],
+    [ 10023,24 ],
+    [ 10024,25 ],
+    [ 10025,26 ],
+    [ 10026,27 ],
+    [ 10027,28 ],
+    [ 11027,29 ],
+    [ 11029,30 ],
+    [ 11030,31 ],
+    [ 12030,32 ],
+    [ 12031,33 ],
+    [ 12032,34 ],
+    [ 12033,35 ],
+  ]
+);
+
 OrderService.prototype.addExternalOrder = (req, res, next) => {
   req.checkBody(schema.addExternalOrder);
-  let errors = req.validationErrors();
+  const errors = req.validationErrors();
   if (errors) {
     return res.api(res_obj.INVALID_PARAMS, errors);
   }
-  let params = req.body;
+  const params = req.body;
 
   let promise = OrderService.prototype.addRecipient(
     req,
@@ -78,7 +118,8 @@ OrderService.prototype.addExternalOrder = (req, res, next) => {
       let orderObj = {
         recipient_id: recipientId,
         delivery_id: params.delivery_id,
-        src_id: params.src_id,
+        // HACK: transform id >= 10000 to new src_id mapping
+        src_id: params.src_id >= 10000? srcIdMapping.get(params.src_id): params.src_id,
         pay_modes_id: params.pay_modes_id,
         pay_status: params.pay_status,
         owner_name: params.owner_name,

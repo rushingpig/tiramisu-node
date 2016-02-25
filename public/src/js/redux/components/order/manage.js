@@ -171,7 +171,7 @@ var OrderRow = React.createClass({
         {/*订单来源*/}
         <td className="nowrap">
           {src_name[0]}
-          {src_name[1] ? [<br />, <span className="bordered bg-warning">{src_name[1]}</span>] : null}
+          {src_name[1] ? [<br />, <span key="src_2" className="bordered bg-warning">{src_name[1]}</span>] : null}
         </td>
         <td><strong className="strong">{props.pay_status}</strong></td>
         <td className="nowrap text-left">

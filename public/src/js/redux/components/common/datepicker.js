@@ -7,6 +7,8 @@ var DatePicker = React.createClass({
       className: '',
       'redux-form': null,
       editable: false,
+      upperLimit: undefined,
+      lowerLimit: undefined,
     };
   },
   getInitialState: function() {
@@ -42,9 +44,18 @@ var DatePicker = React.createClass({
   initDatePicker: function(){
     var $dom_date = $(this.refs.date);
     var $date = $dom_date.data('datepicker');
+    var {lowerLimit, upperLimit} = this.props;
+    lowerLimit = new Date(lowerLimit + ' 00:00:00');
+    upperLimit = new Date(upperLimit + ' 00:00:00');
+
     if(!$date){
       $date = $dom_date.datepicker({
         format: 'yyyy-mm-dd',
+        onRender: (lowerLimit || upperLimit) && function(date){
+          if(date < lowerLimit || date > upperLimit){
+            return 'disabled'
+          }
+        }
       }).on('changeDate', function(e) {
         var value = e.target.value;
         this.props.onChange && this.props.onChange(value);

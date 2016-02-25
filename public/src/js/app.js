@@ -28507,7 +28507,7 @@
 	        src_name[0],
 	        src_name[1] ? [_react2['default'].createElement('br', null), _react2['default'].createElement(
 	          'span',
-	          { className: 'bordered bg-warning' },
+	          { key: 'src_2', className: 'bordered bg-warning' },
 	          src_name[1]
 	        )] : null
 	      ),
@@ -33159,7 +33159,9 @@
 	    return {
 	      className: '',
 	      'redux-form': null,
-	      editable: false
+	      editable: false,
+	      upperLimit: undefined,
+	      lowerLimit: undefined
 	    };
 	  },
 	  getInitialState: function getInitialState() {
@@ -33189,9 +33191,21 @@
 	  initDatePicker: function initDatePicker() {
 	    var $dom_date = $(this.refs.date);
 	    var $date = $dom_date.data('datepicker');
+	    var _props = this.props;
+	    var lowerLimit = _props.lowerLimit;
+	    var upperLimit = _props.upperLimit;
+
+	    lowerLimit = new Date(lowerLimit + ' 00:00:00');
+	    upperLimit = new Date(upperLimit + ' 00:00:00');
+
 	    if (!$date) {
 	      $date = $dom_date.datepicker({
-	        format: 'yyyy-mm-dd'
+	        format: 'yyyy-mm-dd',
+	        onRender: (lowerLimit || upperLimit) && function (date) {
+	          if (date < lowerLimit || date > upperLimit) {
+	            return 'disabled';
+	          }
+	        }
 	      }).on('changeDate', (function (e) {
 	        var value = e.target.value;
 	        this.props.onChange && this.props.onChange(value);
@@ -36217,7 +36231,7 @@
 	            null,
 	            '　配送时间：'
 	          ),
-	          _react2['default'].createElement(_commonDatepicker2['default'], { 'redux-form': delivery_date, className: '' + delivery_date.error }),
+	          _react2['default'].createElement(_commonDatepicker2['default'], { 'redux-form': delivery_date, lowerLimit: (0, _utilsIndex.dateFormat)(new Date()), className: '' + delivery_date.error }),
 	          ' ',
 	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_hours, { options: all_delivery_time, className: '' + delivery_hours.error }))
 	        ),

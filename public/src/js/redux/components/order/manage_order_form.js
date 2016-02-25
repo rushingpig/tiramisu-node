@@ -6,7 +6,7 @@ import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import Pagination from 'common/pagination';
 import LazyLoad from 'utils/lazy_load';
-import { Noty, form as uForm } from 'utils/index';
+import { Noty, form as uForm, dateFormat } from 'utils/index';
 import history from 'history_instance';
 
 import HistoryOrders from './manage_history_orders';
@@ -246,7 +246,7 @@ class ManageAddForm extends Component {
       </div>
       <div className="form-group form-inline">
         <label>{'　配送时间：'}</label>
-        <DatePicker redux-form={delivery_date} className={`${delivery_date.error}`}/>{' '}
+        <DatePicker redux-form={delivery_date} lowerLimit={dateFormat(new Date())} className={`${delivery_date.error}`}/>{' '}
         <Select {...delivery_hours} options={all_delivery_time} className={`${delivery_hours.error}`} />
       </div>
       <div className="form-group form-inline">

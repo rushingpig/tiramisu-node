@@ -218,6 +218,7 @@ OrderService.prototype.getOrderDetail = (req, res, next) => {
       data.pay_modes_id = curr.pay_modes_id;
       data.pay_name = curr.pay_name;
       data.coupon = curr.coupon;
+      data.invoice = curr.invoice;
       data.recipient_address = curr.recipient_address;
       data.recipient_name = curr.recipient_name;
       data.recipient_id = curr.recipient_id;
@@ -541,13 +542,14 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
         delivery_id: req.query.delivery_id,
         deliveryman_id: req.query.deliveryman_id,
         print_status: req.query.print_status,
-        is_greeting_card: req.query.is_greeting_card
+        is_greeting_card: req.query.is_greeting_card,
+        user : req.session.user
       };
     }
 
 
-    if (isNaN(parseInt(req.query.keywords || ''))) {
-      query_data.keywords = systemUtils.encodeForFulltext(req.query.keywords || '');
+    if (req.query.keywords && isNaN(parseInt(req.query.keywords))) {
+      query_data.keywords = systemUtils.encodeForFulltext(req.query.keywords);
     } else {
       query_data.keywords = req.query.keywords;
     }

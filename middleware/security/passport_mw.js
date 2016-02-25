@@ -51,11 +51,11 @@ function authenticate(passport){
     return (req,res,next)=>{
         passport.authenticate('local', function(err,user,msg){
             if(err){
-                res.api(res_obj.FAIL,null);
+                res.api(res_obj.FAIL,err);
             }else if(msg && !user){
                 res.api(res_obj.INVALID_USERNAME_OR_PASSWORD,msg);
             }else{
-                res.api();
+                res.api(user);
             }
         })(req,res);
     }

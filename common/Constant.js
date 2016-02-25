@@ -107,6 +107,14 @@ Constant.PFT = {
     FULL_REFUND:'FULL_REFUND'
 };
 
+Constant.DS = {
+    ALLCOMPANY : 0,
+    OFFICEANDCHILD : 1,
+    OFFICE : 2,
+    STATION : 3,
+    CITY : 4
+};
+
 
 
 module.exports = Constant;

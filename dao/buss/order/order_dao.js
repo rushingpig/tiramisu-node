@@ -122,6 +122,7 @@ OrderDao.prototype.findOrderById = function (orderIdOrIds) {
         'bo.remarks',
         'bo.status',
         'bo.coupon',
+        'bo.invoice',
         'bp.`name` as product_name',
         'bp.original_price',
         'bos.amount',
@@ -231,7 +232,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
         'bo.updated_time',
         'bo.greeting_card'
     ].join(',');
-    let params = [];
+    let params = [],data_scope = query_data.user.role.data_scope;
     let sql = "select " + columns + " from ?? bo";
     params.push(tables.buss_order);
     if (query_data.keywords) {
@@ -248,6 +249,11 @@ OrderDao.prototype.findOrderList = function (query_data) {
     }
     sql += " left join ?? bds2 on bo.delivery_id = bds2.id";
     params.push(tables.buss_delivery_station);
+    if(data_scope == constant.DS.CITY){
+        sql += " inner join ?? dr3 on dr3.id = bds2.regionalism_id and dr3.parent_id = ?";
+        params.push(tables.dict_regionalism);
+        params.push(query_data.user.city_id);
+    }
     sql += " left join ?? bos on bo.src_id = bos.id";
     params.push(tables.buss_order_src);
     sql += " left join ?? dr on br.regionalism_id = dr.id";
@@ -326,17 +332,25 @@ OrderDao.prototype.findOrderList = function (query_data) {
     if (query_data.order_ids && Array.isArray(query_data.order_ids)) {
         sql += " and bo.id in " + dbHelper.genInSql(query_data.order_ids);
     }
+    let ds_sql = "";
+    if(data_scope == constant.DS.STATION){
+        ds_sql += " and bo.delivery_id = ?";
+        params.push(query_data.user.station_id);
+    }
     switch (query_data.order_sorted_rules) {
         case constant.OSR.LIST:
             sql += " order by bo.created_time desc";
             break;
         case constant.OSR.DELIVERY_EXCHANGE:
+            sql += ds_sql;
             sql += " order by bo.delivery_time asc";
             break;
         case constant.OSR.DELIVER_LIST:
+            sql += ds_sql;
             sql += " order by bo.print_status asc,bo.delivery_time asc";
             break;
         case constant.OSR.RECEIVE_LIST:
+            sql += ds_sql;
             sql += " order by bo.delivery_time asc,bo.`status` asc";
             break;
         default:
@@ -564,6 +578,7 @@ OrderDao.prototype.insertOrderInTransaction = function (req) {
                 }
                 let recipientId = info.insertId;
                 let orderObj = {
+                    office_id : req.session.user.office_id,
                     recipient_id: recipientId,
                     delivery_id: delivery_id,
                     src_id: src_id,
@@ -645,4 +660,3 @@ OrderDao.prototype.batchUpdateOrderFulltext = function(orderIds,updateObj){
     return baseDao.update(sql,params);
 };
 module.exports = OrderDao;
-

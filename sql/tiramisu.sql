@@ -285,7 +285,7 @@ CREATE TABLE `buss_pay_modes` (
   `updated_time` datetime DEFAULT NULL COMMENT '更新时间',
   `del_flag` tinyint(1) DEFAULT '1' COMMENT '删除标志',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='支付方式';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='支付方式';
 
 -- ----------------------------
 --  Records of `buss_pay_modes`

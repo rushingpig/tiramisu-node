@@ -167,19 +167,44 @@ $(document).ready(function($) {
   };
 
   /**
+   * [插入配送站信息]
+   * @param  {[Array]} stations 
+   */
+  function insertStationInfo(stations) {
+    var html = '';
+    stations.forEach(function(item, index) {
+      html += '<tr>' +
+        '<td><input type="checkbox"/></td>' +
+        '<td class="district-name">' + item.district_name + '</td>' +
+        '<td class="station-name">' + item.station_name + '</td>' +
+        '<td class="address">' + item.address + '</td>' +
+        '<td><a class="edit" data-toggle="modal" data-target="#mapContainer">编辑</a></td>' +
+        '</tr>';
+    });
+
+    $(html).appendTo('#tableStation tbody');
+  }
+
+  /**
    * 根据配送站名称查找指定配送站的信息
    */
+  function getStationByName(data) {
+    var stations = data.data;
+    insertStationInfo(stations)
+  }
+
   $('#searchStation').click(function(e) {
     e.preventDefault();
+    $('#tableStation tbody').empty();
+
     var stationName = $('#findStation').val();
 
     if (stationName !== '') {
       ajax('http://localhost:3001/v1/a/stations/getStationsByName', 'GET', {
         station_name: stationName
-      },function(data){console.log(data)});
+      }, getStationByName);
     }
   });
-// insertStationInfo(data.data.pagination_result)
   /**
    * 获取省份
    */
@@ -219,33 +244,19 @@ $(document).ready(function($) {
     ajax('http://localhost:3001/v1/a/province/' + provinceId + '/cities', 'GET', null, getCities);
 
   });
-  /**
-   * [插入配送站信息]
-   * @param  {[Array]} stations 
-   */
-  function insertStationInfo(stations) {
-    var html = '';
 
-    stations.forEach(function(item, index) {
-      html += '<tr>' +
-        '<td><input type="checkbox"/></td>' +
-        '<td class="district-name">' + item.district_name + '</td>' +
-        '<td class="station-name">' + item.station_name + '</td>' +
-        '<td class="address">' + item.address + '</td>' +
-        '<td><a class="edit" data-toggle="modal" data-target="#mapContainer">编辑</a></td>' +
-        '</tr>';
-    });
 
-    $(html).appendTo('#tableStation tbody');
-  }
-  
   /**
    * 查询城市的配送站
    */
-
+  function getStationsByCity(data) {
+    var stations = data.data.pagination_result;
+    insertStationInfo(stations);
+  }
+  
   var stationOfCity = function(data) {
 
-    insertStationInfo(data.data.pagination_result);
+    getStationsByCity(data);
 
     console.log('stationOfCity', data);
     //点击编辑开启该配送站的编辑
@@ -271,7 +282,7 @@ $(document).ready(function($) {
           station_name: stationName
         }, getStationScope);
 
-         // 修改配送站
+        // 修改配送站
         $('#modifiyStation').click(function(event) {
 
           $('#mapContainer').modal('hide');
@@ -314,9 +325,9 @@ $(document).ready(function($) {
 
   });
 
-  /**
-   * 查询配送站
-   */
+
+
+
 
 
 });

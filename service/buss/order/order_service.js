@@ -521,7 +521,8 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
       query_data = {
         order_ids: req.body.order_ids.map((curr) => {
           return systemUtils.getDBOrderId(curr);
-        })
+        }),
+        user : req.session.user
       };
     } else {
       req.checkQuery(listOrder);

@@ -579,13 +579,18 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
         page_no: req.query.page_no
       };
       for (let curr of resObj._result) {
-        let delivery_adds = curr.merger_name.split(',');
+        let delivery_adds = [],city_name = '';
+        if(curr.merger_name){
+          delivery_adds = curr.merger_name.split(',');
+          city_name = delivery_adds[2];
+        }
+
         delivery_adds.shift();
 
         let list_obj = {
           cancel_reason: curr.cancel_reason,
           recipient_landmark: curr.landmark,
-          city: curr.merger_name.split(',')[2],
+          city: city_name,
           created_by: curr.created_by,
           created_time: curr.created_time,
           delivery_time: curr.delivery_time,

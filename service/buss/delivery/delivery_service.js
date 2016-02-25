@@ -557,8 +557,6 @@ DeliveryService.prototype.print = (req,res,next)=>{
                 throw new TiramisuError(res_obj.ORDER_NO_PRINT);
             }else if (print_status === Constant.PS.AUDITING){
                 throw new TiramisuError(res_obj.ORDER_AUDITING);
-            }else if(!curr.deliveryman_id){
-                throw new TiramisuError(res_obj.NO_DELIVERYMAN);
             }
         });
         let print_status_update_obj = {

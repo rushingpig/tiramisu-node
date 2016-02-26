@@ -19,12 +19,16 @@ UserService.prototype.getUserInfo = (username, password)=> {
             return null;
         } else {
             let user = {
+                is_admin : false,
                 permissions : [],
                 role : {}
             };
             for(let i = 0;i < results.length;i++){
                 let curr = results[i];
                 if(i === 0){
+                    if(user.id == 1){
+                        user.is_admin = true;
+                    }
                     user.id = curr.id;
                     user.office_id = curr.office_id;
                     user.username = curr.username;

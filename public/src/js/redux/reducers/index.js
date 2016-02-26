@@ -7,6 +7,7 @@ import deliveryManage from './delivery_manage';
 import distributeManage from './distribute_manage';
 import deliveryPrintReview from './delivery_print_review';
 import form from './form';
+import stationManage from './station_manage';
 import { routeReducer } from 'redux-simple-router';
 
 const rootReducer = combineReducers({
@@ -18,7 +19,8 @@ const rootReducer = combineReducers({
   distributeManage,
   deliveryPrintReview,
   form,
-  routing: routeReducer
+  routing: routeReducer,
+  stationManage
 })
 
 export default rootReducer

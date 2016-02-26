@@ -51,4 +51,15 @@ export default [
       "icon": "",
       "link": "/dm/review",
   }]
+}, {
+  "key": "station_management",
+  "name": "配送管理",
+  "short_name": "送货",
+  "icon": "truck",
+  "link": [{
+      "key": "sm_index",
+      "name": "配送站管理",
+      "icon": "",
+      "link": "/sm/index"
+  }]
 }];

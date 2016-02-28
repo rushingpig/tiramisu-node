@@ -9,7 +9,7 @@ import SearchInput from 'common/search_input';
 import Select from 'common/select';
 
 import AreaActions from 'actions/area';
-
+import StationAction from 'actions/stations';
 class TopHeader extends React.Component {
   render(){
     return (
@@ -23,13 +23,14 @@ class TopHeader extends React.Component {
 
 class StationRow extends React.Component {
   render(){
-    var content = this.props.stationList.map(n => (
+    var list = this.props.stationList;
+    var content = list.map(n => (
       <tr key={n.id}>
         <th>
           <input type="checkbox" />
         </th>
         <th>
-          {n.district_name}
+          {n}
         </th>
         <th>
           {n.station_name}
@@ -68,35 +69,96 @@ class StationRow extends React.Component {
     );
   }
 }
+
+class AutoComplete extends React.Component {
+  constructor(props){
+    super(props);
+  }
+
+  keyDownHandler(e){
+    //enter键
+    if(!this.props.searching && e.which == 13){
+      this.searchHandler();
+    }
+  }
+
+  searchHandler(){
+    if(!this.props.searching){
+      console.log('search: ' + this.refs.input.value);
+      this.props.searchHandler(this.refs.input.value);
+    }
+  }
+
+  filter(e){
+    var stations = this.props.options;
+    var matches = [];
+    console.log(stations[0]);
+    stations.map(function(item,index){
+      var sign = item.text.indexOf(e.target.value);
+      if(sign !== -1){
+        matches.push(item.text);
+      }
+    });
+
+  }
+
+  render(){
+    var { options, className, options, placeholder, searching } = this.props;
+    var i_className = searching ? 'fa fa-spinner fa-spin disabled' : 'fa fa-search';
+    return (
+      <input ref="input" 
+        className={className} 
+        placeholder={placeholder} 
+        style={{marginRight: '5px'}}
+        onChange={this.filter.bind(this)}
+        onKeyDown={this.keyDownHandler.bind(this)} />
+    );
+  }
+
+}
+
 class FilterHeader extends React.Component{
- 
+  constructor(props){
+    super(props);
+    this.state = {
+     search_ing: false,
+    }
+  }
 
   render(){
     var { 
       fields: {
         province_id,
         city_id,
+        station_id
       },
       area:{
         provinces,
         cities,
-      }
+      },
+      station: {
+        stations,
+        stationsOfCity,
+      },
     } = this.props;
+    var { search_ing } = this.state;
     return (
       <div className="form-inline">
-        <SearchInput placeholder="请输入您要查询的配送站" className="pull-left"/>
+        <AutoComplete {...station_id} placeholder={"请输入配送站"} className="form-control input-xs v-mg" options={stations} />
         <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space-right"/>
-        <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space-right"/>
-        <button className="btn btn-sm btn-theme">查找<i className="fa fa-search" style={{paddingLeft:'5px'}}></i></button>
-        <StationRow stationList={[{district_name:'jks',station_name:'dsf',address:'sdf',id:'100'}]}/>
+        <Select ref="city" {...city_id} options={cities} default-text="选择城市" className="space-right"/>
+        <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
+          查找<i className="fa fa-search" style={{'padding': '0 3px'}}></i>
+        </button>
+        <StationRow stationList={stationsOfCity}/>
       </div>
     );
   }
-
   componentDidMount(){
     setTimeout(function(){
-      var { getProvinces, getAllDeliveryStations } = this.props;
+      var { getProvinces, getAllDeliveryStations, getStations,getStationByCity} = this.props;
       getProvinces();
+      getStations();
       LazyLoad('noty');
     }.bind(this),0)
   }
@@ -112,6 +174,14 @@ class FilterHeader extends React.Component{
     callback(e);
   }
 
+  search(){
+    var city_id = $(findDOMNode(this.refs.city)).children('option:selected').attr('value');
+    var { getStationByCity } = this.props;
+    // this.setState({search_ing: true});
+    getStationByCity(city_id);
+
+    console.log(this.props.stationsOfCity);
+  }
 }
 
 
@@ -142,7 +212,7 @@ function mapStateToProps({stationManage}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  return bindActionCreators({...AreaActions()}, dispatch);
+  return bindActionCreators({...AreaActions(), ...StationAction()}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(StationManagePanel);

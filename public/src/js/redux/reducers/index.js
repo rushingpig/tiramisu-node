@@ -20,7 +20,7 @@ const rootReducer = combineReducers({
   deliveryPrintReview,
   form,
   routing: routeReducer,
-  stationManage
+  stationManage,
 })
 
 export default rootReducer

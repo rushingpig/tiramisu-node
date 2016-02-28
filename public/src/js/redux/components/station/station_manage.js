@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, findDOMNode } from 'react-dom';
+import ReactDom from 'react-dom';
 import { bindActionCreators } from 'redux';
 import { reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
@@ -30,7 +31,7 @@ class StationRow extends React.Component {
           <input type="checkbox" />
         </th>
         <th>
-          {n}
+          {n.district_name}
         </th>
         <th>
           {n.station_name}
@@ -182,8 +183,8 @@ class FilterHeader extends React.Component{
 
     console.log(this.props.stationsOfCity);
   }
-}
 
+}
 
 FilterHeader = reduxForm({
   form: 'station_manage',

@@ -1,11 +1,13 @@
 import { combineReducers } from 'redux';
 import { map } from 'utils/index';
 import { area } from 'reducers/area_select';
-import { GOT_STATIONS , GOT_STATIONS_BY_CITY } from 'actions/stations';
+import { GOT_STATIONS , GOT_STATIONS_BY_CITY, GOT_STATIONS_BY_NAME, GOT_STATIONS_SCOPE } from 'actions/stations';
 
 var initial_state = {
   stations: [],
-  stationsOfCity: [],
+  station_list_info: [],
+  station_info: [],
+  station_coords: [],
 }
 
 function _t(data) {
@@ -17,7 +19,11 @@ export function station(state = initial_state, action){
     case GOT_STATIONS:
       return {...state, stations: _t(action.data) };
     case GOT_STATIONS_BY_CITY:
-      return { ...state, stationsOfCity: action.data};
+      return { ...state, station_list_info: action.data.pagination_result};
+     case GOT_STATIONS_BY_NAME:
+      return {...state, station_info: action.data};
+     case GOT_STATIONS_SCOPE:
+      return {...state, station_coords:action.data};
     default :
       return state;
   }

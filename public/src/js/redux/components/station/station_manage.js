@@ -1,22 +1,40 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { render, findDOMNode } from 'react-dom';
 import ReactDom from 'react-dom';
 import { bindActionCreators } from 'redux';
 import { reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 
+import Pagination from 'common/pagination';
+import StdModal from 'common/std_modal';
 import LineRouter from 'common/line_router';
 import SearchInput from 'common/search_input';
 import Select from 'common/select';
 
 import AreaActions from 'actions/area';
 import StationAction from 'actions/stations';
+
+import LazyLoad from 'utils/lazy_load';
+import MyMap from 'utils/MyMap';
+
 class TopHeader extends React.Component {
+
   render(){
     return (
       <div className="clearfix top-header">
         <LineRouter 
           routes={[{name: '配送管理', link: '/sm/index'}, {name: '配送站管理', link: ''}]} />
+      </div>
+    );
+  };
+}
+
+class StationScope extends React.Component{
+  
+  render(){
+    return (
+      <div>
+        <div id="container" style={{width: '100px',height: '100px'}}></div>
       </div>
     );
   }
@@ -27,95 +45,66 @@ class StationRow extends React.Component {
     var list = this.props.stationList;
     var content = list.map(n => (
       <tr key={n.id}>
-        <th>
+        <td>
           <input type="checkbox" />
-        </th>
-        <th>
+        </td>
+        <td>
           {n.district_name}
-        </th>
-        <th>
+        </td>
+        <td ref="station_name">
           {n.station_name}
-        </th>
-        <th>
+        </td>
+        <td>
           {n.address}
-        </th>
-        <th>
-          <a href="">编辑</a>
-        </th>
+        </td>
+        <td>
+          <a href="javascript:;" id={n.id} ref="edit" onClick={this.stationScopeEdit.bind(this)}>编辑</a>
+        </td>
       </tr>
     ));
 
     return (
-      <div className="panel">
-        <header className="panel-heading">送货列表</header>
-        <div className="panel-body">
-          <div className="table-responsive">
-            <table className="table table-hover text-center">
-              <thead>
-              <tr>
-                <th><input type="checkbox" /></th>
-                <th>区域</th>
-                <th>名称</th>
-                <th>地址</th>
-                <th>操作</th>
-              </tr>
-              </thead>
-              <tbody>
-              { content }
-              </tbody>
-            </table>
+      <div className="">
+        <div className="panel">
+          <header className="panel-heading">配送站列表</header>
+          <div className="panel-body">
+            <div className="table-responsive">
+              <table className="table table-hover text-center">
+                <thead>
+                <tr>
+                  <th><input type="checkbox" /></th>
+                  <th>区域</th>
+                  <th>名称</th>
+                  <th>地址</th>
+                  <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                { content }
+                </tbody>
+              </table>
+            </div>
+
+            <Pagination/>
           </div>
         </div>
+
+        <MapModal ref="map"/>
       </div>
     );
   }
-}
 
-class AutoComplete extends React.Component {
-  constructor(props){
-    super(props);
+  stationScopeEdit(){
+    var { getStationScope } = this.props;
+    var station_id = $(findDOMNode(this.refs.edit)).attr('id');
+    var station_name = $(findDOMNode(this.refs.station_name)).text();
+
+    getStationScope(station_id,{'station_name':station_name})
+    console.log(typeof station_id);
+    console.log(station_name);
+    this.refs.map.show();
   }
-
-  keyDownHandler(e){
-    //enter键
-    if(!this.props.searching && e.which == 13){
-      this.searchHandler();
-    }
-  }
-
-  searchHandler(){
-    if(!this.props.searching){
-      console.log('search: ' + this.refs.input.value);
-      this.props.searchHandler(this.refs.input.value);
-    }
-  }
-
-  filter(e){
-    var stations = this.props.options;
-    var matches = [];
-    console.log(stations[0]);
-    stations.map(function(item,index){
-      var sign = item.text.indexOf(e.target.value);
-      if(sign !== -1){
-        matches.push(item.text);
-      }
-    });
-
-  }
-
-  render(){
-    var { options, className, options, placeholder, searching } = this.props;
-    var i_className = searching ? 'fa fa-spinner fa-spin disabled' : 'fa fa-search';
-    return (
-      <input ref="input" 
-        className={className} 
-        placeholder={placeholder} 
-        style={{marginRight: '5px'}}
-        onChange={this.filter.bind(this)}
-        onKeyDown={this.keyDownHandler.bind(this)} />
-    );
-  }
-
+  
 }
 
 class FilterHeader extends React.Component{
@@ -125,7 +114,6 @@ class FilterHeader extends React.Component{
      search_ing: false,
     }
   }
-
   render(){
     var { 
       fields: {
@@ -139,19 +127,20 @@ class FilterHeader extends React.Component{
       },
       station: {
         stations,
-        stationsOfCity,
+        station_list_info,
       },
     } = this.props;
     var { search_ing } = this.state;
     return (
       <div className="form-inline">
-        <AutoComplete {...station_id} placeholder={"请输入配送站"} className="form-control input-xs v-mg" options={stations} />
+        <input ref="inp" {...station_id} placeholder={"请输入配送站"} className="form-control input-xs v-mg" style={{marginRight: '5px'}} options={stations} />
         <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space-right"/>
         <Select ref="city" {...city_id} options={cities} default-text="选择城市" className="space-right"/>
         <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
           查找<i className="fa fa-search" style={{'padding': '0 3px'}}></i>
         </button>
-        <StationRow stationList={stationsOfCity}/>
+        <StationRow stationList={station_list_info} {...this.props }/>
+
       </div>
     );
   }
@@ -161,7 +150,20 @@ class FilterHeader extends React.Component{
       getProvinces();
       getStations();
       LazyLoad('noty');
-    }.bind(this),0)
+    }.bind(this),0);
+
+    var data = this.props.station.stations;
+    var stations = [];
+    data.forEach(function(n){
+      stations.push(n['text']);
+    });
+    console.log(stations)
+    LazyLoad('autocomplete', () => {
+      var $inp = $(findDOMNode(this.refs.inp));
+      $inp.autocomplete({
+        source: stations
+      });
+    });
   }
 
   onProvinceChange(callback, e){
@@ -177,11 +179,11 @@ class FilterHeader extends React.Component{
 
   search(){
     var city_id = $(findDOMNode(this.refs.city)).children('option:selected').attr('value');
-    var { getStationByCity } = this.props;
-    // this.setState({search_ing: true});
-    getStationByCity(city_id);
-
-    console.log(this.props.stationsOfCity);
+    this.setState({search_ing: true});
+    this.props.getStationByCity(city_id)
+      .always(()=>{
+        this.setState({search_ing: false});
+      });
   }
 
 }
@@ -217,3 +219,30 @@ function mapDispatchToProps(dispatch){
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(StationManagePanel);
+
+
+
+
+/***************   *******   *****************/
+/***************   子模态框   *****************/
+/***************   *******   *****************/
+
+class MapModal extends React.Component {
+  render(){
+    return (
+      <StdModal ref="modal" title="批量转换操作">
+        <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=dxF5GZW6CHlR4GCQ9kKynOcc"></script>
+      </StdModal>
+    )
+  }
+  show(){
+    this.refs.modal.show();
+  }
+  hide(){
+    this.refs.modal.hide();
+  }
+};
+
+MapModal.PropTypes = {
+
+}

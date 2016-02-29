@@ -6,11 +6,15 @@ var config = {
   },
   chinese_py: {
     js: root + 'lib/chinese_py.min.js'
-  }
+  },
+  autocomplete: {
+    css: '/plugins/jquery-ui/jquery-ui.css',
+    js: '/plugins/jquery-ui/autocomplete.js',
+  },
 };
 var load_map = {};
 
-export default function LazyLoad(name){
+export default function LazyLoad(name, callback){
   $(function(){
     var plugin = config[name];
     if(plugin){
@@ -26,6 +30,7 @@ export default function LazyLoad(name){
             var sc = document.createElement("script");
             sc.type = "text\/javascript";
             sc.src = plugin.js;
+            sc.onload = callback;
             document.body.appendChild(sc);
           }
           load_map[name] = 1; //已加载过

@@ -83,7 +83,7 @@ export function checkHistoryOrder(id){
 
 export function checkGroupbuyPsd(password){
   // return dispatch => {
-  //   return post(Url.check_groupbuy_psd, {password});
+  //   return post(Url.check_groupbuy_psd.toString(), {password});
   // }
   return test(true); //模拟成功
 }

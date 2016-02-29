@@ -234,7 +234,7 @@ function products_choosing(state = products_choosing_state, action){
           })
         }
         return {...state};
-      }())
+      })()
 
     case FormActions.GOT_ORDER_BY_ID:
       return {...state, confirm_list: action.data.products, selected_list: action.data.products };

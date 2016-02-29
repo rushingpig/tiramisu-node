@@ -9,7 +9,7 @@ body
   font-size: 13px;
   color: #676a6c;
   overflow: hidden
-  perspective: 1000
+  // perspective: 1000
   &.login_hide
     overflow: auto
 html,body,body>section
@@ -82,6 +82,8 @@ a
   white-space: nowrap
 .gray
   color: #9C9A9A !important
+.silver
+  color: #ccc !important
 .font-sm
   font-size: 12px !important
 .font-lg
@@ -148,6 +150,18 @@ hr.dotted
 
 .error,.error:focus, .error:active, .error:hover
   border-color: #FF6C60 !important
+.btn-data-submitting-after
+  font-size: 12px
+  position: absolute
+  top: 50%
+  left: 50%
+  margin-left: -5px
+  margin-top: -9px
+  color: #fff
+  content: '\f01e'
+
+  font-family: FontAwesome
+  animation: fa-spin 2s infinite linear;  //依赖font-awesome
 .btn
   &.btn-theme
     color: #fff
@@ -166,17 +180,11 @@ hr.dotted
   &[data-submitting=true]
     position: relative
     &:after
-      font-size: 12px
-      position: absolute
-      top: 50%
-      left: 50%
-      margin-left: -5px
-      margin-top: -9px
-      color: #fff
-      content: '\f01e'
+      @extend .btn-data-submitting-after
+    &.btn-default:after
+      @extend .btn-data-submitting-after
+      color: #ddd
 
-      font-family: FontAwesome
-      animation: fa-spin 2s infinite linear;  //依赖font-awesome
 
 .number-picker
   @extend .tc

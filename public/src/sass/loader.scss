@@ -1,0 +1,108 @@
+.loader {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(253, 253, 253, 0.76);
+  z-index: 10000;
+
+  .loader-inner{
+    position: relative;
+    top: 35%;
+    left: 50%;
+    margin-left: -50px;
+    margin-top: -50px;
+    width: 100px;
+
+    &:before {
+      content: '';
+      display: block;
+      padding-top: 100%;
+    }
+  }
+  .progress {
+    position: absolute;
+    bottom: -24px;
+    z-index: 10;
+    height: 20px;
+    width: 100%;
+    text-align: center;
+    text-indent: 0px;
+    line-height: 20px;
+    background: transparent;
+    color: #08c;
+  }
+  .circular {
+    -webkit-animation: loader-rotate 2s linear infinite;
+            animation: loader-rotate 2s linear infinite;
+    height: 100%;
+    -webkit-transform-origin: center center;
+            transform-origin: center center;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+  }
+  .path {
+    stroke-dasharray: 1,200;
+    stroke-dashoffset: 0;
+    -webkit-animation: loader-dash 1.5s ease-in-out infinite, loader-color 6s ease-in-out infinite;
+            animation: loader-dash 1.5s ease-in-out infinite, loader-color 6s ease-in-out infinite;
+    stroke-linecap: round;
+  }
+}
+
+@-webkit-keyframes loader-rotate {
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+@keyframes loader-rotate {
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes loader-dash {
+  0% {
+    stroke-dasharray: 1,200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89,200;
+    stroke-dashoffset: -35px;
+  }
+  100% {
+    stroke-dasharray: 89,200;
+    stroke-dashoffset: -124px;
+  }
+}
+@keyframes loader-dash {
+  0% {
+    stroke-dasharray: 1,200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89,200;
+    stroke-dashoffset: -35px;
+  }
+  100% {
+    stroke-dasharray: 89,200;
+    stroke-dashoffset: -124px;
+  }
+}
+@-webkit-keyframes loader-color {
+  100%, 0% { stroke: #d62d20; }
+  40% { stroke: #0057e7; }
+  66% { stroke: #008744; }
+  80%, 90% { stroke: #ffa700; }
+}
+@keyframes loader-color {
+  100%, 0% { stroke: #d62d20; }
+  40% { stroke: #0057e7; }
+  66% { stroke: #008744; }
+  80%, 90% { stroke: #ffa700; }
+}

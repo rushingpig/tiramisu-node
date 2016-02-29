@@ -175,7 +175,7 @@ class ProductSet extends Component {
         <td>{yes_or_no(sku0.is_delivery)}</td>
         <td>
           {sku0.checked
-            ? <span className="gray">[选择]</span>
+            ? <span className="silver">[选择]</span>
             : <a onClick={choose.bind(this, sku0)} href="javascript:;">[选择]</a>}
         </td>
       </tr>

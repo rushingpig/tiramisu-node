@@ -9,10 +9,6 @@ import { delay, each } from 'utils/index';
 import { REDUX_FORM_REINIT } from 'actions/form';
 import FormFields from 'config/form.fields';
 
-// setTimeout(() => {
-//   console.dir(xxx);
-// })
-
 function preCheck(){
   var { pathname } = location;
   return pathname.startsWith('/om/index') && getGlobalState();
@@ -150,59 +146,3 @@ function getPayStatus(state, action){
     }
   }
 }
-/*
-export default formReducer.normalize({
-  //表单数据再处理，（可以在这里改变form的值）
-  add_order: {
-    pay_modes_id: (value, preValue, allValues, preAllValues) => {
-      var { src_id } = allValues;
-      if(src_id){
-        if(isSrc('第三方预约', src_id)){
-          return getMode('团购券').id; //团购券id（TODO）
-        }else if(isSrc('有赞', src_id)){  
-          return getMode('微信').id; //微信支付id
-        }else if(isSrc('电话', src_id)){
-          var mode_cash = getMode('货到付款（现金）');
-          var mode_card = getMode('货到付款（POS）');
-          if(value == mode_cash.id || value == mode_card.id){
-            return value;
-          }else{
-            if(preValue == mode_cash.id || preValue == mode_card.id){
-              return preValue;
-            }else{
-              return mode_cash.id;
-            }
-          }
-        }else{
-          //说明手动更改
-          // return allValues.src_id != preAllValues.src_id ? SELECT_DEFAULT_VALUE : value;
-          return value;
-        }
-      }else{
-        return value;
-      }
-    },
-    pay_status: (value, preValue, allValues, preAllValues) => {
-      var { src_id } = allValues;
-      if(src_id){
-        if(isSrc('第三方预约', src_id) || isSrc('有赞', src_id)){
-          var { orderManageForm: { products: { confirm_list }}} = getGlobalState();
-          //属于第三方预约
-          if(confirm_list.length > 1 || (confirm_list[0] && confirm_list[0].num > 1)){
-            return 'PARTPAYED'; //部分付款（TODO）
-          }else{
-            return 'PAYED'; //已付款（TODO）
-          }
-        }else if(isSrc('电话', src_id)){
-          return 'COD'; //货到付款
-        }else{
-          //说明手动更改
-          // return allValues.src_id != preAllValues.src_id ? SELECT_DEFAULT_VALUE : value;
-          return value;
-        }
-      }else{
-        return value;
-      }
-    },
-  }
-});*/

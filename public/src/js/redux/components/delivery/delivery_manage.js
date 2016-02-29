@@ -165,12 +165,23 @@ class OrderRow extends Component {
           <input onChange={this.checkOrderHandler.bind(this)} checked={props.checked} type="checkbox" />
         </td>
         <td>
-          <a onClick={this.showEditModal.bind(this)} href="javascript:;" className="nowrap">[编辑配送员]</a><br/>
+          {
+            props.print_status != 'PRINTABLE'
+              ? [<a onClick={this.showEditModal.bind(this)} key="edit" href="javascript:;" className="nowrap">[编辑配送员]</a>, <br key="br" />]
+              : null
+          }
           {
             props.print_status == 'AUDITING'
-              ? '[正在审核]'
-              : <a onClick={this.printHandler.bind(this)} href="javascript:;">
-                  {props.print_status == 'REPRINTABLE' ? '[重新打印]' : '[打印]'}
+              ? <span key="auditing">[正在审核]</span>
+              : <a onClick={this.printHandler.bind(this)} key="print" href="javascript:;">
+                  {
+                    props.print_status == 'PRINTABLE'
+                      ? <span key="printable">[打印]</span>
+                      : ( props.print_status == 'UNPRINTABLE'
+                            ? <span key="unprintable">[申请打印]</span>
+                            : <span key="reprintable">[重新打印]</span>
+                        )
+                  }
                 </a>
           }
         </td>
@@ -483,6 +494,9 @@ var EditModal = React.createClass({
       }
     }
   },
+  translate(){
+
+  },
   render: function(){
     var { filter_results, selected_deliveryman_id, orders } = this.state;
     var { batch_edit, submitting } = this.props;
@@ -574,7 +588,11 @@ var EditModal = React.createClass({
     this.refs.modal.show();
   },
   hideCallback: function(){
-    this.setState(this.getInitialState());
+    this.setState({
+      filter_results: this.state.all_deliveryman,
+      selected_deliveryman_id: undefined,
+      orders: []
+    });
   },
 });
 

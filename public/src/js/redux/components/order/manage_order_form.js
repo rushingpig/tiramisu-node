@@ -216,7 +216,7 @@ class ManageAddForm extends Component {
                   className={`form-select ${src_id.error}`} />
               ]
             : <Select 
-                value={typeof selected_order_src_level1_id == 'undefined' ? src_id.value : SELECT_DEFAULT_VALUE} 
+                value={typeof selected_order_src_level1_id != 'undefined' ? src_id.value : SELECT_DEFAULT_VALUE} 
                 options={all_order_srcs[0]} 
                 onChange={this.orderSrcsLevel1Change.bind(this)} 
                 key="order_srcs_level1" 
@@ -235,7 +235,7 @@ class ManageAddForm extends Component {
                 <input value={groupbuy_psd} onChange={this.onGroupbuyPsdChange.bind(this)} className="form-control input-xs" type="text" />{' '}
                 <button onClick={this.checkGroupbuyPsd.bind(this)} data-submitting={groupbuy_check_ing} disabled={groupbuy_check_ing} className="btn btn-default btn-xs">验劵</button>
                 {' '}
-                <span className={groupbuy_success ? 'text-success' : 'text-danger'}>{groupbuy_msg}</span>
+                <span className={'fadeIn animated ' + (groupbuy_success ? 'text-success' : 'text-danger')}>{groupbuy_msg}</span>
               </div>
             )
           : null
@@ -433,20 +433,21 @@ class ManageAddForm extends Component {
   }
   checkGroupbuyPsd(){
     var { groupbuy_psd } = this.state;
-    if(groupbuy_psd){
+    if(groupbuy_psd && uForm.isNumber(groupbuy_psd)){
       this.setState({ groupbuy_check_ing: true });
       this.props.actions.checkGroupbuyPsd(groupbuy_psd)
         .done(() => {
-          this.setState({ groupbuy_success: true, groupbuy_msg: '团购券正常使用！'})
+          this.setState({ groupbuy_success: true, groupbuy_msg: <i className="fa fa-check"></i>})
         })
-        .fail(() => {
+        .fail((msg) => {
+          console.warn(msg);
           this.setState({ groupbuy_success: false, groupbuy_msg: '团购券验证有误，请手动确认！'})
         })
         .always(() => {
           this.setState({ groupbuy_check_ing: false })
         })
     }else{
-      Noty('warning', '请填写团购密码');
+      Noty('warning', '请填写正确的团购密码');
     }
   }
 }

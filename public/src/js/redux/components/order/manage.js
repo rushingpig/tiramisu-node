@@ -16,7 +16,7 @@ import Select from 'common/select';
 import Pagination from 'common/pagination';
 import {order_status, SELECT_DEFAULT_VALUE, DELIVERY_TO_HOME, DELIVERY_TO_STORE} from 'config/app.config';
 import history from 'history_instance';
-import LineRouter from 'common/line_router';
+import Linkers from 'common/linkers';
 import SearchInput from 'common/search_input';
 import { tableLoader, get_table_empty } from 'common/loading';
 import StdModal from 'common/std_modal';
@@ -37,8 +37,10 @@ class TopHeader extends Component {
     return (
       <div className="clearfix top-header">
         <button onClick={this.addOrder.bind(this)} className="btn btn-sm btn-theme pull-left">添加订单</button>
-        <LineRouter 
-          routes={[{name: '总订单页面', link: '/om/index'}, {name: '处理页面', link: ''}]}
+        <Linkers
+          data={['总订单页面', '处理页面']}
+          active="总订单页面"
+          onChange={this.filterHandler.bind(this)}
           className="pull-right" />
       </div>
     )
@@ -46,6 +48,15 @@ class TopHeader extends Component {
   addOrder(){
     // history.replace('/om/index/add');
     history.push('/om/index/add');
+  }
+  filterHandler(name){
+    var searchOpts = {page_no: 0, page_size: this.props.pageSize};
+    if(name == '总订单页面'){
+      searchOpts.is_submit = undefined;
+    }else{
+      searchOpts.is_submit = 0;
+    }
+    this.props.getOrderList(searchOpts);
   }
 }
 
@@ -155,11 +166,15 @@ var OrderRow = React.createClass({
     return (
       <tr className={props.active_order_id == props.order_id ? 'active' : ''} onClick={this.clickHandler}>
         <td>
-          <a onClick={this.editHandler} href="javascript:;">[编辑]</a><br/>
-          <a onClick={this.viewOrderDetail} href="javascript:;">[查看]</a><br/>
-          <a onClick={this.alterDelivery} href="javascript:;" className="nowrap">[修改配送]</a><br/>
-          <a onClick={this.alterStation} href="javascript:;" className="nowrap">[分配配送站]</a><br/>
-          <a onClick={this.cancelOrder} href="javascript:;" className="nowrap">[订单取消]</a>
+        {
+          this.ACL(
+            [<a onClick={this.editHandler} key="OrderManageEdit" href="javascript:;">[编辑]</a>, <br key="1" />],
+            [<a onClick={this.viewOrderDetail} key="OrderManageView" href="javascript:;">[查看]</a>, <br key="2" />],
+            [<a onClick={this.alterDelivery} key="OrderManageAlterDelivery" href="javascript:;" className="nowrap">[修改配送]</a>, <br key="3" />],
+            [<a onClick={this.alterStation} key="OrderManageAlterStation" href="javascript:;" className="nowrap">[分配配送站]</a>, <br key="4" />],
+            [<a onClick={this.cancelOrder} key="OrderManageCancel" href="javascript:;" className="nowrap">[订单取消]</a>]
+          )
+        }
         </td>
         <td>{props.merchant_id}</td>
         <td>{props.order_id}</td>
@@ -193,6 +208,32 @@ var OrderRow = React.createClass({
         <td><a onClick={this.viewOrderOperationRecord} className="inline-block time" href="javascript:;">{props.updated_time}</a></td>
       </tr>
     )
+  },
+  ACL: function(){
+    var { status } = this.props;
+    var roles = null;
+    switch( status ){
+      case 'UNTREATED':
+        roles = ['OrderManageEdit', 'OrderManageCancel', 'OrderManageView']; break;
+      case 'TREATED':
+        roles = ['OrderManageEdit', 'OrderManageCancel', 'OrderManageView']; break;
+      case 'STATION':
+        roles = ['OrderManageCancel', 'OrderManageAlterDelivery', 'OrderManageView']; break;
+      case 'INLINE':
+        roles = ['OrderManageAlterDelivery', 'OrderManageView']; break;
+      case 'DELIVERY':
+      case 'DELIVERY':
+      default:
+        roles = ['OrderManageView']; break;
+    }
+    var results = []
+    for(var i=0,len=arguments.length; i<len; i++){
+      var ele = arguments[i][0];
+      if(roles.some( n => n == ele.key)){
+        results.push(arguments[i]);
+      }
+    }
+    return results;
   },
   activeOrder(){
     var { 
@@ -282,7 +323,7 @@ class ManagePannel extends Component {
     return (
       <div className="order-manage">
 
-        <TopHeader />
+        <TopHeader {...{getOrderList, pageSize: this.state.page_size}} />
         <FilterHeader {...{...filter, ...area}}
            actions={{...bindActionCreators({...AreaActions(), getOrderSrcs}, dispatch), getOrderList}}
            page_size={this.state.page_size} />

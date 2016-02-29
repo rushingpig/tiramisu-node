@@ -2,7 +2,7 @@ import React from 'react';
 import {render, findDOMNode} from 'react-dom';
 import config from 'config/app.config';
 import {connect} from 'react-redux';
-import {login, usernameChange, passwordChange} from 'actions/login';
+import {login, usernameChange, passwordChange, resetErrorMsg} from 'actions/login';
 import history from '../history';
 
 var Login = React.createClass({
@@ -82,15 +82,16 @@ var Login = React.createClass({
     // this.refs.me.style.display = 'none';
     // $('body').addClass('login-hide'); //使app可滚动, 顺带动画
   },
-  onUsernameChange: function(e){
-    // this.setState({username: e.target.value});
+  onUsernameChange(e){
     this.props.dispatch(usernameChange(e.target.value));
   },
-  onPasswordChange: function(e){
+  onPasswordChange(e){
     this.props.dispatch(passwordChange(e.target.value));
-    // this.setState({password: e.target.value});
   },
-  onEnterHandler: function(e){
+  resetErrorMsg(){
+    this.props.dispatch(resetErrorMsg());
+  },
+  onEnterHandler(e){
     if(e.which == 13){
       this.login();
     }
@@ -100,12 +101,18 @@ var Login = React.createClass({
     setTimeout(function(){
       $input.removeClass('tip');
     }, 400);
+  },
+  componentDidMount(){
+    console.log($([this.refs.username, this.refs.password]));
+    $([this.refs.username, this.refs.password]).on('click', this.resetErrorMsg);
+  },
+  componentWillUnmount(){
+    $([this.refs.username, this.refs.password]).off('click', this.resetErrorMsg);
   }
 });
 
 function mapStateToProps(state){
-  var s = state.login
-  return {...s.login, ...s.form};
+  return state.login;
 }
 
 // function mapDispatchToProps(dispatch) {

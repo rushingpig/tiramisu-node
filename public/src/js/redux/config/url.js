@@ -76,6 +76,7 @@ const URL = (function(){
    station_info: '/stations/getStationsByName', //单个配送站信息
    station_list_info: '/city/:cityId/stations', //指定城市下配送站信息
    station_scope: '/station/:stationId', //配送范围
+   new_station_scope:'station/:stationId/coords',//修改配送范围
   };
 
   for(var a in url){

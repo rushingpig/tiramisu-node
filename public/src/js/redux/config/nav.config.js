@@ -55,11 +55,16 @@ export default [
   "key": "station_management",
   "name": "配送管理",
   "short_name": "送货",
-  "icon": "truck",
+  "icon": "",
   "link": [{
-      "key": "sm_index",
+      "key": "sm_station",
       "name": "配送站管理",
       "icon": "",
-      "link": "/sm/index"
+      "link": "/sm/station"
+  },{
+      "key": "sm_scope",
+      "name": "配送区域管理",
+      "icon": "",
+      "link": "/sm/scope"
   }]
 }];

@@ -6,6 +6,7 @@ export const GOT_STATIONS = 'GOT_STATIONS';
 export const GOT_STATIONS_BY_CITY = 'GOT_STATIONS_BY_CITY';
 export const GOT_STATIONS_BY_NAME = 'GOT_STATIONS_BY_NAME';
 export const GOT_STATIONS_SCOPE = 'GOT_STATIONS_SCOPE';
+export const MODIFY_STATIONS_SCOPE = 'MODIFY_STATIONS_SCOPE';
 
 export default function Stations(){
   function _resolve(url, signal) {
@@ -43,6 +44,10 @@ export default function Stations(){
 
     getStationScope: function(station_id,station_name){
       return GET(Url.station_scope.toString(station_id),  station_name, GOT_STATIONS_SCOPE);
+    },
+
+    modifyStationScope: function(station_id,coords){
+      return PUT(Url.new_station_scope.toString(station_id), coords, MODIFY_STATIONS_SCOPE);
     }
     
   }

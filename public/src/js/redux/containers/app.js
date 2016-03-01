@@ -7,7 +7,8 @@ import DeliveryChangePannel from '../components/delivery/change';
 import DeliveryManagePannel from '../components/delivery/delivery_manage';
 import DistributeManagePannel from '../components/delivery/distribute_manage';
 import DeliverPrintReviewPannel from '../components/delivery/print_review';
-import StationManagePanel from '../components/station/station_manage';
+import StationManagePannel from '../components/station/station_manage';
+import StationScopeManagePannel from '../components/station/station_scope_manage';
 import history from 'history_instance';
 import {Router, Route, IndexRoute} from 'react-router';
 
@@ -34,7 +35,8 @@ export default class App extends Component {
           </Route>
 
           <Route path="sm">
-            <Route path="index" component={StationManagePanel} />
+            <Route path="station" component={StationManagePannel} />
+            <Route path="scope" component={StationScopeManagePannel} />
           </Route>
 
           <Route path="*" component={NoPage}/>

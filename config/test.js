@@ -63,6 +63,7 @@ var tables = {
     sys_menu : 'sys_menu',
     sys_user_role : 'sys_user_role',
     sys_role_menu : 'sys_role_menu',
+    sys_office : 'sys_office',
 //=================Buss=================
     buss_city : 'buss_city',
     buss_delivery_station : 'buss_delivery_station',
@@ -108,7 +109,9 @@ var white_ips = [
   '1',
   '127.0.0.1',
   // xfxb_ecommerce
-  '112.74.135.144'
+  '112.74.135.144',
+  '10.46.89.45',
+  '120.76.25.32'
 ];
 
 var log4js_options = {
@@ -120,7 +123,7 @@ var ping_xx = {
     apiKey: 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
 };
 
-var sms_host = "http://127.0.0.1:3000/sms/internal";
+var sms_host = "http://xfxb-production:3000/sms/internal";
 
 var login_required = true;
 

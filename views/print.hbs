@@ -7,9 +7,10 @@
     <title>打印送货单</title>
     <style type="text/css">
         body {
-            font-size: .85em;
-            font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
-            color: #232323;
+            /*font-size: .85em;*/
+            /*font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;*/
+            font-family: "黑体";
+            color: #000;
             background-color: #fff;
         }
 
@@ -49,7 +50,7 @@
         }
 
         .Content {
-            width: 710px;
+            width: 847px;
             /*border:1px solid red;*/
             margin-left: 0px;
             margin-top: 20px;
@@ -65,12 +66,14 @@
         }
 
         td {
-            height: 16px;
+            height: 18px;
             margin: 0;
             padding: 0;
-            line-height: 16px;
-            font-size: 14px;
+            line-height: 18px;
+            font-size: 16px;
         }
+        .clearfix{*+height:1%;}
+        .clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden}
     </style>
     <script type="text/javascript">
         function init() {
@@ -88,37 +91,19 @@
 {{#list}}
 <div class="Content">
     <div class="tb">
-        <div>
-            <div style="float: left; height: 40px; width: 168px;">
-
-
+        <div class="clearfix">
+            <div style="float: left; height: 40px; width: 148px;">
                 <div style="font-size: 23px; margin-left:15px; font-weight: bold; line-height: 23px; height: 23px; font-family: '幼圆'">幸福西饼</div>
                 <div style="font-size: 17px; margin-left:15px; font-weight: bold; line-height: 17px; height: 17px; font-family: '幼圆'; ">BLISS CAKE</div>
             </div>
-            <div style="float: left; width: 425px;">
+            <div style="float: left; width: 419px;">
                 <span style="font-size: 30px; font-weight: bold; line-height: 40px; height: 40px; font-family: '华文中宋'">幸福西饼网络商城配送签收单</span>
             </div>
-            <div id="barcode{{@index}}" style="float: left;margin-bottom: 2px;">
+            <!-- <div id="barcode{{@index}}" style="float: left;margin-bottom: 2px;"> -->
             </div>
-            <script type="text/javascript">
-                $(function(){
-                    $('#barcode{{@index}}').barcode('{{order_id}}', 'ean13', {
-                        addQuietZone: "1",
-                        barHeight: "40",
-                        barWidth: "1",
-                        bgColor: "#FFFFFF",
-                        color: "#000000",
-                        moduleSize: "5",
-                        output: "css",
-                        showHRI: false,
-                        posX: "0",
-                        posY: "0",
-                    })
-                })
-            </script>
         </div>
 
-        <div style="width: 740px">
+        <div style="width: 100%" class="clearfix">
             <table id="tablemoney" style="width: 730px; border-collapse: collapse; border: 1px solid #000000; height: 300px; float: left; " border="1">
                 <tbody>
                 <tr>
@@ -270,7 +255,7 @@
                 </tbody>
             </table>
             <div style="float: left; padding: 0; margin: 0; width: 10px;">
-                <ul style="list-style: none; padding: 8px 0 0 3px; margin: 0; width: 10px; font-size: 12px;">
+                <ul style="list-style: none; padding: 8px 0 0 3px; margin: 0; width: 10px; font-size: 13px;">
                     <li>生</li>
                     <li>产</li>
                     <li>︵</li>
@@ -296,7 +281,25 @@
                     <li>︶</li>
                 </ul>
             </div>
-
+            <div style="float: right;width: 96px;height: 369px;position: relative;">
+                <div id="barcode{{@index}}" style="position:absolute; top: 50%;left: -168px;margin-top: -6px;transform: rotate(90deg)"></div>
+            </div>
+            <script type="text/javascript">
+                $(function(){
+                    $('#barcode{{@index}}').barcode('{{order_id}}', 'code128', {
+                        addQuietZone: "1",
+                        barHeight: "50",
+                        barWidth: "3",
+                        bgColor: "#FFFFFF",
+                        color: "#333",
+                        // moduleSize: "20",
+                        output: "css",
+                        showHRI: false,
+                        posX: "0",
+                        posY: "0",
+                    })
+                })
+            </script>
         </div>
     </div>
 </div>

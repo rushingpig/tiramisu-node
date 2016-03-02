@@ -6,7 +6,7 @@ import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import Pagination from 'common/pagination';
 import LazyLoad from 'utils/lazy_load';
-import { Noty } from 'utils/index';
+import { Noty, form as uForm, dateFormat } from 'utils/index';
 import history from 'history_instance';
 
 import HistoryOrders from './manage_history_orders';
@@ -15,6 +15,7 @@ import { isSrc } from 'reducers/form';
 import { DELIVERY_TO_HOME, DELIVERY_TO_STORE,
   SELECT_DEFAULT_VALUE, INVOICE } from 'config/app.config';
 import autoMatchDeliveryStations from 'mixins/map';
+import FormFields from 'config/form.fields';
 
 const validate = (values, props) => {
   const errors = {};
@@ -29,16 +30,22 @@ const validate = (values, props) => {
     if(form[key] && form[key].touched && (!values[key] || values[key] == SELECT_DEFAULT_VALUE))
       errors[key] = msg;
   }
+  function _v_mobile(key){
+    if (form[key] && form[key].touched && !values[key] || (form[key] && !form[key].focus && values[key] && !uForm.isMobile(values[key]))){
+      errors[key] = msg;
+    }
+  }
 
   _v('owner_name');
-  _v('owner_mobile');
   _v('recipient_name');
-  _v('recipient_mobile');
   // _v('recipient_landmark');
   _v('delivery_date');
 
+  _v_mobile('owner_mobile');
+  _v_mobile('recipient_mobile');
+
   _v_selsect('regionalism_id');
-  _v_selsect('delivery_id');
+  // _v_selsect('delivery_id');
   _v_selsect('src_id');
   _v_selsect('pay_modes_id');
   _v_selsect('pay_status');
@@ -63,7 +70,7 @@ class ManageAddForm extends Component {
     super(props);
     this.state = {
       invoices: [{id: INVOICE.NO, text: '不需要'}, {id: INVOICE.YES, text: '需要'}],
-      selected_order_src_level1_id: SELECT_DEFAULT_VALUE,
+      selected_order_src_level1_id: undefined,
       groupbuy_psd: '',
       groupbuy_check_ing: false,
       groupbuy_success: undefined, //验券是否成功
@@ -103,7 +110,7 @@ class ManageAddForm extends Component {
       history_orders,
     } = this.props;
 
-    var { getHistoryOrders, checkHistoryOrder } = this.props.actions;
+    var { getHistoryOrders, checkHistoryOrder, getCopyOrderById, copyOrder } = this.props.actions;
 
     var { save_ing, save_success, submit_ing, 
       all_delivery_time, all_pay_status, all_order_srcs, 
@@ -157,7 +164,7 @@ class ManageAddForm extends Component {
         <label>{'下单人手机：'}</label>
         <input {...owner_mobile} ref="owner_mobile" className={`form-control input-xs ${ owner_mobile.error }`} type="text" />{' '}
         <button onClick={this.showHistoryModal.bind(this)} className="btn btn-default btn-xs">查询历史订单</button>{' '}
-        <button className="btn btn-default btn-xs">拨号</button>
+        <button className="btn btn-default btn-xs" disabled>拨号</button>
       </div>
       <div className="form-group form-inline">
         <label>{'收货人姓名：'}</label>
@@ -209,7 +216,7 @@ class ManageAddForm extends Component {
                   className={`form-select ${src_id.error}`} />
               ]
             : <Select 
-                value={selected_order_src_level1_id} 
+                value={typeof selected_order_src_level1_id != 'undefined' ? src_id.value : SELECT_DEFAULT_VALUE} 
                 options={all_order_srcs[0]} 
                 onChange={this.orderSrcsLevel1Change.bind(this)} 
                 key="order_srcs_level1" 
@@ -228,7 +235,7 @@ class ManageAddForm extends Component {
                 <input value={groupbuy_psd} onChange={this.onGroupbuyPsdChange.bind(this)} className="form-control input-xs" type="text" />{' '}
                 <button onClick={this.checkGroupbuyPsd.bind(this)} data-submitting={groupbuy_check_ing} disabled={groupbuy_check_ing} className="btn btn-default btn-xs">验劵</button>
                 {' '}
-                <span className={groupbuy_success ? 'text-success' : 'text-danger'}>{groupbuy_msg}</span>
+                <span className={'fadeIn animated ' + (groupbuy_success ? 'text-success' : 'text-danger')}>{groupbuy_msg}</span>
               </div>
             )
           : null
@@ -239,7 +246,7 @@ class ManageAddForm extends Component {
       </div>
       <div className="form-group form-inline">
         <label>{'　配送时间：'}</label>
-        <DatePicker redux-form={delivery_date} className={`${delivery_date.error}`}/>{' '}
+        <DatePicker redux-form={delivery_date} lowerLimit={dateFormat(new Date())} className={`${delivery_date.error}`}/>{' '}
         <Select {...delivery_hours} options={all_delivery_time} className={`${delivery_hours.error}`} />
       </div>
       <div className="form-group form-inline">
@@ -247,7 +254,7 @@ class ManageAddForm extends Component {
         <textarea {...remarks} className="form-control input-xs" rows="2" cols="40"></textarea>
         {'　　'}
         <label>{'发票备注：'}</label>
-        <Select {...invoice} options={invoices} className={`${invoice.error}`} no-default="true" />
+        <textarea {...invoice} placeholder="" rows="2" cols="22" className={`form-control input-xs ${invoice.error}`} />
       </div>
 
       <hr className="dotted" />
@@ -266,7 +273,8 @@ class ManageAddForm extends Component {
               <button
                   key="submitBtn"
                   onClick={handleSubmit(this._check.bind(this, this.handleSubmitOrder))}
-                  disabled={save_ing} className="btn btn-theme btn-xs">提交</button>
+                  data-submitting={submit_ing}
+                  disabled={submit_ing} className="btn btn-theme btn-xs">提交</button>
             ]
           : <button 
                 onClick={handleSubmit(this._check.bind(this, this.handleCreateOrder))} 
@@ -280,7 +288,7 @@ class ManageAddForm extends Component {
           ref="history_orders_modal"
           phone_num={owner_mobile.value} 
           data={history_orders}
-          {...{getHistoryOrders, checkHistoryOrder}} />
+          {...{getHistoryOrders, checkHistoryOrder, getCopyOrderById, copyOrder}} />
     </div>
     )
   }
@@ -329,8 +337,8 @@ class ManageAddForm extends Component {
         Noty('success', '保存成功');
         history.push('/om/index');
       })
-      .fail(function(){
-        Noty('error', '保存异常');
+      .fail(function(msg, code){
+        Noty('error', msg || '保存异常');
       });
   }
   handleSaveOrder(form_data){
@@ -339,16 +347,16 @@ class ManageAddForm extends Component {
         Noty('success', '保存成功')
         this.props.actions.getOrderById(form_data.order_id).fail(function(){history.go(0);}.bind(this));
       }.bind(this))
-      .fail(function(){
-        Noty('error', '保存异常');
+      .fail(function(msg){
+        Noty('error', msg || '保存异常');
       });
   }
   handleSubmitOrder(form_data){
     this.props.actions.submitOrder(form_data).done(function(){
       Noty('success', '已成功提交！');
       history.push('/om/index');
-    }).fail(function(){
-      Noty('error', '操作异常');
+    }).fail(function(msg){
+      Noty('error', msg || '操作异常');
     });
   }
   componentDidMount(){
@@ -425,20 +433,21 @@ class ManageAddForm extends Component {
   }
   checkGroupbuyPsd(){
     var { groupbuy_psd } = this.state;
-    if(groupbuy_psd){
+    if(groupbuy_psd && uForm.isNumber(groupbuy_psd)){
       this.setState({ groupbuy_check_ing: true });
       this.props.actions.checkGroupbuyPsd(groupbuy_psd)
         .done(() => {
-          this.setState({ groupbuy_success: true, groupbuy_msg: '团购券正常使用！'})
+          this.setState({ groupbuy_success: true, groupbuy_msg: <i className="fa fa-check"></i>})
         })
-        .fail(() => {
+        .fail((msg) => {
+          console.warn(msg);
           this.setState({ groupbuy_success: false, groupbuy_msg: '团购券验证有误，请手动确认！'})
         })
         .always(() => {
           this.setState({ groupbuy_check_ing: false })
         })
     }else{
-      Noty('warning', '请填写团购密码');
+      Noty('warning', '请填写正确的团购密码');
     }
   }
 }
@@ -474,29 +483,7 @@ ManageAddForm.PropTypes = {
 export default function initManageOrderForm( initFunc ){
   return reduxForm({
     form: 'add_order',  //表单命名空间
-    fields: [
-      'delivery_type',
-      'owner_name',
-      'owner_mobile',
-      'recipient_name', //下单人姓名
-      'recipient_mobile',
-      'recipient_address', //收货人详细地址----》送货上门
-      'recipient_shop_address', //收货人详细地址----》门店自提(实际上是门店地址)
-      'province_id',
-      'city_id',
-      'regionalism_id',    //分店ID ----》自取
-      'recipient_landmark', //标志性建筑
-      'delivery_id',     //配送中心
-      'src_id',          //订单来源
-      'pay_modes_id',
-      'pay_status',
-      // 'delivery_time',
-      'delivery_date',
-      'delivery_hours',
-      'remarks',
-      'invoice',
-      '_update', //业务无关的私有field，用于触发整个form的更新
-    ],
+    fields: FormFields.add_order,
     validate,
     touchOnBlur: true,
   }, initFunc)( ManageAddForm );

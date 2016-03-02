@@ -13,6 +13,7 @@ import LineRouter from 'common/line_router';
 import StdModal from 'common/std_modal';
 import { tableLoader } from 'common/loading';
 import RadioGroup from 'common/radio_group';
+import RecipientInfo from 'common/recipient_info';
 
 import { order_status, DELIVERY_MAP, YES_OR_NO } from 'config/app.config';
 import history from 'history_instance';
@@ -28,6 +29,7 @@ import { getPayModes } from 'actions/order_manage_form';
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from 'common/order_detail_modal';
 import ScanModal from 'common/scan_modal';
+import OperationRecordModal from 'common/operation_record_modal.js';
 
 class TopHeader extends Component {
   render(){
@@ -82,6 +84,9 @@ class FilterHeader extends Component {
             <Select {...order_status} options={all_order_status} default-text="选择订单状态" className="space-right"/>
             <Select {...deliveryman_id} options={all_deliveryman.map(n => ({id: n.deliveryman_id, text: n.deliveryman_name}))} default-text="选择配送员" className="space-right"/>
             <Select {...delivery_id} options={delivery_stations} default-text="选择配送中心" className="space-right"/>
+            <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
+              <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
+            </button>
           </div>
           <div className="form-group form-inline">
             <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space-right"/>
@@ -144,6 +149,15 @@ FilterHeader = reduxForm({
     'province_id',
     'city_id'
   ]
+}, state => {
+  var now = dateFormat(new Date());
+  return {
+    //赋初始值
+    initialValues: {
+      begin_time: now,
+      end_time: now,
+    }
+  }
 })( FilterHeader );
 
 class OrderRow extends Component {
@@ -167,21 +181,16 @@ class OrderRow extends Component {
           }
         </td>
         <td>{parseTime(props.delivery_time)}</td>
-        <td>{props.total_amount}</td>
+        <td>￥{props.total_amount/100}</td>
         <td>{props.owner_name}<br />{props.owner_mobile}</td>
-        <td className="text-left">
-          姓名：{props.recipient_name}<br />
-          电话：{props.recipient_mobile}<br />
-          <div className="address-detail-td">
-            <span className="inline-block">地址：</span><span className="address-all">{props.recipient_address}</span>
-          </div>
-          建筑：{props.recipient_landmark}
-        </td>
+        <RecipientInfo data={props} />
         <td><a onClick={props.viewOrderDetail} href="javascript:;">{props.order_id}</a></td>
         <td>{props.delivery_type}</td>
         <td><div className="remark-in-table">{props.remarks}</div></td>
         <td>{parseTime(props.signin_time)}</td>
         <td><div className="order-status" style={{color: _order_status.color || 'inherit'}}>{_order_status.value}</div></td>
+        <td>{props.updated_by}</td>
+        <td><a onClick={this.viewOrderOperationRecord.bind(this)} className="inline-block time" href="javascript:;">{props.updated_time}</a></td>
       </tr>
     )
   }
@@ -200,6 +209,10 @@ class OrderRow extends Component {
   clickHandler(){
     this.props.activeOrderHandler(this.props.order_id);
   }
+  viewOrderOperationRecord(e){
+    this.props.viewOrderOperationRecord(this.props);
+    e.stopPropagation();
+  }
 }
 
 class DeliveryDistributePannel extends Component {
@@ -213,21 +226,28 @@ class DeliveryDistributePannel extends Component {
     this.checkOrderHandler = this.checkOrderHandler.bind(this);
     this.activeOrderHandler = this.activeOrderHandler.bind(this);
     this.viewOrderDetail = this.viewOrderDetail.bind(this);
+    this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
     this.showScanModal = this.showScanModal.bind(this);
     this.search = this.search.bind(this);
   }
   render(){
-    var { filter, area, deliveryman, orders, main, signOrder, unsignOrder, searchByScan } = this.props;
+    var { filter, area, deliveryman, orders, main, signOrder, unsignOrder, searchByScan, 
+      getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
     var { submitting } = main;
     var { loading, page_no, total, list, check_order_info, active_order_id } = orders;
-    var { search, showSignedModal, showUnSignedModal, showScanModal, checkOrderHandler, viewOrderDetail, activeOrderHandler } = this;
+    var { search, showSignedModal, showUnSignedModal, showScanModal, checkOrderHandler, 
+      viewOrderDetail, activeOrderHandler, viewOrderOperationRecord } = this;
 
     var {scan, scan_list} = main; //扫描
     if(scan){
       list = scan_list;
     }
     var content = list.map((n, i) => {
-      return <OrderRow key={n.order_id} {...{...n, active_order_id, showSignedModal, showUnSignedModal, viewOrderDetail, checkOrderHandler, activeOrderHandler}} />;
+      return <OrderRow 
+        key={n.order_id} 
+        {...{...n, active_order_id, showSignedModal, showUnSignedModal, 
+          viewOrderDetail, checkOrderHandler, activeOrderHandler, viewOrderOperationRecord}}
+      />;
     })
     return (
       <div className="order-manage">
@@ -256,6 +276,8 @@ class DeliveryDistributePannel extends Component {
                   <th>备注</th>
                   <th>订单完成时间</th>
                   <th>订单状态</th>
+                  <th>操作人</th>
+                  <th>操作时间</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -290,6 +312,7 @@ class DeliveryDistributePannel extends Component {
         <SignedModal ref="SignedModal" {...{submitting, signOrder, callback: search}} />
         <UnSignedModal ref="UnSignedModal" {...{submitting, unsignOrder, callback: search}} />
         <ScanModal ref="ScanModal" submitting={submitting} search={searchByScan}  />
+        <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
       </div>
     )
   }
@@ -318,6 +341,9 @@ class DeliveryDistributePannel extends Component {
   }
   viewOrderDetail(){
     this.refs.detail_modal.show();
+  }
+  viewOrderOperationRecord(order){
+    this.refs.OperationRecordModal.show(order);
   }
   showSignedModal(n){
     this.refs.SignedModal.show(n);

@@ -130,6 +130,29 @@ AddressService.prototype.modifyStation = (req,res,next)=>{
     });
     systemUtils.wrapService(res, next, promise);
 };
+/**
+ * get station by station name
+ * @param req
+ * @param res
+ * @param next
+ */
+AddressService.prototype.getStationsByName = (req,res,next)=>{
+    req.checkQuery('station_name','请填写有效的配送站名称...').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,null);
+        return;
+    }
+    let station_name = req.query['station_name'];
+    let promise = addressDao.getStationsByName(station_name).then((result) => {
+        if (!result || result.length == 0) {
+            res.api(res_obj.NO_MORE_RESULTS, null);
+            return;
+        }
+        res.api(result);
+    });
+    systemUtils.wrapService(res, next, promise);
+};
 
 
 module.exports = new AddressService();

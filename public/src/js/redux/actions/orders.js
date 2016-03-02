@@ -139,13 +139,9 @@ export function showProductsDetail(){
   }
 }
 
-export const RESET_ORDER_OPT_RECORD = 'RESET_ORDER_OPT_RECORD'; //先重置历史数据
 export const GET_ORDER_OPT_RECORD = 'GET_ORDER_OPT_RECORD';
 export function getOrderOptRecord(order_id, data){
   return dispatch => {
-    dispatch({
-      type: RESET_ORDER_OPT_RECORD,
-    })
     return get(Url.order_opt_record.toString(order_id), data)
       .done(function(jsonobj){
         dispatch({
@@ -204,4 +200,11 @@ export function getOrderOptRecord(order_id, data){
       "page_size": "8"
     }
   }*/
+}
+
+export const RESET_ORDER_OPT_RECORD = 'RESET_ORDER_OPT_RECORD'; //先重置历史数据
+export function resetOrderOptRecord(){
+  return {
+    type: RESET_ORDER_OPT_RECORD,
+  }
 }

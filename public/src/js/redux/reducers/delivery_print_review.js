@@ -1,9 +1,11 @@
 import { combineReducers } from 'redux';
-import { REQUEST } from 'config/app.config';
+import { REQUEST, YES_OR_NO, PRINT_REVIEW_STATUS } from 'config/app.config';
 import * as Actions from 'actions/delivery_print_review';
+import { map } from 'utils/index';
 
 var filter_state = {
-  search_ing: false,
+  yes_or_no: YES_OR_NO,
+  all_review_status: map(PRINT_REVIEW_STATUS, (text, id) => ({id, text})),
 }
 
 function filter(state = filter_state, action){

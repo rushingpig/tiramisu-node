@@ -1,7 +1,7 @@
 import { dateFormat, map } from 'utils/index';
 import { combineReducers } from 'redux';
 import { REQUEST, order_status } from 'config/app.config';
-import { orders } from 'reducers/orders';
+import { orders, operationRecord } from 'reducers/orders';
 import { deliveryman } from 'reducers/deliveryman';
 import { area } from 'reducers/area_select';
 import { GET_DELIVERY_STATIONS, GOT_PAY_MODES } from 'actions/order_manage_form';
@@ -66,6 +66,7 @@ function main(state = main_state, action){
 export default combineReducers({
   filter,
   orders,
+  operationRecord,
   main,
   area: area(),
   deliveryman,

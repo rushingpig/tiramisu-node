@@ -71,14 +71,14 @@ var AddedProductsRow = React.createClass({
       <tr className="form-inline">
         <td>{name}</td>
         <td>{size}</td>
-        <td>{original_price/100}</td>
+        <td>￥{original_price/100}</td>
         <td>{num}</td>
         <td>{editable 
           ? <input value={discount_price} onChange={handleChange.bind(this, 'discount_price')} className={edit_input_classname} style={{width: 50}} type="text" /> 
-          : discount_price}</td>
+          : '￥' + discount_price}</td>
         <td>{editable 
           ? <input value={amount} onChange={handleChange.bind(this, 'amount')} className={edit_input_classname} style={{width: 50}} type="text" /> 
-          : amount}</td>
+          : '￥' + amount}</td>
         <td>{editable 
           ? <textarea value={choco_board} onChange={handleChange.bind(this, 'choco_board')} className={edit_input_classname} rows="2" cols="15"></textarea> 
           : choco_board}</td>
@@ -93,7 +93,12 @@ var AddedProductsRow = React.createClass({
           ? <textarea value={custom_desc} onChange={handleChange.bind(this, 'custom_desc')} className={edit_input_classname} rows="2" cols="15"></textarea> 
           : custom_desc}</td>
         <td className="nowrap">
-          <a onClick={this.edit.bind(this, true)} href="javascript:;">[编辑]</a>{' '}
+          {
+            editable
+            ? <a key="save" href="javascript:;">[保存]</a>
+            : <a key="edit" onClick={this.edit.bind(this, true)} href="javascript:;" className={edit_input_classname}>[编辑]</a>
+          }
+          {' '}
           <a onClick={this.delete.bind(this, this.props.data)} href="javascript:;">[删除]</a>
         </td>
       </tr>

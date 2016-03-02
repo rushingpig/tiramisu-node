@@ -78,7 +78,7 @@ DeliveryDao.prototype.findReprintApplies = function(query_obj){
         params.push(query_obj.end_time + ' 23:59:59');
     }
     if(toolUtils.isInt(query_obj.is_reprint)){
-        sql += " and bpa.is_repirnt = ?";
+        sql += " and bpa.is_reprint = ?";
         params.push(query_obj.is_reprint);
 
     }

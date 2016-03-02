@@ -45,7 +45,7 @@ class ScanModal extends Component {
                 <RotateLoading style={{'marginLeft': 5}} />
               </h5>
             : <h5 className="text-danger font-lg">
-                无法扫描，请点击以下输入框
+                非扫描状态，请点击以下输入框
               </h5>
           }
         </center>

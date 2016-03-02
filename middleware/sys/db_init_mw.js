@@ -21,10 +21,10 @@ DBInitMiddleware.initdb = (callback) => {
       loadSQL(),
       (err) => {
         if (err) {
-          console.log(err);
-          console.log('=============================================');
-          console.log('==============init db failed=================');
-          console.log('=============================================');
+          console.error(err);
+          console.error('=============================================');
+          console.error('==============init db failed=================');
+          console.error('=============================================');
         } else {
           console.log('==============================================');
           console.log('==============init db success=================');

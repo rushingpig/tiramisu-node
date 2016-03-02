@@ -32,7 +32,7 @@ export default [
   "icon": "truck",
   "link": [{
       "key": "dm_change",
-      "name": "订单转送单",
+      "name": "订单转送货单",
       "icon": "",
       "link": "/dm/change"
   }, {

@@ -31,6 +31,7 @@
       transition: background-color 0.1s ease-in 0s, color 0.2s ease-in 0s
       &:hover, &:active, &:focus
         @extend .menu-list-active
+        // background-color: lighten($theme-light-color, 50)
     > a
       padding: 12px 20px
       text-indent: 30px
@@ -74,10 +75,12 @@
       //line-height: $nav-sub-item-height
       padding: $nav-sub-item-height/2 5px $nav-sub-item-height/2 50px
       // transition: all 0.08s ease-in
-      &:hover,&:active,&:focus,&.active
-        @extend .submenu-list-active
+      &:hover
+        background-color: lighten($theme-dark-color, 6)
+      // &.active
+      //   @extend .submenu-list-active
         
-    li.active a
+    li.active a, li.active a:hover
       @extend .submenu-list-active
       color: $nav-active-font-color
   .open

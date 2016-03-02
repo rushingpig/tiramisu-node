@@ -1,6 +1,6 @@
 
 export function getGlobalStore(){
-  return window.STORE && window.STORE;
+  return window.STORE;
 }
 
 export function getGlobalState(){

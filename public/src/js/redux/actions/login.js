@@ -41,3 +41,10 @@ export function passwordChange(password){
     password
   }
 }
+
+export const RESET_ERROR_MSG = 'RESET_ERROR_MSG';
+export function resetErrorMsg(){
+  return {
+    type: RESET_ERROR_MSG
+  }
+}

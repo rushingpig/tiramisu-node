@@ -58,13 +58,60 @@ OrderService.prototype.addOrder = (req, res, next) => {
   systemUtils.wrapService(res, next, promise);
 };
 
+const srcIdMapping = new Map(
+  [
+    [ 10000,1 ],
+    [ 10001,2 ],
+    [ 10002,3 ],
+    [ 10003,4 ],
+    [ 10004,5 ],
+    [ 10005,6 ],
+    [ 10006,7 ],
+    [ 10007,8 ],
+    [ 10008,9 ],
+    [ 10009,10 ],
+    [ 10010,11 ],
+    [ 10011,12 ],
+    [ 10012,13 ],
+    [ 10013,14 ],
+    [ 10014,15 ],
+    [ 10015,16 ],
+    [ 10016,17 ],
+    [ 10017,18 ],
+    [ 10018,19 ],
+    [ 10019,20 ],
+    [ 10020,21 ],
+    [ 10021,22 ],
+    [ 10022,23 ],
+    [ 10023,24 ],
+    [ 10024,25 ],
+    [ 10025,26 ],
+    [ 10026,27 ],
+    [ 10027,28 ],
+    [ 11027,29 ],
+    [ 11029,30 ],
+    [ 11030,31 ],
+    [ 12030,32 ],
+    [ 12031,33 ],
+    [ 12032,34 ],
+    [ 12033,35 ],
+    [ 11007,38 ],
+    [ 11012,39 ],
+    [ 11013,40 ],
+    [ 11014,41 ],
+    [ 11015,42 ],
+    [ 12011,43 ],
+    [ 12012,44 ],
+  ]
+);
+
 OrderService.prototype.addExternalOrder = (req, res, next) => {
   req.checkBody(schema.addExternalOrder);
-  let errors = req.validationErrors();
+  const errors = req.validationErrors();
   if (errors) {
     return res.api(res_obj.INVALID_PARAMS, errors);
   }
-  let params = req.body;
+  const params = req.body;
 
   let promise = OrderService.prototype.addRecipient(
     req,
@@ -78,7 +125,8 @@ OrderService.prototype.addExternalOrder = (req, res, next) => {
       let orderObj = {
         recipient_id: recipientId,
         delivery_id: params.delivery_id,
-        src_id: params.src_id,
+        // HACK: transform id >= 10000 to new src_id mapping
+        src_id: params.src_id >= 10000? srcIdMapping.get(params.src_id): params.src_id,
         pay_modes_id: params.pay_modes_id,
         pay_status: params.pay_status,
         owner_name: params.owner_name,
@@ -177,6 +225,7 @@ OrderService.prototype.getOrderDetail = (req, res, next) => {
       data.pay_modes_id = curr.pay_modes_id;
       data.pay_name = curr.pay_name;
       data.coupon = curr.coupon;
+      data.invoice = curr.invoice;
       data.recipient_address = curr.recipient_address;
       data.recipient_name = curr.recipient_name;
       data.recipient_id = curr.recipient_id;
@@ -479,7 +528,8 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
       query_data = {
         order_ids: req.body.order_ids.map((curr) => {
           return systemUtils.getDBOrderId(curr);
-        })
+        }),
+        user : req.session.user
       };
     } else {
       req.checkQuery(listOrder);
@@ -500,13 +550,14 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
         delivery_id: req.query.delivery_id,
         deliveryman_id: req.query.deliveryman_id,
         print_status: req.query.print_status,
-        is_greeting_card: req.query.is_greeting_card
+        is_greeting_card: req.query.is_greeting_card,
+        user : req.session.user
       };
     }
 
 
-    if (isNaN(parseInt(req.query.keywords || ''))) {
-      query_data.keywords = systemUtils.encodeForFulltext(req.query.keywords || '');
+    if (req.query.keywords && isNaN(parseInt(req.query.keywords))) {
+      query_data.keywords = systemUtils.encodeForFulltext(req.query.keywords);
     } else {
       query_data.keywords = req.query.keywords;
     }
@@ -535,13 +586,18 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
         page_no: req.query.page_no
       };
       for (let curr of resObj._result) {
-        let delivery_adds = curr.merger_name.split(',');
+        let delivery_adds = [],city_name = '';
+        if(curr.merger_name){
+          delivery_adds = curr.merger_name.split(',');
+          city_name = delivery_adds[2];
+        }
+
         delivery_adds.shift();
 
         let list_obj = {
           cancel_reason: curr.cancel_reason,
           recipient_landmark: curr.landmark,
-          city: curr.merger_name.split(',')[2],
+          city: city_name,
           created_by: curr.created_by,
           created_time: curr.created_time,
           delivery_time: curr.delivery_time,
@@ -559,7 +615,7 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
           owner_mobile: curr.owner_mobile,
           owner_name: curr.owner_name,
           pay_status: Constant.PSD[curr.pay_status],
-          recipient_address: delivery_adds.join(',') + curr.address,
+          recipient_address: delivery_adds.join(',') + '  '+curr.address,
           recipient_mobile: curr.recipient_mobile,
           recipient_name: curr.recipient_name,
           remarks: curr.remarks,

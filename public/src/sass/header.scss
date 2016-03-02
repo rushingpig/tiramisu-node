@@ -62,6 +62,10 @@
     border-radius: 0;
     border: none;
 
+    //fix去掉img的影响
+    height: 50px;
+    line-height: 27px;
+
     img {
       vertical-align: middle;
       margin-right: 5px;

@@ -9,6 +9,7 @@ import { order_status, REQUEST } from 'config/app.config';
 import { area } from 'reducers/area_select';
 import delivery_stations from 'reducers/delivery_stations';
 import { orders, operationRecord } from 'reducers/orders';
+import { core } from 'utils/index';
 
 var filter_state = {
   search_ing: false,
@@ -20,8 +21,9 @@ function filter(state = filter_state, action){
   switch (action.type) {
     case GOT_ORDER_SRCS:
       let l1 = [], l2 = [];
+      var data = core.isArray(action.data) ? action.data : [];
       //level最多为2级
-      action.data.forEach(n => {
+      data.forEach(n => {
         n.text = n.name;  //转换
         if(n.level == 1){
           l1.push(n);

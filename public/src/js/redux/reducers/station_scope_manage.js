@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from 'redux';  
 import { map } from 'utils/index';
 import { area } from 'reducers/area_select';
 import { GOT_STATIONS , GOT_STATIONS_BY_CITY, GOT_STATIONS_BY_NAME, GOT_STATIONS_SCOPE, MODIFY_STATIONS_SCOPE } from 'actions/station_scope_manage';

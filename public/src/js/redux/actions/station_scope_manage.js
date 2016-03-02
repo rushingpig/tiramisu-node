@@ -4,6 +4,7 @@ import Url from 'config/url';
 export const FAIL = 'FAIL';
 export const GOT_STATIONS = 'GOT_STATIONS';
 export const GOT_STATIONS_BY_CITY = 'GOT_STATIONS_BY_CITY';
+export const GOT_STATIONS_BY_DISTRICT = 'GOT_STATIONS_BY_DISTRICT';
 export const GOT_STATIONS_BY_NAME = 'GOT_STATIONS_BY_NAME';
 export const GOT_STATIONS_SCOPE = 'GOT_STATIONS_SCOPE';
 export const MODIFY_STATIONS_SCOPE = 'MODIFY_STATIONS_SCOPE';
@@ -38,8 +39,12 @@ export default function Stations(){
       return _resolve(Url.station_list_info.toString(city_id), GOT_STATIONS_BY_CITY);
     },
 
+    getStationByDistrict: function(district_id){
+      return _resolve(Url.station_list_info.toString(district_id), GOT_STATIONS_BY_DISTRICT);
+    },
+
     getStationByName: function(station_name){
-      return _resolve(Url.station_info.toString(station_name), GOT_STATIONS_BY_NAME);
+      return GET(Url.station_info.toString(), station_name, GOT_STATIONS_BY_NAME);
     },
 
     getStationScope: function(station_id,station_name){

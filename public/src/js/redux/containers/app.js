@@ -36,6 +36,7 @@ export default class App extends Component {
 
           <Route path="sm">
             <Route path="station" component={StationManagePannel} />
+            <Route path="station/:id" component={StationManagePannel} />
             <Route path="scope" component={StationScopeManagePannel} />
           </Route>
 

@@ -9,10 +9,15 @@ import Select from 'common/select';
 import Pagination from 'common/pagination';
 import LineRouter from 'common/line_router';
 import { tableLoader } from 'common/loading';
+import history from 'history_instance';
+
+import Autocomplete from './autocomplete';
 
 import AreaActions from 'actions/area';
-// import StationScopeAction from 'actions/station_scope_manage';
+import StationScopeAction from 'actions/station_scope_manage';
 // import * as StationAction from 'actions/station_manage';
+
+import LazyLoad from 'utils/lazy_load';
 
 class TopHeader extends Component {
   render(){
@@ -45,17 +50,20 @@ class FilterHeader extends Component {
 				provinces,
 				cities,
 				districts,
-			}
+			},
+			station: {
+				stations,
+			},
 		} = this.props;
 
 		return (
 			<div className="panel search">
 				<div className="panel-body form-inline">
-					<SearchInput className="pull-left " />
-					<Select {...province_id} options={provinces} onChange={this.onProvinceChange.bind(this, province_id.onChange)} ref="province" default-text="选择省份" className="space-left space-right"/>
-					<Select {...city_id} options={cities} onChange={this.onCityChange.bind(this, city_id.onChange)} ref="city" className="space-right"/>
+					<Autocomplete focusHandler={this.focusHandler}  placeholder={'请输入配送站名称'} searchHandler={this.props.getStationByName}  options={stations} className="pull-left"/>
+					<Select {...province_id} options={provinces} no-default='true' onChange={this.onProvinceChange.bind(this, province_id.onChange)} ref="province" className="space-left space-right"/>
+					<Select {...city_id} options={cities} no-default='true' onChange={this.onCityChange.bind(this, city_id.onChange)} ref="city" className="space-right"/>
 					<Select {...district_id} options={districts} ref="district" className="space-right"/>
-					<button disabled={this.state.search_ing} className="btn btn-theme btn-xs">
+					<button disabled={this.state.search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
 						<i className="fa fa-search" style={{'padding': '0 5px'}}></i>
 						查询
 					</button>
@@ -70,11 +78,21 @@ class FilterHeader extends Component {
 
 	componentDidMount(){
     setTimeout(function(){
-      var { getProvinces, } = this.props;
+      var { getProvinces, getStations} = this.props;
       getProvinces();
+      getStations();
+      console.log('ok')
       LazyLoad('noty');
     }.bind(this),0)
+
+    var intial_province_id = '110000';
+    var intial_city_id = '110000';
+    $(findDOMNode(this.refs.province)).children('option[value=' + intial_province_id + ']').attr('selected', 'true');
+    var $city = $(findDOMNode(this.refs.city));
+    this.props.getCities(intial_province_id);
+    
   }
+
   onProvinceChange(callback, e){
     var {value} = e.target;
     this.props.provinceReset();
@@ -96,11 +114,16 @@ class FilterHeader extends Component {
     callback(e);
   }
   search(){
+    var city_id = $(findDOMNode(this.refs.city)).children('option:selected').attr('value');
     this.setState({search_ing: true});
-    this.props.getOrderExchangeList({page_no: 0, page_size: this.props.page_size})
+    this.props.getStationByCity(city_id)
       .always(()=>{
         this.setState({search_ing: false});
       });
+    // this.props.getOrderExchangeList({page_no: 0, page_size: this.props.page_size})
+    //   .always(()=>{
+    //     this.setState({search_ing: false});
+    //   });
   }
 
 }
@@ -116,7 +139,8 @@ FilterHeader = reduxForm({
 
 
 class StationRow extends Component{
-	render(){
+  render(){
+    var { station_id } = this.props;
 		return (
 			<tr>
         <td><input type="checkbox" /></td>
@@ -126,18 +150,30 @@ class StationRow extends Component{
         <td>{this.props.station_name}</td>
         <td>{this.props.address}</td>
         <td>
-        	<a>编辑配送区域</a>
-        	<a>查看备注</a>
-        	<a>编辑</a>
-        	<a>删除</a>
+        	<a onClick={this.editScope} href="javascript:;">[编辑配送区域]</a>
+        	<a onClick={this.viewDetail} href="javascript:;" className="no-wrap">[查看备注]</a>
+        	<a onClick={this.editStation} href="javascript:;" className="no-wrap">[编辑]</a>
+        	<a onClick={this.deleteStation} href="javascript:;" className="no-wrap">[删除]</a>
         </td>
       </tr>
 		)
 	}
+  editScope(e){
+    history.push('/sm/station' + this.props.station_id);
+    e.stopPropagation();
+  }
+  viewDetail(){}
+  editStation(){}
+  deleteStation(){}
 }
 
 export default class StationManagePannel extends Component {
-	render(){
+  render(){
+  var { station } = this.props;
+  var content = station.station_list_info.map((n, i) => {
+    return <StationRow key={n.id}
+      {...this.props} />
+  })
 		return (
 			<div className="station-manage">
 				<TopHeader/>
@@ -160,6 +196,7 @@ export default class StationManagePannel extends Component {
                 </tr>
                 </thead>
                 <tbody>
+                  {content}
                 </tbody>
               </table>
             </div>
@@ -167,7 +204,8 @@ export default class StationManagePannel extends Component {
             	<i className="fa fa-minus-square" style={{'padding': '0 5px'}}></i>
             	删除
             </button>
-            <Pagination  />
+
+            
           </div>
         </div>
 			</div>
@@ -182,7 +220,7 @@ function mapStateToProps({stationManage}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  return bindActionCreators({...AreaActions()},dispatch);
+  return bindActionCreators({...AreaActions(), ...StationScopeAction()},dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(StationManagePannel);

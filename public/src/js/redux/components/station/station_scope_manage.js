@@ -11,6 +11,8 @@ import LineRouter from 'common/line_router';
 import SearchInput from 'common/search_input';
 import Select from 'common/select';
 
+import Autocomplete from './autocomplete';
+
 import AreaActions from 'actions/area';
 import StationAction from 'actions/station_scope_manage';
 
@@ -75,7 +77,17 @@ class StationRow extends React.Component {
       </div>
     );
   }
-
+  onPageChange(page){
+    this.search(page);
+  }
+  componentDidMount() {
+    this.search();
+  }
+  search(page){
+    // page = typeof page == 'undefined' ? this.props.orders.page_no : page;
+    // this.props.getOrderList({page_no: page, page_size: this.state.page_size});
+  }
+  
   stationScopeEdit(){
     var { getStationScope } = this.props;
     var station_id = $(findDOMNode(this.refs.edit)).attr('id');
@@ -114,8 +126,8 @@ class FilterHeader extends React.Component{
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <input ref="inp" {...station_id} onFocus={this.focusHandler.bind(this)} placeholder={"请输入配送站"} className="form-control input-xs v-mg" style={{marginRight: '5px'}} options={stations} />
-          <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space-right"/>
+          <Autocomplete focusHandler={this.focusHandler} placeholder={'请输入配送站名称'} searchHandler={this.getStationByName}  options={stations} className="pull-left"/>
+          <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space-left space-right"/>
           <Select ref="city" {...city_id} options={cities} default-text="选择城市" className="space-right"/>
           <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
             查找<i className="fa fa-search" style={{'padding': '0 3px'}}></i>
@@ -147,10 +159,6 @@ class FilterHeader extends React.Component{
         source: stations
       });
     });
-  }
-
-  searchHandler(){
-
   }
 
   onProvinceChange(callback, e){

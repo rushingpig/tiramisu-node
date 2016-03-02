@@ -30,7 +30,10 @@ export default class Autocomplete extends Component {
   searchHandler(){
     if(!this.props.searching){
       console.log('search: ' + this.refs.input.value);
-      this.props.searchHandler({station_name: this.refs.input.value});
+      var station_name = this.refs.input.value;
+      if(station_name !== ''){
+        this.props.searchHandler({station_name: this.refs.input.value});
+      }
     }
   }
   focusHandler(){

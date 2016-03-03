@@ -21,12 +21,14 @@ UserService.prototype.getUserInfo = (username, password)=> {
             let user = {
                 is_admin : false,
                 permissions : [],
-                role : {}
+                roles : [],
+                data_scopes : []
             };
             for(let i = 0;i < results.length;i++){
                 let curr = results[i];
                 if(i === 0){
-                    if(user.id == 1){
+                    // the admin id is fixed at 1
+                    if(curr.id == 1){
                         user.is_admin = true;
                     }
                     user.id = curr.id;
@@ -36,10 +38,11 @@ UserService.prototype.getUserInfo = (username, password)=> {
                     user.station_id = curr.station_id;
                     user.user_type = curr.user_type;
                     user.no = curr.no;
-                    user.role.data_scope = curr.data_scope;
                     user.name = curr.name;
                 }
                 user.permissions.push(curr.permission);
+                user.roles.push({id:curr.role_id,name:curr.role_name});
+                user.data_scopes.push(curr.data_scope);
             }
             return user;
         }

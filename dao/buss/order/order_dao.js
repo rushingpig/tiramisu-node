@@ -232,7 +232,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
         'bo.updated_time',
         'bo.greeting_card'
     ].join(',');
-    let params = [],data_scope = query_data.user.role.data_scope;
+    let params = [],data_scopes = query_data.user.data_scopes;
     let sql = "select " + columns + " from ?? bo";
     params.push(tables.buss_order);
     if (query_data.keywords) {
@@ -249,10 +249,10 @@ OrderDao.prototype.findOrderList = function (query_data) {
     }
     sql += " left join ?? bds2 on bo.delivery_id = bds2.id";
     params.push(tables.buss_delivery_station);
-    if(data_scope == constant.DS.CITY){
-        sql += " inner join ?? dr3 on dr3.id = bds2.regionalism_id and dr3.parent_id = ?";
+    if(data_scopes.indexOf(constant.DS.CITY) !== -1){
+        sql += " inner join ?? dr3 on dr3.id = bds2.regionalism_id";
         params.push(tables.dict_regionalism);
-        params.push(query_data.user.city_id);
+
     }
     sql += " left join ?? bos on bo.src_id = bos.id";
     params.push(tables.buss_order_src);
@@ -332,11 +332,26 @@ OrderDao.prototype.findOrderList = function (query_data) {
     if (query_data.order_ids && Array.isArray(query_data.order_ids)) {
         sql += " and bo.id in " + dbHelper.genInSql(query_data.order_ids);
     }
-    let ds_sql = "";
-    if(data_scope == constant.DS.STATION){
-        ds_sql += " and bo.delivery_id = ?";
-        params.push(query_data.user.station_id);
+    // data filter begin
+    let ds_sql = "",temp_sql = "";
+    if(toolUtils.isArray(data_scopes)){
+        ds_sql += " and (";
+        data_scopes.forEach((curr)=>{
+
+            if(curr == constant.DS.STATION){
+                temp_sql += " or bo.delivery_id = ?";
+                params.push(query_data.user.station_id);
+            }
+            if(curr == constant.DS.CITY){
+                temp_sql += " or dr3.parent_id = ?";
+                params.push(query_data.user.city_id);
+            }
+        });
+        ds_sql += temp_sql.replace(/^ or/,'');
+        ds_sql += ")";
     }
+
+    // data filter end
     switch (query_data.order_sorted_rules) {
         case constant.OSR.LIST:
             sql += " order by bo.created_time desc";
@@ -356,6 +371,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
         default:
         // do nothing && order by with the db self
     }
+    console.log(sql);
     let countSql = dbHelper.countSql(sql);
     return baseDao.select(countSql, params).then((result) => {
         return baseDao.select(dbHelper.paginate(sql, query_data.page_no, query_data.page_size), params).then((_result) => {

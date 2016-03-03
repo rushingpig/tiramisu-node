@@ -18,16 +18,20 @@ function localStrategy(req,username, password, done) {
         return done(null,false,{msg : '请输入有效的用户名和密码'});
     }
     let db_password = crypto.md5(password.toString().trim());
-    userService.getUserInfo(username,db_password).then((user)=>{
-            if(!user){
+    userService.getUserInfo(username,db_password).then((userInfo)=>{
+            if(!userInfo){
                 return done(null,false,{msg:"用户名或错误,请确认后重新输入..."})
             }
             //  set user session
-            se.emit('fill',req,user);
+            se.emit('fill',req,userInfo);
+            let user = {
+                name : userInfo.name,
+                permissions : userInfo.permissions
+            };
             return done(null,user);
         }
     ).catch((err)=>{
-            return done(err);
+        return done(err);
     });
 }
 /**

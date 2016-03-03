@@ -1,5 +1,6 @@
 import { post, put, GET, POST, TEST } from 'utils/request'; //Promise
 import Url from 'config/url';
+import { getDeliveryStations as _getDeliveryStations } from 'actions/order_manage_form';
 
 export const ORDERS_EXCHANGE = 'ORDERS_EXCHANGE'; //key: 0->正在处理，1->成功，2->失败
 export function exchangeOrders(order_ids) {
@@ -28,3 +29,5 @@ export function exchangeOrders(order_ids) {
   //   {type: ORDERS_EXCHANGE, key: 1}   //2000毫秒后派发
   // ], 2000);
 }
+
+export const getDeliveryStations = _getDeliveryStations;

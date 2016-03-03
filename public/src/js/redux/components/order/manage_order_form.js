@@ -60,6 +60,13 @@ const validate = (values, props) => {
     _v_selsect('recipient_shop_address'); //门店
   }
 
+  //团购密码
+  if( isSrc('第三方预约', values.src_id) ){
+    if (form['coupon'] && form['coupon'].touched && !values['coupon'] || (form['coupon'] && !form['coupon'].focus && values['coupon'] && !uForm.isCoupon(values['coupon']))){
+      errors['coupon'] = msg;
+    }
+  }
+
   console.log(errors);
   //errors为空对象才表明验证正确
   return errors;
@@ -71,7 +78,7 @@ class ManageAddForm extends Component {
     this.state = {
       invoices: [{id: INVOICE.NO, text: '不需要'}, {id: INVOICE.YES, text: '需要'}],
       selected_order_src_level1_id: undefined,
-      groupbuy_psd: '',
+
       groupbuy_check_ing: false,
       groupbuy_success: undefined, //验券是否成功
       groupbuy_msg: '', //验券结果
@@ -100,6 +107,7 @@ class ManageAddForm extends Component {
         delivery_id,     //配送中心
         src_id,          //订单来源
         pay_modes_id,    //支付方式
+        coupon,          //团购密码
         pay_status,
         // delivery_time, //总配送时间：delivery_date + delivery_time
         delivery_date,  //配送日期
@@ -232,7 +240,7 @@ class ManageAddForm extends Component {
           ? (
               <div className="form-group form-inline">
                 <label>{'　团购密码：'}</label>
-                <input value={groupbuy_psd} onChange={this.onGroupbuyPsdChange.bind(this)} className="form-control input-xs" type="text" />{' '}
+                <input {...coupon} className={`form-control input-xs ${coupon.error}`} type="text" />{' '}
                 <button onClick={this.checkGroupbuyPsd.bind(this)} data-submitting={groupbuy_check_ing} disabled={groupbuy_check_ing} className="btn btn-default btn-xs">验劵</button>
                 {' '}
                 <span className={'fadeIn animated ' + (groupbuy_success ? 'text-success' : 'text-danger')}>{groupbuy_msg}</span>
@@ -320,6 +328,12 @@ class ManageAddForm extends Component {
         if(form_data.delivery_type == DELIVERY_TO_STORE){
           form_data.recipient_address = this.findSelectedOptionText('shop');
           form_data.recipient_landmark = '';
+        }
+        //团购密码验证
+        if( isSrc('第三方预约', form_data.src_id) ){
+          if( !this.state.groupbuy_success ){
+            Noty('warning', '请确定团购密码已验证通过'); return;
+          }
         }
 
         callback.call(this, form_data);
@@ -428,20 +442,24 @@ class ManageAddForm extends Component {
   showHistoryModal(){
     this.refs.history_orders_modal.show();
   }
-  onGroupbuyPsdChange(e){
-    this.setState({ groupbuy_psd: e.target.value })
-  }
   checkGroupbuyPsd(){
-    var { groupbuy_psd } = this.state;
-    if(groupbuy_psd && uForm.isNumber(groupbuy_psd)){
+    var { fields: { city_id, coupon } } = this.props;
+    coupon = coupon.value && coupon.value.trim();
+    var city_name;
+    if( city_id.value && city_id.value != SELECT_DEFAULT_VALUE ){
+      city_name = this.findSelectedOptionText('city');
+      city_name = city_name.substring(0, city_name.length - 1);
+    }else{
+      Noty('warning', '请先选择收货人所在城市'); return;
+    }
+    if(coupon && uForm.isCoupon(coupon)){
       this.setState({ groupbuy_check_ing: true });
-      this.props.actions.checkGroupbuyPsd(groupbuy_psd)
+      this.props.actions.checkGroupbuyPsd({coupon, city_name})
         .done(() => {
           this.setState({ groupbuy_success: true, groupbuy_msg: <i className="fa fa-check"></i>})
         })
         .fail((msg) => {
-          console.warn(msg);
-          this.setState({ groupbuy_success: false, groupbuy_msg: '团购券验证有误，请手动确认！'})
+          this.setState({ groupbuy_success: false, groupbuy_msg: msg || '团购券验证有误，请手动确认！'})
         })
         .always(() => {
           this.setState({ groupbuy_check_ing: false })

@@ -7,6 +7,7 @@ import Login from './login';
 import cookie from 'utils/cookie';
 import { NAV_COLLAPSED_CLASS, NAV_COLLAPSED_COOKIE, 
   NAV_COLLAPSED_COOKIE_NO, NAV_COLLAPSED_COOKIE_YES } from 'config/app.config';
+import V from 'utils/acl';
 
 export class Entry extends Component {
   render(){
@@ -31,7 +32,7 @@ export class Main extends Component {
           <div className="logo-icon text-center">
             <a href="index.html"><img src={config.root + "images/logo_icon.png"} alt=""/></a>
           </div>
-          <Nav />
+          <Nav onRender={V} />
         </div>
         <div className="right-side">
           <Header />
@@ -43,7 +44,13 @@ export class Main extends Component {
     )
   }
 }
-
+export class NoPermission extends Component {
+  render(){
+    return (
+      <h1><center>没有权限</center></h1>
+    )
+  }
+}
 export class NoPage extends Component {
   render(){
     return (

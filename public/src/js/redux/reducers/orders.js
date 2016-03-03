@@ -4,7 +4,8 @@ import { GET_DISTRIBUTE_SCAN_LIST } from 'actions/delivery_distribute';
 import { UPDATE_PATH } from 'redux-simple-router';
 
 var orders_state = {
-  loading: true,
+  loading: true, //初始化加载，
+  refresh: false, //列表数据更新（用于当某些操作所引发的数据刷新）
   page_no: 0,
   total: 0,
   list: [],
@@ -19,10 +20,12 @@ export function orders(state = orders_state, action){
   switch (action.type) {
 
     case UPDATE_PATH:
-      return {...orders_state, loading: false }
-      
+      return {...orders_state}
+    
+    case OrderActions.GET_ORDER_LIST_ING:
+      return {...orders_state, refresh: true }
     case OrderActions.GET_ORDER_LIST:
-      return {...orders_state, ...action.data, loading: false, }
+      return {...orders_state, ...action.data, loading: false, refresh: false }
 
     case OrderActions.CHECK_ORDER:
       return (function(){

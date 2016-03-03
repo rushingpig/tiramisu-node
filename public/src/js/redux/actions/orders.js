@@ -9,6 +9,7 @@ import { Noty, formCompile } from 'utils/index';
  * @type {String}
  */
 export const GET_ORDER_LIST = 'GET_ORDER_LIST';
+export const GET_ORDER_LIST_ING = 'GET_ORDER_LIST_ING';
 export function getOrderList(data){
   return (dispatch, getState) => {
     var filter_data = getValues(getState().form.order_manage_filter);
@@ -57,6 +58,7 @@ export function getOrderExchangeList(data){
   return (dispatch, getState) => {
     var filter_data = getValues(getState().form.order_exchange_filter);
     filter_data = formCompile(filter_data);
+    dispatch({ type: GET_ORDER_LIST_ING });
     return GET(Url.order_exchange.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch);
   }
 }
@@ -65,6 +67,7 @@ export function getOrderDeliveryList(data){
   return (dispatch, getState) => {
     var filter_data = getValues(getState().form.order_delivery_filter);
     filter_data = formCompile(filter_data);
+    dispatch({ type: GET_ORDER_LIST_ING });
     return GET(Url.order_delivery.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch);
   }
 }
@@ -73,6 +76,7 @@ export function getOrderDistributeList(data){
   return (dispatch, getState) => {
     var filter_data = getValues(getState().form.order_distribute_filter);
     filter_data = formCompile(filter_data);
+    dispatch({ type: GET_ORDER_LIST_ING });
     return GET(Url.order_distribute.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch);
   }
 }

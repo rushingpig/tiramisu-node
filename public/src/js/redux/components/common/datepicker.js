@@ -66,7 +66,10 @@ var DatePicker = React.createClass({
             $date.data('datepicker').hide();
           // }, 0);
         });
-      }.bind(this));
+      }.bind(this))
+      .on('click', function(){
+        $date.data('datepicker').show();
+      });
     }
     return $date;
   },

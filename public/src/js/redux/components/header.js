@@ -8,11 +8,16 @@ class Header extends Component {
   constructor(props){
     super(props);
     var now = new Date();
+    var { user } = window.xfxb;
+    if( typeof user == 'string' ){
+      user = JSON.parse(user);
+    }
     this.state = {
       usermenu_open: false,
       time: dateFormat(new Date()),
       day: now.getDay(),
-      weekday: ['日', '一', '二', '三', '四', '五', '六']
+      weekday: ['日', '一', '二', '三', '四', '五', '六'],
+      user: user || {}
     };
   }
   render(){
@@ -28,7 +33,7 @@ class Header extends Component {
               <a href="#" className="btn btn-default dropdown-toggle"
                   onClick={this.showUserMenu.bind(this)} data-toggle="dropdown" aria-expanded="false">
                 {/*<img src="http://www.qq1234.org/uploads/allimg/141119/2252043613-8.png" alt="" />*/}
-                {xfxb.username || 'oBama'}
+                { this.state.user.name || '--'}
                 <span className="caret"></span>
               </a>
               <ul className="dropdown-menu dropdown-menu-usermenu pull-right">

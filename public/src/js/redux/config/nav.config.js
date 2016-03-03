@@ -5,12 +5,12 @@ export default [
   "short_name": "订单",
   "icon": "clipboard",
   "link": [{
-      "key": "om_index",
+      "key": "OrderManage", //key值，主要用来进行访问权限控制
       "name": "订单管理",
       "icon": "",
       "link": "/om/index"
   }, {
-      "key": "om_refund",
+      "key": "OrderRefund",
       "name": "退款管理",
       "icon": "",
       "link": "/om/refund",
@@ -31,22 +31,22 @@ export default [
   "short_name": "送货",
   "icon": "truck",
   "link": [{
-      "key": "dm_change",
+      "key": "DeliveryChange",
       "name": "订单转送货单",
       "icon": "",
       "link": "/dm/change"
   }, {
-      "key": "dm_refund",
+      "key": "DeliveryManage",
       "name": "送货单管理",
       "icon": "",
       "link": "/dm/delivery",
   }, {
-      "key": "dm_invoice",
+      "key": "DistributeManage",
       "name": "配送单管理",
       "icon": "",
       "link": "/dm/distribute",
   }, {
-      "key": "dm_review",
+      "key": "PrintReview",
       "name": "打印审核",
       "icon": "",
       "link": "/dm/review",

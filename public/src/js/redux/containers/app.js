@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {render} from 'react-dom';
-import {Entry, ComingSoon, NoPage} from '../components/body';
+import {Entry, ComingSoon, NoPermission, NoPage} from '../components/body';
 import OrderPannel from '../components/order/manage';
 import OrderDetailPannel from '../components/order/manage_order_detail_pannel';
 import DeliveryChangePannel from '../components/delivery/change';
@@ -10,7 +10,8 @@ import DeliverPrintReviewPannel from '../components/delivery/print_review';
 import StationManagePannel from '../components/station/station_manage';
 import StationScopeManagePannel from '../components/station/station_scope_manage';
 import history from 'history_instance';
-import {Router, Route, IndexRoute} from 'react-router';
+import {Router, Route, IndexRoute, Redirect} from 'react-router';
+import V, { onEnter } from 'utils/acl';
 
 export default class App extends Component {
   render(){
@@ -19,9 +20,11 @@ export default class App extends Component {
         <Route path="/" component={Entry}>
 
           <Route path="om">
-            <Route path="index" component={OrderPannel} />
-            <Route path="index/add" component={OrderDetailPannel} />
-            <Route path="index/:id" component={OrderDetailPannel} />
+            <Route path="index" onEnter={onEnter('OrderManage')}>
+              <IndexRoute component={OrderPannel} />
+              <Route path="add" component={OrderDetailPannel} />
+              <Route path=":id" component={OrderDetailPannel} />
+            </Route>
             <Route path="refund" component={ComingSoon} />
             <Route path="invoice" component={ComingSoon} />
             <Route path="winning" component={ComingSoon} />
@@ -40,6 +43,8 @@ export default class App extends Component {
             <Route path="scope" component={StationScopeManagePannel} />
           </Route>
 
+          <Redirect from="logout" to="/" />
+          <Route path="403" component={NoPermission} />
           <Route path="*" component={NoPage}/>
         </Route>
       </Router>

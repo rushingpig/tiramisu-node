@@ -24,6 +24,7 @@ import RecipientInfo from 'common/recipient_info';
 
 import LazyLoad from 'utils/lazy_load';
 import { colour, Noty, core } from 'utils/index';
+import V from 'utils/acl';
 import { createMap, autoMatch } from 'mixins/map';
 
 import OrderProductsDetail from 'common/order_products_detail';
@@ -104,8 +105,14 @@ class FilterHeader extends Component {
           <Select {...is_submit} options={this.state.submit_opts} default-text="是否提交" className="space-right"/>
           <Select {...is_deal} options={this.state.deal_opts} default-text="是否处理" className="space-right"/>
           <OrderSrcsSelects {...{all_order_srcs, src_id}} />
-          <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space-right"/>
-          <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space-right"/>
+          {
+            V( 'OrderManageAddressFilter' )
+              ? [
+                  <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" key="province" className="space-right"/>,
+                  <Select {...city_id} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>
+                ]
+              : null
+          }
           <Select {...status} options={all_order_status} default-text="订单状态" className="space-right"/>
           <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
             <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
@@ -229,7 +236,7 @@ var OrderRow = React.createClass({
     var results = []
     for(var i=0,len=arguments.length; i<len; i++){
       var ele = arguments[i][0];
-      if(roles.some( n => n == ele.key)){
+      if( V( ele.key ) && roles.some( n => n == ele.key)){
         results.push(arguments[i]);
       }
     }

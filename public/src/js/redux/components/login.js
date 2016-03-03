@@ -9,7 +9,7 @@ var Login = React.createClass({
   render() {
     const {login_ing, validate, error_msg, username, password} = this.props;
 
-    validate && $('body').addClass('login-hide'); //通过
+    // validate && $('body').addClass('login-hide'); //通过
 
     return (
     <div ref="me" className="login-container">
@@ -73,14 +73,12 @@ var Login = React.createClass({
     }else if(!password){
       this.tipNoInput('password'); return ;
     }
-    dispatch(login(username, password)).done(function(){
+    dispatch(login(username, password)).done(function(data){
       window.xfxb.login = true;
+      window.xfxb.user = data.user || {};
       //登录后，直接定位到所在url
       history.push(location.pathname + location.search);
     });
-    // render(AppRouter, document.getElementById('app'));
-    // this.refs.me.style.display = 'none';
-    // $('body').addClass('login-hide'); //使app可滚动, 顺带动画
   },
   onUsernameChange(e){
     this.props.dispatch(usernameChange(e.target.value));
@@ -103,7 +101,6 @@ var Login = React.createClass({
     }, 400);
   },
   componentDidMount(){
-    console.log($([this.refs.username, this.refs.password]));
     $([this.refs.username, this.refs.password]).on('click', this.resetErrorMsg);
   },
   componentWillUnmount(){

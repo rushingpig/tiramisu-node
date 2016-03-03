@@ -73,6 +73,10 @@ function form_isTime(input){
 function form_isMobile(input){
   return /^\d{11}$/.test(input);
 }
+
+function form_isCoupon( input ){
+  return /(^\d{10}$)|(^\d{12}$)/g.test( input );
+}
 /**
 *
 * 描述：日期格式化
@@ -238,6 +242,7 @@ export default {
     isDate: form_isDate, //yyyy-MM-dd
     isTime: form_isTime, //HH:mm:ss 或 HH:mm
     isMobile: form_isMobile, //简单版
+    isCoupon: form_isCoupon, //验券  
   },
   dateFormat,
   getDate,

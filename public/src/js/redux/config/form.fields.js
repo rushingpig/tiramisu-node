@@ -14,6 +14,7 @@ export default {
     'delivery_id',     //配送中心
     'src_id',          //订单来源
     'pay_modes_id',
+    'coupon',          //团购密码
     'pay_status',
     // 'delivery_time',
     'delivery_date',

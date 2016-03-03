@@ -232,11 +232,19 @@ function products_choosing(state = products_choosing_state, action){
           confirm_list.forEach(function(n, i){
             n.amount = i == 0 ? 0 : n.discount_price;
           })
+        }else{
+          confirm_list.forEach(function(n){
+            n.amount = n.discount_price;
+          })
         }
         return {...state};
       })()
 
     case FormActions.GOT_ORDER_BY_ID:
+      action.data.products.forEach( n => {
+        n.discount_price /= 100;
+        n.amount /= 100;
+      });
       return {...state, confirm_list: action.data.products, selected_list: action.data.products };
     default:
       return state;

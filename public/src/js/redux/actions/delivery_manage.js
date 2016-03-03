@@ -1,4 +1,4 @@
-import { put, PUT, POST, TEST } from 'utils/request'; //Promise
+import { put, PUT, POST, TEST, test } from 'utils/request'; //Promise
 import Url from 'config/url';
 import Promise from 'utils/promise';
 
@@ -13,19 +13,22 @@ export function applyDeliveryman(data) {
 }
 
 export function startPrint(order_ids){
-  return new Promise(function(resolve, reject){
-    if(!order_ids.length){
-      reject('参数错误');
-    }else{
-      try{
-        window.open(Url.print.toString() + '?order_ids=' + order_ids.join(','));
-        resolve();
-      }catch(e){
-        console.error(e);
-        reject('打印出错');
+  return dispatch => {
+    return new Promise(function(resolve, reject){
+      if(!order_ids.length){
+        reject('参数错误');
+      }else{
+        try{
+          window.open(Url.print.toString() + '?order_ids=' + order_ids.join(','));
+          setTimeout(resolve, 500);
+        }catch(e){
+          console.error(e);
+          reject('打印出错');
+        }
       }
-    }
-  })
+    })
+  }
+  // return test();
 }
 
 export const APPLY_PRINT = 'APPLY_PRINT'; //key: 0->正在处理，1->成功，2->失败

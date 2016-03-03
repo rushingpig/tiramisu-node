@@ -82,7 +82,7 @@ export default formReducer.plugin({
             }
             delay(() => {
               var p = PAY_STATUS[state.pay_status.value];
-              if( p == '已付款' || p == '部分付款'){
+              if( p == '已付款' || p == '部分付款' || p == '货到付款' || action.field == 'pay_status' || action.key == 'pay_status'){
                 getGlobalStore().dispatch(updateConfirmProductDiscountPrice());
               }
             })

@@ -29,7 +29,7 @@ class TopHeader extends Component {
     return (
       <div className="clearfix top-header">
         <LineRouter 
-          routes={[{name: '送货单管理', link: '/dm/change'}, {name: '订单转送货单列表', link: ''}]} />
+          routes={[{name: '送货单管理', link: '/dm/change'}, {name: '打印审核', link: ''}]} />
       </div>
     )
   }
@@ -142,7 +142,7 @@ class DeliverPrintReviewPannel extends Component {
   }
   render(){
     var { showReviewModal, search } = this;
-    var { filter, reviewPrintApply, main: { loading, page_no, total, list, submitting } } = this.props;
+    var { filter, reviewPrintApply, main: { loading, refresh, page_no, total, list, submitting } } = this.props;
 
     var content = list.map((n, i) => {
       return <ReviewRow key={n.apply_id} {...{...n, showReviewModal}} />;
@@ -175,7 +175,7 @@ class DeliverPrintReviewPannel extends Component {
                 </tr>
                 </thead>
                 <tbody>
-                { tableLoader( loading, content ) }
+                { tableLoader( loading || refresh, content ) }
                 </tbody>
               </table>
             </div>

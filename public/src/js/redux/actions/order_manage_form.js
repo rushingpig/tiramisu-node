@@ -18,6 +18,7 @@ export function getOrderSrcs(){
   // });
 }
 
+//该方法也在其他业务模块中被调用
 export const GOT_DELIVERY_STATIONS = 'GOT_DELIVERY_STATIONS';
 export function getDeliveryStations() {
   return GET(Url.stations.toString(), null, GOT_DELIVERY_STATIONS);
@@ -81,22 +82,22 @@ export function checkHistoryOrder(id){
   }
 }
 
-export function checkGroupbuyPsd(password){
-  // return dispatch => {
-  //   return post(Url.check_groupbuy_psd.toString(), {password});
-  // }
-  return test(true); //模拟成功
+export function checkGroupbuyPsd(data){
+  return dispatch => {
+    return post(Url.check_groupbuy_psd.toString(), data);
+  }
+  // return test(true); //模拟成功
 }
 
 function _getFormData(form_data, getState){
   var products = getState().orderManageForm.products.confirm_list;
-  var total_amount = products.reduce((p, n) => p + n.discount_price*100, 0);
   var total_amount = 0, original_price = 0, discount_price = 0;
   var gretting_card = [];
   products.forEach(n => {
     total_amount += n.amount * 100;
+    n.discount_price *= 100;
     original_price += n.original_price * n.num;
-    discount_price += n.discount_price * 100 * n.num;
+    discount_price += n.discount_price * n.num;
     gretting_card.push(n.gretting_card);
   })
   return {

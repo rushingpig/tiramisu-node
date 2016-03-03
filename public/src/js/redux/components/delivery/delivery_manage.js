@@ -17,6 +17,7 @@ import { order_status, YES_OR_NO, DELIVERY_MAP, PRINT_STATUS } from 'config/app.
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
 import { Noty, map, reactReplace, form, parseTime, dateFormat } from 'utils/index';
+import V from 'utils/acl';
 
 import * as OrderActions from 'actions/orders';
 import AreaActions from 'actions/area';
@@ -77,8 +78,14 @@ class FilterHeader extends Component {
             <Select {...delivery_type} options={delivery_types} default-text="选择配送方式" className="space-right"/>
             <Select {...print_status} options={all_print_status} default-text="是否打印" className="space-right"/>
             <Select default-text="是否有祝福贺卡" className="space-right"/>
-            <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space-right"/>
-            <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space-right"/>
+            { 
+              V( 'DeliveryManageDeliveryAddressFilter' )
+              ? [
+                  <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" key="province" default-text="选择省份" className="space-right"/>,
+                  <Select {...city_id} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>
+                ]
+              : null
+            }
             <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
             <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
           </button>
@@ -243,7 +250,7 @@ class DeliveryManagePannel extends Component {
   render(){
     var { filter, area, deliveryman, main, getAllDeliveryman, applyDeliveryman, startPrint, applyPrint, validatePrintCode, rePrint, searchByScan,
     getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
-    var { loading, page_no, total, list, checked_orders, check_order_info, active_order_id } = this.props.orders;
+    var { loading, refresh, page_no, total, list, checked_orders, check_order_info, active_order_id } = this.props.orders;
     var { showBatchPrintModal, printHandler, showEditModal, showScanModal, showBatchEditModal,
        checkOrderHandler, viewOrderDetail, activeOrderHandler, viewOrderOperationRecord } = this;
 
@@ -278,7 +285,7 @@ class DeliveryManagePannel extends Component {
                   <th>管理操作</th>
                   <th>是否打印</th>
                   <th>配送员</th>
-                  <th>送达时间</th>
+                  <th>配送时间</th>
                   <th>下单人</th>
                   <th>收货人信息</th>
                   <th>祝福贺卡</th>
@@ -291,7 +298,7 @@ class DeliveryManagePannel extends Component {
                 </tr>
                 </thead>
                 <tbody>
-                  { tableLoader( loading, content ) }
+                  { tableLoader( loading || refresh, content ) }
                 </tbody>
               </table>
             </div>
@@ -412,10 +419,15 @@ export default connect(mapStateToProps, mapDispatchToProps)(DeliveryManagePannel
 /***************   *******   *****************/
 
 var PrintModal = React.createClass({
+  getInitialState: function() {
+    return {
+      submitting: false 
+    };
+  },
   render: function(){
     var { checked_orders } = this.props;
     return (
-      <StdModal ref="modal" title="批量打印订单" onConfirm={this.printHandler}>
+      <StdModal ref="modal" title="批量打印订单" submitting={this.state.submitting} onConfirm={this.printHandler}>
         <center>
           <h5>
             您已同时勾选
@@ -433,10 +445,13 @@ var PrintModal = React.createClass({
       Noty('warning', '请确定所有订单均可直接打印!');
       return;
     }
+    this.setState({submitting: true});
     this.props.startPrint(this.props.checked_orders.map(n => n.order_id))
       .done(function(){
         Noty('success', '操作成功');
+        this.setState({submitting: false});
         this.props.callback();
+        this.refs.modal.hide();
       }.bind(this))
       .fail(function(e){
         Noty('error', e || '异常错误');

@@ -19,6 +19,7 @@ import { order_status, DELIVERY_MAP, YES_OR_NO } from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
 import { form, Noty, dateFormat, parseTime } from 'utils/index';
+import V from 'utils/acl';
 
 import * as OrderActions from 'actions/orders';
 import AreaActions from 'actions/area';
@@ -83,14 +84,25 @@ class FilterHeader extends Component {
             <Select {...pay_modes_id} options={all_pay_modes} default-text="选择支付方式" className="space-right"/>
             <Select {...order_status} options={all_order_status} default-text="选择订单状态" className="space-right"/>
             <Select {...deliveryman_id} options={all_deliveryman.map(n => ({id: n.deliveryman_id, text: n.deliveryman_name}))} default-text="选择配送员" className="space-right"/>
-            <Select {...delivery_id} options={delivery_stations} default-text="选择配送中心" className="space-right"/>
-            <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
-              <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
-            </button>
+            {
+              V( 'DeliveryManageDistributeStationFilter' )
+                ? <Select {...delivery_id} options={delivery_stations} default-text="选择配送中心" className="space-right"/>
+                : null
+            }
           </div>
           <div className="form-group form-inline">
-            <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" className="space-right"/>
-            <Select {...city_id} options={cities} default-text="选择城市" ref="city" className="space-right"/>
+            {
+              V( 'DeliveryManageDistributeAddressFilter' )
+              ? [
+                  <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" key="province" default-text="选择省份" className="space-right"/>,
+                  <Select {...city_id} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>
+                ]
+              : null
+            }
+            <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs space-right">
+              <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
+            </button>
+            {'　'}
             <button onClick={this.onScanHandler.bind(this)} className="btn btn-theme btn-xs space-right">扫描</button>
           </div>
         </div>
@@ -99,10 +111,11 @@ class FilterHeader extends Component {
   }
   componentDidMount(){
     setTimeout(function(){
-      var { getProvinces, getPayModes, getAllDeliveryman } = this.props;
+      var { getProvinces, getPayModes, getAllDeliveryman, getDeliveryStations } = this.props;
       getProvinces();
       getPayModes();
       getAllDeliveryman();
+      getDeliveryStations();
       LazyLoad('noty');
     }.bind(this),0)
   }
@@ -234,7 +247,7 @@ class DeliveryDistributePannel extends Component {
     var { filter, area, deliveryman, orders, main, signOrder, unsignOrder, searchByScan, 
       getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
     var { submitting } = main;
-    var { loading, page_no, total, list, check_order_info, active_order_id } = orders;
+    var { loading, refresh, page_no, total, list, check_order_info, active_order_id } = orders;
     var { search, showSignedModal, showUnSignedModal, showScanModal, checkOrderHandler, 
       viewOrderDetail, activeOrderHandler, viewOrderOperationRecord } = this;
 
@@ -281,7 +294,7 @@ class DeliveryDistributePannel extends Component {
                 </tr>
                 </thead>
                 <tbody>
-                  { tableLoader( loading, content ) }
+                  { tableLoader( loading || refresh, content ) }
                 </tbody>
               </table>
             </div>

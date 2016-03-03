@@ -132,12 +132,13 @@ export function PUT(url, send_data, action_type){
  * @param  {Boolean} ajax_status true代表成功，false代表失败
  * @param  {[type]} ajax_time   ajax 持续时间
  */
-export function test(ajax_status, ajax_time){
+export function test(ajax_status = true, ajax_time = 2000){
   return dispatch => {
     return new Promise(function(resolve, reject){
       setTimeout(function(){
+        dispatch({type: '__JUST_A_TEST_ACTION'});
         ajax_status ? resolve() : reject();
-      }, ajax_time || 2000);
+      }, ajax_time);
     })
   }
 }

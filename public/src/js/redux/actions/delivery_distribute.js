@@ -1,5 +1,6 @@
 import { put, PUT, TEST, POST } from 'utils/request'; //Promise
 import Url from 'config/url';
+import { getDeliveryStations as _getDeliveryStations } from 'actions/order_manage_form';
 
 export const SIGN_ORDER = 'SIGN_ORDER'; //key: 0->正在处理，1->成功，2->失败
 export function signOrder(order_id, data) {
@@ -25,3 +26,5 @@ export const GET_DISTRIBUTE_SCAN_LIST = 'GET_DISTRIBUTE_SCAN_LIST';
 export function searchByScan(order_ids){
   return POST(Url.order_distribute.toString(), {order_ids}, GET_DISTRIBUTE_SCAN_LIST);
 }
+
+export const getDeliveryStations = _getDeliveryStations;

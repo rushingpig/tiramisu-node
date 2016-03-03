@@ -551,7 +551,7 @@ DeliveryService.prototype.print = (req,res,next)=>{
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
         result.forEach((curr)=>{
-
+            //注视掉以下代码，即可直接打印
             let print_status = curr.print_status;
             if(print_status === Constant.PS.UNPRINTABLE){
                 throw new TiramisuError(res_obj.ORDER_NO_PRINT);

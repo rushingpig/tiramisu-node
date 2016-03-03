@@ -10,8 +10,8 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link href="/plugins/font-awesome-4.4.0/css/font-awesome.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.min.css?rev=a63922a059f9c3c30e79a017ff63c622">
-  <script type="text/javascript">xfxb = { login: {{isLogin}}, root: "/", };</script>
+  <link rel="stylesheet" href="/css/style.min.css?rev=e1c47f43edce516eba85847471000008">
+  <script type="text/javascript">xfxb = { login: {{isLogin}}, root: "/"{{#if user}}, user : '{{{user}}}' {{/if}} };</script>
 </head>
 
 <body>
@@ -25,9 +25,9 @@
   </div>
   <section id="app"></section>
   <script src="/lib/vendor/jquery-1.11.3.min.js"></script>
-  <script src="http://localhost:3000/app.js"></script>
+  <script src="/js/app.min.js?rev=75252acaa6012530c71c369e280cb83a"></script>
   <script type="text/javascript">$(function(){$('#loader').remove();})</script>
-  <script src="http://localhost:3000/webpack-dev-server.js"></script>
+  
   <!-- <script src="/js/main.min.js?rev=74a2b33f68a000e4799f522640dc3654"></script> -->
   <script src="/lib/bootstrap.min.js"></script>
   <script src="/lib/bootstrap-datepicker.min.js"></script>

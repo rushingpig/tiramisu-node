@@ -4,7 +4,7 @@ import { REQUEST, order_status } from 'config/app.config';
 import { orders, operationRecord } from 'reducers/orders';
 import { deliveryman } from 'reducers/deliveryman';
 import { area } from 'reducers/area_select';
-import { GET_DELIVERY_STATIONS, GOT_PAY_MODES } from 'actions/order_manage_form';
+import { GOT_DELIVERY_STATIONS, GOT_PAY_MODES } from 'actions/order_manage_form';
 import { GET_ORDER_LIST } from 'actions/orders';
 import * as Actions from 'actions/delivery_distribute';
 import { UPDATE_PATH } from 'redux-simple-router';
@@ -18,8 +18,8 @@ var filter_state = {
 
 function filter(state = filter_state, action){
   switch (action.type) {
-    case GET_DELIVERY_STATIONS:
-      return {...state, delivery_stations: map(action.data, (text, id) => {id, text})}
+    case GOT_DELIVERY_STATIONS:
+      return {...state, delivery_stations: map(action.data, (text, id) => ({id, text}))}
     case GOT_PAY_MODES:
       return {...state, all_pay_modes: map(action.data, (text, id) => ({id, text})) }
     default:

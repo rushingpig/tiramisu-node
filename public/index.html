@@ -11,7 +11,7 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link href="/plugins/font-awesome-4.4.0/css/font-awesome.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.min.css?rev=@@hash">
-  <script type="text/javascript">xfxb = { login: {{isLogin}}, root: "/", };</script>
+  <script type="text/javascript">xfxb = { login: {{isLogin}}, root: "/"{{#if user}}, user : '{{{user}}}' {{/if}} };</script>
 </head>
 
 <body>
@@ -25,9 +25,9 @@
   </div>
   <section id="app"></section>
   <script src="/lib/vendor/jquery-1.11.3.min.js"></script>
-  <script src="http://localhost:3000/app.js"></script>
+  <script src="/js/app.min.js?rev=@@hash"></script>
   <script type="text/javascript">$(function(){$('#loader').remove();})</script>
-  <script src="http://localhost:3000/webpack-dev-server.js"></script>
+  
   <!-- <script src="/js/main.min.js?rev=@@hash"></script> -->
   <script src="/lib/bootstrap.min.js"></script>
   <script src="/lib/bootstrap-datepicker.min.js"></script>

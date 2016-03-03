@@ -5,9 +5,10 @@ import Util from 'utils/index';
 import {Link} from 'react-router';
 import history from 'history_instance';
 
-export default class Nav extends Component {
+class Nav extends Component {
   render(){
     var current_path = location.pathname;
+    var V = this.props.onRender; //权限验证函数
     var check_active = function(link, path){
       return link == path || path.startsWith(link); //页面子页面（没在导航菜单中显示的）
     };
@@ -15,19 +16,21 @@ export default class Nav extends Component {
       var active;
       if (Util.core.isArray(firstLevelItem.link)) { //有二级菜单
         let secondLevels = firstLevelItem.link.map(secondLevelItem => {
-            var a = check_active(secondLevelItem.link, current_path);
-            a && (active = true);
+          let _active = check_active(secondLevelItem.link, current_path);
+          active = active || _active;
+          if( V( secondLevelItem.key ) ){
             return (
-              <li key={secondLevelItem.key} className={a ? 'active' : ''}>
+              <li key={secondLevelItem.key} className={_active ? 'active' : ''}>
                 <Link to={secondLevelItem.link} className="menu-2">
                     {secondLevelItem.name}
                 </Link>
               </li>
             );
+          }
         })
-
-        return (
-          <li key={firstLevelItem.key} className={"menu-list " + (active ? 'active open' : '')}>
+        //当secondLevels当中全为undefined时，则表示该栏目下的所有页面均无访问权限，那么就隐藏该栏目
+        return secondLevels.some( sl => sl ) && (
+          <li key={firstLevelItem.key} className={"menu-list has-sub " + (active ? 'active open' : '')}>
             <a className="menu-1" href="javascript:;">
               <span>{firstLevelItem.name}</span>
             </a>
@@ -39,11 +42,11 @@ export default class Nav extends Component {
         )
       } else { //只有一级菜单
         return (
-          <li key={firstLevelItem.key} className="menu-list" className={check_active(firstLevelItem.link, current_path) ? 'active open' : ''}>
-            <Link to={firstLevelItem.link} clasName="menu-1">
+          <li key={firstLevelItem.key} className={check_active(firstLevelItem.link, current_path) ? 'menu-list active open' : 'menu-list'}>
+            <Link to={firstLevelItem.link} className="menu-1">
               {firstLevelItem.name}
             </Link>
-            <Link to={firstLevelItem.link} clasName="menu-1 short-menu">
+            <Link to={firstLevelItem.link} className="menu-1 short-menu">
               {firstLevelItem.short_name}
             </Link>
           </li>
@@ -102,3 +105,12 @@ export default class Nav extends Component {
     });
   }
 }
+
+Nav.defaultProps = {
+  //默认情况，始终返回true, 代表不做权限控制
+  onRender: function( role ){
+    return true;
+  }
+}
+
+export default Nav;

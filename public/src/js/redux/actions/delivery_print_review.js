@@ -3,11 +3,13 @@ import Url from 'config/url';
 import { formCompile } from 'utils/index';
 import { getValues } from 'redux-form';
 
+export const GET_PRINT_REVIEW_LIST_ING = 'GET_PRINT_REVIEW_LIST_ING';
 export const GET_PRINT_REVIEW_LIST = 'GET_PRINT_REVIEW_LIST';
 export function getPrintReviewList(data){
   return (dispatch, getState) => {
     var filter_data = getValues(getState().form.print_review);
     filter_data = formCompile(filter_data);
+    dispatch({ type: GET_PRINT_REVIEW_LIST_ING });
     return GET(Url.print_review_list.toString(), {...data, ...filter_data}, GET_PRINT_REVIEW_LIST)(dispatch)
   }
 /*

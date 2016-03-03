@@ -20,6 +20,14 @@
   .menu-list
     &:hover
       color: $theme-color
+    &.has-sub
+      > a
+        &:after
+          //content: '\f067'
+          content: '+'
+          color: $theme-black
+          float: right
+          margin-right: 10px
     a
       font-size: 18px
       font-weight: bold
@@ -35,12 +43,6 @@
     > a
       padding: 12px 20px
       text-indent: 30px
-      &:after
-        //content: '\f067'
-        content: '+'
-        color: $theme-black
-        float: right
-        margin-right: 10px
     a.short-menu
       display: none
     i
@@ -55,6 +57,8 @@
     &.open
       >a
         @extend .menu-list-active
+    &.open.has-sub
+      >a
         &:after
           content: '_'
           margin-top: -6px

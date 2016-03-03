@@ -17,6 +17,7 @@ function filter(state = filter_state, action){
 
 var main_state = {
   loading: true,
+  refresh: false,
   page_no: 0,
   total: 0,
   list: [],
@@ -24,8 +25,11 @@ var main_state = {
 }
 function main( state = main_state, action){
   switch (action.type) {
+
+    case Actions.GET_PRINT_REVIEW_LIST_ING:
+      return {...state, ...action.data, refresh: true}
     case Actions.GET_PRINT_REVIEW_LIST:
-      return {...state, ...action.data, loading: false}
+      return {...state, ...action.data, loading: false, refresh: false}
 
     case Actions.REVIEW_PRINT_APPLY:
       if(action.key == REQUEST.ING){

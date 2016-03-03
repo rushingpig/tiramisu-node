@@ -1,7 +1,7 @@
 import { dateFormat, map } from 'utils/index';
 import { combineReducers } from 'redux';
 import * as ChangeActions from 'actions/delivery_change';
-import { GET_DELIVERY_STATIONS } from 'actions/order_manage_form';
+import { GOT_DELIVERY_STATIONS } from 'actions/order_manage_form';
 import { orders, operationRecord } from 'reducers/orders';
 import { area } from 'reducers/area_select';
 import { REQUEST } from 'config/app.config';
@@ -22,8 +22,8 @@ function filter(state = filter_state, action){
       }else{
         console.error('nali?')
       }
-    case GET_DELIVERY_STATIONS:
-      return {...state, delivery_stations: map(action.data, (text, id) => {id, text})}
+    case GOT_DELIVERY_STATIONS:
+      return {...state, delivery_stations: map(action.data, (text, id) => ({id, text}))}
     default:
       return state
   }

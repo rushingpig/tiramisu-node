@@ -5,7 +5,7 @@ import { LOGIN_START, LOGIN_SUCCESS, LOGIN_FAIL,
 
 var initial_state = {
   login_ing: false,
-  validate: false,
+  validate: false, //好像已经没用了
   error_msg: '',
 
   username: '',

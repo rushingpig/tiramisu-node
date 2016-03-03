@@ -7,9 +7,10 @@
     <title>打印送货单</title>
     <style type="text/css">
         body {
-            /*font-size: .85em;*/
+            font-size: .85em;
             /*font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;*/
-            font-family: "黑体";
+            /*font-family: "宋体", "黑体";*/
+            font-family: "微软雅黑";
             color: #000;
             background-color: #fff;
         }
@@ -66,11 +67,11 @@
         }
 
         td {
-            height: 18px;
+            height: 16px;
             margin: 0;
             padding: 0;
-            line-height: 18px;
-            font-size: 16px;
+            line-height: 16px;
+            font-size: 14px;
         }
         .clearfix{*+height:1%;}
         .clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden}
@@ -83,7 +84,8 @@
         }
     </script>
     <script src="/lib/vendor/jquery-1.11.3.min.js"></script>
-    <script src="/plugins/barcode/jquery-barcode.min.js"></script>
+    <!-- <script src="/plugins/barcode/jquery-barcode.min.js"></script> -->
+    <script src="/plugins/barcode/jsbarcode.all.min.js"></script>
 </head>
 
 <body onload="init()">
@@ -92,14 +94,13 @@
 <div class="Content">
     <div class="tb">
         <div class="clearfix">
-            <div style="float: left; height: 40px; width: 148px;">
+            <div style="float: left; height: 40px; width: 170px;">
                 <div style="font-size: 23px; margin-left:15px; font-weight: bold; line-height: 23px; height: 23px; font-family: '幼圆'">幸福西饼</div>
                 <div style="font-size: 17px; margin-left:15px; font-weight: bold; line-height: 17px; height: 17px; font-family: '幼圆'; ">BLISS CAKE</div>
             </div>
             <div style="float: left; width: 419px;">
                 <span style="font-size: 30px; font-weight: bold; line-height: 40px; height: 40px; font-family: '华文中宋'">幸福西饼网络商城配送签收单</span>
             </div>
-            <!-- <div id="barcode{{@index}}" style="float: left;margin-bottom: 2px;"> -->
             </div>
         </div>
 
@@ -146,7 +147,6 @@
                     <td style="text-align: center;" colspan="3">{{delivery_time}}</td>
                 </tr>
 
-                <!--产品开始 产品结束 -->
 
                 <tr>
                     <td style="text-align: center;">NO.</td>
@@ -172,7 +172,7 @@
                     <td style="text-align: center;" class="mm"></td>
                     <td style="text-align: center;" colspan="2">{{choco_board}}</td>
                 </tr>
-                <!--产品结束 结束 -->
+
                         {{/products}}
                 {{/if}}
 
@@ -282,28 +282,26 @@
                 </ul>
             </div>
             <div style="float: right;width: 96px;height: 369px;position: relative;">
-                <div id="barcode{{@index}}" style="position:absolute; top: 50%;left: -168px;margin-top: -6px;transform: rotate(90deg)"></div>
+                <div style="position:absolute; top: 43%;left: -110px;transform: rotate(90deg)">
+                    <image id="barcode{{@index}}" />
+                </div>
             </div>
             <script type="text/javascript">
                 $(function(){
-                    $('#barcode{{@index}}').barcode('{{order_id}}', 'code128', {
-                        addQuietZone: "1",
-                        barHeight: "50",
-                        barWidth: "3",
-                        bgColor: "#FFFFFF",
-                        color: "#333",
-                        // moduleSize: "20",
-                        output: "css",
-                        showHRI: false,
-                        posX: "0",
-                        posY: "0",
-                    })
+                    var canvas = document.createElement("canvas");
+                    JsBarcode(canvas, '{{order_id}}', {
+                      format: "CODE128C",
+                      width:2,
+                      height:40,
+                      quite: 20,
+                      displayValue: false,
+                    });
+                    $('#barcode{{@index}}').get(0).src = canvas.toDataURL("image/png");
                 })
             </script>
         </div>
     </div>
 </div>
-<br/><br/><br/>
 {{/list}}
 {{/if}}
 <!--<object style="position: absolute; left: -9000px; top: -9000px;" type="application/x-bang5taoplugin" id="b5tplugin" height="0" width="0"></object>-->

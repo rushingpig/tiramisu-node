@@ -30,6 +30,8 @@ UserDao.prototype.findByUsername = (username,password)=>{
         'su.no',
 
         'sr.data_scope',
+        'sr.id as role_id',
+        'sr.name as role_name',
 
         'sm.parent_id',
         'sm.parent_ids',
@@ -37,7 +39,7 @@ UserDao.prototype.findByUsername = (username,password)=>{
         'sm.permission',
         'sm.sort'
     ].join(',');
-    let sql = "select " + columns + " from ?? su",params=[];
+    let sql = "select distinct " + columns + " from ?? su",params=[];
     params.push(tables.sys_user);
     sql += " left join ?? sur on su.id = sur.user_id";
     params.push(tables.sys_user_role);

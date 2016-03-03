@@ -334,7 +334,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
     }
     // data filter begin
     let ds_sql = "",temp_sql = "";
-    if(toolUtils.isArray(data_scopes)){
+    if(!toolUtils.isEmptyArray(data_scopes)){
         ds_sql += " and (";
         data_scopes.forEach((curr)=>{
 
@@ -345,6 +345,9 @@ OrderDao.prototype.findOrderList = function (query_data) {
             if(curr == constant.DS.CITY){
                 temp_sql += " or dr3.parent_id = ?";
                 params.push(query_data.user.city_id);
+            }
+            if(curr == constant.DS.ALLCOMPANY){
+                temp_sql += " or 1 = 1";
             }
         });
         ds_sql += temp_sql.replace(/^ or/,'');
@@ -371,7 +374,6 @@ OrderDao.prototype.findOrderList = function (query_data) {
         default:
         // do nothing && order by with the db self
     }
-    console.log(sql);
     let countSql = dbHelper.countSql(sql);
     return baseDao.select(countSql, params).then((result) => {
         return baseDao.select(dbHelper.paginate(sql, query_data.page_no, query_data.page_size), params).then((_result) => {

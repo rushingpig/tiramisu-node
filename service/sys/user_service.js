@@ -24,6 +24,8 @@ UserService.prototype.getUserInfo = (username, password)=> {
                 roles : [],
                 data_scopes : []
             };
+            //  ###     tips : 当给user属性赋值set类型时,存入session再取出来,属性值为空     ###
+            let roles_set = new Set(),data_scopes_set = new Set();
             for(let i = 0;i < results.length;i++){
                 let curr = results[i];
                 if(i === 0){
@@ -40,14 +42,15 @@ UserService.prototype.getUserInfo = (username, password)=> {
                     user.no = curr.no;
                     user.name = curr.name;
                 }
-                user.permissions.push(curr.permission);
-                user.roles.push({id:curr.role_id,name:curr.role_name});
-                user.data_scopes.push(curr.data_scope);
+                if(curr.permission) user.permissions.push(curr.permission);
+                if(curr.role_name) roles_set.add({id:curr.role_id,name:curr.role_name});
+                if(curr.data_scope)  data_scopes_set.add(curr.data_scope);
             }
+            user.roles = Array.from(roles_set.values());
+            user.data_scopes = Array.from(data_scopes_set.values());
             return user;
         }
     });
 };
 
 module.exports = new UserService();
-

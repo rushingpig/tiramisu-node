@@ -108,11 +108,11 @@ Constant.PFT = {
 };
 
 Constant.DS = {
-    ALLCOMPANY : 0,
-    OFFICEANDCHILD : 1,
-    OFFICE : 2,
-    STATION : 3,
-    CITY : 4
+    ALLCOMPANY : 1,
+    OFFICEANDCHILD : 2,
+    OFFICE : 3,
+    STATION : 4,
+    CITY : 5
 };
 
 

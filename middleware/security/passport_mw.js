@@ -59,7 +59,7 @@ function authenticate(passport){
             }else if(msg && !user){
                 res.api(res_obj.INVALID_USERNAME_OR_PASSWORD,msg);
             }else{
-                res.api(user);
+                res.api({user});
             }
         })(req,res);
     }

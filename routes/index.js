@@ -12,7 +12,15 @@ var router = express.Router(config.exp_router_options);
 
 
 router.get('/',function(req,res){
-    res.render('index',{isLogin : req.session.user ? true : false});
+    let userInfo = req.session.user,user;
+    if(userInfo){
+        user = {
+            name : userInfo.name,
+            permissions : userInfo.permissions
+        };
+    };
+
+    res.render('index',{isLogin : userInfo ? true : false,user:JSON.stringify(user)});
 });
 
 router.get('/logout',function(req,res){

@@ -75,6 +75,8 @@ a.post('/order',orderService.addOrder); // 添加订单
 
 a.post('/order/reprint/apply',deliveryService.applyForRePrint); // 申请重新打印
 
+a.post('/coupon',orderService.validateCoupon);
+
 //*********************
 //******** PUT ********
 //*********************

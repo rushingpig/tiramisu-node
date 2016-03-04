@@ -124,6 +124,8 @@ var ping_xx = {
 
 var sms_host = "http://127.0.0.1:3000/sms/internal";
 
+var coupon_host = "http://localhost:3000";
+
 var login_required = true;
 
 module .exports = {
@@ -138,6 +140,7 @@ module .exports = {
     log4js_options : log4js_options,
     exclude_paths : exclude_paths,
     white_ips : white_ips,
-    sms_host : sms_host
+    sms_host : sms_host,
+    coupon_host : coupon_host
 };
 

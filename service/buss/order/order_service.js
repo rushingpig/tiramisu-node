@@ -24,7 +24,9 @@ var res_obj = require('../../../util/res_obj'),
   baseDao = require('../../../dao/base_dao'),
   dao = require('../../../dao'),
   OrderDao = dao.order,
-  orderDao = new OrderDao();
+  orderDao = new OrderDao(),
+  util = require('util'),
+  config = require('../../../config');
 
 function OrderService() {
 }
@@ -828,5 +830,21 @@ OrderService.prototype.changeDelivery = (req,res,next)=>{
     });
     systemUtils.wrapService(res,next,promise);
 };
-
+/**
+ * validate the coupon
+ * @param req
+ * @param res
+ * @param next
+ */
+OrderService.prototype.validateCoupon = (req,res,next)=>{
+  req.checkBody('coupon','请确认券号是否填写正确...').notEmpty();
+  req.checkBody('city_name','请填写有效的城市名...').notEmpty();
+  let errors = req.validationErrors();
+  if (errors) {
+    res.api(res_obj.INVALID_PARAMS,errors);
+    return;
+  }
+  let city_name = req.body.city_name,coupon = req.body.coupon;
+  res.redirect(util.format(config.coupon_host+'/v1/coupon?city_name=%s&coupon=%s',encodeURIComponent(city_name),coupon));
+};
 module.exports = new OrderService();

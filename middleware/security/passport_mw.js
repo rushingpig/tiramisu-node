@@ -10,6 +10,7 @@ var res_obj = require('../../util/res_obj');
 var userService = require('../../service').user;
 var se =require('../login/session_event');
 var crypto = require('../../common/CryptoUtils');
+var version = require('../../package.json').version;
 function PassportMiddlerware() {
 }
 
@@ -59,7 +60,7 @@ function authenticate(passport){
             }else if(msg && !user){
                 res.api(res_obj.INVALID_USERNAME_OR_PASSWORD,msg);
             }else{
-                res.api({user});
+                res.api({user,version});
             }
         })(req,res);
     }

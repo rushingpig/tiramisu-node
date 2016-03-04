@@ -6,7 +6,8 @@ var dateUtils = require('./DateUtils'),
   logger = require('./LogHelper').systemLog(),
   Constant = require('./Constant'),
   res_obj = require('../util/res_obj'),
-  geolib = require('geolib');
+  geolib = require('geolib'),
+  version = require('../package.json').version;
 
 module.exports = {
   /**
@@ -135,6 +136,6 @@ module.exports = {
         permissions: userInfo.permissions
       };
     }
-    res.render('index', {isLogin: userInfo ? true : false, user: JSON.stringify(user)});
+    res.render('index', {isLogin: userInfo ? true : false, user: JSON.stringify(user),version : version});
   }
 };

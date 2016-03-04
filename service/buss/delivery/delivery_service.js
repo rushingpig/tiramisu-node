@@ -213,9 +213,8 @@ DeliveryService.prototype.auditReprintApply = (req,res,next)=>{
             body : body,
             json : true
         },(err,res,body)=>{
-            if(err || body || res.statusCode !== 200){
+            if(err || res.statusCode !== 200){
                 logger.error('给用户['+applicant_mobile+']发送审核打印短信异常====>['+err+']');
-                throw new TiramisuError(res_obj.FAIL,'发送短信失败');
             }
         });
     });

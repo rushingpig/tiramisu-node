@@ -111,7 +111,7 @@ module.exports = {
     for (let i = 0; i < code_length - code.toString().length;) {
       code = code.toString() + '0';
     }
-    return code;
+    return code.toString();
   },
   isOrderCanCancel: (order_status) => {
     return !(order_status === Constant.OS.INLINE

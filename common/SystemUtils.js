@@ -126,5 +126,15 @@ module.exports = {
       return false;
     }
     return geolib.isPointInside(point, coords);
+  },
+  commonRender : (req,res) => {
+    let userInfo = req.session.user, user;
+    if (userInfo) {
+      user = {
+        name: userInfo.name,
+        permissions: userInfo.permissions
+      };
+    }
+    res.render('index', {isLogin: userInfo ? true : false, user: JSON.stringify(user)});
   }
 };

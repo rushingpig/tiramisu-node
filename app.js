@@ -17,6 +17,7 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var validator = require('express-validator');
 var res_obj = require('./util/res_obj');
+var systemUtils = require('./common/SystemUtils');
 
 var app = express();
 var v1Router = require('./routes/v1');
@@ -103,7 +104,7 @@ if (app.get('env') === 'dev') {
         if(err){
           console.error(err);
         }
-        res.renders('index',{isLogin : req.session.user ? true : false});
+        systemUtils.commonRender(req,res);
     });
 }
 
@@ -112,6 +113,6 @@ if (app.get('env') === 'dev') {
 // for the for-end framework
 app.use(function (err, req, res, next) {
     res.status(err.status || 500);
-    res.renders('index',{isLogin : req.session.user ? true : false});
+    systemUtils.commonRender(req,res);
 });
 module.exports = app;

@@ -88,10 +88,10 @@ var mysql_options = {
     waitForConnections : true,
     queueLimit      : 100,
     connectionLimit : 50,
-    host            : 'localhost',
+    host            : 'rdsp4y4r841mswksag22.mysql.rds.aliyuncs.com',
     port            : 3306,
-    user            : 'root',
-    password        : '411425',
+    user            : 'xfxb_qa',
+    password        : 'Xfxbqa2016',
     database        : 'tiramisu',
     charset         : 'utf8mb4',
     timezone        : 'local',
@@ -127,6 +127,8 @@ var sms_host = "http://xfxb-production:3000/sms/internal";
 
 var login_required = true;
 
+var coupon_host = "http://xfxb-qa:3000";
+
 module .exports = {
     exp_static_options : exp_static_options,
     exp_session_options : exp_session_options,
@@ -139,6 +141,7 @@ module .exports = {
     log4js_options : log4js_options,
     exclude_paths : exclude_paths,
     white_ips : white_ips,
-    sms_host : sms_host
+    sms_host : sms_host,
+    coupon_host : coupon_host
 };
 

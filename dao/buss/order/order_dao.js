@@ -561,7 +561,8 @@ OrderDao.prototype.insertOrderInTransaction = function (req) {
         total_discount_price = req.body.discount_price,
         products = req.body.products,
         prefix_address = req.body.prefix_address,
-        greeting_card = req.body.greeting_card;
+        greeting_card = req.body.greeting_card,
+        coupon = req.body.coupon;
     let recipientObj = {
         regionalism_id: regionalism_id,
         name: recipient_name,
@@ -584,6 +585,7 @@ OrderDao.prototype.insertOrderInTransaction = function (req) {
                     return;
                 }
             };
+            // recipient
             trans.query(this.base_insert_sql, [tables.buss_recipient, recipientObj], (recipient_err, info)=> {
                 if (recipient_err || !info.insertId) {
                     if (trans.rollback) trans.rollback();
@@ -613,8 +615,10 @@ OrderDao.prototype.insertOrderInTransaction = function (req) {
                     total_amount: total_amount,
                     total_original_price: total_original_price,
                     total_discount_price: total_discount_price,
-                    greeting_card: greeting_card
+                    greeting_card: greeting_card,
+                    coupon : coupon
                 };
+                // order
                 trans.query(this.base_insert_sql,[tables.buss_order,systemUtils.assembleInsertObj(req,orderObj)],(order_err,result)=>{
                     if (order_err || !result.insertId) {
                         if (trans.rollback) trans.rollback();

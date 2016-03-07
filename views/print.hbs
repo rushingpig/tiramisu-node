@@ -154,8 +154,8 @@
                     <td style="text-align: center;">商品规格</td>
                     <td style="text-align: center;">单价</td>
                     <td style="text-align: center;">数量</td>
-                    <td style="text-align: center; width: 80px;">应收金额</td>
-                    <td style="text-align: center; width: 65px;">实收金额</td>
+                    <td style="text-align: center; width: 80px;">实际售价</td>
+                    <td style="text-align: center; width: 65px;">应收金额</td>
 
                     <td style="text-align: center;" colspan="2">巧克力牌内容</td>
                 </tr>
@@ -166,10 +166,10 @@
                     <td style="text-align: center;">{{product_name}}</td>
                     <td style="text-align: center;">
                         {{size}}                                        </td>
-                    <td style="text-align: center;">{{discount_price}}</td>
+                    <td style="text-align: center;">{{original_price}}</td>
                     <td style="text-align: center;">{{num}}</td>
-                    <td style="text-align: center;">{{amount}}</td>
-                    <td style="text-align: center;" class="mm"></td>
+                    <td style="text-align: center;">{{discount_price}}</td>
+                    <td style="text-align: center;" class="mm">{{amount}}</td>
                     <td style="text-align: center;" colspan="2">{{choco_board}}</td>
                 </tr>
 
@@ -178,7 +178,7 @@
 
                 <tr>
                     <td style="text-align: center;" colspan="6">合计</td>
-                    <td style="text-align: center;">&#165;178.00</td>
+                    <td style="text-align: center;">&#165;{{total_amount}}</td>
                     <td style="text-align: center;" colspan="2"></td>
                 </tr>
                 <tr>

@@ -123,6 +123,26 @@ DeliveryService.prototype.applyForRePrint = (req,res,next) => {
         if(!Number.isInteger(result) || parseInt(result) === 0){
             throw new TiramisuError(res_obj.FAIL);
         }
+    }).then(()=>{
+
+        let body = {
+            "timestamp" : Date.now(),
+            "method" : "order.print.apply",
+            "phone" : req.body.director_mobile,
+            "params" : {
+                "order_id" : req.body.order_id,
+                "code" : ""
+            }
+        };
+        request.post({
+            url : config.sms_host,
+            body : body,
+            json : true
+        },(err,res,body)=>{
+            if(err || res.statusCode !== 200){
+                logger.error('给用户['+req.body.director_mobile+']发送申请打印短信异常====>['+err+']');
+            }
+        });
     });
     let print_status_promise = orderDao.updateOrder(systemUtils.assembleUpdateObj(req,order_update_obj),print_apply_obj.order_id).then((result)=>{
         if(!Number.isInteger(result) || parseInt(result) === 0){
@@ -551,12 +571,12 @@ DeliveryService.prototype.print = (req,res,next)=>{
         }
         result.forEach((curr)=>{
             //注视掉以下代码，即可直接打印
-            let print_status = curr.print_status;
-            if(print_status === Constant.PS.UNPRINTABLE){
-                throw new TiramisuError(res_obj.ORDER_NO_PRINT);
-            }else if (print_status === Constant.PS.AUDITING){
-                throw new TiramisuError(res_obj.ORDER_AUDITING);
-            }
+            //let print_status = curr.print_status;
+            //if(print_status === Constant.PS.UNPRINTABLE){
+            //    throw new TiramisuError(res_obj.ORDER_NO_PRINT);
+            //}else if (print_status === Constant.PS.AUDITING){
+            //    throw new TiramisuError(res_obj.ORDER_AUDITING);
+            //}
         });
         let print_status_update_obj = {
             print_status : Constant.PS.UNPRINTABLE,
@@ -611,19 +631,21 @@ DeliveryService.prototype.print = (req,res,next)=>{
                 data.recipient_mobile = curr.recipient_mobile;
                 data.recipient_landmark = curr.landmark;
                 data.deliveryman_name = curr.deliveryman_name;
+                data.total_amount = curr.total_amount/100; // 总应收金额
                 if(curr.sku_id){
                     let product_obj = {
                         sku_id : curr.sku_id,
                         choco_board : curr.choco_board,
                         custom_desc : curr.custom_desc,
                         custom_name : curr.custom_name,
-                        discount_price : curr.discount_price,
+                        discount_price : curr.discount_price/100,
                         greeting_card : curr.greeting_card,
                         num : curr.num,
-                        original_price : curr.original_price,
+                        original_price : curr.original_price/100,
                         product_name : curr.product_name,
                         atlas : curr.atlas,
-                        size : curr.size
+                        size : curr.size,
+                        amount : curr.amount/100
                     };
                     data.products.push(product_obj);
                 }
@@ -635,13 +657,14 @@ DeliveryService.prototype.print = (req,res,next)=>{
                         choco_board: curr.choco_board,
                         custom_desc: curr.custom_desc,
                         custom_name: curr.custom_name,
-                        discount_price: curr.discount_price,
+                        discount_price: curr.discount_price/100,
                         greeting_card: curr.greeting_card ? curr.greeting_card : '不需要',
                         num: curr.num,
-                        original_price: curr.original_price,
+                        original_price: curr.original_price/100,
                         product_name: curr.product_name,
                         atlas: curr.atlas,
-                        size: curr.size
+                        size: curr.size,
+                        amount : curr.amount/100
                     };
                     map.get(curr.id).products.push(product_obj);
                 }

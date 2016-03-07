@@ -123,6 +123,7 @@ OrderDao.prototype.findOrderById = function (orderIdOrIds) {
         'bo.status',
         'bo.coupon',
         'bo.invoice',
+        'bo.total_amount',
         'bp.`name` as product_name',
         'bp.original_price',
         'bos.amount',

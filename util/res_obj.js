@@ -50,6 +50,10 @@ module.exports = {
     code : '2009',
     msg : '没有分配配送员,不能直接打印...'
   },
+  ORDER_CANNOT_EXCEPTION: {
+    code: '2010',
+    msg: '订单还未进入生产状态,不能被置为异常...'
+  },
   NO_OPTIONAL_STATION: {
     code: '3001',
     msg: '没有可选的配送站...'

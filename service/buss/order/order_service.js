@@ -848,4 +848,42 @@ OrderService.prototype.validateCoupon = (req,res,next)=>{
   let city_name = req.body.city_name,coupon = req.body.coupon;
   res.redirect(util.format(config.coupon_host+'/v1/coupon?city_name=%s&coupon=%s',encodeURIComponent(city_name),coupon));
 };
+/**
+ * update the order status into exception
+ * @param req
+ * @param rex
+ * @param next
+ */
+OrderService.prototype.exceptionOrder = (req,rex,next)=>{
+  req.checkParams('orderId').isOrderId();
+  req.checkBody('cancel_reason').notEmpty();
+  req.checkBody('updated_time','请带上订单的最后更新时间').isDate();
+  let errors = req.validationErrors();
+  if (errors) {
+    res.api(res_obj.INVALID_PARAMS, errors);
+    return;
+  }
+  let orderId = systemUtils.getDBOrderId(req.params.orderId),updated_time = req.body.updated_time;
+  let promise = orderDao.findOrderById(orderId).then((_res) => {
+    if (toolUtils.isEmptyArray(_res)) {
+      throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
+    } else if (updated_time !== _res[0].updated_time) {
+      throw new TiramisuError(res_obj.OPTION_EXPIRED);
+    } else if (!systemUtils.isOrderCanException(_res[0].status)) {
+      throw new TiramisuError(res_obj.ORDER_CANNOT_EXCEPTION);
+    }
+
+    let order_update_obj = {
+      status: Constant.OS.EXCEPTION,
+      cancel_reason: req.body.cancel_reason
+    };
+    return orderDao.updateOrder(systemUtils.assembleUpdateObj(req, order_update_obj), orderId);
+  }).then((result) => {
+    if (parseInt(result) <= 0) {
+      throw new TiramisuError(res_obj.FAIL);
+    }
+    res.api();
+  });
+  systemUtils.wrapService(res,next,promise);
+};
 module.exports = new OrderService();

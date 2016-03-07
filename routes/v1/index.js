@@ -91,6 +91,7 @@ a.put('/order/:orderId/signin',deliveryService.signinOrder);    // 签收订单
 a.put('/order/:orderId/unsignin',deliveryService.unsigninOrder);    // 未签收订单
 a.put('/delivery/deliveryman',deliveryService.allocateDeliveryman); // 分配配送员
 a.put('/order/:orderId/cancel',orderService.cancelOrder);   // 取消订单
+a.put('/order/:orderId/exception',orderService.exceptionOrder);     // 将订单置为异常状态(以是否投入生产作为节点)
 
 a.put('/station/:stationId/coords', addressService.modifyStation);   //修改配送站配送区域信息
 //************************

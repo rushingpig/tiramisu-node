@@ -503,19 +503,21 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
                 data.recipient_mobile = curr.recipient_mobile;
                 data.recipient_landmark = curr.landmark;
                 data.deliveryman_name = curr.deliveryman_name;
+                data.total_amount = curr.total_amount/100; // 总应收金额
                 if(curr.sku_id){
                     let product_obj = {
                         sku_id : curr.sku_id,
                         choco_board : curr.choco_board,
                         custom_desc : curr.custom_desc,
                         custom_name : curr.custom_name,
-                        discount_price : curr.discount_price,
+                        discount_price : curr.discount_price/100,
                         greeting_card : curr.greeting_card,
                         num : curr.num,
-                        original_price : curr.original_price,
+                        original_price : curr.original_price/100,
                         product_name : curr.product_name,
                         atlas : curr.atlas,
-                        size : curr.size
+                        size : curr.size,
+                        amount : curr.amount/100
                     };
                     data.products.push(product_obj);
                 }
@@ -527,13 +529,14 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
                         choco_board: curr.choco_board,
                         custom_desc: curr.custom_desc,
                         custom_name: curr.custom_name,
-                        discount_price: curr.discount_price,
+                        discount_price: curr.discount_price/100,
                         greeting_card: curr.greeting_card ? curr.greeting_card : '不需要',
                         num: curr.num,
-                        original_price: curr.original_price,
+                        original_price: curr.original_price/100,
                         product_name: curr.product_name,
                         atlas: curr.atlas,
-                        size: curr.size
+                        size: curr.size,
+                        amount : curr.amount/100
                     };
                     map.get(curr.id).products.push(product_obj);
                 }

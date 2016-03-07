@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { DELIVERY_MAP, pay_status } from 'config/app.config';
+import { DELIVERY_MAP, DELIVERY_TO_HOME, pay_status } from 'config/app.config';
 import { get_table_empty } from 'common/loading';
 import { findDOMNode } from 'react-dom';
 
@@ -57,9 +57,17 @@ export default class DetailModal extends Component {
               <label>{'收货人地址：'}</label>
               <span className="gray">{data.province_name + data.city_name + data.recipient_address}</span>
             </div>
+            {
+              data.delivery_type == DELIVERY_TO_HOME //送货上门
+                ? <div className="form-group form-inline">
+                    <label>{'标志性建筑：'}</label>
+                    <span className="gray">{data.recipient_landmark}</span>
+                  </div>
+                : null
+            }
             <div className="form-group form-inline">
-              <label>{'标志性建筑：'}</label>
-              <span className="gray">{data.recipient_landmark}</span>
+              <label>{'　配送中心：'}</label>
+              <span className="gray">{data.delivery_name}</span>
             </div>
             <div className="form-group form-inline">
               <label className="inline-block">{'　支付方式：'}<br/>{data.coupon ? [' ', <br/>] : null}{' '}<br/></label>
@@ -69,6 +77,7 @@ export default class DetailModal extends Component {
                 {pay_status[data.pay_status]}
               </span>
             </div>
+
             <div className="form-group form-inline">
               <label>{'　配送时间：'}</label>
               <span className="gray">{data.delivery_time}</span>

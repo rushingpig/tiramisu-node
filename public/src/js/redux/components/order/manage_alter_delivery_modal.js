@@ -60,7 +60,7 @@ var AlterDeliveryModal = React.createClass({
   render(){
     var { delivery_type, delivery_date, delivery_hour, recipient_address, all_delivery_hours, delivery_id } = this.state;
     var { delivery_shops, delivery_stations, provinces, cities, districts, order = {}, loading} = this.props;
-    var _order_status = ORDER_STATUS[order && order.order_status];
+    var _order_status = ORDER_STATUS[order && order.status];
     return (
       <StdModal submitting={this.props.submitting} onConfirm={this.onConfirm} loading={loading} onCancel={this.hideCallback} title="修改配送" ref="modal">
         <div className="form-group form-inline">
@@ -197,7 +197,10 @@ var AlterDeliveryModal = React.createClass({
         this.setState({delivery_id: SELECT_DEFAULT_VALUE});
         autoMatchFail.call(this);
       }
-    }, autoMatchFail.bind(this)); 
+    }, () => {
+      this.setState({delivery_id: SELECT_DEFAULT_VALUE});
+      autoMatchFail.call(this)
+    }); 
   },
   show(){
     this.refs.modal.show();
@@ -205,6 +208,7 @@ var AlterDeliveryModal = React.createClass({
     if(order && order.order_id == active_order_id){
       this.initSetState(order);
     }
+    $(findDOMNode(this.refs.delivery_center)).removeClass('alert-success alert-danger')
   },
   hideCallback(){
     this.setState(this.getInitialState());

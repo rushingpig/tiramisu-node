@@ -5,6 +5,7 @@
   overflow-y: auto
   border-right: 2px solid $theme-color
   z-index: 100
+  padding-bottom: 25px
   .logo
     padding: 10px 0 6px
     a
@@ -90,6 +91,16 @@
   .open
     .sub-menu-list
       display: block
+  .app-version
+    @extend .tc
+    position: absolute
+    bottom: 0
+    height: 25px
+    width: 100%
+    color: $theme-font-color
+    font-weight: bold
+    .fa
+      margin-right: 6px
 .left-side-collapsed
   .left-side
     width: $nav-collapsed-w
@@ -174,6 +185,8 @@
       .menu-list.active
         a
           color: $theme-black
+    .app-version
+      display: none
   .right-side
     margin-left: $nav-collapsed-w
 

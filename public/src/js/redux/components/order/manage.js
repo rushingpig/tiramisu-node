@@ -338,7 +338,7 @@ class ManagePannel extends Component {
         <div className="panel">
           <header className="panel-heading">订单列表</header>
           <div className="panel-body">
-            <div className="table-responsive">
+            <div className="table-responsive main-list">
               <table className="table table-hover text-center">
                 <thead>
                 <tr>

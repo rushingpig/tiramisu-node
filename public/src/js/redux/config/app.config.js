@@ -1,6 +1,7 @@
 export default {
   root: '/',
   ajax: '/v1/a',
+  acl: false,
 
   REQUEST: {
     ING: 0,

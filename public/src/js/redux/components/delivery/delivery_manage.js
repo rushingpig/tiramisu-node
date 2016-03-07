@@ -277,7 +277,7 @@ class DeliveryManagePannel extends Component {
         <div className="panel">
           <header className="panel-heading">送货列表</header>
           <div className="panel-body">
-            <div className="table-responsive">
+            <div className="table-responsive main-list">
               <table className="table table-hover text-center">
                 <thead>
                 <tr>
@@ -357,7 +357,7 @@ class DeliveryManagePannel extends Component {
   printHandler({ print_status, order_id }){
     if(print_status == 'PRINTABLE'){
       this.props.startPrint([order_id])
-        .done(function(){
+        .done(() => {
           this.search(); //重新请求，刷新数据
         })
         .fail(function(){

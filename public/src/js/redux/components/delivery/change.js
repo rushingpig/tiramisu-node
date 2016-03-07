@@ -22,6 +22,7 @@ import OrderDetailModal from 'common/order_detail_modal';
 import OperationRecordModal from 'common/operation_record_modal.js';
 
 import * as OrderActions from 'actions/orders';
+import * as OrderSupportActions from 'actions/order_support';
 import AreaActions from 'actions/area';
 import * as ChangeActions from 'actions/delivery_change';
 
@@ -201,7 +202,7 @@ class DeliverChangePannel extends Component {
     this.search = this.search.bind(this);
   }
   render(){
-    var { filter, area, exchangeOrders, getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
+    var { filter, area, all_order_srcs, all_pay_modes, exchangeOrders, getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
     var { change_submitting } = filter;
     var { loading, refresh, page_no, total, list, checked_order_ids, check_order_info, active_order_id } = this.props.orders;
     var { search, changeHandler, checkOrderHandler, viewOrderDetail, activeOrderHandler, viewOrderOperationRecord } = this;
@@ -221,7 +222,7 @@ class DeliverChangePannel extends Component {
         <div className="panel">
           <header className="panel-heading">送货列表</header>
           <div className="panel-body">
-            <div className="table-responsive">
+            <div className="table-responsive main-list">
               <table className="table table-hover text-center">
                 <thead>
                 <tr>
@@ -263,7 +264,7 @@ class DeliverChangePannel extends Component {
           : null }
 
         <ChangeModal {...{exchangeOrders, search, change_submitting, checked_order_ids}} ref="changeModal" />
-        <OrderDetailModal ref="detail_modal" data={check_order_info || {}} />
+        <OrderDetailModal ref="detail_modal" data={check_order_info || {}} all_order_srcs={all_order_srcs} all_pay_modes={all_pay_modes} />
         <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
       </div>
     )
@@ -297,6 +298,9 @@ class DeliverChangePannel extends Component {
   componentDidMount() {
     this.search();
     LazyLoad('noty');
+    var { getOrderSrcs, getPayModes } = this.props;
+    getOrderSrcs();
+    getPayModes();
   }
   search(){
     var { getOrderExchangeList, orders } = this.props;
@@ -310,7 +314,7 @@ function mapStateToProps({deliveryChange}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  return bindActionCreators({...OrderActions, ...AreaActions(), ...ChangeActions}, dispatch);
+  return bindActionCreators({...OrderActions, ...OrderSupportActions, ...AreaActions(), ...ChangeActions}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeliverChangePannel);

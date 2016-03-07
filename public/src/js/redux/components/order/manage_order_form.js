@@ -67,7 +67,6 @@ const validate = (values, props) => {
     }
   }
 
-  console.log(errors);
   //errors为空对象才表明验证正确
   return errors;
 };

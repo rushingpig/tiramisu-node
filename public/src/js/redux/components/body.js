@@ -33,6 +33,10 @@ export class Main extends Component {
             <a href="index.html"><img src={config.root + "images/logo_icon.png"} alt=""/></a>
           </div>
           <Nav onRender={V} />
+          <div className="app-version">
+            <i className="fa fa-shield"></i>
+            { window.xfxb.version || 'V 1.0.1'}
+          </div>
         </div>
         <div className="right-side">
           <Header />

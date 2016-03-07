@@ -4,6 +4,7 @@ module.exports = {
   entry: [
     path.join(__dirname, './index.js')
   ],
+  devtool: 'cheap-module-source-map',
   output: {
     path: path.join(__dirname, '../'),
     filename: 'app.js',

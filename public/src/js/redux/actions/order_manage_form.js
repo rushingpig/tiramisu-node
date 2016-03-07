@@ -2,21 +2,11 @@ import {post, put, GET, POST, test, TEST} from 'utils/request'; //Promise
 import Url from 'config/url';
 import { getValues } from 'redux-form';
 import { initForm } from 'actions/form';
+import clone from 'clone';
+import * as OrderSupport from 'actions/order_support';
 
-export const GOT_ORDER_SRCS = 'GOT_ORDER_SRCS';
-export function getOrderSrcs(){
-  return GET(Url.order_srcs.toString(), null, GOT_ORDER_SRCS);
-  // return TEST({
-  //   type: GOT_ORDER_SRCS,
-  //   data: [
-  //     {id: 1, name: 'A1', level: 1},
-  //     {id: 2, name: 'A2', level: 1},
-  //     {id: 3, name: 'A3', level: 1},
-  //     {id: 4, name: 'B1', level: 2, parent_id: 1},
-  //     {id: 5, name: 'B2', level: 2, parent_id: 2}
-  //   ]
-  // });
-}
+export const GOT_ORDER_SRCS = OrderSupport.GOT_ORDER_SRCS;
+export const getOrderSrcs = OrderSupport.getOrderSrcs;
 
 //该方法也在其他业务模块中被调用
 export const GOT_DELIVERY_STATIONS = 'GOT_DELIVERY_STATIONS';
@@ -29,10 +19,8 @@ export function autoGetDeliveryStations(data) {
   return POST(Url.auto_loc.toString(), data, AUTO_GOT_DELIVERY_STATIONS);
 }
 
-export const GOT_PAY_MODES = 'GOT_PAY_MODES';
-export function getPayModes(){
-  return GET(Url.pay_modes.toString(), null, GOT_PAY_MODES);
-}
+export const GOT_PAY_MODES = OrderSupport.GOT_PAY_MODES;
+export const getPayModes = OrderSupport.getPayModes;
 
 export const GET_HISTORY_ORDERS = 'GET_HISTORY_ORDERS';
 export function getHistoryOrders(data){
@@ -93,6 +81,7 @@ function _getFormData(form_data, getState){
   var products = getState().orderManageForm.products.confirm_list;
   var total_amount = 0, original_price = 0, discount_price = 0;
   var gretting_card = [];
+  products = clone( products );
   products.forEach(n => {
     total_amount += n.amount * 100;
     n.discount_price *= 100;

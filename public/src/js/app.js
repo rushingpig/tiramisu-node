@@ -67,7 +67,7 @@
 
 	var _reactRedux = __webpack_require__(216);
 
-	var _storesConfigureStore = __webpack_require__(341);
+	var _storesConfigureStore = __webpack_require__(346);
 
 	var _storesConfigureStore2 = _interopRequireDefault(_storesConfigureStore);
 
@@ -75,7 +75,7 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _reduxSimpleRouter = __webpack_require__(348);
+	var _reduxSimpleRouter = __webpack_require__(353);
 
 	(0, _reduxSimpleRouter.syncReduxAndRouter)(_history_instance2['default'], _storesConfigureStore2['default']);
 
@@ -19036,31 +19036,31 @@
 
 	var _componentsOrderManage2 = _interopRequireDefault(_componentsOrderManage);
 
-	var _componentsOrderManage_order_detail_pannel = __webpack_require__(312);
+	var _componentsOrderManage_order_detail_pannel = __webpack_require__(317);
 
 	var _componentsOrderManage_order_detail_pannel2 = _interopRequireDefault(_componentsOrderManage_order_detail_pannel);
 
-	var _componentsDeliveryChange = __webpack_require__(326);
+	var _componentsDeliveryChange = __webpack_require__(331);
 
 	var _componentsDeliveryChange2 = _interopRequireDefault(_componentsDeliveryChange);
 
-	var _componentsDeliveryDelivery_manage = __webpack_require__(328);
+	var _componentsDeliveryDelivery_manage = __webpack_require__(333);
 
 	var _componentsDeliveryDelivery_manage2 = _interopRequireDefault(_componentsDeliveryDelivery_manage);
 
-	var _componentsDeliveryDistribute_manage = __webpack_require__(332);
+	var _componentsDeliveryDistribute_manage = __webpack_require__(337);
 
 	var _componentsDeliveryDistribute_manage2 = _interopRequireDefault(_componentsDeliveryDistribute_manage);
 
-	var _componentsDeliveryPrint_review = __webpack_require__(335);
+	var _componentsDeliveryPrint_review = __webpack_require__(340);
 
 	var _componentsDeliveryPrint_review2 = _interopRequireDefault(_componentsDeliveryPrint_review);
 
-	var _componentsStationStation_manage = __webpack_require__(337);
+	var _componentsStationStation_manage = __webpack_require__(342);
 
 	var _componentsStationStation_manage2 = _interopRequireDefault(_componentsStationStation_manage);
 
-	var _componentsStationStation_scope_manage = __webpack_require__(340);
+	var _componentsStationStation_scope_manage = __webpack_require__(345);
 
 	var _componentsStationStation_scope_manage2 = _interopRequireDefault(_componentsStationStation_scope_manage);
 
@@ -19250,7 +19250,13 @@
 	              _react2['default'].createElement('img', { src: _configAppConfig2['default'].root + "images/logo_icon.png", alt: '' })
 	            )
 	          ),
-	          _react2['default'].createElement(_nav2['default'], { onRender: _utilsAcl2['default'] })
+	          _react2['default'].createElement(_nav2['default'], { onRender: _utilsAcl2['default'] }),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'app-version' },
+	            _react2['default'].createElement('i', { className: 'fa fa-shield' }),
+	            window.xfxb.version || 'V 1.0.1'
+	          )
 	        ),
 	        _react2['default'].createElement(
 	          'div',
@@ -19374,6 +19380,7 @@
 	exports['default'] = {
 	  root: '/',
 	  ajax: '/v1/a',
+	  acl: false,
 
 	  REQUEST: {
 	    ING: 0,
@@ -25063,7 +25070,7 @@
 	    //   e.stopPropagation();
 	    //   return false;
 	    // }
-
+	
 	  }]);
 
 	  return Header;
@@ -28277,12 +28284,11 @@
 
 /***/ },
 /* 240 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * access_control_list : 权限列表
 	 */
-
 	'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
@@ -28290,6 +28296,9 @@
 	});
 	exports['default'] = validate;
 	exports.onEnter = onEnter;
+
+	var _configAppConfig = __webpack_require__(157);
+
 	var PERMISSIONS = undefined;
 	//测试数据
 	// const PERMISSIONS = [
@@ -28314,6 +28323,10 @@
 	 */
 
 	function validate(role) {
+	  //禁用权限控制
+	  if (!_configAppConfig.acl) {
+	    return true;
+	  }
 	  //初始化PERMISSIONS：分两种情况
 	  //1. 第一次登录后；2. 已登陆后刷新；
 	  if (!PERMISSIONS) {
@@ -28347,8 +28360,11 @@
 
 	function onEnter(role) {
 	  return function (state, replace) {
-	    if (!validate(role)) {
-	      replace({}, '/403', null);
+	    //登录成功之后，才有必要进行validate
+	    if (window.xfxb.login) {
+	      if (!validate(role)) {
+	        replace({}, '/403', null);
+	      }
 	    }
 	  };
 	}
@@ -28409,15 +28425,15 @@
 
 	var _actionsOrder_manage_form = __webpack_require__(292);
 
-	var _commonDatepicker = __webpack_require__(295);
+	var _commonDatepicker = __webpack_require__(300);
 
 	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
 
-	var _commonSelect = __webpack_require__(296);
+	var _commonSelect = __webpack_require__(301);
 
 	var _commonSelect2 = _interopRequireDefault(_commonSelect);
 
-	var _commonPagination = __webpack_require__(297);
+	var _commonPagination = __webpack_require__(302);
 
 	var _commonPagination2 = _interopRequireDefault(_commonPagination);
 
@@ -28427,25 +28443,25 @@
 
 	var _history_instance2 = _interopRequireDefault(_history_instance);
 
-	var _commonLinkers = __webpack_require__(298);
+	var _commonLinkers = __webpack_require__(303);
 
 	var _commonLinkers2 = _interopRequireDefault(_commonLinkers);
 
-	var _commonSearch_input = __webpack_require__(299);
+	var _commonSearch_input = __webpack_require__(304);
 
 	var _commonSearch_input2 = _interopRequireDefault(_commonSearch_input);
 
-	var _commonLoading = __webpack_require__(300);
+	var _commonLoading = __webpack_require__(305);
 
-	var _commonStd_modal = __webpack_require__(301);
+	var _commonStd_modal = __webpack_require__(306);
 
 	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
 
-	var _commonRecipient_info = __webpack_require__(302);
+	var _commonRecipient_info = __webpack_require__(307);
 
 	var _commonRecipient_info2 = _interopRequireDefault(_commonRecipient_info);
 
-	var _utilsLazy_load = __webpack_require__(303);
+	var _utilsLazy_load = __webpack_require__(308);
 
 	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
 
@@ -28455,25 +28471,25 @@
 
 	var _utilsAcl2 = _interopRequireDefault(_utilsAcl);
 
-	var _mixinsMap = __webpack_require__(304);
+	var _mixinsMap = __webpack_require__(309);
 
-	var _commonOrder_products_detail = __webpack_require__(306);
+	var _commonOrder_products_detail = __webpack_require__(311);
 
 	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
 
-	var _commonOrder_detail_modal = __webpack_require__(307);
+	var _commonOrder_detail_modal = __webpack_require__(312);
 
 	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
 
-	var _manage_alter_delivery_modal = __webpack_require__(308);
+	var _manage_alter_delivery_modal = __webpack_require__(313);
 
 	var _manage_alter_delivery_modal2 = _interopRequireDefault(_manage_alter_delivery_modal);
 
-	var _commonOrder_srcs_selects = __webpack_require__(310);
+	var _commonOrder_srcs_selects = __webpack_require__(315);
 
 	var _commonOrder_srcs_selects2 = _interopRequireDefault(_commonOrder_srcs_selects);
 
-	var _commonOperation_record_modalJs = __webpack_require__(311);
+	var _commonOperation_record_modalJs = __webpack_require__(316);
 
 	var _commonOperation_record_modalJs2 = _interopRequireDefault(_commonOperation_record_modalJs);
 
@@ -28984,7 +29000,7 @@
 	            { className: 'panel-body' },
 	            _react2['default'].createElement(
 	              'div',
-	              { className: 'table-responsive' },
+	              { className: 'table-responsive main-list' },
 	              _react2['default'].createElement(
 	                'table',
 	                { className: 'table table-hover text-center' },
@@ -33024,6 +33040,10 @@
 
 	var _actionsForm = __webpack_require__(293);
 
+	var _clone = __webpack_require__(295);
+
+	var _clone2 = _interopRequireDefault(_clone);
+
 	var GOT_ORDER_SRCS = 'GOT_ORDER_SRCS';
 	exports.GOT_ORDER_SRCS = GOT_ORDER_SRCS;
 
@@ -33130,6 +33150,7 @@
 	      original_price = 0,
 	      discount_price = 0;
 	  var gretting_card = [];
+	  products = (0, _clone2['default'])(products);
 	  products.forEach(function (n) {
 	    total_amount += n.amount * 100;
 	    n.discount_price *= 100;
@@ -33376,12041 +33397,6 @@
 /* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var DatePicker = _react2['default'].createClass({
-	  displayName: 'DatePicker',
-
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      className: '',
-	      'redux-form': null,
-	      editable: false,
-	      upperLimit: undefined,
-	      lowerLimit: undefined
-	    };
-	  },
-	  getInitialState: function getInitialState() {
-	    var redux_form = this.props['redux-form'];
-	    return {
-	      date: redux_form ? redux_form.value : this.props.value
-	    };
-	  },
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-	    if (nextProps['redux-form'] && nextProps['redux-form'].value != undefined && nextProps['redux-form'].value != this.props['redux-form'].value) {
-	      $((function () {
-	        this.setState({
-	          date: nextProps['redux-form'].value
-	        }, function () {
-	          if (_utilsIndex.form.isDate(nextProps['redux-form'].value)) this.initDatePicker().update();
-	        });
-	      }).bind(this));
-	    } else if (nextProps.value != this.props.value) {
-	      this.setState({ date: nextProps.value });
-	    }
-	  },
-	  componentDidMount: function componentDidMount() {
-	    $((function () {
-	      this.initDatePicker();
-	    }).bind(this));
-	  },
-	  initDatePicker: function initDatePicker() {
-	    var $dom_date = $(this.refs.date);
-	    var $date = $dom_date.data('datepicker');
-	    var _props = this.props;
-	    var lowerLimit = _props.lowerLimit;
-	    var upperLimit = _props.upperLimit;
-
-	    lowerLimit = new Date(lowerLimit + ' 00:00:00');
-	    upperLimit = new Date(upperLimit + ' 00:00:00');
-
-	    if (!$date) {
-	      $date = $dom_date.datepicker({
-	        format: 'yyyy-mm-dd',
-	        onRender: (lowerLimit || upperLimit) && function (date) {
-	          if (date < lowerLimit || date > upperLimit) {
-	            return 'disabled';
-	          }
-	        }
-	      }).on('changeDate', (function (e) {
-	        var value = e.target.value;
-	        this.props.onChange && this.props.onChange(value);
-	        this.setState({ date: value }, function () {
-	          // setTimeout(function(){
-	          $dom_date.focus();
-	          $dom_date.blur();
-	          $date.data('datepicker').hide();
-	          // }, 0);
-	        });
-	      }).bind(this)).on('click', function () {
-	        $date.data('datepicker').show();
-	      });
-	    }
-	    return $date;
-	  },
-	  render: function render() {
-	    var redux_form = this.props['redux-form'];
-	    var editable = this.props.editable;
-	    var spreadProps;
-	    if (redux_form) {
-	      spreadProps = editable ? redux_form : _extends({}, redux_form, { onChange: function onChange() {} });
-	    } else {
-	      spreadProps = { onChange: editable ? this.props.onChange : function () {} };
-	    }
-	    //redux-from 中包含value
-	    return _react2['default'].createElement(
-	      'div',
-	      { style: { 'display': 'inline-block' } },
-	      _react2['default'].createElement('input', _extends({ ref: 'date' }, spreadProps, {
-	        value: this.state.date,
-	        className: 'form-control input-xs ' + this.props.className }))
-	    );
-	  }
-	});
-
-	exports['default'] = DatePicker;
-	module.exports = exports['default'];
-
-/***/ },
-/* 296 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var React = __webpack_require__(2);
-	var Select = React.createClass({
-	  displayName: 'Select',
-
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      "default-text": '--请选择--',
-	      "default-value": -1,
-	      "options": [],
-	      "no-default": false
-	    };
-	  },
-	  render: function render() {
-	    var list = this.props.options.map(function (n) {
-	      return React.createElement(
-	        'option',
-	        { value: n.id, key: n.id },
-	        n.text
-	      );
-	    });
-	    var className = "form-control input-xs " + (this.props.className || '');
-	    this.props = _extends({}, this.props, { className: className });
-	    return React.createElement(
-	      'select',
-	      this.props,
-	      this.props['no-default'] ? null : React.createElement(
-	        'option',
-	        { value: this.props['default-value'] },
-	        this.props['default-text']
-	      ),
-	      list
-	    );
-	  }
-	});
-	module.exports = Select;
-
-/***/ },
-/* 297 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var Pagination = _react2["default"].createClass({
-	    displayName: "Pagination",
-
-	    getDefaultProps: function getDefaultProps() {
-	        return {
-	            random_btn_active: true,
-	            random_btn_show: true,
-	            page_size: 20, //每页显示20条
-	            total_count: 0,
-	            page_no: 0,
-	            page_num_show: 10, //分页的页码，显示10个
-	            onPageChange: null,
-	            no_more_code: -1 };
-	    },
-	    //后台返回空数据的时候，
-	    //onPageChangeBefore: null
-	    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-	        if (nextProps.page_no == this.props.no_more_code) {
-	            this._selectPage(math.ceil(this.props.total_count / this.props.page_size));
-	        }
-	    },
-	    _calc_pages: function _calc_pages() {
-	        var total_count = this.props.total_count;
-	        var page_size = this.props.page_size;
-	        var page_no = this.props.page_no;
-
-	        if (total_count < 0 || total_count == Infinity) {
-	            var total_pages = -1;
-	        } else {
-	            var total_pages = Math.ceil(total_count / page_size);
-	        }
-	        this.total_pages = total_pages;
-
-	        //分页的分页~
-	        var page_num_show = this.props.page_num_show;
-	        if (total_pages == -1) {
-	            //Infinity处理
-	            var pagesOfpage = -1;
-	        } else {
-	            var pagesOfpage = Math.ceil(total_pages / page_num_show);
-	        }
-	        var cpageOfPage = Math.floor(page_no / page_num_show);
-	        var long_prev = cpageOfPage > 0;
-	        var long_next = cpageOfPage < pagesOfpage - 1 || pagesOfpage == -1;
-
-	        var page_num_start = cpageOfPage * page_num_show;
-	        if (total_pages == -1) {
-	            var page_num_end = (cpageOfPage + 1) * page_num_show;
-	        } else {
-	            var page_num_end = Math.min((cpageOfPage + 1) * page_num_show, total_pages);
-	        }
-
-	        return {
-	            "page_no": page_no,
-	            "total_pages": total_pages,
-
-	            "start": page_num_start,
-	            "end": page_num_end,
-	            "long_prev": long_prev,
-	            "long_next": long_next
-	        };
-	    },
-	    _selectPage: function _selectPage(page) {
-	        // if (this.props.onPageChangeBefore){
-	        //     this.props.onPageChangeBefore(page);
-	        // }
-	        if (this.props.onPageChange && this.props.page_no != page) {
-	            this.props.onPageChange(page);
-	            /*
-	            this.setState({
-	                page_no: page
-	            }, function(){
-	                this.props.onPageChange(page);
-	            });
-	            */
-	        }
-	    },
-	    _prevPage: function _prevPage() {
-	        if (this.props.page_no > 0) {
-	            this._selectPage(this.props.page_no - 1);
-	        }
-	    },
-	    _nextPage: function _nextPage() {
-	        var total_pages = this.total_pages;
-	        if (total_pages == -1 || this.props.page_no < total_pages - 1) {
-	            this._selectPage(this.props.page_no + 1);
-	        }
-	    },
-	    _longJumpPre: function _longJumpPre() {
-	        var pn = this.props.page_num_show;
-	        var page = Math.floor(this.props.page_no / pn) * pn - 1;
-	        this._selectPage(page);
-	    },
-	    _longJumpNext: function _longJumpNext() {
-	        var pn = this.props.page_num_show;
-	        var page = Math.floor(this.props.page_no / pn + 1) * pn;
-	        this._selectPage(page);
-	    },
-	    render: function render() {
-	        var page_info = this._calc_pages();
-	        var total_pages = page_info.total_pages;
-
-	        var preDisabledCls = page_info.page_no > 0 ? "" : " disabled",
-	            nextDisabledCls = total_pages == -1 || page_info.page_no < total_pages - 1 ? "" : " disabled";
-
-	        var longNextStyle = { display: 'none' },
-	            longPreStyle = { display: 'none' };
-	        if (page_info.long_next) {
-	            longNextStyle = {};
-	        }
-	        if (page_info.long_prev) {
-	            longPreStyle = {};
-	        }
-
-	        var lastPageStyle = longNextStyle;
-	        if (total_pages == -1) {
-	            //无穷大的页码就不能显示最后一页按钮
-	            lastPageStyle = { display: 'none' };
-	        }
-
-	        var page_numbers = [];
-	        for (var n = page_info.start; n < page_info.end && this.props.random_btn_show; n++) {
-	            var actived = n == page_info.page_no;
-	            var classnames = 'paginate_button';
-	            if (this.props.random_btn_active) {
-	                classnames += actived ? ' active' : '';
-	                page_numbers.push(_react2["default"].createElement(
-	                    "li",
-	                    { className: classnames, onClick: this._selectPage.bind(this, n), key: n },
-	                    _react2["default"].createElement(
-	                        "a",
-	                        { href: "javascript:;" },
-	                        n + 1
-	                    )
-	                ));
-	            } else {
-	                if (actived) {
-	                    classnames += " active";
-	                } else {
-	                    classnames += " disabled";
-	                }
-	                page_numbers.push(_react2["default"].createElement(
-	                    "li",
-	                    { className: classnames, key: n },
-	                    _react2["default"].createElement(
-	                        "a",
-	                        { href: "javascript:;" },
-	                        n + 1
-	                    )
-	                ));
-	            }
-	        }
-
-	        var firstPage, longJumpPre, lastPage, longJumpNext;
-	        if (this.props.random_btn_show) {
-	            //TODO random_btn_active
-
-	            firstPage = _react2["default"].createElement(
-	                "li",
-	                { className: "paginate_button", style: longPreStyle, onClick: this._selectPage.bind(this, 0) },
-	                _react2["default"].createElement(
-	                    "a",
-	                    { href: "javascript:;" },
-	                    "首页"
-	                )
-	            );
-	            longJumpPre = _react2["default"].createElement(
-	                "li",
-	                { className: "paginate_button", style: longPreStyle, onClick: this._longJumpPre },
-	                _react2["default"].createElement(
-	                    "a",
-	                    { href: "javascript:;" },
-	                    "..."
-	                )
-	            );
-
-	            lastPage = _react2["default"].createElement(
-	                "li",
-	                { className: "paginate_button", style: lastPageStyle, onClick: this._selectPage.bind(this, total_pages - 1) },
-	                _react2["default"].createElement(
-	                    "a",
-	                    { href: "javascript:;" },
-	                    "末页"
-	                )
-	            );
-	            longJumpNext = _react2["default"].createElement(
-	                "li",
-	                { className: "paginate_button", style: longNextStyle, onClick: this._longJumpNext },
-	                _react2["default"].createElement(
-	                    "a",
-	                    { href: "javascript:;" },
-	                    "..."
-	                )
-	            );
-	        }
-
-	        return _react2["default"].createElement(
-	            "div",
-	            { className: "clearfix" },
-	            _react2["default"].createElement(
-	                "ul",
-	                { className: "pagination pull-right" },
-	                _react2["default"].createElement(
-	                    "li",
-	                    { className: 'paginate_button previous' + preDisabledCls, onClick: this._prevPage },
-	                    _react2["default"].createElement(
-	                        "a",
-	                        { href: "javascript:;" },
-	                        "«"
-	                    )
-	                ),
-	                firstPage,
-	                longJumpPre,
-	                page_numbers,
-	                longJumpNext,
-	                lastPage,
-	                _react2["default"].createElement(
-	                    "li",
-	                    { className: 'paginate_button next' + nextDisabledCls, onClick: this._nextPage },
-	                    _react2["default"].createElement(
-	                        "a",
-	                        { href: "javascript:;" },
-	                        "»"
-	                    )
-	                )
-	            ),
-	            _react2["default"].createElement(
-	                "div",
-	                { style: { 'lineHeight': '31px' } },
-	                '共' + this.props.total_count + '项'
-	            )
-	        );
-	    }
-	});
-
-	exports["default"] = Pagination;
-	module.exports = exports["default"];
-
-/***/ },
-/* 298 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _history_instance = __webpack_require__(211);
-
-	var _history_instance2 = _interopRequireDefault(_history_instance);
-
-	var Linkers = (function (_React$Component) {
-	  _inherits(Linkers, _React$Component);
-
-	  function Linkers(props) {
-	    _classCallCheck(this, Linkers);
-
-	    _get(Object.getPrototypeOf(Linkers.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      active: this.props.active
-	    };
-	  }
-
-	  _createClass(Linkers, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var data = _props.data;
-	      var className = _props.className;
-	      var active = this.state.active;
-
-	      var content = [];
-
-	      for (var i = 0, len = data.length; i < len; i++) {
-	        if (data[i] == active) {
-	          content.push(_react2['default'].createElement(
-	            'span',
-	            { key: i, className: 'node active' },
-	            data[i]
-	          ));
-	        } else {
-	          content.push(_react2['default'].createElement(
-	            'span',
-	            { key: i, className: 'node',
-	              onClick: this.onClick.bind(this, data[i]) },
-	            data[i]
-	          ));
-	        }
-	        if (i != len - 1) {
-	          content.push(_react2['default'].createElement(
-	            'span',
-	            { key: i + 'separator' },
-	            '　/　'
-	          ));
-	        }
-	      }
-
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'line-router ' + className },
-	        content
-	      );
-	    }
-	  }, {
-	    key: 'onClick',
-	    value: function onClick(name) {
-	      this.setState({ active: name }, function () {
-	        this.props.onChange(name);
-	      });
-	    }
-	  }]);
-
-	  return Linkers;
-	})(_react2['default'].Component);
-
-	exports['default'] = Linkers;
-
-	Linkers.PropTypes = {
-	  data: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-	    name: _react.PropTypes.string.isRequired,
-	    active: _react.PropTypes.string.isRequired
-	  }))
-	};
-	module.exports = exports['default'];
-
-/***/ },
-/* 299 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var SearchInput = (function (_React$Component) {
-	  _inherits(SearchInput, _React$Component);
-
-	  function SearchInput(props) {
-	    _classCallCheck(this, SearchInput);
-
-	    _get(Object.getPrototypeOf(SearchInput.prototype), 'constructor', this).call(this, props);
-	    this.searchHandler = this.searchHandler.bind(this);
-	  }
-
-	  _createClass(SearchInput, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var className = _props.className;
-	      var searching = _props.searching;
-	      var size = _props.size;
-	      var placeholder = _props.placeholder;
-	      var searchHandler = _props.searchHandler;
-
-	      var i_className = searching ? 'fa fa-spinner fa-spin disabled' : 'fa fa-search';
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'search-input ' + className },
-	        _react2['default'].createElement('input', { ref: 'input',
-	          className: 'form-control ' + size,
-	          placeholder: placeholder,
-	          onKeyDown: this.keyDownHandler.bind(this) }),
-	        _react2['default'].createElement('i', { className: i_className, onClick: this.searchHandler })
-	      );
-	    }
-	  }, {
-	    key: 'keyDownHandler',
-	    value: function keyDownHandler(e) {
-	      //enter键
-	      if (!this.props.searching && e.which == 13) {
-	        this.searchHandler();
-	      }
-	    }
-	  }, {
-	    key: 'searchHandler',
-	    value: function searchHandler() {
-	      if (!this.props.searching) {
-	        console.log('search: ' + this.refs.input.value);
-	        this.props.searchHandler(this.refs.input.value);
-	      }
-	    }
-	  }]);
-
-	  return SearchInput;
-	})(_react2['default'].Component);
-
-	exports['default'] = SearchInput;
-
-	SearchInput.defaultProps = {
-	  className: '',
-	  searching: false,
-	  size: 'input-xs',
-	  placeholder: '',
-	  searchHandler: function searchHandler() {}
-	};
-	module.exports = exports['default'];
-
-/***/ },
-/* 300 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.tableLoader = tableLoader;
-	exports.normalLoader = normalLoader;
-	exports.get_table_loading = get_table_loading;
-	exports.get_normal_loading = get_normal_loading;
-	exports.get_table_empty = get_table_empty;
-	exports.get_normal_empty = get_normal_empty;
-	exports.get_loading_icon = get_loading_icon;
-	exports.get_empty_icon = get_empty_icon;
-	exports.get_refresh_icon = get_refresh_icon;
-
-	var React = __webpack_require__(2);
-
-	var loading_icon = React.createElement("i", { className: "fa fa-spin fa-spinner fa-pulse fa-fw" });
-	var empty_icon = "无";
-	var refresh_icon = React.createElement(
-	  "div",
-	  { className: "box-icon", style: { borderLeft: '1px solid #dbdee0' } },
-	  React.createElement("i", { className: "fa fa-spin fa-refresh", style: { color: '#888', borderLeft: 'none' } })
-	);
-
-	var StdWrap = React.createClass({
-	  displayName: "StdWrap",
-
-	  render: function render() {
-	    return React.createElement(
-	      "div",
-	      { style: { height: "100%", width: "100%", display: "table" } },
-	      React.createElement(
-	        "div",
-	        { style: { display: "table-cell", verticalAlign: "middle", textAlign: "center" } },
-	        this.props.children
-	      )
-	    );
-	  }
-	});
-
-	var normal_loading = function normal_loading(content) {
-	  return React.createElement(
-	    StdWrap,
-	    null,
-	    content
-	  );
-	};
-	var table_loading = function table_loading(content) {
-	  return React.createElement(
-	    "tr",
-	    null,
-	    React.createElement(
-	      "td",
-	      { colSpan: "99" },
-	      React.createElement(
-	        StdWrap,
-	        null,
-	        content
-	      )
-	    )
-	  );
-	};
-
-	function tableLoader(loading, content) {
-	  return loading ? get_table_loading() : content.length ? content : get_table_empty();
-	}
-
-	function normalLoader(loading, content) {
-	  return loading ? get_normal_loading() : content.length ? content : get_normal_empty();
-	}
-
-	function get_table_loading() {
-	  return table_loading(loading_icon);
-	}
-
-	function get_normal_loading() {
-	  return normal_loading(loading_icon);
-	}
-
-	function get_table_empty() {
-	  return table_loading(empty_icon);
-	}
-
-	function get_normal_empty() {
-	  return normal_loading(empty_icon);
-	}
-
-	function get_loading_icon() {
-	  return loading_icon;
-	}
-
-	function get_empty_icon() {
-	  return empty_icon;
-	}
-
-	function get_refresh_icon() {
-	  return refresh_icon;
-	}
-
-/***/ },
-/* 301 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var StdModal = (function (_Component) {
-	  _inherits(StdModal, _Component);
-
-	  function StdModal(props) {
-	    _classCallCheck(this, StdModal);
-
-	    _get(Object.getPrototypeOf(StdModal.prototype), "constructor", this).call(this, props);
-	    this.show = this.show.bind(this);
-	    this.hide = this.hide.bind(this);
-	  }
-
-	  _createClass(StdModal, [{
-	    key: "render",
-	    value: function render() {
-	      var _props = this.props;
-	      var size = _props.size;
-	      var title = _props.title;
-	      var submitting = _props.submitting;
-	      var loading = _props.loading;
-	      var disabled = _props.disabled;
-	      var onConfirm = _props.onConfirm;
-	      var footer = _props.footer;
-
-	      return _react2["default"].createElement(
-	        "div",
-	        { ref: "__modal", "aria-hidden": "false", "aria-labelledby": "myModalLabel", role: "dialog", className: "modal fade" },
-	        _react2["default"].createElement("div", { className: "modal-backdrop fade" }),
-	        _react2["default"].createElement(
-	          "div",
-	          { className: "modal-dialog modal-" + size },
-	          _react2["default"].createElement(
-	            "div",
-	            { className: "modal-content" },
-	            _react2["default"].createElement(
-	              "div",
-	              { className: "modal-header" },
-	              _react2["default"].createElement(
-	                "button",
-	                { "aria-hidden": "true", onClick: this.hide, "data-dismiss": "modal", className: "close", type: "button" },
-	                "×"
-	              ),
-	              _react2["default"].createElement(
-	                "h4",
-	                { className: "modal-title" },
-	                title
-	              )
-	            ),
-	            _react2["default"].createElement(
-	              "div",
-	              { className: "modal-body" },
-	              loading && _react2["default"].createElement(
-	                "div",
-	                { className: "loading-wrap text-center" },
-	                _react2["default"].createElement("i", { className: "fa fa-spin fa-lg fa-spinner" })
-	              ),
-	              this.props.children
-	            ),
-	            footer ? _react2["default"].createElement(
-	              "div",
-	              { className: "modal-footer" },
-	              _react2["default"].createElement(
-	                "button",
-	                { onClick: this.hide, type: "button", className: "btn btn-sm btn-default", "data-dismiss": "modal" },
-	                "取消"
-	              ),
-	              _react2["default"].createElement(
-	                "button",
-	                {
-	                  onClick: onConfirm,
-	                  disabled: submitting || loading || disabled,
-	                  "data-submitting": submitting, type: "button", className: "btn btn-sm btn-theme" },
-	                "确定"
-	              )
-	            ) : null
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: "show",
-	    value: function show(callback) {
-	      $(this.refs.__modal).modal('show').on('shown.bs.modal', callback);
-	    }
-	  }, {
-	    key: "hide",
-	    value: function hide() {
-	      if (this.props.submitting) {
-	        return;
-	      }
-	      this.props.onCancel();
-	      $(this.refs.__modal).modal('hide');
-	    }
-	  }, {
-	    key: "componentWillUnmount",
-	    value: function componentWillUnmount() {
-	      $(this.refs.__modal).off('shown.bs.modal');
-	    }
-	  }]);
-
-	  return StdModal;
-	})(_react.Component);
-
-	exports["default"] = StdModal;
-
-	StdModal.PropTypes = {
-	  title: _react.PropTypes.any.isRequired
-	};
-
-	StdModal.defaultProps = {
-	  size: '', // lg
-	  title: 'TODO',
-	  submitting: false,
-	  onConfirm: function onConfirm() {},
-	  onCancel: function onCancel() {}, //modal关闭前需执行的callback
-	  footer: true };
-	module.exports = exports["default"];
-	//是否需要 modal-footer
-
-/***/ },
-/* 302 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports["default"] = RecipientInfo;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	//收货人信息
-
-	function RecipientInfo(props) {
-	  var data = props.data;
-	  return _react2["default"].createElement(
-	    "td",
-	    { className: "text-left" },
-	    _react2["default"].createElement(
-	      "div",
-	      { className: "address-detail-td" },
-	      _react2["default"].createElement(
-	        "table",
-	        { className: "no-padding" },
-	        _react2["default"].createElement(
-	          "tbody",
-	          null,
-	          _react2["default"].createElement(
-	            "tr",
-	            null,
-	            _react2["default"].createElement(
-	              "td",
-	              { className: "nowrap" },
-	              "姓名："
-	            ),
-	            _react2["default"].createElement(
-	              "td",
-	              null,
-	              data.recipient_name
-	            )
-	          ),
-	          _react2["default"].createElement(
-	            "tr",
-	            null,
-	            _react2["default"].createElement(
-	              "td",
-	              { className: "nowrap" },
-	              "电话："
-	            ),
-	            _react2["default"].createElement(
-	              "td",
-	              null,
-	              data.recipient_mobile
-	            )
-	          ),
-	          _react2["default"].createElement(
-	            "tr",
-	            null,
-	            _react2["default"].createElement(
-	              "td",
-	              { className: "nowrap v-top" },
-	              "地址："
-	            ),
-	            _react2["default"].createElement(
-	              "td",
-	              null,
-	              data.recipient_address
-	            )
-	          ),
-	          _react2["default"].createElement(
-	            "tr",
-	            null,
-	            _react2["default"].createElement(
-	              "td",
-	              { className: "nowrap" },
-	              "建筑："
-	            ),
-	            _react2["default"].createElement(
-	              "td",
-	              null,
-	              data.recipient_landmark
-	            )
-	          )
-	        )
-	      )
-	    )
-	  );
-	}
-
-	module.exports = exports["default"];
-
-/***/ },
-/* 303 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports['default'] = LazyLoad;
-	var root = window.xfxb.root;
-	var config = {
-	  noty: {
-	    css: '/plugins/animate/animate.min.css',
-	    js: root + 'lib/jquery.noty.packaged.min.js'
-	  },
-	  chinese_py: {
-	    js: root + 'lib/chinese_py.min.js'
-	  },
-	  autocomplete: {
-	    css: '/plugins/jquery-ui/jquery-ui.css',
-	    js: '/plugins/jquery-ui/autocomplete.js'
-	  }
-	};
-	var load_map = {};
-
-	function LazyLoad(name, callback) {
-	  $(function () {
-	    var plugin = config[name];
-	    if (plugin) {
-	      if (!load_map[name]) {
-	        setTimeout(function () {
-	          if (plugin.css) {
-	            var link = document.createElement("link");
-	            link.rel = "stylesheet";
-	            link.href = plugin.css;
-	            document.head.appendChild(link);
-	          }
-	          if (plugin.js) {
-	            var sc = document.createElement("script");
-	            sc.type = "text\/javascript";
-	            sc.src = plugin.js;
-	            sc.onload = callback;
-	            document.body.appendChild(sc);
-	          }
-	          load_map[name] = 1; //已加载过
-	        }, 0);
-	      }
-	    } else {
-	      console.error('lazy load "' + name + '" fail');
-	    }
-	  });
-	}
-
-	window.LazyLoad = LazyLoad;
-	module.exports = exports['default'];
-
-/***/ },
-/* 304 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports['default'] = autoMatchDeliveryStations;
-	exports.createMap = createMap;
-	exports.autoMatch = autoMatch;
-	exports.autoMatchSuccess = autoMatchSuccess;
-	exports.autoMatchFail = autoMatchFail;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _utilsMyMap = __webpack_require__(305);
-
-	var _utilsMyMap2 = _interopRequireDefault(_utilsMyMap);
-
-	var _reactDom = __webpack_require__(154);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var _utilsPromise = __webpack_require__(238);
-
-	var _utilsPromise2 = _interopRequireDefault(_utilsPromise);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var _actionsForm = __webpack_require__(293);
-
-	//完整封装
-
-	function autoMatchDeliveryStations(success_cb, fail_cb) {
-	  var self = this;
-
-	  createMap(self);
-
-	  $(this.refs.recipient_address).on('blur', function (e) {
-	    var detail = e.target.value;
-	    if (detail) {
-	      var province = self.findSelectedOptionText('province');
-	      var city = self.findSelectedOptionText('city');
-	      var district = self.findSelectedOptionText('district');
-	      var default_text = self.refs.province.props['default-text'];
-	      if (province != default_text && city != default_text && district != default_text) {
-	        autoMatch.call(self, city, district + detail).done(success_cb).fail(fail_cb);
-	      }
-	    }
-	  });
-	}
-
-	//step: 1
-
-	function createMap(t) {
-	  //初始化地图
-	  _utilsMyMap2['default'].create(function (map) {
-	    t._bmap = map;
-	  });
-	}
-
-	//step: 2
-
-	function autoMatch(city, address) {
-	  var self = this;
-	  var autoGetDeliveryStations = this.props.actions.autoGetDeliveryStations;
-
-	  if (!city || !address) {
-	    (0, _utilsIndex.Noty)('error', '地址数据有误');
-	  }
-
-	  return new _utilsPromise2['default'](function (resolve, reject) {
-	    if (BMap) {
-	      var map = self._bmap;
-	      map.centerAndZoom(city);
-	      var localSearch = new BMap.LocalSearch(map);
-	      localSearch.setSearchCompleteCallback(function (searchResult) {
-	        var poi = searchResult && searchResult.getPoi(0);
-	        if (poi) {
-	          console.log(poi.point.lng + "," + poi.point.lat);
-	          autoGetDeliveryStations({
-	            lng: poi.point.lng,
-	            lat: poi.point.lat
-	          }).done(function (data) {
-	            setTimeout(function () {
-	              if (data && data.delivery_id) {
-	                resolve(data.delivery_id); //成功，且有数据
-	              } else {
-	                  reject('服务器异常');
-	                }
-	            }, 0);
-	          }).fail(function (msg, code) {
-	            setTimeout(function () {
-	              if (code && code == '3001') {
-	                reject(); //成功，但没有数据
-	              } else {
-	                  reject('自动检索配送中心异常，请重试');
-	                }
-	            }, 0);
-	          });
-	        } else {
-	          reject();
-	        }
-	      });
-	      localSearch.search(address);
-	    } else {
-	      reject('地图服务加载失败，请稍后再试');
-	    }
-	  }).done(autoMatchSuccess.bind(this)).fail(autoMatchFail.bind(this)).done(addEffect.bind(this, 'alert-success')).fail(addEffect.bind(this, 'alert-danger'));
-	}
-
-	function addEffect(animate_name) {
-	  var $dc = $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).removeClass('alert-success alert-danger').addClass(animate_name);
-	  // setTimeout(function(){
-	  //   $dc.removeClass(animate_name);
-	  // }, 1000);
-	}
-
-	function autoMatchSuccess() {
-	  this.setState({ auto_match_delivery_center: true, auto_match_msg: '已成功匹配！' });
-	}
-
-	function autoMatchFail(msg) {
-	  this.setState({ auto_match_delivery_center: false, auto_match_msg: msg || '无法准确定位配送中心，请与客户联系后手动选择！' });
-	}
-
-/***/ },
-/* 305 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	var MyMap = function MyMap() {
-	  this.callback = null;
-	  this.d = $.Deferred();
-	  this.map = null;
-	  this.init_flag = 0;
-	};
-
-	MyMap.prototype._initialize = function () {
-	  var container = document.createElement('div');
-	  container.style.display = 'none';
-	  var id = 'bmap' + new Date().getTime();
-	  container.setAttribute('id', id);
-	  document.body.appendChild(container);
-	  this.map = new BMap.Map(id);
-	  this.d.resolve(this.map);
-	};
-
-	MyMap.prototype.create = function (callback) {
-	  if (!this.init_flag) {
-	    this.init_flag = 1;
-	    window._bmap_callback = this._initialize.bind(this);
-
-	    var script = document.createElement("script");
-	    script.src = "http://api.map.baidu.com/api?v=2.0&ak=dxF5GZW6CHlR4GCQ9kKynOcc&callback=_bmap_callback"; //此为v2.0版本的引用方式 
-	    // http://api.map.baidu.com/api?v=1.4&ak=您的密钥&callback=initialize"; //此为v1.4版本及以前版本的引用方式 
-	    document.body.appendChild(script);
-	  }
-	  this.d.done(callback);
-	};
-
-	exports['default'] = new MyMap();
-	module.exports = exports['default'];
-
-/***/ },
-/* 306 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function ProductRow(product) {
-	  return _react2["default"].createElement(
-	    "tr",
-	    { key: product.sku_id },
-	    _react2["default"].createElement(
-	      "td",
-	      null,
-	      product.name
-	    ),
-	    _react2["default"].createElement(
-	      "td",
-	      null,
-	      "￥",
-	      product.original_price / 100
-	    ),
-	    _react2["default"].createElement(
-	      "td",
-	      null,
-	      product.size
-	    ),
-	    _react2["default"].createElement(
-	      "td",
-	      null,
-	      product.num
-	    ),
-	    _react2["default"].createElement(
-	      "td",
-	      null,
-	      "￥",
-	      product.discount_price / 100
-	    ),
-	    _react2["default"].createElement(
-	      "td",
-	      null,
-	      product.choco_board
-	    ),
-	    _react2["default"].createElement(
-	      "td",
-	      null,
-	      product.greeting_card
-	    ),
-	    _react2["default"].createElement(
-	      "td",
-	      null,
-	      product.atlas
-	    ),
-	    _react2["default"].createElement(
-	      "td",
-	      null,
-	      product.custom_name
-	    ),
-	    _react2["default"].createElement(
-	      "td",
-	      null,
-	      product.custom_desc
-	    )
-	  );
-	}
-
-	var OrderProductsDetail = (function (_Component) {
-	  _inherits(OrderProductsDetail, _Component);
-
-	  function OrderProductsDetail() {
-	    _classCallCheck(this, OrderProductsDetail);
-
-	    _get(Object.getPrototypeOf(OrderProductsDetail.prototype), "constructor", this).apply(this, arguments);
-	  }
-
-	  _createClass(OrderProductsDetail, [{
-	    key: "render",
-	    value: function render() {
-	      var products = this.props.products.map(function (n) {
-	        return ProductRow(n);
-	      });
-	      return _react2["default"].createElement(
-	        "div",
-	        { className: "table-responsive" },
-	        _react2["default"].createElement(
-	          "table",
-	          { className: "table text-center" },
-	          _react2["default"].createElement(
-	            "thead",
-	            null,
-	            _react2["default"].createElement(
-	              "tr",
-	              null,
-	              _react2["default"].createElement(
-	                "th",
-	                null,
-	                "产品名称"
-	              ),
-	              _react2["default"].createElement(
-	                "th",
-	                null,
-	                "原价"
-	              ),
-	              _react2["default"].createElement(
-	                "th",
-	                null,
-	                "规格"
-	              ),
-	              _react2["default"].createElement(
-	                "th",
-	                null,
-	                "数量"
-	              ),
-	              _react2["default"].createElement(
-	                "th",
-	                null,
-	                "实际售价"
-	              ),
-	              _react2["default"].createElement(
-	                "th",
-	                null,
-	                "巧克力牌"
-	              ),
-	              _react2["default"].createElement(
-	                "th",
-	                null,
-	                "祝福贺卡"
-	              ),
-	              _react2["default"].createElement(
-	                "th",
-	                null,
-	                "产品图册"
-	              ),
-	              _react2["default"].createElement(
-	                "th",
-	                null,
-	                "自由拼名称"
-	              ),
-	              _react2["default"].createElement(
-	                "th",
-	                null,
-	                "自由拼描述"
-	              )
-	            )
-	          ),
-	          _react2["default"].createElement(
-	            "tbody",
-	            null,
-	            products
-	          )
-	        )
-	      );
-	    }
-	  }]);
-
-	  return OrderProductsDetail;
-	})(_react.Component);
-
-	exports["default"] = OrderProductsDetail;
-
-	OrderProductsDetail.PropTypes = {
-	  products: _react.PropTypes.array.isRequired
-	};
-	module.exports = exports["default"];
-
-/***/ },
-/* 307 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var _commonLoading = __webpack_require__(300);
-
-	var _reactDom = __webpack_require__(154);
-
-	var DetailModal = (function (_Component) {
-	  _inherits(DetailModal, _Component);
-
-	  function DetailModal(props) {
-	    _classCallCheck(this, DetailModal);
-
-	    _get(Object.getPrototypeOf(DetailModal.prototype), 'constructor', this).call(this, props);
-	    this.show = this.show.bind(this);
-	    this.hide = this.hide.bind(this);
-	  }
-
-	  // componentWillReceiveProps(nextProps){
-	  //   if(nextProps['data-id'] != this.props['data-id']){
-	  //     this.show();
-	  //   }
-	  // }
-
-	  _createClass(DetailModal, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var data = _props.data;
-	      var _props$data$products = _props.data.products;
-	      var products = _props$data$products === undefined ? [] : _props$data$products;
-
-	      var products = products.map(function (n) {
-	        return _react2['default'].createElement(
-	          'tr',
-	          { key: n.sku_id },
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            n.name
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            { className: 'text-left' },
-	            '规格：',
-	            n.size,
-	            _react2['default'].createElement('br', null),
-	            '数量：',
-	            n.num
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            { className: 'text-left' },
-	            '原价：￥',
-	            n.original_price / 100,
-	            _react2['default'].createElement('br', null),
-	            '实际售价：￥',
-	            n.discount_price / 100
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            '￥',
-	            n.amount / 100
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            n.choco_board
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            n.greeting_card
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            _react2['default'].createElement('input', { checked: n.atlas, disabled: true, type: 'checkbox' })
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            n.custom_name
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            n.custom_desc
-	          )
-	        );
-	      });
-	      return _react2['default'].createElement(
-	        'div',
-	        { ref: 'modal', 'aria-hidden': 'false', 'aria-labelledby': 'myModalLabel', role: 'dialog', className: 'modal fade' },
-	        _react2['default'].createElement('div', { ref: 'modal-backdrop', className: 'modal-backdrop fade' }),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'modal-dialog modal-lg' },
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'modal-content' },
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'modal-header' },
-	              _react2['default'].createElement(
-	                'button',
-	                { 'aria-hidden': 'true', 'data-dismiss': 'modal', className: 'close', type: 'button' },
-	                '×'
-	              ),
-	              _react2['default'].createElement(
-	                'h4',
-	                { className: 'modal-title' },
-	                '查看订单信息'
-	              )
-	            ),
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'modal-body strong-label' },
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '　配送方式：'
-	                ),
-	                _react2['default'].createElement(
-	                  'span',
-	                  { className: 'gray' },
-	                  _configAppConfig.DELIVERY_MAP[data.delivery_type]
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '下单人信息：'
-	                ),
-	                _react2['default'].createElement(
-	                  'span',
-	                  { className: 'gray' },
-	                  data.owner_name + '　' + data.owner_mobile
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '收货人信息：'
-	                ),
-	                _react2['default'].createElement(
-	                  'span',
-	                  { className: 'gray' },
-	                  data.recipient_name + '　' + data.recipient_mobile
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '收货人地址：'
-	                ),
-	                _react2['default'].createElement(
-	                  'span',
-	                  { className: 'gray' },
-	                  data.province_name + data.city_name + data.recipient_address
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '标志性建筑：'
-	                ),
-	                _react2['default'].createElement(
-	                  'span',
-	                  { className: 'gray' },
-	                  data.recipient_landmark
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  { className: 'inline-block' },
-	                  '　支付方式：',
-	                  _react2['default'].createElement('br', null),
-	                  data.coupon ? [' ', _react2['default'].createElement('br', null)] : null,
-	                  ' ',
-	                  _react2['default'].createElement('br', null)
-	                ),
-	                _react2['default'].createElement(
-	                  'span',
-	                  { className: 'inline-block gray' },
-	                  data.pay_name,
-	                  _react2['default'].createElement('br', null),
-	                  data.coupon ? ['团购密码 ' + data.coupon, _react2['default'].createElement('br', null)] : null,
-	                  _configAppConfig.pay_status[data.pay_status]
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '　配送时间：'
-	                ),
-	                _react2['default'].createElement(
-	                  'span',
-	                  { className: 'gray' },
-	                  data.delivery_time
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '　　　备注：'
-	                ),
-	                _react2['default'].createElement(
-	                  'span',
-	                  { className: 'gray' },
-	                  data.remarks
-	                )
-	              ),
-	              _react2['default'].createElement('hr', { className: 'dotted' }),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '　产品信息：'
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'table-responsive' },
-	                _react2['default'].createElement(
-	                  'table',
-	                  { className: 'table table-hover table-click text-center' },
-	                  _react2['default'].createElement(
-	                    'thead',
-	                    null,
-	                    _react2['default'].createElement(
-	                      'tr',
-	                      null,
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '产品名称'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '货品数量信息'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '金额'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '应收金额'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '巧克力牌'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '祝福贺卡'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '产品图册'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '自定义名称'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '自定义描述'
-	                      )
-	                    )
-	                  ),
-	                  _react2['default'].createElement(
-	                    'tbody',
-	                    null,
-	                    products.length ? products : (0, _commonLoading.get_table_empty)()
-	                  )
-	                )
-	              )
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      $(this.refs['modal-backdrop']).on('click', this.hide);
-	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      $(this.refs['modal-backdrop']).off('click', this.hide);
-	    }
-	  }, {
-	    key: 'show',
-	    value: function show() {
-	      $(this.refs.modal).modal('show');
-	    }
-	  }, {
-	    key: 'hide',
-	    value: function hide() {
-	      $(this.refs.modal).modal('hide');
-	    }
-	  }]);
-
-	  return DetailModal;
-	})(_react.Component);
-
-	exports['default'] = DetailModal;
-
-	DetailModal.PropTypes = {
-	  data: _react.PropTypes.object.isRequired
-	};
-	module.exports = exports['default'];
-
-/***/ },
-/* 308 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(154);
-
-	var _reactAddonsLinkedStateMixin = __webpack_require__(284);
-
-	var _reactAddonsLinkedStateMixin2 = _interopRequireDefault(_reactAddonsLinkedStateMixin);
-
-	var _commonDatepicker = __webpack_require__(295);
-
-	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
-
-	var _commonSelect = __webpack_require__(296);
-
-	var _commonSelect2 = _interopRequireDefault(_commonSelect);
-
-	var _commonStd_modal = __webpack_require__(301);
-
-	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
-
-	var _commonRadio_group = __webpack_require__(309);
-
-	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var _mixinsMap = __webpack_require__(304);
-
-	var _mixinsMap2 = _interopRequireDefault(_mixinsMap);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var AlterDeliveryModal = _react2['default'].createClass({
-	  displayName: 'AlterDeliveryModal',
-
-	  propTypes: {
-	    actions: _react.PropTypes.object.isRequired,
-	    provinces: _react.PropTypes.array.isRequired
-	  },
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-	    if (nextProps.order //拿到订单详细数据
-	     && nextProps.order != this.props.order && !nextProps.show_products_detail //非普通点击查询(编辑)
-	    ) {
-	        this.initSetState(nextProps.order);
-	      }
-	  },
-	  initSetState: function initSetState(order) {
-	    var delivery_type = order.delivery_type;
-	    var delivery_time = order.delivery_time;
-	    var province_id = order.province_id;
-	    var city_id = order.city_id;
-	    var regionalism_id = order.regionalism_id;
-	    var recipient_address = order.recipient_address;
-	    var delivery_id = order.delivery_id;
-
-	    delivery_time = delivery_time.split(' ');
-	    this.setState({
-	      delivery_type: delivery_type,
-	      delivery_date: delivery_time[0],
-	      delivery_hour: delivery_time[1],
-	      province_id: province_id,
-	      city_id: city_id,
-	      regionalism_id: regionalism_id,
-	      recipient_address: recipient_address,
-	      delivery_id: delivery_id
-	    });
-	  },
-	  getInitialState: function getInitialState() {
-	    return {
-	      delivery_type: 'DELIVERY',
-	      delivery_date: '',
-	      delivery_hour: '',
-	      province_id: undefined,
-	      city_id: undefined,
-	      regionalism_id: undefined,
-	      recipient_address: '',
-	      delivery_id: undefined,
-
-	      all_delivery_hours: _configAppConfig.DELIVERY_TIME_MAP.map(function (n) {
-	        return { id: n, text: n };
-	      }),
-
-	      auto_match_delivery_center: false,
-	      auto_match_msg: ''
-	    };
-	  },
-	  render: function render() {
-	    var _state = this.state;
-	    var delivery_type = _state.delivery_type;
-	    var delivery_date = _state.delivery_date;
-	    var delivery_hour = _state.delivery_hour;
-	    var recipient_address = _state.recipient_address;
-	    var all_delivery_hours = _state.all_delivery_hours;
-	    var delivery_id = _state.delivery_id;
-	    var _props = this.props;
-	    var delivery_shops = _props.delivery_shops;
-	    var delivery_stations = _props.delivery_stations;
-	    var provinces = _props.provinces;
-	    var cities = _props.cities;
-	    var districts = _props.districts;
-	    var _props$order = _props.order;
-	    var order = _props$order === undefined ? {} : _props$order;
-	    var loading = _props.loading;
-
-	    var _order_status = _configAppConfig.order_status[order && order.order_status];
-	    return _react2['default'].createElement(
-	      _commonStd_modal2['default'],
-	      { submitting: this.props.submitting, onConfirm: this.onConfirm, loading: loading, onCancel: this.hideCallback, title: '修改配送', ref: 'modal' },
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'form-group form-inline' },
-	        _order_status && _order_status.key >= 30 ? _react2['default'].createElement(
-	          'span',
-	          { className: 'text-danger' },
-	          '订单已转换，请与配送站确认是否能修改信息再提交！'
-	        ) : _react2['default'].createElement(
-	          'span',
-	          { className: 'gray' },
-	          '订单尚未生产，可直接更改！'
-	        )
-	      ),
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'form-group form-inline' },
-	        _react2['default'].createElement(
-	          'label',
-	          null,
-	          '　　配送方式：'
-	        ),
-	        _react2['default'].createElement(_commonRadio_group2['default'], {
-	          value: delivery_type,
-	          className: 'inline-block',
-	          radios: [{ value: _configAppConfig.DELIVERY_TO_HOME, text: '配送上门' }, { value: _configAppConfig.DELIVERY_TO_STORE, text: '门店自提' }],
-	          onChange: this.onDeliveryTypeChange,
-	          name: 'delivery_type'
-	        })
-	      ),
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'form-group form-inline' },
-	        _react2['default'].createElement(
-	          'label',
-	          null,
-	          '　　配送时间：'
-	        ),
-	        _react2['default'].createElement(_commonDatepicker2['default'], { value: delivery_date, onChange: this.onDeliveryDateChange }),
-	        ' ',
-	        _react2['default'].createElement(_commonSelect2['default'], { valueLink: this.linkState('delivery_hour'), options: all_delivery_hours, className: 'input-xs' })
-	      ),
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'form-inline' },
-	        _react2['default'].createElement(
-	          'label',
-	          { className: 'v-top', style: { lineHeight: '27px', fontWeight: 'normal' } },
-	          '修改配送地址：'
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'inline-block', style: { maxWidth: 470 } },
-	          _react2['default'].createElement(_commonSelect2['default'], { ref: 'province', value: this.state.province_id, onChange: this.onProvinceChange, options: provinces, className: 'mg-8' }),
-	          ' ',
-	          _react2['default'].createElement(_commonSelect2['default'], { ref: 'city', value: this.state.city_id, onChange: this.onCityChange, options: cities, className: 'mg-8' }),
-	          ' ',
-	          _react2['default'].createElement(_commonSelect2['default'], { ref: 'district', value: this.state.regionalism_id, onChange: this.onDistrictChange, options: districts, className: 'mg-8' }),
-	          ' ',
-	          delivery_type == _configAppConfig.DELIVERY_TO_HOME ? _react2['default'].createElement('input', { ref: 'recipient_address', valueLink: this.linkState('recipient_address'), onBlur: this.onAddressChange, className: 'form-control input-xs mg-8', type: 'text' }) : _react2['default'].createElement(_commonSelect2['default'], { ref: 'shop', valueLink: this.linkState('recipient_address'), options: delivery_shops, className: 'mg-8' })
-	        )
-	      ),
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'form-group form-inline' },
-	        _react2['default'].createElement(
-	          'label',
-	          null,
-	          '修改配送中心：'
-	        ),
-	        _react2['default'].createElement(_commonSelect2['default'], { ref: 'delivery_center', valueLink: this.linkState('delivery_id'), options: delivery_stations, className: 'input-xs transition' }),
-	        ' ',
-	        _react2['default'].createElement(
-	          'span',
-	          { className: this.state.auto_match_delivery_center ? 'text-success' : 'text-danger' },
-	          this.state.auto_match_msg
-	        )
-	      )
-	    );
-	  },
-	  mixins: [_reactAddonsLinkedStateMixin2['default'], { autoMatchDeliveryStations: _mixinsMap2['default'] }],
-	  componentDidMount: function componentDidMount() {
-	    $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).on('click', this.clearMsg);
-	  },
-	  componentWillUnmount: function componentWillUnmount() {
-	    $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).off('click', this.clearMsg);
-	  },
-	  clearMsg: function clearMsg() {
-	    $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).removeClass('alert-success alert-danger');
-	    this.setState({ auto_match_msg: '' });
-	  },
-	  onConfirm: function onConfirm() {
-	    var _state2 = this.state;
-	    var delivery_type = _state2.delivery_type;
-	    var delivery_date = _state2.delivery_date;
-	    var delivery_hour = _state2.delivery_hour;
-	    var regionalism_id = _state2.regionalism_id;
-	    var recipient_address = _state2.recipient_address;
-	    var delivery_id = _state2.delivery_id;
-	    var order = _state2.order;
-
-	    if (!delivery_date || delivery_hour == _configAppConfig.SELECT_DEFAULT_VALUE) {
-	      (0, _utilsIndex.Noty)('warning', '请填写正确的配送时间');return;
-	    } else if (!regionalism_id || regionalism_id == _configAppConfig.SELECT_DEFAULT_VALUE || !recipient_address.trim()) {
-	      (0, _utilsIndex.Noty)('warning', '请填写完整的配送地址');return;
-	    } else if (delivery_id == _configAppConfig.SELECT_DEFAULT_VALUE) {
-	      (0, _utilsIndex.Noty)('warning', '请选择配送中心');return;
-	    }
-	    var prefix_address = this.findSelectedOptionText('province') + this.findSelectedOptionText('city') + this.findSelectedOptionText('district');
-	    this.props.actions.alterDelivery(this.props.active_order_id, {
-	      delivery_type: delivery_type,
-	      delivery_time: delivery_date + ' ' + delivery_hour,
-	      prefix_address: prefix_address,
-	      regionalism_id: regionalism_id,
-	      recipient_address: recipient_address,
-	      delivery_id: delivery_id,
-	      delivery_name: this.findSelectedOptionText('delivery_center'),
-	      updated_time: this.props.order.updated_time
-	    }).done((function () {
-	      this.props.callback();
-	      this.refs.modal.hide();
-	    }).bind(this)).fail(function () {
-	      (0, _utilsIndex.Noty)('error', '服务器异常');
-	    });
-	  },
-	  findSelectedOptionText: function findSelectedOptionText(_refs) {
-	    return $((0, _reactDom.findDOMNode)(this.refs[_refs])).find('option:selected').html();
-	  },
-	  onDeliveryTypeChange: function onDeliveryTypeChange(delivery_type) {
-	    this.setState({ delivery_type: delivery_type });
-	  },
-	  onDeliveryDateChange: function onDeliveryDateChange(delivery_date) {
-	    this.setState({ delivery_date: delivery_date });
-	  },
-	  onProvinceChange: function onProvinceChange(e) {
-	    var value = e.target.value;
-
-	    this.props.actions.provinceReset();
-	    this.setState({ province_id: value });
-	    if (value != this.refs.province.props['default-value']) this.props.actions.getCities(value);
-	  },
-	  onCityChange: function onCityChange(e) {
-	    var value = e.target.value;
-
-	    this.props.actions.cityReset();
-	    this.setState({ city_id: e.target.value });
-	    if (value != this.refs.city.props['default-value']) this.props.actions.getDistricts(value);
-	  },
-	  onDistrictChange: function onDistrictChange(e) {
-	    var value = e.target.value;
-
-	    this.props.actions.districtReset();
-	    this.setState({ regionalism_id: e.target.value });
-	    if (value != this.refs.district.props['default-value']) this.props.actions.getDeliveryShops(value);
-	  },
-	  onAddressChange: function onAddressChange() {
-	    var _this = this;
-
-	    this.autoMatchDeliveryStations(function (delivery_id) {
-	      if (delivery_id) {
-	        _this.setState({ delivery_id: delivery_id });
-	        _mixinsMap.autoMatchSuccess.call(_this);
-	      } else {
-	        _this.setState({ delivery_id: _configAppConfig.SELECT_DEFAULT_VALUE });
-	        _mixinsMap.autoMatchFail.call(_this);
-	      }
-	    }, _mixinsMap.autoMatchFail.bind(this));
-	  },
-	  show: function show() {
-	    this.refs.modal.show();
-	    var _props2 = this.props;
-	    var order = _props2.order;
-	    var active_order_id = _props2.active_order_id;
-
-	    if (order && order.order_id == active_order_id) {
-	      this.initSetState(order);
-	    }
-	  },
-	  hideCallback: function hideCallback() {
-	    this.setState(this.getInitialState());
-	    // this.refs.modal.hide();
-	    this.props.actions.resetDeliveryStations();
-	  }
-	});
-
-	exports['default'] = AlterDeliveryModal;
-	module.exports = exports['default'];
-
-/***/ },
-/* 309 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var RadioGroup = (function (_Component) {
-	  _inherits(RadioGroup, _Component);
-
-	  function RadioGroup(props) {
-	    _classCallCheck(this, RadioGroup);
-
-	    _get(Object.getPrototypeOf(RadioGroup.prototype), 'constructor', this).call(this, props);
-	    this.onCheck = this.onCheck.bind(this);
-	  }
-
-	  _createClass(RadioGroup, [{
-	    key: 'render',
-	    value: function render() {
-	      var _this = this;
-
-	      var _props = this.props;
-	      var radios = _props.radios;
-	      var space = _props.space;
-	      var value = _props.value;
-	      var vertical = _props.vertical;
-	      var name = _props.name;
-
-	      var content = radios.map(function (n, i) {
-	        var item = _react2['default'].createElement(
-	          'label',
-	          { style: { marginRight: space }, key: n.value },
-	          _react2['default'].createElement('input', { value: n.value, checked: _this.props.value == n.value, name: name, onChange: _this.onCheck, type: 'radio' }),
-	          ' ' + n.text
-	        );
-	        return vertical ? _react2['default'].createElement(
-	          'div',
-	          { key: n.value },
-	          item
-	        ) : item;
-	      });
-
-	      //onChange少不了，有bug
-	      return _react2['default'].createElement(
-	        'div',
-	        _extends({}, this.props, { onChange: function () {} }),
-	        content
-	      );
-	    }
-	  }, {
-	    key: 'onCheck',
-	    value: function onCheck(e) {
-	      this.props.onChange(e.target.value);
-	    }
-	  }]);
-
-	  return RadioGroup;
-	})(_react.Component);
-
-	exports['default'] = RadioGroup;
-
-	RadioGroup.defaultProps = {
-	  space: 16,
-	  vertical: false
-	};
-
-	RadioGroup.PropTypes = {
-	  name: _react.PropTypes.string.isRequired,
-	  value: _react.PropTypes.string.isRequired,
-	  radios: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-	    value: _react.PropTypes.string.isRequired,
-	    text: _react.PropTypes.string.isRequired
-	  })).isRequired, //得按顺序，所以得用数组
-	  onChange: _react.PropTypes.func.isRequired
-	};
-	module.exports = exports['default'];
-
-/***/ },
-/* 310 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var _commonSelect = __webpack_require__(296);
-
-	var _commonSelect2 = _interopRequireDefault(_commonSelect);
-
-	var OrderSrcsSelects = (function (_React$Component) {
-	  _inherits(OrderSrcsSelects, _React$Component);
-
-	  function OrderSrcsSelects(props) {
-	    _classCallCheck(this, OrderSrcsSelects);
-
-	    _get(Object.getPrototypeOf(OrderSrcsSelects.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      selected_order_src_level1_id: _configAppConfig.SELECT_DEFAULT_VALUE
-	    };
-	  }
-
-	  _createClass(OrderSrcsSelects, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var all_order_srcs = _props.all_order_srcs;
-	      var src_id = _props.src_id;
-	      var selected_order_src_level1_id = this.state.selected_order_src_level1_id;
-
-	      var order_srcs_level2 = all_order_srcs.length > 1 ? all_order_srcs[1].filter(function (n) {
-	        return n.parent_id == selected_order_src_level1_id;
-	      }) : [];
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'inline-block' },
-	        all_order_srcs.length == 1 //2级
-	        ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, {
-	          options: all_order_srcs[0],
-	          'default-text': '订单来源',
-	          key: 'order_srcs_level1',
-	          className: 'space' })) : [order_srcs_level2.length ? _react2['default'].createElement(_commonSelect2['default'], {
-	          value: selected_order_src_level1_id,
-	          options: all_order_srcs[0],
-	          onChange: this.orderSrcsLevel1Change.bind(this),
-	          'default-text': '订单来源',
-	          key: 'order_srcs_level1',
-	          className: 'space' }) : _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, {
-	          value: selected_order_src_level1_id,
-	          options: all_order_srcs[0],
-	          onChange: this.orderSrcsLevel1Change.bind(this),
-	          'default-text': '订单来源',
-	          key: 'order_srcs_level1',
-	          className: 'space' })), ' ', order_srcs_level2.length ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, {
-	          options: order_srcs_level2,
-	          key: 'order_srcs_level2',
-	          'default-text': '订单来源',
-	          className: 'space' })) : null]
-	      );
-	    }
-	  }, {
-	    key: 'orderSrcsLevel1Change',
-	    value: function orderSrcsLevel1Change(e) {
-	      this.setState({ selected_order_src_level1_id: e.target.value });
-	    }
-	  }]);
-
-	  return OrderSrcsSelects;
-	})(_react2['default'].Component);
-
-	exports['default'] = OrderSrcsSelects;
-
-	OrderSrcsSelects.PropTypes = {
-	  all_order_srcs: _react.PropTypes.array.isRequired,
-	  src_id: _react.PropTypes.func.isRequired
-	};
-	module.exports = exports['default'];
-
-/***/ },
-/* 311 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _commonStd_modalJs = __webpack_require__(301);
-
-	var _commonStd_modalJs2 = _interopRequireDefault(_commonStd_modalJs);
-
-	var _commonLoading = __webpack_require__(300);
-
-	var _commonPaginationJs = __webpack_require__(297);
-
-	var _commonPaginationJs2 = _interopRequireDefault(_commonPaginationJs);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var OperationRecordModal = _react2['default'].createClass({
-	  displayName: 'OperationRecordModal',
-
-	  getInitialState: function getInitialState() {
-	    return {
-	      sort_type: 'DESC', //ASC
-	      page_size: 8,
-	      data: {}
-	    };
-	  },
-	  render: function render() {
-	    var _state$data = this.state.data;
-	    var order_id = _state$data.order_id;
-	    var owner_mobile = _state$data.owner_mobile;
-	    var owner_name = _state$data.owner_name;
-	    var _props = this.props;
-	    var page_no = _props.page_no;
-	    var total = _props.total;
-	    var list = _props.list;
-
-	    var content = list.map(function (n, i) {
-	      return _react2['default'].createElement(
-	        'tr',
-	        { key: n.order_id + '' + i },
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          n.created_by
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          { className: 'text-left' },
-	          (0, _utilsIndex.colour)(n.option)
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          n.created_time
-	        )
-	      );
-	    });
-	    return _react2['default'].createElement(
-	      _commonStd_modalJs2['default'],
-	      { title: '操作历史记录', footer: false, ref: 'modal', onCancel: this.hideCallback },
-	      _react2['default'].createElement(
-	        'div',
-	        { className: '' },
-	        _react2['default'].createElement(
-	          'label',
-	          null,
-	          '订单号：'
-	        ),
-	        order_id
-	      ),
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'form-group' },
-	        _react2['default'].createElement(
-	          'label',
-	          null,
-	          '下单人信息：'
-	        ),
-	        owner_name + '　' + owner_mobile
-	      ),
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'table-responsive' },
-	        _react2['default'].createElement(
-	          'table',
-	          { className: 'table table-hover table-bordered text-left' },
-	          _react2['default'].createElement(
-	            'thead',
-	            null,
-	            _react2['default'].createElement(
-	              'tr',
-	              null,
-	              _react2['default'].createElement(
-	                'th',
-	                null,
-	                '操作人'
-	              ),
-	              _react2['default'].createElement(
-	                'th',
-	                null,
-	                '操作记录'
-	              ),
-	              _react2['default'].createElement(
-	                'th',
-	                { className: 'sorting ' + this.state.sort_type.toLowerCase(), onClick: this.changeSortType },
-	                '操作时间'
-	              )
-	            )
-	          ),
-	          _react2['default'].createElement(
-	            'tbody',
-	            null,
-	            content.length ? content : (0, _commonLoading.get_table_empty)()
-	          )
-	        )
-	      ),
-	      _react2['default'].createElement(_commonPaginationJs2['default'], {
-	        page_no: page_no,
-	        total_count: total,
-	        page_size: this.state.page_size,
-	        onPageChange: this.onPageChange
-	      })
-	    );
-	  },
-	  changeSortType: function changeSortType() {
-	    if (this.state.sort_type == 'DESC') this.setState({ sort_type: 'ASC' }, this.search.bind(this, this.props.page_no));else this.setState({ sort_type: 'DESC' }, this.search.bind(this, this.props.page_no));
-	  },
-	  onPageChange: function onPageChange(page) {
-	    this.search(page);
-	  },
-	  search: function search(page_no) {
-	    var _state = this.state;
-	    var page_size = _state.page_size;
-	    var sort_type = _state.sort_type;
-
-	    this.props.getOrderOptRecord(this.state.data.order_id, {
-	      page_no: page_no,
-	      page_size: page_size,
-	      sort_type: sort_type
-	    });
-	  },
-	  show: function show(data) {
-	    this.refs.modal.show();
-	    this.setState({ data: data }, function () {
-	      this.search(this.props.page_no);
-	    });
-	  },
-	  hideCallback: function hideCallback() {
-	    this.props.resetOrderOptRecord();
-	  }
-	});
-
-	exports['default'] = OperationRecordModal;
-	module.exports = exports['default'];
-
-/***/ },
-/* 312 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(154);
-
-	var _reactRedux = __webpack_require__(216);
-
-	var _redux = __webpack_require__(223);
-
-	var _actionsArea = __webpack_require__(288);
-
-	var _actionsArea2 = _interopRequireDefault(_actionsArea);
-
-	var _actionsOrder_manage_form = __webpack_require__(292);
-
-	var OrderFormActions = _interopRequireWildcard(_actionsOrder_manage_form);
-
-	var _actionsForm = __webpack_require__(293);
-
-	var FormActions = _interopRequireWildcard(_actionsForm);
-
-	var _commonDatepicker = __webpack_require__(295);
-
-	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
-
-	var _commonAlert = __webpack_require__(313);
-
-	var _commonAlert2 = _interopRequireDefault(_commonAlert);
-
-	var _commonLine_router = __webpack_require__(314);
-
-	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
-
-	var _manage_order_form_create = __webpack_require__(315);
-
-	var _manage_order_form_create2 = _interopRequireDefault(_manage_order_form_create);
-
-	var _manage_order_form_edit = __webpack_require__(321);
-
-	var _manage_order_form_edit2 = _interopRequireDefault(_manage_order_form_edit);
-
-	var _manage_order_products = __webpack_require__(322);
-
-	var _manage_order_products2 = _interopRequireDefault(_manage_order_products);
-
-	var TopHeader = (function (_Component) {
-	  _inherits(TopHeader, _Component);
-
-	  function TopHeader() {
-	    _classCallCheck(this, TopHeader);
-
-	    _get(Object.getPrototypeOf(TopHeader.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(TopHeader, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'clearfix top-header' },
-	        _react2['default'].createElement(_commonLine_router2['default'], {
-	          routes: [{ name: '总订单页面', link: '/om/index' }, { name: (this.props.editable ? '编辑' : '添加') + '订单', link: '' }],
-	          className: 'pull-right' })
-	      );
-	    }
-	  }]);
-
-	  return TopHeader;
-	})(_react.Component);
-
-	var ManageOrderDetailPannel = (function (_Component2) {
-	  _inherits(ManageOrderDetailPannel, _Component2);
-
-	  function ManageOrderDetailPannel() {
-	    _classCallCheck(this, ManageOrderDetailPannel);
-
-	    _get(Object.getPrototypeOf(ManageOrderDetailPannel.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(ManageOrderDetailPannel, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var mainForm = _props.mainForm;
-	      var delivery_stations = _props.delivery_stations;
-	      var history_orders = _props.history_orders;
-	      var area = _props.area;
-	      var dispatch = _props.dispatch;
-	      var products = _props.products;
-	      var params = _props.params;
-
-	      var editable = !!(params && params.id);
-
-	      var actions = _extends({}, (0, _redux.bindActionCreators)((0, _actionsArea2['default'])(), dispatch), (0, _redux.bindActionCreators)(OrderFormActions, dispatch), (0, _redux.bindActionCreators)(FormActions, dispatch));
-
-	      mainForm = _extends({}, mainForm, delivery_stations);
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'order-manage' },
-	        _react2['default'].createElement(TopHeader, { editable: editable }),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'panel' },
-	          _react2['default'].createElement(
-	            'header',
-	            { className: 'panel-heading' },
-	            '订单详情'
-	          ),
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'panel-body' },
-	            !editable ? _react2['default'].createElement(
-	              _manage_order_form_create2['default'],
-	              {
-	                'form-data': mainForm,
-	                history_orders: history_orders,
-	                area: area,
-	                editable: editable,
-	                order_id: params.id,
-	                actions: actions },
-	              _react2['default'].createElement(_manage_order_products2['default'], _extends({ dispatch: dispatch }, products))
-	            ) : _react2['default'].createElement(
-	              _manage_order_form_edit2['default'],
-	              {
-	                'form-data': mainForm,
-	                history_orders: history_orders,
-	                area: area,
-	                editable: editable,
-	                order_id: params.id,
-	                actions: actions },
-	              _react2['default'].createElement(_manage_order_products2['default'], _extends({ dispatch: dispatch }, products))
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      //有params则表示是编辑订单
-	      var params = this.props.params;
-
-	      if (params && params.id) {
-	        this.props.getOrderById(params.id);
-	      }
-	    }
-	  }]);
-
-	  return ManageOrderDetailPannel;
-	})(_react.Component);
-
-	ManageOrderDetailPannel.PropTypes = {
-	  createOrder: _react.PropTypes.func.isRequired
-	};
-
-	function mapStateToProps(_ref) {
-	  var orderManageForm = _ref.orderManageForm;
-
-	  return orderManageForm;
-	}
-	function mapDispatchToProps(dispatch) {
-	  var actions = (0, _redux.bindActionCreators)(OrderFormActions, dispatch);
-	  actions.dispatch = dispatch; //不绑定的话，dispatch传不到 ManageOrderDetailPannel了，(￣◇￣;)
-	  return actions;
-	}
-
-	//bindActionCreators: dispatch(action) --> 自动加上dispatch --> reducer
-	//redux-thunk       : dispatch(action) --> reducer         --> 异步代码执行，thunk 提供dispatch
-
-	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ManageOrderDetailPannel);
-	module.exports = exports['default'];
-
-/***/ },
-/* 313 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var Alert = (function (_Component) {
-	  _inherits(Alert, _Component);
-
-	  function Alert() {
-	    _classCallCheck(this, Alert);
-
-	    _get(Object.getPrototypeOf(Alert.prototype), "constructor", this).apply(this, arguments);
-	  }
-
-	  _createClass(Alert, [{
-	    key: "render",
-	    value: function render() {
-	      var type = this.props.type;
-
-	      return _react2["default"].createElement(
-	        "div",
-	        { className: "alert alert-block alert-" + type + " fade in" },
-	        _react2["default"].createElement(
-	          "button",
-	          { type: "button", className: "close close-xs", "data-dismiss": "alert" },
-	          _react2["default"].createElement("i", { className: "fa fa-times" })
-	        ),
-	        this.props.children
-	      );
-	    }
-	  }]);
-
-	  return Alert;
-	})(_react.Component);
-
-	exports["default"] = Alert;
-
-	Alert.PropTypes = {
-	  type: _react.PropTypes.string.isRequired
-	};
-	module.exports = exports["default"];
-
-/***/ },
-/* 314 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _history_instance = __webpack_require__(211);
-
-	var _history_instance2 = _interopRequireDefault(_history_instance);
-
-	var LineRouter = (function (_React$Component) {
-	  _inherits(LineRouter, _React$Component);
-
-	  function LineRouter() {
-	    _classCallCheck(this, LineRouter);
-
-	    _get(Object.getPrototypeOf(LineRouter.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(LineRouter, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var routes = _props.routes;
-	      var className = _props.className;
-
-	      var content = [];
-
-	      for (var i = 0, len = routes.length; i < len; i++) {
-	        if (i < len - 1) {
-	          content.push(_react2['default'].createElement(
-	            'span',
-	            { key: i + routes[i].link, className: 'node',
-	              onClick: this.jumpTo.bind(this, routes[i].link) },
-	            routes[i].name
-	          ), _react2['default'].createElement(
-	            'span',
-	            { key: i + 'separator' },
-	            '　/　'
-	          ));
-	        } else {
-	          content.push(_react2['default'].createElement(
-	            'span',
-	            { key: i + routes[i].link, className: 'node active' },
-	            routes[i].name
-	          ));
-	        }
-	      }
-
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'line-router ' + className },
-	        content
-	      );
-	    }
-	  }, {
-	    key: 'jumpTo',
-	    value: function jumpTo(link) {
-	      link && _history_instance2['default'].push(link);
-	    }
-	  }]);
-
-	  return LineRouter;
-	})(_react2['default'].Component);
-
-	exports['default'] = LineRouter;
-
-	LineRouter.PropTypes = {
-	  routes: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-	    name: _react.PropTypes.string.isRequired,
-	    link: _react.PropTypes.string.isRequired
-	  }))
-	};
-	module.exports = exports['default'];
-
-/***/ },
-/* 315 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _manage_order_form = __webpack_require__(316);
-
-	var _manage_order_form2 = _interopRequireDefault(_manage_order_form);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	exports['default'] = (0, _manage_order_form2['default'])(function (state) {
-	  return {
-	    //赋初始值
-	    initialValues: {
-	      delivery_type: _configAppConfig.DELIVERY_TO_HOME }
-	  };
-	});
-	module.exports = exports['default'];
-	//这里有bug，还是把默认值写到组件里面
-	// invoice: INVOICE.NO,
-
-/***/ },
-/* 316 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	exports['default'] = initManageOrderForm;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(154);
-
-	var _reduxForm = __webpack_require__(242);
-
-	var _commonDatepicker = __webpack_require__(295);
-
-	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
-
-	var _commonSelect = __webpack_require__(296);
-
-	var _commonSelect2 = _interopRequireDefault(_commonSelect);
-
-	var _commonPagination = __webpack_require__(297);
-
-	var _commonPagination2 = _interopRequireDefault(_commonPagination);
-
-	var _utilsLazy_load = __webpack_require__(303);
-
-	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var _history_instance = __webpack_require__(211);
-
-	var _history_instance2 = _interopRequireDefault(_history_instance);
-
-	var _manage_history_orders = __webpack_require__(317);
-
-	var _manage_history_orders2 = _interopRequireDefault(_manage_history_orders);
-
-	var _reducersForm = __webpack_require__(318);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var _mixinsMap = __webpack_require__(304);
-
-	var _mixinsMap2 = _interopRequireDefault(_mixinsMap);
-
-	var _configFormFields = __webpack_require__(294);
-
-	var _configFormFields2 = _interopRequireDefault(_configFormFields);
-
-	var validate = function validate(values, props) {
-	  var errors = {};
-	  var msg = 'error';
-	  var form = props.form;
-
-	  function _v(key) {
-	    // touched 为true 表示用户点击处理过
-	    if (form[key] && form[key].touched && !values[key]) errors[key] = msg;
-	  }
-	  function _v_selsect(key) {
-	    if (form[key] && form[key].touched && (!values[key] || values[key] == _configAppConfig.SELECT_DEFAULT_VALUE)) errors[key] = msg;
-	  }
-	  function _v_mobile(key) {
-	    if (form[key] && form[key].touched && !values[key] || form[key] && !form[key].focus && values[key] && !_utilsIndex.form.isMobile(values[key])) {
-	      errors[key] = msg;
-	    }
-	  }
-
-	  _v('owner_name');
-	  _v('recipient_name');
-	  // _v('recipient_landmark');
-	  _v('delivery_date');
-
-	  _v_mobile('owner_mobile');
-	  _v_mobile('recipient_mobile');
-
-	  _v_selsect('regionalism_id');
-	  // _v_selsect('delivery_id');
-	  _v_selsect('src_id');
-	  _v_selsect('pay_modes_id');
-	  _v_selsect('pay_status');
-	  _v_selsect('delivery_hours');
-
-	  //配送上门
-	  if (values.delivery_type == _configAppConfig.DELIVERY_TO_HOME) {
-	    _v('recipient_address');
-	    //自提时，则不需建筑物字段, 但地址则为相应的门店地址
-	  } else if (values.delivery_type == _configAppConfig.DELIVERY_TO_STORE) {
-	      delete errors.recipient_landmark;
-	      _v_selsect('recipient_shop_address'); //门店
-	    }
-
-	  //团购密码
-	  if ((0, _reducersForm.isSrc)('第三方预约', values.src_id)) {
-	    if (form['coupon'] && form['coupon'].touched && !values['coupon'] || form['coupon'] && !form['coupon'].focus && values['coupon'] && !_utilsIndex.form.isCoupon(values['coupon'])) {
-	      errors['coupon'] = msg;
-	    }
-	  }
-
-	  console.log(errors);
-	  //errors为空对象才表明验证正确
-	  return errors;
-	};
-
-	var ManageAddForm = (function (_Component) {
-	  _inherits(ManageAddForm, _Component);
-
-	  function ManageAddForm(props) {
-	    _classCallCheck(this, ManageAddForm);
-
-	    _get(Object.getPrototypeOf(ManageAddForm.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      invoices: [{ id: _configAppConfig.INVOICE.NO, text: '不需要' }, { id: _configAppConfig.INVOICE.YES, text: '需要' }],
-	      selected_order_src_level1_id: undefined,
-
-	      groupbuy_check_ing: false,
-	      groupbuy_success: undefined, //验券是否成功
-	      groupbuy_msg: '', //验券结果
-	      auto_match_delivery_center: false,
-	      auto_match_msg: ''
-	    };
-	    this._check = this._check.bind(this);
-	    this.autoMatchDeliveryStations = _mixinsMap2['default'].bind(this);
-	  }
-
-	  _createClass(ManageAddForm, [{
-	    key: 'render',
-	    value: function render() {
-	      var _this = this;
-
-	      var _props = this.props;
-	      var editable = _props.editable;
-	      var // 表明是否是处于编辑状态
-	      handleSubmit = _props.handleSubmit;
-	      var _props$fields = _props.fields;
-	      var delivery_type = _props$fields.delivery_type;
-	      var owner_name = _props$fields.owner_name;
-	      var owner_mobile = _props$fields.owner_mobile;
-	      var recipient_name = _props$fields.recipient_name;
-	      var //下单人姓名
-	      recipient_mobile = _props$fields.recipient_mobile;
-	      var recipient_address = _props$fields.recipient_address;
-	      var //收货人详细地址----》配送上门 ，
-	      recipient_shop_address = _props$fields.recipient_shop_address;
-	      var //收货人详细地址----》门店自提(实际上是门店地址)
-	      province_id = _props$fields.province_id;
-	      var city_id = _props$fields.city_id;
-	      var regionalism_id = _props$fields.regionalism_id;
-	      var //区ID
-	      recipient_landmark = _props$fields.recipient_landmark;
-	      var //标志性建筑
-	      delivery_id = _props$fields.delivery_id;
-	      var //配送中心
-	      src_id = _props$fields.src_id;
-	      var //订单来源
-	      pay_modes_id = _props$fields.pay_modes_id;
-	      var //支付方式
-	      coupon = _props$fields.coupon;
-	      var //团购密码
-	      pay_status = _props$fields.pay_status;
-	      var
-	      // delivery_time, //总配送时间：delivery_date + delivery_time
-	      delivery_date = _props$fields.delivery_date;
-	      var //配送日期
-	      delivery_hours = _props$fields.delivery_hours;
-	      var //配送时段：几点到几点
-	      remarks = _props$fields.remarks;
-	      var invoice = _props$fields.invoice;
-	      var history_orders = _props.history_orders;
-	      var _props$actions = this.props.actions;
-	      var getHistoryOrders = _props$actions.getHistoryOrders;
-	      var checkHistoryOrder = _props$actions.checkHistoryOrder;
-	      var getCopyOrderById = _props$actions.getCopyOrderById;
-	      var copyOrder = _props$actions.copyOrder;
-	      var _props$formData = this.props['form-data'];
-	      var save_ing = _props$formData.save_ing;
-	      var save_success = _props$formData.save_success;
-	      var submit_ing = _props$formData.submit_ing;
-	      var all_delivery_time = _props$formData.all_delivery_time;
-	      var all_pay_status = _props$formData.all_pay_status;
-	      var all_order_srcs = _props$formData.all_order_srcs;
-	      var delivery_stations = _props$formData.delivery_stations;
-	      var all_pay_modes = _props$formData.all_pay_modes;
-	      var _props$area = this.props.area;
-	      var provinces = _props$area.provinces;
-	      var cities = _props$area.cities;
-	      var districts = _props$area.districts;
-	      var delivery_shops = _props$area.delivery_shops;
-	      var _state = this.state;
-	      var invoices = _state.invoices;
-	      var selected_order_src_level1_id = _state.selected_order_src_level1_id;
-	      var groupbuy_psd = _state.groupbuy_psd;
-	      var groupbuy_check_ing = _state.groupbuy_check_ing;
-	      var groupbuy_msg = _state.groupbuy_msg;
-	      var groupbuy_success = _state.groupbuy_success;
-
-	      var isThird = (0, _reducersForm.isSrc)('第三方预约', src_id.value); //是否第三方，显示团购密码组件
-
-	      //{{表单处于编辑状态时的额外处理
-	      if (editable && !this.editable_initial) {
-	        if (src_id.value && all_order_srcs[1]) {
-	          //表明表单数据已准备完毕
-	          this.editable_initial = true; //初始化就只能一次
-	          all_order_srcs[1].forEach(function (n) {
-	            if (n.id == src_id.value) {
-	              selected_order_src_level1_id = n.parent_id;
-	              _this.state.selected_order_src_level1_id = n.parent_id;
-	            }
-	          });
-	        }
-	      }
-	      //}}
-
-	      var order_srcs_level2 = all_order_srcs.length > 1 ? all_order_srcs[1].filter(function (n) {
-	        return n.parent_id == selected_order_src_level1_id;
-	      }) : [];
-
-	      return _react2['default'].createElement(
-	        'div',
-	        null,
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            { className: 'control-label' },
-	            '　配送方式：'
-	          ),
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            _react2['default'].createElement('input', _extends({ type: 'radio'
-	            }, delivery_type, {
-	              value: _configAppConfig.DELIVERY_TO_HOME,
-	              name: 'delivery_type',
-	              checked: delivery_type.value == _configAppConfig.DELIVERY_TO_HOME })),
-	            ' 配送上门'
-	          ),
-	          '　',
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            _react2['default'].createElement('input', _extends({ type: 'radio'
-	            }, delivery_type, {
-	              value: _configAppConfig.DELIVERY_TO_STORE,
-	              name: 'delivery_type',
-	              checked: delivery_type.value == _configAppConfig.DELIVERY_TO_STORE })),
-	            ' 门店自提'
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '下单人姓名：'
-	          ),
-	          _react2['default'].createElement('input', _extends({}, owner_name, { className: 'form-control input-xs ' + owner_name.error, type: 'text' }))
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '下单人手机：'
-	          ),
-	          _react2['default'].createElement('input', _extends({}, owner_mobile, { ref: 'owner_mobile', className: 'form-control input-xs ' + owner_mobile.error, type: 'text' })),
-	          ' ',
-	          _react2['default'].createElement(
-	            'button',
-	            { onClick: this.showHistoryModal.bind(this), className: 'btn btn-default btn-xs' },
-	            '查询历史订单'
-	          ),
-	          ' ',
-	          _react2['default'].createElement(
-	            'button',
-	            { className: 'btn btn-default btn-xs', disabled: true },
-	            '拨号'
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '收货人姓名：'
-	          ),
-	          _react2['default'].createElement('input', _extends({}, recipient_name, { className: 'form-control input-xs ' + recipient_name.error, type: 'text' }))
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '收货人手机：'
-	          ),
-	          _react2['default'].createElement('input', _extends({}, recipient_mobile, { className: 'form-control input-xs ' + recipient_mobile.error, type: 'text' }))
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? '收货人地址：' : '　选择分店：'
-	          ),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'province', options: provinces }, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), className: 'form-select' })),
-	          ' ',
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'city', options: cities }, city_id, { onChange: this.onCityChange.bind(this, city_id.onChange) })),
-	          ' ',
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'district', options: districts }, regionalism_id, { onChange: this.onDistrictChange.bind(this, regionalism_id.onChange), className: '' + regionalism_id.error })),
-	          ' ',
-	          _react2['default'].createElement('input', _extends({ ref: 'recipient_address' }, recipient_address, { className: 'form-control input-xs ' + recipient_address.error + ' ' + (delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? '' : 'hidden'), type: 'text' })),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'shop', options: delivery_shops }, recipient_shop_address, { className: recipient_shop_address.error + ' ' + (delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? 'hidden' : '') }))
-	        ),
-	        delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '标志性建筑：'
-	          ),
-	          _react2['default'].createElement('input', _extends({}, recipient_landmark, { className: 'form-control input-xs ' + recipient_landmark.error, type: 'text' }))
-	        ) : null,
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　配送中心：'
-	          ),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: delivery_stations, className: 'form-select transition ' + delivery_id.error, ref: 'delivery_center' })),
-	          ' ',
-	          _react2['default'].createElement(
-	            'span',
-	            { className: this.state.auto_match_delivery_center ? 'text-success' : 'text-danger' },
-	            this.state.auto_match_msg
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　订单来源：'
-	          ),
-	          order_srcs_level2.length ? [_react2['default'].createElement(_commonSelect2['default'], {
-	            value: selected_order_src_level1_id,
-	            options: all_order_srcs[0],
-	            onChange: this.orderSrcsLevel1Change.bind(this),
-	            key: 'order_srcs_level1',
-	            className: 'form-select' }), ' ', _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, {
-	            options: order_srcs_level2,
-	            key: 'order_srcs_level2',
-	            className: 'form-select ' + src_id.error }))] : _react2['default'].createElement(_commonSelect2['default'], {
-	            value: typeof selected_order_src_level1_id != 'undefined' ? src_id.value : _configAppConfig.SELECT_DEFAULT_VALUE,
-	            options: all_order_srcs[0],
-	            onChange: this.orderSrcsLevel1Change.bind(this),
-	            key: 'order_srcs_level1',
-	            className: 'form-select ' + src_id.error })
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　支付方式：'
-	          ),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_modes_id, { options: all_pay_modes, onChange: this.onPayModesChange.bind(this, pay_modes_id.onChange), className: 'form-select ' + pay_modes_id.error }))
-	        ),
-	        isThird ? _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　团购密码：'
-	          ),
-	          _react2['default'].createElement('input', _extends({}, coupon, { className: 'form-control input-xs ' + coupon.error, type: 'text' })),
-	          ' ',
-	          _react2['default'].createElement(
-	            'button',
-	            { onClick: this.checkGroupbuyPsd.bind(this), 'data-submitting': groupbuy_check_ing, disabled: groupbuy_check_ing, className: 'btn btn-default btn-xs' },
-	            '验劵'
-	          ),
-	          ' ',
-	          _react2['default'].createElement(
-	            'span',
-	            { className: 'fadeIn animated ' + (groupbuy_success ? 'text-success' : 'text-danger') },
-	            groupbuy_msg
-	          )
-	        ) : null,
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　支付状态：'
-	          ),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_status, { options: all_pay_status, ref: 'pay_status', className: 'form-select ' + pay_status.error }))
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　配送时间：'
-	          ),
-	          _react2['default'].createElement(_commonDatepicker2['default'], { 'redux-form': delivery_date, lowerLimit: (0, _utilsIndex.dateFormat)(new Date()), className: '' + delivery_date.error }),
-	          ' ',
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_hours, { options: all_delivery_time, className: '' + delivery_hours.error }))
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　　　备注：'
-	          ),
-	          _react2['default'].createElement('textarea', _extends({}, remarks, { className: 'form-control input-xs', rows: '2', cols: '40' })),
-	          '　　',
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '发票备注：'
-	          ),
-	          _react2['default'].createElement('textarea', _extends({}, invoice, { placeholder: '', rows: '2', cols: '22', className: 'form-control input-xs ' + invoice.error }))
-	        ),
-	        _react2['default'].createElement('hr', { className: 'dotted' }),
-	        this.props.children,
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group' },
-	          editable ? [_react2['default'].createElement(
-	            'button',
-	            {
-	              key: 'saveBtn',
-	              onClick: handleSubmit(this._check.bind(this, this.handleSaveOrder)),
-	              disabled: save_ing,
-	              'data-submitting': save_ing,
-	              className: 'btn btn-theme btn-xs' },
-	            '保存信息'
-	          ), '　　', _react2['default'].createElement(
-	            'button',
-	            {
-	              key: 'submitBtn',
-	              onClick: handleSubmit(this._check.bind(this, this.handleSubmitOrder)),
-	              'data-submitting': submit_ing,
-	              disabled: submit_ing, className: 'btn btn-theme btn-xs' },
-	            '提交'
-	          )] : _react2['default'].createElement(
-	            'button',
-	            {
-	              onClick: handleSubmit(this._check.bind(this, this.handleCreateOrder)),
-	              disabled: save_ing,
-	              'data-submitting': save_ing,
-	              className: 'btn btn-theme btn-xs' },
-	            '生成新订单'
-	          )
-	        ),
-	        _react2['default'].createElement(_manage_history_orders2['default'], _extends({
-	          ref: 'history_orders_modal',
-	          phone_num: owner_mobile.value,
-	          data: history_orders
-	        }, { getHistoryOrders: getHistoryOrders, checkHistoryOrder: checkHistoryOrder, getCopyOrderById: getCopyOrderById, copyOrder: copyOrder }))
-	      );
-	    }
-	  }, {
-	    key: '_check',
-	    value: function _check(callback, form_data) {
-	      var _this2 = this;
-
-	      var dispatch = this.props.dispatch;
-
-	      //redux-form的缘故，这里必须异步，否则errors为空对象
-	      setTimeout(function () {
-	        var _props2 = _this2.props;
-	        var errors = _props2.errors;
-	        var dispatch = _props2.dispatch;
-	        var createOrder = _props2.actions.createOrder;
-	        var order_id = _props2.order_id;
-
-	        var order_info = _this2.props['form-data'].data;
-	        if (!Object.keys(errors).length) {
-	          form_data.delivery_id = 1;
-	          form_data.delivery_time = form_data.delivery_date + ' ' + form_data.delivery_hours;
-	          delete form_data.delivery_date;
-	          delete form_data.delivery_hours;
-
-	          form_data.order_id = order_id;
-	          form_data.updated_time = order_info.updated_time;
-	          form_data.recipient_id = order_info.recipient_id;
-	          form_data.delivery_name = _this2.findSelectedOptionText('delivery_center');
-
-	          //拼接省市区
-	          form_data.prefix_address = _this2.findSelectedOptionText('province') + _this2.findSelectedOptionText('city') + _this2.findSelectedOptionText('district');
-	          //门店自提时，将门店id转换为 收货人详细地址
-	          if (form_data.delivery_type == _configAppConfig.DELIVERY_TO_STORE) {
-	            form_data.recipient_address = _this2.findSelectedOptionText('shop');
-	            form_data.recipient_landmark = '';
-	          }
-	          //团购密码验证
-	          if ((0, _reducersForm.isSrc)('第三方预约', form_data.src_id)) {
-	            if (!_this2.state.groupbuy_success) {
-	              (0, _utilsIndex.Noty)('warning', '请确定团购密码已验证通过');return;
-	            }
-	          }
-
-	          callback.call(_this2, form_data);
-	        } else {
-	          (0, _utilsIndex.Noty)('warning', '请填写完整');
-	        }
-	      }, 0);
-	    }
-	  }, {
-	    key: 'findSelectedOptionText',
-	    value: function findSelectedOptionText(_refs) {
-	      return $((0, _reactDom.findDOMNode)(this.refs[_refs])).find('option:selected').html();
-	    }
-	  }, {
-	    key: 'handleCreateOrder',
-	    value: function handleCreateOrder(form_data) {
-	      this.props.actions.createOrder(form_data).done(function () {
-	        (0, _utilsIndex.Noty)('success', '保存成功');
-	        _history_instance2['default'].push('/om/index');
-	      }).fail(function (msg, code) {
-	        (0, _utilsIndex.Noty)('error', msg || '保存异常');
-	      });
-	    }
-	  }, {
-	    key: 'handleSaveOrder',
-	    value: function handleSaveOrder(form_data) {
-	      this.props.actions.saveOrder(form_data).done((function () {
-	        (0, _utilsIndex.Noty)('success', '保存成功');
-	        this.props.actions.getOrderById(form_data.order_id).fail((function () {
-	          _history_instance2['default'].go(0);
-	        }).bind(this));
-	      }).bind(this)).fail(function (msg) {
-	        (0, _utilsIndex.Noty)('error', msg || '保存异常');
-	      });
-	    }
-	  }, {
-	    key: 'handleSubmitOrder',
-	    value: function handleSubmitOrder(form_data) {
-	      this.props.actions.submitOrder(form_data).done(function () {
-	        (0, _utilsIndex.Noty)('success', '已成功提交！');
-	        _history_instance2['default'].push('/om/index');
-	      }).fail(function (msg) {
-	        (0, _utilsIndex.Noty)('error', msg || '操作异常');
-	      });
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      var _this3 = this;
-
-	      var _props$actions2 = this.props.actions;
-	      var getProvinces = _props$actions2.getProvinces;
-	      var getOrderSrcs = _props$actions2.getOrderSrcs;
-	      var getDeliveryStations = _props$actions2.getDeliveryStations;
-	      var getPayModes = _props$actions2.getPayModes;
-	      var triggerFormUpdate = _props$actions2.triggerFormUpdate;
-
-	      getProvinces();
-	      getOrderSrcs();
-	      getPayModes();
-	      getDeliveryStations();
-
-	      this.autoMatchDeliveryStations(function (delivery_id) {
-	        delivery_id = delivery_id || _configAppConfig.SELECT_DEFAULT_VALUE;
-	        $((0, _reactDom.findDOMNode)(_this3.refs.delivery_center)).val(delivery_id);
-	        triggerFormUpdate('add_order', 'delivery_id', delivery_id); //手动更改表单值后，需要使用该方法，主动触发redux-form进行更新，否则数据将不会同步
-	      }, function () {
-	        triggerFormUpdate('add_order', 'delivery_id', _configAppConfig.SELECT_DEFAULT_VALUE);
-	      });
-
-	      (0, _utilsLazy_load2['default'])('noty');
-
-	      $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).on('click', this.clearMsg.bind(this));
-	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).off('click', this.clearMsg.bind(this));
-	    }
-	  }, {
-	    key: 'clearMsg',
-	    value: function clearMsg() {
-	      $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).removeClass('alert-success alert-danger');
-	      this.setState({ auto_match_msg: '' });
-	    }
-	  }, {
-	    key: 'onProvinceChange',
-	    value: function onProvinceChange(callback, e) {
-	      var value = e.target.value;
-
-	      this.props.actions.provinceReset();
-	      if (value != this.refs.province.props['default-value']) this.props.actions.getCities(value);
-	      callback(e);
-	    }
-	  }, {
-	    key: 'onCityChange',
-	    value: function onCityChange(callback, e) {
-	      var value = e.target.value;
-
-	      this.props.actions.cityReset();
-	      if (value != this.refs.city.props['default-value']) this.props.actions.getDistricts(value);
-	      callback(e);
-	    }
-	  }, {
-	    key: 'onDistrictChange',
-	    value: function onDistrictChange(callback, e) {
-	      var value = e.target.value;
-
-	      this.props.actions.districtReset();
-	      if (value != this.refs.district.props['default-value']) this.props.actions.getDeliveryShops(value);
-	      callback(e);
-	    }
-	  }, {
-	    key: 'onPayModesChange',
-	    value: function onPayModesChange(callback, e) {
-	      // $(findDOMNode(this.refs.pay_status)).val('COD');
-	      // console.log('pay_modes change');
-	      callback(e);
-	    }
-	  }, {
-	    key: 'orderSrcsLevel1Change',
-	    value: function orderSrcsLevel1Change(e) {
-	      var value = e.target.value;
-
-	      var all_order_srcs = this.props['form-data'].all_order_srcs;
-	      //如果没有二级订单来源，则表明只是一个一级来源
-	      if (all_order_srcs[1] && !all_order_srcs[1].filter(function (n) {
-	        return n.parent_id == value;
-	      }).length) {
-	        this.props.actions.triggerFormUpdate('add_order', 'src_id', value); //此时只能模拟form表单更新
-	      } else {
-	          this.props.actions.resetFormUpdate('add_order', 'src_id');
-	        }
-	      this.setState({ selected_order_src_level1_id: value });
-	    }
-	  }, {
-	    key: 'addProducts',
-	    value: function addProducts() {
-	      this.refs.productsModal.show();
-	    }
-	  }, {
-	    key: 'showHistoryModal',
-	    value: function showHistoryModal() {
-	      this.refs.history_orders_modal.show();
-	    }
-	  }, {
-	    key: 'checkGroupbuyPsd',
-	    value: function checkGroupbuyPsd() {
-	      var _this4 = this;
-
-	      var _props$fields2 = this.props.fields;
-	      var city_id = _props$fields2.city_id;
-	      var coupon = _props$fields2.coupon;
-
-	      coupon = coupon.value && coupon.value.trim();
-	      var city_name;
-	      if (city_id.value && city_id.value != _configAppConfig.SELECT_DEFAULT_VALUE) {
-	        city_name = this.findSelectedOptionText('city');
-	        city_name = city_name.substring(0, city_name.length - 1);
-	      } else {
-	        (0, _utilsIndex.Noty)('warning', '请先选择收货人所在城市');return;
-	      }
-	      if (coupon && _utilsIndex.form.isCoupon(coupon)) {
-	        this.setState({ groupbuy_check_ing: true });
-	        this.props.actions.checkGroupbuyPsd({ coupon: coupon, city_name: city_name }).done(function () {
-	          _this4.setState({ groupbuy_success: true, groupbuy_msg: _react2['default'].createElement('i', { className: 'fa fa-check' }) });
-	        }).fail(function (msg) {
-	          _this4.setState({ groupbuy_success: false, groupbuy_msg: msg || '团购券验证有误，请手动确认！' });
-	        }).always(function () {
-	          _this4.setState({ groupbuy_check_ing: false });
-	        });
-	      } else {
-	        (0, _utilsIndex.Noty)('warning', '请填写正确的团购密码');
-	      }
-	    }
-	  }]);
-
-	  return ManageAddForm;
-	})(_react.Component);
-
-	ManageAddForm.PropTypes = {
-	  form: _react.PropTypes.shape({
-	    all_delivery_time: _react.PropTypes.array.isRequired,
-	    all_pay_status: _react.PropTypes.array.isRequired,
-	    all_order_srcs: _react.PropTypes.array.isRequired,
-	    delivery_stations: _react.PropTypes.array.isRequired,
-	    all_pay_modes: _react.PropTypes.array.isRequired,
-	    save_ing: _react.PropTypes.bool.isRequired,
-	    save_success: _react.PropTypes.bool.isRequired
-	  }).isRequired,
-	  area: _react.PropTypes.shape({
-	    provinces: _react.PropTypes.array.isRequired,
-	    cities: _react.PropTypes.array.isRequired,
-	    districts: _react.PropTypes.array.isRequired
-	  }).isRequired,
-
-	  actions: _react.PropTypes.shape({
-	    getProvinces: _react.PropTypes.func.isRequired,
-	    getOrderSrcs: _react.PropTypes.func.isRequired,
-	    getDeliveryStations: _react.PropTypes.func.isRequired,
-	    getPayModes: _react.PropTypes.func.isRequired,
-	    createOrder: _react.PropTypes.func.isRequired
-	  }).isRequired,
-
-	  editable: _react.PropTypes.bool.isRequired,
-	  order_id: _react.PropTypes.any.isRequired
-	};
-
-	function initManageOrderForm(initFunc) {
-	  return (0, _reduxForm.reduxForm)({
-	    form: 'add_order', //表单命名空间
-	    fields: _configFormFields2['default'].add_order,
-	    validate: validate,
-	    touchOnBlur: true
-	  }, initFunc)(ManageAddForm);
-	}
-
-	module.exports = exports['default'];
-
-/***/ },
-/* 317 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _actionsOrders = __webpack_require__(290);
-
-	var OrderManageActions = _interopRequireWildcard(_actionsOrders);
-
-	var _commonPagination = __webpack_require__(297);
-
-	var _commonPagination2 = _interopRequireDefault(_commonPagination);
-
-	var _commonStd_modal = __webpack_require__(301);
-
-	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
-
-	var _commonLoading = __webpack_require__(300);
-
-	var _commonRecipient_info = __webpack_require__(302);
-
-	var _commonRecipient_info2 = _interopRequireDefault(_commonRecipient_info);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var _commonOrder_products_detail = __webpack_require__(306);
-
-	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
-
-	var OrderRow = (function (_Component) {
-	  _inherits(OrderRow, _Component);
-
-	  function OrderRow() {
-	    _classCallCheck(this, OrderRow);
-
-	    _get(Object.getPrototypeOf(OrderRow.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(OrderRow, [{
-	    key: 'render',
-	    value: function render() {
-	      var props = this.props;
-
-	      var src_name = props.src_name.split(',');
-	      var _order_status = _configAppConfig.order_status[props.status] || {};
-	      return _react2['default'].createElement(
-	        'tr',
-	        { className: props.active_order_id == props.order_id ? 'active' : '', onClick: this.clickHandler.bind(this) },
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.order_id
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'time' },
-	            props.created_time
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.owner_name,
-	          _react2['default'].createElement('br', null),
-	          props.owner_mobile
-	        ),
-	        _react2['default'].createElement(_commonRecipient_info2['default'], { data: props }),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.delivery_time
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'remark-in-table' },
-	            props.remarks
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          { className: 'nowrap' },
-	          src_name[0],
-	          src_name[1] ? [_react2['default'].createElement('br', null), _react2['default'].createElement(
-	            'span',
-	            { className: 'bordered bg-warning' },
-	            src_name[1]
-	          )] : null
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'div',
-	            { style: { color: _order_status.color || 'inherit' } },
-	            _order_status.value
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          'todo'
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.updated_by
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'time' },
-	            props.updated_time
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'clickHandler',
-	    value: function clickHandler() {
-	      this.props.checkHistoryOrder(this.props.order_id);
-	    }
-	  }]);
-
-	  return OrderRow;
-	})(_react.Component);
-
-	var HistoryOrders = (function (_Component2) {
-	  _inherits(HistoryOrders, _Component2);
-
-	  function HistoryOrders(props) {
-	    _classCallCheck(this, HistoryOrders);
-
-	    _get(Object.getPrototypeOf(HistoryOrders.prototype), 'constructor', this).call(this, props);
-	    this.search = this.search.bind(this);
-	    this.show = this.show.bind(this);
-	    this.hideCallback = this.hideCallback.bind(this);
-	    this.state = {
-	      page_size: 3,
-	      phone_num: this.props.phone_num
-	    };
-	  }
-
-	  _createClass(HistoryOrders, [{
-	    key: 'render',
-	    value: function render() {
-	      var checkHistoryOrder = this.props.checkHistoryOrder;
-	      var _props$data = this.props.data;
-	      var page_no = _props$data.page_no;
-	      var total = _props$data.total;
-	      var list = _props$data.list;
-	      var check_order_info = _props$data.check_order_info;
-	      var active_order_id = _props$data.active_order_id;
-	      var viewDetail = this.viewDetail;
-
-	      var content = list.map(function (n, i) {
-	        return _react2['default'].createElement(OrderRow, _extends({ key: n.order_id }, _extends({}, n, { active_order_id: active_order_id, viewDetail: viewDetail, checkHistoryOrder: checkHistoryOrder })));
-	      });
-	      return _react2['default'].createElement(
-	        _commonStd_modal2['default'],
-	        { ref: 'modal', size: 'lg', footer: false, title: '历史订单' },
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '手机号码 ',
-	            _react2['default'].createElement('input', { value: this.state.phone_num, onChange: this.onPhonenumChange.bind(this), className: 'form-control input-xs' })
-	          ),
-	          '　',
-	          _react2['default'].createElement(
-	            'button',
-	            { onClick: this.search, className: 'btn btn-default btn-xs' },
-	            '查询'
-	          ),
-	          '　',
-	          _react2['default'].createElement(
-	            'button',
-	            { onClick: this.copyOrder.bind(this), className: 'btn btn-default btn-xs' },
-	            '复制订单'
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'table-responsive' },
-	          _react2['default'].createElement(
-	            'table',
-	            { className: 'table table-hover text-center' },
-	            _react2['default'].createElement(
-	              'thead',
-	              null,
-	              _react2['default'].createElement(
-	                'tr',
-	                null,
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '订单号'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '下单时间'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '下单人'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '收货人信息'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '配送时间'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '备注'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '订单来源'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '订单状态'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '发票备注'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '操作人'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '操作时间'
-	                )
-	              )
-	            ),
-	            _react2['default'].createElement(
-	              'tbody',
-	              null,
-	              content.length ? content : (0, _commonLoading.get_table_empty)()
-	            )
-	          )
-	        ),
-	        _react2['default'].createElement(_commonPagination2['default'], {
-	          page_no: page_no,
-	          total_count: total,
-	          page_size: this.state.page_size,
-	          onPageChange: this.onPageChange
-	        }),
-	        check_order_info ? _react2['default'].createElement(
-	          'div',
-	          { className: 'panel' },
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'panel-body' },
-	            _react2['default'].createElement(
-	              'div',
-	              null,
-	              '历史订单产品详情'
-	            ),
-	            _react2['default'].createElement(_commonOrder_products_detail2['default'], { products: check_order_info.products })
-	          )
-	        ) : null
-	      );
-	    }
-	  }, {
-	    key: 'onPhonenumChange',
-	    value: function onPhonenumChange(e) {
-	      this.setState({ phone_num: e.target.value });
-	    }
-	  }, {
-	    key: 'componentWillReceiveProps',
-	    value: function componentWillReceiveProps(nextProps) {
-	      if (nextProps.phone_num != this.props.phone_num) {
-	        this.setState({ phone_num: nextProps.phone_num });
-	      }
-	    }
-	  }, {
-	    key: 'onPageChange',
-	    value: function onPageChange(page) {
-	      this.setState({ page_no: page });
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {}
-	  }, {
-	    key: 'search',
-	    value: function search() {
-	      var _props = this.props;
-	      var getHistoryOrders = _props.getHistoryOrders;
-	      var page_no = _props.data.page_no;
-	      var _state = this.state;
-	      var phone_num = _state.phone_num;
-	      var page_size = _state.page_size;
-
-	      if (!phone_num) {
-	        return;
-	      } else if (_utilsIndex.form.isMobile(phone_num)) {
-	        getHistoryOrders({ owner_mobile: phone_num, page_no: page_no, page_size: page_size });
-	      } else {
-	        (0, _utilsIndex.Noty)('warning', '错误的电话号码');
-	      }
-	    }
-	  }, {
-	    key: 'copyOrder',
-	    value: function copyOrder() {
-	      var _this = this;
-
-	      var _props2 = this.props;
-	      var check_order_info = _props2.data.check_order_info;
-	      var getCopyOrderById = _props2.getCopyOrderById;
-	      var copyOrder = _props2.copyOrder;
-
-	      if (check_order_info) {
-	        getCopyOrderById(check_order_info.order_id).done(function () {
-	          copyOrder();
-	          _this.refs.modal.hide();
-	        }).fail(function (msg) {
-	          (0, _utilsIndex.Noty)('error', msg || '服务器忙');
-	        });
-	      } else {
-	        (0, _utilsIndex.Noty)('warning', '请点击选择你想要复制的订单');
-	      }
-	    }
-	  }, {
-	    key: 'show',
-	    value: function show() {
-	      this.refs.modal.show();
-	      this.search();
-	    }
-	  }, {
-	    key: 'hideCallback',
-	    value: function hideCallback() {}
-	  }]);
-
-	  return HistoryOrders;
-	})(_react.Component);
-
-	HistoryOrders.PropTypes = {
-	  data: _react.PropTypes.object.isRequired,
-	  getHistoryOrders: _react.PropTypes.func.isRequired,
-	  checkHistoryOrder: _react.PropTypes.func.isRequired,
-	  getCopyOrderById: _react.PropTypes.func.isRequired,
-	  copyOrder: _react.PropTypes.func.isRequired
-	};
-
-	exports['default'] = HistoryOrders;
-	module.exports = exports['default'];
-	/*订单来源*/ /*订单状态*/
-
-/***/ },
-/* 318 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	exports.isSrc = isSrc;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	var _reduxForm = __webpack_require__(242);
-
-	var xxx = _interopRequireWildcard(_reduxForm);
-
-	// import store from 'stores/configureStore'; //循环引用
-
-	var _storesGetter = __webpack_require__(319);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var _actionsOrder_products = __webpack_require__(320);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var _actionsForm = __webpack_require__(293);
-
-	var _configFormFields = __webpack_require__(294);
-
-	var _configFormFields2 = _interopRequireDefault(_configFormFields);
-
-	function preCheck() {
-	  var pathname = location.pathname;
-
-	  return pathname.startsWith('/om/index') && (0, _storesGetter.getGlobalState)();
-	}
-
-	function isSrc(name, src_id) {
-	  if (preCheck()) {
-	    var _getGlobalState = (0, _storesGetter.getGlobalState)();
-
-	    var all_order_srcs = _getGlobalState.orderManageForm.mainForm.all_order_srcs;
-
-	    //注意all_order_srcs是一个二维数组，第一个是一级，第二个是二维，src_id可能位于一维，也可能在二维
-	    if (all_order_srcs.length > 1 && src_id) {
-	      var src1 = all_order_srcs[0].filter(function (n) {
-	        return n.name === name;
-	      })[0] || {};
-	      if (src1.id == src_id) {
-	        return true;
-	      } else {
-	        var src2 = all_order_srcs[1].filter(function (n) {
-	          return n.id == src_id;
-	        })[0];
-	        if (src2 && src2.parent_id == src1.id) {
-	          return true;
-	        }
-	      }
-	    }
-	  }
-	}
-
-	function getMode(mode_name) {
-	  var _getGlobalState2 = (0, _storesGetter.getGlobalState)();
-
-	  var all_pay_modes = _getGlobalState2.orderManageForm.mainForm.all_pay_modes;
-
-	  return all_pay_modes.filter(function (n) {
-	    return n.text == mode_name;
-	  })[0] || {};
-	}
-
-	exports['default'] = _reduxForm.reducer.plugin({
-	  add_order: function add_order(state, action) {
-	    //这里注意：所有的action都会进入，所以得使用以下判断, 以确保当前form为add_order
-	    if (action && action.form == 'add_order') {
-	      //重新初始化表单
-	      if (action.type == _actionsForm.REDUX_FORM_REINIT) {
-	        _configFormFields2['default']['add_order'].forEach(function (n) {
-	          state[n].value = state[n].initial;
-	        });
-	        return _extends({}, state);
-	      } else if (action.field == 'owner_mobile') {
-	        //电话号码
-	        switch (action.type) {
-	          case _reduxForm.actionTypes.FOCUS:
-	            state.owner_mobile.focus = true;
-	            return _extends({}, state);
-	          case _reduxForm.actionTypes.BLUR:
-	            state.owner_mobile.focus = false;
-	            return _extends({}, state);
-	          default:
-	            return state;
-	        }
-	      } else if (action.field == 'recipient_mobile') {
-	        switch (action.type) {
-	          case _reduxForm.actionTypes.FOCUS:
-	            state.recipient_mobile.focus = true;
-	            return _extends({}, state);
-	          case _reduxForm.actionTypes.BLUR:
-	            state.recipient_mobile.focus = false;
-	            return _extends({}, state);
-	          default:
-	            return state;
-	        }
-	      } else {
-	        //订单来源，支付方式，支付状态，产品应收 联动
-	        switch (action.type) {
-	          case _reduxForm.actionTypes.BLUR:
-	          case _reduxForm.actionTypes.CHANGE:
-	          case _reduxForm.actionTypes.RESET:
-	            if (action.field == 'src_id' || action.key == 'src_id') {
-	              state.pay_modes_id = _extends({}, state.pay_modes_id, getPayModesId(state, action));
-	              state.pay_status = _extends({}, state.pay_status, getPayStatus(state, action));
-	            }
-	            (0, _utilsIndex.delay)(function () {
-	              var p = _configAppConfig.pay_status[state.pay_status.value];
-	              if (p == '已付款' || p == '部分付款' || p == '货到付款' || action.field == 'pay_status' || action.key == 'pay_status') {
-	                (0, _storesGetter.getGlobalStore)().dispatch((0, _actionsOrder_products.updateConfirmProductDiscountPrice)());
-	              }
-	            });
-	            return _extends({}, state);
-	          default:
-	            return state;
-	        }
-	      }
-	    } else {
-	      return state;
-	    }
-	  }
-	});
-
-	function getPayModesId(state, action) {
-	  var src_id = state.src_id.value;
-	  var pay_modes_id = state.pay_modes_id.value;
-	  if (src_id) {
-	    if (action.type == _reduxForm.actionTypes.RESET) {
-	      return { value: _configAppConfig.SELECT_DEFAULT_VALUE };
-	    } else {
-	      if (isSrc('第三方预约', src_id)) {
-	        return { value: getMode('团购券').id }; //团购券id（TODO）
-	      } else if (isSrc('有赞', src_id)) {
-	          return { value: getMode('微信支付').id }; //微信支付id
-	        } else if (isSrc('电话', src_id)) {
-	            // var mode_cash = getMode('货到付款（现金）');
-	            // var mode_card = getMode('货到付款（POS）');
-	            var mode_cash = getMode('现金');
-	            var mode_card = getMode('现金');
-	            if (pay_modes_id != mode_cash.id || pay_modes_id != mode_card.id) {
-	              return { value: mode_cash.id };
-	            }
-	          } else {
-	            return { touched: false, value: _configAppConfig.SELECT_DEFAULT_VALUE, visited: false };
-	          }
-	    }
-	  }
-	}
-
-	function getPayStatus(state, action) {
-	  var src_id = state.src_id.value;
-	  var pay_status = state.pay_status.value;
-	  if (src_id) {
-	    if (action.type == _reduxForm.actionTypes.RESET) {
-	      return { value: _configAppConfig.SELECT_DEFAULT_VALUE };
-	    } else {
-	      if (isSrc('第三方预约', src_id) || isSrc('有赞', src_id)) {
-	        var _getGlobalState3 = (0, _storesGetter.getGlobalState)();
-
-	        var confirm_list = _getGlobalState3.orderManageForm.products.confirm_list;
-
-	        //属于第三方预约
-	        if (confirm_list.length > 1 || confirm_list[0] && confirm_list[0].num > 1) {
-	          return { value: 'PARTPAYED' }; //部分付款（TODO）
-	        } else {
-	            return { value: 'PAYED' }; //已付款（TODO）
-	          }
-	      } else if (isSrc('电话', src_id)) {
-	          return { value: 'COD' }; //货到付款
-	        } else {
-	            return { touched: false, value: _configAppConfig.SELECT_DEFAULT_VALUE, visited: false };
-	          }
-	    }
-	  }
-	}
-
-/***/ },
-/* 319 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.getGlobalStore = getGlobalStore;
-	exports.getGlobalState = getGlobalState;
-
-	function getGlobalStore() {
-	  return window.STORE;
-	}
-
-	function getGlobalState() {
-	  var s = getGlobalStore();
-	  return s && s.getState();
-	}
-
-/***/ },
-/* 320 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports.getCategories = getCategories;
-	exports.searchProducts = searchProducts;
-	exports.selectProduct = selectProduct;
-	exports.changeProductNum = changeProductNum;
-	exports.deleteProduct = deleteProduct;
-	exports.confirmAllSelectedProducts = confirmAllSelectedProducts;
-	exports.cancelAllSelectedProducts = cancelAllSelectedProducts;
-	exports.deleteConfirmProduct = deleteConfirmProduct;
-	exports.productAttrChange = productAttrChange;
-	exports.updateConfirmProductDiscountPrice = updateConfirmProductDiscountPrice;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _utilsRequest = __webpack_require__(234);
-
-	//Promise
-
-	var _configUrl = __webpack_require__(239);
-
-	var _configUrl2 = _interopRequireDefault(_configUrl);
-
-	var GOT_CATEGORIES = 'GOT_CATEGORIES';
-	exports.GOT_CATEGORIES = GOT_CATEGORIES;
-
-	function getCategories() {
-	  return (0, _utilsRequest.GET)(_configUrl2['default'].categories.toString(), null, GOT_CATEGORIES);
-	  // return TEST({1: '11111', 2: '2222'}, GOT_CATEGORIES);
-	}
-
-	var SEARCH_PRODUCTS = 'SEARCH_PRODUCTS';
-	exports.SEARCH_PRODUCTS = SEARCH_PRODUCTS;
-
-	function searchProducts(query_data) {
-	  return (0, _utilsRequest.GET)(_configUrl2['default'].products.toString(), query_data, SEARCH_PRODUCTS);
-	  /*
-	    return TEST({
-	      list: [
-	        {
-	          product_id: 1,
-	          name: "zhang",
-	          size: "zhang1",
-	          category_name: "类型1",
-	          original_price: 20000,
-	  
-	          skus: [{
-	            sku_id: 22,
-	            website: "website2",
-	            discount_price: 18000,
-	            is_local_site: "0",
-	            is_delivery: "1",
-	          }, {
-	            sku_id: 23,
-	            website: "website2",
-	            discount_price: 19000,
-	            is_local_site: "1",
-	            is_delivery: "0",
-	          }]
-	        },
-	        {
-	          product_id: 2,
-	          name: "li",
-	          size: "li3",
-	          category_name: "类型3",
-	          original_price: 20000,
-	          
-	          skus: [{
-	            sku_id: 24,
-	            website: "website3",
-	            discount_price: 30000,
-	            is_local_site: "1",
-	            is_delivery: "1",
-	          }]
-	        }
-	      ],
-	      total: 2
-	    }, SEARCH_PRODUCTS);
-	  */
-	}
-
-	var SELECT_PRODUCT = 'SELECT_PRODUCT';
-	exports.SELECT_PRODUCT = SELECT_PRODUCT;
-
-	function selectProduct(sku_info) {
-	  return {
-	    type: SELECT_PRODUCT,
-	    data: sku_info
-	  };
-	}
-
-	var CHANGE_PRODUCT_NUM = 'CHANGE_PRODUCT_NUM';
-	exports.CHANGE_PRODUCT_NUM = CHANGE_PRODUCT_NUM;
-
-	function changeProductNum(sku_id, num) {
-	  return {
-	    type: CHANGE_PRODUCT_NUM,
-	    sku_id: sku_id,
-	    num: num
-	  };
-	}
-
-	var DELETE_SELECTED_PRODUCT = 'DELETE_SELECTED_PRODUCT';
-	exports.DELETE_SELECTED_PRODUCT = DELETE_SELECTED_PRODUCT;
-
-	function deleteProduct(sku_info) {
-	  return {
-	    type: DELETE_SELECTED_PRODUCT,
-	    data: sku_info
-	  };
-	}
-
-	var CONFIRM_ALL_SELECTED_PRODUCTS = 'CONFIRM_ALL_SELECTED_PRODUCTS';
-	exports.CONFIRM_ALL_SELECTED_PRODUCTS = CONFIRM_ALL_SELECTED_PRODUCTS;
-
-	function confirmAllSelectedProducts() {
-	  return {
-	    type: CONFIRM_ALL_SELECTED_PRODUCTS
-	  };
-	}
-
-	var CANCEL_ALL_SELECTED_PRODUCTS = 'CANCEL_ALL_SELECTED_PRODUCTS';
-	exports.CANCEL_ALL_SELECTED_PRODUCTS = CANCEL_ALL_SELECTED_PRODUCTS;
-
-	function cancelAllSelectedProducts() {
-	  return {
-	    type: CANCEL_ALL_SELECTED_PRODUCTS
-	  };
-	}
-
-	var DELETE_CONFIRM_PRODUCT = 'DELETE_CONFIRM_PRODUCT';
-	exports.DELETE_CONFIRM_PRODUCT = DELETE_CONFIRM_PRODUCT;
-
-	function deleteConfirmProduct(sku_info) {
-	  return {
-	    type: DELETE_CONFIRM_PRODUCT,
-	    data: sku_info
-	  };
-	}
-
-	//
-	var CONFIRM_PRODUCT_ATTR_CHANGE = 'CONFIRM_PRODUCT_ATTR_CHANGE';
-	exports.CONFIRM_PRODUCT_ATTR_CHANGE = CONFIRM_PRODUCT_ATTR_CHANGE;
-
-	function productAttrChange(data) {
-	  return {
-	    type: CONFIRM_PRODUCT_ATTR_CHANGE,
-	    data: data
-	  };
-	}
-
-	var UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE = 'UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE';
-	exports.UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE = UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE;
-
-	function updateConfirmProductDiscountPrice() {
-	  return {
-	    type: UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE
-	  };
-	}
-
-/***/ },
-/* 321 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _manage_order_form = __webpack_require__(316);
-
-	var _manage_order_form2 = _interopRequireDefault(_manage_order_form);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	exports['default'] = (0, _manage_order_form2['default'])(function (state) {
-	  return {
-	    //赋初始值
-	    initialValues: state.orderManageForm.mainForm.data
-	  };
-	});
-	module.exports = exports['default'];
-
-/***/ },
-/* 322 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * form表单下面已添加进来的商品
-	 */
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(154);
-
-	var _manage_add_products_modal = __webpack_require__(323);
-
-	var _manage_add_products_modal2 = _interopRequireDefault(_manage_add_products_modal);
-
-	var _actionsOrder_products = __webpack_require__(320);
-
-	var ProductsActions = _interopRequireWildcard(_actionsOrder_products);
-
-	var ManageAddProducts = (function (_Component) {
-	  _inherits(ManageAddProducts, _Component);
-
-	  function ManageAddProducts() {
-	    _classCallCheck(this, ManageAddProducts);
-
-	    _get(Object.getPrototypeOf(ManageAddProducts.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(ManageAddProducts, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var confirm_list = _props.confirm_list;
-	      var dispatch = _props.dispatch;
-
-	      var list = confirm_list.map(function (n) {
-	        return _react2['default'].createElement(AddedProductsRow, { key: n.sku_id, data: n, dispatch: dispatch });
-	      });
-	      return _react2['default'].createElement(
-	        'div',
-	        null,
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group' },
-	          '选择产品：',
-	          _react2['default'].createElement(
-	            'button',
-	            { onClick: this.addProducts.bind(this), className: 'btn btn-xs btn-theme' },
-	            '添加'
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'table-responsive' },
-	          _react2['default'].createElement(
-	            'table',
-	            { className: 'table text-center' },
-	            _react2['default'].createElement(
-	              'thead',
-	              null,
-	              _react2['default'].createElement(
-	                'tr',
-	                null,
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '产品名称'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '规格'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '原价'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '数量'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '实际售价'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '应收金额'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '巧克力牌'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '祝福贺卡'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '产品图册'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '自定义名称'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '自定义描述'
-	                ),
-	                _react2['default'].createElement(
-	                  'th',
-	                  null,
-	                  '操作'
-	                )
-	              )
-	            ),
-	            _react2['default'].createElement(
-	              'tbody',
-	              null,
-	              list
-	            )
-	          )
-	        ),
-	        _react2['default'].createElement(_manage_add_products_modal2['default'], _extends({ ref: 'productsModal' }, this.props))
-	      );
-	    }
-	  }, {
-	    key: 'addProducts',
-	    value: function addProducts() {
-	      this.refs.productsModal.show();
-	    }
-	  }]);
-
-	  return ManageAddProducts;
-	})(_react.Component);
-
-	exports['default'] = ManageAddProducts;
-
-	ManageAddProducts.PropTypes = {
-	  products_choosing: _react.PropTypes.object.isRequired,
-	  dispatch: _react.PropTypes.func.isRequired
-	};
-
-	var AddedProductsRow = _react2['default'].createClass({
-	  displayName: 'AddedProductsRow',
-
-	  getInitialState: function getInitialState() {
-	    return {
-	      editable: false,
-	      edit_input_classname: 'product-editable-form'
-	    };
-	  },
-	  render: function render() {
-	    var handleChange = this.handleChange;
-	    var _state = this.state;
-	    var editable = _state.editable;
-	    var edit_input_classname = _state.edit_input_classname;
-	    var _props$data = this.props.data;
-	    var sku_id = _props$data.sku_id;
-	    var name = _props$data.name;
-	    var size = _props$data.size;
-	    var original_price = _props$data.original_price;
-	    var num = _props$data.num;
-	    var discount_price = _props$data.discount_price;
-	    var amount = _props$data.amount;
-	    var choco_board = _props$data.choco_board;
-	    var greeting_card = _props$data.greeting_card;
-	    var atlas = _props$data.atlas;
-	    var custom_name = _props$data.custom_name;
-	    var custom_desc = _props$data.custom_desc;
-
-	    return _react2['default'].createElement(
-	      'tr',
-	      { className: 'form-inline' },
-	      _react2['default'].createElement(
-	        'td',
-	        null,
-	        name
-	      ),
-	      _react2['default'].createElement(
-	        'td',
-	        null,
-	        size
-	      ),
-	      _react2['default'].createElement(
-	        'td',
-	        null,
-	        '￥',
-	        original_price / 100
-	      ),
-	      _react2['default'].createElement(
-	        'td',
-	        null,
-	        num
-	      ),
-	      _react2['default'].createElement(
-	        'td',
-	        null,
-	        editable ? _react2['default'].createElement('input', { value: discount_price, onChange: handleChange.bind(this, 'discount_price'), className: edit_input_classname, style: { width: 50 }, type: 'text' }) : '￥' + discount_price
-	      ),
-	      _react2['default'].createElement(
-	        'td',
-	        null,
-	        editable ? _react2['default'].createElement('input', { value: amount, onChange: handleChange.bind(this, 'amount'), className: edit_input_classname, style: { width: 50 }, type: 'text' }) : '￥' + amount
-	      ),
-	      _react2['default'].createElement(
-	        'td',
-	        null,
-	        editable ? _react2['default'].createElement('textarea', { value: choco_board, onChange: handleChange.bind(this, 'choco_board'), className: edit_input_classname, rows: '2', cols: '15' }) : choco_board
-	      ),
-	      _react2['default'].createElement(
-	        'td',
-	        null,
-	        editable ? _react2['default'].createElement('textarea', { value: greeting_card, onChange: handleChange.bind(this, 'greeting_card'), className: edit_input_classname, rows: '2', cols: '15' }) : greeting_card
-	      ),
-	      _react2['default'].createElement(
-	        'td',
-	        null,
-	        _react2['default'].createElement('input', { checked: atlas, onChange: handleChange.bind(this, 'atlas'), disabled: !editable, className: edit_input_classname, type: 'checkbox' })
-	      ),
-	      _react2['default'].createElement(
-	        'td',
-	        null,
-	        editable ? _react2['default'].createElement('textarea', { value: custom_name, onChange: handleChange.bind(this, 'custom_name'), className: edit_input_classname, rows: '2', cols: '15' }) : custom_name
-	      ),
-	      _react2['default'].createElement(
-	        'td',
-	        null,
-	        editable ? _react2['default'].createElement('textarea', { value: custom_desc, onChange: handleChange.bind(this, 'custom_desc'), className: edit_input_classname, rows: '2', cols: '15' }) : custom_desc
-	      ),
-	      _react2['default'].createElement(
-	        'td',
-	        { className: 'nowrap' },
-	        editable ? _react2['default'].createElement(
-	          'a',
-	          { key: 'save', href: 'javascript:;' },
-	          '[保存]'
-	        ) : _react2['default'].createElement(
-	          'a',
-	          { key: 'edit', onClick: this.edit.bind(this, true), href: 'javascript:;', className: edit_input_classname },
-	          '[编辑]'
-	        ),
-	        ' ',
-	        _react2['default'].createElement(
-	          'a',
-	          { onClick: this['delete'].bind(this, this.props.data), href: 'javascript:;' },
-	          '[删除]'
-	        )
-	      )
-	    );
-	  },
-	  handleChange: function handleChange(attr_name, e) {
-	    this.props.dispatch(ProductsActions.productAttrChange({
-	      sku_id: this.props.data.sku_id,
-	      attr: {
-	        name: attr_name,
-	        value: e.target.getAttribute('type') == 'text' || e.target.nodeName.toLowerCase() == 'textarea' ? e.target.value : e.target.checked
-	      }
-	    }));
-	  },
-	  edit: function edit(editable) {
-	    this.setState({ editable: !!editable });
-	  },
-	  'delete': function _delete(data) {
-	    this.props.dispatch((0, _actionsOrder_products.deleteConfirmProduct)(data));
-	  },
-	  componentDidMount: function componentDidMount() {
-	    var self = this;
-	    $('#app').on('click', this._close_edit);
-	  },
-	  _close_edit: function _close_edit(e) {
-	    if (!$(e.target).hasClass(this.state.edit_input_classname)) {
-	      this.edit(false);
-	    }
-	  },
-	  componentWillUnmount: function componentWillUnmount() {
-	    $('#app').off('click', this._close_edit);
-	  }
-	});
-
-	AddedProductsRow.PropTypes = {
-	  dispatch: _react.PropTypes.func.isRequired,
-	  data: _react.PropTypes.shape({
-	    name: _react.PropTypes.string.isRequired,
-	    size: _react.PropTypes.string.isRequired,
-	    original_price: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
-	    num: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
-	    discount_price: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number])
-	  })
-	};
-	module.exports = exports['default'];
-
-/***/ },
-/* 323 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _commonSelect = __webpack_require__(296);
-
-	var _commonSelect2 = _interopRequireDefault(_commonSelect);
-
-	var _commonNumber_picker = __webpack_require__(324);
-
-	var _commonNumber_picker2 = _interopRequireDefault(_commonNumber_picker);
-
-	var _commonPagination = __webpack_require__(297);
-
-	var _commonPagination2 = _interopRequireDefault(_commonPagination);
-
-	var _commonSelect_group = __webpack_require__(325);
-
-	var _commonSelect_group2 = _interopRequireDefault(_commonSelect_group);
-
-	var _commonLoading = __webpack_require__(300);
-
-	var _actionsOrder_products = __webpack_require__(320);
-
-	var OrderProductsActions = _interopRequireWildcard(_actionsOrder_products);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var ProductsModal = (function (_Component) {
-	  _inherits(ProductsModal, _Component);
-
-	  function ProductsModal(props) {
-	    _classCallCheck(this, ProductsModal);
-
-	    _get(Object.getPrototypeOf(ProductsModal.prototype), 'constructor', this).call(this, props);
-	    this.show = this.show.bind(this);
-	    this.hide = this.hide.bind(this);
-	    this.onCancel = this.onCancel.bind(this);
-	    this.state = {
-	      sku_name: '',
-	      category_id: _configAppConfig.SELECT_DEFAULT_VALUE,
-	      page_no: 0,
-	      page_size: 8
-	    };
-	  }
-
-	  _createClass(ProductsModal, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var all_categories = _props.all_categories;
-	      var _props$search_results = _props.search_results;
-	      var total = _props$search_results.total;
-	      var list = _props$search_results.list;
-	      var selected_list = _props.selected_list;
-	      var dispatch = _props.dispatch;
-
-	      var s = this.state;
-	      var product_list = list.map(function (n, i) {
-	        return _react2['default'].createElement(ProductSet, { data: n, key: i, dispatch: dispatch });
-	      });
-	      var selected_list = selected_list.map(function (n, i) {
-	        return _react2['default'].createElement(ProductSelectedRow, { data: n, key: n.sku_id + '' + i, dispatch: dispatch });
-	      });
-	      return _react2['default'].createElement(
-	        'div',
-	        { ref: 'modal', 'aria-hidden': 'false', 'aria-labelledby': 'myModalLabel', role: 'dialog', className: 'modal fade' },
-	        _react2['default'].createElement('div', { className: 'modal-backdrop fade' }),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'modal-dialog modal-lg' },
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'modal-content' },
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'modal-header' },
-	              _react2['default'].createElement(
-	                'button',
-	                { onClick: this.onCancel, 'aria-hidden': 'true', 'data-dismiss': 'modal', className: 'close', type: 'button' },
-	                '×'
-	              ),
-	              _react2['default'].createElement(
-	                'h4',
-	                { className: 'modal-title' },
-	                '选择产品'
-	              )
-	            ),
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'modal-body' },
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement('input', { value: s.sku_name, onChange: this.handleSkuName.bind(this), className: 'form-control input-xs', placeholder: '输入产品名称' }),
-	                ' ',
-	                _react2['default'].createElement(_commonSelect_group2['default'], { value: s.category_id, onChange: this.onCategoryChange.bind(this), options: all_categories, 'default-text': '选择产品分类' }),
-	                ' ',
-	                _react2['default'].createElement(
-	                  'button',
-	                  { onClick: this.search.bind(this), className: 'btn btn-xs btn-default' },
-	                  _react2['default'].createElement('i', { className: 'fa fa-search' }),
-	                  ' 查询'
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'table-responsive table-modal' },
-	                _react2['default'].createElement(
-	                  'table',
-	                  { className: 'table table-hover table-click text-center' },
-	                  _react2['default'].createElement(
-	                    'thead',
-	                    null,
-	                    _react2['default'].createElement(
-	                      'tr',
-	                      null,
-	                      _react2['default'].createElement('th', null),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '产品名称'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '规格'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '产品类型名称'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '所属网站'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '价格'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '是否本站产品'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '是否配送上门'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '管理操作'
-	                      )
-	                    )
-	                  ),
-	                  product_list.length ? product_list : _react2['default'].createElement(
-	                    'tbody',
-	                    null,
-	                    (0, _commonLoading.get_table_empty)()
-	                  )
-	                )
-	              ),
-	              _react2['default'].createElement(_commonPagination2['default'], {
-	                page_no: s.page_no,
-	                total_count: total,
-	                page_size: s.page_size,
-	                onPageChange: this.onPageChange.bind(this)
-	              }),
-	              _react2['default'].createElement('hr', { className: 'dotted' }),
-	              _react2['default'].createElement(
-	                'div',
-	                null,
-	                '产品管理 >> 选择列表'
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'table-responsive' },
-	                _react2['default'].createElement(
-	                  'table',
-	                  { className: 'table table-hover text-center' },
-	                  _react2['default'].createElement(
-	                    'thead',
-	                    null,
-	                    _react2['default'].createElement(
-	                      'tr',
-	                      null,
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '产品名称'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '规格'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '产品类型名称'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '所属网站'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '价格'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '数量'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '是否本站'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '是否配送'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'th',
-	                        null,
-	                        '管理操作'
-	                      )
-	                    )
-	                  ),
-	                  _react2['default'].createElement(
-	                    'tbody',
-	                    null,
-	                    selected_list
-	                  )
-	                )
-	              )
-	            ),
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'modal-footer' },
-	              _react2['default'].createElement(
-	                'button',
-	                { onClick: this.onCancel, type: 'button', className: 'btn btn-sm btn-default', 'data-dismiss': 'modal' },
-	                '取消'
-	              ),
-	              _react2['default'].createElement(
-	                'button',
-	                { onClick: this.onConfirm.bind(this), type: 'button', className: 'btn btn-sm btn-theme' },
-	                '确定'
-	              )
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'handleSkuName',
-	    value: function handleSkuName(e) {
-	      this.setState({ sku_name: e.target.value });
-	    }
-	  }, {
-	    key: 'onCategoryChange',
-	    value: function onCategoryChange(e) {
-	      this.setState({ category_id: e.target.value });
-	    }
-	  }, {
-	    key: 'search',
-	    value: function search() {
-	      var _state = this.state;
-	      var sku_name = _state.sku_name;
-	      var category_id = _state.category_id;
-	      var page_no = _state.page_no;
-	      var page_size = _state.page_size;
-
-	      this.props.dispatch(OrderProductsActions.searchProducts({
-	        name: sku_name, page_no: page_no, page_size: page_size,
-	        category_id: category_id == _configAppConfig.SELECT_DEFAULT_VALUE ? undefined : category_id
-	      }));
-	    }
-	  }, {
-	    key: 'onPageChange',
-	    value: function onPageChange(page) {
-	      this.setState({ page_no: page }, this.search);
-	    }
-	  }, {
-	    key: 'onCancel',
-	    value: function onCancel() {
-	      this.props.dispatch(OrderProductsActions.cancelAllSelectedProducts());
-	    }
-	  }, {
-	    key: 'onConfirm',
-	    value: function onConfirm() {
-	      this.props.dispatch(OrderProductsActions.confirmAllSelectedProducts());
-	      this.hide();
-	    }
-	  }, {
-	    key: 'show',
-	    value: function show() {
-	      this.props.dispatch(OrderProductsActions.getCategories());
-	      $(this.refs.modal).modal('show');
-	    }
-	  }, {
-	    key: 'hide',
-	    value: function hide() {
-	      $(this.refs.modal).modal('hide');
-	    }
-	  }]);
-
-	  return ProductsModal;
-	})(_react.Component);
-
-	exports['default'] = ProductsModal;
-
-	ProductsModal.PropTypes = {
-	  dispatch: _react.PropTypes.func.isRequired,
-	  all_categories: _react.PropTypes.array.isRequired,
-	  search_results: _react.PropTypes.array.isRequired
-	};
-
-	var ProductSet = (function (_Component2) {
-	  _inherits(ProductSet, _Component2);
-
-	  function ProductSet(props) {
-	    _classCallCheck(this, ProductSet);
-
-	    _get(Object.getPrototypeOf(ProductSet.prototype), 'constructor', this).call(this, props);
-	    this.toggle = this.toggle.bind(this);
-	    this.state = {
-	      active: false
-	    };
-	  }
-
-	  _createClass(ProductSet, [{
-	    key: 'render',
-	    value: function render() {
-	      var _this = this;
-
-	      var yes_or_no = this.yes_or_no;
-	      var choose = this.choose;
-	      var active = this.state.active;
-
-	      //is_local_site, is_delivery : "1" / "0"
-	      var _props$data = this.props.data;
-	      var product_id = _props$data.product_id;
-	      var name = _props$data.name;
-	      var size = _props$data.size;
-	      var category_name = _props$data.category_name;
-	      var original_price = _props$data.original_price;
-	      var skus = _props$data.skus;
-
-	      var hasOthers = skus.length != 1;
-	      var sku0 = skus[0];
-
-	      var head = _react2['default'].createElement(
-	        'tr',
-	        { key: sku0.sku_id, className: hasOthers ? "clickable" : "", onClick: hasOthers ? this.toggle : null },
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement('input', { type: 'checkbox', checked: sku0.checked, onClick: choose.bind(this, sku0), disabled: sku0.checked })
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          name
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          size
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          category_name
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          sku0.website
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          '￥',
-	          (0, _utilsIndex.toFixed)(sku0.discount_price / 100, 2)
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          yes_or_no(sku0.is_local_site)
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          yes_or_no(sku0.is_delivery)
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          sku0.checked ? _react2['default'].createElement(
-	            'span',
-	            { className: 'silver' },
-	            '[选择]'
-	          ) : _react2['default'].createElement(
-	            'a',
-	            { onClick: choose.bind(this, sku0), href: 'javascript:;' },
-	            '[选择]'
-	          )
-	        )
-	      );
-
-	      var body = skus.map(function (n, i) {
-	        if (i == 0) {
-	          //滤出第一个
-	          return null;
-	        }
-	        return _react2['default'].createElement(
-	          'tr',
-	          { key: n.sku_id + '' + i, className: active ? "" : "hidden" },
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            _react2['default'].createElement('input', { type: 'checkbox', checked: n.checked, onClick: choose.bind(_this, n), disabled: n.checked })
-	          ),
-	          _react2['default'].createElement('td', { colSpan: '3' }),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            n.website
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            '￥',
-	            (0, _utilsIndex.toFixed)(n.discount_price / 100, 2)
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            yes_or_no(n.is_local_site)
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            yes_or_no(n.is_delivery)
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            _react2['default'].createElement(
-	              'a',
-	              { onClick: choose.bind(_this, n), href: 'javascript:;' },
-	              '[选择]'
-	            )
-	          )
-	        );
-	      });
-
-	      return _react2['default'].createElement(
-	        'tbody',
-	        null,
-	        [head, body]
-	      );
-	    }
-	  }, {
-	    key: 'yes_or_no',
-	    value: function yes_or_no(d) {
-	      return d == 1 ? '是' : '否';
-	    }
-	  }, {
-	    key: 'toggle',
-	    value: function toggle() {
-	      this.setState({ active: !this.state.active });
-	    }
-	  }, {
-	    key: 'choose',
-	    value: function choose(sku, e) {
-	      //整合数据
-	      var copy = _extends({}, this.props.data, sku);
-	      delete copy.skus;
-	      this.props.dispatch(OrderProductsActions.selectProduct(copy));
-	      e.stopPropagation();
-	    }
-	  }]);
-
-	  return ProductSet;
-	})(_react.Component);
-
-	ProductSet.PropTypes = {
-	  data: _react.PropTypes.array.isRequired,
-	  dispatch: _react.PropTypes.func.isRequired
-	};
-
-	var ProductSelectedRow = (function (_Component3) {
-	  _inherits(ProductSelectedRow, _Component3);
-
-	  function ProductSelectedRow() {
-	    _classCallCheck(this, ProductSelectedRow);
-
-	    _get(Object.getPrototypeOf(ProductSelectedRow.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(ProductSelectedRow, [{
-	    key: 'yes_or_no',
-	    value: function yes_or_no(d) {
-	      return d == 1 ? '是' : '否';
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var data = this.props.data;
-	      var yes_or_no = this.yes_or_no;
-
-	      return _react2['default'].createElement(
-	        'tr',
-	        null,
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          data.name
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          data.size
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          data.category_name
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          data.website
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          '￥',
-	          (0, _utilsIndex.toFixed)(data.discount_price / 100, 2)
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(_commonNumber_picker2['default'], { value: data.num, onChange: this.onNumChange.bind(this) })
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          yes_or_no(data.is_local_site)
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          yes_or_no(data.is_delivery)
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'a',
-	            { onClick: this['delete'].bind(this), href: 'javascript:;' },
-	            '[删除]'
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'onNumChange',
-	    value: function onNumChange(num) {
-	      var _props2 = this.props;
-	      var sku_id = _props2.data.sku_id;
-	      var dispatch = _props2.dispatch;
-
-	      dispatch(OrderProductsActions.changeProductNum(sku_id, num));
-	    }
-	  }, {
-	    key: 'delete',
-	    value: function _delete() {
-	      this.props.dispatch(OrderProductsActions.deleteProduct(this.props.data));
-	    }
-	  }]);
-
-	  return ProductSelectedRow;
-	})(_react.Component);
-
-	ProductSelectedRow.PropTypes = {
-	  data: _react.PropTypes.object.isRequired,
-	  dispatch: _react.PropTypes.func.isRequired
-	};
-	module.exports = exports['default'];
-
-/***/ },
-/* 324 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var NumberPicker = _react2['default'].createClass({
-	  displayName: 'NumberPicker',
-
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      step: 1,
-	      value: 1,
-	      'lower_limit': 1,
-	      'upper_limit': 100000
-	    };
-	  },
-	  getInitialState: function getInitialState() {
-	    return {
-	      value: this.props.value
-	    };
-	  },
-	  componentDidMount: function componentDidMount() {},
-	  render: function render() {
-	    return _react2['default'].createElement(
-	      'div',
-	      { className: 'number-picker form-inline' },
-	      _react2['default'].createElement(
-	        'a',
-	        { onClick: this.minus, href: 'javascript:;' },
-	        _react2['default'].createElement('i', { className: 'fa fa-minus' })
-	      ),
-	      _react2['default'].createElement('input', { value: this.state.value, onChange: this.input, className: 'form-control input-xs' }),
-	      _react2['default'].createElement(
-	        'a',
-	        { onClick: this.add, href: 'javascript:;' },
-	        _react2['default'].createElement('i', { className: 'fa fa-plus' })
-	      )
-	    );
-	  },
-	  minus: function minus() {
-	    var value = parseInt(this.state.value) || this.props.lower_limit;
-	    var _props = this.props;
-	    var step = _props.step;
-	    var lower_limit = _props.lower_limit;
-
-	    value = value - step >= lower_limit ? value - step : value;
-	    this.setState({ value: value }, function () {
-	      this.props.onChange(value);
-	    });
-	  },
-	  add: function add() {
-	    var value = parseInt(this.state.value) || this.props.lower_limit;
-	    var _props2 = this.props;
-	    var step = _props2.step;
-	    var upper_limit = _props2.upper_limit;
-
-	    value = value + step <= upper_limit ? value + step : value;
-	    this.setState({ value: value }, function () {
-	      this.props.onChange(value);
-	    });
-	  },
-	  input: function input(e) {
-	    var v = e.target.value.replace(/[^\d]/g, '');
-	    console.log(v);
-	    if (v > this.props.upper_limit) {
-	      v = v.substring(0, v.length - 1);
-	    }
-	    this.setState({ value: v });
-	  }
-	});
-
-	exports['default'] = NumberPicker;
-	module.exports = exports['default'];
-
-/***/ },
-/* 325 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 *  2级Select(缩进的方式，一级select模拟而来, 因此也可以被选)
-	 */
-	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var SelectGroup = _react2['default'].createClass({
-	  displayName: 'SelectGroup',
-
-	  propTypes: {
-	    options: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-	      id: _react.PropTypes.number.isRequired,
-	      name: _react.PropTypes.string.isRequired,
-	      parent_id: _react.PropTypes.number.isRequired }))
-	  },
-	  //0为1最上级，其他的为下级
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      "default-text": '--请选择--',
-	      "default-value": _configAppConfig.SELECT_DEFAULT_VALUE,
-	      "options": [],
-	      "no-default": false,
-	      "parentId": 0,
-	      "onChange": function onChange() {}
-	    };
-	  },
-	  render: function render() {
-	    var _props = this.props;
-	    var options = _props.options;
-	    var parentId = _props.parentId;
-
-	    var first_level = [],
-	        second_level = [];
-	    options.forEach(function (n) {
-	      n.parent_id == parentId ? first_level.push(n) : second_level.push(n);
-	    });
-	    var list = [];
-	    var createOption = function createOption(id, p_id, text) {
-	      return _react2['default'].createElement(
-	        'option',
-	        { value: id, 'data-parent-id': p_id, key: id },
-	        text
-	      );
-	    };
-	    first_level.forEach(function (f) {
-	      list.push(createOption(f.id, f.parent_id, f.name));
-	      second_level.forEach(function (s) {
-	        if (f.id == s.parent_id) list.push(createOption(s.id, s.parent_id, '　' + s.name));
-	      });
-	    });
-	    var className = "form-control text-left input-xs " + (this.props.className || '');
-	    this.props = _extends({}, this.props, { className: className });
-	    return _react2['default'].createElement(
-	      'select',
-	      this.props,
-	      this.props['no-default'] ? null : _react2['default'].createElement(
-	        'option',
-	        { value: this.props['default-value'] },
-	        this.props['default-text']
-	      ),
-	      list
-	    );
-	  }
-	});
-
-	module.exports = SelectGroup;
-
-/***/ },
-/* 326 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(154);
-
-	var _reactRedux = __webpack_require__(216);
-
-	var _redux = __webpack_require__(223);
-
-	var _reduxForm = __webpack_require__(242);
-
-	var _commonDatepicker = __webpack_require__(295);
-
-	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
-
-	var _commonSelect = __webpack_require__(296);
-
-	var _commonSelect2 = _interopRequireDefault(_commonSelect);
-
-	var _commonPagination = __webpack_require__(297);
-
-	var _commonPagination2 = _interopRequireDefault(_commonPagination);
-
-	var _commonStd_modal = __webpack_require__(301);
-
-	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
-
-	var _commonLine_router = __webpack_require__(314);
-
-	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
-
-	var _commonLoading = __webpack_require__(300);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var _utilsAcl = __webpack_require__(240);
-
-	var _utilsAcl2 = _interopRequireDefault(_utilsAcl);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var _history_instance = __webpack_require__(211);
-
-	var _history_instance2 = _interopRequireDefault(_history_instance);
-
-	var _utilsLazy_load = __webpack_require__(303);
-
-	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
-
-	var _commonOrder_products_detail = __webpack_require__(306);
-
-	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
-
-	var _commonOrder_detail_modal = __webpack_require__(307);
-
-	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
-
-	var _commonOperation_record_modalJs = __webpack_require__(311);
-
-	var _commonOperation_record_modalJs2 = _interopRequireDefault(_commonOperation_record_modalJs);
-
-	var _actionsOrders = __webpack_require__(290);
-
-	var OrderActions = _interopRequireWildcard(_actionsOrders);
-
-	var _actionsArea = __webpack_require__(288);
-
-	var _actionsArea2 = _interopRequireDefault(_actionsArea);
-
-	var _actionsDelivery_change = __webpack_require__(327);
-
-	var ChangeActions = _interopRequireWildcard(_actionsDelivery_change);
-
-	var TopHeader = (function (_Component) {
-	  _inherits(TopHeader, _Component);
-
-	  function TopHeader() {
-	    _classCallCheck(this, TopHeader);
-
-	    _get(Object.getPrototypeOf(TopHeader.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(TopHeader, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'clearfix top-header' },
-	        _react2['default'].createElement(_commonLine_router2['default'], {
-	          routes: [{ name: '送货单管理', link: '/dm/change' }, { name: '订单转送货单列表', link: '' }] })
-	      );
-	    }
-	  }]);
-
-	  return TopHeader;
-	})(_react.Component);
-
-	var FilterHeader = (function (_Component2) {
-	  _inherits(FilterHeader, _Component2);
-
-	  function FilterHeader(props) {
-	    _classCallCheck(this, FilterHeader);
-
-	    _get(Object.getPrototypeOf(FilterHeader.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      search_ing: false
-	    };
-	  }
-
-	  _createClass(FilterHeader, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var _props$fields = _props.fields;
-	      var keywords = _props$fields.keywords;
-	      var begin_time = _props$fields.begin_time;
-	      var end_time = _props$fields.end_time;
-	      var delivery_id = _props$fields.delivery_id;
-	      var province_id = _props$fields.province_id;
-	      var city_id = _props$fields.city_id;
-	      var provinces = _props.provinces;
-	      var cities = _props.cities;
-	      var delivery_stations = _props.delivery_stations;
-	      var changeHandler = _props.changeHandler;
-	      var change_submitting = _props.change_submitting;
-	      var search_ing = this.state.search_ing;
-
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'panel search' },
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'panel-body form-inline' },
-	          _react2['default'].createElement('input', _extends({}, keywords, { className: 'form-control input-xs v-mg', placeholder: '关键字' })),
-	          ' 开始时间',
-	          _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': begin_time, className: 'short-input' }),
-	          ' 结束时间',
-	          _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': end_time, className: 'short-input space-right' }),
-	          (0, _utilsAcl2['default'])('DeliveryManageChangeStationFilter') ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: delivery_stations, 'default-text': '选择配送中心', className: 'space-right' })) : null,
-	          (0, _utilsAcl2['default'])('DeliveryManageChangeAddressFilter') ? [_react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), options: provinces, ref: 'province', 'default-text': '选择省份', key: 'province', className: 'space-right' })), _react2['default'].createElement(_commonSelect2['default'], _extends({}, city_id, { options: cities, 'default-text': '选择城市', ref: 'city', key: 'city', className: 'space-right' }))] : null,
-	          _react2['default'].createElement(
-	            'button',
-	            { disabled: search_ing, 'data-submitting': search_ing, onClick: this.search.bind(this), className: 'btn btn-theme btn-xs' },
-	            _react2['default'].createElement('i', { className: 'fa fa-search', style: { 'padding': '0 3px' } })
-	          ),
-	          '　',
-	          _react2['default'].createElement(
-	            'button',
-	            { disabled: change_submitting, 'data-submitting': change_submitting, onClick: changeHandler, className: 'btn btn-theme btn-xs' },
-	            '转换'
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      setTimeout((function () {
-	        var _props2 = this.props;
-	        var getProvinces = _props2.getProvinces;
-	        var getDeliveryStations = _props2.getDeliveryStations;
-
-	        getProvinces();
-	        getDeliveryStations();
-	        (0, _utilsLazy_load2['default'])('noty');
-	      }).bind(this), 0);
-	    }
-	  }, {
-	    key: 'onProvinceChange',
-	    value: function onProvinceChange(callback, e) {
-	      var value = e.target.value;
-
-	      this.props.provinceReset();
-	      if (value != this.refs.province.props['default-value']) var $city = $((0, _reactDom.findDOMNode)(this.refs.city));
-	      this.props.getCities(value).done(function () {
-	        $city.trigger('focus'); //聚焦已使city_id的值更新
-	      });
-	      callback(e);
-	    }
-	  }, {
-	    key: 'search',
-	    value: function search() {
-	      var _this = this;
-
-	      this.setState({ search_ing: true });
-	      this.props.getOrderExchangeList({ page_no: 0, page_size: this.props.page_size }).always(function () {
-	        _this.setState({ search_ing: false });
-	      });
-	    }
-	  }]);
-
-	  return FilterHeader;
-	})(_react.Component);
-
-	FilterHeader.propTypes = {
-	  changeHandler: _react.PropTypes.func.isRequired,
-	  provinces: _react.PropTypes.array.isRequired,
-	  cities: _react.PropTypes.array.isRequired,
-	  delivery_stations: _react.PropTypes.array.isRequired
-	};
-	FilterHeader = (0, _reduxForm.reduxForm)({
-	  form: 'order_exchange_filter',
-	  fields: ['keywords', 'begin_time', 'end_time', 'delivery_id', 'province_id', 'city_id']
-	}, function (state) {
-	  var now = (0, _utilsIndex.dateFormat)(new Date());
-	  return {
-	    //赋初始值
-	    initialValues: {
-	      begin_time: now,
-	      end_time: now
-	    }
-	  };
-	})(FilterHeader);
-
-	var OrderRow = (function (_Component3) {
-	  _inherits(OrderRow, _Component3);
-
-	  function OrderRow() {
-	    _classCallCheck(this, OrderRow);
-
-	    _get(Object.getPrototypeOf(OrderRow.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(OrderRow, [{
-	    key: 'render',
-	    value: function render() {
-	      var props = this.props;
-
-	      return _react2['default'].createElement(
-	        'tr',
-	        { onClick: this.clickHandler.bind(this), className: props.active_order_id == props.order_id ? 'active' : '' },
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement('input', { onChange: this.checkOrderHandler.bind(this), checked: props.checked, type: 'checkbox' })
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          (0, _utilsIndex.parseTime)(props.delivery_time)
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.owner_name,
-	          _react2['default'].createElement('br', null),
-	          props.owner_mobile
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          { className: 'text-left' },
-	          '姓名：',
-	          props.recipient_name,
-	          _react2['default'].createElement('br', null),
-	          '电话：',
-	          props.recipient_mobile,
-	          _react2['default'].createElement('br', null),
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'address-detail-td' },
-	            _react2['default'].createElement(
-	              'span',
-	              { className: 'inline-block' },
-	              '地址：'
-	            ),
-	            _react2['default'].createElement(
-	              'span',
-	              { className: 'address-all' },
-	              props.recipient_address
-	            )
-	          ),
-	          '建筑：',
-	          props.recipient_landmark
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.coupon
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          (0, _utilsIndex.parseTime)(props.submit_time)
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'a',
-	            { onClick: props.viewOrderDetail, href: 'javascript:;' },
-	            props.order_id
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _configAppConfig.DELIVERY_MAP[props.delivery_type] || props.delivery_type
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'remark-in-table' },
-	            props.remarks
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.updated_by
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'a',
-	            { onClick: this.viewOrderOperationRecord.bind(this), className: 'inline-block time', href: 'javascript:;' },
-	            props.updated_time
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'checkOrderHandler',
-	    value: function checkOrderHandler(e) {
-	      var _props3 = this.props;
-	      var order_id = _props3.order_id;
-	      var checkOrderHandler = _props3.checkOrderHandler;
-
-	      checkOrderHandler(order_id, e.target.checked);
-	    }
-	  }, {
-	    key: 'clickHandler',
-	    value: function clickHandler() {
-	      this.props.activeOrderHandler(this.props.order_id);
-	    }
-	  }, {
-	    key: 'viewOrderOperationRecord',
-	    value: function viewOrderOperationRecord(e) {
-	      this.props.viewOrderOperationRecord(this.props);
-	      e.stopPropagation();
-	    }
-	  }]);
-
-	  return OrderRow;
-	})(_react.Component);
-
-	var DeliverChangePannel = (function (_Component4) {
-	  _inherits(DeliverChangePannel, _Component4);
-
-	  function DeliverChangePannel(props) {
-	    _classCallCheck(this, DeliverChangePannel);
-
-	    _get(Object.getPrototypeOf(DeliverChangePannel.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      page_size: 5
-	    };
-	    this.checkOrderHandler = this.checkOrderHandler.bind(this);
-	    this.activeOrderHandler = this.activeOrderHandler.bind(this);
-	    this.changeHandler = this.changeHandler.bind(this);
-	    this.viewOrderDetail = this.viewOrderDetail.bind(this);
-	    this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
-	    this.search = this.search.bind(this);
-	  }
-
-	  _createClass(DeliverChangePannel, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props4 = this.props;
-	      var filter = _props4.filter;
-	      var area = _props4.area;
-	      var exchangeOrders = _props4.exchangeOrders;
-	      var getOrderOptRecord = _props4.getOrderOptRecord;
-	      var resetOrderOptRecord = _props4.resetOrderOptRecord;
-	      var operationRecord = _props4.operationRecord;
-	      var change_submitting = filter.change_submitting;
-	      var _props$orders = this.props.orders;
-	      var loading = _props$orders.loading;
-	      var refresh = _props$orders.refresh;
-	      var page_no = _props$orders.page_no;
-	      var total = _props$orders.total;
-	      var list = _props$orders.list;
-	      var checked_order_ids = _props$orders.checked_order_ids;
-	      var check_order_info = _props$orders.check_order_info;
-	      var active_order_id = _props$orders.active_order_id;
-	      var search = this.search;
-	      var changeHandler = this.changeHandler;
-	      var checkOrderHandler = this.checkOrderHandler;
-	      var viewOrderDetail = this.viewOrderDetail;
-	      var activeOrderHandler = this.activeOrderHandler;
-	      var viewOrderOperationRecord = this.viewOrderOperationRecord;
-
-	      var content = list.map(function (n, i) {
-	        return _react2['default'].createElement(OrderRow, _extends({ key: n.order_id }, _extends({}, n, { active_order_id: active_order_id, activeOrderHandler: activeOrderHandler, checkOrderHandler: checkOrderHandler, viewOrderDetail: viewOrderDetail, viewOrderOperationRecord: viewOrderOperationRecord })));
-	      });
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'order-manage' },
-	        _react2['default'].createElement(TopHeader, null),
-	        _react2['default'].createElement(FilterHeader, _extends({}, _extends({}, this.props, filter, area, { changeHandler: changeHandler }), {
-	          page_size: this.state.page_size
-	        })),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'panel' },
-	          _react2['default'].createElement(
-	            'header',
-	            { className: 'panel-heading' },
-	            '送货列表'
-	          ),
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'panel-body' },
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'table-responsive' },
-	              _react2['default'].createElement(
-	                'table',
-	                { className: 'table table-hover text-center' },
-	                _react2['default'].createElement(
-	                  'thead',
-	                  null,
-	                  _react2['default'].createElement(
-	                    'tr',
-	                    null,
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      _react2['default'].createElement('input', { onChange: this.checkAll.bind(this), type: 'checkbox' })
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '送达时间'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '下单人'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '收货人'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '验证码'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '提交时间'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '订单号'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '配送方式'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '备注'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '操作人'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '操作时间'
-	                    )
-	                  )
-	                ),
-	                _react2['default'].createElement(
-	                  'tbody',
-	                  null,
-	                  (0, _commonLoading.tableLoader)(loading || refresh, content)
-	                )
-	              )
-	            ),
-	            _react2['default'].createElement(_commonPagination2['default'], {
-	              page_no: page_no,
-	              total_count: total,
-	              page_size: this.state.page_size,
-	              onPageChange: this.onPageChange
-	            })
-	          )
-	        ),
-	        check_order_info ? _react2['default'].createElement(
-	          'div',
-	          { className: 'panel' },
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'panel-body' },
-	            _react2['default'].createElement(
-	              'div',
-	              null,
-	              '订单产品详情'
-	            ),
-	            _react2['default'].createElement(_commonOrder_products_detail2['default'], { products: check_order_info.products })
-	          )
-	        ) : null,
-	        _react2['default'].createElement(ChangeModal, _extends({ exchangeOrders: exchangeOrders, search: search, change_submitting: change_submitting, checked_order_ids: checked_order_ids }, { ref: 'changeModal' })),
-	        _react2['default'].createElement(_commonOrder_detail_modal2['default'], { ref: 'detail_modal', data: check_order_info || {} }),
-	        _react2['default'].createElement(_commonOperation_record_modalJs2['default'], _extends({ ref: 'OperationRecordModal' }, _extends({ getOrderOptRecord: getOrderOptRecord, resetOrderOptRecord: resetOrderOptRecord }, operationRecord)))
-	      );
-	    }
-	  }, {
-	    key: 'changeHandler',
-	    value: function changeHandler() {
-	      if (this.props.orders.checked_order_ids.length) {
-	        this.refs.changeModal.show();
-	      } else {
-	        (0, _utilsIndex.Noty)('warning', '请先选择需要转换的订单！');
-	      }
-	    }
-	  }, {
-	    key: 'activeOrderHandler',
-	    value: function activeOrderHandler(order_id) {
-	      if (this.props.orders.active_order_id != order_id) this.props.activeOrder(order_id);
-	    }
-	  }, {
-	    key: 'checkOrderHandler',
-	    value: function checkOrderHandler(order_id, checked) {
-	      this.props.checkOrder(order_id, checked);
-	    }
-	  }, {
-	    key: 'checkAll',
-	    value: function checkAll(e) {
-	      this.props.checkAllOrders(e.target.checked);
-	    }
-	  }, {
-	    key: 'viewOrderDetail',
-	    value: function viewOrderDetail() {
-	      this.refs.detail_modal.show();
-	    }
-	  }, {
-	    key: 'viewOrderOperationRecord',
-	    value: function viewOrderOperationRecord(order) {
-	      this.refs.OperationRecordModal.show(order);
-	    }
-	  }, {
-	    key: 'onPageChange',
-	    value: function onPageChange(page) {
-	      this.setState({ page_no: page });
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      this.search();
-	      (0, _utilsLazy_load2['default'])('noty');
-	    }
-	  }, {
-	    key: 'search',
-	    value: function search() {
-	      var _props5 = this.props;
-	      var getOrderExchangeList = _props5.getOrderExchangeList;
-	      var orders = _props5.orders;
-
-	      getOrderExchangeList({ page_no: orders.page_no, page_size: this.state.page_size });
-	    }
-	  }]);
-
-	  return DeliverChangePannel;
-	})(_react.Component);
-
-	function mapStateToProps(_ref) {
-	  var deliveryChange = _ref.deliveryChange;
-
-	  return deliveryChange;
-	}
-
-	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
-	function mapDispatchToProps(dispatch) {
-	  return (0, _redux.bindActionCreators)(_extends({}, OrderActions, (0, _actionsArea2['default'])(), ChangeActions), dispatch);
-	}
-
-	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DeliverChangePannel);
-
-	/***************   *******   *****************/
-	/***************   子模态框   *****************/
-	/***************   *******   *****************/
-
-	var ChangeModal = (function (_Component5) {
-	  _inherits(ChangeModal, _Component5);
-
-	  function ChangeModal() {
-	    _classCallCheck(this, ChangeModal);
-
-	    _get(Object.getPrototypeOf(ChangeModal.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(ChangeModal, [{
-	    key: 'render',
-	    value: function render() {
-	      var checked_order_ids = this.props.checked_order_ids;
-
-	      return _react2['default'].createElement(
-	        _commonStd_modal2['default'],
-	        { onConfirm: this.onConfirm.bind(this), submitting: this.props.change_submitting, ref: 'modal', title: '批量转换操作' },
-	        _react2['default'].createElement(
-	          'center',
-	          null,
-	          _react2['default'].createElement(
-	            'h5',
-	            null,
-	            '您已同时勾选',
-	            _react2['default'].createElement(
-	              'span',
-	              { className: 'strong font-lg' },
-	              ' ' + checked_order_ids.length + ' '
-	            ),
-	            '个订单'
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'center',
-	          null,
-	          _react2['default'].createElement(
-	            'h5',
-	            null,
-	            '进行转换'
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'show',
-	    value: function show() {
-	      this.refs.modal.show();
-	    }
-	  }, {
-	    key: 'hide',
-	    value: function hide() {
-	      this.refs.modal.hide();
-	    }
-	  }, {
-	    key: 'onConfirm',
-	    value: function onConfirm() {
-	      var _props6 = this.props;
-	      var exchangeOrders = _props6.exchangeOrders;
-	      var search = _props6.search;
-	      var checked_order_ids = _props6.checked_order_ids;
-
-	      exchangeOrders(checked_order_ids).done((function () {
-	        // search();
-	        this.hide();
-	        (0, _utilsIndex.Noty)('success', '转换成功！');
-	        (0, _history_instance.go)('/dm/delivery');
-	      }).bind(this)).fail(function () {
-	        (0, _utilsIndex.Noty)('error', '转换异常');
-	      });
-	    }
-	  }]);
-
-	  return ChangeModal;
-	})(_react.Component);
-
-	;
-
-	ChangeModal.PropTypes = {
-	  checked_order_ids: _react.PropTypes.array.isRequired,
-	  exchangeOrders: _react.PropTypes.func.isRequired,
-	  change_submitting: _react.PropTypes.bool.isRequired,
-	  search: _react.PropTypes.func.isRequired
-	};
-	module.exports = exports['default'];
-
-/***/ },
-/* 327 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports.exchangeOrders = exchangeOrders;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _utilsRequest = __webpack_require__(234);
-
-	//Promise
-
-	var _configUrl = __webpack_require__(239);
-
-	var _configUrl2 = _interopRequireDefault(_configUrl);
-
-	var _actionsOrder_manage_form = __webpack_require__(292);
-
-	var ORDERS_EXCHANGE = 'ORDERS_EXCHANGE';exports.ORDERS_EXCHANGE = ORDERS_EXCHANGE;
-	//key: 0->正在处理，1->成功，2->失败
-
-	function exchangeOrders(order_ids) {
-	  //若是异步的话，那么该函数必须也返回一个函数
-	  return function (dispatch, getState) {
-	    dispatch({
-	      type: ORDERS_EXCHANGE,
-	      key: 0
-	    });
-	    return (0, _utilsRequest.put)(_configUrl2['default'].order_exchange.toString(), { order_ids: order_ids }).done(function () {
-	      dispatch({
-	        type: ORDERS_EXCHANGE,
-	        key: 1
-	      });
-	    }).fail(function () {
-	      dispatch({
-	        type: ORDERS_EXCHANGE,
-	        key: 2
-	      });
-	    });
-	  };
-	  // return TEST(null, [
-	  //   {type: ORDERS_EXCHANGE, key: 0},  //立即派发
-	  //   {type: ORDERS_EXCHANGE, key: 1}   //2000毫秒后派发
-	  // ], 2000);
-	}
-
-	var getDeliveryStations = _actionsOrder_manage_form.getDeliveryStations;
-	exports.getDeliveryStations = getDeliveryStations;
-
-/***/ },
-/* 328 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(154);
-
-	var _reactRedux = __webpack_require__(216);
-
-	var _redux = __webpack_require__(223);
-
-	var _reactAddonsLinkedStateMixin = __webpack_require__(284);
-
-	var _reactAddonsLinkedStateMixin2 = _interopRequireDefault(_reactAddonsLinkedStateMixin);
-
-	var _reduxForm = __webpack_require__(242);
-
-	var _commonDatepicker = __webpack_require__(295);
-
-	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
-
-	var _commonSelect = __webpack_require__(296);
-
-	var _commonSelect2 = _interopRequireDefault(_commonSelect);
-
-	var _commonPagination = __webpack_require__(297);
-
-	var _commonPagination2 = _interopRequireDefault(_commonPagination);
-
-	var _commonStd_modal = __webpack_require__(301);
-
-	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
-
-	var _commonLine_router = __webpack_require__(314);
-
-	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
-
-	var _commonLoading = __webpack_require__(300);
-
-	var _commonRecipient_info = __webpack_require__(302);
-
-	var _commonRecipient_info2 = _interopRequireDefault(_commonRecipient_info);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var _history_instance = __webpack_require__(211);
-
-	var _history_instance2 = _interopRequireDefault(_history_instance);
-
-	var _utilsLazy_load = __webpack_require__(303);
-
-	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var _utilsAcl = __webpack_require__(240);
-
-	var _utilsAcl2 = _interopRequireDefault(_utilsAcl);
-
-	var _actionsOrders = __webpack_require__(290);
-
-	var OrderActions = _interopRequireWildcard(_actionsOrders);
-
-	var _actionsArea = __webpack_require__(288);
-
-	var _actionsArea2 = _interopRequireDefault(_actionsArea);
-
-	var _actionsDeliveryman = __webpack_require__(329);
-
-	var DeliverymanActions = _interopRequireWildcard(_actionsDeliveryman);
-
-	var _actionsDelivery_manage = __webpack_require__(330);
-
-	var DeliveryManageActions = _interopRequireWildcard(_actionsDelivery_manage);
-
-	var _commonOrder_products_detail = __webpack_require__(306);
-
-	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
-
-	var _commonOrder_detail_modal = __webpack_require__(307);
-
-	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
-
-	var _commonScan_modal = __webpack_require__(331);
-
-	var _commonScan_modal2 = _interopRequireDefault(_commonScan_modal);
-
-	var _commonOperation_record_modalJs = __webpack_require__(311);
-
-	var _commonOperation_record_modalJs2 = _interopRequireDefault(_commonOperation_record_modalJs);
-
-	var TopHeader = (function (_Component) {
-	  _inherits(TopHeader, _Component);
-
-	  function TopHeader() {
-	    _classCallCheck(this, TopHeader);
-
-	    _get(Object.getPrototypeOf(TopHeader.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(TopHeader, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'clearfix top-header' },
-	        _react2['default'].createElement(_commonLine_router2['default'], {
-	          routes: [{ name: '送货单管理', link: '/dm/change' }, { name: '送货单列表', link: '' }] })
-	      );
-	    }
-	  }]);
-
-	  return TopHeader;
-	})(_react.Component);
-
-	var FilterHeader = (function (_Component2) {
-	  _inherits(FilterHeader, _Component2);
-
-	  function FilterHeader(props) {
-	    _classCallCheck(this, FilterHeader);
-
-	    _get(Object.getPrototypeOf(FilterHeader.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      search_ing: false,
-	      all_print_status: _configAppConfig.YES_OR_NO,
-	      delivery_types: (0, _utilsIndex.map)(_configAppConfig.DELIVERY_MAP, function (text, id) {
-	        return { id: id, text: text };
-	      })
-	    };
-	  }
-
-	  _createClass(FilterHeader, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var _props$fields = _props.fields;
-	      var keywords = _props$fields.keywords;
-	      var begin_time = _props$fields.begin_time;
-	      var end_time = _props$fields.end_time;
-	      var delivery_type = _props$fields.delivery_type;
-	      var print_status = _props$fields.print_status;
-	      var province_id = _props$fields.province_id;
-	      var city_id = _props$fields.city_id;
-	      var provinces = _props.provinces;
-	      var cities = _props.cities;
-	      var delivery_stations = _props.delivery_stations;
-	      var change_submitting = _props.change_submitting;
-	      var _state = this.state;
-	      var search_ing = _state.search_ing;
-	      var delivery_types = _state.delivery_types;
-	      var all_print_status = _state.all_print_status;
-
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'panel search' },
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'panel-body' },
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'form-group form-inline' },
-	            _react2['default'].createElement('input', _extends({}, keywords, { className: 'form-control input-xs v-mg', placeholder: '关键字' })),
-	            ' 开始时间',
-	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': begin_time, className: 'short-input' }),
-	            ' 配送时间',
-	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': end_time, className: 'short-input space-right' }),
-	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_type, { options: delivery_types, 'default-text': '选择配送方式', className: 'space-right' })),
-	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, print_status, { options: all_print_status, 'default-text': '是否打印', className: 'space-right' })),
-	            _react2['default'].createElement(_commonSelect2['default'], { 'default-text': '是否有祝福贺卡', className: 'space-right' }),
-	            (0, _utilsAcl2['default'])('DeliveryManageDeliveryAddressFilter') ? [_react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), options: provinces, ref: 'province', key: 'province', 'default-text': '选择省份', className: 'space-right' })), _react2['default'].createElement(_commonSelect2['default'], _extends({}, city_id, { options: cities, 'default-text': '选择城市', ref: 'city', key: 'city', className: 'space-right' }))] : null,
-	            _react2['default'].createElement(
-	              'button',
-	              { disabled: search_ing, 'data-submitting': search_ing, onClick: this.search.bind(this), className: 'btn btn-theme btn-xs' },
-	              _react2['default'].createElement('i', { className: 'fa fa-search', style: { 'padding': '0 3px' } })
-	            )
-	          ),
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'form-group form-inline' },
-	            _react2['default'].createElement(
-	              'button',
-	              { onClick: this.printHandler.bind(this), className: 'btn btn-theme space-right btn-xs' },
-	              '批量打印'
-	            ),
-	            _react2['default'].createElement(
-	              'button',
-	              { onClick: this.onScanHandler.bind(this), className: 'btn btn-theme btn-xs space-right' },
-	              '扫描'
-	            ),
-	            _react2['default'].createElement(
-	              'button',
-	              { onClick: this.batchEdit.bind(this), className: 'btn btn-theme btn-xs' },
-	              '批量编辑配送员'
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      setTimeout((function () {
-	        var getProvinces = this.props.getProvinces;
-
-	        getProvinces();
-	        (0, _utilsLazy_load2['default'])('noty');
-	      }).bind(this), 0);
-	    }
-	  }, {
-	    key: 'onProvinceChange',
-	    value: function onProvinceChange(callback, e) {
-	      var value = e.target.value;
-
-	      this.props.provinceReset();
-	      if (value != this.refs.province.props['default-value']) var $city = $((0, _reactDom.findDOMNode)(this.refs.city));
-	      this.props.getCities(value).done(function () {
-	        $city.trigger('focus'); //聚焦已使city_id的值更新
-	      });
-	      callback(e);
-	    }
-	  }, {
-	    key: 'search',
-	    value: function search() {
-	      var _this = this;
-
-	      this.setState({ search_ing: true });
-	      this.props.getOrderDeliveryList({ page_no: 0, page_size: this.props.page_size }).always(function () {
-	        _this.setState({ search_ing: false });
-	      });
-	    }
-	  }, {
-	    key: 'printHandler',
-	    value: function printHandler() {
-	      this.props.showBatchPrintModal();
-	    }
-	  }, {
-	    key: 'batchEdit',
-	    value: function batchEdit() {
-	      this.props.showBatchEditModal();
-	    }
-	  }, {
-	    key: 'onScanHandler',
-	    value: function onScanHandler() {
-	      this.props.showScanModal();
-	    }
-	  }]);
-
-	  return FilterHeader;
-	})(_react.Component);
-
-	FilterHeader.propTypes = {
-	  showBatchPrintModal: _react.PropTypes.func.isRequired,
-	  showBatchEditModal: _react.PropTypes.func.isRequired,
-	  provinces: _react.PropTypes.array.isRequired,
-	  cities: _react.PropTypes.array.isRequired
-	};
-	FilterHeader = (0, _reduxForm.reduxForm)({
-	  form: 'order_delivery_filter',
-	  fields: ['keywords', 'begin_time', 'end_time', 'delivery_type', 'print_status', 'province_id', 'city_id']
-	}, function (state) {
-	  var now = (0, _utilsIndex.dateFormat)(new Date());
-	  return {
-	    //赋初始值
-	    initialValues: {
-	      begin_time: now,
-	      end_time: now
-	    }
-	  };
-	})(FilterHeader);
-
-	var OrderRow = (function (_Component3) {
-	  _inherits(OrderRow, _Component3);
-
-	  function OrderRow() {
-	    _classCallCheck(this, OrderRow);
-
-	    _get(Object.getPrototypeOf(OrderRow.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(OrderRow, [{
-	    key: 'render',
-	    value: function render() {
-	      var props = this.props;
-
-	      var delivery_time = props.delivery_time.split(' ');
-	      var _order_status = _configAppConfig.order_status[props.status] || {};
-	      return _react2['default'].createElement(
-	        'tr',
-	        { onClick: this.clickHandler.bind(this), className: props.active_order_id == props.order_id ? 'active' : '' },
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement('input', { onChange: this.checkOrderHandler.bind(this), checked: props.checked, type: 'checkbox' })
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.print_status != 'PRINTABLE' ? [_react2['default'].createElement(
-	            'a',
-	            { onClick: this.showEditModal.bind(this), key: 'edit', href: 'javascript:;', className: 'nowrap' },
-	            '[编辑配送员]'
-	          ), _react2['default'].createElement('br', { key: 'br' })] : null,
-	          props.print_status == 'AUDITING' ? _react2['default'].createElement(
-	            'span',
-	            { key: 'auditing' },
-	            '[正在审核]'
-	          ) : _react2['default'].createElement(
-	            'a',
-	            { onClick: this.printHandler.bind(this), key: 'print', href: 'javascript:;' },
-	            props.print_status == 'PRINTABLE' ? _react2['default'].createElement(
-	              'span',
-	              { key: 'printable' },
-	              '[打印]'
-	            ) : props.print_status == 'UNPRINTABLE' ? _react2['default'].createElement(
-	              'span',
-	              { key: 'unprintable' },
-	              '[申请打印]'
-	            ) : _react2['default'].createElement(
-	              'span',
-	              { key: 'reprintable' },
-	              '[重新打印]'
-	            )
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _configAppConfig.PRINT_STATUS[props.print_status]
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.deliveryman_name,
-	          _react2['default'].createElement('br', null),
-	          props.deliveryman_mobile
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'time' },
-	            delivery_time[0],
-	            _react2['default'].createElement('br', null),
-	            delivery_time[1]
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.owner_name,
-	          _react2['default'].createElement('br', null),
-	          props.owner_mobile
-	        ),
-	        _react2['default'].createElement(_commonRecipient_info2['default'], { data: props }),
-	        _react2['default'].createElement(
-	          'td',
-	          { className: 'text-left' },
-	          (0, _utilsIndex.reactReplace)(props.greeting_card, '|', _react2['default'].createElement('br', null))
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.exchange_time
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'order-status', style: { color: _order_status.color } },
-	            _order_status.value
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'a',
-	            { onClick: props.viewOrderDetail, href: 'javascript:;' },
-	            props.order_id
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.remarks
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.updated_by
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'a',
-	            { onClick: this.viewOrderOperationRecord.bind(this), className: 'inline-block time', href: 'javascript:;' },
-	            props.updated_time
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'showEditModal',
-	    value: function showEditModal(e) {
-	      this.props.showEditModal(this.props);
-	      e.stopPropagation();
-	    }
-	  }, {
-	    key: 'printHandler',
-	    value: function printHandler(e) {
-	      this.props.printHandler(this.props);
-	      e.stopPropagation();
-	    }
-	  }, {
-	    key: 'checkOrderHandler',
-	    value: function checkOrderHandler(e) {
-	      var _props2 = this.props;
-	      var order_id = _props2.order_id;
-	      var checkOrderHandler = _props2.checkOrderHandler;
-
-	      checkOrderHandler(order_id, e.target.checked);
-	      // e.stopPropagation();
-	    }
-	  }, {
-	    key: 'clickHandler',
-	    value: function clickHandler() {
-	      this.props.activeOrderHandler(this.props.order_id);
-	    }
-	  }, {
-	    key: 'viewOrderOperationRecord',
-	    value: function viewOrderOperationRecord(e) {
-	      this.props.viewOrderOperationRecord(this.props);
-	      e.stopPropagation();
-	    }
-	  }]);
-
-	  return OrderRow;
-	})(_react.Component);
-
-	var DeliveryManagePannel = (function (_Component4) {
-	  _inherits(DeliveryManagePannel, _Component4);
-
-	  function DeliveryManagePannel(props) {
-	    _classCallCheck(this, DeliveryManagePannel);
-
-	    _get(Object.getPrototypeOf(DeliveryManagePannel.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      page_size: 5,
-	      batch_edit: false
-	    };
-	    this.showEditModal = this.showEditModal.bind(this);
-	    this.showBatchEditModal = this.showBatchEditModal.bind(this);
-	    this.showBatchPrintModal = this.showBatchPrintModal.bind(this);
-	    this.checkOrderHandler = this.checkOrderHandler.bind(this);
-	    this.activeOrderHandler = this.activeOrderHandler.bind(this);
-	    this.viewOrderDetail = this.viewOrderDetail.bind(this);
-	    this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
-	    this.printHandler = this.printHandler.bind(this);
-	    this.search = this.search.bind(this);
-	    this.showScanModal = this.showScanModal.bind(this);
-	  }
-
-	  _createClass(DeliveryManagePannel, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props3 = this.props;
-	      var filter = _props3.filter;
-	      var area = _props3.area;
-	      var deliveryman = _props3.deliveryman;
-	      var main = _props3.main;
-	      var getAllDeliveryman = _props3.getAllDeliveryman;
-	      var applyDeliveryman = _props3.applyDeliveryman;
-	      var startPrint = _props3.startPrint;
-	      var applyPrint = _props3.applyPrint;
-	      var validatePrintCode = _props3.validatePrintCode;
-	      var rePrint = _props3.rePrint;
-	      var searchByScan = _props3.searchByScan;
-	      var getOrderOptRecord = _props3.getOrderOptRecord;
-	      var resetOrderOptRecord = _props3.resetOrderOptRecord;
-	      var operationRecord = _props3.operationRecord;
-	      var _props$orders = this.props.orders;
-	      var loading = _props$orders.loading;
-	      var refresh = _props$orders.refresh;
-	      var page_no = _props$orders.page_no;
-	      var total = _props$orders.total;
-	      var list = _props$orders.list;
-	      var checked_orders = _props$orders.checked_orders;
-	      var check_order_info = _props$orders.check_order_info;
-	      var active_order_id = _props$orders.active_order_id;
-	      var showBatchPrintModal = this.showBatchPrintModal;
-	      var printHandler = this.printHandler;
-	      var showEditModal = this.showEditModal;
-	      var showScanModal = this.showScanModal;
-	      var showBatchEditModal = this.showBatchEditModal;
-	      var checkOrderHandler = this.checkOrderHandler;
-	      var viewOrderDetail = this.viewOrderDetail;
-	      var activeOrderHandler = this.activeOrderHandler;
-	      var viewOrderOperationRecord = this.viewOrderOperationRecord;
-	      var scan = main.scan;
-	      var scan_list = main.scan_list;
-	      //扫描
-	      if (scan) {
-	        list = scan_list;
-	      }
-	      var content = list.map(function (n, i) {
-	        return _react2['default'].createElement(OrderRow, _extends({
-	          key: n.order_id
-	        }, _extends({}, n, { active_order_id: active_order_id, showEditModal: showEditModal, printHandler: printHandler,
-	          checkOrderHandler: checkOrderHandler, viewOrderDetail: viewOrderDetail, activeOrderHandler: activeOrderHandler, viewOrderOperationRecord: viewOrderOperationRecord })));
-	      });
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'order-manage' },
-	        _react2['default'].createElement(TopHeader, null),
-	        _react2['default'].createElement(FilterHeader, _extends({}, _extends({}, this.props, filter, area, { showScanModal: showScanModal, showBatchPrintModal: showBatchPrintModal, showBatchEditModal: showBatchEditModal }), {
-	          page_size: this.state.page_size
-	        })),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'panel' },
-	          _react2['default'].createElement(
-	            'header',
-	            { className: 'panel-heading' },
-	            '送货列表'
-	          ),
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'panel-body' },
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'table-responsive' },
-	              _react2['default'].createElement(
-	                'table',
-	                { className: 'table table-hover text-center' },
-	                _react2['default'].createElement(
-	                  'thead',
-	                  null,
-	                  _react2['default'].createElement(
-	                    'tr',
-	                    null,
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      _react2['default'].createElement('input', { onChange: this.checkAll.bind(this), type: 'checkbox' })
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '管理操作'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '是否打印'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '配送员'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '配送时间'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '下单人'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '收货人信息'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '祝福贺卡'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '转单时间'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '订单状态'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '订单号'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '备注'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '操作人'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '操作时间'
-	                    )
-	                  )
-	                ),
-	                _react2['default'].createElement(
-	                  'tbody',
-	                  null,
-	                  (0, _commonLoading.tableLoader)(loading || refresh, content)
-	                )
-	              )
-	            ),
-	            scan ? null : _react2['default'].createElement(_commonPagination2['default'], {
-	              page_no: page_no,
-	              total_count: total,
-	              page_size: this.state.page_size,
-	              onPageChange: this.onPageChange
-	            })
-	          )
-	        ),
-	        check_order_info ? _react2['default'].createElement(
-	          'div',
-	          { className: 'panel' },
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'panel-body' },
-	            _react2['default'].createElement(
-	              'div',
-	              null,
-	              '订单产品详情'
-	            ),
-	            _react2['default'].createElement(_commonOrder_products_detail2['default'], { products: check_order_info.products })
-	          )
-	        ) : null,
-	        _react2['default'].createElement(EditModal, _extends({ ref: 'EditModal' }, { getAllDeliveryman: getAllDeliveryman, applyDeliveryman: applyDeliveryman, deliveryman: deliveryman, submitting: main.submitting }, { callback: this.search })),
-	        _react2['default'].createElement(_commonOrder_detail_modal2['default'], { ref: 'detail_modal', data: check_order_info || {} }),
-	        _react2['default'].createElement(PrintModal, _extends({ ref: 'PrintModal' }, { checked_orders: checked_orders, startPrint: startPrint, callback: this.search })),
-	        _react2['default'].createElement(ApplyPrintModal, _extends({ ref: 'ApplyPrintModal' }, { applyPrint: applyPrint, submitting: main.submitting }, { callback: this.search })),
-	        _react2['default'].createElement(RePrintModal, _extends({ ref: 'RePrintModal' }, { validatePrintCode: validatePrintCode, rePrint: rePrint, submitting: main.submitting }, { callback: this.search })),
-	        _react2['default'].createElement(_commonScan_modal2['default'], { ref: 'ScanModal', submitting: main.submitting, search: searchByScan }),
-	        _react2['default'].createElement(_commonOperation_record_modalJs2['default'], _extends({ ref: 'OperationRecordModal' }, _extends({ getOrderOptRecord: getOrderOptRecord, resetOrderOptRecord: resetOrderOptRecord }, operationRecord)))
-	      );
-	    }
-	  }, {
-	    key: 'showEditModal',
-	    value: function showEditModal(n) {
-	      this.refs.EditModal.show([n]);
-	    }
-	  }, {
-	    key: 'showBatchEditModal',
-	    value: function showBatchEditModal() {
-	      var checked_orders = this.props.orders.checked_orders;
-
-	      if (checked_orders.length) {
-	        this.refs.EditModal.show(checked_orders);
-	      } else {
-	        (0, _utilsIndex.Noty)('warning', '请先勾选订单！');
-	      }
-	    }
-	  }, {
-	    key: 'showBatchPrintModal',
-	    value: function showBatchPrintModal(n) {
-	      var checked_orders = this.props.orders.checked_orders;
-
-	      if (checked_orders.length) {
-	        this.refs.PrintModal.show();
-	      } else {
-	        (0, _utilsIndex.Noty)('warning', '请先勾选订单！');
-	      }
-	    }
-	  }, {
-	    key: 'printHandler',
-	    value: function printHandler(_ref) {
-	      var print_status = _ref.print_status;
-	      var order_id = _ref.order_id;
-
-	      if (print_status == 'PRINTABLE') {
-	        this.props.startPrint([order_id]).done(function () {
-	          this.search(); //重新请求，刷新数据
-	        }).fail(function () {
-	          (0, _utilsIndex.Noty)('error', '异常错误');
-	        });
-	      } else if (print_status == 'UNPRINTABLE') {
-	        this.refs.ApplyPrintModal.show(order_id);
-	      } else if (print_status == 'REPRINTABLE') {
-	        this.refs.RePrintModal.show(order_id); //再次打印，输入验证码
-	      }
-	    }
-	  }, {
-	    key: 'showScanModal',
-	    value: function showScanModal() {
-	      this.refs.ScanModal.show();
-	    }
-	  }, {
-	    key: 'activeOrderHandler',
-	    value: function activeOrderHandler(order_id) {
-	      if (this.props.orders.active_order_id != order_id) this.props.activeOrder(order_id);
-	    }
-	  }, {
-	    key: 'checkOrderHandler',
-	    value: function checkOrderHandler(order_id, checked) {
-	      this.props.checkOrder(order_id, checked);
-	    }
-	  }, {
-	    key: 'checkAll',
-	    value: function checkAll(e) {
-	      this.props.checkAllOrders(e.target.checked);
-	    }
-	  }, {
-	    key: 'viewOrderDetail',
-	    value: function viewOrderDetail() {
-	      this.refs.detail_modal.show();
-	    }
-	  }, {
-	    key: 'viewOrderOperationRecord',
-	    value: function viewOrderOperationRecord(order) {
-	      this.refs.OperationRecordModal.show(order);
-	    }
-	  }, {
-	    key: 'onPageChange',
-	    value: function onPageChange(page) {
-	      this.search(page);
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      this.search();
-
-	      (0, _utilsLazy_load2['default'])('noty');
-	      (0, _utilsLazy_load2['default'])('chinese_py');
-	    }
-	  }, {
-	    key: 'search',
-	    value: function search(page) {
-	      page = typeof page == 'undefined' ? this.props.orders.page_no : page;
-	      this.props.getOrderDeliveryList({ page_no: page, page_size: this.state.page_size });
-	    }
-	  }]);
-
-	  return DeliveryManagePannel;
-	})(_react.Component);
-
-	function mapStateToProps(_ref2) {
-	  var deliveryManage = _ref2.deliveryManage;
-
-	  return deliveryManage;
-	}
-
-	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
-	function mapDispatchToProps(dispatch) {
-	  return (0, _redux.bindActionCreators)(_extends({}, OrderActions, (0, _actionsArea2['default'])(), DeliverymanActions, DeliveryManageActions), dispatch);
-	}
-
-	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DeliveryManagePannel);
-
-	/***************   *******   *****************/
-	/***************   子模态框   *****************/
-	/***************   *******   *****************/
-
-	var PrintModal = _react2['default'].createClass({
-	  displayName: 'PrintModal',
-
-	  getInitialState: function getInitialState() {
-	    return {
-	      submitting: false
-	    };
-	  },
-	  render: function render() {
-	    var checked_orders = this.props.checked_orders;
-
-	    return _react2['default'].createElement(
-	      _commonStd_modal2['default'],
-	      { ref: 'modal', title: '批量打印订单', submitting: this.state.submitting, onConfirm: this.printHandler },
-	      _react2['default'].createElement(
-	        'center',
-	        null,
-	        _react2['default'].createElement(
-	          'h5',
-	          null,
-	          '您已同时勾选',
-	          _react2['default'].createElement(
-	            'span',
-	            { className: 'strong font-lg' },
-	            ' ' + checked_orders.length + ' '
-	          ),
-	          '个订单'
-	        )
-	      ),
-	      _react2['default'].createElement(
-	        'center',
-	        null,
-	        _react2['default'].createElement(
-	          'h5',
-	          null,
-	          '进行打印'
-	        )
-	      )
-	    );
-	  },
-	  printHandler: function printHandler() {
-	    var checked_orders = this.props.checked_orders;
-
-	    if (checked_orders.some(function (n) {
-	      return n.print_status != 'PRINTABLE';
-	    })) {
-	      (0, _utilsIndex.Noty)('warning', '请确定所有订单均可直接打印!');
-	      return;
-	    }
-	    this.setState({ submitting: true });
-	    this.props.startPrint(this.props.checked_orders.map(function (n) {
-	      return n.order_id;
-	    })).done((function () {
-	      (0, _utilsIndex.Noty)('success', '操作成功');
-	      this.setState({ submitting: false });
-	      this.props.callback();
-	      this.refs.modal.hide();
-	    }).bind(this)).fail(function (e) {
-	      (0, _utilsIndex.Noty)('error', e || '异常错误');
-	    });
-	  },
-	  show: function show() {
-	    this.refs.modal.show();
-	  },
-	  hide: function hide() {
-	    this.refs.modal.hide();
-	  }
-	});
-
-	var EditModal = _react2['default'].createClass({
-	  displayName: 'EditModal',
-
-	  propTypes: {
-	    'deliveryman': _react.PropTypes.object.isRequired,
-	    'getAllDeliveryman': _react.PropTypes.func.isRequired,
-	    'applyDeliveryman': _react.PropTypes.func.isRequired
-	  },
-	  getInitialState: function getInitialState() {
-	    return {
-	      all_deliveryman: [],
-	      filter_results: [],
-	      selected_deliveryman_id: undefined,
-	      orders: []
-	    };
-	  },
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-	    var _this2 = this;
-
-	    var deliveryman = nextProps.deliveryman;
-
-	    //只需要初始化一次
-	    if (deliveryman.load_success && !this._hasInitial) {
-	      this._hasInitial = true;
-	      var list = deliveryman.list;
-
-	      var build = (function () {
-	        var new_data = list.map(function (n) {
-	          n.py = window.makePy(n.deliveryman_name);
-	          return n;
-	        });
-	        this.setState({
-	          all_deliveryman: list, filter_results: new_data, selected_deliveryman_id: list.length && list[0].deliveryman_id
-	        });
-	      }).bind(this);
-
-	      if (window.makePy) {
-	        build();
-	      } else {
-	        //异步加载的chinese_py库可能还未加载完成，所以需要定时检测
-	        this._build_timer = setInterval(function () {
-	          if (window.makePy) {
-	            build();
-	            clearInterval(_this2._build_timer);
-	            delete _this2._build_timer;
-	          }
-	        }, 100);
-	      }
-	    }
-	  },
-	  translate: function translate() {},
-	  render: function render() {
-	    var _state2 = this.state;
-	    var filter_results = _state2.filter_results;
-	    var selected_deliveryman_id = _state2.selected_deliveryman_id;
-	    var orders = _state2.orders;
-	    var _props4 = this.props;
-	    var batch_edit = _props4.batch_edit;
-	    var submitting = _props4.submitting;
-
-	    var content = filter_results.map(function (n) {
-	      return _react2['default'].createElement(
-	        'option',
-	        { key: n.deliveryman_id, value: n.deliveryman_id },
-	        n.deliveryman_name + ' ' + n.deliveryman_mobile
-	      );
-	    });
-	    return _react2['default'].createElement(
-	      _commonStd_modal2['default'],
-	      { onConfirm: this.saveHandler, onCancel: this.hideCallback, submitting: submitting, ref: 'modal', title: '编辑配送人员' },
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'form-group form-inline mg-15' },
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'input-group input-group-sm' },
-	          _react2['default'].createElement(
-	            'span',
-	            { className: 'input-group-addon' },
-	            _react2['default'].createElement('i', { className: 'fa fa-filter' })
-	          ),
-	          _react2['default'].createElement('input', { onChange: this.filterHandler, type: 'text',
-	            className: 'form-control', style: { 'width': '200' }, placeholder: '配送员拼音首字母 或 手机号码' })
-	        )
-	      ),
-	      _react2['default'].createElement(
-	        'center',
-	        { className: 'form-inline mg-15', style: { 'padding': '33px 0', 'textIndent': -15 } },
-	        orders.length > 1 ? _react2['default'].createElement(
-	          'div',
-	          null,
-	          _react2['default'].createElement(
-	            'h5',
-	            { style: { 'marginTop': 0 } },
-	            '您已同时勾选',
-	            _react2['default'].createElement(
-	              'span',
-	              { className: 'strong font-lg' },
-	              ' ' + orders.length + ' '
-	            ),
-	            '个订单'
-	          ),
-	          _react2['default'].createElement(
-	            'h5',
-	            { style: { 'marginBottom': 30 } },
-	            '来编辑配送人员'
-	          )
-	        ) : null,
-	        _react2['default'].createElement(
-	          'div',
-	          { style: { 'textIndent': -38 } },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '配送人员　'
-	          ),
-	          _react2['default'].createElement(
-	            'select',
-	            { onChange: this.onSelectDeliveryman, value: selected_deliveryman_id, className: 'form-control input-sm', style: { 'minWidth': '145px' } },
-	            content.length ? content : _react2['default'].createElement(
-	              'option',
-	              null,
-	              '无'
-	            )
-	          )
-	        )
-	      )
-	    );
-	  },
-	  filterHandler: function filterHandler(e) {
-	    var value = e.target.value;
-	    var all_deliveryman = this.state.all_deliveryman;
-
-	    var results = [];
-	    value = value.toUpperCase();
-	    if (value === '') {
-	      results = all_deliveryman;
-	    } else if (/^\d+$/i.test(value)) {
-	      //电话号码
-	      results = all_deliveryman.filter(function (n) {
-	        return n.phone.indexOf(value) == 0;
-	      });
-	    } else if (/^\w+$/i.test(value)) {
-	      //首字母
-	      results = all_deliveryman.filter(function (n) {
-	        return n.py.some(function (m) {
-	          return m.indexOf(value) == 0;
-	        });
-	      });
-	    } else {
-	      //中文全称
-	      results = all_deliveryman.filter(function (n) {
-	        return n.text.indexOf(value) != -1;
-	      });
-	    }
-	    this.setState({ filter_results: results, selected_deliveryman_id: results.length && results[0].deliveryman_id });
-	  },
-	  onSelectDeliveryman: function onSelectDeliveryman(e) {
-	    this.setState({ selected_deliveryman_id: e.target.value });
-	  },
-	  saveHandler: function saveHandler() {
-	    var _state3 = this.state;
-	    var selected_deliveryman_id = _state3.selected_deliveryman_id;
-	    var orders = _state3.orders;
-
-	    var selected_deliveryman = this.state.filter_results.filter(function (n) {
-	      return n.deliveryman_id == selected_deliveryman_id;
-	    });
-	    this.props.applyDeliveryman({
-	      deliveryman_id: selected_deliveryman_id,
-	      deliveryman_name: selected_deliveryman.length && selected_deliveryman[0].deliveryman_name,
-	      deliveryman_mobile: selected_deliveryman.length && selected_deliveryman[0].deliveryman_mobile,
-	      order_ids: orders.map(function (n) {
-	        return n.order_id;
-	      })
-	    }).done((function (json) {
-	      (0, _utilsIndex.Noty)('success', '操作成功！');
-	      this.props.callback();
-	      this.refs.modal.hide();
-	    }).bind(this)).fail(function (json) {
-	      console.error(json);
-	      (0, _utilsIndex.Noty)('error', '操作失败！');
-	    });
-	  },
-	  componentDidMount: function componentDidMount() {
-	    var _this3 = this;
-
-	    //稍微延时一下，
-	    setTimeout(function () {
-	      _this3.props.getAllDeliveryman();
-	    }, 200);
-	  },
-	  show: function show(orders) {
-	    this.setState({ orders: orders });
-	    this.refs.modal.show();
-	  },
-	  hideCallback: function hideCallback() {
-	    this.setState({
-	      filter_results: this.state.all_deliveryman,
-	      selected_deliveryman_id: undefined,
-	      orders: []
-	    });
-	  }
-	});
-
-	var ApplyPrintModal = _react2['default'].createClass({
-	  displayName: 'ApplyPrintModal',
-
-	  propTypes: {
-	    applyPrint: _react.PropTypes.func.isRequired
-	  },
-	  getInitialState: function getInitialState() {
-	    return {
-	      order_id: '',
-	      reason: '',
-	      applicant_mobile: '',
-	      director_mobile: ''
-	    };
-	  },
-	  mixins: [_reactAddonsLinkedStateMixin2['default']],
-	  render: function render() {
-	    return _react2['default'].createElement(
-	      _commonStd_modal2['default'],
-	      { onConfirm: this.saveHandler, onCancel: this.hideCallback, submitting: this.props.submitting, ref: 'modal', size: 'sm', title: '重新申请打印' },
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'pl-50' },
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　订单编号：'
-	          ),
-	          _react2['default'].createElement(
-	            'span',
-	            null,
-	            ' ' + this.state.order_id
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　申请理由：'
-	          ),
-	          _react2['default'].createElement('textarea', { valueLink: this.linkState('reason'), cols: '18', rows: '2', className: 'form-control input-xs' })
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '申请人手机：'
-	          ),
-	          _react2['default'].createElement('input', { valueLink: this.linkState('applicant_mobile'), type: 'text', className: 'form-control input-xs' })
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　主管手机：'
-	          ),
-	          _react2['default'].createElement('input', { valueLink: this.linkState('director_mobile'), type: 'text', className: 'form-control input-xs' })
-	        )
-	      )
-	    );
-	  },
-	  saveHandler: function saveHandler() {
-	    var applicant_mobile = this.state.applicant_mobile;
-
-	    if (!_utilsIndex.form.isMobile(applicant_mobile)) {
-	      (0, _utilsIndex.Noty)('warning', '错误的电话号！');return;
-	    }
-	    this.props.applyPrint(_extends({}, this.state, { order_id: this.state.order_id })).done((function () {
-	      this.props.callback();
-	      this.refs.modal.hide();
-	    }).bind(this)).fail(function (msg, code) {
-	      (0, _utilsIndex.Noty)('error', msg || '服务器异常');
-	    });
-	  },
-	  show: function show(order_id) {
-	    this.setState({ order_id: order_id }, function () {
-	      this.refs.modal.show();
-	    });
-	  },
-	  hideCallback: function hideCallback() {
-	    // this.setState(this.getInitialState());
-	  }
-	});
-
-	//再次打印，输入验证码的弹窗
-	var RePrintModal = _react2['default'].createClass({
-	  displayName: 'RePrintModal',
-
-	  propTypes: {
-	    rePrint: _react.PropTypes.func.isRequired
-	  },
-	  getInitialState: function getInitialState() {
-	    return {
-	      order_id: '',
-	      validate_code: ''
-	    };
-	  },
-	  render: function render() {
-	    return _react2['default'].createElement(
-	      _commonStd_modal2['default'],
-	      { onConfirm: this.saveHandler, onCancel: this.hideCallback, submitting: this.props.submitting, ref: 'modal', size: 'sm', title: '打印' },
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'pl-50' },
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '订单编号：'
-	          ),
-	          _react2['default'].createElement(
-	            'span',
-	            null,
-	            ' ' + this.state.order_id
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　验证码：'
-	          ),
-	          _react2['default'].createElement('input', { valueLink: this.linkState('validate_code'), type: 'text', className: 'form-control input-xs' })
-	        )
-	      )
-	    );
-	  },
-	  saveHandler: function saveHandler() {
-	    var order_id = this.state.order_id;
-
-	    this.props.validatePrintCode(order_id, this.state.validate_code).done((function () {
-	      this.props.rePrint(order_id).done((function () {
-	        this.refs.modal.hide();
-	        setTimeout(this.props.callback, 1000);
-	      }).bind(this));
-	      this.refs.modal.hide();
-	    }).bind(this)).fail(function () {
-	      (0, _utilsIndex.Noty)('error', '服务器异常');
-	    });
-	  },
-	  mixins: [_reactAddonsLinkedStateMixin2['default']],
-	  show: function show(order_id) {
-	    this.setState({ order_id: order_id }, function () {
-	      this.refs.modal.show();
-	    });
-	  },
-	  hideCallback: function hideCallback() {
-	    this.setState(this.getInitialState());
-	  }
-	});
-	module.exports = exports['default'];
-
-/***/ },
-/* 329 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports.getAllDeliveryman = getAllDeliveryman;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _utilsRequest = __webpack_require__(234);
-
-	//Promise
-
-	var _configUrl = __webpack_require__(239);
-
-	var _configUrl2 = _interopRequireDefault(_configUrl);
-
-	var GET_ALL_DELIVERYMAN = 'GET_ALL_DELIVERYMAN';
-	exports.GET_ALL_DELIVERYMAN = GET_ALL_DELIVERYMAN;
-
-	function getAllDeliveryman() {
-	  return (0, _utilsRequest.GET)(_configUrl2['default'].deliveryman.toString(), null, GET_ALL_DELIVERYMAN);
-	  // return TEST([
-	  //   { deliveryman_id: '1', deliveryman_name: '张三三', deliveryman_mobile: '17744445555' },
-	  //   { deliveryman_id: '2', deliveryman_name: '李四四', deliveryman_mobile: '13544445555' },
-	  //   { deliveryman_id: '3', deliveryman_name: '王五五', deliveryman_mobile: '13344445555' },
-	  //   { deliveryman_id: '4', deliveryman_name: '韩梅梅', deliveryman_mobile: '13644445555' },
-	  //   { deliveryman_id: '5', deliveryman_name: '刘小明', deliveryman_mobile: '18944445555' }
-	  // ], GET_ALL_DELIVERYMAN);
-	}
-
-/***/ },
-/* 330 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports.applyDeliveryman = applyDeliveryman;
-	exports.startPrint = startPrint;
-	exports.applyPrint = applyPrint;
-	exports.validatePrintCode = validatePrintCode;
-	exports.rePrint = rePrint;
-	exports.searchByScan = searchByScan;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _utilsRequest = __webpack_require__(234);
-
-	//Promise
-
-	var _configUrl = __webpack_require__(239);
-
-	var _configUrl2 = _interopRequireDefault(_configUrl);
-
-	var _utilsPromise = __webpack_require__(238);
-
-	var _utilsPromise2 = _interopRequireDefault(_utilsPromise);
-
-	var APPLY_DELIVERYMAN = 'APPLY_DELIVERYMAN';exports.APPLY_DELIVERYMAN = APPLY_DELIVERYMAN;
-	//key: 0->正在处理，1->成功，2->失败
-
-	function applyDeliveryman(data) {
-	  //若是异步的话，那么该函数必须也返回一个函数
-	  return (0, _utilsRequest.PUT)(_configUrl2['default'].deliveryman_apply.toString(), data, APPLY_DELIVERYMAN);
-	  // return TEST(null, [
-	  //   {type: APPLY_DELIVERYMAN, key: 0},  //立即派发
-	  //   {type: APPLY_DELIVERYMAN, key: 1}   //2000毫秒后派发
-	  // ], 2000, true);
-	}
-
-	function startPrint(order_ids) {
-	  return function (dispatch) {
-	    return new _utilsPromise2['default'](function (resolve, reject) {
-	      if (!order_ids.length) {
-	        reject('参数错误');
-	      } else {
-	        try {
-	          window.open(_configUrl2['default'].print.toString() + '?order_ids=' + order_ids.join(','));
-	          setTimeout(resolve, 500);
-	        } catch (e) {
-	          console.error(e);
-	          reject('打印出错');
-	        }
-	      }
-	    });
-	  };
-	  // return test();
-	}
-
-	var APPLY_PRINT = 'APPLY_PRINT';exports.APPLY_PRINT = APPLY_PRINT;
-	//key: 0->正在处理，1->成功，2->失败
-
-	function applyPrint(data) {
-	  //若是异步的话，那么该函数必须也返回一个函数
-	  return (0, _utilsRequest.POST)(_configUrl2['default'].apply_print.toString(), data, APPLY_PRINT);
-	  // return TEST(null, [
-	  //   {type: APPLY_PRINT, key: 0},  //立即派发
-	  //   {type: APPLY_PRINT, key: 1}   //2000毫秒后派发
-	  // ], 2000, true);
-	}
-
-	var REPRINT_VALIDATE_CODE = 'REPRINT_VALIDATE_CODE';exports.REPRINT_VALIDATE_CODE = REPRINT_VALIDATE_CODE;
-	//key: 0->正在处理，1->成功，2->失败
-
-	function validatePrintCode(order_id, validate_code) {
-	  //若是异步的话，那么该函数必须也返回一个函数
-	  return (0, _utilsRequest.PUT)(_configUrl2['default'].reprint_validate.toString(order_id), { validate_code: validate_code }, REPRINT_VALIDATE_CODE);
-	  // return TEST(null, [
-	  //   {type: REPRINT_VALIDATE_CODE, key: 0},  //立即派发
-	  //   {type: REPRINT_VALIDATE_CODE, key: 1}   //2000毫秒后派发
-	  // ], 2000, true);
-	}
-
-	function rePrint(order_id) {
-	  return function (dispatch) {
-	    return new _utilsPromise2['default'](function (resolve, reject) {
-	      try {
-	        window.open(_configUrl2['default'].reprint.toString(order_id));
-	        resolve();
-	      } catch (e) {
-	        console.error(e);
-	        reject('打印出错');
-	      }
-	    });
-	  };
-	}
-
-	var GET_DELIVERY_SCAN_LIST = 'GET_DELIVERY_SCAN_LIST';
-	exports.GET_DELIVERY_SCAN_LIST = GET_DELIVERY_SCAN_LIST;
-
-	function searchByScan(order_ids) {
-	  return (0, _utilsRequest.POST)(_configUrl2['default'].order_delivery.toString(), { order_ids: order_ids }, GET_DELIVERY_SCAN_LIST);
-	}
-
-/***/ },
-/* 331 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _commonStd_modal = __webpack_require__(301);
-
-	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	/**
-	 * 扫描窗口
-	 */
-
-	var RotateLoading = (function (_Component) {
-	  _inherits(RotateLoading, _Component);
-
-	  function RotateLoading() {
-	    _classCallCheck(this, RotateLoading);
-
-	    _get(Object.getPrototypeOf(RotateLoading.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(RotateLoading, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2['default'].createElement(
-	        'div',
-	        _extends({ className: 'inline-block' }, this.props),
-	        _react2['default'].createElement('span', { className: 'rotate-loading-1' }),
-	        _react2['default'].createElement('span', { className: 'rotate-loading-2' }),
-	        _react2['default'].createElement('span', { className: 'rotate-loading-3' })
-	      );
-	    }
-	  }]);
-
-	  return RotateLoading;
-	})(_react.Component);
-
-	var ScanModal = (function (_Component2) {
-	  _inherits(ScanModal, _Component2);
-
-	  function ScanModal(props) {
-	    _classCallCheck(this, ScanModal);
-
-	    _get(Object.getPrototypeOf(ScanModal.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      scanable: true,
-	      value: '',
-	      order_ids: []
-	    };
-	    this.show = this.show.bind(this);
-	    this.hide = this.hide.bind(this);
-	  }
-
-	  _createClass(ScanModal, [{
-	    key: 'render',
-	    value: function render() {
-	      var _this = this;
-
-	      var content = this.state.order_ids.map(function (n, i) {
-	        return _react2['default'].createElement(
-	          'div',
-	          { key: n, className: 'mg-15 inline-block deleteable-row' },
-	          _react2['default'].createElement(
-	            'span',
-	            { className: 'strong' },
-	            n
-	          ),
-	          _react2['default'].createElement(
-	            'span',
-	            { onClick: _this['delete'].bind(_this, i), className: 'del-btn space' },
-	            '×'
-	          )
-	        );
-	      });
-	      return _react2['default'].createElement(
-	        _commonStd_modal2['default'],
-	        { onConfirm: this.onConfirm.bind(this), onCancel: this.hide, ref: 'modal', title: '批量扫描' },
-	        _react2['default'].createElement(
-	          'center',
-	          null,
-	          this.state.scanable ? _react2['default'].createElement(
-	            'h5',
-	            { className: 'strong font-lg' },
-	            '可以扫描',
-	            _react2['default'].createElement(RotateLoading, { style: { 'marginLeft': 5 } })
-	          ) : _react2['default'].createElement(
-	            'h5',
-	            { className: 'text-danger font-lg' },
-	            '非扫描状态，请点击以下输入框'
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'center',
-	          null,
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'form-group mg-15 form-inline' },
-	            _react2['default'].createElement('input', {
-	              ref: 'scan_input',
-	              value: this.state.value,
-	              onChange: this.onInput.bind(this),
-	              type: 'text',
-	              className: 'form-control input-xs long-input text-center',
-	              placeholder: ''
-	            })
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'center',
-	          null,
-	          content
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'onInput',
-	    value: function onInput(e) {
-	      var value = e.target.value;
-	      var order_ids = this.state.order_ids;
-
-	      if (value.length == 16) {
-	        if (!order_ids.some(function (n) {
-	          return n == value;
-	        })) {
-	          this.setState({ value: '', order_ids: order_ids.concat(value) });
-	        }
-	      } else {
-	        this.setState({ value: value });
-	      }
-	    }
-	  }, {
-	    key: 'delete',
-	    value: function _delete(i) {
-	      this.state.order_ids.splice(i, 1);
-	      this.setState({ order_ids: this.state.order_ids });
-	    }
-	  }, {
-	    key: 'show',
-	    value: function show() {
-	      this.refs.modal.show((function () {
-	        this.refs.scan_input.focus();
-	      }).bind(this));
-	    }
-	  }, {
-	    key: 'hide',
-	    value: function hide() {
-	      $(this.refs.input).off();
-	      this.setState({ value: '', order_ids: [] });
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      $(this.refs.scan_input).on('focus', (function () {
-	        this.setState({ scanable: true, value: '' });
-	      }).bind(this)).on('blur', (function () {
-	        this.setState({ scanable: false, value: '' });
-	      }).bind(this));
-	    }
-	  }, {
-	    key: 'onConfirm',
-	    value: function onConfirm() {
-	      var order_ids = this.state.order_ids;
-
-	      if (order_ids.length) {
-	        this.props.search(order_ids).done(this.refs.modal.hide);
-	      } else {
-	        (0, _utilsIndex.Noty)('warning', '没有订单');
-	      }
-	    }
-	  }]);
-
-	  return ScanModal;
-	})(_react.Component);
-
-	;
-
-	ScanModal.PropTypes = {
-	  search: _react.PropTypes.func.isRequired
-	};
-
-	exports['default'] = ScanModal;
-	module.exports = exports['default'];
-
-/***/ },
-/* 332 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(154);
-
-	var _reactRedux = __webpack_require__(216);
-
-	var _redux = __webpack_require__(223);
-
-	var _reactAddonsLinkedStateMixin = __webpack_require__(284);
-
-	var _reactAddonsLinkedStateMixin2 = _interopRequireDefault(_reactAddonsLinkedStateMixin);
-
-	var _reduxForm = __webpack_require__(242);
-
-	var _commonDatepicker = __webpack_require__(295);
-
-	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
-
-	var _commonSelect = __webpack_require__(296);
-
-	var _commonSelect2 = _interopRequireDefault(_commonSelect);
-
-	var _commonTime_input = __webpack_require__(333);
-
-	var _commonTime_input2 = _interopRequireDefault(_commonTime_input);
-
-	var _commonPagination = __webpack_require__(297);
-
-	var _commonPagination2 = _interopRequireDefault(_commonPagination);
-
-	var _commonLine_router = __webpack_require__(314);
-
-	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
-
-	var _commonStd_modal = __webpack_require__(301);
-
-	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
-
-	var _commonLoading = __webpack_require__(300);
-
-	var _commonRadio_group = __webpack_require__(309);
-
-	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
-
-	var _commonRecipient_info = __webpack_require__(302);
-
-	var _commonRecipient_info2 = _interopRequireDefault(_commonRecipient_info);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var _history_instance = __webpack_require__(211);
-
-	var _history_instance2 = _interopRequireDefault(_history_instance);
-
-	var _utilsLazy_load = __webpack_require__(303);
-
-	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var _utilsAcl = __webpack_require__(240);
-
-	var _utilsAcl2 = _interopRequireDefault(_utilsAcl);
-
-	var _actionsOrders = __webpack_require__(290);
-
-	var OrderActions = _interopRequireWildcard(_actionsOrders);
-
-	var _actionsArea = __webpack_require__(288);
-
-	var _actionsArea2 = _interopRequireDefault(_actionsArea);
-
-	var _actionsDeliveryman = __webpack_require__(329);
-
-	var DeliverymanActions = _interopRequireWildcard(_actionsDeliveryman);
-
-	var _actionsDelivery_distribute = __webpack_require__(334);
-
-	var DeliveryDistributeActions = _interopRequireWildcard(_actionsDelivery_distribute);
-
-	var _actionsOrder_manage_form = __webpack_require__(292);
-
-	var _commonOrder_products_detail = __webpack_require__(306);
-
-	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
-
-	var _commonOrder_detail_modal = __webpack_require__(307);
-
-	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
-
-	var _commonScan_modal = __webpack_require__(331);
-
-	var _commonScan_modal2 = _interopRequireDefault(_commonScan_modal);
-
-	var _commonOperation_record_modalJs = __webpack_require__(311);
-
-	var _commonOperation_record_modalJs2 = _interopRequireDefault(_commonOperation_record_modalJs);
-
-	var TopHeader = (function (_Component) {
-	  _inherits(TopHeader, _Component);
-
-	  function TopHeader() {
-	    _classCallCheck(this, TopHeader);
-
-	    _get(Object.getPrototypeOf(TopHeader.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(TopHeader, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'clearfix top-header' },
-	        _react2['default'].createElement(_commonLine_router2['default'], {
-	          routes: [{ name: '送货单管理', link: '' }, { name: '配送单列表', link: '' }] })
-	      );
-	    }
-	  }]);
-
-	  return TopHeader;
-	})(_react.Component);
-
-	var FilterHeader = (function (_Component2) {
-	  _inherits(FilterHeader, _Component2);
-
-	  function FilterHeader(props) {
-	    _classCallCheck(this, FilterHeader);
-
-	    _get(Object.getPrototypeOf(FilterHeader.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      search_ing: false,
-	      all_print_status: _configAppConfig.YES_OR_NO
-	    };
-	  }
-
-	  _createClass(FilterHeader, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var _props$fields = _props.fields;
-	      var keywords = _props$fields.keywords;
-	      var begin_time = _props$fields.begin_time;
-	      var end_time = _props$fields.end_time;
-	      var pay_modes_id = _props$fields.pay_modes_id;
-	      var order_status = _props$fields.order_status;
-	      var deliveryman_id = _props$fields.deliveryman_id;
-	      var delivery_id = _props$fields.delivery_id;
-	      var province_id = _props$fields.province_id;
-	      var city_id = _props$fields.city_id;
-	      var provinces = _props.provinces;
-	      var cities = _props.cities;
-	      var delivery_stations = _props.delivery_stations;
-	      var all_order_status = _props.all_order_status;
-	      var all_pay_modes = _props.all_pay_modes;
-	      var all_deliveryman = _props.all_deliveryman;
-	      var search_ing = this.state.search_ing;
-
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'panel search' },
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'panel-body' },
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'form-group form-inline' },
-	            _react2['default'].createElement('input', _extends({}, keywords, { className: 'form-control input-xs v-mg', placeholder: '关键字' })),
-	            ' 开始时间',
-	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': begin_time, className: 'short-input' }),
-	            ' 配送时间',
-	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': end_time, className: 'short-input space-right' }),
-	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_modes_id, { options: all_pay_modes, 'default-text': '选择支付方式', className: 'space-right' })),
-	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, order_status, { options: all_order_status, 'default-text': '选择订单状态', className: 'space-right' })),
-	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, deliveryman_id, { options: all_deliveryman.map(function (n) {
-	                return { id: n.deliveryman_id, text: n.deliveryman_name };
-	              }), 'default-text': '选择配送员', className: 'space-right' })),
-	            (0, _utilsAcl2['default'])('DeliveryManageDistributeStationFilter') ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: delivery_stations, 'default-text': '选择配送中心', className: 'space-right' })) : null
-	          ),
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'form-group form-inline' },
-	            (0, _utilsAcl2['default'])('DeliveryManageDistributeAddressFilter') ? [_react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), options: provinces, ref: 'province', key: 'province', 'default-text': '选择省份', className: 'space-right' })), _react2['default'].createElement(_commonSelect2['default'], _extends({}, city_id, { options: cities, 'default-text': '选择城市', ref: 'city', key: 'city', className: 'space-right' }))] : null,
-	            _react2['default'].createElement(
-	              'button',
-	              { disabled: search_ing, 'data-submitting': search_ing, onClick: this.search.bind(this), className: 'btn btn-theme btn-xs space-right' },
-	              _react2['default'].createElement('i', { className: 'fa fa-search', style: { 'padding': '0 3px' } })
-	            ),
-	            '　',
-	            _react2['default'].createElement(
-	              'button',
-	              { onClick: this.onScanHandler.bind(this), className: 'btn btn-theme btn-xs space-right' },
-	              '扫描'
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      setTimeout((function () {
-	        var _props2 = this.props;
-	        var getProvinces = _props2.getProvinces;
-	        var getPayModes = _props2.getPayModes;
-	        var getAllDeliveryman = _props2.getAllDeliveryman;
-	        var getDeliveryStations = _props2.getDeliveryStations;
-
-	        getProvinces();
-	        getPayModes();
-	        getAllDeliveryman();
-	        getDeliveryStations();
-	        (0, _utilsLazy_load2['default'])('noty');
-	      }).bind(this), 0);
-	    }
-	  }, {
-	    key: 'onProvinceChange',
-	    value: function onProvinceChange(callback, e) {
-	      var value = e.target.value;
-
-	      this.props.provinceReset();
-	      if (value != this.refs.province.props['default-value']) var $city = $((0, _reactDom.findDOMNode)(this.refs.city));
-	      this.props.getCities(value).done(function () {
-	        $city.trigger('focus'); //聚焦已使city_id的值更新
-	      });
-	      callback(e);
-	    }
-	  }, {
-	    key: 'search',
-	    value: function search() {
-	      var _this = this;
-
-	      this.setState({ search_ing: true });
-	      this.props.getOrderDistributeList({ page_no: 0, page_size: this.props.page_size }).always(function () {
-	        _this.setState({ search_ing: false });
-	      });
-	    }
-	  }, {
-	    key: 'onScanHandler',
-	    value: function onScanHandler() {
-	      this.props.showScanModal();
-	    }
-	  }]);
-
-	  return FilterHeader;
-	})(_react.Component);
-
-	FilterHeader.propTypes = {
-	  provinces: _react.PropTypes.array.isRequired,
-	  cities: _react.PropTypes.array.isRequired,
-	  all_pay_modes: _react.PropTypes.array.isRequired,
-	  delivery_stations: _react.PropTypes.array.isRequired,
-	  all_order_status: _react.PropTypes.array.isRequired,
-	  all_pay_modes: _react.PropTypes.array.isRequired,
-	  all_deliveryman: _react.PropTypes.array.isRequired
-	};
-	FilterHeader = (0, _reduxForm.reduxForm)({
-	  form: 'order_distribute_filter',
-	  fields: ['keywords', 'begin_time', 'end_time', 'pay_modes_id', 'order_status', 'deliveryman_id', 'delivery_id', 'province_id', 'city_id']
-	}, function (state) {
-	  var now = (0, _utilsIndex.dateFormat)(new Date());
-	  return {
-	    //赋初始值
-	    initialValues: {
-	      begin_time: now,
-	      end_time: now
-	    }
-	  };
-	})(FilterHeader);
-
-	var OrderRow = (function (_Component3) {
-	  _inherits(OrderRow, _Component3);
-
-	  function OrderRow() {
-	    _classCallCheck(this, OrderRow);
-
-	    _get(Object.getPrototypeOf(OrderRow.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(OrderRow, [{
-	    key: 'render',
-	    value: function render() {
-	      var props = this.props;
-
-	      var _order_status = _configAppConfig.order_status[props.status] || {};
-	      return _react2['default'].createElement(
-	        'tr',
-	        { onClick: this.clickHandler.bind(this), className: props.active_order_id == props.order_id ? 'active' : '' },
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement('input', { onChange: this.checkOrderHandler.bind(this), checked: props.checked, disabled: props.status == 'COMPLETED', type: 'checkbox' })
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.status == 'DELIVERY' ? [_react2['default'].createElement(
-	            'a',
-	            { onClick: this.showSignedModal.bind(this), key: 'signin', href: 'javascript:;' },
-	            '[签收]'
-	          ), _react2['default'].createElement('br', { key: 'br' }), _react2['default'].createElement(
-	            'a',
-	            { onClick: this.showUnSignedModal.bind(this), key: 'unsignin', href: 'javascript:;' },
-	            '[未签收]'
-	          )] : null
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          (0, _utilsIndex.parseTime)(props.delivery_time)
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          '￥',
-	          props.total_amount / 100
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.owner_name,
-	          _react2['default'].createElement('br', null),
-	          props.owner_mobile
-	        ),
-	        _react2['default'].createElement(_commonRecipient_info2['default'], { data: props }),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'a',
-	            { onClick: props.viewOrderDetail, href: 'javascript:;' },
-	            props.order_id
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.delivery_type
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'remark-in-table' },
-	            props.remarks
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          (0, _utilsIndex.parseTime)(props.signin_time)
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'order-status', style: { color: _order_status.color || 'inherit' } },
-	            _order_status.value
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.updated_by
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'a',
-	            { onClick: this.viewOrderOperationRecord.bind(this), className: 'inline-block time', href: 'javascript:;' },
-	            props.updated_time
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'showSignedModal',
-	    value: function showSignedModal(e) {
-	      this.props.showSignedModal(this.props);
-	      e.stopPropagation();
-	    }
-	  }, {
-	    key: 'showUnSignedModal',
-	    value: function showUnSignedModal(e) {
-	      this.props.showUnSignedModal(this.props);
-	      e.stopPropagation();
-	    }
-	  }, {
-	    key: 'checkOrderHandler',
-	    value: function checkOrderHandler(e) {
-	      var _props3 = this.props;
-	      var order_id = _props3.order_id;
-	      var checkOrderHandler = _props3.checkOrderHandler;
-
-	      checkOrderHandler(order_id, e.target.checked);
-	    }
-	  }, {
-	    key: 'clickHandler',
-	    value: function clickHandler() {
-	      this.props.activeOrderHandler(this.props.order_id);
-	    }
-	  }, {
-	    key: 'viewOrderOperationRecord',
-	    value: function viewOrderOperationRecord(e) {
-	      this.props.viewOrderOperationRecord(this.props);
-	      e.stopPropagation();
-	    }
-	  }]);
-
-	  return OrderRow;
-	})(_react.Component);
-
-	var DeliveryDistributePannel = (function (_Component4) {
-	  _inherits(DeliveryDistributePannel, _Component4);
-
-	  function DeliveryDistributePannel(props) {
-	    _classCallCheck(this, DeliveryDistributePannel);
-
-	    _get(Object.getPrototypeOf(DeliveryDistributePannel.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      page_size: 5
-	    };
-	    this.showSignedModal = this.showSignedModal.bind(this);
-	    this.showUnSignedModal = this.showUnSignedModal.bind(this);
-	    this.checkOrderHandler = this.checkOrderHandler.bind(this);
-	    this.activeOrderHandler = this.activeOrderHandler.bind(this);
-	    this.viewOrderDetail = this.viewOrderDetail.bind(this);
-	    this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
-	    this.showScanModal = this.showScanModal.bind(this);
-	    this.search = this.search.bind(this);
-	  }
-
-	  _createClass(DeliveryDistributePannel, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props4 = this.props;
-	      var filter = _props4.filter;
-	      var area = _props4.area;
-	      var deliveryman = _props4.deliveryman;
-	      var orders = _props4.orders;
-	      var main = _props4.main;
-	      var signOrder = _props4.signOrder;
-	      var unsignOrder = _props4.unsignOrder;
-	      var searchByScan = _props4.searchByScan;
-	      var getOrderOptRecord = _props4.getOrderOptRecord;
-	      var resetOrderOptRecord = _props4.resetOrderOptRecord;
-	      var operationRecord = _props4.operationRecord;
-	      var submitting = main.submitting;
-	      var loading = orders.loading;
-	      var refresh = orders.refresh;
-	      var page_no = orders.page_no;
-	      var total = orders.total;
-	      var list = orders.list;
-	      var check_order_info = orders.check_order_info;
-	      var active_order_id = orders.active_order_id;
-	      var search = this.search;
-	      var showSignedModal = this.showSignedModal;
-	      var showUnSignedModal = this.showUnSignedModal;
-	      var showScanModal = this.showScanModal;
-	      var checkOrderHandler = this.checkOrderHandler;
-	      var viewOrderDetail = this.viewOrderDetail;
-	      var activeOrderHandler = this.activeOrderHandler;
-	      var viewOrderOperationRecord = this.viewOrderOperationRecord;
-	      var scan = main.scan;
-	      var scan_list = main.scan_list;
-	      //扫描
-	      if (scan) {
-	        list = scan_list;
-	      }
-	      var content = list.map(function (n, i) {
-	        return _react2['default'].createElement(OrderRow, _extends({
-	          key: n.order_id
-	        }, _extends({}, n, { active_order_id: active_order_id, showSignedModal: showSignedModal, showUnSignedModal: showUnSignedModal,
-	          viewOrderDetail: viewOrderDetail, checkOrderHandler: checkOrderHandler, activeOrderHandler: activeOrderHandler, viewOrderOperationRecord: viewOrderOperationRecord })));
-	      });
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'order-manage' },
-	        _react2['default'].createElement(TopHeader, null),
-	        _react2['default'].createElement(FilterHeader, _extends({}, _extends({}, this.props, filter, area, { showScanModal: showScanModal, all_deliveryman: deliveryman.list }), {
-	          page_size: this.state.page_size
-	        })),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'panel' },
-	          _react2['default'].createElement(
-	            'header',
-	            { className: 'panel-heading' },
-	            '送货列表'
-	          ),
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'panel-body' },
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'table-responsive' },
-	              _react2['default'].createElement(
-	                'table',
-	                { className: 'table table-hover text-center' },
-	                _react2['default'].createElement(
-	                  'thead',
-	                  null,
-	                  _react2['default'].createElement(
-	                    'tr',
-	                    null,
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      _react2['default'].createElement('input', { onChange: this.checkAll.bind(this), type: 'checkbox' })
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '管理操作'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '送达时间'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '货到付款金额'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '下单人'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '收货人信息'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '订单号'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '配送方式'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '备注'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '订单完成时间'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '订单状态'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '操作人'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '操作时间'
-	                    )
-	                  )
-	                ),
-	                _react2['default'].createElement(
-	                  'tbody',
-	                  null,
-	                  (0, _commonLoading.tableLoader)(loading || refresh, content)
-	                )
-	              )
-	            ),
-	            scan ? null : _react2['default'].createElement(_commonPagination2['default'], {
-	              page_no: page_no,
-	              total_count: total,
-	              page_size: this.state.page_size,
-	              onPageChange: this.onPageChange
-	            })
-	          )
-	        ),
-	        check_order_info ? _react2['default'].createElement(
-	          'div',
-	          { className: 'panel' },
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'panel-body' },
-	            _react2['default'].createElement(
-	              'div',
-	              null,
-	              '订单产品详情'
-	            ),
-	            _react2['default'].createElement(_commonOrder_products_detail2['default'], { products: check_order_info.products })
-	          )
-	        ) : null,
-	        _react2['default'].createElement(_commonOrder_detail_modal2['default'], { ref: 'detail_modal', data: check_order_info || {} }),
-	        _react2['default'].createElement(SignedModal, _extends({ ref: 'SignedModal' }, { submitting: submitting, signOrder: signOrder, callback: search })),
-	        _react2['default'].createElement(UnSignedModal, _extends({ ref: 'UnSignedModal' }, { submitting: submitting, unsignOrder: unsignOrder, callback: search })),
-	        _react2['default'].createElement(_commonScan_modal2['default'], { ref: 'ScanModal', submitting: submitting, search: searchByScan }),
-	        _react2['default'].createElement(_commonOperation_record_modalJs2['default'], _extends({ ref: 'OperationRecordModal' }, _extends({ getOrderOptRecord: getOrderOptRecord, resetOrderOptRecord: resetOrderOptRecord }, operationRecord)))
-	      );
-	    }
-	  }, {
-	    key: 'onPageChange',
-	    value: function onPageChange(page) {
-	      this.search(page);
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      this.search();
-
-	      (0, _utilsLazy_load2['default'])('noty');
-	    }
-	  }, {
-	    key: 'search',
-	    value: function search(page) {
-	      var _props5 = this.props;
-	      var getOrderDistributeList = _props5.getOrderDistributeList;
-	      var orders = _props5.orders;
-
-	      page = typeof page == 'undefined' ? orders.page_no : page;
-	      getOrderDistributeList({ page_no: page, page_size: this.state.page_size });
-	    }
-	  }, {
-	    key: 'activeOrderHandler',
-	    value: function activeOrderHandler(order_id) {
-	      if (this.props.orders.active_order_id != order_id) this.props.activeOrder(order_id);
-	    }
-	  }, {
-	    key: 'checkOrderHandler',
-	    value: function checkOrderHandler(order_id, checked) {
-	      this.props.checkOrder(order_id, checked);
-	    }
-	  }, {
-	    key: 'checkAll',
-	    value: function checkAll(e) {
-	      this.props.checkAllOrders(e.target.checked);
-	    }
-	  }, {
-	    key: 'viewOrderDetail',
-	    value: function viewOrderDetail() {
-	      this.refs.detail_modal.show();
-	    }
-	  }, {
-	    key: 'viewOrderOperationRecord',
-	    value: function viewOrderOperationRecord(order) {
-	      this.refs.OperationRecordModal.show(order);
-	    }
-	  }, {
-	    key: 'showSignedModal',
-	    value: function showSignedModal(n) {
-	      this.refs.SignedModal.show(n);
-	    }
-	  }, {
-	    key: 'showUnSignedModal',
-	    value: function showUnSignedModal(n) {
-	      this.refs.UnSignedModal.show(n);
-	    }
-	  }, {
-	    key: 'showScanModal',
-	    value: function showScanModal() {
-	      this.refs.ScanModal.show();
-	    }
-	  }]);
-
-	  return DeliveryDistributePannel;
-	})(_react.Component);
-
-	function mapStateToProps(_ref) {
-	  var distributeManage = _ref.distributeManage;
-
-	  return distributeManage;
-	}
-
-	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
-	function mapDispatchToProps(dispatch) {
-	  return (0, _redux.bindActionCreators)(_extends({}, OrderActions, (0, _actionsArea2['default'])(), DeliverymanActions, DeliveryDistributeActions, { getPayModes: _actionsOrder_manage_form.getPayModes }), dispatch);
-	}
-
-	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DeliveryDistributePannel);
-
-	/***************   *******   *****************/
-	/***************   子模态框   *****************/
-	/***************   *******   *****************/
-
-	var SignedModal = _react2['default'].createClass({
-	  displayName: 'SignedModal',
-
-	  getInitialState: function getInitialState() {
-	    return {
-	      CASH: 'CASH', //现金赔偿
-	      REFUND: 'REFUND', //全额退款
-
-	      order: {},
-
-	      signin_date: (0, _utilsIndex.dateFormat)(new Date()),
-	      // signin_hour: '',  // 直接 TimeInput.val()获取
-	      late_minutes: 0,
-	      refund_method: '',
-	      refund_money: 0,
-	      refund_reson: ''
-	    };
-	  },
-	  mixins: [_reactAddonsLinkedStateMixin2['default']],
-	  render: function render() {
-	    var _state = this.state;
-	    var signin_date = _state.signin_date;
-	    var late_minutes = _state.late_minutes;
-	    var refund_method = _state.refund_method;
-	    var refund_money = _state.refund_money;
-	    var refund_reson = _state.refund_reson;
-
-	    return _react2['default'].createElement(
-	      _commonStd_modal2['default'],
-	      { submitting: this.props.submitting, onConfirm: this.submitHandler, onCancel: this.hideCallback, title: '订单完成页面', ref: 'modal' },
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'form-group mg-15 form-inline' },
-	        _react2['default'].createElement(
-	          'label',
-	          null,
-	          '签收时间：'
-	        ),
-	        _react2['default'].createElement(_commonDatepicker2['default'], { value: signin_date, onChange: this.onSignInDateChange, className: 'short-input' }),
-	        '　',
-	        _react2['default'].createElement(_commonTime_input2['default'], { onChange: this.onTimeChange, ref: 'timeinput' })
-	      ),
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'form-group form-inline mg-15' },
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'row' },
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'col-xs-6' },
-	            _react2['default'].createElement(
-	              'label',
-	              null,
-	              '迟到时长：'
-	            ),
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'inline-block input-group input-group-xs' },
-	              _react2['default'].createElement('input', { value: late_minutes, onChange: this.onLateTimeChange, type: 'text', className: 'form-control', style: { 'width': 50 } }),
-	              _react2['default'].createElement(
-	                'span',
-	                { className: 'input-group-addon' },
-	                'Min'
-	              )
-	            )
-	          ),
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'col-xs-6' },
-	            _react2['default'].createElement(
-	              'label',
-	              null,
-	              '货到付款金额：'
-	            ),
-	            _react2['default'].createElement('input', { value: this.state.order.total_amount || 0, readOnly: true, className: 'form-control input-xs short-input', style: { 'width': 50 } })
-	          )
-	        )
-	      ),
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'form-group mg-15' },
-	        _react2['default'].createElement(
-	          'label',
-	          { className: '' },
-	          _react2['default'].createElement('input', { value: this.state.CASH, onClick: this.checkMethod, checked: this.state.CASH == refund_method, type: 'radio', name: 'method' }),
-	          ' 现金赔偿（迟到30mins以内）'
-	        ),
-	        this.state.refund_method == this.state.CASH ? _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'input-group input-group-xs pl-20' },
-	            _react2['default'].createElement('input', { valueLink: this.linkState('refund_money'), className: 'form-control input-xs', style: { 'width': 50 } }),
-	            _react2['default'].createElement(
-	              'span',
-	              { className: 'input-group-addon' },
-	              'RMB'
-	            )
-	          )
-	        ) : null
-	      ),
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'form-group mg-15' },
-	        _react2['default'].createElement(
-	          'label',
-	          { className: '' },
-	          _react2['default'].createElement('input', { value: this.state.REFUND, onClick: this.checkMethod, checked: this.state.REFUND == refund_method, type: 'radio', name: 'method' }),
-	          ' 全额退款（迟到时间>=30mins）'
-	        ),
-	        this.state.refund_method == this.state.REFUND ? _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group pl-20' },
-	          _react2['default'].createElement(_commonRadio_group2['default'], {
-	            value: refund_reson,
-	            vertical: true,
-	            name: 'refund_reson',
-	            radios: [{ value: '迟到30mins以上', text: '迟到30mins以上' }, { value: '款式不符', text: '款式不符' }, { value: '尺寸、规格不符', text: '尺寸、规格不符' }],
-	            onChange: this.checkReason
-	          })
-	        ) : null
-	      )
-	    );
-	  },
-	  submitHandler: function submitHandler() {
-	    var _state2 = this.state;
-	    var order = _state2.order;
-	    var CASH = _state2.CASH;
-	    var late_minutes = _state2.late_minutes;
-	    var refund_method = _state2.refund_method;
-	    var refund_money = _state2.refund_money;
-	    var refund_reson = _state2.refund_reson;
-	    var signin_date = _state2.signin_date;
-
-	    var signin_hour = this.refs.timeinput.val();
-	    if (!_utilsIndex.form.isNumber(late_minutes) || late_minutes < 0) {
-	      (0, _utilsIndex.Noty)('warning', '迟到时间输入有误');return;
-	    }
-	    if (!signin_date || !signin_hour) {
-	      (0, _utilsIndex.Noty)('warning', '请填写签收时间');return;
-	    }
-	    if (late_minutes > 0) {
-	      if (!refund_method) {
-	        (0, _utilsIndex.Noty)('warning', '请选择赔偿方式');return;
-	      }
-	      if (refund_method == CASH) {
-	        if (!_utilsIndex.form.isNumber(refund_money)) {
-	          (0, _utilsIndex.Noty)('warning', '请输入现金赔偿金额');return;
-	        }
-	      } else {
-	        if (!refund_reson) {
-	          (0, _utilsIndex.Noty)('warning', '请勾选全额退款原因');return;
-	        }
-	      }
-	    }
-	    this.props.signOrder(order.order_id, {
-	      late_minutes: late_minutes,
-	      payfor_type: refund_method,
-	      payfor_amount: refund_money,
-	      payfor_reason: refund_reson,
-	      signin_time: signin_date + ' ' + signin_hour
-	    }).done((function () {
-	      this.refs.modal.hide();
-	      this.props.callback();
-	      (0, _utilsIndex.Noty)('success', '签收成功！');
-	    }).bind(this)).fail(function (msg, code) {
-	      (0, _utilsIndex.Noty)('error', msg || '提交失败');
-	    });
-	  },
-	  onSignInDateChange: function onSignInDateChange(value) {
-	    this.setState({ signin_date: value });
-	  },
-	  onTimeChange: function onTimeChange(value) {
-	    this.setState({ signin_hour: value });
-	  },
-	  onLateTimeChange: function onLateTimeChange(e) {
-	    var value = e.target.value;
-
-	    this.setState({ late_minutes: value, refund_money: value <= 30 ? value : '' });
-	  },
-	  checkMethod: function checkMethod(e) {
-	    this.setState({ refund_method: e.target.value });
-	  },
-	  checkReason: function checkReason(value) {
-	    this.setState({ refund_reson: value });
-	  },
-	  show: function show(order) {
-	    this.refs.modal.show();
-	    this.setState({ order: order });
-	  },
-	  hideCallback: function hideCallback() {
-	    this.refs.timeinput.reset();
-	    this.setState(this.getInitialState());
-	  }
-	});
-
-	var UnSignedModal = _react2['default'].createClass({
-	  displayName: 'UnSignedModal',
-
-	  getInitialState: function getInitialState() {
-	    return {
-	      NOTFOUND: 'NOTFOUND',
-	      OTHER: 'OTHER',
-
-	      order: {},
-
-	      reason_type: '',
-	      notfound_reason: '联系不上用户，无人签收',
-	      other_reason: '',
-	      real_pay: 0,
-	      black_list: '0'
-	    };
-	  },
-	  mixins: [_reactAddonsLinkedStateMixin2['default']],
-	  render: function render() {
-	    var notfound_reason = this.state.notfound_reason;
-
-	    return _react2['default'].createElement(
-	      _commonStd_modal2['default'],
-	      { submitting: this.props.submitting, onConfirm: this.submitHandler, onCancel: this.hideCallback, title: '订单未完成页面', ref: 'modal' },
-	      _react2['default'].createElement(
-	        'div',
-	        { className: ' mg-15' },
-	        _react2['default'].createElement(
-	          'label',
-	          { className: 'strong-label' },
-	          '未签收原因：'
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            _react2['default'].createElement('input', { value: this.state.NOTFOUND,
-	              checked: this.state.reason_type == this.state.NOTFOUND,
-	              onClick: this.checkReason, type: 'radio', name: 'reason' }),
-	            ' ' + notfound_reason
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            _react2['default'].createElement('input', { value: this.state.OTHER,
-	              checked: this.state.reason_type == this.state.OTHER,
-	              onClick: this.checkReason, type: 'radio', name: 'reason' }),
-	            ' 其他'
-	          ),
-	          '　',
-	          _react2['default'].createElement('input', { valueLink: this.linkState('other_reason'), className: 'form-control input-xs long-input' })
-	        )
-	      ),
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'form-inline mg-15' },
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'row' },
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'col-xs-6' },
-	            _react2['default'].createElement(
-	              'label',
-	              null,
-	              '货到付款金额：'
-	            ),
-	            _react2['default'].createElement('input', { value: this.state.order.total_amount || 0, readOnly: true, className: 'form-control input-xs short-input', style: { 'width': 50 } })
-	          ),
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'col-xs-6' },
-	            _react2['default'].createElement(
-	              'label',
-	              null,
-	              '实收金额：'
-	            ),
-	            _react2['default'].createElement('input', { valueLink: this.linkState('real_pay'), className: 'form-control input-xs', style: { 'width': 50 } })
-	          )
-	        )
-	      ),
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'form-group mg-15' },
-	        _react2['default'].createElement(
-	          'label',
-	          { className: 'strong-label' },
-	          '是否将该用户列入黑名单：'
-	        ),
-	        '　',
-	        _react2['default'].createElement(_commonRadio_group2['default'], {
-	          value: this.state.black_list,
-	          className: 'inline-block',
-	          radios: [{ value: "1", text: '是' }, { value: "0", text: '否' }],
-	          onChange: this.checkBlackList
-	        }),
-	        _react2['default'].createElement(
-	          'p',
-	          { className: 'font-xs gray' },
-	          '（列入黑名单后，此用户ID下单无法再选择货到付款模式）'
-	        )
-	      )
-	    );
-	  },
-	  submitHandler: function submitHandler() {
-	    var _state3 = this.state;
-	    var order = _state3.order;
-	    var reason_type = _state3.reason_type;
-	    var OTHER = _state3.OTHER;
-	    var notfound_reason = _state3.notfound_reason;
-	    var other_reason = _state3.other_reason;
-	    var real_pay = _state3.real_pay;
-	    var black_list = _state3.black_list;
-
-	    if (!reason_type) {
-	      (0, _utilsIndex.Noty)('warning', '请选择未签收原因');return;
-	    }
-	    if (reason_type == OTHER && !other_reason.trim()) {
-	      (0, _utilsIndex.Noty)('warning', '请填写其他未签收原因');return;
-	    }
-	    if (!_utilsIndex.form.isNumber(real_pay)) {
-	      (0, _utilsIndex.Noty)('warning', '请填写正确的实收金额');return;
-	    }
-	    this.props.unsignOrder(order.order_id, {
-	      COD_amount: real_pay * 100,
-	      unsignin_reason: reason_type == OTHER ? other_reason : notfound_reason,
-	      is_blacklist: black_list
-	    }).done((function () {
-	      this.refs.modal.hide();
-	      this.props.callback();
-	      (0, _utilsIndex.Noty)('success', '操作成功！');
-	    }).bind(this)).fail(function (msg, code) {
-	      (0, _utilsIndex.Noty)('error', msg || '提交失败');
-	    });
-	  },
-	  checkReason: function checkReason(e) {
-	    var reason_type = e.target.value;
-	    this.setState({ reason_type: reason_type, other_reason: reason_type == this.state.NOTFOUND ? '' : this.state.other_reason });
-	  },
-	  checkBlackList: function checkBlackList(value) {
-	    this.setState({ black_list: value });
-	  },
-	  show: function show(order) {
-	    this.refs.modal.show();
-	    this.setState({ order: order });
-	  },
-	  hideCallback: function hideCallback() {
-	    this.setState(this.getInitialState());
-	  }
-	});
-	module.exports = exports['default'];
-
-/***/ },
-/* 333 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var TimeInput = (function (_Component) {
-	  _inherits(TimeInput, _Component);
-
-	  function TimeInput(props) {
-	    _classCallCheck(this, TimeInput);
-
-	    _get(Object.getPrototypeOf(TimeInput.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      hour: '',
-	      minute: '',
-	      hour_error: '',
-	      minute_error: ''
-	    };
-	  }
-
-	  _createClass(TimeInput, [{
-	    key: 'render',
-	    value: function render() {
-	      var _state = this.state;
-	      var hour = _state.hour;
-	      var minute = _state.minute;
-	      var hour_error = _state.hour_error;
-	      var minute_error = _state.minute_error;
-
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'form-inline inline-block' },
-	        _react2['default'].createElement('input', {
-	          value: this.state.hour,
-	          onChange: this.onHourChange.bind(this),
-	          className: 'form-control input-xs time-input ' + hour_error }),
-	        _react2['default'].createElement(
-	          'span',
-	          { className: 'gray' },
-	          ' : '
-	        ),
-	        _react2['default'].createElement('input', {
-	          value: this.state.minute,
-	          onChange: this.onMinuteChange.bind(this),
-	          className: 'form-control input-xs time-input ' + minute_error })
-	      );
-	    }
-	  }, {
-	    key: 'val',
-	    value: function val() {
-	      var _state2 = this.state;
-	      var hour = _state2.hour;
-	      var minute = _state2.minute;
-
-	      return !hour || !minute ? '' : (hour > 9 ? hour : '0' + hour) + ':' + (minute > 9 ? minute : '0' + minute);
-	    }
-	  }, {
-	    key: 'reset',
-	    value: function reset() {
-	      this.setState({
-	        hour: '',
-	        minute: '',
-	        hour_error: '',
-	        minute_error: ''
-	      });
-	    }
-	  }, {
-	    key: 'onHourChange',
-	    value: function onHourChange(e) {
-	      var value = e.target.value;var hour_error;
-	      if (_utilsIndex.form.isNumber(value) && value >= 0 && value < 24) {
-	        hour_error = '';
-	      } else {
-	        hour_error = 'error';
-	      }
-	      this.setState({ hour: value, hour_error: hour_error });
-	    }
-	  }, {
-	    key: 'onMinuteChange',
-	    value: function onMinuteChange(e) {
-	      var value = e.target.value;var minute_error;
-	      if (_utilsIndex.form.isNumber(value) && value >= 0 && value < 60) {
-	        minute_error = '';
-	      } else {
-	        minute_error = 'error';
-	      }
-	      this.setState({ minute: e.target.value, minute_error: minute_error });
-	    }
-	  }]);
-
-	  return TimeInput;
-	})(_react.Component);
-
-	exports['default'] = TimeInput;
-	module.exports = exports['default'];
-
-/***/ },
-/* 334 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports.signOrder = signOrder;
-	exports.unsignOrder = unsignOrder;
-	exports.searchByScan = searchByScan;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _utilsRequest = __webpack_require__(234);
-
-	//Promise
-
-	var _configUrl = __webpack_require__(239);
-
-	var _configUrl2 = _interopRequireDefault(_configUrl);
-
-	var _actionsOrder_manage_form = __webpack_require__(292);
-
-	var SIGN_ORDER = 'SIGN_ORDER';exports.SIGN_ORDER = SIGN_ORDER;
-	//key: 0->正在处理，1->成功，2->失败
-
-	function signOrder(order_id, data) {
-	  //若是异步的话，那么该函数必须也返回一个函数
-	  return (0, _utilsRequest.PUT)(_configUrl2['default'].order_sign.toString(order_id), data, SIGN_ORDER);
-	  // return TEST(null, [
-	  //   {type: SIGN_ORDER, key: 0},  //立即派发
-	  //   {type: SIGN_ORDER, key: 1}   //2000毫秒后派发
-	  // ], 2000, true);
-	}
-
-	var UNSIGN_ORDER = 'UNSIGN_ORDER';exports.UNSIGN_ORDER = UNSIGN_ORDER;
-	//key: 0->正在处理，1->成功，2->失败
-
-	function unsignOrder(order_id, data) {
-	  //若是异步的话，那么该函数必须也返回一个函数
-	  return (0, _utilsRequest.PUT)(_configUrl2['default'].order_unsign.toString(order_id), data, UNSIGN_ORDER);
-	  // return TEST(null, [
-	  //   {type: UNSIGN_ORDER, key: 0},  //立即派发
-	  //   {type: UNSIGN_ORDER, key: 1}   //2000毫秒后派发
-	  // ], 2000, true);
-	}
-
-	var GET_DISTRIBUTE_SCAN_LIST = 'GET_DISTRIBUTE_SCAN_LIST';
-	exports.GET_DISTRIBUTE_SCAN_LIST = GET_DISTRIBUTE_SCAN_LIST;
-
-	function searchByScan(order_ids) {
-	  return (0, _utilsRequest.POST)(_configUrl2['default'].order_distribute.toString(), { order_ids: order_ids }, GET_DISTRIBUTE_SCAN_LIST);
-	}
-
-	var getDeliveryStations = _actionsOrder_manage_form.getDeliveryStations;
-	exports.getDeliveryStations = getDeliveryStations;
-
-/***/ },
-/* 335 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(154);
-
-	var _reactRedux = __webpack_require__(216);
-
-	var _redux = __webpack_require__(223);
-
-	var _reactAddonsLinkedStateMixin = __webpack_require__(284);
-
-	var _reactAddonsLinkedStateMixin2 = _interopRequireDefault(_reactAddonsLinkedStateMixin);
-
-	var _reduxForm = __webpack_require__(242);
-
-	var _commonDatepicker = __webpack_require__(295);
-
-	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
-
-	var _commonSelect = __webpack_require__(296);
-
-	var _commonSelect2 = _interopRequireDefault(_commonSelect);
-
-	var _commonPagination = __webpack_require__(297);
-
-	var _commonPagination2 = _interopRequireDefault(_commonPagination);
-
-	var _commonStd_modal = __webpack_require__(301);
-
-	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
-
-	var _commonLine_router = __webpack_require__(314);
-
-	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
-
-	var _commonRadio_group = __webpack_require__(309);
-
-	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
-
-	var _commonLoading = __webpack_require__(300);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var _history_instance = __webpack_require__(211);
-
-	var _history_instance2 = _interopRequireDefault(_history_instance);
-
-	var _utilsLazy_load = __webpack_require__(303);
-
-	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
-
-	var _commonOrder_products_detail = __webpack_require__(306);
-
-	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
-
-	var _commonOrder_detail_modal = __webpack_require__(307);
-
-	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
-
-	var _actionsOrders = __webpack_require__(290);
-
-	var OrderActions = _interopRequireWildcard(_actionsOrders);
-
-	var _actionsDelivery_print_review = __webpack_require__(336);
-
-	var DeliverPrintReviewActions = _interopRequireWildcard(_actionsDelivery_print_review);
-
-	var TopHeader = (function (_Component) {
-	  _inherits(TopHeader, _Component);
-
-	  function TopHeader() {
-	    _classCallCheck(this, TopHeader);
-
-	    _get(Object.getPrototypeOf(TopHeader.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(TopHeader, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'clearfix top-header' },
-	        _react2['default'].createElement(_commonLine_router2['default'], {
-	          routes: [{ name: '送货单管理', link: '/dm/change' }, { name: '打印审核', link: '' }] })
-	      );
-	    }
-	  }]);
-
-	  return TopHeader;
-	})(_react.Component);
-
-	var FilterHeader = (function (_Component2) {
-	  _inherits(FilterHeader, _Component2);
-
-	  function FilterHeader(props) {
-	    _classCallCheck(this, FilterHeader);
-
-	    _get(Object.getPrototypeOf(FilterHeader.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      search_ing: false
-	    };
-	  }
-
-	  _createClass(FilterHeader, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var _props$fields = _props.fields;
-	      var order_id = _props$fields.order_id;
-	      var begin_time = _props$fields.begin_time;
-	      var end_time = _props$fields.end_time;
-	      var is_reprint = _props$fields.is_reprint;
-	      var status = _props$fields.status;
-	      var yes_or_no = _props.yes_or_no;
-	      var all_review_status = _props.all_review_status;
-	      var search_ing = this.state.search_ing;
-
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'panel search' },
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'panel-body form-inline' },
-	          _react2['default'].createElement('input', _extends({}, order_id, { className: 'form-control input-xs v-mg', placeholder: '订单号' })),
-	          ' 开始时间',
-	          _react2['default'].createElement(_commonDatepicker2['default'], { 'redux-form': begin_time, editable: true, className: 'short-input' }),
-	          ' 结束时间',
-	          _react2['default'].createElement(_commonDatepicker2['default'], { 'redux-form': end_time, editable: true, className: 'short-input space-right' }),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, is_reprint, { options: yes_or_no, 'default-text': '是否打印', className: 'space-right' })),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, status, { options: all_review_status, 'default-text': '选择审核状态', className: 'space-right' })),
-	          _react2['default'].createElement(
-	            'button',
-	            { disabled: search_ing, 'data-submitting': search_ing, onClick: this.search.bind(this), className: 'btn btn-theme btn-xs' },
-	            _react2['default'].createElement('i', { className: 'fa fa-search', style: { 'padding': '0 3px' } })
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'search',
-	    value: function search() {
-	      var _this = this;
-
-	      this.setState({ search_ing: true });
-	      this.props.search(0).always(function () {
-	        _this.setState({ search_ing: false });
-	      });
-	    }
-	  }]);
-
-	  return FilterHeader;
-	})(_react.Component);
-
-	FilterHeader = (0, _reduxForm.reduxForm)({
-	  form: 'print_review',
-	  fields: ['order_id', 'begin_time', 'end_time', 'is_reprint', 'status']
-	}, function (state) {
-	  var now = (0, _utilsIndex.dateFormat)(new Date());
-	  return {
-	    //赋初始值
-	    initialValues: {
-	      begin_time: now,
-	      end_time: now
-	    }
-	  };
-	})(FilterHeader);
-
-	var ReviewRow = (function (_Component3) {
-	  _inherits(ReviewRow, _Component3);
-
-	  function ReviewRow() {
-	    _classCallCheck(this, ReviewRow);
-
-	    _get(Object.getPrototypeOf(ReviewRow.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(ReviewRow, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props2 = this.props;
-	      var props = _props2 === undefined ? {} : _props2;
-
-	      return _react2['default'].createElement(
-	        'tr',
-	        null,
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.order_id
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.applicant_name
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.applicant_mobile
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.apply_time
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.apply_reason
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.validate_code
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.audit_opinion
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.audit_time
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.auditor
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _configAppConfig.PRINT_REVIEW_STATUS[props.status]
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.reprint_time
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          props.status != 'AUDITED' ? [_react2['default'].createElement(
-	            'a',
-	            { key: 'review', onClick: this.reviewHandler.bind(this), href: 'javascript:;', className: 'nowrap' },
-	            '[审核]'
-	          ), _react2['default'].createElement('br', { key: 'br' })] : null
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'reviewHandler',
-	    value: function reviewHandler() {
-	      this.props.showReviewModal(this.props);
-	    }
-	  }]);
-
-	  return ReviewRow;
-	})(_react.Component);
-
-	var DeliverPrintReviewPannel = (function (_Component4) {
-	  _inherits(DeliverPrintReviewPannel, _Component4);
-
-	  function DeliverPrintReviewPannel(props) {
-	    _classCallCheck(this, DeliverPrintReviewPannel);
-
-	    _get(Object.getPrototypeOf(DeliverPrintReviewPannel.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      page_size: 10,
-	      review_order: {}
-	    };
-	    this.showReviewModal = this.showReviewModal.bind(this);
-	    this.search = this.search.bind(this);
-	  }
-
-	  _createClass(DeliverPrintReviewPannel, [{
-	    key: 'render',
-	    value: function render() {
-	      var showReviewModal = this.showReviewModal;
-	      var search = this.search;
-	      var _props3 = this.props;
-	      var filter = _props3.filter;
-	      var reviewPrintApply = _props3.reviewPrintApply;
-	      var _props3$main = _props3.main;
-	      var loading = _props3$main.loading;
-	      var refresh = _props3$main.refresh;
-	      var page_no = _props3$main.page_no;
-	      var total = _props3$main.total;
-	      var list = _props3$main.list;
-	      var submitting = _props3$main.submitting;
-
-	      var content = list.map(function (n, i) {
-	        return _react2['default'].createElement(ReviewRow, _extends({ key: n.apply_id }, _extends({}, n, { showReviewModal: showReviewModal })));
-	      });
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'order-manage' },
-	        _react2['default'].createElement(TopHeader, null),
-	        _react2['default'].createElement(FilterHeader, _extends({}, filter, { search: search })),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'panel' },
-	          _react2['default'].createElement(
-	            'header',
-	            { className: 'panel-heading' },
-	            '送货列表'
-	          ),
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'panel-body' },
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'table-responsive' },
-	              _react2['default'].createElement(
-	                'table',
-	                { className: 'table table-hover text-center' },
-	                _react2['default'].createElement(
-	                  'thead',
-	                  null,
-	                  _react2['default'].createElement(
-	                    'tr',
-	                    null,
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '订单号'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '申请人'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '申请人电话'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '申请时间'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '申请理由'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '验证码'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '审核意见'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '审核时间'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '审核人'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '审核状态'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '打印时间'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '管理操作'
-	                    )
-	                  )
-	                ),
-	                _react2['default'].createElement(
-	                  'tbody',
-	                  null,
-	                  (0, _commonLoading.tableLoader)(loading || refresh, content)
-	                )
-	              )
-	            ),
-	            _react2['default'].createElement(_commonPagination2['default'], {
-	              page_no: page_no,
-	              total_count: total,
-	              page_size: this.state.page_size,
-	              onPageChange: this.onPageChange.bind(this)
-	            })
-	          )
-	        ),
-	        _react2['default'].createElement(ReviewModal, _extends({ data: this.state.review_order, reviewPrintApply: reviewPrintApply, submitting: submitting, callback: search }, { ref: 'ReviewModal' }))
-	      );
-	    }
-	  }, {
-	    key: 'showReviewModal',
-	    value: function showReviewModal(n) {
-	      this.setState({ review_order: n }, this.refs.ReviewModal.show());
-	    }
-	  }, {
-	    key: 'onPageChange',
-	    value: function onPageChange(page) {
-	      this.search(page);
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      this.search();
-
-	      (0, _utilsLazy_load2['default'])('noty');
-	    }
-	  }, {
-	    key: 'search',
-	    value: function search(page) {
-	      var _props4 = this.props;
-	      var getPrintReviewList = _props4.getPrintReviewList;
-	      var main = _props4.main;
-
-	      page = typeof page == 'undefined' ? main.page_no : page;
-	      return getPrintReviewList({ page_no: page, page_size: this.state.page_size });
-	    }
-	  }]);
-
-	  return DeliverPrintReviewPannel;
-	})(_react.Component);
-
-	function mapStateToProps(_ref) {
-	  var deliveryPrintReview = _ref.deliveryPrintReview;
-
-	  return deliveryPrintReview;
-	}
-
-	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
-	function mapDispatchToProps(dispatch) {
-	  return (0, _redux.bindActionCreators)(_extends({}, OrderActions, DeliverPrintReviewActions), dispatch);
-	}
-
-	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DeliverPrintReviewPannel);
-
-	/***************   *******   *****************/
-	/***************   子模态框   *****************/
-	/***************   *******   *****************/
-
-	var ReviewModal = _react2['default'].createClass({
-	  displayName: 'ReviewModal',
-
-	  propTypes: {
-	    data: _react.PropTypes.object.isRequired,
-	    reviewPrintApply: _react.PropTypes.func.isRequired,
-	    submitting: _react.PropTypes.bool.isRequired
-	  },
-	  getInitialState: function getInitialState() {
-	    return {
-	      radios: [{ value: 'AUDITED', text: '是' }, { value: 'AUDITFAILED', text: '否' }],
-	      audit_opinion: '',
-	      status: 'AUDITED'
-	    };
-	  },
-	  render: function render() {
-	    var submitting = this.props.submitting;
-
-	    return _react2['default'].createElement(
-	      _commonStd_modal2['default'],
-	      { onConfirm: this.onConfirm, onCancel: this.hideCallback, submitting: submitting, size: 'sm', ref: 'modal', title: '审核打印申请' },
-	      _react2['default'].createElement(
-	        'div',
-	        { className: 'pl-50' },
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　订单编号：'
-	          ),
-	          _react2['default'].createElement(
-	            'span',
-	            null,
-	            ' ' + this.props.data.order_id
-	          )
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　审核意见：'
-	          ),
-	          _react2['default'].createElement('textarea', { valueLink: this.linkState('audit_opinion'), cols: '25', rows: '2', className: 'form-control input-xs' })
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '　是否通过：'
-	          ),
-	          _react2['default'].createElement(_commonRadio_group2['default'], {
-	            radios: this.state.radios,
-	            value: this.state.status,
-	            className: 'inline-block',
-	            name: 'review_status',
-	            onChange: this.onStatusChange })
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'form-group form-inline' },
-	          _react2['default'].createElement(
-	            'label',
-	            null,
-	            '申请人手机：'
-	          ),
-	          _react2['default'].createElement(
-	            'span',
-	            null,
-	            ' ' + this.props.data.applicant_mobile
-	          )
-	        )
-	      )
-	    );
-	  },
-	  onStatusChange: function onStatusChange(value) {
-	    this.setState({ status: value });
-	  },
-	  mixins: [_reactAddonsLinkedStateMixin2['default']],
-	  show: function show() {
-	    this.refs.modal.show();
-	  },
-	  hideCallback: function hideCallback() {
-	    this.setState(this.getInitialState());
-	  },
-	  onConfirm: function onConfirm() {
-	    var _props$data = this.props.data;
-	    var apply_id = _props$data.apply_id;
-	    var applicant_mobile = _props$data.applicant_mobile;
-	    var order_id = _props$data.order_id;
-	    var _state = this.state;
-	    var status = _state.status;
-	    var audit_opinion = _state.audit_opinion;
-
-	    this.props.reviewPrintApply(apply_id, { applicant_mobile: applicant_mobile, order_id: order_id, status: status, audit_opinion: audit_opinion }).done((function () {
-	      this.refs.modal.hide();
-	      this.props.callback();
-	    }).bind(this)).fail(function () {
-	      (0, _utilsIndex.Noty)('error', '服务器异常');
-	    });
-	  }
-	});
-	module.exports = exports['default'];
-
-/***/ },
-/* 336 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	exports.getPrintReviewList = getPrintReviewList;
-	exports.reviewPrintApply = reviewPrintApply;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _utilsRequest = __webpack_require__(234);
-
-	//Promise
-
-	var _configUrl = __webpack_require__(239);
-
-	var _configUrl2 = _interopRequireDefault(_configUrl);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var _reduxForm = __webpack_require__(242);
-
-	var GET_PRINT_REVIEW_LIST_ING = 'GET_PRINT_REVIEW_LIST_ING';
-	exports.GET_PRINT_REVIEW_LIST_ING = GET_PRINT_REVIEW_LIST_ING;
-	var GET_PRINT_REVIEW_LIST = 'GET_PRINT_REVIEW_LIST';
-	exports.GET_PRINT_REVIEW_LIST = GET_PRINT_REVIEW_LIST;
-
-	function getPrintReviewList(data) {
-	  return function (dispatch, getState) {
-	    var filter_data = (0, _reduxForm.getValues)(getState().form.print_review);
-	    filter_data = (0, _utilsIndex.formCompile)(filter_data);
-	    dispatch({ type: GET_PRINT_REVIEW_LIST_ING });
-	    return (0, _utilsRequest.GET)(_configUrl2['default'].print_review_list.toString(), _extends({}, data, filter_data), GET_PRINT_REVIEW_LIST)(dispatch);
-	  };
-	  /*
-	    return TEST({
-	      total: 1,
-	      page_no: 0,
-	      list: [{
-	        'applicant_mobile':  '申请人手机-todo',
-	        'applicant_name':  '申请人名字-todo',
-	        'apply_id':  '申请记录ID-todo',
-	        'apply_reason':  '申请理由-todo',
-	        'apply_time':  '申请时间-todo',
-	        'audit_':  '审核意见-todo',
-	        'audit_time':  '审核时间-todo',
-	        'auditor': '审核人-todo',
-	        'is_reprint':  '是否已经重新打印-todo',
-	        'order_id':  '订单号-todo',
-	        'reprint_time':  '重新打印时间-todo',
-	        'status':  '审核状态-todo',
-	        'validate_code':  '短信验证码-todo',
-	      }]
-	    }, GET_PRINT_REVIEW_LIST, 2000)
-	  */
-	}
-
-	//审核重新打印申请
-	var REVIEW_PRINT_APPLY = 'REVIEW_PRINT_APPLY';exports.REVIEW_PRINT_APPLY = REVIEW_PRINT_APPLY;
-	//key: 0->正在处理，1->成功，2->失败
-
-	function reviewPrintApply(apply_id, data) {
-	  //若是异步的话，那么该函数必须也返回一个函数
-	  return (0, _utilsRequest.PUT)(_configUrl2['default'].review_print_apply.toString(apply_id), data, REVIEW_PRINT_APPLY);
-	  // return TEST(null, [
-	  //   {type: REVIEW_PRINT_APPLY, key: 0},  //立即派发
-	  //   {type: REVIEW_PRINT_APPLY, key: 1}   //2000毫秒后派发
-	  // ], 1000, true);
-	}
-
-/***/ },
-/* 337 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(154);
-
-	var _reactRedux = __webpack_require__(216);
-
-	var _redux = __webpack_require__(223);
-
-	var _reduxForm = __webpack_require__(242);
-
-	var _commonSearch_input = __webpack_require__(299);
-
-	var _commonSearch_input2 = _interopRequireDefault(_commonSearch_input);
-
-	var _commonSelect = __webpack_require__(296);
-
-	var _commonSelect2 = _interopRequireDefault(_commonSelect);
-
-	var _commonPagination = __webpack_require__(297);
-
-	var _commonPagination2 = _interopRequireDefault(_commonPagination);
-
-	var _commonLine_router = __webpack_require__(314);
-
-	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
-
-	var _commonLoading = __webpack_require__(300);
-
-	var _history_instance = __webpack_require__(211);
-
-	var _history_instance2 = _interopRequireDefault(_history_instance);
-
-	var _autocomplete = __webpack_require__(338);
-
-	var _autocomplete2 = _interopRequireDefault(_autocomplete);
-
-	var _actionsArea = __webpack_require__(288);
-
-	var _actionsArea2 = _interopRequireDefault(_actionsArea);
-
-	var _actionsStation_scope_manage = __webpack_require__(339);
-
-	var _actionsStation_scope_manage2 = _interopRequireDefault(_actionsStation_scope_manage);
-
-	// import * as StationAction from 'actions/station_manage';
-
-	var _utilsLazy_load = __webpack_require__(303);
-
-	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
-
-	var TopHeader = (function (_Component) {
-	  _inherits(TopHeader, _Component);
-
-	  function TopHeader() {
-	    _classCallCheck(this, TopHeader);
-
-	    _get(Object.getPrototypeOf(TopHeader.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(TopHeader, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'clearfix top-header' },
-	        _react2['default'].createElement(_commonLine_router2['default'], {
-	          routes: [{ name: '配送管理', link: '/sm/station' }, { name: '配送站管理', link: '' }] })
-	      );
-	    }
-	  }]);
-
-	  return TopHeader;
-	})(_react.Component);
-
-	var FilterHeader = (function (_Component2) {
-	  _inherits(FilterHeader, _Component2);
-
-	  function FilterHeader(props) {
-	    _classCallCheck(this, FilterHeader);
-
-	    _get(Object.getPrototypeOf(FilterHeader.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      search_ing: false
-	    };
-	  }
-
-	  _createClass(FilterHeader, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var _props$fields = _props.fields;
-	      var station_name = _props$fields.station_name;
-	      var province_id = _props$fields.province_id;
-	      var city_id = _props$fields.city_id;
-	      var district_id = _props$fields.district_id;
-	      var _props$area = _props.area;
-	      var provinces = _props$area.provinces;
-	      var cities = _props$area.cities;
-	      var districts = _props$area.districts;
-	      var stations = _props.station.stations;
-
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'panel search' },
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'panel-body form-inline' },
-	          _react2['default'].createElement(_autocomplete2['default'], { focusHandler: this.focusHandler, placeholder: '请输入配送站名称', searchHandler: this.props.getStationByName, options: stations, className: 'pull-left' }),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { options: provinces, 'no-default': 'true', onChange: this.onProvinceChange.bind(this, province_id.onChange), ref: 'province', className: 'space-left space-right' })),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, city_id, { options: cities, 'no-default': 'true', onChange: this.onCityChange.bind(this, city_id.onChange), ref: 'city', className: 'space-right' })),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, district_id, { options: districts, ref: 'district', className: 'space-right' })),
-	          _react2['default'].createElement(
-	            'button',
-	            { disabled: this.state.search_ing, onClick: this.search.bind(this), className: 'btn btn-theme btn-xs' },
-	            _react2['default'].createElement('i', { className: 'fa fa-search', style: { 'padding': '0 5px' } }),
-	            '查询'
-	          ),
-	          _react2['default'].createElement(
-	            'a',
-	            { className: 'pull-right btn btn-theme btn-xs' },
-	            _react2['default'].createElement('i', { className: 'fa fa-plus-circle', style: { 'padding': '0 5px' } }),
-	            '添加'
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      setTimeout((function () {
-	        var _props2 = this.props;
-	        var getProvinces = _props2.getProvinces;
-	        var getStations = _props2.getStations;
-
-	        getProvinces();
-	        getStations();
-	        console.log('ok');
-	        (0, _utilsLazy_load2['default'])('noty');
-	      }).bind(this), 0);
-
-	      var intial_province_id = '110000';
-	      var intial_city_id = '110000';
-	      $((0, _reactDom.findDOMNode)(this.refs.province)).children('option[value=' + intial_province_id + ']').attr('selected', 'true');
-	      var $city = $((0, _reactDom.findDOMNode)(this.refs.city));
-	      this.props.getCities(intial_province_id);
-	    }
-	  }, {
-	    key: 'onProvinceChange',
-	    value: function onProvinceChange(callback, e) {
-	      var value = e.target.value;
-
-	      this.props.provinceReset();
-	      if (value != this.refs.province.props['default-value']) var $city = $((0, _reactDom.findDOMNode)(this.refs.city));
-	      this.props.getCities(value).done(function () {
-	        $city.trigger('focus'); //聚焦已使city_id的值更新
-	      });
-	      callback(e);
-	    }
-	  }, {
-	    key: 'onCityChange',
-	    value: function onCityChange(callback, e) {
-	      var value = e.target.value;
-
-	      this.props.cityReset();
-	      if (value != this.refs.city.props['default-value']) var $district = $((0, _reactDom.findDOMNode)(this.refs.district));
-	      this.props.getDistricts(value).done(function () {
-	        $district.trigger('focus'); //聚焦已使city_id的值更新
-	      });
-	      callback(e);
-	    }
-	  }, {
-	    key: 'search',
-	    value: function search() {
-	      var _this = this;
-
-	      var city_id = $((0, _reactDom.findDOMNode)(this.refs.city)).children('option:selected').attr('value');
-	      this.setState({ search_ing: true });
-	      this.props.getStationByCity(city_id).always(function () {
-	        _this.setState({ search_ing: false });
-	      });
-	      // this.props.getOrderExchangeList({page_no: 0, page_size: this.props.page_size})
-	      //   .always(()=>{
-	      //     this.setState({search_ing: false});
-	      //   });
-	    }
-	  }]);
-
-	  return FilterHeader;
-	})(_react.Component);
-
-	FilterHeader = (0, _reduxForm.reduxForm)({
-	  form: 'station_manage',
-	  fields: ['province_id', 'city_id', 'district_id']
-	})(FilterHeader);
-
-	var StationRow = (function (_Component3) {
-	  _inherits(StationRow, _Component3);
-
-	  function StationRow() {
-	    _classCallCheck(this, StationRow);
-
-	    _get(Object.getPrototypeOf(StationRow.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(StationRow, [{
-	    key: 'render',
-	    value: function render() {
-	      var station_id = this.props.station_id;
-
-	      return _react2['default'].createElement(
-	        'tr',
-	        null,
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement('input', { type: 'checkbox' })
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          this.props.province_id
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          this.props.city_id
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          this.props.district_id
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          this.props.station_name
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          this.props.address
-	        ),
-	        _react2['default'].createElement(
-	          'td',
-	          null,
-	          _react2['default'].createElement(
-	            'a',
-	            { onClick: this.editScope, href: 'javascript:;' },
-	            '[编辑配送区域]'
-	          ),
-	          _react2['default'].createElement(
-	            'a',
-	            { onClick: this.viewDetail, href: 'javascript:;', className: 'no-wrap' },
-	            '[查看备注]'
-	          ),
-	          _react2['default'].createElement(
-	            'a',
-	            { onClick: this.editStation, href: 'javascript:;', className: 'no-wrap' },
-	            '[编辑]'
-	          ),
-	          _react2['default'].createElement(
-	            'a',
-	            { onClick: this.deleteStation, href: 'javascript:;', className: 'no-wrap' },
-	            '[删除]'
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'editScope',
-	    value: function editScope(e) {
-	      _history_instance2['default'].push('/sm/station' + this.props.station_id);
-	      e.stopPropagation();
-	    }
-	  }, {
-	    key: 'viewDetail',
-	    value: function viewDetail() {}
-	  }, {
-	    key: 'editStation',
-	    value: function editStation() {}
-	  }, {
-	    key: 'deleteStation',
-	    value: function deleteStation() {}
-	  }]);
-
-	  return StationRow;
-	})(_react.Component);
-
-	var StationManagePannel = (function (_Component4) {
-	  _inherits(StationManagePannel, _Component4);
-
-	  function StationManagePannel() {
-	    _classCallCheck(this, StationManagePannel);
-
-	    _get(Object.getPrototypeOf(StationManagePannel.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(StationManagePannel, [{
-	    key: 'render',
-	    value: function render() {
-	      var _this2 = this;
-
-	      var station = this.props.station;
-
-	      var content = station.station_list_info.map(function (n, i) {
-	        return _react2['default'].createElement(StationRow, _extends({ key: n.id
-	        }, _this2.props));
-	      });
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'station-manage' },
-	        _react2['default'].createElement(TopHeader, null),
-	        _react2['default'].createElement(FilterHeader, this.props),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'panel' },
-	          _react2['default'].createElement(
-	            'header',
-	            { className: 'panel-heading' },
-	            '送货列表'
-	          ),
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'panel-body' },
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'table-responsive' },
-	              _react2['default'].createElement(
-	                'table',
-	                { className: 'table table-hover text-center' },
-	                _react2['default'].createElement(
-	                  'thead',
-	                  null,
-	                  _react2['default'].createElement(
-	                    'tr',
-	                    null,
-	                    _react2['default'].createElement('th', null),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '省份'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '城市'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '区域'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '配送站名称'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '详细地址'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '操作'
-	                    )
-	                  )
-	                ),
-	                _react2['default'].createElement(
-	                  'tbody',
-	                  null,
-	                  content
-	                )
-	              )
-	            ),
-	            _react2['default'].createElement(
-	              'button',
-	              { className: 'btn btn-theme btn-xs' },
-	              _react2['default'].createElement('i', { className: 'fa fa-minus-square', style: { 'padding': '0 5px' } }),
-	              '删除'
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }]);
-
-	  return StationManagePannel;
-	})(_react.Component);
-
-	exports['default'] = StationManagePannel;
-
-	function mapStateToProps(_ref) {
-	  var stationManage = _ref.stationManage;
-
-	  return stationManage;
-	}
-
-	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
-	function mapDispatchToProps(dispatch) {
-	  return (0, _redux.bindActionCreators)(_extends({}, (0, _actionsArea2['default'])(), (0, _actionsStation_scope_manage2['default'])()), dispatch);
-	}
-
-	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(StationManagePannel);
-	module.exports = exports['default'];
-
-/***/ },
-/* 338 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(154);
-
-	var Autocomplete = (function (_Component) {
-	  _inherits(Autocomplete, _Component);
-
-	  function Autocomplete(props) {
-	    _classCallCheck(this, Autocomplete);
-
-	    _get(Object.getPrototypeOf(Autocomplete.prototype), 'constructor', this).call(this, props);
-	    this.searchHandler = this.searchHandler.bind(this);
-	    this.focusHandler = this.focusHandler.bind(this);
-	  }
-
-	  _createClass(Autocomplete, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var className = _props.className;
-	      var searching = _props.searching;
-	      var size = _props.size;
-	      var placeholder = _props.placeholder;
-	      var searchHandler = _props.searchHandler;
-	      var focusHandler = _props.focusHandler;
-
-	      var i_className = searching ? 'fa fa-spinner fa-spin disabled' : 'fa fa-search';
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'search-input ' + className },
-	        _react2['default'].createElement('input', { ref: 'input',
-	          className: 'form-control ' + size,
-	          placeholder: placeholder,
-	          onFocus: this.focusHandler.bind(this),
-	          onKeyDown: this.keyDownHandler.bind(this) }),
-	        _react2['default'].createElement('i', { className: i_className, onClick: this.searchHandler })
-	      );
-	    }
-	  }, {
-	    key: 'keyDownHandler',
-	    value: function keyDownHandler(e) {
-	      //enter键
-	      if (!this.props.searching && e.which == 13) {
-	        this.searchHandler();
-	      }
-	    }
-	  }, {
-	    key: 'searchHandler',
-	    value: function searchHandler() {
-	      if (!this.props.searching) {
-	        console.log('search: ' + this.refs.input.value);
-	        var station_name = this.refs.input.value;
-	        if (station_name !== '') {
-	          this.props.searchHandler({ station_name: this.refs.input.value });
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'focusHandler',
-	    value: function focusHandler() {
-	      var options = this.props.options;
-
-	      var $inp = $((0, _reactDom.findDOMNode)(this.refs.input));
-	      var stations = [];
-	      options.forEach(function (n) {
-	        stations.push(n['text']);
-	      });
-	      LazyLoad('autocomplete', function () {
-	        $inp.autocomplete({
-	          source: stations
-	        });
-	      });
-	    }
-	  }]);
-
-	  return Autocomplete;
-	})(_react.Component);
-
-	exports['default'] = Autocomplete;
-
-	Autocomplete.defaultProps = {
-	  className: '',
-	  searching: false,
-	  size: 'input-xs',
-	  placeholder: '',
-	  searchHandler: function searchHandler() {}
-	};
-	module.exports = exports['default'];
-
-/***/ },
-/* 339 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports['default'] = Stations;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _utilsRequest = __webpack_require__(234);
-
-	//Promise
-
-	var _configUrl = __webpack_require__(239);
-
-	var _configUrl2 = _interopRequireDefault(_configUrl);
-
-	var FAIL = 'FAIL';
-	exports.FAIL = FAIL;
-	var GOT_STATIONS = 'GOT_STATIONS';
-	exports.GOT_STATIONS = GOT_STATIONS;
-	var GOT_STATIONS_BY_CITY = 'GOT_STATIONS_BY_CITY';
-	exports.GOT_STATIONS_BY_CITY = GOT_STATIONS_BY_CITY;
-	var GOT_STATIONS_BY_DISTRICT = 'GOT_STATIONS_BY_DISTRICT';
-	exports.GOT_STATIONS_BY_DISTRICT = GOT_STATIONS_BY_DISTRICT;
-	var GOT_STATIONS_BY_NAME = 'GOT_STATIONS_BY_NAME';
-	exports.GOT_STATIONS_BY_NAME = GOT_STATIONS_BY_NAME;
-	var GOT_STATIONS_SCOPE = 'GOT_STATIONS_SCOPE';
-	exports.GOT_STATIONS_SCOPE = GOT_STATIONS_SCOPE;
-	var MODIFY_STATIONS_SCOPE = 'MODIFY_STATIONS_SCOPE';
-
-	exports.MODIFY_STATIONS_SCOPE = MODIFY_STATIONS_SCOPE;
-
-	function Stations() {
-	  function _resolve(url, signal) {
-	    return function (dispatch) {
-	      return (0, _utilsRequest.get)(url).done(function (json) {
-	        dispatch({
-	          type: signal,
-	          data: json
-	        });
-	      }).fail(function (msg) {
-	        dispatch({
-	          type: FAIL,
-	          msg: msg
-	        });
-	      });
-	    };
-	  };
-	  return {
-	    getStations: function getStations() {
-	      return _resolve(_configUrl2['default'].stations.toString(), GOT_STATIONS);
-	      // return {
-	      //   type: ActionTypes.GOT_STATIONS,
-	      //   data: [1: '沙井配送站']
-	      // }
-	    },
-
-	    getStationByCity: function getStationByCity(city_id) {
-	      return _resolve(_configUrl2['default'].station_list_info.toString(city_id), GOT_STATIONS_BY_CITY);
-	    },
-
-	    getStationByDistrict: function getStationByDistrict(district_id) {
-	      return _resolve(_configUrl2['default'].station_list_info.toString(district_id), GOT_STATIONS_BY_DISTRICT);
-	    },
-
-	    getStationByName: function getStationByName(station_name) {
-	      return (0, _utilsRequest.GET)(_configUrl2['default'].station_info.toString(), station_name, GOT_STATIONS_BY_NAME);
-	    },
-
-	    getStationScope: function getStationScope(station_id, station_name) {
-	      return (0, _utilsRequest.GET)(_configUrl2['default'].station_scope.toString(station_id), station_name, GOT_STATIONS_SCOPE);
-	    },
-
-	    modifyStationScope: function modifyStationScope(station_id, coords) {
-	      return PUT(_configUrl2['default'].new_station_scope.toString(station_id), coords, MODIFY_STATIONS_SCOPE);
-	    }
-
-	  };
-	}
-
-/***/ },
-/* 340 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(154);
-
-	var _reactDom2 = _interopRequireDefault(_reactDom);
-
-	var _redux = __webpack_require__(223);
-
-	var _reduxForm = __webpack_require__(242);
-
-	var _reactRedux = __webpack_require__(216);
-
-	var _commonPagination = __webpack_require__(297);
-
-	var _commonPagination2 = _interopRequireDefault(_commonPagination);
-
-	var _commonStd_modal = __webpack_require__(301);
-
-	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
-
-	var _commonLine_router = __webpack_require__(314);
-
-	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
-
-	var _commonSearch_input = __webpack_require__(299);
-
-	var _commonSearch_input2 = _interopRequireDefault(_commonSearch_input);
-
-	var _commonSelect = __webpack_require__(296);
-
-	var _commonSelect2 = _interopRequireDefault(_commonSelect);
-
-	var _autocomplete = __webpack_require__(338);
-
-	var _autocomplete2 = _interopRequireDefault(_autocomplete);
-
-	var _actionsArea = __webpack_require__(288);
-
-	var _actionsArea2 = _interopRequireDefault(_actionsArea);
-
-	var _actionsStation_scope_manage = __webpack_require__(339);
-
-	var _actionsStation_scope_manage2 = _interopRequireDefault(_actionsStation_scope_manage);
-
-	var _utilsLazy_load = __webpack_require__(303);
-
-	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
-
-	var TopHeader = (function (_React$Component) {
-	  _inherits(TopHeader, _React$Component);
-
-	  function TopHeader() {
-	    _classCallCheck(this, TopHeader);
-
-	    _get(Object.getPrototypeOf(TopHeader.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(TopHeader, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'clearfix top-header' },
-	        _react2['default'].createElement(_commonLine_router2['default'], {
-	          routes: [{ name: '配送管理', link: '/sm/index' }, { name: '配送站管理', link: '' }] })
-	      );
-	    }
-	  }]);
-
-	  return TopHeader;
-	})(_react2['default'].Component);
-
-	var StationRow = (function (_React$Component2) {
-	  _inherits(StationRow, _React$Component2);
-
-	  function StationRow() {
-	    _classCallCheck(this, StationRow);
-
-	    _get(Object.getPrototypeOf(StationRow.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(StationRow, [{
-	    key: 'render',
-	    value: function render() {
-	      var _this = this;
-
-	      var list = this.props.stationList;
-	      var content = list.map(function (n) {
-	        return _react2['default'].createElement(
-	          'tr',
-	          { key: n.id },
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            _react2['default'].createElement('input', { type: 'checkbox' })
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            n.district_name
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            { ref: 'station_name' },
-	            n.station_name
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            n.address
-	          ),
-	          _react2['default'].createElement(
-	            'td',
-	            null,
-	            _react2['default'].createElement(
-	              'a',
-	              { href: 'javascript:;', id: n.id, ref: 'edit', onClick: _this.stationScopeEdit.bind(_this) },
-	              '编辑'
-	            )
-	          )
-	        );
-	      });
-
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: '' },
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'panel' },
-	          _react2['default'].createElement(
-	            'header',
-	            { className: 'panel-heading' },
-	            '配送站列表'
-	          ),
-	          _react2['default'].createElement(
-	            'div',
-	            { className: 'panel-body' },
-	            _react2['default'].createElement(
-	              'div',
-	              { className: 'table-responsive' },
-	              _react2['default'].createElement(
-	                'table',
-	                { className: 'table table-hover text-center' },
-	                _react2['default'].createElement(
-	                  'thead',
-	                  null,
-	                  _react2['default'].createElement(
-	                    'tr',
-	                    null,
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      _react2['default'].createElement('input', { type: 'checkbox' })
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '区域'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '名称'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '地址'
-	                    ),
-	                    _react2['default'].createElement(
-	                      'th',
-	                      null,
-	                      '操作'
-	                    )
-	                  )
-	                ),
-	                _react2['default'].createElement(
-	                  'tbody',
-	                  null,
-	                  content
-	                )
-	              )
-	            ),
-	            _react2['default'].createElement(_commonPagination2['default'], null)
-	          )
-	        ),
-	        _react2['default'].createElement(MapModal, { ref: 'map', size: 'lg', title: '编辑配送站范围' })
-	      );
-	    }
-	  }, {
-	    key: 'onPageChange',
-	    value: function onPageChange(page) {
-	      this.search(page);
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      this.search();
-	    }
-	  }, {
-	    key: 'search',
-	    value: function search(page) {
-	      // page = typeof page == 'undefined' ? this.props.orders.page_no : page;
-	      // this.props.getOrderList({page_no: page, page_size: this.state.page_size});
-	    }
-	  }, {
-	    key: 'stationScopeEdit',
-	    value: function stationScopeEdit() {
-	      var getStationScope = this.props.getStationScope;
-
-	      var station_id = $((0, _reactDom.findDOMNode)(this.refs.edit)).attr('id');
-	      var station_name = $((0, _reactDom.findDOMNode)(this.refs.station_name)).text();
-
-	      getStationScope(station_id, { 'station_name': station_name });
-	      this.refs.map.show();
-	    }
-	  }]);
-
-	  return StationRow;
-	})(_react2['default'].Component);
-
-	var FilterHeader = (function (_React$Component3) {
-	  _inherits(FilterHeader, _React$Component3);
-
-	  function FilterHeader(props) {
-	    _classCallCheck(this, FilterHeader);
-
-	    _get(Object.getPrototypeOf(FilterHeader.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      search_ing: false
-	    };
-	  }
-
-	  _createClass(FilterHeader, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var _props$fields = _props.fields;
-	      var province_id = _props$fields.province_id;
-	      var city_id = _props$fields.city_id;
-	      var station_id = _props$fields.station_id;
-	      var _props$area = _props.area;
-	      var provinces = _props$area.provinces;
-	      var cities = _props$area.cities;
-	      var _props$station = _props.station;
-	      var stations = _props$station.stations;
-	      var station_list_info = _props$station.station_list_info;
-	      var search_ing = this.state.search_ing;
-
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'panel search' },
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'panel-body form-inline' },
-	          _react2['default'].createElement(_autocomplete2['default'], { focusHandler: this.focusHandler, placeholder: '请输入配送站名称', searchHandler: this.getStationByName, options: stations, className: 'pull-left' }),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), options: provinces, ref: 'province', 'default-text': '选择省份', className: 'space-left space-right' })),
-	          _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'city' }, city_id, { options: cities, 'default-text': '选择城市', className: 'space-right' })),
-	          _react2['default'].createElement(
-	            'button',
-	            { disabled: search_ing, 'data-submitting': search_ing, onClick: this.search.bind(this), className: 'btn btn-theme btn-xs' },
-	            '查找',
-	            _react2['default'].createElement('i', { className: 'fa fa-search', style: { 'padding': '0 3px' } })
-	          ),
-	          _react2['default'].createElement(StationRow, _extends({ stationList: station_list_info }, this.props))
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      setTimeout((function () {
-	        var _props2 = this.props;
-	        var getProvinces = _props2.getProvinces;
-	        var getAllDeliveryStations = _props2.getAllDeliveryStations;
-	        var getStations = _props2.getStations;
-	        var getStationByCity = _props2.getStationByCity;
-
-	        getProvinces();
-	        getStations();
-	        (0, _utilsLazy_load2['default'])('noty');
-	      }).bind(this), 0);
-	    }
-	  }, {
-	    key: 'focusHandler',
-	    value: function focusHandler() {
-	      var $inp = $((0, _reactDom.findDOMNode)(this.refs.inp));
-	      var data = this.props.station.stations;
-	      var stations = [];
-	      data.forEach(function (n) {
-	        stations.push(n['text']);
-	      });
-	      (0, _utilsLazy_load2['default'])('autocomplete', function () {
-	        console.log('asnfostganeoganrsdgnaren');
-	        $inp.autocomplete({
-	          source: stations
-	        });
-	      });
-	    }
-	  }, {
-	    key: 'onProvinceChange',
-	    value: function onProvinceChange(callback, e) {
-	      var value = e.target.value;
-
-	      this.props.provinceReset();
-	      if (value != this.refs.province.props['default-value']) var $city = $((0, _reactDom.findDOMNode)(this.refs.city));
-	      this.props.getCities(value).done(function () {
-	        $city.trigger('focus'); //聚焦已使city_id的值更新
-	      });
-	      callback(e);
-	    }
-	  }, {
-	    key: 'search',
-	    value: function search() {
-	      var _this2 = this;
-
-	      var city_id = $((0, _reactDom.findDOMNode)(this.refs.city)).children('option:selected').attr('value');
-	      this.setState({ search_ing: true });
-	      this.props.getStationByCity(city_id).always(function () {
-	        _this2.setState({ search_ing: false });
-	      });
-	    }
-	  }]);
-
-	  return FilterHeader;
-	})(_react2['default'].Component);
-
-	FilterHeader = (0, _reduxForm.reduxForm)({
-	  form: 'station_scope_manage',
-	  fields: ['province_id', 'city_id']
-	})(FilterHeader);
-
-	var stationScopeManagePannel = (function (_React$Component4) {
-	  _inherits(stationScopeManagePannel, _React$Component4);
-
-	  function stationScopeManagePannel() {
-	    _classCallCheck(this, stationScopeManagePannel);
-
-	    _get(Object.getPrototypeOf(stationScopeManagePannel.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(stationScopeManagePannel, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2['default'].createElement(
-	        'div',
-	        null,
-	        _react2['default'].createElement(TopHeader, null),
-	        _react2['default'].createElement(FilterHeader, this.props)
-	      );
-	    }
-	  }]);
-
-	  return stationScopeManagePannel;
-	})(_react2['default'].Component);
-
-	function mapStateToProps(_ref) {
-	  var stationScopeManage = _ref.stationScopeManage;
-
-	  return stationScopeManage;
-	}
-
-	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
-	function mapDispatchToProps(dispatch) {
-	  return (0, _redux.bindActionCreators)(_extends({}, (0, _actionsArea2['default'])(), (0, _actionsStation_scope_manage2['default'])()), dispatch);
-	}
-
-	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(stationScopeManagePannel);
-
-	/***************   *******   *****************/
-	/***************   子模态框   *****************/
-	/***************   *******   *****************/
-
-	var MapModal = (function (_React$Component5) {
-	  _inherits(MapModal, _React$Component5);
-
-	  function MapModal() {
-	    _classCallCheck(this, MapModal);
-
-	    _get(Object.getPrototypeOf(MapModal.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(MapModal, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2['default'].createElement(
-	        _commonStd_modal2['default'],
-	        { ref: 'modal', title: '批量转换操作' },
-	        _react2['default'].createElement(MapScope, null)
-	      );
-	    }
-	  }, {
-	    key: 'show',
-	    value: function show() {
-	      this.refs.modal.show();
-	    }
-	  }, {
-	    key: 'hide',
-	    value: function hide() {
-	      this.refs.modal.hide();
-	    }
-	  }]);
-
-	  return MapModal;
-	})(_react2['default'].Component);
-
-	;
-
-	var MapScope = (function (_React$Component6) {
-	  _inherits(MapScope, _React$Component6);
-
-	  function MapScope() {
-	    _classCallCheck(this, MapScope);
-
-	    _get(Object.getPrototypeOf(MapScope.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(MapScope, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2['default'].createElement('div', { ref: 'map' });
-	    }
-	  }]);
-
-	  return MapScope;
-	})(_react2['default'].Component);
-
-	module.exports = exports['default'];
-
-/***/ },
-/* 341 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _redux = __webpack_require__(223);
-
-	var _reduxLogger = __webpack_require__(342);
-
-	var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
-
-	var _reduxThunk = __webpack_require__(343);
-
-	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
-
-	var _reducersIndex = __webpack_require__(344);
-
-	var _reducersIndex2 = _interopRequireDefault(_reducersIndex);
-
-	if (true) {
-	  //生产环境不需要logger
-	  var createStoreWithMiddleware = (0, _redux.applyMiddleware)(_reduxThunk2['default'])(_redux.createStore);
-	} else {
-	  var createStoreWithMiddleware = (0, _redux.compose)((0, _redux.applyMiddleware)(_reduxThunk2['default'], (0, _reduxLogger2['default'])()), window.devToolsExtension ? window.devToolsExtension() : function (f) {
-	    return f;
-	  })(_redux.createStore);
-	}
-
-	var store = createStoreWithMiddleware(_reducersIndex2['default']);
-
-	//考虑到有些reducer中将使用到store
-	window.STORE = store;
-
-	exports['default'] = store;
-	module.exports = exports['default'];
-
-/***/ },
-/* 342 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	var repeat = function repeat(str, times) {
-	  return new Array(times + 1).join(str);
-	};
-	var pad = function pad(num, maxLength) {
-	  return repeat("0", maxLength - num.toString().length) + num;
-	};
-	var formatTime = function formatTime(time) {
-	  return " @ " + pad(time.getHours(), 2) + ":" + pad(time.getMinutes(), 2) + ":" + pad(time.getSeconds(), 2) + "." + pad(time.getMilliseconds(), 3);
-	};
-
-	// Use the new performance api to get better precision if available
-	var timer = typeof performance !== "undefined" && typeof performance.now === "function" ? performance : Date;
-
-	/**
-	 * Creates logger with followed options
-	 *
-	 * @namespace
-	 * @property {object} options - options for logger
-	 * @property {string} options.level - console[level]
-	 * @property {bool} options.duration - print duration of each action?
-	 * @property {bool} options.timestamp - print timestamp with each action?
-	 * @property {object} options.colors - custom colors
-	 * @property {object} options.logger - implementation of the `console` API
-	 * @property {boolean} options.collapsed - is group collapsed?
-	 * @property {boolean} options.predicate - condition which resolves logger behavior
-	 * @property {function} options.stateTransformer - transform state before print
-	 * @property {function} options.actionTransformer - transform action before print
-	 */
-
-	function createLogger() {
-	  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-	  return function (_ref) {
-	    var getState = _ref.getState;
-	    return function (next) {
-	      return function (action) {
-	        var _options$level = options.level;
-	        var level = _options$level === undefined ? "log" : _options$level;
-	        var _options$logger = options.logger;
-	        var logger = _options$logger === undefined ? window.console : _options$logger;
-	        var collapsed = options.collapsed;
-	        var predicate = options.predicate;
-	        var _options$duration = options.duration;
-	        var duration = _options$duration === undefined ? false : _options$duration;
-	        var _options$timestamp = options.timestamp;
-	        var timestamp = _options$timestamp === undefined ? true : _options$timestamp;
-	        var transformer = options.transformer;
-	        var _options$stateTransfo = options.stateTransformer;
-	        var // deprecated
-	        stateTransformer = _options$stateTransfo === undefined ? function (state) {
-	          return state;
-	        } : _options$stateTransfo;
-	        var _options$actionTransf = options.actionTransformer;
-	        var actionTransformer = _options$actionTransf === undefined ? function (actn) {
-	          return actn;
-	        } : _options$actionTransf;
-	        var _options$colors = options.colors;
-	        var colors = _options$colors === undefined ? {
-	          title: function title() {
-	            return "#000000";
-	          },
-	          prevState: function prevState() {
-	            return "#9E9E9E";
-	          },
-	          action: function action() {
-	            return "#03A9F4";
-	          },
-	          nextState: function nextState() {
-	            return "#4CAF50";
-	          }
-	        } : _options$colors;
-
-	        // exit if console undefined
-
-	        if (typeof logger === "undefined") {
-	          return next(action);
-	        }
-
-	        // exit early if predicate function returns false
-	        if (typeof predicate === "function" && !predicate(getState, action)) {
-	          return next(action);
-	        }
-
-	        if (transformer) {
-	          console.error("Option 'transformer' is deprecated, use stateTransformer instead");
-	        }
-
-	        var started = timer.now();
-	        var prevState = stateTransformer(getState());
-
-	        var formattedAction = actionTransformer(action);
-	        var returnedValue = next(action);
-
-	        var took = timer.now() - started;
-	        var nextState = stateTransformer(getState());
-
-	        // message
-	        var time = new Date();
-	        var isCollapsed = typeof collapsed === "function" ? collapsed(getState, action) : collapsed;
-
-	        var formattedTime = formatTime(time);
-	        var titleCSS = colors.title ? "color: " + colors.title(formattedAction) + ";" : null;
-	        var title = "action " + formattedAction.type + (timestamp ? formattedTime : "") + (duration ? " in " + took.toFixed(2) + " ms" : "");
-
-	        // render
-	        try {
-	          if (isCollapsed) {
-	            if (colors.title) logger.groupCollapsed("%c " + title, titleCSS);else logger.groupCollapsed(title);
-	          } else {
-	            if (colors.title) logger.group("%c " + title, titleCSS);else logger.group(title);
-	          }
-	        } catch (e) {
-	          logger.log(title);
-	        }
-
-	        if (colors.prevState) logger[level]("%c prev state", "color: " + colors.prevState(prevState) + "; font-weight: bold", prevState);else logger[level]("prev state", prevState);
-
-	        if (colors.action) logger[level]("%c action", "color: " + colors.action(formattedAction) + "; font-weight: bold", formattedAction);else logger[level]("action", formattedAction);
-
-	        if (colors.nextState) logger[level]("%c next state", "color: " + colors.nextState(nextState) + "; font-weight: bold", nextState);else logger[level]("next state", nextState);
-
-	        try {
-	          logger.groupEnd();
-	        } catch (e) {
-	          logger.log("—— log end ——");
-	        }
-
-	        return returnedValue;
-	      };
-	    };
-	  };
-	}
-
-	exports.default = createLogger;
-	module.exports = exports['default'];
-
-/***/ },
-/* 343 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	exports.__esModule = true;
-	exports['default'] = thunkMiddleware;
-
-	function thunkMiddleware(_ref) {
-	  var dispatch = _ref.dispatch;
-	  var getState = _ref.getState;
-
-	  return function (next) {
-	    return function (action) {
-	      return typeof action === 'function' ? action(dispatch, getState) : next(action);
-	    };
-	  };
-	}
-
-	module.exports = exports['default'];
-
-/***/ },
-/* 344 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _redux = __webpack_require__(223);
-
-	var _login = __webpack_require__(345);
-
-	var _login2 = _interopRequireDefault(_login);
-
-	var _order_manage = __webpack_require__(346);
-
-	var _order_manage2 = _interopRequireDefault(_order_manage);
-
-	var _order_manage_form = __webpack_require__(351);
-
-	var _order_manage_form2 = _interopRequireDefault(_order_manage_form);
-
-	var _delivery_change = __webpack_require__(357);
-
-	var _delivery_change2 = _interopRequireDefault(_delivery_change);
-
-	var _delivery_manage = __webpack_require__(358);
-
-	var _delivery_manage2 = _interopRequireDefault(_delivery_manage);
-
-	var _distribute_manage = __webpack_require__(360);
-
-	var _distribute_manage2 = _interopRequireDefault(_distribute_manage);
-
-	var _delivery_print_review = __webpack_require__(361);
-
-	var _delivery_print_review2 = _interopRequireDefault(_delivery_print_review);
-
-	var _form = __webpack_require__(318);
-
-	var _form2 = _interopRequireDefault(_form);
-
-	var _station_manage = __webpack_require__(362);
-
-	var _station_manage2 = _interopRequireDefault(_station_manage);
-
-	var _station_scope_manage = __webpack_require__(363);
-
-	var _station_scope_manage2 = _interopRequireDefault(_station_scope_manage);
-
-	var _reduxSimpleRouter = __webpack_require__(348);
-
-	var rootReducer = (0, _redux.combineReducers)({
-	  login: _login2['default'],
-	  orderManage: _order_manage2['default'],
-	  orderManageForm: _order_manage_form2['default'],
-	  deliveryChange: _delivery_change2['default'],
-	  deliveryManage: _delivery_manage2['default'],
-	  distributeManage: _distribute_manage2['default'],
-	  deliveryPrintReview: _delivery_print_review2['default'],
-	  form: _form2['default'],
-	  routing: _reduxSimpleRouter.routeReducer,
-	  stationManage: _station_manage2['default'],
-	  stationScopeManage: _station_scope_manage2['default']
-	});
-
-	exports['default'] = rootReducer;
-	module.exports = exports['default'];
-
-/***/ },
-/* 345 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _redux = __webpack_require__(223);
-
-	var _actionsLogin = __webpack_require__(233);
-
-	var initial_state = {
-	  login_ing: false,
-	  validate: false, //好像已经没用了
-	  error_msg: '',
-
-	  username: '',
-	  password: ''
-	};
-
-	function login(state, action) {
-	  if (state === undefined) state = initial_state;
-
-	  switch (action.type) {
-	    case _actionsLogin.LOGIN_START:
-	      return _extends({}, state, { login_ing: true });
-	    case _actionsLogin.LOGIN_SUCCESS:
-	      return _extends({}, state, { validate: true, login_ing: false });
-	    case _actionsLogin.LOGIN_FAIL:
-	      return _extends({}, state, { error_msg: action.msg, login_ing: false });
-	    case _actionsLogin.USERNAME_CHANGE:
-	      return _extends({}, state, { username: action.username });
-	    case _actionsLogin.PASSWORD_CHANGE:
-	      return _extends({}, state, { password: action.password });
-	    case _actionsLogin.RESET_ERROR_MSG:
-	      return _extends({}, state, { error_msg: '' });
-	    default:
-	      return state;
-	  }
-	}
-
-	exports['default'] = login;
-	module.exports = exports['default'];
-
-/***/ },
-/* 346 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var _redux = __webpack_require__(223);
-
-	var _actionsOrder_manage = __webpack_require__(291);
-
-	var Actions = _interopRequireWildcard(_actionsOrder_manage);
-
-	var _actionsOrder_manage_form = __webpack_require__(292);
-
-	var _actionsOrders = __webpack_require__(290);
-
-	var _actionsAction_types = __webpack_require__(289);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var _reducersArea_select = __webpack_require__(347);
-
-	var _reducersDelivery_stations = __webpack_require__(349);
-
-	var _reducersDelivery_stations2 = _interopRequireDefault(_reducersDelivery_stations);
-
-	var _reducersOrders = __webpack_require__(350);
-
-	var filter_state = {
-	  search_ing: false,
-	  all_order_srcs: [],
-	  all_order_status: (0, _utilsIndex.map)(_configAppConfig.order_status, function (_ref, id) {
-	    var value = _ref.value;
-	    return { id: id, text: value };
-	  })
-	};
-
-	function filter(state, action) {
-	  if (state === undefined) state = filter_state;
-
-	  switch (action.type) {
-	    case _actionsOrder_manage_form.GOT_ORDER_SRCS:
-	      var l1 = [],
-	          l2 = [];
-	      var data = _utilsIndex.core.isArray(action.data) ? action.data : [];
-	      //level最多为2级
-	      data.forEach(function (n) {
-	        n.text = n.name; //转换
-	        if (n.level == 1) {
-	          l1.push(n);
-	        } else {
-	          l2.push(n);
-	        }
-	      });
-	      return _extends({}, state, { all_order_srcs: !l2.length ? [l1] : [l1, l2] });
-	    default:
-	      return state;
-	  }
-	}
-
-	var main_state = {
-	  submitting: false,
-
-	  prepare_delivery_data_ok: false };
-	//AlterDeliveryModal和AlterStationModal辅助数据是否已经获取完毕
-	// delivery_stations: [],  //这个用于AlterDeliveryModal和AlterStationModal中
-	function main(state, action) {
-	  if (state === undefined) state = main_state;
-
-	  switch (action.type) {
-	    case Actions.CANCEL_ORDER:
-	    case Actions.ORDER_EXCEPTION:
-	    case Actions.ALTER_DELIVERY:
-	      if (action.key == _configAppConfig.REQUEST.ING) {
-	        return _extends({}, state, { submitting: true });
-	      } else if (action.key == _configAppConfig.REQUEST.SUCCESS || action.key == _configAppConfig.REQUEST.FAIL) {
-	        return _extends({}, state, { submitting: false });
-	      } else {
-	        console.error('nali?');
-	      }
-
-	    case Actions.PREPARE_DELIVERY_DATA_OK:
-	      return _extends({}, state, { prepare_delivery_data_ok: true });
-	    case _actionsOrders.GET_ORDER_DETAIL_PRODUCTS:
-	      return _extends({}, state, { prepare_delivery_data_ok: false }); //重新拉取订单详情时，先置否，等待拉取 prepare_delivery_data
-
-	    default:
-	      return state;
-	  }
-	}
-
-	exports['default'] = (0, _redux.combineReducers)({
-	  filter: filter,
-	  area: (0, _reducersArea_select.area)(),
-	  orders: _reducersOrders.orders,
-	  operationRecord: _reducersOrders.operationRecord,
-	  main: main,
-	  alter_delivery_area: (0, _reducersArea_select.area)(_actionsAction_types.AreaActionTypes2),
-	  delivery_stations: _reducersDelivery_stations2['default']
-	});
-	module.exports = exports['default'];
-
-/***/ },
-/* 347 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	exports.area = area;
-
-	var _redux = __webpack_require__(223);
-
-	var _actionsAction_types = __webpack_require__(289);
-
-	var _reduxSimpleRouter = __webpack_require__(348);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var initial_state = {
-	  provinces: [],
-	  cities: [],
-	  districts: [],
-	  delivery_shops: []
-	};
-
-	function _t(data) {
-	  return (0, _utilsIndex.map)(data, function (text, id) {
-	    return { id: id, text: text };
-	  });
-	}
-
-	function area() {
-	  var Actions = arguments.length <= 0 || arguments[0] === undefined ? _actionsAction_types.AreaActionTypes1 : arguments[0];
-
-	  return function area(state, action) {
-	    if (state === undefined) state = initial_state;
-
-	    switch (action.type) {
-	      case _reduxSimpleRouter.UPDATE_PATH:
-	        return initial_state;
-
-	      case Actions.GOT_PROVINCES:
-	        return _extends({}, state, { provinces: _t(action.data) });
-	      case Actions.PROVINCE_RESET:
-	        return _extends({}, state, { cities: [], districts: [], delivery_shops: [] });
-	      case Actions.GOT_CITIES:
-	        return _extends({}, state, { cities: _t(action.data) });
-	      case Actions.CITY_RESET:
-	        return _extends({}, state, { districts: [], delivery_shops: [] });
-	      case Actions.GOT_DISTRICTS:
-	        return _extends({}, state, { districts: _t(action.data) });
-	      case Actions.GOT_DELIVERY_SHOPS:
-	        return _extends({}, state, { delivery_shops: (0, _utilsIndex.map)(action.data, function (text) {
-	            return { id: text, text: text };
-	          }) });
-	      case Actions.DISTRICT_RESET:
-	        return _extends({}, state, { delivery_shops: [] });
-	      default:
-	        return state;
-	    }
-	  };
-	}
-
-/***/ },
-/* 348 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.routeReducer = exports.UPDATE_PATH = undefined;
-	exports.pushPath = pushPath;
-	exports.replacePath = replacePath;
-	exports.syncReduxAndRouter = syncReduxAndRouter;
-
-	var _deepEqual = __webpack_require__(173);
-
-	var _deepEqual2 = _interopRequireDefault(_deepEqual);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	// Constants
-
-	var INIT_PATH = '@@router/INIT_PATH';
-	var UPDATE_PATH = exports.UPDATE_PATH = '@@router/UPDATE_PATH';
-	var SELECT_STATE = function SELECT_STATE(state) {
-	  return state.routing;
-	};
-
-	// Action creators
-
-	function initPath(path, state) {
-	  return {
-	    type: INIT_PATH,
-	    payload: {
-	      path: path,
-	      state: state,
-	      replace: false,
-	      avoidRouterUpdate: true
-	    }
-	  };
-	}
-
-	function pushPath(path, state) {
-	  var _ref = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-	  var _ref$avoidRouterUpdat = _ref.avoidRouterUpdate;
-	  var avoidRouterUpdate = _ref$avoidRouterUpdat === undefined ? false : _ref$avoidRouterUpdat;
-
-	  return {
-	    type: UPDATE_PATH,
-	    payload: {
-	      path: path,
-	      state: state,
-	      replace: false,
-	      avoidRouterUpdate: !!avoidRouterUpdate
-	    }
-	  };
-	}
-
-	function replacePath(path, state) {
-	  var _ref2 = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-	  var _ref2$avoidRouterUpda = _ref2.avoidRouterUpdate;
-	  var avoidRouterUpdate = _ref2$avoidRouterUpda === undefined ? false : _ref2$avoidRouterUpda;
-
-	  return {
-	    type: UPDATE_PATH,
-	    payload: {
-	      path: path,
-	      state: state,
-	      replace: true,
-	      avoidRouterUpdate: !!avoidRouterUpdate
-	    }
-	  };
-	}
-
-	// Reducer
-
-	var initialState = {
-	  changeId: 1,
-	  path: undefined,
-	  state: undefined,
-	  replace: false
-	};
-
-	function update() {
-	  var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
-	  var _ref3 = arguments[1];
-	  var type = _ref3.type;
-	  var payload = _ref3.payload;
-
-	  if (type === INIT_PATH || type === UPDATE_PATH) {
-	    return _extends({}, state, {
-	      path: payload.path,
-	      changeId: state.changeId + (payload.avoidRouterUpdate ? 0 : 1),
-	      state: payload.state,
-	      replace: payload.replace
-	    });
-	  }
-	  return state;
-	}
-
-	// Syncing
-
-	function locationsAreEqual(a, b) {
-	  return a != null && b != null && a.path === b.path && (0, _deepEqual2.default)(a.state, b.state);
-	}
-
-	function createPath(location) {
-	  var pathname = location.pathname;
-	  var search = location.search;
-	  var hash = location.hash;
-
-	  var result = pathname;
-	  if (search) result += search;
-	  if (hash) result += hash;
-	  return result;
-	}
-
-	function syncReduxAndRouter(history, store) {
-	  var selectRouterState = arguments.length <= 2 || arguments[2] === undefined ? SELECT_STATE : arguments[2];
-
-	  var getRouterState = function getRouterState() {
-	    return selectRouterState(store.getState());
-	  };
-
-	  // To properly handle store updates we need to track the last route.
-	  // This route contains a `changeId` which is updated on every
-	  // `pushPath` and `replacePath`. If this id changes we always
-	  // trigger a history update. However, if the id does not change, we
-	  // check if the location has changed, and if it is we trigger a
-	  // history update. It's possible for this to happen when something
-	  // reloads the entire app state such as redux devtools.
-	  var lastRoute = undefined;
-
-	  if (!getRouterState()) {
-	    throw new Error('Cannot sync router: route state does not exist. Did you ' + 'install the routing reducer?');
-	  }
-
-	  var unsubscribeHistory = history.listen(function (location) {
-	    var route = {
-	      path: createPath(location),
-	      state: location.state
-	    };
-
-	    if (!lastRoute) {
-	      // `initialState` *should* represent the current location when
-	      // the app loads, but we cannot get the current location when it
-	      // is defined. What happens is `history.listen` is called
-	      // immediately when it is registered, and it updates the app
-	      // state with an UPDATE_PATH action. This causes problem when
-	      // users are listening to UPDATE_PATH actions just for
-	      // *changes*, and with redux devtools because "revert" will use
-	      // `initialState` and it won't revert to the original URL.
-	      // Instead, we specialize the first route notification and do
-	      // different things based on it.
-	      initialState = {
-	        changeId: 1,
-	        path: route.path,
-	        state: route.state,
-	        replace: false
-	      };
-
-	      // Also set `lastRoute` so that the store subscriber doesn't
-	      // trigger an unnecessary `pushState` on load
-	      lastRoute = initialState;
-
-	      store.dispatch(initPath(route.path, route.state));
-	    } else if (!locationsAreEqual(getRouterState(), route)) {
-	      // The above check avoids dispatching an action if the store is
-	      // already up-to-date
-	      var method = location.action === 'REPLACE' ? replacePath : pushPath;
-	      store.dispatch(method(route.path, route.state, { avoidRouterUpdate: true }));
-	    }
-	  });
-
-	  var unsubscribeStore = store.subscribe(function () {
-	    var routing = getRouterState();
-
-	    // Only trigger history update if this is a new change or the
-	    // location has changed.
-	    if (lastRoute.changeId !== routing.changeId || !locationsAreEqual(lastRoute, routing)) {
-
-	      lastRoute = routing;
-	      var method = routing.replace ? 'replaceState' : 'pushState';
-	      history[method](routing.state, routing.path);
-	    }
-	  });
-
-	  return function unsubscribe() {
-	    unsubscribeHistory();
-	    unsubscribeStore();
-	  };
-	}
-
-	exports.routeReducer = update;
-
-
-/***/ },
-/* 349 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	var _actionsOrder_manage_form = __webpack_require__(292);
-
-	var FormActions = _interopRequireWildcard(_actionsOrder_manage_form);
-
-	var _actionsOrder_manage = __webpack_require__(291);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var initial_state = {
-	  delivery_stations: [],
-	  delivery_stations_backup: []
-	};
-
-	function delivery_stations(state, action) {
-	  if (state === undefined) state = initial_state;
-
-	  switch (action.type) {
-	    case _actionsOrder_manage.RESET_DELIVERY_STATIONS:
-	      return _extends({}, state, { delivery_stations: state.delivery_stations_backup });
-	    case FormActions.GOT_DELIVERY_STATIONS:
-	      var __delivery_stations = (0, _utilsIndex.map)(action.data, function (text, id) {
-	        return { id: id, text: text };
-	      });
-	      return _extends({}, state, { delivery_stations: __delivery_stations, delivery_stations_backup: __delivery_stations });
-	    case FormActions.AUTO_GOT_DELIVERY_STATIONS:
-	      return (function () {
-	        var d = action.data;
-	        if (action.key == _configAppConfig.REQUEST.SUCCESS) {
-	          return _extends({}, state, { delivery_stations: [{ id: d.delivery_id, text: d.delivery_name }] });
-	        } else if (action.key == _configAppConfig.REQUEST.FAIL) {
-	          return _extends({}, state, { delivery_stations: state.delivery_stations_backup });
-	        } else {
-	          return state;
-	        }
-	      })();
-	    default:
-	      return state;
-	  }
-	}
-
-	exports['default'] = delivery_stations;
-	module.exports = exports['default'];
-
-/***/ },
-/* 350 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	exports.orders = orders;
-	exports.operationRecord = operationRecord;
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	var _actionsOrders = __webpack_require__(290);
-
-	var OrderActions = _interopRequireWildcard(_actionsOrders);
-
-	var _actionsDelivery_manage = __webpack_require__(330);
-
-	var _actionsDelivery_distribute = __webpack_require__(334);
-
-	var _reduxSimpleRouter = __webpack_require__(348);
-
-	var orders_state = {
-	  loading: true, //初始化加载，
-	  refresh: false, //列表数据更新（用于当某些操作所引发的数据刷新）
-	  page_no: 0,
-	  total: 0,
-	  list: [],
-	  checked_order_ids: [],
-	  checked_orders: [],
-	  active_order_id: undefined,
-	  check_order_info: null,
-	  show_products_detail: false
-	};
-
-	function orders(state, action) {
-	  if (state === undefined) state = orders_state;
-
-	  switch (action.type) {
-
-	    case _reduxSimpleRouter.UPDATE_PATH:
-	      return _extends({}, orders_state);
-
-	    case OrderActions.GET_ORDER_LIST_ING:
-	      return _extends({}, orders_state, { refresh: true });
-	    case OrderActions.GET_ORDER_LIST:
-	      return _extends({}, orders_state, action.data, { loading: false, refresh: false });
-
-	    case OrderActions.CHECK_ORDER:
-	      return (function () {
-	        var checked_order_ids = [],
-	            checked_orders = [];
-	        state.list.forEach(function (n) {
-	          if (n.order_id == action.order_id) {
-	            n.checked = action.checked;
-	          }
-	          if (n.checked) {
-	            checked_order_ids.push(n.order_id);
-	            checked_orders.push(n);
-	          }
-	        });
-	        return _extends({}, state, { checked_order_ids: checked_order_ids, checked_orders: checked_orders });
-	      })();
-
-	    case OrderActions.CHECK_ALL_ORDERS:
-	      return (function () {
-	        var checked_order_ids = [],
-	            checked_orders = [];
-	        state.list.forEach(function (n) {
-	          n.checked = action.checked;
-	          if (action.checked) {
-	            checked_order_ids.push(n.order_id);
-	            checked_orders.push(n);
-	          }
-	        });
-	        return _extends({}, state, { checked_order_ids: checked_order_ids, checked_orders: checked_orders });
-	      })();
-
-	    case OrderActions.ACTIVE_ORDER:
-	      return _extends({}, state, { active_order_id: action.active_order_id, show_products_detail: false });
-
-	    case OrderActions.SHOW_PRODUCTS_DETAIL:
-	      return _extends({}, state, { show_products_detail: true });
-
-	    case OrderActions.GET_ORDER_DETAIL_PRODUCTS:
-	      return _extends({}, state, { check_order_info: action.data });
-
-	    //特殊情况：送货单管理，配送单管理 -> 获取扫描搜索结果列表
-	    case _actionsDelivery_manage.GET_DELIVERY_SCAN_LIST:
-	    case _actionsDelivery_distribute.GET_DISTRIBUTE_SCAN_LIST:
-	      return _extends({}, orders_state, { loading: false }); //重置
-
-	    default:
-	      return state;
-	  }
-	}
-
-	var operation_record = {
-	  page_no: 0,
-	  total: 0,
-	  list: []
-	};
-
-	function operationRecord(state, action) {
-	  if (state === undefined) state = operation_record;
-
-	  switch (action.type) {
-	    case OrderActions.RESET_ORDER_OPT_RECORD:
-	      return _extends({}, operation_record);
-	    case OrderActions.GET_ORDER_OPT_RECORD:
-	      return _extends({}, state, action.data);
-	    default:
-	      return state;
-	  }
-	}
-
-/***/ },
-/* 351 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
-
-	var _redux = __webpack_require__(223);
-
-	var _area_select = __webpack_require__(347);
-
-	var _actionsOrder_manage_form = __webpack_require__(292);
-
-	var FormActions = _interopRequireWildcard(_actionsOrder_manage_form);
-
-	var _actionsOrder_products = __webpack_require__(320);
-
-	var OrderProductsActions = _interopRequireWildcard(_actionsOrder_products);
-
-	var _reduxSimpleRouter = __webpack_require__(348);
-
-	var _actionsArea = __webpack_require__(288);
-
-	var _actionsArea2 = _interopRequireDefault(_actionsArea);
-
-	var _actionsForm = __webpack_require__(293);
-
-	var _utilsIndex = __webpack_require__(160);
-
-	var _reduxForm = __webpack_require__(242);
-
-	var _configAppConfig = __webpack_require__(157);
-
-	var _reducersDelivery_stations = __webpack_require__(349);
-
-	var _reducersDelivery_stations2 = _interopRequireDefault(_reducersDelivery_stations);
-
-	var _clone = __webpack_require__(352);
-
-	var _clone2 = _interopRequireDefault(_clone);
-
-	var _storesGetter = __webpack_require__(319);
-
-	var initial_state = {
-	  all_pay_status: (0, _utilsIndex.map)(_configAppConfig.pay_status, function (text, id) {
-	    return { id: id, text: text };
-	  }),
-	  all_delivery_time: _configAppConfig.DELIVERY_TIME_MAP.map(function (n) {
-	    return { id: n, text: n };
-	  }),
-	  all_order_srcs: [],
-	  all_pay_modes: [],
-
-	  save_ing: false,
-	  save_success: true,
-	  submit_ing: false,
-
-	  //edit data from server
-	  data: {}
-	};
-
-	function mainForm(state, action) {
-	  if (state === undefined) state = initial_state;
-
-	  var store = (0, _storesGetter.getGlobalStore)();
-	  switch (action.type) {
-	    case _reduxSimpleRouter.UPDATE_PATH:
-	      return _extends({}, initial_state);
-	    case FormActions.GOT_ORDER_SRCS:
-	      var l1 = [],
-	          l2 = [];
-	      var order_src_data = _utilsIndex.core.isArray(action.data) ? action.data : [];
-	      //level最多为2级
-	      order_src_data.forEach(function (n) {
-	        n.text = n.name; //转换
-	        if (n.level == 1) {
-	          l1.push(n);
-	        } else {
-	          l2.push(n);
-	        }
-	      });
-	      return _extends({}, state, { all_order_srcs: !l2.length ? [l1] : [l1, l2] });
-
-	    case FormActions.GOT_PAY_MODES:
-	      return _extends({}, state, { all_pay_modes: (0, _utilsIndex.map)(action.data, function (text, id) {
-	          return { id: id, text: text };
-	        }) });
-
-	    case FormActions.SAVE_ORDER_INFO_ING:
-	      return _extends({}, state, { save_ing: true });
-	    case FormActions.SAVE_ORDER_INFO_SUCCESS:
-	      return _extends({}, state, { save_success: true, save_ing: false });
-	    case FormActions.SAVE_ORDER_INFO_FAIL:
-	      return _extends({}, state, { save_success: false, save_ing: false });
-
-	    case FormActions.SUBMIT_ORDER_ING:
-	      return _extends({}, state, { submit_ing: true });
-	    case FormActions.SUBMIT_ORDER_COMPLETE:
-	      return _extends({}, state, { submit_ing: true });
-
-	    case FormActions.GOT_ORDER_BY_ID:
-	    case FormActions.GOT_COPY_ORDER_BY_ID:
-	      return (function () {
-	        var data = action.data;
-
-	        var tmp = data.delivery_time.split(' ');
-	        data.delivery_date = tmp[0];
-	        data.delivery_hours = tmp[1];
-
-	        //
-
-	        var _AreaActions = (0, _actionsArea2['default'])();
-
-	        var getCities = _AreaActions.getCities;
-	        var getDistricts = _AreaActions.getDistricts;
-	        var getDeliveryShops = _AreaActions.getDeliveryShops;
-
-	        store.dispatch(getCities(data.province_id));
-	        store.dispatch(getDistricts(data.city_id));
-	        store.dispatch(getDeliveryShops(data.regionalism_id));
-
-	        return _extends({}, state, { data: data });
-	      })();
-
-	    default:
-	      return state;
-	  }
-	}
-
-	//正在选择的商品
-	var products_choosing_state = {
-	  all_categories: [],
-	  search_results: {
-	    total: 0,
-	    list: []
-	  },
-	  selected_list: [], //modal 里面的 选择列表
-	  confirm_list: [] };
-	//modal 里面确认后，主面板的已选产品列表
-	function products_choosing(state, action) {
-	  if (state === undefined) state = products_choosing_state;
-
-	  var sku_id, new_selected_list;
-	  var store = (0, _storesGetter.getGlobalStore)();
-
-	  switch (action.type) {
-	    case _reduxSimpleRouter.UPDATE_PATH:
-	      return products_choosing_state;
-	    case OrderProductsActions.GOT_CATEGORIES:
-	      return _extends({}, state, { all_categories: action.data });
-	    case OrderProductsActions.SEARCH_PRODUCTS:
-	      //如果检索到已被选商品，那么则要标明已被勾选
-	      state.selected_list.forEach(function (n) {
-	        for (var i = 0, len = action.data.list.length; i < len; i++) {
-	          for (var j = 0, jlen = action.data.list[i].skus.length; j < jlen; j++) {
-	            if (action.data.list[i].skus[j].sku_id == n.sku_id) {
-	              action.data.list[i].skus[j].checked = true;
-	            }
-	          }
-	        }
-	      });
-	      return _extends({}, state, { search_results: action.data });
-	    case OrderProductsActions.SELECT_PRODUCT:
-	      sku_id = action.data.sku_id;
-	      if (state.selected_list.some(function (n) {
-	        return n.sku_id == sku_id;
-	      })) {
-	        return state;
-	      }
-	      /*****  这个地方已突变，应该使用 immutablejs *****/
-	      state.search_results.list.forEach(function (n) {
-	        n.skus.forEach(function (m) {
-	          if (m.sku_id == sku_id) {
-	            m.checked = !m.checked;
-	          }
-	        });
-	      });
-	      action.data.num = 1; //默认1
-	      return _extends({}, state, { selected_list: [].concat(_toConsumableArray(state.selected_list), [action.data]) });
-	    case OrderProductsActions.DELETE_SELECTED_PRODUCT:
-	      sku_id = action.data.sku_id;
-	      state.search_results.list.forEach(function (n) {
-	        n.skus.forEach(function (m) {
-	          if (m.sku_id == sku_id) {
-	            m.checked = false;
-	          }
-	        });
-	      });
-	      new_selected_list = [].concat(_toConsumableArray(state.selected_list)).filter(function (n) {
-	        return n.sku_id != sku_id;
-	      });
-	      return _extends({}, state, { selected_list: new_selected_list });
-	    case OrderProductsActions.CHANGE_PRODUCT_NUM:
-	      var num = action.num;
-
-	      sku_id = action.sku_id;
-	      new_selected_list = (0, _clone2['default'])(state.selected_list);
-	      new_selected_list.forEach(function (n) {
-	        if (n.sku_id == sku_id) {
-	          n.num = num;
-	        }
-	      });
-	      return _extends({}, state, { selected_list: new_selected_list });
-
-	    case OrderProductsActions.CONFIRM_ALL_SELECTED_PRODUCTS:
-	      return (function () {
-	        var base = {
-	          discount_price: 0,
-	          choco_board: '生日快乐', //巧克力牌
-	          greeting_card: '', //祝福语
-	          atlas: true, //产品图册
-	          custom_name: '', //自定义名称
-	          custom_desc: '' };
-	        //自定义描述
-	        var confirm_list = state.selected_list.map(function (n) {
-	          var new_item = _extends({}, n, base);
-	          new_item.discount_price = n.discount_price / 100 || 0;
-	          new_item.amount = new_item.discount_price * n.num;
-	          return new_item;
-	        });
-	        (0, _utilsIndex.delay)(function () {
-	          return store.dispatch((0, _actionsForm.updateAddOrderForm)());
-	        }); //商品数变化，通知add_order表单更新，支付方式、支付状态的默认值与所选商品数是紧密相关的
-	        (0, _utilsIndex.delay)(function () {
-	          return store.dispatch(OrderProductsActions.updateConfirmProductDiscountPrice());
-	        }); //更新商品应收金额
-	        return _extends({}, state, { confirm_list: confirm_list });
-	      })();
-
-	    case OrderProductsActions.CANCEL_ALL_SELECTED_PRODUCTS:
-	      state.search_results.list.forEach(function (n) {
-	        n.skus.forEach(function (m) {
-	          m.checked = state.confirm_list.some(function (j) {
-	            return m.sku_id == j.sku_id;
-	          });
-	        });
-	      });
-	      return _extends({}, state, { selected_list: [].concat(_toConsumableArray((0, _clone2['default'])(state.confirm_list))) });
-
-	    case OrderProductsActions.CONFIRM_PRODUCT_ATTR_CHANGE:
-	      sku_id = action.data.sku_id;
-	      //突变
-	      state.confirm_list.forEach(function (n) {
-	        if (n.sku_id == sku_id) {
-	          n[action.data.attr.name] = action.data.attr.value;
-	        }
-	      });
-	      return _extends({}, state);
-
-	    case OrderProductsActions.DELETE_CONFIRM_PRODUCT:
-	      sku_id = action.data.sku_id;
-	      // 突变
-	      state.search_results.list.forEach(function (n) {
-	        n.skus.forEach(function (m) {
-	          if (m.sku_id == sku_id) {
-	            m.checked = false;
-	          }
-	        });
-	      });
-	      var new_confirm_list = (0, _clone2['default'])(state.confirm_list);
-	      new_confirm_list.splice(new_confirm_list.findIndex(function (n) {
-	        return n.sku_id == sku_id;
-	      }), 1);
-	      new_selected_list = (0, _clone2['default'])(state.selected_list);
-	      new_selected_list.splice(new_selected_list.findIndex(function (n) {
-	        return n.sku_id == sku_id;
-	      }), 1);
-	      (0, _utilsIndex.delay)(function () {
-	        return store.dispatch((0, _actionsForm.updateAddOrderForm)());
-	      }); //商品数变化，通知add_order表单更新，支付方式、支付状态的默认值与所选商品数是紧密相关的
-	      (0, _utilsIndex.delay)(function () {
-	        return store.dispatch(OrderProductsActions.updateConfirmProductDiscountPrice());
-	      }); //更新商品应收金额
-	      return _extends({}, state, { confirm_list: new_confirm_list, selected_list: new_selected_list });
-
-	    case OrderProductsActions.UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE:
-	      return (function () {
-	        var global_state = store.getState();
-	        var order = (0, _reduxForm.getValues)(global_state.form.add_order);
-	        var pay_status = _configAppConfig.pay_status[order.pay_status];
-	        var confirm_list = state.confirm_list;
-
-	        if (pay_status == '已付款') {
-	          confirm_list.forEach(function (n) {
-	            n.amount = 0;
-	          });
-	        } else if (pay_status == '部分付款') {
-	          confirm_list.forEach(function (n, i) {
-	            n.amount = i == 0 ? 0 : n.discount_price;
-	          });
-	        } else {
-	          confirm_list.forEach(function (n) {
-	            n.amount = n.discount_price;
-	          });
-	        }
-	        return _extends({}, state);
-	      })();
-
-	    case FormActions.GOT_ORDER_BY_ID:
-	      action.data.products.forEach(function (n) {
-	        n.discount_price /= 100;
-	        n.amount /= 100;
-	      });
-	      return _extends({}, state, { confirm_list: action.data.products, selected_list: action.data.products });
-	    default:
-	      return state;
-	  }
-	}
-
-	var history_orders_state = {
-	  page_no: 0,
-	  total: 0,
-	  list: [],
-	  active_order_id: undefined,
-	  check_order_info: null
-	};
-	function history_orders(state, action) {
-	  if (state === undefined) state = history_orders_state;
-
-	  switch (action.type) {
-	    case FormActions.GET_HISTORY_ORDERS:
-	      return _extends({}, state, action.data, { active_order_id: undefined, check_order_info: null });
-
-	    case FormActions.CHECK_HISTORY_ORDER:
-	      return _extends({}, state, { active_order_id: action.active_order_id });
-	    case FormActions.GET_HISTORY_ORDER_DETAIL_PRODUCTS:
-	      return _extends({}, state, { check_order_info: action.data });
-	    default:
-	      return state;
-	  }
-	}
-
-	var orderAddReducer = (0, _redux.combineReducers)({
-	  area: (0, _area_select.area)(),
-	  mainForm: mainForm,
-	  products: products_choosing,
-	  history_orders: history_orders,
-	  delivery_stations: _reducersDelivery_stations2['default']
-	});
-
-	exports['default'] = orderAddReducer;
-	module.exports = exports['default'];
-
-/***/ },
-/* 352 */
-/***/ function(module, exports, __webpack_require__) {
-
 	/* WEBPACK VAR INJECTION */(function(Buffer) {var clone = (function() {
 	'use strict';
 
@@ -45572,10 +33558,10 @@
 	  module.exports = clone;
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(353).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(296).Buffer))
 
 /***/ },
-/* 353 */
+/* 296 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -45586,9 +33572,9 @@
 	 */
 	/* eslint-disable no-proto */
 
-	var base64 = __webpack_require__(354)
-	var ieee754 = __webpack_require__(355)
-	var isArray = __webpack_require__(356)
+	var base64 = __webpack_require__(297)
+	var ieee754 = __webpack_require__(298)
+	var isArray = __webpack_require__(299)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -47123,10 +35109,10 @@
 	  return i
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(353).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(296).Buffer, (function() { return this; }())))
 
 /***/ },
-/* 354 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -47256,7 +35242,7 @@
 
 
 /***/ },
-/* 355 */
+/* 298 */
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -47346,13 +35332,12069 @@
 
 
 /***/ },
-/* 356 */
+/* 299 */
 /***/ function(module, exports) {
 
 	module.exports = Array.isArray || function (arr) {
 	  return Object.prototype.toString.call(arr) == '[object Array]';
 	};
 
+
+/***/ },
+/* 300 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var DatePicker = _react2['default'].createClass({
+	  displayName: 'DatePicker',
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      className: '',
+	      'redux-form': null,
+	      editable: false,
+	      upperLimit: undefined,
+	      lowerLimit: undefined
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    var redux_form = this.props['redux-form'];
+	    return {
+	      date: redux_form ? redux_form.value : this.props.value
+	    };
+	  },
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+	    if (nextProps['redux-form'] && nextProps['redux-form'].value != undefined && nextProps['redux-form'].value != this.props['redux-form'].value) {
+	      $((function () {
+	        this.setState({
+	          date: nextProps['redux-form'].value
+	        }, function () {
+	          if (_utilsIndex.form.isDate(nextProps['redux-form'].value)) this.initDatePicker().update();
+	        });
+	      }).bind(this));
+	    } else if (nextProps.value != this.props.value) {
+	      this.setState({ date: nextProps.value });
+	    }
+	  },
+	  componentDidMount: function componentDidMount() {
+	    $((function () {
+	      this.initDatePicker();
+	    }).bind(this));
+	  },
+	  initDatePicker: function initDatePicker() {
+	    var $dom_date = $(this.refs.date);
+	    var $date = $dom_date.data('datepicker');
+	    var _props = this.props;
+	    var lowerLimit = _props.lowerLimit;
+	    var upperLimit = _props.upperLimit;
+
+	    lowerLimit = new Date(lowerLimit + ' 00:00:00');
+	    upperLimit = new Date(upperLimit + ' 00:00:00');
+
+	    if (!$date) {
+	      $date = $dom_date.datepicker({
+	        format: 'yyyy-mm-dd',
+	        onRender: (lowerLimit || upperLimit) && function (date) {
+	          if (date < lowerLimit || date > upperLimit) {
+	            return 'disabled';
+	          }
+	        }
+	      }).on('changeDate', (function (e) {
+	        var value = e.target.value;
+	        this.props.onChange && this.props.onChange(value);
+	        this.setState({ date: value }, function () {
+	          // setTimeout(function(){
+	          $dom_date.focus();
+	          $dom_date.blur();
+	          $date.data('datepicker').hide();
+	          // }, 0);
+	        });
+	      }).bind(this)).on('click', function () {
+	        $date.data('datepicker').show();
+	      });
+	    }
+	    return $date;
+	  },
+	  render: function render() {
+	    var redux_form = this.props['redux-form'];
+	    var editable = this.props.editable;
+	    var spreadProps;
+	    if (redux_form) {
+	      spreadProps = editable ? redux_form : _extends({}, redux_form, { onChange: function onChange() {} });
+	    } else {
+	      spreadProps = { onChange: editable ? this.props.onChange : function () {} };
+	    }
+	    //redux-from 中包含value
+	    return _react2['default'].createElement(
+	      'div',
+	      { style: { 'display': 'inline-block' } },
+	      _react2['default'].createElement('input', _extends({ ref: 'date' }, spreadProps, {
+	        value: this.state.date,
+	        className: 'form-control input-xs ' + this.props.className }))
+	    );
+	  }
+	});
+
+	exports['default'] = DatePicker;
+	module.exports = exports['default'];
+
+/***/ },
+/* 301 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var React = __webpack_require__(2);
+	var Select = React.createClass({
+	  displayName: 'Select',
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      "default-text": '--请选择--',
+	      "default-value": -1,
+	      "options": [],
+	      "no-default": false
+	    };
+	  },
+	  render: function render() {
+	    var list = this.props.options.map(function (n) {
+	      return React.createElement(
+	        'option',
+	        { value: n.id, key: n.id },
+	        n.text
+	      );
+	    });
+	    var className = "form-control input-xs " + (this.props.className || '');
+	    this.props = _extends({}, this.props, { className: className });
+	    return React.createElement(
+	      'select',
+	      this.props,
+	      this.props['no-default'] ? null : React.createElement(
+	        'option',
+	        { value: this.props['default-value'] },
+	        this.props['default-text']
+	      ),
+	      list
+	    );
+	  }
+	});
+	module.exports = Select;
+
+/***/ },
+/* 302 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var Pagination = _react2["default"].createClass({
+	    displayName: "Pagination",
+
+	    getDefaultProps: function getDefaultProps() {
+	        return {
+	            random_btn_active: true,
+	            random_btn_show: true,
+	            page_size: 20, //每页显示20条
+	            total_count: 0,
+	            page_no: 0,
+	            page_num_show: 10, //分页的页码，显示10个
+	            onPageChange: null,
+	            no_more_code: -1 };
+	    },
+	    //后台返回空数据的时候，
+	    //onPageChangeBefore: null
+	    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+	        if (nextProps.page_no == this.props.no_more_code) {
+	            this._selectPage(math.ceil(this.props.total_count / this.props.page_size));
+	        }
+	    },
+	    _calc_pages: function _calc_pages() {
+	        var total_count = this.props.total_count;
+	        var page_size = this.props.page_size;
+	        var page_no = this.props.page_no;
+
+	        if (total_count < 0 || total_count == Infinity) {
+	            var total_pages = -1;
+	        } else {
+	            var total_pages = Math.ceil(total_count / page_size);
+	        }
+	        this.total_pages = total_pages;
+
+	        //分页的分页~
+	        var page_num_show = this.props.page_num_show;
+	        if (total_pages == -1) {
+	            //Infinity处理
+	            var pagesOfpage = -1;
+	        } else {
+	            var pagesOfpage = Math.ceil(total_pages / page_num_show);
+	        }
+	        var cpageOfPage = Math.floor(page_no / page_num_show);
+	        var long_prev = cpageOfPage > 0;
+	        var long_next = cpageOfPage < pagesOfpage - 1 || pagesOfpage == -1;
+
+	        var page_num_start = cpageOfPage * page_num_show;
+	        if (total_pages == -1) {
+	            var page_num_end = (cpageOfPage + 1) * page_num_show;
+	        } else {
+	            var page_num_end = Math.min((cpageOfPage + 1) * page_num_show, total_pages);
+	        }
+
+	        return {
+	            "page_no": page_no,
+	            "total_pages": total_pages,
+
+	            "start": page_num_start,
+	            "end": page_num_end,
+	            "long_prev": long_prev,
+	            "long_next": long_next
+	        };
+	    },
+	    _selectPage: function _selectPage(page) {
+	        // if (this.props.onPageChangeBefore){
+	        //     this.props.onPageChangeBefore(page);
+	        // }
+	        if (this.props.onPageChange && this.props.page_no != page) {
+	            this.props.onPageChange(page);
+	            /*
+	            this.setState({
+	                page_no: page
+	            }, function(){
+	                this.props.onPageChange(page);
+	            });
+	            */
+	        }
+	    },
+	    _prevPage: function _prevPage() {
+	        if (this.props.page_no > 0) {
+	            this._selectPage(this.props.page_no - 1);
+	        }
+	    },
+	    _nextPage: function _nextPage() {
+	        var total_pages = this.total_pages;
+	        if (total_pages == -1 || this.props.page_no < total_pages - 1) {
+	            this._selectPage(this.props.page_no + 1);
+	        }
+	    },
+	    _longJumpPre: function _longJumpPre() {
+	        var pn = this.props.page_num_show;
+	        var page = Math.floor(this.props.page_no / pn) * pn - 1;
+	        this._selectPage(page);
+	    },
+	    _longJumpNext: function _longJumpNext() {
+	        var pn = this.props.page_num_show;
+	        var page = Math.floor(this.props.page_no / pn + 1) * pn;
+	        this._selectPage(page);
+	    },
+	    render: function render() {
+	        var page_info = this._calc_pages();
+	        var total_pages = page_info.total_pages;
+
+	        var preDisabledCls = page_info.page_no > 0 ? "" : " disabled",
+	            nextDisabledCls = total_pages == -1 || page_info.page_no < total_pages - 1 ? "" : " disabled";
+
+	        var longNextStyle = { display: 'none' },
+	            longPreStyle = { display: 'none' };
+	        if (page_info.long_next) {
+	            longNextStyle = {};
+	        }
+	        if (page_info.long_prev) {
+	            longPreStyle = {};
+	        }
+
+	        var lastPageStyle = longNextStyle;
+	        if (total_pages == -1) {
+	            //无穷大的页码就不能显示最后一页按钮
+	            lastPageStyle = { display: 'none' };
+	        }
+
+	        var page_numbers = [];
+	        for (var n = page_info.start; n < page_info.end && this.props.random_btn_show; n++) {
+	            var actived = n == page_info.page_no;
+	            var classnames = 'paginate_button';
+	            if (this.props.random_btn_active) {
+	                classnames += actived ? ' active' : '';
+	                page_numbers.push(_react2["default"].createElement(
+	                    "li",
+	                    { className: classnames, onClick: this._selectPage.bind(this, n), key: n },
+	                    _react2["default"].createElement(
+	                        "a",
+	                        { href: "javascript:;" },
+	                        n + 1
+	                    )
+	                ));
+	            } else {
+	                if (actived) {
+	                    classnames += " active";
+	                } else {
+	                    classnames += " disabled";
+	                }
+	                page_numbers.push(_react2["default"].createElement(
+	                    "li",
+	                    { className: classnames, key: n },
+	                    _react2["default"].createElement(
+	                        "a",
+	                        { href: "javascript:;" },
+	                        n + 1
+	                    )
+	                ));
+	            }
+	        }
+
+	        var firstPage, longJumpPre, lastPage, longJumpNext;
+	        if (this.props.random_btn_show) {
+	            //TODO random_btn_active
+
+	            firstPage = _react2["default"].createElement(
+	                "li",
+	                { className: "paginate_button", style: longPreStyle, onClick: this._selectPage.bind(this, 0) },
+	                _react2["default"].createElement(
+	                    "a",
+	                    { href: "javascript:;" },
+	                    "首页"
+	                )
+	            );
+	            longJumpPre = _react2["default"].createElement(
+	                "li",
+	                { className: "paginate_button", style: longPreStyle, onClick: this._longJumpPre },
+	                _react2["default"].createElement(
+	                    "a",
+	                    { href: "javascript:;" },
+	                    "..."
+	                )
+	            );
+
+	            lastPage = _react2["default"].createElement(
+	                "li",
+	                { className: "paginate_button", style: lastPageStyle, onClick: this._selectPage.bind(this, total_pages - 1) },
+	                _react2["default"].createElement(
+	                    "a",
+	                    { href: "javascript:;" },
+	                    "末页"
+	                )
+	            );
+	            longJumpNext = _react2["default"].createElement(
+	                "li",
+	                { className: "paginate_button", style: longNextStyle, onClick: this._longJumpNext },
+	                _react2["default"].createElement(
+	                    "a",
+	                    { href: "javascript:;" },
+	                    "..."
+	                )
+	            );
+	        }
+
+	        return _react2["default"].createElement(
+	            "div",
+	            { className: "clearfix" },
+	            _react2["default"].createElement(
+	                "ul",
+	                { className: "pagination pull-right" },
+	                _react2["default"].createElement(
+	                    "li",
+	                    { className: 'paginate_button previous' + preDisabledCls, onClick: this._prevPage },
+	                    _react2["default"].createElement(
+	                        "a",
+	                        { href: "javascript:;" },
+	                        "«"
+	                    )
+	                ),
+	                firstPage,
+	                longJumpPre,
+	                page_numbers,
+	                longJumpNext,
+	                lastPage,
+	                _react2["default"].createElement(
+	                    "li",
+	                    { className: 'paginate_button next' + nextDisabledCls, onClick: this._nextPage },
+	                    _react2["default"].createElement(
+	                        "a",
+	                        { href: "javascript:;" },
+	                        "»"
+	                    )
+	                )
+	            ),
+	            _react2["default"].createElement(
+	                "div",
+	                { style: { 'lineHeight': '31px' } },
+	                '共' + this.props.total_count + '项'
+	            )
+	        );
+	    }
+	});
+
+	exports["default"] = Pagination;
+	module.exports = exports["default"];
+
+/***/ },
+/* 303 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _history_instance = __webpack_require__(211);
+
+	var _history_instance2 = _interopRequireDefault(_history_instance);
+
+	var Linkers = (function (_React$Component) {
+	  _inherits(Linkers, _React$Component);
+
+	  function Linkers(props) {
+	    _classCallCheck(this, Linkers);
+
+	    _get(Object.getPrototypeOf(Linkers.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      active: this.props.active
+	    };
+	  }
+
+	  _createClass(Linkers, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var data = _props.data;
+	      var className = _props.className;
+	      var active = this.state.active;
+
+	      var content = [];
+
+	      for (var i = 0, len = data.length; i < len; i++) {
+	        if (data[i] == active) {
+	          content.push(_react2['default'].createElement(
+	            'span',
+	            { key: i, className: 'node active' },
+	            data[i]
+	          ));
+	        } else {
+	          content.push(_react2['default'].createElement(
+	            'span',
+	            { key: i, className: 'node',
+	              onClick: this.onClick.bind(this, data[i]) },
+	            data[i]
+	          ));
+	        }
+	        if (i != len - 1) {
+	          content.push(_react2['default'].createElement(
+	            'span',
+	            { key: i + 'separator' },
+	            '　/　'
+	          ));
+	        }
+	      }
+
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'line-router ' + className },
+	        content
+	      );
+	    }
+	  }, {
+	    key: 'onClick',
+	    value: function onClick(name) {
+	      this.setState({ active: name }, function () {
+	        this.props.onChange(name);
+	      });
+	    }
+	  }]);
+
+	  return Linkers;
+	})(_react2['default'].Component);
+
+	exports['default'] = Linkers;
+
+	Linkers.PropTypes = {
+	  data: _react.PropTypes.arrayOf(_react.PropTypes.shape({
+	    name: _react.PropTypes.string.isRequired,
+	    active: _react.PropTypes.string.isRequired
+	  }))
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 304 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var SearchInput = (function (_React$Component) {
+	  _inherits(SearchInput, _React$Component);
+
+	  function SearchInput(props) {
+	    _classCallCheck(this, SearchInput);
+
+	    _get(Object.getPrototypeOf(SearchInput.prototype), 'constructor', this).call(this, props);
+	    this.searchHandler = this.searchHandler.bind(this);
+	  }
+
+	  _createClass(SearchInput, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var className = _props.className;
+	      var searching = _props.searching;
+	      var size = _props.size;
+	      var placeholder = _props.placeholder;
+	      var searchHandler = _props.searchHandler;
+
+	      var i_className = searching ? 'fa fa-spinner fa-spin disabled' : 'fa fa-search';
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'search-input ' + className },
+	        _react2['default'].createElement('input', { ref: 'input',
+	          className: 'form-control ' + size,
+	          placeholder: placeholder,
+	          onKeyDown: this.keyDownHandler.bind(this) }),
+	        _react2['default'].createElement('i', { className: i_className, onClick: this.searchHandler })
+	      );
+	    }
+	  }, {
+	    key: 'keyDownHandler',
+	    value: function keyDownHandler(e) {
+	      //enter键
+	      if (!this.props.searching && e.which == 13) {
+	        this.searchHandler();
+	      }
+	    }
+	  }, {
+	    key: 'searchHandler',
+	    value: function searchHandler() {
+	      if (!this.props.searching) {
+	        console.log('search: ' + this.refs.input.value);
+	        this.props.searchHandler(this.refs.input.value);
+	      }
+	    }
+	  }]);
+
+	  return SearchInput;
+	})(_react2['default'].Component);
+
+	exports['default'] = SearchInput;
+
+	SearchInput.defaultProps = {
+	  className: '',
+	  searching: false,
+	  size: 'input-xs',
+	  placeholder: '',
+	  searchHandler: function searchHandler() {}
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 305 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.tableLoader = tableLoader;
+	exports.normalLoader = normalLoader;
+	exports.get_table_loading = get_table_loading;
+	exports.get_normal_loading = get_normal_loading;
+	exports.get_table_empty = get_table_empty;
+	exports.get_normal_empty = get_normal_empty;
+	exports.get_loading_icon = get_loading_icon;
+	exports.get_empty_icon = get_empty_icon;
+	exports.get_refresh_icon = get_refresh_icon;
+
+	var React = __webpack_require__(2);
+
+	var loading_icon = React.createElement("i", { className: "fa fa-spin fa-spinner fa-pulse fa-fw" });
+	var empty_icon = "无";
+	var refresh_icon = React.createElement(
+	  "div",
+	  { className: "box-icon", style: { borderLeft: '1px solid #dbdee0' } },
+	  React.createElement("i", { className: "fa fa-spin fa-refresh", style: { color: '#888', borderLeft: 'none' } })
+	);
+
+	var StdWrap = React.createClass({
+	  displayName: "StdWrap",
+
+	  render: function render() {
+	    return React.createElement(
+	      "div",
+	      { style: { height: "100%", width: "100%", display: "table" } },
+	      React.createElement(
+	        "div",
+	        { style: { display: "table-cell", verticalAlign: "middle", textAlign: "center" } },
+	        this.props.children
+	      )
+	    );
+	  }
+	});
+
+	var normal_loading = function normal_loading(content) {
+	  return React.createElement(
+	    StdWrap,
+	    null,
+	    content
+	  );
+	};
+	var table_loading = function table_loading(content) {
+	  return React.createElement(
+	    "tr",
+	    null,
+	    React.createElement(
+	      "td",
+	      { colSpan: "99" },
+	      React.createElement(
+	        StdWrap,
+	        null,
+	        content
+	      )
+	    )
+	  );
+	};
+
+	function tableLoader(loading, content) {
+	  return loading ? get_table_loading() : content.length ? content : get_table_empty();
+	}
+
+	function normalLoader(loading, content) {
+	  return loading ? get_normal_loading() : content.length ? content : get_normal_empty();
+	}
+
+	function get_table_loading() {
+	  return table_loading(loading_icon);
+	}
+
+	function get_normal_loading() {
+	  return normal_loading(loading_icon);
+	}
+
+	function get_table_empty() {
+	  return table_loading(empty_icon);
+	}
+
+	function get_normal_empty() {
+	  return normal_loading(empty_icon);
+	}
+
+	function get_loading_icon() {
+	  return loading_icon;
+	}
+
+	function get_empty_icon() {
+	  return empty_icon;
+	}
+
+	function get_refresh_icon() {
+	  return refresh_icon;
+	}
+
+/***/ },
+/* 306 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var StdModal = (function (_Component) {
+	  _inherits(StdModal, _Component);
+
+	  function StdModal(props) {
+	    _classCallCheck(this, StdModal);
+
+	    _get(Object.getPrototypeOf(StdModal.prototype), "constructor", this).call(this, props);
+	    this.show = this.show.bind(this);
+	    this.hide = this.hide.bind(this);
+	  }
+
+	  _createClass(StdModal, [{
+	    key: "render",
+	    value: function render() {
+	      var _props = this.props;
+	      var size = _props.size;
+	      var title = _props.title;
+	      var submitting = _props.submitting;
+	      var loading = _props.loading;
+	      var disabled = _props.disabled;
+	      var onConfirm = _props.onConfirm;
+	      var footer = _props.footer;
+
+	      return _react2["default"].createElement(
+	        "div",
+	        { ref: "__modal", "aria-hidden": "false", "aria-labelledby": "myModalLabel", role: "dialog", className: "modal fade" },
+	        _react2["default"].createElement("div", { className: "modal-backdrop fade" }),
+	        _react2["default"].createElement(
+	          "div",
+	          { className: "modal-dialog modal-" + size },
+	          _react2["default"].createElement(
+	            "div",
+	            { className: "modal-content" },
+	            _react2["default"].createElement(
+	              "div",
+	              { className: "modal-header" },
+	              _react2["default"].createElement(
+	                "button",
+	                { "aria-hidden": "true", onClick: this.hide, "data-dismiss": "modal", className: "close", type: "button" },
+	                "×"
+	              ),
+	              _react2["default"].createElement(
+	                "h4",
+	                { className: "modal-title" },
+	                title
+	              )
+	            ),
+	            _react2["default"].createElement(
+	              "div",
+	              { className: "modal-body" },
+	              loading && _react2["default"].createElement(
+	                "div",
+	                { className: "loading-wrap text-center" },
+	                _react2["default"].createElement("i", { className: "fa fa-spin fa-lg fa-spinner" })
+	              ),
+	              this.props.children
+	            ),
+	            footer ? _react2["default"].createElement(
+	              "div",
+	              { className: "modal-footer" },
+	              _react2["default"].createElement(
+	                "button",
+	                { onClick: this.hide, type: "button", className: "btn btn-sm btn-default", "data-dismiss": "modal" },
+	                "取消"
+	              ),
+	              _react2["default"].createElement(
+	                "button",
+	                {
+	                  onClick: onConfirm,
+	                  disabled: submitting || loading || disabled,
+	                  "data-submitting": submitting, type: "button", className: "btn btn-sm btn-theme" },
+	                "确定"
+	              )
+	            ) : null
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: "show",
+	    value: function show(callback) {
+	      $(this.refs.__modal).modal('show').on('shown.bs.modal', callback);
+	    }
+	  }, {
+	    key: "hide",
+	    value: function hide() {
+	      if (this.props.submitting) {
+	        return;
+	      }
+	      this.props.onCancel();
+	      $(this.refs.__modal).modal('hide');
+	    }
+	  }, {
+	    key: "componentWillUnmount",
+	    value: function componentWillUnmount() {
+	      $(this.refs.__modal).off('shown.bs.modal');
+	    }
+	  }]);
+
+	  return StdModal;
+	})(_react.Component);
+
+	exports["default"] = StdModal;
+
+	StdModal.PropTypes = {
+	  title: _react.PropTypes.any.isRequired
+	};
+
+	StdModal.defaultProps = {
+	  size: '', // lg
+	  title: 'TODO',
+	  submitting: false,
+	  onConfirm: function onConfirm() {},
+	  onCancel: function onCancel() {}, //modal关闭前需执行的callback
+	  footer: true };
+	module.exports = exports["default"];
+	//是否需要 modal-footer
+
+/***/ },
+/* 307 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports["default"] = RecipientInfo;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	//收货人信息
+
+	function RecipientInfo(props) {
+	  var data = props.data;
+	  return _react2["default"].createElement(
+	    "td",
+	    { className: "text-left" },
+	    _react2["default"].createElement(
+	      "div",
+	      { className: "address-detail-td" },
+	      _react2["default"].createElement(
+	        "table",
+	        { className: "no-padding" },
+	        _react2["default"].createElement(
+	          "tbody",
+	          null,
+	          _react2["default"].createElement(
+	            "tr",
+	            null,
+	            _react2["default"].createElement(
+	              "td",
+	              { className: "nowrap" },
+	              "姓名："
+	            ),
+	            _react2["default"].createElement(
+	              "td",
+	              null,
+	              data.recipient_name
+	            )
+	          ),
+	          _react2["default"].createElement(
+	            "tr",
+	            null,
+	            _react2["default"].createElement(
+	              "td",
+	              { className: "nowrap" },
+	              "电话："
+	            ),
+	            _react2["default"].createElement(
+	              "td",
+	              null,
+	              data.recipient_mobile
+	            )
+	          ),
+	          _react2["default"].createElement(
+	            "tr",
+	            null,
+	            _react2["default"].createElement(
+	              "td",
+	              { className: "nowrap v-top" },
+	              "地址："
+	            ),
+	            _react2["default"].createElement(
+	              "td",
+	              null,
+	              data.recipient_address
+	            )
+	          ),
+	          _react2["default"].createElement(
+	            "tr",
+	            null,
+	            _react2["default"].createElement(
+	              "td",
+	              { className: "nowrap" },
+	              "建筑："
+	            ),
+	            _react2["default"].createElement(
+	              "td",
+	              null,
+	              data.recipient_landmark
+	            )
+	          )
+	        )
+	      )
+	    )
+	  );
+	}
+
+	module.exports = exports["default"];
+
+/***/ },
+/* 308 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports['default'] = LazyLoad;
+	var root = window.xfxb.root;
+	var config = {
+	  noty: {
+	    css: '/plugins/animate/animate.min.css',
+	    js: root + 'lib/jquery.noty.packaged.min.js'
+	  },
+	  chinese_py: {
+	    js: root + 'lib/chinese_py.min.js'
+	  },
+	  autocomplete: {
+	    css: '/plugins/jquery-ui/jquery-ui.css',
+	    js: '/plugins/jquery-ui/autocomplete.js'
+	  }
+	};
+	var load_map = {};
+
+	function LazyLoad(name, callback) {
+	  $(function () {
+	    var plugin = config[name];
+	    if (plugin) {
+	      if (!load_map[name]) {
+	        setTimeout(function () {
+	          if (plugin.css) {
+	            var link = document.createElement("link");
+	            link.rel = "stylesheet";
+	            link.href = plugin.css;
+	            document.head.appendChild(link);
+	          }
+	          if (plugin.js) {
+	            var sc = document.createElement("script");
+	            sc.type = "text\/javascript";
+	            sc.src = plugin.js;
+	            sc.onload = callback;
+	            document.body.appendChild(sc);
+	          }
+	          load_map[name] = 1; //已加载过
+	        }, 0);
+	      }
+	    } else {
+	      console.error('lazy load "' + name + '" fail');
+	    }
+	  });
+	}
+
+	window.LazyLoad = LazyLoad;
+	module.exports = exports['default'];
+
+/***/ },
+/* 309 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports['default'] = autoMatchDeliveryStations;
+	exports.createMap = createMap;
+	exports.autoMatch = autoMatch;
+	exports.autoMatchSuccess = autoMatchSuccess;
+	exports.autoMatchFail = autoMatchFail;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _utilsMyMap = __webpack_require__(310);
+
+	var _utilsMyMap2 = _interopRequireDefault(_utilsMyMap);
+
+	var _reactDom = __webpack_require__(154);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _utilsPromise = __webpack_require__(238);
+
+	var _utilsPromise2 = _interopRequireDefault(_utilsPromise);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var _actionsForm = __webpack_require__(293);
+
+	//完整封装
+
+	function autoMatchDeliveryStations(success_cb, fail_cb) {
+	  var self = this;
+
+	  createMap(self);
+
+	  $(this.refs.recipient_address).on('blur', function (e) {
+	    var detail = e.target.value;
+	    if (detail) {
+	      var province = self.findSelectedOptionText('province');
+	      var city = self.findSelectedOptionText('city');
+	      var district = self.findSelectedOptionText('district');
+	      var default_text = self.refs.province.props['default-text'];
+	      if (province != default_text && city != default_text && district != default_text) {
+	        autoMatch.call(self, city, district + detail).done(success_cb).fail(fail_cb);
+	      }
+	    }
+	  });
+	}
+
+	//step: 1
+
+	function createMap(t) {
+	  //初始化地图
+	  _utilsMyMap2['default'].create(function (map) {
+	    t._bmap = map;
+	  });
+	}
+
+	//step: 2
+
+	function autoMatch(city, address) {
+	  var self = this;
+	  var autoGetDeliveryStations = this.props.actions.autoGetDeliveryStations;
+
+	  if (!city || !address) {
+	    (0, _utilsIndex.Noty)('error', '地址数据有误');
+	  }
+
+	  return new _utilsPromise2['default'](function (resolve, reject) {
+	    if (BMap) {
+	      var map = self._bmap;
+	      map.centerAndZoom(city);
+	      var localSearch = new BMap.LocalSearch(map);
+	      localSearch.setSearchCompleteCallback(function (searchResult) {
+	        var poi = searchResult && searchResult.getPoi(0);
+	        if (poi) {
+	          console.log(poi.point.lng + "," + poi.point.lat);
+	          autoGetDeliveryStations({
+	            lng: poi.point.lng,
+	            lat: poi.point.lat
+	          }).done(function (data) {
+	            setTimeout(function () {
+	              if (data && data.delivery_id) {
+	                resolve(data.delivery_id); //成功，且有数据
+	              } else {
+	                  reject('服务器异常');
+	                }
+	            }, 0);
+	          }).fail(function (msg, code) {
+	            setTimeout(function () {
+	              if (code && code == '3001') {
+	                reject(); //成功，但没有数据
+	              } else {
+	                  reject('自动检索配送中心异常，请重试');
+	                }
+	            }, 0);
+	          });
+	        } else {
+	          reject();
+	        }
+	      });
+	      localSearch.search(address);
+	    } else {
+	      reject('地图服务加载失败，请稍后再试');
+	    }
+	  }).done(autoMatchSuccess.bind(this)).fail(autoMatchFail.bind(this)).done(addEffect.bind(this, 'alert-success')).fail(addEffect.bind(this, 'alert-danger'));
+	}
+
+	function addEffect(animate_name) {
+	  var $dc = $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).removeClass('alert-success alert-danger').addClass(animate_name);
+	  // setTimeout(function(){
+	  //   $dc.removeClass(animate_name);
+	  // }, 1000);
+	}
+
+	function autoMatchSuccess() {
+	  this.setState({ auto_match_delivery_center: true, auto_match_msg: '已成功匹配！' });
+	}
+
+	function autoMatchFail(msg) {
+	  this.setState({ auto_match_delivery_center: false, auto_match_msg: msg || '无法准确定位配送中心，请与客户联系后手动选择！' });
+	}
+
+/***/ },
+/* 310 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	var MyMap = function MyMap() {
+	  this.callback = null;
+	  this.d = $.Deferred();
+	  this.map = null;
+	  this.init_flag = 0;
+	};
+
+	MyMap.prototype._initialize = function () {
+	  var container = document.createElement('div');
+	  container.style.display = 'none';
+	  var id = 'bmap' + new Date().getTime();
+	  container.setAttribute('id', id);
+	  document.body.appendChild(container);
+	  this.map = new BMap.Map(id);
+	  this.d.resolve(this.map);
+	};
+
+	MyMap.prototype.create = function (callback) {
+	  if (!this.init_flag) {
+	    this.init_flag = 1;
+	    window._bmap_callback = this._initialize.bind(this);
+
+	    var script = document.createElement("script");
+	    script.src = "http://api.map.baidu.com/api?v=2.0&ak=dxF5GZW6CHlR4GCQ9kKynOcc&callback=_bmap_callback"; //此为v2.0版本的引用方式 
+	    // http://api.map.baidu.com/api?v=1.4&ak=您的密钥&callback=initialize"; //此为v1.4版本及以前版本的引用方式 
+	    document.body.appendChild(script);
+	  }
+	  this.d.done(callback);
+	};
+
+	exports['default'] = new MyMap();
+	module.exports = exports['default'];
+
+/***/ },
+/* 311 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function ProductRow(product) {
+	  return _react2["default"].createElement(
+	    "tr",
+	    { key: product.sku_id },
+	    _react2["default"].createElement(
+	      "td",
+	      null,
+	      product.name
+	    ),
+	    _react2["default"].createElement(
+	      "td",
+	      null,
+	      "￥",
+	      product.original_price / 100
+	    ),
+	    _react2["default"].createElement(
+	      "td",
+	      null,
+	      product.size
+	    ),
+	    _react2["default"].createElement(
+	      "td",
+	      null,
+	      product.num
+	    ),
+	    _react2["default"].createElement(
+	      "td",
+	      null,
+	      "￥",
+	      product.discount_price / 100
+	    ),
+	    _react2["default"].createElement(
+	      "td",
+	      null,
+	      product.choco_board
+	    ),
+	    _react2["default"].createElement(
+	      "td",
+	      null,
+	      product.greeting_card
+	    ),
+	    _react2["default"].createElement(
+	      "td",
+	      null,
+	      product.atlas
+	    ),
+	    _react2["default"].createElement(
+	      "td",
+	      null,
+	      product.custom_name
+	    ),
+	    _react2["default"].createElement(
+	      "td",
+	      null,
+	      product.custom_desc
+	    )
+	  );
+	}
+
+	var OrderProductsDetail = (function (_Component) {
+	  _inherits(OrderProductsDetail, _Component);
+
+	  function OrderProductsDetail() {
+	    _classCallCheck(this, OrderProductsDetail);
+
+	    _get(Object.getPrototypeOf(OrderProductsDetail.prototype), "constructor", this).apply(this, arguments);
+	  }
+
+	  _createClass(OrderProductsDetail, [{
+	    key: "render",
+	    value: function render() {
+	      var products = this.props.products.map(function (n) {
+	        return ProductRow(n);
+	      });
+	      return _react2["default"].createElement(
+	        "div",
+	        { className: "table-responsive" },
+	        _react2["default"].createElement(
+	          "table",
+	          { className: "table text-center" },
+	          _react2["default"].createElement(
+	            "thead",
+	            null,
+	            _react2["default"].createElement(
+	              "tr",
+	              null,
+	              _react2["default"].createElement(
+	                "th",
+	                null,
+	                "产品名称"
+	              ),
+	              _react2["default"].createElement(
+	                "th",
+	                null,
+	                "原价"
+	              ),
+	              _react2["default"].createElement(
+	                "th",
+	                null,
+	                "规格"
+	              ),
+	              _react2["default"].createElement(
+	                "th",
+	                null,
+	                "数量"
+	              ),
+	              _react2["default"].createElement(
+	                "th",
+	                null,
+	                "实际售价"
+	              ),
+	              _react2["default"].createElement(
+	                "th",
+	                null,
+	                "巧克力牌"
+	              ),
+	              _react2["default"].createElement(
+	                "th",
+	                null,
+	                "祝福贺卡"
+	              ),
+	              _react2["default"].createElement(
+	                "th",
+	                null,
+	                "产品图册"
+	              ),
+	              _react2["default"].createElement(
+	                "th",
+	                null,
+	                "自由拼名称"
+	              ),
+	              _react2["default"].createElement(
+	                "th",
+	                null,
+	                "自由拼描述"
+	              )
+	            )
+	          ),
+	          _react2["default"].createElement(
+	            "tbody",
+	            null,
+	            products
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return OrderProductsDetail;
+	})(_react.Component);
+
+	exports["default"] = OrderProductsDetail;
+
+	OrderProductsDetail.PropTypes = {
+	  products: _react.PropTypes.array.isRequired
+	};
+	module.exports = exports["default"];
+
+/***/ },
+/* 312 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _commonLoading = __webpack_require__(305);
+
+	var _reactDom = __webpack_require__(154);
+
+	var DetailModal = (function (_Component) {
+	  _inherits(DetailModal, _Component);
+
+	  function DetailModal(props) {
+	    _classCallCheck(this, DetailModal);
+
+	    _get(Object.getPrototypeOf(DetailModal.prototype), 'constructor', this).call(this, props);
+	    this.show = this.show.bind(this);
+	    this.hide = this.hide.bind(this);
+	  }
+
+	  // componentWillReceiveProps(nextProps){
+	  //   if(nextProps['data-id'] != this.props['data-id']){
+	  //     this.show();
+	  //   }
+	  // }
+
+	  _createClass(DetailModal, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var data = _props.data;
+	      var _props$data$products = _props.data.products;
+	      var products = _props$data$products === undefined ? [] : _props$data$products;
+
+	      var products = products.map(function (n) {
+	        return _react2['default'].createElement(
+	          'tr',
+	          { key: n.sku_id },
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.name
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            { className: 'text-left' },
+	            '规格：',
+	            n.size,
+	            _react2['default'].createElement('br', null),
+	            '数量：',
+	            n.num
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            { className: 'text-left' },
+	            '原价：￥',
+	            n.original_price / 100,
+	            _react2['default'].createElement('br', null),
+	            '实际售价：￥',
+	            n.discount_price / 100
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            '￥',
+	            n.amount / 100
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.choco_board
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.greeting_card
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            _react2['default'].createElement('input', { checked: n.atlas, disabled: true, type: 'checkbox' })
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.custom_name
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.custom_desc
+	          )
+	        );
+	      });
+	      return _react2['default'].createElement(
+	        'div',
+	        { ref: 'modal', 'aria-hidden': 'false', 'aria-labelledby': 'myModalLabel', role: 'dialog', className: 'modal fade' },
+	        _react2['default'].createElement('div', { ref: 'modal-backdrop', className: 'modal-backdrop fade' }),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'modal-dialog modal-lg' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'modal-content' },
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'modal-header' },
+	              _react2['default'].createElement(
+	                'button',
+	                { 'aria-hidden': 'true', 'data-dismiss': 'modal', className: 'close', type: 'button' },
+	                '×'
+	              ),
+	              _react2['default'].createElement(
+	                'h4',
+	                { className: 'modal-title' },
+	                '查看订单信息'
+	              )
+	            ),
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'modal-body strong-label' },
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '　配送方式：'
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'gray' },
+	                  _configAppConfig.DELIVERY_MAP[data.delivery_type]
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '下单人信息：'
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'gray' },
+	                  data.owner_name + '　' + data.owner_mobile
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '收货人信息：'
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'gray' },
+	                  data.recipient_name + '　' + data.recipient_mobile
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '收货人地址：'
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'gray' },
+	                  data.province_name + data.city_name + data.recipient_address
+	                )
+	              ),
+	              data.delivery_type == _configAppConfig.DELIVERY_TO_HOME //送货上门
+	              ? _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '标志性建筑：'
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'gray' },
+	                  data.recipient_landmark
+	                )
+	              ) : null,
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '　配送中心：'
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'gray' },
+	                  data.delivery_name
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  { className: 'inline-block' },
+	                  '　支付方式：',
+	                  _react2['default'].createElement('br', null),
+	                  data.coupon ? [' ', _react2['default'].createElement('br', null)] : null,
+	                  ' ',
+	                  _react2['default'].createElement('br', null)
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'inline-block gray' },
+	                  data.pay_name,
+	                  _react2['default'].createElement('br', null),
+	                  data.coupon ? ['团购密码 ' + data.coupon, _react2['default'].createElement('br', null)] : null,
+	                  _configAppConfig.pay_status[data.pay_status]
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '　配送时间：'
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'gray' },
+	                  data.delivery_time
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '　　　备注：'
+	                ),
+	                _react2['default'].createElement(
+	                  'span',
+	                  { className: 'gray' },
+	                  data.remarks
+	                )
+	              ),
+	              _react2['default'].createElement('hr', { className: 'dotted' }),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement(
+	                  'label',
+	                  null,
+	                  '　产品信息：'
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'table-responsive' },
+	                _react2['default'].createElement(
+	                  'table',
+	                  { className: 'table table-hover table-click text-center' },
+	                  _react2['default'].createElement(
+	                    'thead',
+	                    null,
+	                    _react2['default'].createElement(
+	                      'tr',
+	                      null,
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '产品名称'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '货品数量信息'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '金额'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '应收金额'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '巧克力牌'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '祝福贺卡'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '产品图册'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '自定义名称'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '自定义描述'
+	                      )
+	                    )
+	                  ),
+	                  _react2['default'].createElement(
+	                    'tbody',
+	                    null,
+	                    products.length ? products : (0, _commonLoading.get_table_empty)()
+	                  )
+	                )
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      $(this.refs['modal-backdrop']).on('click', this.hide);
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      $(this.refs['modal-backdrop']).off('click', this.hide);
+	    }
+	  }, {
+	    key: 'show',
+	    value: function show() {
+	      $(this.refs.modal).modal('show');
+	    }
+	  }, {
+	    key: 'hide',
+	    value: function hide() {
+	      $(this.refs.modal).modal('hide');
+	    }
+	  }]);
+
+	  return DetailModal;
+	})(_react.Component);
+
+	exports['default'] = DetailModal;
+
+	DetailModal.PropTypes = {
+	  data: _react.PropTypes.object.isRequired
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 313 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(154);
+
+	var _reactAddonsLinkedStateMixin = __webpack_require__(284);
+
+	var _reactAddonsLinkedStateMixin2 = _interopRequireDefault(_reactAddonsLinkedStateMixin);
+
+	var _commonDatepicker = __webpack_require__(300);
+
+	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
+
+	var _commonSelect = __webpack_require__(301);
+
+	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+
+	var _commonStd_modal = __webpack_require__(306);
+
+	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
+
+	var _commonRadio_group = __webpack_require__(314);
+
+	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var _mixinsMap = __webpack_require__(309);
+
+	var _mixinsMap2 = _interopRequireDefault(_mixinsMap);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var AlterDeliveryModal = _react2['default'].createClass({
+	  displayName: 'AlterDeliveryModal',
+
+	  propTypes: {
+	    actions: _react.PropTypes.object.isRequired,
+	    provinces: _react.PropTypes.array.isRequired
+	  },
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+	    if (nextProps.order //拿到订单详细数据
+	     && nextProps.order != this.props.order && !nextProps.show_products_detail //非普通点击查询(编辑)
+	    ) {
+	        this.initSetState(nextProps.order);
+	      }
+	  },
+	  initSetState: function initSetState(order) {
+	    var delivery_type = order.delivery_type;
+	    var delivery_time = order.delivery_time;
+	    var province_id = order.province_id;
+	    var city_id = order.city_id;
+	    var regionalism_id = order.regionalism_id;
+	    var recipient_address = order.recipient_address;
+	    var delivery_id = order.delivery_id;
+
+	    delivery_time = delivery_time.split(' ');
+	    this.setState({
+	      delivery_type: delivery_type,
+	      delivery_date: delivery_time[0],
+	      delivery_hour: delivery_time[1],
+	      province_id: province_id,
+	      city_id: city_id,
+	      regionalism_id: regionalism_id,
+	      recipient_address: recipient_address,
+	      delivery_id: delivery_id
+	    });
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      delivery_type: 'DELIVERY',
+	      delivery_date: '',
+	      delivery_hour: '',
+	      province_id: undefined,
+	      city_id: undefined,
+	      regionalism_id: undefined,
+	      recipient_address: '',
+	      delivery_id: undefined,
+
+	      all_delivery_hours: _configAppConfig.DELIVERY_TIME_MAP.map(function (n) {
+	        return { id: n, text: n };
+	      }),
+
+	      auto_match_delivery_center: false,
+	      auto_match_msg: ''
+	    };
+	  },
+	  render: function render() {
+	    var _state = this.state;
+	    var delivery_type = _state.delivery_type;
+	    var delivery_date = _state.delivery_date;
+	    var delivery_hour = _state.delivery_hour;
+	    var recipient_address = _state.recipient_address;
+	    var all_delivery_hours = _state.all_delivery_hours;
+	    var delivery_id = _state.delivery_id;
+	    var _props = this.props;
+	    var delivery_shops = _props.delivery_shops;
+	    var delivery_stations = _props.delivery_stations;
+	    var provinces = _props.provinces;
+	    var cities = _props.cities;
+	    var districts = _props.districts;
+	    var _props$order = _props.order;
+	    var order = _props$order === undefined ? {} : _props$order;
+	    var loading = _props.loading;
+
+	    var _order_status = _configAppConfig.order_status[order && order.status];
+	    return _react2['default'].createElement(
+	      _commonStd_modal2['default'],
+	      { submitting: this.props.submitting, onConfirm: this.onConfirm, loading: loading, onCancel: this.hideCallback, title: '修改配送', ref: 'modal' },
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group form-inline' },
+	        _order_status && _order_status.key >= 30 ? _react2['default'].createElement(
+	          'span',
+	          { className: 'text-danger' },
+	          '订单已转换，请与配送站确认是否能修改信息再提交！'
+	        ) : _react2['default'].createElement(
+	          'span',
+	          { className: 'gray' },
+	          '订单尚未生产，可直接更改！'
+	        )
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group form-inline' },
+	        _react2['default'].createElement(
+	          'label',
+	          null,
+	          '　　配送方式：'
+	        ),
+	        _react2['default'].createElement(_commonRadio_group2['default'], {
+	          value: delivery_type,
+	          className: 'inline-block',
+	          radios: [{ value: _configAppConfig.DELIVERY_TO_HOME, text: '配送上门' }, { value: _configAppConfig.DELIVERY_TO_STORE, text: '门店自提' }],
+	          onChange: this.onDeliveryTypeChange,
+	          name: 'delivery_type'
+	        })
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group form-inline' },
+	        _react2['default'].createElement(
+	          'label',
+	          null,
+	          '　　配送时间：'
+	        ),
+	        _react2['default'].createElement(_commonDatepicker2['default'], { value: delivery_date, onChange: this.onDeliveryDateChange }),
+	        ' ',
+	        _react2['default'].createElement(_commonSelect2['default'], { valueLink: this.linkState('delivery_hour'), options: all_delivery_hours, className: 'input-xs' })
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-inline' },
+	        _react2['default'].createElement(
+	          'label',
+	          { className: 'v-top', style: { lineHeight: '27px', fontWeight: 'normal' } },
+	          '修改配送地址：'
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'inline-block', style: { maxWidth: 470 } },
+	          _react2['default'].createElement(_commonSelect2['default'], { ref: 'province', value: this.state.province_id, onChange: this.onProvinceChange, options: provinces, className: 'mg-8' }),
+	          ' ',
+	          _react2['default'].createElement(_commonSelect2['default'], { ref: 'city', value: this.state.city_id, onChange: this.onCityChange, options: cities, className: 'mg-8' }),
+	          ' ',
+	          _react2['default'].createElement(_commonSelect2['default'], { ref: 'district', value: this.state.regionalism_id, onChange: this.onDistrictChange, options: districts, className: 'mg-8' }),
+	          ' ',
+	          delivery_type == _configAppConfig.DELIVERY_TO_HOME ? _react2['default'].createElement('input', { ref: 'recipient_address', valueLink: this.linkState('recipient_address'), onBlur: this.onAddressChange, className: 'form-control input-xs mg-8', type: 'text' }) : _react2['default'].createElement(_commonSelect2['default'], { ref: 'shop', valueLink: this.linkState('recipient_address'), options: delivery_shops, className: 'mg-8' })
+	        )
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group form-inline' },
+	        _react2['default'].createElement(
+	          'label',
+	          null,
+	          '修改配送中心：'
+	        ),
+	        _react2['default'].createElement(_commonSelect2['default'], { ref: 'delivery_center', valueLink: this.linkState('delivery_id'), options: delivery_stations, className: 'input-xs transition' }),
+	        ' ',
+	        _react2['default'].createElement(
+	          'span',
+	          { className: this.state.auto_match_delivery_center ? 'text-success' : 'text-danger' },
+	          this.state.auto_match_msg
+	        )
+	      )
+	    );
+	  },
+	  mixins: [_reactAddonsLinkedStateMixin2['default'], { autoMatchDeliveryStations: _mixinsMap2['default'] }],
+	  componentDidMount: function componentDidMount() {
+	    $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).on('click', this.clearMsg);
+	  },
+	  componentWillUnmount: function componentWillUnmount() {
+	    $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).off('click', this.clearMsg);
+	  },
+	  clearMsg: function clearMsg() {
+	    $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).removeClass('alert-success alert-danger');
+	    this.setState({ auto_match_msg: '' });
+	  },
+	  onConfirm: function onConfirm() {
+	    var _state2 = this.state;
+	    var delivery_type = _state2.delivery_type;
+	    var delivery_date = _state2.delivery_date;
+	    var delivery_hour = _state2.delivery_hour;
+	    var regionalism_id = _state2.regionalism_id;
+	    var recipient_address = _state2.recipient_address;
+	    var delivery_id = _state2.delivery_id;
+	    var order = _state2.order;
+
+	    if (!delivery_date || delivery_hour == _configAppConfig.SELECT_DEFAULT_VALUE) {
+	      (0, _utilsIndex.Noty)('warning', '请填写正确的配送时间');return;
+	    } else if (!regionalism_id || regionalism_id == _configAppConfig.SELECT_DEFAULT_VALUE || !recipient_address.trim()) {
+	      (0, _utilsIndex.Noty)('warning', '请填写完整的配送地址');return;
+	    } else if (delivery_id == _configAppConfig.SELECT_DEFAULT_VALUE) {
+	      (0, _utilsIndex.Noty)('warning', '请选择配送中心');return;
+	    }
+	    var prefix_address = this.findSelectedOptionText('province') + this.findSelectedOptionText('city') + this.findSelectedOptionText('district');
+	    this.props.actions.alterDelivery(this.props.active_order_id, {
+	      delivery_type: delivery_type,
+	      delivery_time: delivery_date + ' ' + delivery_hour,
+	      prefix_address: prefix_address,
+	      regionalism_id: regionalism_id,
+	      recipient_address: recipient_address,
+	      delivery_id: delivery_id,
+	      delivery_name: this.findSelectedOptionText('delivery_center'),
+	      updated_time: this.props.order.updated_time
+	    }).done((function () {
+	      this.props.callback();
+	      this.refs.modal.hide();
+	    }).bind(this)).fail(function () {
+	      (0, _utilsIndex.Noty)('error', '服务器异常');
+	    });
+	  },
+	  findSelectedOptionText: function findSelectedOptionText(_refs) {
+	    return $((0, _reactDom.findDOMNode)(this.refs[_refs])).find('option:selected').html();
+	  },
+	  onDeliveryTypeChange: function onDeliveryTypeChange(delivery_type) {
+	    this.setState({ delivery_type: delivery_type });
+	  },
+	  onDeliveryDateChange: function onDeliveryDateChange(delivery_date) {
+	    this.setState({ delivery_date: delivery_date });
+	  },
+	  onProvinceChange: function onProvinceChange(e) {
+	    var value = e.target.value;
+
+	    this.props.actions.provinceReset();
+	    this.setState({ province_id: value });
+	    if (value != this.refs.province.props['default-value']) this.props.actions.getCities(value);
+	  },
+	  onCityChange: function onCityChange(e) {
+	    var value = e.target.value;
+
+	    this.props.actions.cityReset();
+	    this.setState({ city_id: e.target.value });
+	    if (value != this.refs.city.props['default-value']) this.props.actions.getDistricts(value);
+	  },
+	  onDistrictChange: function onDistrictChange(e) {
+	    var value = e.target.value;
+
+	    this.props.actions.districtReset();
+	    this.setState({ regionalism_id: e.target.value });
+	    if (value != this.refs.district.props['default-value']) this.props.actions.getDeliveryShops(value);
+	  },
+	  onAddressChange: function onAddressChange() {
+	    var _this = this;
+
+	    this.autoMatchDeliveryStations(function (delivery_id) {
+	      if (delivery_id) {
+	        _this.setState({ delivery_id: delivery_id });
+	        _mixinsMap.autoMatchSuccess.call(_this);
+	      } else {
+	        _this.setState({ delivery_id: _configAppConfig.SELECT_DEFAULT_VALUE });
+	        _mixinsMap.autoMatchFail.call(_this);
+	      }
+	    }, function () {
+	      _this.setState({ delivery_id: _configAppConfig.SELECT_DEFAULT_VALUE });
+	      _mixinsMap.autoMatchFail.call(_this);
+	    });
+	  },
+	  show: function show() {
+	    this.refs.modal.show();
+	    var _props2 = this.props;
+	    var order = _props2.order;
+	    var active_order_id = _props2.active_order_id;
+
+	    if (order && order.order_id == active_order_id) {
+	      this.initSetState(order);
+	    }
+	    $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).removeClass('alert-success alert-danger');
+	  },
+	  hideCallback: function hideCallback() {
+	    this.setState(this.getInitialState());
+	    // this.refs.modal.hide();
+	    this.props.actions.resetDeliveryStations();
+	  }
+	});
+
+	exports['default'] = AlterDeliveryModal;
+	module.exports = exports['default'];
+
+/***/ },
+/* 314 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var RadioGroup = (function (_Component) {
+	  _inherits(RadioGroup, _Component);
+
+	  function RadioGroup(props) {
+	    _classCallCheck(this, RadioGroup);
+
+	    _get(Object.getPrototypeOf(RadioGroup.prototype), 'constructor', this).call(this, props);
+	    this.onCheck = this.onCheck.bind(this);
+	  }
+
+	  _createClass(RadioGroup, [{
+	    key: 'render',
+	    value: function render() {
+	      var _this = this;
+
+	      var _props = this.props;
+	      var radios = _props.radios;
+	      var space = _props.space;
+	      var value = _props.value;
+	      var vertical = _props.vertical;
+	      var name = _props.name;
+
+	      var content = radios.map(function (n, i) {
+	        var item = _react2['default'].createElement(
+	          'label',
+	          { style: { marginRight: space }, key: n.value },
+	          _react2['default'].createElement('input', { value: n.value, checked: _this.props.value == n.value, name: name, onChange: _this.onCheck, type: 'radio' }),
+	          ' ' + n.text
+	        );
+	        return vertical ? _react2['default'].createElement(
+	          'div',
+	          { key: n.value },
+	          item
+	        ) : item;
+	      });
+
+	      //onChange少不了，有bug
+	      return _react2['default'].createElement(
+	        'div',
+	        _extends({}, this.props, { onChange: function () {} }),
+	        content
+	      );
+	    }
+	  }, {
+	    key: 'onCheck',
+	    value: function onCheck(e) {
+	      this.props.onChange(e.target.value);
+	    }
+	  }]);
+
+	  return RadioGroup;
+	})(_react.Component);
+
+	exports['default'] = RadioGroup;
+
+	RadioGroup.defaultProps = {
+	  space: 16,
+	  vertical: false
+	};
+
+	RadioGroup.PropTypes = {
+	  name: _react.PropTypes.string.isRequired,
+	  value: _react.PropTypes.string.isRequired,
+	  radios: _react.PropTypes.arrayOf(_react.PropTypes.shape({
+	    value: _react.PropTypes.string.isRequired,
+	    text: _react.PropTypes.string.isRequired
+	  })).isRequired, //得按顺序，所以得用数组
+	  onChange: _react.PropTypes.func.isRequired
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 315 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _commonSelect = __webpack_require__(301);
+
+	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+
+	var OrderSrcsSelects = (function (_React$Component) {
+	  _inherits(OrderSrcsSelects, _React$Component);
+
+	  function OrderSrcsSelects(props) {
+	    _classCallCheck(this, OrderSrcsSelects);
+
+	    _get(Object.getPrototypeOf(OrderSrcsSelects.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      selected_order_src_level1_id: _configAppConfig.SELECT_DEFAULT_VALUE
+	    };
+	  }
+
+	  _createClass(OrderSrcsSelects, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var all_order_srcs = _props.all_order_srcs;
+	      var src_id = _props.src_id;
+	      var selected_order_src_level1_id = this.state.selected_order_src_level1_id;
+
+	      var order_srcs_level2 = all_order_srcs.length > 1 ? all_order_srcs[1].filter(function (n) {
+	        return n.parent_id == selected_order_src_level1_id;
+	      }) : [];
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'inline-block' },
+	        all_order_srcs.length == 1 //2级
+	        ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, {
+	          options: all_order_srcs[0],
+	          'default-text': '订单来源',
+	          key: 'order_srcs_level1',
+	          className: 'space' })) : [order_srcs_level2.length ? _react2['default'].createElement(_commonSelect2['default'], {
+	          value: selected_order_src_level1_id,
+	          options: all_order_srcs[0],
+	          onChange: this.orderSrcsLevel1Change.bind(this),
+	          'default-text': '订单来源',
+	          key: 'order_srcs_level1',
+	          className: 'space' }) : _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, {
+	          value: selected_order_src_level1_id,
+	          options: all_order_srcs[0],
+	          onChange: this.orderSrcsLevel1Change.bind(this),
+	          'default-text': '订单来源',
+	          key: 'order_srcs_level1',
+	          className: 'space' })), ' ', order_srcs_level2.length ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, {
+	          options: order_srcs_level2,
+	          key: 'order_srcs_level2',
+	          'default-text': '订单来源',
+	          className: 'space' })) : null]
+	      );
+	    }
+	  }, {
+	    key: 'orderSrcsLevel1Change',
+	    value: function orderSrcsLevel1Change(e) {
+	      this.setState({ selected_order_src_level1_id: e.target.value });
+	    }
+	  }]);
+
+	  return OrderSrcsSelects;
+	})(_react2['default'].Component);
+
+	exports['default'] = OrderSrcsSelects;
+
+	OrderSrcsSelects.PropTypes = {
+	  all_order_srcs: _react.PropTypes.array.isRequired,
+	  src_id: _react.PropTypes.func.isRequired
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 316 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _commonStd_modalJs = __webpack_require__(306);
+
+	var _commonStd_modalJs2 = _interopRequireDefault(_commonStd_modalJs);
+
+	var _commonLoading = __webpack_require__(305);
+
+	var _commonPaginationJs = __webpack_require__(302);
+
+	var _commonPaginationJs2 = _interopRequireDefault(_commonPaginationJs);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var OperationRecordModal = _react2['default'].createClass({
+	  displayName: 'OperationRecordModal',
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      sort_type: 'DESC', //ASC
+	      page_size: 8,
+	      data: {}
+	    };
+	  },
+	  render: function render() {
+	    var _state$data = this.state.data;
+	    var order_id = _state$data.order_id;
+	    var owner_mobile = _state$data.owner_mobile;
+	    var owner_name = _state$data.owner_name;
+	    var _props = this.props;
+	    var page_no = _props.page_no;
+	    var total = _props.total;
+	    var list = _props.list;
+
+	    var content = list.map(function (n, i) {
+	      return _react2['default'].createElement(
+	        'tr',
+	        { key: n.order_id + '' + i },
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          n.created_by
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          { className: 'text-left' },
+	          (0, _utilsIndex.colour)(n.option)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          n.created_time
+	        )
+	      );
+	    });
+	    return _react2['default'].createElement(
+	      _commonStd_modalJs2['default'],
+	      { title: '操作历史记录', footer: false, ref: 'modal', onCancel: this.hideCallback },
+	      _react2['default'].createElement(
+	        'div',
+	        { className: '' },
+	        _react2['default'].createElement(
+	          'label',
+	          null,
+	          '订单号：'
+	        ),
+	        order_id
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group' },
+	        _react2['default'].createElement(
+	          'label',
+	          null,
+	          '下单人信息：'
+	        ),
+	        owner_name + '　' + owner_mobile
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'table-responsive' },
+	        _react2['default'].createElement(
+	          'table',
+	          { className: 'table table-hover table-bordered text-left' },
+	          _react2['default'].createElement(
+	            'thead',
+	            null,
+	            _react2['default'].createElement(
+	              'tr',
+	              null,
+	              _react2['default'].createElement(
+	                'th',
+	                null,
+	                '操作人'
+	              ),
+	              _react2['default'].createElement(
+	                'th',
+	                null,
+	                '操作记录'
+	              ),
+	              _react2['default'].createElement(
+	                'th',
+	                { className: 'sorting ' + this.state.sort_type.toLowerCase(), onClick: this.changeSortType },
+	                '操作时间'
+	              )
+	            )
+	          ),
+	          _react2['default'].createElement(
+	            'tbody',
+	            null,
+	            content.length ? content : (0, _commonLoading.get_table_empty)()
+	          )
+	        )
+	      ),
+	      _react2['default'].createElement(_commonPaginationJs2['default'], {
+	        page_no: page_no,
+	        total_count: total,
+	        page_size: this.state.page_size,
+	        onPageChange: this.onPageChange
+	      })
+	    );
+	  },
+	  changeSortType: function changeSortType() {
+	    if (this.state.sort_type == 'DESC') this.setState({ sort_type: 'ASC' }, this.search.bind(this, this.props.page_no));else this.setState({ sort_type: 'DESC' }, this.search.bind(this, this.props.page_no));
+	  },
+	  onPageChange: function onPageChange(page) {
+	    this.search(page);
+	  },
+	  search: function search(page_no) {
+	    var _state = this.state;
+	    var page_size = _state.page_size;
+	    var sort_type = _state.sort_type;
+
+	    this.props.getOrderOptRecord(this.state.data.order_id, {
+	      page_no: page_no,
+	      page_size: page_size,
+	      sort_type: sort_type
+	    });
+	  },
+	  show: function show(data) {
+	    this.refs.modal.show();
+	    this.setState({ data: data }, function () {
+	      this.search(this.props.page_no);
+	    });
+	  },
+	  hideCallback: function hideCallback() {
+	    this.props.resetOrderOptRecord();
+	  }
+	});
+
+	exports['default'] = OperationRecordModal;
+	module.exports = exports['default'];
+
+/***/ },
+/* 317 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(154);
+
+	var _reactRedux = __webpack_require__(216);
+
+	var _redux = __webpack_require__(223);
+
+	var _actionsArea = __webpack_require__(288);
+
+	var _actionsArea2 = _interopRequireDefault(_actionsArea);
+
+	var _actionsOrder_manage_form = __webpack_require__(292);
+
+	var OrderFormActions = _interopRequireWildcard(_actionsOrder_manage_form);
+
+	var _actionsForm = __webpack_require__(293);
+
+	var FormActions = _interopRequireWildcard(_actionsForm);
+
+	var _commonDatepicker = __webpack_require__(300);
+
+	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
+
+	var _commonAlert = __webpack_require__(318);
+
+	var _commonAlert2 = _interopRequireDefault(_commonAlert);
+
+	var _commonLine_router = __webpack_require__(319);
+
+	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
+
+	var _manage_order_form_create = __webpack_require__(320);
+
+	var _manage_order_form_create2 = _interopRequireDefault(_manage_order_form_create);
+
+	var _manage_order_form_edit = __webpack_require__(326);
+
+	var _manage_order_form_edit2 = _interopRequireDefault(_manage_order_form_edit);
+
+	var _manage_order_products = __webpack_require__(327);
+
+	var _manage_order_products2 = _interopRequireDefault(_manage_order_products);
+
+	var TopHeader = (function (_Component) {
+	  _inherits(TopHeader, _Component);
+
+	  function TopHeader() {
+	    _classCallCheck(this, TopHeader);
+
+	    _get(Object.getPrototypeOf(TopHeader.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(TopHeader, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'clearfix top-header' },
+	        _react2['default'].createElement(_commonLine_router2['default'], {
+	          routes: [{ name: '总订单页面', link: '/om/index' }, { name: (this.props.editable ? '编辑' : '添加') + '订单', link: '' }],
+	          className: 'pull-right' })
+	      );
+	    }
+	  }]);
+
+	  return TopHeader;
+	})(_react.Component);
+
+	var ManageOrderDetailPannel = (function (_Component2) {
+	  _inherits(ManageOrderDetailPannel, _Component2);
+
+	  function ManageOrderDetailPannel() {
+	    _classCallCheck(this, ManageOrderDetailPannel);
+
+	    _get(Object.getPrototypeOf(ManageOrderDetailPannel.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(ManageOrderDetailPannel, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var mainForm = _props.mainForm;
+	      var delivery_stations = _props.delivery_stations;
+	      var history_orders = _props.history_orders;
+	      var area = _props.area;
+	      var dispatch = _props.dispatch;
+	      var products = _props.products;
+	      var params = _props.params;
+
+	      var editable = !!(params && params.id);
+
+	      var actions = _extends({}, (0, _redux.bindActionCreators)((0, _actionsArea2['default'])(), dispatch), (0, _redux.bindActionCreators)(OrderFormActions, dispatch), (0, _redux.bindActionCreators)(FormActions, dispatch));
+
+	      mainForm = _extends({}, mainForm, delivery_stations);
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'order-manage' },
+	        _react2['default'].createElement(TopHeader, { editable: editable }),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'panel' },
+	          _react2['default'].createElement(
+	            'header',
+	            { className: 'panel-heading' },
+	            '订单详情'
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'panel-body' },
+	            !editable ? _react2['default'].createElement(
+	              _manage_order_form_create2['default'],
+	              {
+	                'form-data': mainForm,
+	                history_orders: history_orders,
+	                area: area,
+	                editable: editable,
+	                order_id: params.id,
+	                actions: actions },
+	              _react2['default'].createElement(_manage_order_products2['default'], _extends({ dispatch: dispatch }, products))
+	            ) : _react2['default'].createElement(
+	              _manage_order_form_edit2['default'],
+	              {
+	                'form-data': mainForm,
+	                history_orders: history_orders,
+	                area: area,
+	                editable: editable,
+	                order_id: params.id,
+	                actions: actions },
+	              _react2['default'].createElement(_manage_order_products2['default'], _extends({ dispatch: dispatch }, products))
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      //有params则表示是编辑订单
+	      var params = this.props.params;
+
+	      if (params && params.id) {
+	        this.props.getOrderById(params.id);
+	      }
+	    }
+	  }]);
+
+	  return ManageOrderDetailPannel;
+	})(_react.Component);
+
+	ManageOrderDetailPannel.PropTypes = {
+	  createOrder: _react.PropTypes.func.isRequired
+	};
+
+	function mapStateToProps(_ref) {
+	  var orderManageForm = _ref.orderManageForm;
+
+	  return orderManageForm;
+	}
+	function mapDispatchToProps(dispatch) {
+	  var actions = (0, _redux.bindActionCreators)(OrderFormActions, dispatch);
+	  actions.dispatch = dispatch; //不绑定的话，dispatch传不到 ManageOrderDetailPannel了，(￣◇￣;)
+	  return actions;
+	}
+
+	//bindActionCreators: dispatch(action) --> 自动加上dispatch --> reducer
+	//redux-thunk       : dispatch(action) --> reducer         --> 异步代码执行，thunk 提供dispatch
+
+	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ManageOrderDetailPannel);
+	module.exports = exports['default'];
+
+/***/ },
+/* 318 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var Alert = (function (_Component) {
+	  _inherits(Alert, _Component);
+
+	  function Alert() {
+	    _classCallCheck(this, Alert);
+
+	    _get(Object.getPrototypeOf(Alert.prototype), "constructor", this).apply(this, arguments);
+	  }
+
+	  _createClass(Alert, [{
+	    key: "render",
+	    value: function render() {
+	      var type = this.props.type;
+
+	      return _react2["default"].createElement(
+	        "div",
+	        { className: "alert alert-block alert-" + type + " fade in" },
+	        _react2["default"].createElement(
+	          "button",
+	          { type: "button", className: "close close-xs", "data-dismiss": "alert" },
+	          _react2["default"].createElement("i", { className: "fa fa-times" })
+	        ),
+	        this.props.children
+	      );
+	    }
+	  }]);
+
+	  return Alert;
+	})(_react.Component);
+
+	exports["default"] = Alert;
+
+	Alert.PropTypes = {
+	  type: _react.PropTypes.string.isRequired
+	};
+	module.exports = exports["default"];
+
+/***/ },
+/* 319 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _history_instance = __webpack_require__(211);
+
+	var _history_instance2 = _interopRequireDefault(_history_instance);
+
+	var LineRouter = (function (_React$Component) {
+	  _inherits(LineRouter, _React$Component);
+
+	  function LineRouter() {
+	    _classCallCheck(this, LineRouter);
+
+	    _get(Object.getPrototypeOf(LineRouter.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(LineRouter, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var routes = _props.routes;
+	      var className = _props.className;
+
+	      var content = [];
+
+	      for (var i = 0, len = routes.length; i < len; i++) {
+	        if (i < len - 1) {
+	          content.push(_react2['default'].createElement(
+	            'span',
+	            { key: i + routes[i].link, className: 'node',
+	              onClick: this.jumpTo.bind(this, routes[i].link) },
+	            routes[i].name
+	          ), _react2['default'].createElement(
+	            'span',
+	            { key: i + 'separator' },
+	            '　/　'
+	          ));
+	        } else {
+	          content.push(_react2['default'].createElement(
+	            'span',
+	            { key: i + routes[i].link, className: 'node active' },
+	            routes[i].name
+	          ));
+	        }
+	      }
+
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'line-router ' + className },
+	        content
+	      );
+	    }
+	  }, {
+	    key: 'jumpTo',
+	    value: function jumpTo(link) {
+	      link && _history_instance2['default'].push(link);
+	    }
+	  }]);
+
+	  return LineRouter;
+	})(_react2['default'].Component);
+
+	exports['default'] = LineRouter;
+
+	LineRouter.PropTypes = {
+	  routes: _react.PropTypes.arrayOf(_react.PropTypes.shape({
+	    name: _react.PropTypes.string.isRequired,
+	    link: _react.PropTypes.string.isRequired
+	  }))
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 320 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _manage_order_form = __webpack_require__(321);
+
+	var _manage_order_form2 = _interopRequireDefault(_manage_order_form);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	exports['default'] = (0, _manage_order_form2['default'])(function (state) {
+	  return {
+	    //赋初始值
+	    initialValues: {
+	      delivery_type: _configAppConfig.DELIVERY_TO_HOME }
+	  };
+	});
+	module.exports = exports['default'];
+	//这里有bug，还是把默认值写到组件里面
+	// invoice: INVOICE.NO,
+
+/***/ },
+/* 321 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	exports['default'] = initManageOrderForm;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(154);
+
+	var _reduxForm = __webpack_require__(242);
+
+	var _commonDatepicker = __webpack_require__(300);
+
+	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
+
+	var _commonSelect = __webpack_require__(301);
+
+	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+
+	var _commonPagination = __webpack_require__(302);
+
+	var _commonPagination2 = _interopRequireDefault(_commonPagination);
+
+	var _utilsLazy_load = __webpack_require__(308);
+
+	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var _history_instance = __webpack_require__(211);
+
+	var _history_instance2 = _interopRequireDefault(_history_instance);
+
+	var _manage_history_orders = __webpack_require__(322);
+
+	var _manage_history_orders2 = _interopRequireDefault(_manage_history_orders);
+
+	var _reducersForm = __webpack_require__(323);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _mixinsMap = __webpack_require__(309);
+
+	var _mixinsMap2 = _interopRequireDefault(_mixinsMap);
+
+	var _configFormFields = __webpack_require__(294);
+
+	var _configFormFields2 = _interopRequireDefault(_configFormFields);
+
+	var validate = function validate(values, props) {
+	  var errors = {};
+	  var msg = 'error';
+	  var form = props.form;
+
+	  function _v(key) {
+	    // touched 为true 表示用户点击处理过
+	    if (form[key] && form[key].touched && !values[key]) errors[key] = msg;
+	  }
+	  function _v_selsect(key) {
+	    if (form[key] && form[key].touched && (!values[key] || values[key] == _configAppConfig.SELECT_DEFAULT_VALUE)) errors[key] = msg;
+	  }
+	  function _v_mobile(key) {
+	    if (form[key] && form[key].touched && !values[key] || form[key] && !form[key].focus && values[key] && !_utilsIndex.form.isMobile(values[key])) {
+	      errors[key] = msg;
+	    }
+	  }
+
+	  _v('owner_name');
+	  _v('recipient_name');
+	  // _v('recipient_landmark');
+	  _v('delivery_date');
+
+	  _v_mobile('owner_mobile');
+	  _v_mobile('recipient_mobile');
+
+	  _v_selsect('regionalism_id');
+	  // _v_selsect('delivery_id');
+	  _v_selsect('src_id');
+	  _v_selsect('pay_modes_id');
+	  _v_selsect('pay_status');
+	  _v_selsect('delivery_hours');
+
+	  //配送上门
+	  if (values.delivery_type == _configAppConfig.DELIVERY_TO_HOME) {
+	    _v('recipient_address');
+	    //自提时，则不需建筑物字段, 但地址则为相应的门店地址
+	  } else if (values.delivery_type == _configAppConfig.DELIVERY_TO_STORE) {
+	      delete errors.recipient_landmark;
+	      _v_selsect('recipient_shop_address'); //门店
+	    }
+
+	  //团购密码
+	  if ((0, _reducersForm.isSrc)('第三方预约', values.src_id)) {
+	    if (form['coupon'] && form['coupon'].touched && !values['coupon'] || form['coupon'] && !form['coupon'].focus && values['coupon'] && !_utilsIndex.form.isCoupon(values['coupon'])) {
+	      errors['coupon'] = msg;
+	    }
+	  }
+
+	  console.log(errors);
+	  //errors为空对象才表明验证正确
+	  return errors;
+	};
+
+	var ManageAddForm = (function (_Component) {
+	  _inherits(ManageAddForm, _Component);
+
+	  function ManageAddForm(props) {
+	    _classCallCheck(this, ManageAddForm);
+
+	    _get(Object.getPrototypeOf(ManageAddForm.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      invoices: [{ id: _configAppConfig.INVOICE.NO, text: '不需要' }, { id: _configAppConfig.INVOICE.YES, text: '需要' }],
+	      selected_order_src_level1_id: undefined,
+
+	      groupbuy_check_ing: false,
+	      groupbuy_success: undefined, //验券是否成功
+	      groupbuy_msg: '', //验券结果
+	      auto_match_delivery_center: false,
+	      auto_match_msg: ''
+	    };
+	    this._check = this._check.bind(this);
+	    this.autoMatchDeliveryStations = _mixinsMap2['default'].bind(this);
+	  }
+
+	  _createClass(ManageAddForm, [{
+	    key: 'render',
+	    value: function render() {
+	      var _this = this;
+
+	      var _props = this.props;
+	      var editable = _props.editable;
+	      var // 表明是否是处于编辑状态
+	      handleSubmit = _props.handleSubmit;
+	      var _props$fields = _props.fields;
+	      var delivery_type = _props$fields.delivery_type;
+	      var owner_name = _props$fields.owner_name;
+	      var owner_mobile = _props$fields.owner_mobile;
+	      var recipient_name = _props$fields.recipient_name;
+	      var //下单人姓名
+	      recipient_mobile = _props$fields.recipient_mobile;
+	      var recipient_address = _props$fields.recipient_address;
+	      var //收货人详细地址----》配送上门 ，
+	      recipient_shop_address = _props$fields.recipient_shop_address;
+	      var //收货人详细地址----》门店自提(实际上是门店地址)
+	      province_id = _props$fields.province_id;
+	      var city_id = _props$fields.city_id;
+	      var regionalism_id = _props$fields.regionalism_id;
+	      var //区ID
+	      recipient_landmark = _props$fields.recipient_landmark;
+	      var //标志性建筑
+	      delivery_id = _props$fields.delivery_id;
+	      var //配送中心
+	      src_id = _props$fields.src_id;
+	      var //订单来源
+	      pay_modes_id = _props$fields.pay_modes_id;
+	      var //支付方式
+	      coupon = _props$fields.coupon;
+	      var //团购密码
+	      pay_status = _props$fields.pay_status;
+	      var
+	      // delivery_time, //总配送时间：delivery_date + delivery_time
+	      delivery_date = _props$fields.delivery_date;
+	      var //配送日期
+	      delivery_hours = _props$fields.delivery_hours;
+	      var //配送时段：几点到几点
+	      remarks = _props$fields.remarks;
+	      var invoice = _props$fields.invoice;
+	      var history_orders = _props.history_orders;
+	      var _props$actions = this.props.actions;
+	      var getHistoryOrders = _props$actions.getHistoryOrders;
+	      var checkHistoryOrder = _props$actions.checkHistoryOrder;
+	      var getCopyOrderById = _props$actions.getCopyOrderById;
+	      var copyOrder = _props$actions.copyOrder;
+	      var _props$formData = this.props['form-data'];
+	      var save_ing = _props$formData.save_ing;
+	      var save_success = _props$formData.save_success;
+	      var submit_ing = _props$formData.submit_ing;
+	      var all_delivery_time = _props$formData.all_delivery_time;
+	      var all_pay_status = _props$formData.all_pay_status;
+	      var all_order_srcs = _props$formData.all_order_srcs;
+	      var delivery_stations = _props$formData.delivery_stations;
+	      var all_pay_modes = _props$formData.all_pay_modes;
+	      var _props$area = this.props.area;
+	      var provinces = _props$area.provinces;
+	      var cities = _props$area.cities;
+	      var districts = _props$area.districts;
+	      var delivery_shops = _props$area.delivery_shops;
+	      var _state = this.state;
+	      var invoices = _state.invoices;
+	      var selected_order_src_level1_id = _state.selected_order_src_level1_id;
+	      var groupbuy_psd = _state.groupbuy_psd;
+	      var groupbuy_check_ing = _state.groupbuy_check_ing;
+	      var groupbuy_msg = _state.groupbuy_msg;
+	      var groupbuy_success = _state.groupbuy_success;
+
+	      var isThird = (0, _reducersForm.isSrc)('第三方预约', src_id.value); //是否第三方，显示团购密码组件
+
+	      //{{表单处于编辑状态时的额外处理
+	      if (editable && !this.editable_initial) {
+	        if (src_id.value && all_order_srcs[1]) {
+	          //表明表单数据已准备完毕
+	          this.editable_initial = true; //初始化就只能一次
+	          all_order_srcs[1].forEach(function (n) {
+	            if (n.id == src_id.value) {
+	              selected_order_src_level1_id = n.parent_id;
+	              _this.state.selected_order_src_level1_id = n.parent_id;
+	            }
+	          });
+	        }
+	      }
+	      //}}
+
+	      var order_srcs_level2 = all_order_srcs.length > 1 ? all_order_srcs[1].filter(function (n) {
+	        return n.parent_id == selected_order_src_level1_id;
+	      }) : [];
+
+	      return _react2['default'].createElement(
+	        'div',
+	        null,
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            { className: 'control-label' },
+	            '　配送方式：'
+	          ),
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            _react2['default'].createElement('input', _extends({ type: 'radio'
+	            }, delivery_type, {
+	              value: _configAppConfig.DELIVERY_TO_HOME,
+	              name: 'delivery_type',
+	              checked: delivery_type.value == _configAppConfig.DELIVERY_TO_HOME })),
+	            ' 配送上门'
+	          ),
+	          '　',
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            _react2['default'].createElement('input', _extends({ type: 'radio'
+	            }, delivery_type, {
+	              value: _configAppConfig.DELIVERY_TO_STORE,
+	              name: 'delivery_type',
+	              checked: delivery_type.value == _configAppConfig.DELIVERY_TO_STORE })),
+	            ' 门店自提'
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '下单人姓名：'
+	          ),
+	          _react2['default'].createElement('input', _extends({}, owner_name, { className: 'form-control input-xs ' + owner_name.error, type: 'text' }))
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '下单人手机：'
+	          ),
+	          _react2['default'].createElement('input', _extends({}, owner_mobile, { ref: 'owner_mobile', className: 'form-control input-xs ' + owner_mobile.error, type: 'text' })),
+	          ' ',
+	          _react2['default'].createElement(
+	            'button',
+	            { onClick: this.showHistoryModal.bind(this), className: 'btn btn-default btn-xs' },
+	            '查询历史订单'
+	          ),
+	          ' ',
+	          _react2['default'].createElement(
+	            'button',
+	            { className: 'btn btn-default btn-xs', disabled: true },
+	            '拨号'
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '收货人姓名：'
+	          ),
+	          _react2['default'].createElement('input', _extends({}, recipient_name, { className: 'form-control input-xs ' + recipient_name.error, type: 'text' }))
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '收货人手机：'
+	          ),
+	          _react2['default'].createElement('input', _extends({}, recipient_mobile, { className: 'form-control input-xs ' + recipient_mobile.error, type: 'text' }))
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? '收货人地址：' : '　选择分店：'
+	          ),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'province', options: provinces }, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), className: 'form-select' })),
+	          ' ',
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'city', options: cities }, city_id, { onChange: this.onCityChange.bind(this, city_id.onChange) })),
+	          ' ',
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'district', options: districts }, regionalism_id, { onChange: this.onDistrictChange.bind(this, regionalism_id.onChange), className: '' + regionalism_id.error })),
+	          ' ',
+	          _react2['default'].createElement('input', _extends({ ref: 'recipient_address' }, recipient_address, { className: 'form-control input-xs ' + recipient_address.error + ' ' + (delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? '' : 'hidden'), type: 'text' })),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'shop', options: delivery_shops }, recipient_shop_address, { className: recipient_shop_address.error + ' ' + (delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? 'hidden' : '') }))
+	        ),
+	        delivery_type.value == _configAppConfig.DELIVERY_TO_HOME ? _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '标志性建筑：'
+	          ),
+	          _react2['default'].createElement('input', _extends({}, recipient_landmark, { className: 'form-control input-xs ' + recipient_landmark.error, type: 'text' }))
+	        ) : null,
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　配送中心：'
+	          ),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: delivery_stations, className: 'form-select transition ' + delivery_id.error, ref: 'delivery_center' })),
+	          ' ',
+	          _react2['default'].createElement(
+	            'span',
+	            { className: this.state.auto_match_delivery_center ? 'text-success' : 'text-danger' },
+	            this.state.auto_match_msg
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　订单来源：'
+	          ),
+	          order_srcs_level2.length ? [_react2['default'].createElement(_commonSelect2['default'], {
+	            value: selected_order_src_level1_id,
+	            options: all_order_srcs[0],
+	            onChange: this.orderSrcsLevel1Change.bind(this),
+	            key: 'order_srcs_level1',
+	            className: 'form-select' }), ' ', _react2['default'].createElement(_commonSelect2['default'], _extends({}, src_id, {
+	            options: order_srcs_level2,
+	            key: 'order_srcs_level2',
+	            className: 'form-select ' + src_id.error }))] : _react2['default'].createElement(_commonSelect2['default'], {
+	            value: typeof selected_order_src_level1_id != 'undefined' ? src_id.value : _configAppConfig.SELECT_DEFAULT_VALUE,
+	            options: all_order_srcs[0],
+	            onChange: this.orderSrcsLevel1Change.bind(this),
+	            key: 'order_srcs_level1',
+	            className: 'form-select ' + src_id.error })
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　支付方式：'
+	          ),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_modes_id, { options: all_pay_modes, onChange: this.onPayModesChange.bind(this, pay_modes_id.onChange), className: 'form-select ' + pay_modes_id.error }))
+	        ),
+	        isThird ? _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　团购密码：'
+	          ),
+	          _react2['default'].createElement('input', _extends({}, coupon, { className: 'form-control input-xs ' + coupon.error, type: 'text' })),
+	          ' ',
+	          _react2['default'].createElement(
+	            'button',
+	            { onClick: this.checkGroupbuyPsd.bind(this), 'data-submitting': groupbuy_check_ing, disabled: groupbuy_check_ing, className: 'btn btn-default btn-xs' },
+	            '验劵'
+	          ),
+	          ' ',
+	          _react2['default'].createElement(
+	            'span',
+	            { className: 'fadeIn animated ' + (groupbuy_success ? 'text-success' : 'text-danger') },
+	            groupbuy_msg
+	          )
+	        ) : null,
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　支付状态：'
+	          ),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_status, { options: all_pay_status, ref: 'pay_status', className: 'form-select ' + pay_status.error }))
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　配送时间：'
+	          ),
+	          _react2['default'].createElement(_commonDatepicker2['default'], { 'redux-form': delivery_date, lowerLimit: (0, _utilsIndex.dateFormat)(new Date()), className: '' + delivery_date.error }),
+	          ' ',
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_hours, { options: all_delivery_time, className: '' + delivery_hours.error }))
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　　　备注：'
+	          ),
+	          _react2['default'].createElement('textarea', _extends({}, remarks, { className: 'form-control input-xs', rows: '2', cols: '40' })),
+	          '　　',
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '发票备注：'
+	          ),
+	          _react2['default'].createElement('textarea', _extends({}, invoice, { placeholder: '', rows: '2', cols: '22', className: 'form-control input-xs ' + invoice.error }))
+	        ),
+	        _react2['default'].createElement('hr', { className: 'dotted' }),
+	        this.props.children,
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group' },
+	          editable ? [_react2['default'].createElement(
+	            'button',
+	            {
+	              key: 'saveBtn',
+	              onClick: handleSubmit(this._check.bind(this, this.handleSaveOrder)),
+	              disabled: save_ing,
+	              'data-submitting': save_ing,
+	              className: 'btn btn-theme btn-xs' },
+	            '保存信息'
+	          ), '　　', _react2['default'].createElement(
+	            'button',
+	            {
+	              key: 'submitBtn',
+	              onClick: handleSubmit(this._check.bind(this, this.handleSubmitOrder)),
+	              'data-submitting': submit_ing,
+	              disabled: submit_ing, className: 'btn btn-theme btn-xs' },
+	            '提交'
+	          )] : _react2['default'].createElement(
+	            'button',
+	            {
+	              onClick: handleSubmit(this._check.bind(this, this.handleCreateOrder)),
+	              disabled: save_ing,
+	              'data-submitting': save_ing,
+	              className: 'btn btn-theme btn-xs' },
+	            '生成新订单'
+	          )
+	        ),
+	        _react2['default'].createElement(_manage_history_orders2['default'], _extends({
+	          ref: 'history_orders_modal',
+	          phone_num: owner_mobile.value,
+	          data: history_orders
+	        }, { getHistoryOrders: getHistoryOrders, checkHistoryOrder: checkHistoryOrder, getCopyOrderById: getCopyOrderById, copyOrder: copyOrder }))
+	      );
+	    }
+	  }, {
+	    key: '_check',
+	    value: function _check(callback, form_data) {
+	      var _this2 = this;
+
+	      var dispatch = this.props.dispatch;
+
+	      //redux-form的缘故，这里必须异步，否则errors为空对象
+	      setTimeout(function () {
+	        var _props2 = _this2.props;
+	        var errors = _props2.errors;
+	        var dispatch = _props2.dispatch;
+	        var createOrder = _props2.actions.createOrder;
+	        var order_id = _props2.order_id;
+
+	        var order_info = _this2.props['form-data'].data;
+	        if (!Object.keys(errors).length) {
+	          form_data.delivery_id = 1;
+	          form_data.delivery_time = form_data.delivery_date + ' ' + form_data.delivery_hours;
+	          delete form_data.delivery_date;
+	          delete form_data.delivery_hours;
+
+	          form_data.order_id = order_id;
+	          form_data.updated_time = order_info.updated_time;
+	          form_data.recipient_id = order_info.recipient_id;
+	          form_data.delivery_name = _this2.findSelectedOptionText('delivery_center');
+
+	          //拼接省市区
+	          form_data.prefix_address = _this2.findSelectedOptionText('province') + _this2.findSelectedOptionText('city') + _this2.findSelectedOptionText('district');
+	          //门店自提时，将门店id转换为 收货人详细地址
+	          if (form_data.delivery_type == _configAppConfig.DELIVERY_TO_STORE) {
+	            form_data.recipient_address = _this2.findSelectedOptionText('shop');
+	            form_data.recipient_landmark = '';
+	          }
+	          //团购密码验证
+	          if ((0, _reducersForm.isSrc)('第三方预约', form_data.src_id)) {
+	            if (!_this2.state.groupbuy_success) {
+	              (0, _utilsIndex.Noty)('warning', '请确定团购密码已验证通过');return;
+	            }
+	          }
+
+	          callback.call(_this2, form_data);
+	        } else {
+	          (0, _utilsIndex.Noty)('warning', '请填写完整');
+	        }
+	      }, 0);
+	    }
+	  }, {
+	    key: 'findSelectedOptionText',
+	    value: function findSelectedOptionText(_refs) {
+	      return $((0, _reactDom.findDOMNode)(this.refs[_refs])).find('option:selected').html();
+	    }
+	  }, {
+	    key: 'handleCreateOrder',
+	    value: function handleCreateOrder(form_data) {
+	      this.props.actions.createOrder(form_data).done(function () {
+	        (0, _utilsIndex.Noty)('success', '保存成功');
+	        _history_instance2['default'].push('/om/index');
+	      }).fail(function (msg, code) {
+	        (0, _utilsIndex.Noty)('error', msg || '保存异常');
+	      });
+	    }
+	  }, {
+	    key: 'handleSaveOrder',
+	    value: function handleSaveOrder(form_data) {
+	      this.props.actions.saveOrder(form_data).done((function () {
+	        (0, _utilsIndex.Noty)('success', '保存成功');
+	        this.props.actions.getOrderById(form_data.order_id).fail((function () {
+	          _history_instance2['default'].go(0);
+	        }).bind(this));
+	      }).bind(this)).fail(function (msg) {
+	        (0, _utilsIndex.Noty)('error', msg || '保存异常');
+	      });
+	    }
+	  }, {
+	    key: 'handleSubmitOrder',
+	    value: function handleSubmitOrder(form_data) {
+	      this.props.actions.submitOrder(form_data).done(function () {
+	        (0, _utilsIndex.Noty)('success', '已成功提交！');
+	        _history_instance2['default'].push('/om/index');
+	      }).fail(function (msg) {
+	        (0, _utilsIndex.Noty)('error', msg || '操作异常');
+	      });
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var _this3 = this;
+
+	      var _props$actions2 = this.props.actions;
+	      var getProvinces = _props$actions2.getProvinces;
+	      var getOrderSrcs = _props$actions2.getOrderSrcs;
+	      var getDeliveryStations = _props$actions2.getDeliveryStations;
+	      var getPayModes = _props$actions2.getPayModes;
+	      var triggerFormUpdate = _props$actions2.triggerFormUpdate;
+
+	      getProvinces();
+	      getOrderSrcs();
+	      getPayModes();
+	      getDeliveryStations();
+
+	      this.autoMatchDeliveryStations(function (delivery_id) {
+	        delivery_id = delivery_id || _configAppConfig.SELECT_DEFAULT_VALUE;
+	        $((0, _reactDom.findDOMNode)(_this3.refs.delivery_center)).val(delivery_id);
+	        triggerFormUpdate('add_order', 'delivery_id', delivery_id); //手动更改表单值后，需要使用该方法，主动触发redux-form进行更新，否则数据将不会同步
+	      }, function () {
+	        triggerFormUpdate('add_order', 'delivery_id', _configAppConfig.SELECT_DEFAULT_VALUE);
+	      });
+
+	      (0, _utilsLazy_load2['default'])('noty');
+
+	      $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).on('click', this.clearMsg.bind(this));
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).off('click', this.clearMsg.bind(this));
+	    }
+	  }, {
+	    key: 'clearMsg',
+	    value: function clearMsg() {
+	      $((0, _reactDom.findDOMNode)(this.refs.delivery_center)).removeClass('alert-success alert-danger');
+	      this.setState({ auto_match_msg: '' });
+	    }
+	  }, {
+	    key: 'onProvinceChange',
+	    value: function onProvinceChange(callback, e) {
+	      var value = e.target.value;
+
+	      this.props.actions.provinceReset();
+	      if (value != this.refs.province.props['default-value']) this.props.actions.getCities(value);
+	      callback(e);
+	    }
+	  }, {
+	    key: 'onCityChange',
+	    value: function onCityChange(callback, e) {
+	      var value = e.target.value;
+
+	      this.props.actions.cityReset();
+	      if (value != this.refs.city.props['default-value']) this.props.actions.getDistricts(value);
+	      callback(e);
+	    }
+	  }, {
+	    key: 'onDistrictChange',
+	    value: function onDistrictChange(callback, e) {
+	      var value = e.target.value;
+
+	      this.props.actions.districtReset();
+	      if (value != this.refs.district.props['default-value']) this.props.actions.getDeliveryShops(value);
+	      callback(e);
+	    }
+	  }, {
+	    key: 'onPayModesChange',
+	    value: function onPayModesChange(callback, e) {
+	      // $(findDOMNode(this.refs.pay_status)).val('COD');
+	      // console.log('pay_modes change');
+	      callback(e);
+	    }
+	  }, {
+	    key: 'orderSrcsLevel1Change',
+	    value: function orderSrcsLevel1Change(e) {
+	      var value = e.target.value;
+
+	      var all_order_srcs = this.props['form-data'].all_order_srcs;
+	      //如果没有二级订单来源，则表明只是一个一级来源
+	      if (all_order_srcs[1] && !all_order_srcs[1].filter(function (n) {
+	        return n.parent_id == value;
+	      }).length) {
+	        this.props.actions.triggerFormUpdate('add_order', 'src_id', value); //此时只能模拟form表单更新
+	      } else {
+	          this.props.actions.resetFormUpdate('add_order', 'src_id');
+	        }
+	      this.setState({ selected_order_src_level1_id: value });
+	    }
+	  }, {
+	    key: 'addProducts',
+	    value: function addProducts() {
+	      this.refs.productsModal.show();
+	    }
+	  }, {
+	    key: 'showHistoryModal',
+	    value: function showHistoryModal() {
+	      this.refs.history_orders_modal.show();
+	    }
+	  }, {
+	    key: 'checkGroupbuyPsd',
+	    value: function checkGroupbuyPsd() {
+	      var _this4 = this;
+
+	      var _props$fields2 = this.props.fields;
+	      var city_id = _props$fields2.city_id;
+	      var coupon = _props$fields2.coupon;
+
+	      coupon = coupon.value && coupon.value.trim();
+	      var city_name;
+	      if (city_id.value && city_id.value != _configAppConfig.SELECT_DEFAULT_VALUE) {
+	        city_name = this.findSelectedOptionText('city');
+	        city_name = city_name.substring(0, city_name.length - 1);
+	      } else {
+	        (0, _utilsIndex.Noty)('warning', '请先选择收货人所在城市');return;
+	      }
+	      if (coupon && _utilsIndex.form.isCoupon(coupon)) {
+	        this.setState({ groupbuy_check_ing: true });
+	        this.props.actions.checkGroupbuyPsd({ coupon: coupon, city_name: city_name }).done(function () {
+	          _this4.setState({ groupbuy_success: true, groupbuy_msg: _react2['default'].createElement('i', { className: 'fa fa-check' }) });
+	        }).fail(function (msg) {
+	          _this4.setState({ groupbuy_success: false, groupbuy_msg: msg || '团购券验证有误，请手动确认！' });
+	        }).always(function () {
+	          _this4.setState({ groupbuy_check_ing: false });
+	        });
+	      } else {
+	        (0, _utilsIndex.Noty)('warning', '请填写正确的团购密码');
+	      }
+	    }
+	  }]);
+
+	  return ManageAddForm;
+	})(_react.Component);
+
+	ManageAddForm.PropTypes = {
+	  form: _react.PropTypes.shape({
+	    all_delivery_time: _react.PropTypes.array.isRequired,
+	    all_pay_status: _react.PropTypes.array.isRequired,
+	    all_order_srcs: _react.PropTypes.array.isRequired,
+	    delivery_stations: _react.PropTypes.array.isRequired,
+	    all_pay_modes: _react.PropTypes.array.isRequired,
+	    save_ing: _react.PropTypes.bool.isRequired,
+	    save_success: _react.PropTypes.bool.isRequired
+	  }).isRequired,
+	  area: _react.PropTypes.shape({
+	    provinces: _react.PropTypes.array.isRequired,
+	    cities: _react.PropTypes.array.isRequired,
+	    districts: _react.PropTypes.array.isRequired
+	  }).isRequired,
+
+	  actions: _react.PropTypes.shape({
+	    getProvinces: _react.PropTypes.func.isRequired,
+	    getOrderSrcs: _react.PropTypes.func.isRequired,
+	    getDeliveryStations: _react.PropTypes.func.isRequired,
+	    getPayModes: _react.PropTypes.func.isRequired,
+	    createOrder: _react.PropTypes.func.isRequired
+	  }).isRequired,
+
+	  editable: _react.PropTypes.bool.isRequired,
+	  order_id: _react.PropTypes.any.isRequired
+	};
+
+	function initManageOrderForm(initFunc) {
+	  return (0, _reduxForm.reduxForm)({
+	    form: 'add_order', //表单命名空间
+	    fields: _configFormFields2['default'].add_order,
+	    validate: validate,
+	    touchOnBlur: true
+	  }, initFunc)(ManageAddForm);
+	}
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 322 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _actionsOrders = __webpack_require__(290);
+
+	var OrderManageActions = _interopRequireWildcard(_actionsOrders);
+
+	var _commonPagination = __webpack_require__(302);
+
+	var _commonPagination2 = _interopRequireDefault(_commonPagination);
+
+	var _commonStd_modal = __webpack_require__(306);
+
+	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
+
+	var _commonLoading = __webpack_require__(305);
+
+	var _commonRecipient_info = __webpack_require__(307);
+
+	var _commonRecipient_info2 = _interopRequireDefault(_commonRecipient_info);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var _commonOrder_products_detail = __webpack_require__(311);
+
+	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
+
+	var OrderRow = (function (_Component) {
+	  _inherits(OrderRow, _Component);
+
+	  function OrderRow() {
+	    _classCallCheck(this, OrderRow);
+
+	    _get(Object.getPrototypeOf(OrderRow.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(OrderRow, [{
+	    key: 'render',
+	    value: function render() {
+	      var props = this.props;
+
+	      var src_name = props.src_name.split(',');
+	      var _order_status = _configAppConfig.order_status[props.status] || {};
+	      return _react2['default'].createElement(
+	        'tr',
+	        { className: props.active_order_id == props.order_id ? 'active' : '', onClick: this.clickHandler.bind(this) },
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.order_id
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'time' },
+	            props.created_time
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.owner_name,
+	          _react2['default'].createElement('br', null),
+	          props.owner_mobile
+	        ),
+	        _react2['default'].createElement(_commonRecipient_info2['default'], { data: props }),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.delivery_time
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'remark-in-table' },
+	            props.remarks
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          { className: 'nowrap' },
+	          src_name[0],
+	          src_name[1] ? [_react2['default'].createElement('br', null), _react2['default'].createElement(
+	            'span',
+	            { className: 'bordered bg-warning' },
+	            src_name[1]
+	          )] : null
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'div',
+	            { style: { color: _order_status.color || 'inherit' } },
+	            _order_status.value
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          'todo'
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.updated_by
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'time' },
+	            props.updated_time
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'clickHandler',
+	    value: function clickHandler() {
+	      this.props.checkHistoryOrder(this.props.order_id);
+	    }
+	  }]);
+
+	  return OrderRow;
+	})(_react.Component);
+
+	var HistoryOrders = (function (_Component2) {
+	  _inherits(HistoryOrders, _Component2);
+
+	  function HistoryOrders(props) {
+	    _classCallCheck(this, HistoryOrders);
+
+	    _get(Object.getPrototypeOf(HistoryOrders.prototype), 'constructor', this).call(this, props);
+	    this.search = this.search.bind(this);
+	    this.show = this.show.bind(this);
+	    this.hideCallback = this.hideCallback.bind(this);
+	    this.state = {
+	      page_size: 3,
+	      phone_num: this.props.phone_num
+	    };
+	  }
+
+	  _createClass(HistoryOrders, [{
+	    key: 'render',
+	    value: function render() {
+	      var checkHistoryOrder = this.props.checkHistoryOrder;
+	      var _props$data = this.props.data;
+	      var page_no = _props$data.page_no;
+	      var total = _props$data.total;
+	      var list = _props$data.list;
+	      var check_order_info = _props$data.check_order_info;
+	      var active_order_id = _props$data.active_order_id;
+	      var viewDetail = this.viewDetail;
+
+	      var content = list.map(function (n, i) {
+	        return _react2['default'].createElement(OrderRow, _extends({ key: n.order_id }, _extends({}, n, { active_order_id: active_order_id, viewDetail: viewDetail, checkHistoryOrder: checkHistoryOrder })));
+	      });
+	      return _react2['default'].createElement(
+	        _commonStd_modal2['default'],
+	        { ref: 'modal', size: 'lg', footer: false, title: '历史订单' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '手机号码 ',
+	            _react2['default'].createElement('input', { value: this.state.phone_num, onChange: this.onPhonenumChange.bind(this), className: 'form-control input-xs' })
+	          ),
+	          '　',
+	          _react2['default'].createElement(
+	            'button',
+	            { onClick: this.search, className: 'btn btn-default btn-xs' },
+	            '查询'
+	          ),
+	          '　',
+	          _react2['default'].createElement(
+	            'button',
+	            { onClick: this.copyOrder.bind(this), className: 'btn btn-default btn-xs' },
+	            '复制订单'
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'table-responsive' },
+	          _react2['default'].createElement(
+	            'table',
+	            { className: 'table table-hover text-center' },
+	            _react2['default'].createElement(
+	              'thead',
+	              null,
+	              _react2['default'].createElement(
+	                'tr',
+	                null,
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '订单号'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '下单时间'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '下单人'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '收货人信息'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '配送时间'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '备注'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '订单来源'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '订单状态'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '发票备注'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '操作人'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '操作时间'
+	                )
+	              )
+	            ),
+	            _react2['default'].createElement(
+	              'tbody',
+	              null,
+	              content.length ? content : (0, _commonLoading.get_table_empty)()
+	            )
+	          )
+	        ),
+	        _react2['default'].createElement(_commonPagination2['default'], {
+	          page_no: page_no,
+	          total_count: total,
+	          page_size: this.state.page_size,
+	          onPageChange: this.onPageChange
+	        }),
+	        check_order_info ? _react2['default'].createElement(
+	          'div',
+	          { className: 'panel' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'panel-body' },
+	            _react2['default'].createElement(
+	              'div',
+	              null,
+	              '历史订单产品详情'
+	            ),
+	            _react2['default'].createElement(_commonOrder_products_detail2['default'], { products: check_order_info.products })
+	          )
+	        ) : null
+	      );
+	    }
+	  }, {
+	    key: 'onPhonenumChange',
+	    value: function onPhonenumChange(e) {
+	      this.setState({ phone_num: e.target.value });
+	    }
+	  }, {
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      if (nextProps.phone_num != this.props.phone_num) {
+	        this.setState({ phone_num: nextProps.phone_num });
+	      }
+	    }
+	  }, {
+	    key: 'onPageChange',
+	    value: function onPageChange(page) {
+	      this.setState({ page_no: page });
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {}
+	  }, {
+	    key: 'search',
+	    value: function search() {
+	      var _props = this.props;
+	      var getHistoryOrders = _props.getHistoryOrders;
+	      var page_no = _props.data.page_no;
+	      var _state = this.state;
+	      var phone_num = _state.phone_num;
+	      var page_size = _state.page_size;
+
+	      if (!phone_num) {
+	        return;
+	      } else if (_utilsIndex.form.isMobile(phone_num)) {
+	        getHistoryOrders({ owner_mobile: phone_num, page_no: page_no, page_size: page_size });
+	      } else {
+	        (0, _utilsIndex.Noty)('warning', '错误的电话号码');
+	      }
+	    }
+	  }, {
+	    key: 'copyOrder',
+	    value: function copyOrder() {
+	      var _this = this;
+
+	      var _props2 = this.props;
+	      var check_order_info = _props2.data.check_order_info;
+	      var getCopyOrderById = _props2.getCopyOrderById;
+	      var copyOrder = _props2.copyOrder;
+
+	      if (check_order_info) {
+	        getCopyOrderById(check_order_info.order_id).done(function () {
+	          copyOrder();
+	          _this.refs.modal.hide();
+	        }).fail(function (msg) {
+	          (0, _utilsIndex.Noty)('error', msg || '服务器忙');
+	        });
+	      } else {
+	        (0, _utilsIndex.Noty)('warning', '请点击选择你想要复制的订单');
+	      }
+	    }
+	  }, {
+	    key: 'show',
+	    value: function show() {
+	      this.refs.modal.show();
+	      this.search();
+	    }
+	  }, {
+	    key: 'hideCallback',
+	    value: function hideCallback() {}
+	  }]);
+
+	  return HistoryOrders;
+	})(_react.Component);
+
+	HistoryOrders.PropTypes = {
+	  data: _react.PropTypes.object.isRequired,
+	  getHistoryOrders: _react.PropTypes.func.isRequired,
+	  checkHistoryOrder: _react.PropTypes.func.isRequired,
+	  getCopyOrderById: _react.PropTypes.func.isRequired,
+	  copyOrder: _react.PropTypes.func.isRequired
+	};
+
+	exports['default'] = HistoryOrders;
+	module.exports = exports['default'];
+	/*订单来源*/ /*订单状态*/
+
+/***/ },
+/* 323 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	exports.isSrc = isSrc;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	var _reduxForm = __webpack_require__(242);
+
+	var xxx = _interopRequireWildcard(_reduxForm);
+
+	// import store from 'stores/configureStore'; //循环引用
+
+	var _storesGetter = __webpack_require__(324);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _actionsOrder_products = __webpack_require__(325);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var _actionsForm = __webpack_require__(293);
+
+	var _configFormFields = __webpack_require__(294);
+
+	var _configFormFields2 = _interopRequireDefault(_configFormFields);
+
+	function preCheck() {
+	  var pathname = location.pathname;
+
+	  return pathname.startsWith('/om/index') && (0, _storesGetter.getGlobalState)();
+	}
+
+	function isSrc(name, src_id) {
+	  if (preCheck()) {
+	    var _getGlobalState = (0, _storesGetter.getGlobalState)();
+
+	    var all_order_srcs = _getGlobalState.orderManageForm.mainForm.all_order_srcs;
+
+	    //注意all_order_srcs是一个二维数组，第一个是一级，第二个是二维，src_id可能位于一维，也可能在二维
+	    if (all_order_srcs.length > 1 && src_id) {
+	      var src1 = all_order_srcs[0].filter(function (n) {
+	        return n.name === name;
+	      })[0] || {};
+	      if (src1.id == src_id) {
+	        return true;
+	      } else {
+	        var src2 = all_order_srcs[1].filter(function (n) {
+	          return n.id == src_id;
+	        })[0];
+	        if (src2 && src2.parent_id == src1.id) {
+	          return true;
+	        }
+	      }
+	    }
+	  }
+	}
+
+	function getMode(mode_name) {
+	  var _getGlobalState2 = (0, _storesGetter.getGlobalState)();
+
+	  var all_pay_modes = _getGlobalState2.orderManageForm.mainForm.all_pay_modes;
+
+	  return all_pay_modes.filter(function (n) {
+	    return n.text == mode_name;
+	  })[0] || {};
+	}
+
+	exports['default'] = _reduxForm.reducer.plugin({
+	  add_order: function add_order(state, action) {
+	    //这里注意：所有的action都会进入，所以得使用以下判断, 以确保当前form为add_order
+	    if (action && action.form == 'add_order') {
+	      //重新初始化表单
+	      if (action.type == _actionsForm.REDUX_FORM_REINIT) {
+	        _configFormFields2['default']['add_order'].forEach(function (n) {
+	          state[n].value = state[n].initial;
+	        });
+	        return _extends({}, state);
+	      } else if (action.field == 'owner_mobile') {
+	        //电话号码
+	        switch (action.type) {
+	          case _reduxForm.actionTypes.FOCUS:
+	            state.owner_mobile.focus = true;
+	            return _extends({}, state);
+	          case _reduxForm.actionTypes.BLUR:
+	            state.owner_mobile.focus = false;
+	            return _extends({}, state);
+	          default:
+	            return state;
+	        }
+	      } else if (action.field == 'recipient_mobile') {
+	        switch (action.type) {
+	          case _reduxForm.actionTypes.FOCUS:
+	            state.recipient_mobile.focus = true;
+	            return _extends({}, state);
+	          case _reduxForm.actionTypes.BLUR:
+	            state.recipient_mobile.focus = false;
+	            return _extends({}, state);
+	          default:
+	            return state;
+	        }
+	      } else {
+	        //订单来源，支付方式，支付状态，产品应收 联动
+	        switch (action.type) {
+	          case _reduxForm.actionTypes.BLUR:
+	          case _reduxForm.actionTypes.CHANGE:
+	          case _reduxForm.actionTypes.RESET:
+	            if (action.field == 'src_id' || action.key == 'src_id') {
+	              state.pay_modes_id = _extends({}, state.pay_modes_id, getPayModesId(state, action));
+	              state.pay_status = _extends({}, state.pay_status, getPayStatus(state, action));
+	            }
+	            (0, _utilsIndex.delay)(function () {
+	              var p = _configAppConfig.pay_status[state.pay_status.value];
+	              if (p == '已付款' || p == '部分付款' || p == '货到付款' || action.field == 'pay_status' || action.key == 'pay_status') {
+	                (0, _storesGetter.getGlobalStore)().dispatch((0, _actionsOrder_products.updateConfirmProductDiscountPrice)());
+	              }
+	            });
+	            return _extends({}, state);
+	          default:
+	            return state;
+	        }
+	      }
+	    } else {
+	      return state;
+	    }
+	  }
+	});
+
+	function getPayModesId(state, action) {
+	  var src_id = state.src_id.value;
+	  var pay_modes_id = state.pay_modes_id.value;
+	  if (src_id) {
+	    if (action.type == _reduxForm.actionTypes.RESET) {
+	      return { value: _configAppConfig.SELECT_DEFAULT_VALUE };
+	    } else {
+	      if (isSrc('第三方预约', src_id)) {
+	        return { value: getMode('团购券').id }; //团购券id（TODO）
+	      } else if (isSrc('有赞', src_id)) {
+	          return { value: getMode('微信支付').id }; //微信支付id
+	        } else if (isSrc('电话', src_id)) {
+	            // var mode_cash = getMode('货到付款（现金）');
+	            // var mode_card = getMode('货到付款（POS）');
+	            var mode_cash = getMode('现金');
+	            var mode_card = getMode('现金');
+	            if (pay_modes_id != mode_cash.id || pay_modes_id != mode_card.id) {
+	              return { value: mode_cash.id };
+	            }
+	          } else {
+	            return { touched: false, value: _configAppConfig.SELECT_DEFAULT_VALUE, visited: false };
+	          }
+	    }
+	  }
+	}
+
+	function getPayStatus(state, action) {
+	  var src_id = state.src_id.value;
+	  var pay_status = state.pay_status.value;
+	  if (src_id) {
+	    if (action.type == _reduxForm.actionTypes.RESET) {
+	      return { value: _configAppConfig.SELECT_DEFAULT_VALUE };
+	    } else {
+	      if (isSrc('第三方预约', src_id) || isSrc('有赞', src_id)) {
+	        var _getGlobalState3 = (0, _storesGetter.getGlobalState)();
+
+	        var confirm_list = _getGlobalState3.orderManageForm.products.confirm_list;
+
+	        //属于第三方预约
+	        if (confirm_list.length > 1 || confirm_list[0] && confirm_list[0].num > 1) {
+	          return { value: 'PARTPAYED' }; //部分付款（TODO）
+	        } else {
+	            return { value: 'PAYED' }; //已付款（TODO）
+	          }
+	      } else if (isSrc('电话', src_id)) {
+	          return { value: 'COD' }; //货到付款
+	        } else {
+	            return { touched: false, value: _configAppConfig.SELECT_DEFAULT_VALUE, visited: false };
+	          }
+	    }
+	  }
+	}
+
+/***/ },
+/* 324 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.getGlobalStore = getGlobalStore;
+	exports.getGlobalState = getGlobalState;
+
+	function getGlobalStore() {
+	  return window.STORE;
+	}
+
+	function getGlobalState() {
+	  var s = getGlobalStore();
+	  return s && s.getState();
+	}
+
+/***/ },
+/* 325 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.getCategories = getCategories;
+	exports.searchProducts = searchProducts;
+	exports.selectProduct = selectProduct;
+	exports.changeProductNum = changeProductNum;
+	exports.deleteProduct = deleteProduct;
+	exports.confirmAllSelectedProducts = confirmAllSelectedProducts;
+	exports.cancelAllSelectedProducts = cancelAllSelectedProducts;
+	exports.deleteConfirmProduct = deleteConfirmProduct;
+	exports.productAttrChange = productAttrChange;
+	exports.updateConfirmProductDiscountPrice = updateConfirmProductDiscountPrice;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _utilsRequest = __webpack_require__(234);
+
+	//Promise
+
+	var _configUrl = __webpack_require__(239);
+
+	var _configUrl2 = _interopRequireDefault(_configUrl);
+
+	var GOT_CATEGORIES = 'GOT_CATEGORIES';
+	exports.GOT_CATEGORIES = GOT_CATEGORIES;
+
+	function getCategories() {
+	  return (0, _utilsRequest.GET)(_configUrl2['default'].categories.toString(), null, GOT_CATEGORIES);
+	  // return TEST({1: '11111', 2: '2222'}, GOT_CATEGORIES);
+	}
+
+	var SEARCH_PRODUCTS = 'SEARCH_PRODUCTS';
+	exports.SEARCH_PRODUCTS = SEARCH_PRODUCTS;
+
+	function searchProducts(query_data) {
+	  return (0, _utilsRequest.GET)(_configUrl2['default'].products.toString(), query_data, SEARCH_PRODUCTS);
+	  /*
+	    return TEST({
+	      list: [
+	        {
+	          product_id: 1,
+	          name: "zhang",
+	          size: "zhang1",
+	          category_name: "类型1",
+	          original_price: 20000,
+	  
+	          skus: [{
+	            sku_id: 22,
+	            website: "website2",
+	            discount_price: 18000,
+	            is_local_site: "0",
+	            is_delivery: "1",
+	          }, {
+	            sku_id: 23,
+	            website: "website2",
+	            discount_price: 19000,
+	            is_local_site: "1",
+	            is_delivery: "0",
+	          }]
+	        },
+	        {
+	          product_id: 2,
+	          name: "li",
+	          size: "li3",
+	          category_name: "类型3",
+	          original_price: 20000,
+	          
+	          skus: [{
+	            sku_id: 24,
+	            website: "website3",
+	            discount_price: 30000,
+	            is_local_site: "1",
+	            is_delivery: "1",
+	          }]
+	        }
+	      ],
+	      total: 2
+	    }, SEARCH_PRODUCTS);
+	  */
+	}
+
+	var SELECT_PRODUCT = 'SELECT_PRODUCT';
+	exports.SELECT_PRODUCT = SELECT_PRODUCT;
+
+	function selectProduct(sku_info) {
+	  return {
+	    type: SELECT_PRODUCT,
+	    data: sku_info
+	  };
+	}
+
+	var CHANGE_PRODUCT_NUM = 'CHANGE_PRODUCT_NUM';
+	exports.CHANGE_PRODUCT_NUM = CHANGE_PRODUCT_NUM;
+
+	function changeProductNum(sku_id, num) {
+	  return {
+	    type: CHANGE_PRODUCT_NUM,
+	    sku_id: sku_id,
+	    num: num
+	  };
+	}
+
+	var DELETE_SELECTED_PRODUCT = 'DELETE_SELECTED_PRODUCT';
+	exports.DELETE_SELECTED_PRODUCT = DELETE_SELECTED_PRODUCT;
+
+	function deleteProduct(sku_info) {
+	  return {
+	    type: DELETE_SELECTED_PRODUCT,
+	    data: sku_info
+	  };
+	}
+
+	var CONFIRM_ALL_SELECTED_PRODUCTS = 'CONFIRM_ALL_SELECTED_PRODUCTS';
+	exports.CONFIRM_ALL_SELECTED_PRODUCTS = CONFIRM_ALL_SELECTED_PRODUCTS;
+
+	function confirmAllSelectedProducts() {
+	  return {
+	    type: CONFIRM_ALL_SELECTED_PRODUCTS
+	  };
+	}
+
+	var CANCEL_ALL_SELECTED_PRODUCTS = 'CANCEL_ALL_SELECTED_PRODUCTS';
+	exports.CANCEL_ALL_SELECTED_PRODUCTS = CANCEL_ALL_SELECTED_PRODUCTS;
+
+	function cancelAllSelectedProducts() {
+	  return {
+	    type: CANCEL_ALL_SELECTED_PRODUCTS
+	  };
+	}
+
+	var DELETE_CONFIRM_PRODUCT = 'DELETE_CONFIRM_PRODUCT';
+	exports.DELETE_CONFIRM_PRODUCT = DELETE_CONFIRM_PRODUCT;
+
+	function deleteConfirmProduct(sku_info) {
+	  return {
+	    type: DELETE_CONFIRM_PRODUCT,
+	    data: sku_info
+	  };
+	}
+
+	//
+	var CONFIRM_PRODUCT_ATTR_CHANGE = 'CONFIRM_PRODUCT_ATTR_CHANGE';
+	exports.CONFIRM_PRODUCT_ATTR_CHANGE = CONFIRM_PRODUCT_ATTR_CHANGE;
+
+	function productAttrChange(data) {
+	  return {
+	    type: CONFIRM_PRODUCT_ATTR_CHANGE,
+	    data: data
+	  };
+	}
+
+	var UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE = 'UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE';
+	exports.UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE = UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE;
+
+	function updateConfirmProductDiscountPrice() {
+	  return {
+	    type: UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE
+	  };
+	}
+
+/***/ },
+/* 326 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _manage_order_form = __webpack_require__(321);
+
+	var _manage_order_form2 = _interopRequireDefault(_manage_order_form);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	exports['default'] = (0, _manage_order_form2['default'])(function (state) {
+	  return {
+	    //赋初始值
+	    initialValues: state.orderManageForm.mainForm.data
+	  };
+	});
+	module.exports = exports['default'];
+
+/***/ },
+/* 327 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * form表单下面已添加进来的商品
+	 */
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(154);
+
+	var _manage_add_products_modal = __webpack_require__(328);
+
+	var _manage_add_products_modal2 = _interopRequireDefault(_manage_add_products_modal);
+
+	var _actionsOrder_products = __webpack_require__(325);
+
+	var ProductsActions = _interopRequireWildcard(_actionsOrder_products);
+
+	var ManageAddProducts = (function (_Component) {
+	  _inherits(ManageAddProducts, _Component);
+
+	  function ManageAddProducts() {
+	    _classCallCheck(this, ManageAddProducts);
+
+	    _get(Object.getPrototypeOf(ManageAddProducts.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(ManageAddProducts, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var confirm_list = _props.confirm_list;
+	      var dispatch = _props.dispatch;
+
+	      var list = confirm_list.map(function (n) {
+	        return _react2['default'].createElement(AddedProductsRow, { key: n.sku_id, data: n, dispatch: dispatch });
+	      });
+	      return _react2['default'].createElement(
+	        'div',
+	        null,
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group' },
+	          '选择产品：',
+	          _react2['default'].createElement(
+	            'button',
+	            { onClick: this.addProducts.bind(this), className: 'btn btn-xs btn-theme' },
+	            '添加'
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'table-responsive' },
+	          _react2['default'].createElement(
+	            'table',
+	            { className: 'table text-center' },
+	            _react2['default'].createElement(
+	              'thead',
+	              null,
+	              _react2['default'].createElement(
+	                'tr',
+	                null,
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '产品名称'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '规格'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '原价'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '数量'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '实际售价'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '应收金额'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '巧克力牌'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '祝福贺卡'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '产品图册'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '自定义名称'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '自定义描述'
+	                ),
+	                _react2['default'].createElement(
+	                  'th',
+	                  null,
+	                  '操作'
+	                )
+	              )
+	            ),
+	            _react2['default'].createElement(
+	              'tbody',
+	              null,
+	              list
+	            )
+	          )
+	        ),
+	        _react2['default'].createElement(_manage_add_products_modal2['default'], _extends({ ref: 'productsModal' }, this.props))
+	      );
+	    }
+	  }, {
+	    key: 'addProducts',
+	    value: function addProducts() {
+	      this.refs.productsModal.show();
+	    }
+	  }]);
+
+	  return ManageAddProducts;
+	})(_react.Component);
+
+	exports['default'] = ManageAddProducts;
+
+	ManageAddProducts.PropTypes = {
+	  products_choosing: _react.PropTypes.object.isRequired,
+	  dispatch: _react.PropTypes.func.isRequired
+	};
+
+	var AddedProductsRow = _react2['default'].createClass({
+	  displayName: 'AddedProductsRow',
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      editable: false,
+	      edit_input_classname: 'product-editable-form'
+	    };
+	  },
+	  render: function render() {
+	    var handleChange = this.handleChange;
+	    var _state = this.state;
+	    var editable = _state.editable;
+	    var edit_input_classname = _state.edit_input_classname;
+	    var _props$data = this.props.data;
+	    var sku_id = _props$data.sku_id;
+	    var name = _props$data.name;
+	    var size = _props$data.size;
+	    var original_price = _props$data.original_price;
+	    var num = _props$data.num;
+	    var discount_price = _props$data.discount_price;
+	    var amount = _props$data.amount;
+	    var choco_board = _props$data.choco_board;
+	    var greeting_card = _props$data.greeting_card;
+	    var atlas = _props$data.atlas;
+	    var custom_name = _props$data.custom_name;
+	    var custom_desc = _props$data.custom_desc;
+
+	    return _react2['default'].createElement(
+	      'tr',
+	      { className: 'form-inline' },
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        name
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        size
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        '￥',
+	        original_price / 100
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        num
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        editable ? _react2['default'].createElement('input', { value: discount_price, onChange: handleChange.bind(this, 'discount_price'), className: edit_input_classname, style: { width: 50 }, type: 'text' }) : '￥' + discount_price
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        editable ? _react2['default'].createElement('input', { value: amount, onChange: handleChange.bind(this, 'amount'), className: edit_input_classname, style: { width: 50 }, type: 'text' }) : '￥' + amount
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        editable ? _react2['default'].createElement('textarea', { value: choco_board, onChange: handleChange.bind(this, 'choco_board'), className: edit_input_classname, rows: '2', cols: '15' }) : choco_board
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        editable ? _react2['default'].createElement('textarea', { value: greeting_card, onChange: handleChange.bind(this, 'greeting_card'), className: edit_input_classname, rows: '2', cols: '15' }) : greeting_card
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        _react2['default'].createElement('input', { checked: atlas, onChange: handleChange.bind(this, 'atlas'), disabled: !editable, className: edit_input_classname, type: 'checkbox' })
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        editable ? _react2['default'].createElement('textarea', { value: custom_name, onChange: handleChange.bind(this, 'custom_name'), className: edit_input_classname, rows: '2', cols: '15' }) : custom_name
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        null,
+	        editable ? _react2['default'].createElement('textarea', { value: custom_desc, onChange: handleChange.bind(this, 'custom_desc'), className: edit_input_classname, rows: '2', cols: '15' }) : custom_desc
+	      ),
+	      _react2['default'].createElement(
+	        'td',
+	        { className: 'nowrap' },
+	        editable ? _react2['default'].createElement(
+	          'a',
+	          { key: 'save', href: 'javascript:;' },
+	          '[保存]'
+	        ) : _react2['default'].createElement(
+	          'a',
+	          { key: 'edit', onClick: this.edit.bind(this, true), href: 'javascript:;', className: edit_input_classname },
+	          '[编辑]'
+	        ),
+	        ' ',
+	        _react2['default'].createElement(
+	          'a',
+	          { onClick: this['delete'].bind(this, this.props.data), href: 'javascript:;' },
+	          '[删除]'
+	        )
+	      )
+	    );
+	  },
+	  handleChange: function handleChange(attr_name, e) {
+	    this.props.dispatch(ProductsActions.productAttrChange({
+	      sku_id: this.props.data.sku_id,
+	      attr: {
+	        name: attr_name,
+	        value: e.target.getAttribute('type') == 'text' || e.target.nodeName.toLowerCase() == 'textarea' ? e.target.value : e.target.checked
+	      }
+	    }));
+	  },
+	  edit: function edit(editable) {
+	    this.setState({ editable: !!editable });
+	  },
+	  'delete': function _delete(data) {
+	    this.props.dispatch((0, _actionsOrder_products.deleteConfirmProduct)(data));
+	  },
+	  componentDidMount: function componentDidMount() {
+	    var self = this;
+	    $('#app').on('click', this._close_edit);
+	  },
+	  _close_edit: function _close_edit(e) {
+	    if (!$(e.target).hasClass(this.state.edit_input_classname)) {
+	      this.edit(false);
+	    }
+	  },
+	  componentWillUnmount: function componentWillUnmount() {
+	    $('#app').off('click', this._close_edit);
+	  }
+	});
+
+	AddedProductsRow.PropTypes = {
+	  dispatch: _react.PropTypes.func.isRequired,
+	  data: _react.PropTypes.shape({
+	    name: _react.PropTypes.string.isRequired,
+	    size: _react.PropTypes.string.isRequired,
+	    original_price: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
+	    num: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
+	    discount_price: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number])
+	  })
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 328 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _commonSelect = __webpack_require__(301);
+
+	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+
+	var _commonNumber_picker = __webpack_require__(329);
+
+	var _commonNumber_picker2 = _interopRequireDefault(_commonNumber_picker);
+
+	var _commonPagination = __webpack_require__(302);
+
+	var _commonPagination2 = _interopRequireDefault(_commonPagination);
+
+	var _commonSelect_group = __webpack_require__(330);
+
+	var _commonSelect_group2 = _interopRequireDefault(_commonSelect_group);
+
+	var _commonLoading = __webpack_require__(305);
+
+	var _actionsOrder_products = __webpack_require__(325);
+
+	var OrderProductsActions = _interopRequireWildcard(_actionsOrder_products);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var ProductsModal = (function (_Component) {
+	  _inherits(ProductsModal, _Component);
+
+	  function ProductsModal(props) {
+	    _classCallCheck(this, ProductsModal);
+
+	    _get(Object.getPrototypeOf(ProductsModal.prototype), 'constructor', this).call(this, props);
+	    this.show = this.show.bind(this);
+	    this.hide = this.hide.bind(this);
+	    this.onCancel = this.onCancel.bind(this);
+	    this.state = {
+	      sku_name: '',
+	      category_id: _configAppConfig.SELECT_DEFAULT_VALUE,
+	      page_no: 0,
+	      page_size: 8
+	    };
+	  }
+
+	  _createClass(ProductsModal, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var all_categories = _props.all_categories;
+	      var _props$search_results = _props.search_results;
+	      var total = _props$search_results.total;
+	      var list = _props$search_results.list;
+	      var selected_list = _props.selected_list;
+	      var dispatch = _props.dispatch;
+
+	      var s = this.state;
+	      var product_list = list.map(function (n, i) {
+	        return _react2['default'].createElement(ProductSet, { data: n, key: i, dispatch: dispatch });
+	      });
+	      var selected_list = selected_list.map(function (n, i) {
+	        return _react2['default'].createElement(ProductSelectedRow, { data: n, key: n.sku_id + '' + i, dispatch: dispatch });
+	      });
+	      return _react2['default'].createElement(
+	        'div',
+	        { ref: 'modal', 'aria-hidden': 'false', 'aria-labelledby': 'myModalLabel', role: 'dialog', className: 'modal fade' },
+	        _react2['default'].createElement('div', { className: 'modal-backdrop fade' }),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'modal-dialog modal-lg' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'modal-content' },
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'modal-header' },
+	              _react2['default'].createElement(
+	                'button',
+	                { onClick: this.onCancel, 'aria-hidden': 'true', 'data-dismiss': 'modal', className: 'close', type: 'button' },
+	                '×'
+	              ),
+	              _react2['default'].createElement(
+	                'h4',
+	                { className: 'modal-title' },
+	                '选择产品'
+	              )
+	            ),
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'modal-body' },
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'form-group form-inline' },
+	                _react2['default'].createElement('input', { value: s.sku_name, onChange: this.handleSkuName.bind(this), className: 'form-control input-xs', placeholder: '输入产品名称' }),
+	                ' ',
+	                _react2['default'].createElement(_commonSelect_group2['default'], { value: s.category_id, onChange: this.onCategoryChange.bind(this), options: all_categories, 'default-text': '选择产品分类' }),
+	                ' ',
+	                _react2['default'].createElement(
+	                  'button',
+	                  { onClick: this.search.bind(this), className: 'btn btn-xs btn-default' },
+	                  _react2['default'].createElement('i', { className: 'fa fa-search' }),
+	                  ' 查询'
+	                )
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'table-responsive table-modal' },
+	                _react2['default'].createElement(
+	                  'table',
+	                  { className: 'table table-hover table-click text-center' },
+	                  _react2['default'].createElement(
+	                    'thead',
+	                    null,
+	                    _react2['default'].createElement(
+	                      'tr',
+	                      null,
+	                      _react2['default'].createElement('th', null),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '产品名称'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '规格'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '产品类型名称'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '所属网站'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '价格'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '是否本站产品'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '是否配送上门'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '管理操作'
+	                      )
+	                    )
+	                  ),
+	                  product_list.length ? product_list : _react2['default'].createElement(
+	                    'tbody',
+	                    null,
+	                    (0, _commonLoading.get_table_empty)()
+	                  )
+	                )
+	              ),
+	              _react2['default'].createElement(_commonPagination2['default'], {
+	                page_no: s.page_no,
+	                total_count: total,
+	                page_size: s.page_size,
+	                onPageChange: this.onPageChange.bind(this)
+	              }),
+	              _react2['default'].createElement('hr', { className: 'dotted' }),
+	              _react2['default'].createElement(
+	                'div',
+	                null,
+	                '产品管理 >> 选择列表'
+	              ),
+	              _react2['default'].createElement(
+	                'div',
+	                { className: 'table-responsive' },
+	                _react2['default'].createElement(
+	                  'table',
+	                  { className: 'table table-hover text-center' },
+	                  _react2['default'].createElement(
+	                    'thead',
+	                    null,
+	                    _react2['default'].createElement(
+	                      'tr',
+	                      null,
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '产品名称'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '规格'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '产品类型名称'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '所属网站'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '价格'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '数量'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '是否本站'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '是否配送'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '管理操作'
+	                      )
+	                    )
+	                  ),
+	                  _react2['default'].createElement(
+	                    'tbody',
+	                    null,
+	                    selected_list
+	                  )
+	                )
+	              )
+	            ),
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'modal-footer' },
+	              _react2['default'].createElement(
+	                'button',
+	                { onClick: this.onCancel, type: 'button', className: 'btn btn-sm btn-default', 'data-dismiss': 'modal' },
+	                '取消'
+	              ),
+	              _react2['default'].createElement(
+	                'button',
+	                { onClick: this.onConfirm.bind(this), type: 'button', className: 'btn btn-sm btn-theme' },
+	                '确定'
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'handleSkuName',
+	    value: function handleSkuName(e) {
+	      this.setState({ sku_name: e.target.value });
+	    }
+	  }, {
+	    key: 'onCategoryChange',
+	    value: function onCategoryChange(e) {
+	      this.setState({ category_id: e.target.value });
+	    }
+	  }, {
+	    key: 'search',
+	    value: function search() {
+	      var _state = this.state;
+	      var sku_name = _state.sku_name;
+	      var category_id = _state.category_id;
+	      var page_no = _state.page_no;
+	      var page_size = _state.page_size;
+
+	      this.props.dispatch(OrderProductsActions.searchProducts({
+	        name: sku_name, page_no: page_no, page_size: page_size,
+	        category_id: category_id == _configAppConfig.SELECT_DEFAULT_VALUE ? undefined : category_id
+	      }));
+	    }
+	  }, {
+	    key: 'onPageChange',
+	    value: function onPageChange(page) {
+	      this.setState({ page_no: page }, this.search);
+	    }
+	  }, {
+	    key: 'onCancel',
+	    value: function onCancel() {
+	      this.props.dispatch(OrderProductsActions.cancelAllSelectedProducts());
+	    }
+	  }, {
+	    key: 'onConfirm',
+	    value: function onConfirm() {
+	      this.props.dispatch(OrderProductsActions.confirmAllSelectedProducts());
+	      this.hide();
+	    }
+	  }, {
+	    key: 'show',
+	    value: function show() {
+	      this.props.dispatch(OrderProductsActions.getCategories());
+	      $(this.refs.modal).modal('show');
+	    }
+	  }, {
+	    key: 'hide',
+	    value: function hide() {
+	      $(this.refs.modal).modal('hide');
+	    }
+	  }]);
+
+	  return ProductsModal;
+	})(_react.Component);
+
+	exports['default'] = ProductsModal;
+
+	ProductsModal.PropTypes = {
+	  dispatch: _react.PropTypes.func.isRequired,
+	  all_categories: _react.PropTypes.array.isRequired,
+	  search_results: _react.PropTypes.array.isRequired
+	};
+
+	var ProductSet = (function (_Component2) {
+	  _inherits(ProductSet, _Component2);
+
+	  function ProductSet(props) {
+	    _classCallCheck(this, ProductSet);
+
+	    _get(Object.getPrototypeOf(ProductSet.prototype), 'constructor', this).call(this, props);
+	    this.toggle = this.toggle.bind(this);
+	    this.state = {
+	      active: false
+	    };
+	  }
+
+	  _createClass(ProductSet, [{
+	    key: 'render',
+	    value: function render() {
+	      var _this = this;
+
+	      var yes_or_no = this.yes_or_no;
+	      var choose = this.choose;
+	      var active = this.state.active;
+
+	      //is_local_site, is_delivery : "1" / "0"
+	      var _props$data = this.props.data;
+	      var product_id = _props$data.product_id;
+	      var name = _props$data.name;
+	      var size = _props$data.size;
+	      var category_name = _props$data.category_name;
+	      var original_price = _props$data.original_price;
+	      var skus = _props$data.skus;
+
+	      var hasOthers = skus.length != 1;
+	      var sku0 = skus[0];
+
+	      var head = _react2['default'].createElement(
+	        'tr',
+	        { key: sku0.sku_id, className: hasOthers ? "clickable" : "", onClick: hasOthers ? this.toggle : null },
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement('input', { type: 'checkbox', checked: sku0.checked, onClick: choose.bind(this, sku0), disabled: sku0.checked })
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          name
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          size
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          category_name
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          sku0.website
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          '￥',
+	          (0, _utilsIndex.toFixed)(sku0.discount_price / 100, 2)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          yes_or_no(sku0.is_local_site)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          yes_or_no(sku0.is_delivery)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          sku0.checked ? _react2['default'].createElement(
+	            'span',
+	            { className: 'silver' },
+	            '[选择]'
+	          ) : _react2['default'].createElement(
+	            'a',
+	            { onClick: choose.bind(this, sku0), href: 'javascript:;' },
+	            '[选择]'
+	          )
+	        )
+	      );
+
+	      var body = skus.map(function (n, i) {
+	        if (i == 0) {
+	          //滤出第一个
+	          return null;
+	        }
+	        return _react2['default'].createElement(
+	          'tr',
+	          { key: n.sku_id + '' + i, className: active ? "" : "hidden" },
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            _react2['default'].createElement('input', { type: 'checkbox', checked: n.checked, onClick: choose.bind(_this, n), disabled: n.checked })
+	          ),
+	          _react2['default'].createElement('td', { colSpan: '3' }),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.website
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            '￥',
+	            (0, _utilsIndex.toFixed)(n.discount_price / 100, 2)
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            yes_or_no(n.is_local_site)
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            yes_or_no(n.is_delivery)
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            _react2['default'].createElement(
+	              'a',
+	              { onClick: choose.bind(_this, n), href: 'javascript:;' },
+	              '[选择]'
+	            )
+	          )
+	        );
+	      });
+
+	      return _react2['default'].createElement(
+	        'tbody',
+	        null,
+	        [head, body]
+	      );
+	    }
+	  }, {
+	    key: 'yes_or_no',
+	    value: function yes_or_no(d) {
+	      return d == 1 ? '是' : '否';
+	    }
+	  }, {
+	    key: 'toggle',
+	    value: function toggle() {
+	      this.setState({ active: !this.state.active });
+	    }
+	  }, {
+	    key: 'choose',
+	    value: function choose(sku, e) {
+	      //整合数据
+	      var copy = _extends({}, this.props.data, sku);
+	      delete copy.skus;
+	      this.props.dispatch(OrderProductsActions.selectProduct(copy));
+	      e.stopPropagation();
+	    }
+	  }]);
+
+	  return ProductSet;
+	})(_react.Component);
+
+	ProductSet.PropTypes = {
+	  data: _react.PropTypes.array.isRequired,
+	  dispatch: _react.PropTypes.func.isRequired
+	};
+
+	var ProductSelectedRow = (function (_Component3) {
+	  _inherits(ProductSelectedRow, _Component3);
+
+	  function ProductSelectedRow() {
+	    _classCallCheck(this, ProductSelectedRow);
+
+	    _get(Object.getPrototypeOf(ProductSelectedRow.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(ProductSelectedRow, [{
+	    key: 'yes_or_no',
+	    value: function yes_or_no(d) {
+	      return d == 1 ? '是' : '否';
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var data = this.props.data;
+	      var yes_or_no = this.yes_or_no;
+
+	      return _react2['default'].createElement(
+	        'tr',
+	        null,
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          data.name
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          data.size
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          data.category_name
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          data.website
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          '￥',
+	          (0, _utilsIndex.toFixed)(data.discount_price / 100, 2)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(_commonNumber_picker2['default'], { value: data.num, onChange: this.onNumChange.bind(this) })
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          yes_or_no(data.is_local_site)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          yes_or_no(data.is_delivery)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'a',
+	            { onClick: this['delete'].bind(this), href: 'javascript:;' },
+	            '[删除]'
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'onNumChange',
+	    value: function onNumChange(num) {
+	      var _props2 = this.props;
+	      var sku_id = _props2.data.sku_id;
+	      var dispatch = _props2.dispatch;
+
+	      dispatch(OrderProductsActions.changeProductNum(sku_id, num));
+	    }
+	  }, {
+	    key: 'delete',
+	    value: function _delete() {
+	      this.props.dispatch(OrderProductsActions.deleteProduct(this.props.data));
+	    }
+	  }]);
+
+	  return ProductSelectedRow;
+	})(_react.Component);
+
+	ProductSelectedRow.PropTypes = {
+	  data: _react.PropTypes.object.isRequired,
+	  dispatch: _react.PropTypes.func.isRequired
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 329 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var NumberPicker = _react2['default'].createClass({
+	  displayName: 'NumberPicker',
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      step: 1,
+	      value: 1,
+	      'lower_limit': 1,
+	      'upper_limit': 100000
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      value: this.props.value
+	    };
+	  },
+	  componentDidMount: function componentDidMount() {},
+	  render: function render() {
+	    return _react2['default'].createElement(
+	      'div',
+	      { className: 'number-picker form-inline' },
+	      _react2['default'].createElement(
+	        'a',
+	        { onClick: this.minus, href: 'javascript:;' },
+	        _react2['default'].createElement('i', { className: 'fa fa-minus' })
+	      ),
+	      _react2['default'].createElement('input', { value: this.state.value, onChange: this.input, className: 'form-control input-xs' }),
+	      _react2['default'].createElement(
+	        'a',
+	        { onClick: this.add, href: 'javascript:;' },
+	        _react2['default'].createElement('i', { className: 'fa fa-plus' })
+	      )
+	    );
+	  },
+	  minus: function minus() {
+	    var value = parseInt(this.state.value) || this.props.lower_limit;
+	    var _props = this.props;
+	    var step = _props.step;
+	    var lower_limit = _props.lower_limit;
+
+	    value = value - step >= lower_limit ? value - step : value;
+	    this.setState({ value: value }, function () {
+	      this.props.onChange(value);
+	    });
+	  },
+	  add: function add() {
+	    var value = parseInt(this.state.value) || this.props.lower_limit;
+	    var _props2 = this.props;
+	    var step = _props2.step;
+	    var upper_limit = _props2.upper_limit;
+
+	    value = value + step <= upper_limit ? value + step : value;
+	    this.setState({ value: value }, function () {
+	      this.props.onChange(value);
+	    });
+	  },
+	  input: function input(e) {
+	    var v = e.target.value.replace(/[^\d]/g, '');
+	    console.log(v);
+	    if (v > this.props.upper_limit) {
+	      v = v.substring(0, v.length - 1);
+	    }
+	    this.setState({ value: v });
+	  }
+	});
+
+	exports['default'] = NumberPicker;
+	module.exports = exports['default'];
+
+/***/ },
+/* 330 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 *  2级Select(缩进的方式，一级select模拟而来, 因此也可以被选)
+	 */
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var SelectGroup = _react2['default'].createClass({
+	  displayName: 'SelectGroup',
+
+	  propTypes: {
+	    options: _react.PropTypes.arrayOf(_react.PropTypes.shape({
+	      id: _react.PropTypes.number.isRequired,
+	      name: _react.PropTypes.string.isRequired,
+	      parent_id: _react.PropTypes.number.isRequired }))
+	  },
+	  //0为1最上级，其他的为下级
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      "default-text": '--请选择--',
+	      "default-value": _configAppConfig.SELECT_DEFAULT_VALUE,
+	      "options": [],
+	      "no-default": false,
+	      "parentId": 0,
+	      "onChange": function onChange() {}
+	    };
+	  },
+	  render: function render() {
+	    var _props = this.props;
+	    var options = _props.options;
+	    var parentId = _props.parentId;
+
+	    var first_level = [],
+	        second_level = [];
+	    options.forEach(function (n) {
+	      n.parent_id == parentId ? first_level.push(n) : second_level.push(n);
+	    });
+	    var list = [];
+	    var createOption = function createOption(id, p_id, text) {
+	      return _react2['default'].createElement(
+	        'option',
+	        { value: id, 'data-parent-id': p_id, key: id },
+	        text
+	      );
+	    };
+	    first_level.forEach(function (f) {
+	      list.push(createOption(f.id, f.parent_id, f.name));
+	      second_level.forEach(function (s) {
+	        if (f.id == s.parent_id) list.push(createOption(s.id, s.parent_id, '　' + s.name));
+	      });
+	    });
+	    var className = "form-control text-left input-xs " + (this.props.className || '');
+	    this.props = _extends({}, this.props, { className: className });
+	    return _react2['default'].createElement(
+	      'select',
+	      this.props,
+	      this.props['no-default'] ? null : _react2['default'].createElement(
+	        'option',
+	        { value: this.props['default-value'] },
+	        this.props['default-text']
+	      ),
+	      list
+	    );
+	  }
+	});
+
+	module.exports = SelectGroup;
+
+/***/ },
+/* 331 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(154);
+
+	var _reactRedux = __webpack_require__(216);
+
+	var _redux = __webpack_require__(223);
+
+	var _reduxForm = __webpack_require__(242);
+
+	var _commonDatepicker = __webpack_require__(300);
+
+	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
+
+	var _commonSelect = __webpack_require__(301);
+
+	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+
+	var _commonPagination = __webpack_require__(302);
+
+	var _commonPagination2 = _interopRequireDefault(_commonPagination);
+
+	var _commonStd_modal = __webpack_require__(306);
+
+	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
+
+	var _commonLine_router = __webpack_require__(319);
+
+	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
+
+	var _commonLoading = __webpack_require__(305);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var _utilsAcl = __webpack_require__(240);
+
+	var _utilsAcl2 = _interopRequireDefault(_utilsAcl);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _history_instance = __webpack_require__(211);
+
+	var _history_instance2 = _interopRequireDefault(_history_instance);
+
+	var _utilsLazy_load = __webpack_require__(308);
+
+	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
+
+	var _commonOrder_products_detail = __webpack_require__(311);
+
+	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
+
+	var _commonOrder_detail_modal = __webpack_require__(312);
+
+	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
+
+	var _commonOperation_record_modalJs = __webpack_require__(316);
+
+	var _commonOperation_record_modalJs2 = _interopRequireDefault(_commonOperation_record_modalJs);
+
+	var _actionsOrders = __webpack_require__(290);
+
+	var OrderActions = _interopRequireWildcard(_actionsOrders);
+
+	var _actionsArea = __webpack_require__(288);
+
+	var _actionsArea2 = _interopRequireDefault(_actionsArea);
+
+	var _actionsDelivery_change = __webpack_require__(332);
+
+	var ChangeActions = _interopRequireWildcard(_actionsDelivery_change);
+
+	var TopHeader = (function (_Component) {
+	  _inherits(TopHeader, _Component);
+
+	  function TopHeader() {
+	    _classCallCheck(this, TopHeader);
+
+	    _get(Object.getPrototypeOf(TopHeader.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(TopHeader, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'clearfix top-header' },
+	        _react2['default'].createElement(_commonLine_router2['default'], {
+	          routes: [{ name: '送货单管理', link: '/dm/change' }, { name: '订单转送货单列表', link: '' }] })
+	      );
+	    }
+	  }]);
+
+	  return TopHeader;
+	})(_react.Component);
+
+	var FilterHeader = (function (_Component2) {
+	  _inherits(FilterHeader, _Component2);
+
+	  function FilterHeader(props) {
+	    _classCallCheck(this, FilterHeader);
+
+	    _get(Object.getPrototypeOf(FilterHeader.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      search_ing: false
+	    };
+	  }
+
+	  _createClass(FilterHeader, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var _props$fields = _props.fields;
+	      var keywords = _props$fields.keywords;
+	      var begin_time = _props$fields.begin_time;
+	      var end_time = _props$fields.end_time;
+	      var delivery_id = _props$fields.delivery_id;
+	      var province_id = _props$fields.province_id;
+	      var city_id = _props$fields.city_id;
+	      var provinces = _props.provinces;
+	      var cities = _props.cities;
+	      var delivery_stations = _props.delivery_stations;
+	      var changeHandler = _props.changeHandler;
+	      var change_submitting = _props.change_submitting;
+	      var search_ing = this.state.search_ing;
+
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'panel search' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'panel-body form-inline' },
+	          _react2['default'].createElement('input', _extends({}, keywords, { className: 'form-control input-xs v-mg', placeholder: '关键字' })),
+	          ' 开始时间',
+	          _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': begin_time, className: 'short-input' }),
+	          ' 结束时间',
+	          _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': end_time, className: 'short-input space-right' }),
+	          (0, _utilsAcl2['default'])('DeliveryManageChangeStationFilter') ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: delivery_stations, 'default-text': '选择配送中心', className: 'space-right' })) : null,
+	          (0, _utilsAcl2['default'])('DeliveryManageChangeAddressFilter') ? [_react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), options: provinces, ref: 'province', 'default-text': '选择省份', key: 'province', className: 'space-right' })), _react2['default'].createElement(_commonSelect2['default'], _extends({}, city_id, { options: cities, 'default-text': '选择城市', ref: 'city', key: 'city', className: 'space-right' }))] : null,
+	          _react2['default'].createElement(
+	            'button',
+	            { disabled: search_ing, 'data-submitting': search_ing, onClick: this.search.bind(this), className: 'btn btn-theme btn-xs' },
+	            _react2['default'].createElement('i', { className: 'fa fa-search', style: { 'padding': '0 3px' } })
+	          ),
+	          '　',
+	          _react2['default'].createElement(
+	            'button',
+	            { disabled: change_submitting, 'data-submitting': change_submitting, onClick: changeHandler, className: 'btn btn-theme btn-xs' },
+	            '转换'
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      setTimeout((function () {
+	        var _props2 = this.props;
+	        var getProvinces = _props2.getProvinces;
+	        var getDeliveryStations = _props2.getDeliveryStations;
+
+	        getProvinces();
+	        getDeliveryStations();
+	        (0, _utilsLazy_load2['default'])('noty');
+	      }).bind(this), 0);
+	    }
+	  }, {
+	    key: 'onProvinceChange',
+	    value: function onProvinceChange(callback, e) {
+	      var value = e.target.value;
+
+	      this.props.provinceReset();
+	      if (value != this.refs.province.props['default-value']) var $city = $((0, _reactDom.findDOMNode)(this.refs.city));
+	      this.props.getCities(value).done(function () {
+	        $city.trigger('focus'); //聚焦已使city_id的值更新
+	      });
+	      callback(e);
+	    }
+	  }, {
+	    key: 'search',
+	    value: function search() {
+	      var _this = this;
+
+	      this.setState({ search_ing: true });
+	      this.props.getOrderExchangeList({ page_no: 0, page_size: this.props.page_size }).always(function () {
+	        _this.setState({ search_ing: false });
+	      });
+	    }
+	  }]);
+
+	  return FilterHeader;
+	})(_react.Component);
+
+	FilterHeader.propTypes = {
+	  changeHandler: _react.PropTypes.func.isRequired,
+	  provinces: _react.PropTypes.array.isRequired,
+	  cities: _react.PropTypes.array.isRequired,
+	  delivery_stations: _react.PropTypes.array.isRequired
+	};
+	FilterHeader = (0, _reduxForm.reduxForm)({
+	  form: 'order_exchange_filter',
+	  fields: ['keywords', 'begin_time', 'end_time', 'delivery_id', 'province_id', 'city_id']
+	}, function (state) {
+	  var now = (0, _utilsIndex.dateFormat)(new Date());
+	  return {
+	    //赋初始值
+	    initialValues: {
+	      begin_time: now,
+	      end_time: now
+	    }
+	  };
+	})(FilterHeader);
+
+	var OrderRow = (function (_Component3) {
+	  _inherits(OrderRow, _Component3);
+
+	  function OrderRow() {
+	    _classCallCheck(this, OrderRow);
+
+	    _get(Object.getPrototypeOf(OrderRow.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(OrderRow, [{
+	    key: 'render',
+	    value: function render() {
+	      var props = this.props;
+
+	      return _react2['default'].createElement(
+	        'tr',
+	        { onClick: this.clickHandler.bind(this), className: props.active_order_id == props.order_id ? 'active' : '' },
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement('input', { onChange: this.checkOrderHandler.bind(this), checked: props.checked, type: 'checkbox' })
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          (0, _utilsIndex.parseTime)(props.delivery_time)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.owner_name,
+	          _react2['default'].createElement('br', null),
+	          props.owner_mobile
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          { className: 'text-left' },
+	          '姓名：',
+	          props.recipient_name,
+	          _react2['default'].createElement('br', null),
+	          '电话：',
+	          props.recipient_mobile,
+	          _react2['default'].createElement('br', null),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'address-detail-td' },
+	            _react2['default'].createElement(
+	              'span',
+	              { className: 'inline-block' },
+	              '地址：'
+	            ),
+	            _react2['default'].createElement(
+	              'span',
+	              { className: 'address-all' },
+	              props.recipient_address
+	            )
+	          ),
+	          '建筑：',
+	          props.recipient_landmark
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.coupon
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          (0, _utilsIndex.parseTime)(props.submit_time)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'a',
+	            { onClick: props.viewOrderDetail, href: 'javascript:;' },
+	            props.order_id
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _configAppConfig.DELIVERY_MAP[props.delivery_type] || props.delivery_type
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'remark-in-table' },
+	            props.remarks
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.updated_by
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'a',
+	            { onClick: this.viewOrderOperationRecord.bind(this), className: 'inline-block time', href: 'javascript:;' },
+	            props.updated_time
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'checkOrderHandler',
+	    value: function checkOrderHandler(e) {
+	      var _props3 = this.props;
+	      var order_id = _props3.order_id;
+	      var checkOrderHandler = _props3.checkOrderHandler;
+
+	      checkOrderHandler(order_id, e.target.checked);
+	    }
+	  }, {
+	    key: 'clickHandler',
+	    value: function clickHandler() {
+	      this.props.activeOrderHandler(this.props.order_id);
+	    }
+	  }, {
+	    key: 'viewOrderOperationRecord',
+	    value: function viewOrderOperationRecord(e) {
+	      this.props.viewOrderOperationRecord(this.props);
+	      e.stopPropagation();
+	    }
+	  }]);
+
+	  return OrderRow;
+	})(_react.Component);
+
+	var DeliverChangePannel = (function (_Component4) {
+	  _inherits(DeliverChangePannel, _Component4);
+
+	  function DeliverChangePannel(props) {
+	    _classCallCheck(this, DeliverChangePannel);
+
+	    _get(Object.getPrototypeOf(DeliverChangePannel.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      page_size: 5
+	    };
+	    this.checkOrderHandler = this.checkOrderHandler.bind(this);
+	    this.activeOrderHandler = this.activeOrderHandler.bind(this);
+	    this.changeHandler = this.changeHandler.bind(this);
+	    this.viewOrderDetail = this.viewOrderDetail.bind(this);
+	    this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
+	    this.search = this.search.bind(this);
+	  }
+
+	  _createClass(DeliverChangePannel, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props4 = this.props;
+	      var filter = _props4.filter;
+	      var area = _props4.area;
+	      var exchangeOrders = _props4.exchangeOrders;
+	      var getOrderOptRecord = _props4.getOrderOptRecord;
+	      var resetOrderOptRecord = _props4.resetOrderOptRecord;
+	      var operationRecord = _props4.operationRecord;
+	      var change_submitting = filter.change_submitting;
+	      var _props$orders = this.props.orders;
+	      var loading = _props$orders.loading;
+	      var refresh = _props$orders.refresh;
+	      var page_no = _props$orders.page_no;
+	      var total = _props$orders.total;
+	      var list = _props$orders.list;
+	      var checked_order_ids = _props$orders.checked_order_ids;
+	      var check_order_info = _props$orders.check_order_info;
+	      var active_order_id = _props$orders.active_order_id;
+	      var search = this.search;
+	      var changeHandler = this.changeHandler;
+	      var checkOrderHandler = this.checkOrderHandler;
+	      var viewOrderDetail = this.viewOrderDetail;
+	      var activeOrderHandler = this.activeOrderHandler;
+	      var viewOrderOperationRecord = this.viewOrderOperationRecord;
+
+	      var content = list.map(function (n, i) {
+	        return _react2['default'].createElement(OrderRow, _extends({ key: n.order_id }, _extends({}, n, { active_order_id: active_order_id, activeOrderHandler: activeOrderHandler, checkOrderHandler: checkOrderHandler, viewOrderDetail: viewOrderDetail, viewOrderOperationRecord: viewOrderOperationRecord })));
+	      });
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'order-manage' },
+	        _react2['default'].createElement(TopHeader, null),
+	        _react2['default'].createElement(FilterHeader, _extends({}, _extends({}, this.props, filter, area, { changeHandler: changeHandler }), {
+	          page_size: this.state.page_size
+	        })),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'panel' },
+	          _react2['default'].createElement(
+	            'header',
+	            { className: 'panel-heading' },
+	            '送货列表'
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'panel-body' },
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'table-responsive main-list' },
+	              _react2['default'].createElement(
+	                'table',
+	                { className: 'table table-hover text-center' },
+	                _react2['default'].createElement(
+	                  'thead',
+	                  null,
+	                  _react2['default'].createElement(
+	                    'tr',
+	                    null,
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      _react2['default'].createElement('input', { onChange: this.checkAll.bind(this), type: 'checkbox' })
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '送达时间'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '下单人'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '收货人'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '验证码'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '提交时间'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '订单号'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '配送方式'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '备注'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '操作人'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '操作时间'
+	                    )
+	                  )
+	                ),
+	                _react2['default'].createElement(
+	                  'tbody',
+	                  null,
+	                  (0, _commonLoading.tableLoader)(loading || refresh, content)
+	                )
+	              )
+	            ),
+	            _react2['default'].createElement(_commonPagination2['default'], {
+	              page_no: page_no,
+	              total_count: total,
+	              page_size: this.state.page_size,
+	              onPageChange: this.onPageChange
+	            })
+	          )
+	        ),
+	        check_order_info ? _react2['default'].createElement(
+	          'div',
+	          { className: 'panel' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'panel-body' },
+	            _react2['default'].createElement(
+	              'div',
+	              null,
+	              '订单产品详情'
+	            ),
+	            _react2['default'].createElement(_commonOrder_products_detail2['default'], { products: check_order_info.products })
+	          )
+	        ) : null,
+	        _react2['default'].createElement(ChangeModal, _extends({ exchangeOrders: exchangeOrders, search: search, change_submitting: change_submitting, checked_order_ids: checked_order_ids }, { ref: 'changeModal' })),
+	        _react2['default'].createElement(_commonOrder_detail_modal2['default'], { ref: 'detail_modal', data: check_order_info || {} }),
+	        _react2['default'].createElement(_commonOperation_record_modalJs2['default'], _extends({ ref: 'OperationRecordModal' }, _extends({ getOrderOptRecord: getOrderOptRecord, resetOrderOptRecord: resetOrderOptRecord }, operationRecord)))
+	      );
+	    }
+	  }, {
+	    key: 'changeHandler',
+	    value: function changeHandler() {
+	      if (this.props.orders.checked_order_ids.length) {
+	        this.refs.changeModal.show();
+	      } else {
+	        (0, _utilsIndex.Noty)('warning', '请先选择需要转换的订单！');
+	      }
+	    }
+	  }, {
+	    key: 'activeOrderHandler',
+	    value: function activeOrderHandler(order_id) {
+	      if (this.props.orders.active_order_id != order_id) this.props.activeOrder(order_id);
+	    }
+	  }, {
+	    key: 'checkOrderHandler',
+	    value: function checkOrderHandler(order_id, checked) {
+	      this.props.checkOrder(order_id, checked);
+	    }
+	  }, {
+	    key: 'checkAll',
+	    value: function checkAll(e) {
+	      this.props.checkAllOrders(e.target.checked);
+	    }
+	  }, {
+	    key: 'viewOrderDetail',
+	    value: function viewOrderDetail() {
+	      this.refs.detail_modal.show();
+	    }
+	  }, {
+	    key: 'viewOrderOperationRecord',
+	    value: function viewOrderOperationRecord(order) {
+	      this.refs.OperationRecordModal.show(order);
+	    }
+	  }, {
+	    key: 'onPageChange',
+	    value: function onPageChange(page) {
+	      this.setState({ page_no: page });
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.search();
+	      (0, _utilsLazy_load2['default'])('noty');
+	    }
+	  }, {
+	    key: 'search',
+	    value: function search() {
+	      var _props5 = this.props;
+	      var getOrderExchangeList = _props5.getOrderExchangeList;
+	      var orders = _props5.orders;
+
+	      getOrderExchangeList({ page_no: orders.page_no, page_size: this.state.page_size });
+	    }
+	  }]);
+
+	  return DeliverChangePannel;
+	})(_react.Component);
+
+	function mapStateToProps(_ref) {
+	  var deliveryChange = _ref.deliveryChange;
+
+	  return deliveryChange;
+	}
+
+	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
+	function mapDispatchToProps(dispatch) {
+	  return (0, _redux.bindActionCreators)(_extends({}, OrderActions, (0, _actionsArea2['default'])(), ChangeActions), dispatch);
+	}
+
+	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DeliverChangePannel);
+
+	/***************   *******   *****************/
+	/***************   子模态框   *****************/
+	/***************   *******   *****************/
+
+	var ChangeModal = (function (_Component5) {
+	  _inherits(ChangeModal, _Component5);
+
+	  function ChangeModal() {
+	    _classCallCheck(this, ChangeModal);
+
+	    _get(Object.getPrototypeOf(ChangeModal.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(ChangeModal, [{
+	    key: 'render',
+	    value: function render() {
+	      var checked_order_ids = this.props.checked_order_ids;
+
+	      return _react2['default'].createElement(
+	        _commonStd_modal2['default'],
+	        { onConfirm: this.onConfirm.bind(this), submitting: this.props.change_submitting, ref: 'modal', title: '批量转换操作' },
+	        _react2['default'].createElement(
+	          'center',
+	          null,
+	          _react2['default'].createElement(
+	            'h5',
+	            null,
+	            '您已同时勾选',
+	            _react2['default'].createElement(
+	              'span',
+	              { className: 'strong font-lg' },
+	              ' ' + checked_order_ids.length + ' '
+	            ),
+	            '个订单'
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'center',
+	          null,
+	          _react2['default'].createElement(
+	            'h5',
+	            null,
+	            '进行转换'
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'show',
+	    value: function show() {
+	      this.refs.modal.show();
+	    }
+	  }, {
+	    key: 'hide',
+	    value: function hide() {
+	      this.refs.modal.hide();
+	    }
+	  }, {
+	    key: 'onConfirm',
+	    value: function onConfirm() {
+	      var _props6 = this.props;
+	      var exchangeOrders = _props6.exchangeOrders;
+	      var search = _props6.search;
+	      var checked_order_ids = _props6.checked_order_ids;
+
+	      exchangeOrders(checked_order_ids).done((function () {
+	        // search();
+	        this.hide();
+	        (0, _utilsIndex.Noty)('success', '转换成功！');
+	        (0, _history_instance.go)('/dm/delivery');
+	      }).bind(this)).fail(function () {
+	        (0, _utilsIndex.Noty)('error', '转换异常');
+	      });
+	    }
+	  }]);
+
+	  return ChangeModal;
+	})(_react.Component);
+
+	;
+
+	ChangeModal.PropTypes = {
+	  checked_order_ids: _react.PropTypes.array.isRequired,
+	  exchangeOrders: _react.PropTypes.func.isRequired,
+	  change_submitting: _react.PropTypes.bool.isRequired,
+	  search: _react.PropTypes.func.isRequired
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 332 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.exchangeOrders = exchangeOrders;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _utilsRequest = __webpack_require__(234);
+
+	//Promise
+
+	var _configUrl = __webpack_require__(239);
+
+	var _configUrl2 = _interopRequireDefault(_configUrl);
+
+	var _actionsOrder_manage_form = __webpack_require__(292);
+
+	var ORDERS_EXCHANGE = 'ORDERS_EXCHANGE';exports.ORDERS_EXCHANGE = ORDERS_EXCHANGE;
+	//key: 0->正在处理，1->成功，2->失败
+
+	function exchangeOrders(order_ids) {
+	  //若是异步的话，那么该函数必须也返回一个函数
+	  return function (dispatch, getState) {
+	    dispatch({
+	      type: ORDERS_EXCHANGE,
+	      key: 0
+	    });
+	    return (0, _utilsRequest.put)(_configUrl2['default'].order_exchange.toString(), { order_ids: order_ids }).done(function () {
+	      dispatch({
+	        type: ORDERS_EXCHANGE,
+	        key: 1
+	      });
+	    }).fail(function () {
+	      dispatch({
+	        type: ORDERS_EXCHANGE,
+	        key: 2
+	      });
+	    });
+	  };
+	  // return TEST(null, [
+	  //   {type: ORDERS_EXCHANGE, key: 0},  //立即派发
+	  //   {type: ORDERS_EXCHANGE, key: 1}   //2000毫秒后派发
+	  // ], 2000);
+	}
+
+	var getDeliveryStations = _actionsOrder_manage_form.getDeliveryStations;
+	exports.getDeliveryStations = getDeliveryStations;
+
+/***/ },
+/* 333 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(154);
+
+	var _reactRedux = __webpack_require__(216);
+
+	var _redux = __webpack_require__(223);
+
+	var _reactAddonsLinkedStateMixin = __webpack_require__(284);
+
+	var _reactAddonsLinkedStateMixin2 = _interopRequireDefault(_reactAddonsLinkedStateMixin);
+
+	var _reduxForm = __webpack_require__(242);
+
+	var _commonDatepicker = __webpack_require__(300);
+
+	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
+
+	var _commonSelect = __webpack_require__(301);
+
+	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+
+	var _commonPagination = __webpack_require__(302);
+
+	var _commonPagination2 = _interopRequireDefault(_commonPagination);
+
+	var _commonStd_modal = __webpack_require__(306);
+
+	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
+
+	var _commonLine_router = __webpack_require__(319);
+
+	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
+
+	var _commonLoading = __webpack_require__(305);
+
+	var _commonRecipient_info = __webpack_require__(307);
+
+	var _commonRecipient_info2 = _interopRequireDefault(_commonRecipient_info);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _history_instance = __webpack_require__(211);
+
+	var _history_instance2 = _interopRequireDefault(_history_instance);
+
+	var _utilsLazy_load = __webpack_require__(308);
+
+	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var _utilsAcl = __webpack_require__(240);
+
+	var _utilsAcl2 = _interopRequireDefault(_utilsAcl);
+
+	var _actionsOrders = __webpack_require__(290);
+
+	var OrderActions = _interopRequireWildcard(_actionsOrders);
+
+	var _actionsArea = __webpack_require__(288);
+
+	var _actionsArea2 = _interopRequireDefault(_actionsArea);
+
+	var _actionsDeliveryman = __webpack_require__(334);
+
+	var DeliverymanActions = _interopRequireWildcard(_actionsDeliveryman);
+
+	var _actionsDelivery_manage = __webpack_require__(335);
+
+	var DeliveryManageActions = _interopRequireWildcard(_actionsDelivery_manage);
+
+	var _commonOrder_products_detail = __webpack_require__(311);
+
+	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
+
+	var _commonOrder_detail_modal = __webpack_require__(312);
+
+	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
+
+	var _commonScan_modal = __webpack_require__(336);
+
+	var _commonScan_modal2 = _interopRequireDefault(_commonScan_modal);
+
+	var _commonOperation_record_modalJs = __webpack_require__(316);
+
+	var _commonOperation_record_modalJs2 = _interopRequireDefault(_commonOperation_record_modalJs);
+
+	var TopHeader = (function (_Component) {
+	  _inherits(TopHeader, _Component);
+
+	  function TopHeader() {
+	    _classCallCheck(this, TopHeader);
+
+	    _get(Object.getPrototypeOf(TopHeader.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(TopHeader, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'clearfix top-header' },
+	        _react2['default'].createElement(_commonLine_router2['default'], {
+	          routes: [{ name: '送货单管理', link: '/dm/change' }, { name: '送货单列表', link: '' }] })
+	      );
+	    }
+	  }]);
+
+	  return TopHeader;
+	})(_react.Component);
+
+	var FilterHeader = (function (_Component2) {
+	  _inherits(FilterHeader, _Component2);
+
+	  function FilterHeader(props) {
+	    _classCallCheck(this, FilterHeader);
+
+	    _get(Object.getPrototypeOf(FilterHeader.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      search_ing: false,
+	      all_print_status: _configAppConfig.YES_OR_NO,
+	      delivery_types: (0, _utilsIndex.map)(_configAppConfig.DELIVERY_MAP, function (text, id) {
+	        return { id: id, text: text };
+	      })
+	    };
+	  }
+
+	  _createClass(FilterHeader, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var _props$fields = _props.fields;
+	      var keywords = _props$fields.keywords;
+	      var begin_time = _props$fields.begin_time;
+	      var end_time = _props$fields.end_time;
+	      var delivery_type = _props$fields.delivery_type;
+	      var print_status = _props$fields.print_status;
+	      var province_id = _props$fields.province_id;
+	      var city_id = _props$fields.city_id;
+	      var provinces = _props.provinces;
+	      var cities = _props.cities;
+	      var delivery_stations = _props.delivery_stations;
+	      var change_submitting = _props.change_submitting;
+	      var _state = this.state;
+	      var search_ing = _state.search_ing;
+	      var delivery_types = _state.delivery_types;
+	      var all_print_status = _state.all_print_status;
+
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'panel search' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'panel-body' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            _react2['default'].createElement('input', _extends({}, keywords, { className: 'form-control input-xs v-mg', placeholder: '关键字' })),
+	            ' 开始时间',
+	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': begin_time, className: 'short-input' }),
+	            ' 配送时间',
+	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': end_time, className: 'short-input space-right' }),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_type, { options: delivery_types, 'default-text': '选择配送方式', className: 'space-right' })),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, print_status, { options: all_print_status, 'default-text': '是否打印', className: 'space-right' })),
+	            _react2['default'].createElement(_commonSelect2['default'], { 'default-text': '是否有祝福贺卡', className: 'space-right' }),
+	            (0, _utilsAcl2['default'])('DeliveryManageDeliveryAddressFilter') ? [_react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), options: provinces, ref: 'province', key: 'province', 'default-text': '选择省份', className: 'space-right' })), _react2['default'].createElement(_commonSelect2['default'], _extends({}, city_id, { options: cities, 'default-text': '选择城市', ref: 'city', key: 'city', className: 'space-right' }))] : null,
+	            _react2['default'].createElement(
+	              'button',
+	              { disabled: search_ing, 'data-submitting': search_ing, onClick: this.search.bind(this), className: 'btn btn-theme btn-xs' },
+	              _react2['default'].createElement('i', { className: 'fa fa-search', style: { 'padding': '0 3px' } })
+	            )
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            _react2['default'].createElement(
+	              'button',
+	              { onClick: this.printHandler.bind(this), className: 'btn btn-theme space-right btn-xs' },
+	              '批量打印'
+	            ),
+	            _react2['default'].createElement(
+	              'button',
+	              { onClick: this.onScanHandler.bind(this), className: 'btn btn-theme btn-xs space-right' },
+	              '扫描'
+	            ),
+	            _react2['default'].createElement(
+	              'button',
+	              { onClick: this.batchEdit.bind(this), className: 'btn btn-theme btn-xs' },
+	              '批量编辑配送员'
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      setTimeout((function () {
+	        var getProvinces = this.props.getProvinces;
+
+	        getProvinces();
+	        (0, _utilsLazy_load2['default'])('noty');
+	      }).bind(this), 0);
+	    }
+	  }, {
+	    key: 'onProvinceChange',
+	    value: function onProvinceChange(callback, e) {
+	      var value = e.target.value;
+
+	      this.props.provinceReset();
+	      if (value != this.refs.province.props['default-value']) var $city = $((0, _reactDom.findDOMNode)(this.refs.city));
+	      this.props.getCities(value).done(function () {
+	        $city.trigger('focus'); //聚焦已使city_id的值更新
+	      });
+	      callback(e);
+	    }
+	  }, {
+	    key: 'search',
+	    value: function search() {
+	      var _this = this;
+
+	      this.setState({ search_ing: true });
+	      this.props.getOrderDeliveryList({ page_no: 0, page_size: this.props.page_size }).always(function () {
+	        _this.setState({ search_ing: false });
+	      });
+	    }
+	  }, {
+	    key: 'printHandler',
+	    value: function printHandler() {
+	      this.props.showBatchPrintModal();
+	    }
+	  }, {
+	    key: 'batchEdit',
+	    value: function batchEdit() {
+	      this.props.showBatchEditModal();
+	    }
+	  }, {
+	    key: 'onScanHandler',
+	    value: function onScanHandler() {
+	      this.props.showScanModal();
+	    }
+	  }]);
+
+	  return FilterHeader;
+	})(_react.Component);
+
+	FilterHeader.propTypes = {
+	  showBatchPrintModal: _react.PropTypes.func.isRequired,
+	  showBatchEditModal: _react.PropTypes.func.isRequired,
+	  provinces: _react.PropTypes.array.isRequired,
+	  cities: _react.PropTypes.array.isRequired
+	};
+	FilterHeader = (0, _reduxForm.reduxForm)({
+	  form: 'order_delivery_filter',
+	  fields: ['keywords', 'begin_time', 'end_time', 'delivery_type', 'print_status', 'province_id', 'city_id']
+	}, function (state) {
+	  var now = (0, _utilsIndex.dateFormat)(new Date());
+	  return {
+	    //赋初始值
+	    initialValues: {
+	      begin_time: now,
+	      end_time: now
+	    }
+	  };
+	})(FilterHeader);
+
+	var OrderRow = (function (_Component3) {
+	  _inherits(OrderRow, _Component3);
+
+	  function OrderRow() {
+	    _classCallCheck(this, OrderRow);
+
+	    _get(Object.getPrototypeOf(OrderRow.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(OrderRow, [{
+	    key: 'render',
+	    value: function render() {
+	      var props = this.props;
+
+	      var delivery_time = props.delivery_time.split(' ');
+	      var _order_status = _configAppConfig.order_status[props.status] || {};
+	      return _react2['default'].createElement(
+	        'tr',
+	        { onClick: this.clickHandler.bind(this), className: props.active_order_id == props.order_id ? 'active' : '' },
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement('input', { onChange: this.checkOrderHandler.bind(this), checked: props.checked, type: 'checkbox' })
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.print_status != 'PRINTABLE' ? [_react2['default'].createElement(
+	            'a',
+	            { onClick: this.showEditModal.bind(this), key: 'edit', href: 'javascript:;', className: 'nowrap' },
+	            '[编辑配送员]'
+	          ), _react2['default'].createElement('br', { key: 'br' })] : null,
+	          props.print_status == 'AUDITING' ? _react2['default'].createElement(
+	            'span',
+	            { key: 'auditing' },
+	            '[正在审核]'
+	          ) : _react2['default'].createElement(
+	            'a',
+	            { onClick: this.printHandler.bind(this), key: 'print', href: 'javascript:;' },
+	            props.print_status == 'PRINTABLE' ? _react2['default'].createElement(
+	              'span',
+	              { key: 'printable' },
+	              '[打印]'
+	            ) : props.print_status == 'UNPRINTABLE' ? _react2['default'].createElement(
+	              'span',
+	              { key: 'unprintable' },
+	              '[申请打印]'
+	            ) : _react2['default'].createElement(
+	              'span',
+	              { key: 'reprintable' },
+	              '[重新打印]'
+	            )
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _configAppConfig.PRINT_STATUS[props.print_status]
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.deliveryman_name,
+	          _react2['default'].createElement('br', null),
+	          props.deliveryman_mobile
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'time' },
+	            delivery_time[0],
+	            _react2['default'].createElement('br', null),
+	            delivery_time[1]
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.owner_name,
+	          _react2['default'].createElement('br', null),
+	          props.owner_mobile
+	        ),
+	        _react2['default'].createElement(_commonRecipient_info2['default'], { data: props }),
+	        _react2['default'].createElement(
+	          'td',
+	          { className: 'text-left' },
+	          (0, _utilsIndex.reactReplace)(props.greeting_card, '|', _react2['default'].createElement('br', null))
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.exchange_time
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'order-status', style: { color: _order_status.color } },
+	            _order_status.value
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'a',
+	            { onClick: props.viewOrderDetail, href: 'javascript:;' },
+	            props.order_id
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.remarks
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.updated_by
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'a',
+	            { onClick: this.viewOrderOperationRecord.bind(this), className: 'inline-block time', href: 'javascript:;' },
+	            props.updated_time
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'showEditModal',
+	    value: function showEditModal(e) {
+	      this.props.showEditModal(this.props);
+	      e.stopPropagation();
+	    }
+	  }, {
+	    key: 'printHandler',
+	    value: function printHandler(e) {
+	      this.props.printHandler(this.props);
+	      e.stopPropagation();
+	    }
+	  }, {
+	    key: 'checkOrderHandler',
+	    value: function checkOrderHandler(e) {
+	      var _props2 = this.props;
+	      var order_id = _props2.order_id;
+	      var checkOrderHandler = _props2.checkOrderHandler;
+
+	      checkOrderHandler(order_id, e.target.checked);
+	      // e.stopPropagation();
+	    }
+	  }, {
+	    key: 'clickHandler',
+	    value: function clickHandler() {
+	      this.props.activeOrderHandler(this.props.order_id);
+	    }
+	  }, {
+	    key: 'viewOrderOperationRecord',
+	    value: function viewOrderOperationRecord(e) {
+	      this.props.viewOrderOperationRecord(this.props);
+	      e.stopPropagation();
+	    }
+	  }]);
+
+	  return OrderRow;
+	})(_react.Component);
+
+	var DeliveryManagePannel = (function (_Component4) {
+	  _inherits(DeliveryManagePannel, _Component4);
+
+	  function DeliveryManagePannel(props) {
+	    _classCallCheck(this, DeliveryManagePannel);
+
+	    _get(Object.getPrototypeOf(DeliveryManagePannel.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      page_size: 5,
+	      batch_edit: false
+	    };
+	    this.showEditModal = this.showEditModal.bind(this);
+	    this.showBatchEditModal = this.showBatchEditModal.bind(this);
+	    this.showBatchPrintModal = this.showBatchPrintModal.bind(this);
+	    this.checkOrderHandler = this.checkOrderHandler.bind(this);
+	    this.activeOrderHandler = this.activeOrderHandler.bind(this);
+	    this.viewOrderDetail = this.viewOrderDetail.bind(this);
+	    this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
+	    this.printHandler = this.printHandler.bind(this);
+	    this.search = this.search.bind(this);
+	    this.showScanModal = this.showScanModal.bind(this);
+	  }
+
+	  _createClass(DeliveryManagePannel, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props3 = this.props;
+	      var filter = _props3.filter;
+	      var area = _props3.area;
+	      var deliveryman = _props3.deliveryman;
+	      var main = _props3.main;
+	      var getAllDeliveryman = _props3.getAllDeliveryman;
+	      var applyDeliveryman = _props3.applyDeliveryman;
+	      var startPrint = _props3.startPrint;
+	      var applyPrint = _props3.applyPrint;
+	      var validatePrintCode = _props3.validatePrintCode;
+	      var rePrint = _props3.rePrint;
+	      var searchByScan = _props3.searchByScan;
+	      var getOrderOptRecord = _props3.getOrderOptRecord;
+	      var resetOrderOptRecord = _props3.resetOrderOptRecord;
+	      var operationRecord = _props3.operationRecord;
+	      var _props$orders = this.props.orders;
+	      var loading = _props$orders.loading;
+	      var refresh = _props$orders.refresh;
+	      var page_no = _props$orders.page_no;
+	      var total = _props$orders.total;
+	      var list = _props$orders.list;
+	      var checked_orders = _props$orders.checked_orders;
+	      var check_order_info = _props$orders.check_order_info;
+	      var active_order_id = _props$orders.active_order_id;
+	      var showBatchPrintModal = this.showBatchPrintModal;
+	      var printHandler = this.printHandler;
+	      var showEditModal = this.showEditModal;
+	      var showScanModal = this.showScanModal;
+	      var showBatchEditModal = this.showBatchEditModal;
+	      var checkOrderHandler = this.checkOrderHandler;
+	      var viewOrderDetail = this.viewOrderDetail;
+	      var activeOrderHandler = this.activeOrderHandler;
+	      var viewOrderOperationRecord = this.viewOrderOperationRecord;
+	      var scan = main.scan;
+	      var scan_list = main.scan_list;
+	      //扫描
+	      if (scan) {
+	        list = scan_list;
+	      }
+	      var content = list.map(function (n, i) {
+	        return _react2['default'].createElement(OrderRow, _extends({
+	          key: n.order_id
+	        }, _extends({}, n, { active_order_id: active_order_id, showEditModal: showEditModal, printHandler: printHandler,
+	          checkOrderHandler: checkOrderHandler, viewOrderDetail: viewOrderDetail, activeOrderHandler: activeOrderHandler, viewOrderOperationRecord: viewOrderOperationRecord })));
+	      });
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'order-manage' },
+	        _react2['default'].createElement(TopHeader, null),
+	        _react2['default'].createElement(FilterHeader, _extends({}, _extends({}, this.props, filter, area, { showScanModal: showScanModal, showBatchPrintModal: showBatchPrintModal, showBatchEditModal: showBatchEditModal }), {
+	          page_size: this.state.page_size
+	        })),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'panel' },
+	          _react2['default'].createElement(
+	            'header',
+	            { className: 'panel-heading' },
+	            '送货列表'
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'panel-body' },
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'table-responsive main-list' },
+	              _react2['default'].createElement(
+	                'table',
+	                { className: 'table table-hover text-center' },
+	                _react2['default'].createElement(
+	                  'thead',
+	                  null,
+	                  _react2['default'].createElement(
+	                    'tr',
+	                    null,
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      _react2['default'].createElement('input', { onChange: this.checkAll.bind(this), type: 'checkbox' })
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '管理操作'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '是否打印'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '配送员'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '配送时间'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '下单人'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '收货人信息'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '祝福贺卡'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '转单时间'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '订单状态'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '订单号'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '备注'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '操作人'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '操作时间'
+	                    )
+	                  )
+	                ),
+	                _react2['default'].createElement(
+	                  'tbody',
+	                  null,
+	                  (0, _commonLoading.tableLoader)(loading || refresh, content)
+	                )
+	              )
+	            ),
+	            scan ? null : _react2['default'].createElement(_commonPagination2['default'], {
+	              page_no: page_no,
+	              total_count: total,
+	              page_size: this.state.page_size,
+	              onPageChange: this.onPageChange
+	            })
+	          )
+	        ),
+	        check_order_info ? _react2['default'].createElement(
+	          'div',
+	          { className: 'panel' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'panel-body' },
+	            _react2['default'].createElement(
+	              'div',
+	              null,
+	              '订单产品详情'
+	            ),
+	            _react2['default'].createElement(_commonOrder_products_detail2['default'], { products: check_order_info.products })
+	          )
+	        ) : null,
+	        _react2['default'].createElement(EditModal, _extends({ ref: 'EditModal' }, { getAllDeliveryman: getAllDeliveryman, applyDeliveryman: applyDeliveryman, deliveryman: deliveryman, submitting: main.submitting }, { callback: this.search })),
+	        _react2['default'].createElement(_commonOrder_detail_modal2['default'], { ref: 'detail_modal', data: check_order_info || {} }),
+	        _react2['default'].createElement(PrintModal, _extends({ ref: 'PrintModal' }, { checked_orders: checked_orders, startPrint: startPrint, callback: this.search })),
+	        _react2['default'].createElement(ApplyPrintModal, _extends({ ref: 'ApplyPrintModal' }, { applyPrint: applyPrint, submitting: main.submitting }, { callback: this.search })),
+	        _react2['default'].createElement(RePrintModal, _extends({ ref: 'RePrintModal' }, { validatePrintCode: validatePrintCode, rePrint: rePrint, submitting: main.submitting }, { callback: this.search })),
+	        _react2['default'].createElement(_commonScan_modal2['default'], { ref: 'ScanModal', submitting: main.submitting, search: searchByScan }),
+	        _react2['default'].createElement(_commonOperation_record_modalJs2['default'], _extends({ ref: 'OperationRecordModal' }, _extends({ getOrderOptRecord: getOrderOptRecord, resetOrderOptRecord: resetOrderOptRecord }, operationRecord)))
+	      );
+	    }
+	  }, {
+	    key: 'showEditModal',
+	    value: function showEditModal(n) {
+	      this.refs.EditModal.show([n]);
+	    }
+	  }, {
+	    key: 'showBatchEditModal',
+	    value: function showBatchEditModal() {
+	      var checked_orders = this.props.orders.checked_orders;
+
+	      if (checked_orders.length) {
+	        this.refs.EditModal.show(checked_orders);
+	      } else {
+	        (0, _utilsIndex.Noty)('warning', '请先勾选订单！');
+	      }
+	    }
+	  }, {
+	    key: 'showBatchPrintModal',
+	    value: function showBatchPrintModal(n) {
+	      var checked_orders = this.props.orders.checked_orders;
+
+	      if (checked_orders.length) {
+	        this.refs.PrintModal.show();
+	      } else {
+	        (0, _utilsIndex.Noty)('warning', '请先勾选订单！');
+	      }
+	    }
+	  }, {
+	    key: 'printHandler',
+	    value: function printHandler(_ref) {
+	      var _this2 = this;
+
+	      var print_status = _ref.print_status;
+	      var order_id = _ref.order_id;
+
+	      if (print_status == 'PRINTABLE') {
+	        this.props.startPrint([order_id]).done(function () {
+	          _this2.search(); //重新请求，刷新数据
+	        }).fail(function () {
+	          (0, _utilsIndex.Noty)('error', '异常错误');
+	        });
+	      } else if (print_status == 'UNPRINTABLE') {
+	        this.refs.ApplyPrintModal.show(order_id);
+	      } else if (print_status == 'REPRINTABLE') {
+	        this.refs.RePrintModal.show(order_id); //再次打印，输入验证码
+	      }
+	    }
+	  }, {
+	    key: 'showScanModal',
+	    value: function showScanModal() {
+	      this.refs.ScanModal.show();
+	    }
+	  }, {
+	    key: 'activeOrderHandler',
+	    value: function activeOrderHandler(order_id) {
+	      if (this.props.orders.active_order_id != order_id) this.props.activeOrder(order_id);
+	    }
+	  }, {
+	    key: 'checkOrderHandler',
+	    value: function checkOrderHandler(order_id, checked) {
+	      this.props.checkOrder(order_id, checked);
+	    }
+	  }, {
+	    key: 'checkAll',
+	    value: function checkAll(e) {
+	      this.props.checkAllOrders(e.target.checked);
+	    }
+	  }, {
+	    key: 'viewOrderDetail',
+	    value: function viewOrderDetail() {
+	      this.refs.detail_modal.show();
+	    }
+	  }, {
+	    key: 'viewOrderOperationRecord',
+	    value: function viewOrderOperationRecord(order) {
+	      this.refs.OperationRecordModal.show(order);
+	    }
+	  }, {
+	    key: 'onPageChange',
+	    value: function onPageChange(page) {
+	      this.search(page);
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.search();
+
+	      (0, _utilsLazy_load2['default'])('noty');
+	      (0, _utilsLazy_load2['default'])('chinese_py');
+	    }
+	  }, {
+	    key: 'search',
+	    value: function search(page) {
+	      page = typeof page == 'undefined' ? this.props.orders.page_no : page;
+	      this.props.getOrderDeliveryList({ page_no: page, page_size: this.state.page_size });
+	    }
+	  }]);
+
+	  return DeliveryManagePannel;
+	})(_react.Component);
+
+	function mapStateToProps(_ref2) {
+	  var deliveryManage = _ref2.deliveryManage;
+
+	  return deliveryManage;
+	}
+
+	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
+	function mapDispatchToProps(dispatch) {
+	  return (0, _redux.bindActionCreators)(_extends({}, OrderActions, (0, _actionsArea2['default'])(), DeliverymanActions, DeliveryManageActions), dispatch);
+	}
+
+	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DeliveryManagePannel);
+
+	/***************   *******   *****************/
+	/***************   子模态框   *****************/
+	/***************   *******   *****************/
+
+	var PrintModal = _react2['default'].createClass({
+	  displayName: 'PrintModal',
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      submitting: false
+	    };
+	  },
+	  render: function render() {
+	    var checked_orders = this.props.checked_orders;
+
+	    return _react2['default'].createElement(
+	      _commonStd_modal2['default'],
+	      { ref: 'modal', title: '批量打印订单', submitting: this.state.submitting, onConfirm: this.printHandler },
+	      _react2['default'].createElement(
+	        'center',
+	        null,
+	        _react2['default'].createElement(
+	          'h5',
+	          null,
+	          '您已同时勾选',
+	          _react2['default'].createElement(
+	            'span',
+	            { className: 'strong font-lg' },
+	            ' ' + checked_orders.length + ' '
+	          ),
+	          '个订单'
+	        )
+	      ),
+	      _react2['default'].createElement(
+	        'center',
+	        null,
+	        _react2['default'].createElement(
+	          'h5',
+	          null,
+	          '进行打印'
+	        )
+	      )
+	    );
+	  },
+	  printHandler: function printHandler() {
+	    var checked_orders = this.props.checked_orders;
+
+	    if (checked_orders.some(function (n) {
+	      return n.print_status != 'PRINTABLE';
+	    })) {
+	      (0, _utilsIndex.Noty)('warning', '请确定所有订单均可直接打印!');
+	      return;
+	    }
+	    this.setState({ submitting: true });
+	    this.props.startPrint(this.props.checked_orders.map(function (n) {
+	      return n.order_id;
+	    })).done((function () {
+	      (0, _utilsIndex.Noty)('success', '操作成功');
+	      this.setState({ submitting: false });
+	      this.props.callback();
+	      this.refs.modal.hide();
+	    }).bind(this)).fail(function (e) {
+	      (0, _utilsIndex.Noty)('error', e || '异常错误');
+	    });
+	  },
+	  show: function show() {
+	    this.refs.modal.show();
+	  },
+	  hide: function hide() {
+	    this.refs.modal.hide();
+	  }
+	});
+
+	var EditModal = _react2['default'].createClass({
+	  displayName: 'EditModal',
+
+	  propTypes: {
+	    'deliveryman': _react.PropTypes.object.isRequired,
+	    'getAllDeliveryman': _react.PropTypes.func.isRequired,
+	    'applyDeliveryman': _react.PropTypes.func.isRequired
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      all_deliveryman: [],
+	      filter_results: [],
+	      selected_deliveryman_id: undefined,
+	      orders: []
+	    };
+	  },
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+	    var _this3 = this;
+
+	    var deliveryman = nextProps.deliveryman;
+
+	    //只需要初始化一次
+	    if (deliveryman.load_success && !this._hasInitial) {
+	      this._hasInitial = true;
+	      var list = deliveryman.list;
+
+	      var build = (function () {
+	        var new_data = list.map(function (n) {
+	          n.py = window.makePy(n.deliveryman_name);
+	          return n;
+	        });
+	        this.setState({
+	          all_deliveryman: list, filter_results: new_data, selected_deliveryman_id: list.length && list[0].deliveryman_id
+	        });
+	      }).bind(this);
+
+	      if (window.makePy) {
+	        build();
+	      } else {
+	        //异步加载的chinese_py库可能还未加载完成，所以需要定时检测
+	        this._build_timer = setInterval(function () {
+	          if (window.makePy) {
+	            build();
+	            clearInterval(_this3._build_timer);
+	            delete _this3._build_timer;
+	          }
+	        }, 100);
+	      }
+	    }
+	  },
+	  translate: function translate() {},
+	  render: function render() {
+	    var _state2 = this.state;
+	    var filter_results = _state2.filter_results;
+	    var selected_deliveryman_id = _state2.selected_deliveryman_id;
+	    var orders = _state2.orders;
+	    var _props4 = this.props;
+	    var batch_edit = _props4.batch_edit;
+	    var submitting = _props4.submitting;
+
+	    var content = filter_results.map(function (n) {
+	      return _react2['default'].createElement(
+	        'option',
+	        { key: n.deliveryman_id, value: n.deliveryman_id },
+	        n.deliveryman_name + ' ' + n.deliveryman_mobile
+	      );
+	    });
+	    return _react2['default'].createElement(
+	      _commonStd_modal2['default'],
+	      { onConfirm: this.saveHandler, onCancel: this.hideCallback, submitting: submitting, ref: 'modal', title: '编辑配送人员' },
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group form-inline mg-15' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'input-group input-group-sm' },
+	          _react2['default'].createElement(
+	            'span',
+	            { className: 'input-group-addon' },
+	            _react2['default'].createElement('i', { className: 'fa fa-filter' })
+	          ),
+	          _react2['default'].createElement('input', { onChange: this.filterHandler, type: 'text',
+	            className: 'form-control', style: { 'width': '200' }, placeholder: '配送员拼音首字母 或 手机号码' })
+	        )
+	      ),
+	      _react2['default'].createElement(
+	        'center',
+	        { className: 'form-inline mg-15', style: { 'padding': '33px 0', 'textIndent': -15 } },
+	        orders.length > 1 ? _react2['default'].createElement(
+	          'div',
+	          null,
+	          _react2['default'].createElement(
+	            'h5',
+	            { style: { 'marginTop': 0 } },
+	            '您已同时勾选',
+	            _react2['default'].createElement(
+	              'span',
+	              { className: 'strong font-lg' },
+	              ' ' + orders.length + ' '
+	            ),
+	            '个订单'
+	          ),
+	          _react2['default'].createElement(
+	            'h5',
+	            { style: { 'marginBottom': 30 } },
+	            '来编辑配送人员'
+	          )
+	        ) : null,
+	        _react2['default'].createElement(
+	          'div',
+	          { style: { 'textIndent': -38 } },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '配送人员　'
+	          ),
+	          _react2['default'].createElement(
+	            'select',
+	            { onChange: this.onSelectDeliveryman, value: selected_deliveryman_id, className: 'form-control input-sm', style: { 'minWidth': '145px' } },
+	            content.length ? content : _react2['default'].createElement(
+	              'option',
+	              null,
+	              '无'
+	            )
+	          )
+	        )
+	      )
+	    );
+	  },
+	  filterHandler: function filterHandler(e) {
+	    var value = e.target.value;
+	    var all_deliveryman = this.state.all_deliveryman;
+
+	    var results = [];
+	    value = value.toUpperCase();
+	    if (value === '') {
+	      results = all_deliveryman;
+	    } else if (/^\d+$/i.test(value)) {
+	      //电话号码
+	      results = all_deliveryman.filter(function (n) {
+	        return n.phone.indexOf(value) == 0;
+	      });
+	    } else if (/^\w+$/i.test(value)) {
+	      //首字母
+	      results = all_deliveryman.filter(function (n) {
+	        return n.py.some(function (m) {
+	          return m.indexOf(value) == 0;
+	        });
+	      });
+	    } else {
+	      //中文全称
+	      results = all_deliveryman.filter(function (n) {
+	        return n.text.indexOf(value) != -1;
+	      });
+	    }
+	    this.setState({ filter_results: results, selected_deliveryman_id: results.length && results[0].deliveryman_id });
+	  },
+	  onSelectDeliveryman: function onSelectDeliveryman(e) {
+	    this.setState({ selected_deliveryman_id: e.target.value });
+	  },
+	  saveHandler: function saveHandler() {
+	    var _state3 = this.state;
+	    var selected_deliveryman_id = _state3.selected_deliveryman_id;
+	    var orders = _state3.orders;
+
+	    var selected_deliveryman = this.state.filter_results.filter(function (n) {
+	      return n.deliveryman_id == selected_deliveryman_id;
+	    });
+	    this.props.applyDeliveryman({
+	      deliveryman_id: selected_deliveryman_id,
+	      deliveryman_name: selected_deliveryman.length && selected_deliveryman[0].deliveryman_name,
+	      deliveryman_mobile: selected_deliveryman.length && selected_deliveryman[0].deliveryman_mobile,
+	      order_ids: orders.map(function (n) {
+	        return n.order_id;
+	      })
+	    }).done((function (json) {
+	      (0, _utilsIndex.Noty)('success', '操作成功！');
+	      this.props.callback();
+	      this.refs.modal.hide();
+	    }).bind(this)).fail(function (json) {
+	      console.error(json);
+	      (0, _utilsIndex.Noty)('error', '操作失败！');
+	    });
+	  },
+	  componentDidMount: function componentDidMount() {
+	    var _this4 = this;
+
+	    //稍微延时一下，
+	    setTimeout(function () {
+	      _this4.props.getAllDeliveryman();
+	    }, 200);
+	  },
+	  show: function show(orders) {
+	    this.setState({ orders: orders });
+	    this.refs.modal.show();
+	  },
+	  hideCallback: function hideCallback() {
+	    this.setState({
+	      filter_results: this.state.all_deliveryman,
+	      selected_deliveryman_id: undefined,
+	      orders: []
+	    });
+	  }
+	});
+
+	var ApplyPrintModal = _react2['default'].createClass({
+	  displayName: 'ApplyPrintModal',
+
+	  propTypes: {
+	    applyPrint: _react.PropTypes.func.isRequired
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      order_id: '',
+	      reason: '',
+	      applicant_mobile: '',
+	      director_mobile: ''
+	    };
+	  },
+	  mixins: [_reactAddonsLinkedStateMixin2['default']],
+	  render: function render() {
+	    return _react2['default'].createElement(
+	      _commonStd_modal2['default'],
+	      { onConfirm: this.saveHandler, onCancel: this.hideCallback, submitting: this.props.submitting, ref: 'modal', size: 'sm', title: '重新申请打印' },
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'pl-50' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　订单编号：'
+	          ),
+	          _react2['default'].createElement(
+	            'span',
+	            null,
+	            ' ' + this.state.order_id
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　申请理由：'
+	          ),
+	          _react2['default'].createElement('textarea', { valueLink: this.linkState('reason'), cols: '18', rows: '2', className: 'form-control input-xs' })
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '申请人手机：'
+	          ),
+	          _react2['default'].createElement('input', { valueLink: this.linkState('applicant_mobile'), type: 'text', className: 'form-control input-xs' })
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　主管手机：'
+	          ),
+	          _react2['default'].createElement('input', { valueLink: this.linkState('director_mobile'), type: 'text', className: 'form-control input-xs' })
+	        )
+	      )
+	    );
+	  },
+	  saveHandler: function saveHandler() {
+	    var applicant_mobile = this.state.applicant_mobile;
+
+	    if (!_utilsIndex.form.isMobile(applicant_mobile)) {
+	      (0, _utilsIndex.Noty)('warning', '错误的电话号！');return;
+	    }
+	    this.props.applyPrint(_extends({}, this.state, { order_id: this.state.order_id })).done((function () {
+	      this.props.callback();
+	      this.refs.modal.hide();
+	    }).bind(this)).fail(function (msg, code) {
+	      (0, _utilsIndex.Noty)('error', msg || '服务器异常');
+	    });
+	  },
+	  show: function show(order_id) {
+	    this.setState({ order_id: order_id }, function () {
+	      this.refs.modal.show();
+	    });
+	  },
+	  hideCallback: function hideCallback() {
+	    // this.setState(this.getInitialState());
+	  }
+	});
+
+	//再次打印，输入验证码的弹窗
+	var RePrintModal = _react2['default'].createClass({
+	  displayName: 'RePrintModal',
+
+	  propTypes: {
+	    rePrint: _react.PropTypes.func.isRequired
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      order_id: '',
+	      validate_code: ''
+	    };
+	  },
+	  render: function render() {
+	    return _react2['default'].createElement(
+	      _commonStd_modal2['default'],
+	      { onConfirm: this.saveHandler, onCancel: this.hideCallback, submitting: this.props.submitting, ref: 'modal', size: 'sm', title: '打印' },
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'pl-50' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '订单编号：'
+	          ),
+	          _react2['default'].createElement(
+	            'span',
+	            null,
+	            ' ' + this.state.order_id
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　验证码：'
+	          ),
+	          _react2['default'].createElement('input', { valueLink: this.linkState('validate_code'), type: 'text', className: 'form-control input-xs' })
+	        )
+	      )
+	    );
+	  },
+	  saveHandler: function saveHandler() {
+	    var order_id = this.state.order_id;
+
+	    this.props.validatePrintCode(order_id, this.state.validate_code).done((function () {
+	      this.props.rePrint(order_id).done((function () {
+	        this.refs.modal.hide();
+	        setTimeout(this.props.callback, 1000);
+	      }).bind(this));
+	      this.refs.modal.hide();
+	    }).bind(this)).fail(function () {
+	      (0, _utilsIndex.Noty)('error', '服务器异常');
+	    });
+	  },
+	  mixins: [_reactAddonsLinkedStateMixin2['default']],
+	  show: function show(order_id) {
+	    this.setState({ order_id: order_id }, function () {
+	      this.refs.modal.show();
+	    });
+	  },
+	  hideCallback: function hideCallback() {
+	    this.setState(this.getInitialState());
+	  }
+	});
+	module.exports = exports['default'];
+
+/***/ },
+/* 334 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.getAllDeliveryman = getAllDeliveryman;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _utilsRequest = __webpack_require__(234);
+
+	//Promise
+
+	var _configUrl = __webpack_require__(239);
+
+	var _configUrl2 = _interopRequireDefault(_configUrl);
+
+	var GET_ALL_DELIVERYMAN = 'GET_ALL_DELIVERYMAN';
+	exports.GET_ALL_DELIVERYMAN = GET_ALL_DELIVERYMAN;
+
+	function getAllDeliveryman() {
+	  return (0, _utilsRequest.GET)(_configUrl2['default'].deliveryman.toString(), null, GET_ALL_DELIVERYMAN);
+	  // return TEST([
+	  //   { deliveryman_id: '1', deliveryman_name: '张三三', deliveryman_mobile: '17744445555' },
+	  //   { deliveryman_id: '2', deliveryman_name: '李四四', deliveryman_mobile: '13544445555' },
+	  //   { deliveryman_id: '3', deliveryman_name: '王五五', deliveryman_mobile: '13344445555' },
+	  //   { deliveryman_id: '4', deliveryman_name: '韩梅梅', deliveryman_mobile: '13644445555' },
+	  //   { deliveryman_id: '5', deliveryman_name: '刘小明', deliveryman_mobile: '18944445555' }
+	  // ], GET_ALL_DELIVERYMAN);
+		}
+
+/***/ },
+/* 335 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.applyDeliveryman = applyDeliveryman;
+	exports.startPrint = startPrint;
+	exports.applyPrint = applyPrint;
+	exports.validatePrintCode = validatePrintCode;
+	exports.rePrint = rePrint;
+	exports.searchByScan = searchByScan;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _utilsRequest = __webpack_require__(234);
+
+	//Promise
+
+	var _configUrl = __webpack_require__(239);
+
+	var _configUrl2 = _interopRequireDefault(_configUrl);
+
+	var _utilsPromise = __webpack_require__(238);
+
+	var _utilsPromise2 = _interopRequireDefault(_utilsPromise);
+
+	var APPLY_DELIVERYMAN = 'APPLY_DELIVERYMAN';exports.APPLY_DELIVERYMAN = APPLY_DELIVERYMAN;
+	//key: 0->正在处理，1->成功，2->失败
+
+	function applyDeliveryman(data) {
+	  //若是异步的话，那么该函数必须也返回一个函数
+	  return (0, _utilsRequest.PUT)(_configUrl2['default'].deliveryman_apply.toString(), data, APPLY_DELIVERYMAN);
+	  // return TEST(null, [
+	  //   {type: APPLY_DELIVERYMAN, key: 0},  //立即派发
+	  //   {type: APPLY_DELIVERYMAN, key: 1}   //2000毫秒后派发
+	  // ], 2000, true);
+	}
+
+	function startPrint(order_ids) {
+	  return function (dispatch) {
+	    return new _utilsPromise2['default'](function (resolve, reject) {
+	      if (!order_ids.length) {
+	        reject('参数错误');
+	      } else {
+	        try {
+	          window.open(_configUrl2['default'].print.toString() + '?order_ids=' + order_ids.join(','));
+	          setTimeout(resolve, 500);
+	        } catch (e) {
+	          console.error(e);
+	          reject('打印出错');
+	        }
+	      }
+	    });
+	  };
+	  // return test();
+	}
+
+	var APPLY_PRINT = 'APPLY_PRINT';exports.APPLY_PRINT = APPLY_PRINT;
+	//key: 0->正在处理，1->成功，2->失败
+
+	function applyPrint(data) {
+	  //若是异步的话，那么该函数必须也返回一个函数
+	  return (0, _utilsRequest.POST)(_configUrl2['default'].apply_print.toString(), data, APPLY_PRINT);
+	  // return TEST(null, [
+	  //   {type: APPLY_PRINT, key: 0},  //立即派发
+	  //   {type: APPLY_PRINT, key: 1}   //2000毫秒后派发
+	  // ], 2000, true);
+	}
+
+	var REPRINT_VALIDATE_CODE = 'REPRINT_VALIDATE_CODE';exports.REPRINT_VALIDATE_CODE = REPRINT_VALIDATE_CODE;
+	//key: 0->正在处理，1->成功，2->失败
+
+	function validatePrintCode(order_id, validate_code) {
+	  //若是异步的话，那么该函数必须也返回一个函数
+	  return (0, _utilsRequest.PUT)(_configUrl2['default'].reprint_validate.toString(order_id), { validate_code: validate_code }, REPRINT_VALIDATE_CODE);
+	  // return TEST(null, [
+	  //   {type: REPRINT_VALIDATE_CODE, key: 0},  //立即派发
+	  //   {type: REPRINT_VALIDATE_CODE, key: 1}   //2000毫秒后派发
+	  // ], 2000, true);
+	}
+
+	function rePrint(order_id) {
+	  return function (dispatch) {
+	    return new _utilsPromise2['default'](function (resolve, reject) {
+	      try {
+	        window.open(_configUrl2['default'].reprint.toString(order_id));
+	        resolve();
+	      } catch (e) {
+	        console.error(e);
+	        reject('打印出错');
+	      }
+	    });
+	  };
+	}
+
+	var GET_DELIVERY_SCAN_LIST = 'GET_DELIVERY_SCAN_LIST';
+	exports.GET_DELIVERY_SCAN_LIST = GET_DELIVERY_SCAN_LIST;
+
+	function searchByScan(order_ids) {
+	  return (0, _utilsRequest.POST)(_configUrl2['default'].order_delivery.toString(), { order_ids: order_ids }, GET_DELIVERY_SCAN_LIST);
+	}
+
+/***/ },
+/* 336 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _commonStd_modal = __webpack_require__(306);
+
+	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	/**
+	 * 扫描窗口
+	 */
+
+	var RotateLoading = (function (_Component) {
+	  _inherits(RotateLoading, _Component);
+
+	  function RotateLoading() {
+	    _classCallCheck(this, RotateLoading);
+
+	    _get(Object.getPrototypeOf(RotateLoading.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(RotateLoading, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2['default'].createElement(
+	        'div',
+	        _extends({ className: 'inline-block' }, this.props),
+	        _react2['default'].createElement('span', { className: 'rotate-loading-1' }),
+	        _react2['default'].createElement('span', { className: 'rotate-loading-2' }),
+	        _react2['default'].createElement('span', { className: 'rotate-loading-3' })
+	      );
+	    }
+	  }]);
+
+	  return RotateLoading;
+	})(_react.Component);
+
+	var ScanModal = (function (_Component2) {
+	  _inherits(ScanModal, _Component2);
+
+	  function ScanModal(props) {
+	    _classCallCheck(this, ScanModal);
+
+	    _get(Object.getPrototypeOf(ScanModal.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      scanable: true,
+	      value: '',
+	      order_ids: []
+	    };
+	    this.show = this.show.bind(this);
+	    this.hide = this.hide.bind(this);
+	  }
+
+	  _createClass(ScanModal, [{
+	    key: 'render',
+	    value: function render() {
+	      var _this = this;
+
+	      var content = this.state.order_ids.map(function (n, i) {
+	        return _react2['default'].createElement(
+	          'div',
+	          { key: n, className: 'mg-15 inline-block deleteable-row' },
+	          _react2['default'].createElement(
+	            'span',
+	            { className: 'strong' },
+	            n
+	          ),
+	          _react2['default'].createElement(
+	            'span',
+	            { onClick: _this['delete'].bind(_this, i), className: 'del-btn space' },
+	            '×'
+	          )
+	        );
+	      });
+	      return _react2['default'].createElement(
+	        _commonStd_modal2['default'],
+	        { onConfirm: this.onConfirm.bind(this), onCancel: this.hide, ref: 'modal', title: '批量扫描' },
+	        _react2['default'].createElement(
+	          'center',
+	          null,
+	          this.state.scanable ? _react2['default'].createElement(
+	            'h5',
+	            { className: 'strong font-lg' },
+	            '可以扫描',
+	            _react2['default'].createElement(RotateLoading, { style: { 'marginLeft': 5 } })
+	          ) : _react2['default'].createElement(
+	            'h5',
+	            { className: 'text-danger font-lg' },
+	            '非扫描状态，请点击以下输入框'
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'center',
+	          null,
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group mg-15 form-inline' },
+	            _react2['default'].createElement('input', {
+	              ref: 'scan_input',
+	              value: this.state.value,
+	              onChange: this.onInput.bind(this),
+	              type: 'text',
+	              className: 'form-control input-xs long-input text-center',
+	              placeholder: ''
+	            })
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'center',
+	          null,
+	          content
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'onInput',
+	    value: function onInput(e) {
+	      var value = e.target.value;
+	      var order_ids = this.state.order_ids;
+
+	      if (value.length == 16) {
+	        if (!order_ids.some(function (n) {
+	          return n == value;
+	        })) {
+	          this.setState({ value: '', order_ids: order_ids.concat(value) });
+	        }
+	      } else {
+	        this.setState({ value: value });
+	      }
+	    }
+	  }, {
+	    key: 'delete',
+	    value: function _delete(i) {
+	      this.state.order_ids.splice(i, 1);
+	      this.setState({ order_ids: this.state.order_ids });
+	    }
+	  }, {
+	    key: 'show',
+	    value: function show() {
+	      this.refs.modal.show((function () {
+	        this.refs.scan_input.focus();
+	      }).bind(this));
+	    }
+	  }, {
+	    key: 'hide',
+	    value: function hide() {
+	      $(this.refs.input).off();
+	      this.setState({ value: '', order_ids: [] });
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      $(this.refs.scan_input).on('focus', (function () {
+	        this.setState({ scanable: true, value: '' });
+	      }).bind(this)).on('blur', (function () {
+	        this.setState({ scanable: false, value: '' });
+	      }).bind(this));
+	    }
+	  }, {
+	    key: 'onConfirm',
+	    value: function onConfirm() {
+	      var order_ids = this.state.order_ids;
+
+	      if (order_ids.length) {
+	        this.props.search(order_ids).done(this.refs.modal.hide);
+	      } else {
+	        (0, _utilsIndex.Noty)('warning', '没有订单');
+	      }
+	    }
+	  }]);
+
+	  return ScanModal;
+	})(_react.Component);
+
+	;
+
+	ScanModal.PropTypes = {
+	  search: _react.PropTypes.func.isRequired
+	};
+
+	exports['default'] = ScanModal;
+	module.exports = exports['default'];
+
+/***/ },
+/* 337 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(154);
+
+	var _reactRedux = __webpack_require__(216);
+
+	var _redux = __webpack_require__(223);
+
+	var _reactAddonsLinkedStateMixin = __webpack_require__(284);
+
+	var _reactAddonsLinkedStateMixin2 = _interopRequireDefault(_reactAddonsLinkedStateMixin);
+
+	var _reduxForm = __webpack_require__(242);
+
+	var _commonDatepicker = __webpack_require__(300);
+
+	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
+
+	var _commonSelect = __webpack_require__(301);
+
+	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+
+	var _commonTime_input = __webpack_require__(338);
+
+	var _commonTime_input2 = _interopRequireDefault(_commonTime_input);
+
+	var _commonPagination = __webpack_require__(302);
+
+	var _commonPagination2 = _interopRequireDefault(_commonPagination);
+
+	var _commonLine_router = __webpack_require__(319);
+
+	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
+
+	var _commonStd_modal = __webpack_require__(306);
+
+	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
+
+	var _commonLoading = __webpack_require__(305);
+
+	var _commonRadio_group = __webpack_require__(314);
+
+	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
+
+	var _commonRecipient_info = __webpack_require__(307);
+
+	var _commonRecipient_info2 = _interopRequireDefault(_commonRecipient_info);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _history_instance = __webpack_require__(211);
+
+	var _history_instance2 = _interopRequireDefault(_history_instance);
+
+	var _utilsLazy_load = __webpack_require__(308);
+
+	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var _utilsAcl = __webpack_require__(240);
+
+	var _utilsAcl2 = _interopRequireDefault(_utilsAcl);
+
+	var _actionsOrders = __webpack_require__(290);
+
+	var OrderActions = _interopRequireWildcard(_actionsOrders);
+
+	var _actionsArea = __webpack_require__(288);
+
+	var _actionsArea2 = _interopRequireDefault(_actionsArea);
+
+	var _actionsDeliveryman = __webpack_require__(334);
+
+	var DeliverymanActions = _interopRequireWildcard(_actionsDeliveryman);
+
+	var _actionsDelivery_distribute = __webpack_require__(339);
+
+	var DeliveryDistributeActions = _interopRequireWildcard(_actionsDelivery_distribute);
+
+	var _actionsOrder_manage_form = __webpack_require__(292);
+
+	var _commonOrder_products_detail = __webpack_require__(311);
+
+	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
+
+	var _commonOrder_detail_modal = __webpack_require__(312);
+
+	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
+
+	var _commonScan_modal = __webpack_require__(336);
+
+	var _commonScan_modal2 = _interopRequireDefault(_commonScan_modal);
+
+	var _commonOperation_record_modalJs = __webpack_require__(316);
+
+	var _commonOperation_record_modalJs2 = _interopRequireDefault(_commonOperation_record_modalJs);
+
+	var TopHeader = (function (_Component) {
+	  _inherits(TopHeader, _Component);
+
+	  function TopHeader() {
+	    _classCallCheck(this, TopHeader);
+
+	    _get(Object.getPrototypeOf(TopHeader.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(TopHeader, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'clearfix top-header' },
+	        _react2['default'].createElement(_commonLine_router2['default'], {
+	          routes: [{ name: '送货单管理', link: '' }, { name: '配送单列表', link: '' }] })
+	      );
+	    }
+	  }]);
+
+	  return TopHeader;
+	})(_react.Component);
+
+	var FilterHeader = (function (_Component2) {
+	  _inherits(FilterHeader, _Component2);
+
+	  function FilterHeader(props) {
+	    _classCallCheck(this, FilterHeader);
+
+	    _get(Object.getPrototypeOf(FilterHeader.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      search_ing: false,
+	      all_print_status: _configAppConfig.YES_OR_NO
+	    };
+	  }
+
+	  _createClass(FilterHeader, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var _props$fields = _props.fields;
+	      var keywords = _props$fields.keywords;
+	      var begin_time = _props$fields.begin_time;
+	      var end_time = _props$fields.end_time;
+	      var pay_modes_id = _props$fields.pay_modes_id;
+	      var order_status = _props$fields.order_status;
+	      var deliveryman_id = _props$fields.deliveryman_id;
+	      var delivery_id = _props$fields.delivery_id;
+	      var province_id = _props$fields.province_id;
+	      var city_id = _props$fields.city_id;
+	      var provinces = _props.provinces;
+	      var cities = _props.cities;
+	      var delivery_stations = _props.delivery_stations;
+	      var all_order_status = _props.all_order_status;
+	      var all_pay_modes = _props.all_pay_modes;
+	      var all_deliveryman = _props.all_deliveryman;
+	      var search_ing = this.state.search_ing;
+
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'panel search' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'panel-body' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            _react2['default'].createElement('input', _extends({}, keywords, { className: 'form-control input-xs v-mg', placeholder: '关键字' })),
+	            ' 开始时间',
+	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': begin_time, className: 'short-input' }),
+	            ' 配送时间',
+	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': end_time, className: 'short-input space-right' }),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_modes_id, { options: all_pay_modes, 'default-text': '选择支付方式', className: 'space-right' })),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, order_status, { options: all_order_status, 'default-text': '选择订单状态', className: 'space-right' })),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, deliveryman_id, { options: all_deliveryman.map(function (n) {
+	                return { id: n.deliveryman_id, text: n.deliveryman_name };
+	              }), 'default-text': '选择配送员', className: 'space-right' })),
+	            (0, _utilsAcl2['default'])('DeliveryManageDistributeStationFilter') ? _react2['default'].createElement(_commonSelect2['default'], _extends({}, delivery_id, { options: delivery_stations, 'default-text': '选择配送中心', className: 'space-right' })) : null
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'form-group form-inline' },
+	            (0, _utilsAcl2['default'])('DeliveryManageDistributeAddressFilter') ? [_react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), options: provinces, ref: 'province', key: 'province', 'default-text': '选择省份', className: 'space-right' })), _react2['default'].createElement(_commonSelect2['default'], _extends({}, city_id, { options: cities, 'default-text': '选择城市', ref: 'city', key: 'city', className: 'space-right' }))] : null,
+	            _react2['default'].createElement(
+	              'button',
+	              { disabled: search_ing, 'data-submitting': search_ing, onClick: this.search.bind(this), className: 'btn btn-theme btn-xs space-right' },
+	              _react2['default'].createElement('i', { className: 'fa fa-search', style: { 'padding': '0 3px' } })
+	            ),
+	            '　',
+	            _react2['default'].createElement(
+	              'button',
+	              { onClick: this.onScanHandler.bind(this), className: 'btn btn-theme btn-xs space-right' },
+	              '扫描'
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      setTimeout((function () {
+	        var _props2 = this.props;
+	        var getProvinces = _props2.getProvinces;
+	        var getPayModes = _props2.getPayModes;
+	        var getAllDeliveryman = _props2.getAllDeliveryman;
+	        var getDeliveryStations = _props2.getDeliveryStations;
+
+	        getProvinces();
+	        getPayModes();
+	        getAllDeliveryman();
+	        getDeliveryStations();
+	        (0, _utilsLazy_load2['default'])('noty');
+	      }).bind(this), 0);
+	    }
+	  }, {
+	    key: 'onProvinceChange',
+	    value: function onProvinceChange(callback, e) {
+	      var value = e.target.value;
+
+	      this.props.provinceReset();
+	      if (value != this.refs.province.props['default-value']) var $city = $((0, _reactDom.findDOMNode)(this.refs.city));
+	      this.props.getCities(value).done(function () {
+	        $city.trigger('focus'); //聚焦已使city_id的值更新
+	      });
+	      callback(e);
+	    }
+	  }, {
+	    key: 'search',
+	    value: function search() {
+	      var _this = this;
+
+	      this.setState({ search_ing: true });
+	      this.props.getOrderDistributeList({ page_no: 0, page_size: this.props.page_size }).always(function () {
+	        _this.setState({ search_ing: false });
+	      });
+	    }
+	  }, {
+	    key: 'onScanHandler',
+	    value: function onScanHandler() {
+	      this.props.showScanModal();
+	    }
+	  }]);
+
+	  return FilterHeader;
+	})(_react.Component);
+
+	FilterHeader.propTypes = {
+	  provinces: _react.PropTypes.array.isRequired,
+	  cities: _react.PropTypes.array.isRequired,
+	  all_pay_modes: _react.PropTypes.array.isRequired,
+	  delivery_stations: _react.PropTypes.array.isRequired,
+	  all_order_status: _react.PropTypes.array.isRequired,
+	  all_pay_modes: _react.PropTypes.array.isRequired,
+	  all_deliveryman: _react.PropTypes.array.isRequired
+	};
+	FilterHeader = (0, _reduxForm.reduxForm)({
+	  form: 'order_distribute_filter',
+	  fields: ['keywords', 'begin_time', 'end_time', 'pay_modes_id', 'order_status', 'deliveryman_id', 'delivery_id', 'province_id', 'city_id']
+	}, function (state) {
+	  var now = (0, _utilsIndex.dateFormat)(new Date());
+	  return {
+	    //赋初始值
+	    initialValues: {
+	      begin_time: now,
+	      end_time: now
+	    }
+	  };
+	})(FilterHeader);
+
+	var OrderRow = (function (_Component3) {
+	  _inherits(OrderRow, _Component3);
+
+	  function OrderRow() {
+	    _classCallCheck(this, OrderRow);
+
+	    _get(Object.getPrototypeOf(OrderRow.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(OrderRow, [{
+	    key: 'render',
+	    value: function render() {
+	      var props = this.props;
+
+	      var _order_status = _configAppConfig.order_status[props.status] || {};
+	      return _react2['default'].createElement(
+	        'tr',
+	        { onClick: this.clickHandler.bind(this), className: props.active_order_id == props.order_id ? 'active' : '' },
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement('input', { onChange: this.checkOrderHandler.bind(this), checked: props.checked, disabled: props.status == 'COMPLETED', type: 'checkbox' })
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.status == 'DELIVERY' ? [_react2['default'].createElement(
+	            'a',
+	            { onClick: this.showSignedModal.bind(this), key: 'signin', href: 'javascript:;' },
+	            '[签收]'
+	          ), _react2['default'].createElement('br', { key: 'br' }), _react2['default'].createElement(
+	            'a',
+	            { onClick: this.showUnSignedModal.bind(this), key: 'unsignin', href: 'javascript:;' },
+	            '[未签收]'
+	          )] : null
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          (0, _utilsIndex.parseTime)(props.delivery_time)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          '￥',
+	          props.total_amount / 100
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.owner_name,
+	          _react2['default'].createElement('br', null),
+	          props.owner_mobile
+	        ),
+	        _react2['default'].createElement(_commonRecipient_info2['default'], { data: props }),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'a',
+	            { onClick: props.viewOrderDetail, href: 'javascript:;' },
+	            props.order_id
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.delivery_type
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'remark-in-table' },
+	            props.remarks
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          (0, _utilsIndex.parseTime)(props.signin_time)
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'order-status', style: { color: _order_status.color || 'inherit' } },
+	            _order_status.value
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.updated_by
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'a',
+	            { onClick: this.viewOrderOperationRecord.bind(this), className: 'inline-block time', href: 'javascript:;' },
+	            props.updated_time
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'showSignedModal',
+	    value: function showSignedModal(e) {
+	      this.props.showSignedModal(this.props);
+	      e.stopPropagation();
+	    }
+	  }, {
+	    key: 'showUnSignedModal',
+	    value: function showUnSignedModal(e) {
+	      this.props.showUnSignedModal(this.props);
+	      e.stopPropagation();
+	    }
+	  }, {
+	    key: 'checkOrderHandler',
+	    value: function checkOrderHandler(e) {
+	      var _props3 = this.props;
+	      var order_id = _props3.order_id;
+	      var checkOrderHandler = _props3.checkOrderHandler;
+
+	      checkOrderHandler(order_id, e.target.checked);
+	    }
+	  }, {
+	    key: 'clickHandler',
+	    value: function clickHandler() {
+	      this.props.activeOrderHandler(this.props.order_id);
+	    }
+	  }, {
+	    key: 'viewOrderOperationRecord',
+	    value: function viewOrderOperationRecord(e) {
+	      this.props.viewOrderOperationRecord(this.props);
+	      e.stopPropagation();
+	    }
+	  }]);
+
+	  return OrderRow;
+	})(_react.Component);
+
+	var DeliveryDistributePannel = (function (_Component4) {
+	  _inherits(DeliveryDistributePannel, _Component4);
+
+	  function DeliveryDistributePannel(props) {
+	    _classCallCheck(this, DeliveryDistributePannel);
+
+	    _get(Object.getPrototypeOf(DeliveryDistributePannel.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      page_size: 5
+	    };
+	    this.showSignedModal = this.showSignedModal.bind(this);
+	    this.showUnSignedModal = this.showUnSignedModal.bind(this);
+	    this.checkOrderHandler = this.checkOrderHandler.bind(this);
+	    this.activeOrderHandler = this.activeOrderHandler.bind(this);
+	    this.viewOrderDetail = this.viewOrderDetail.bind(this);
+	    this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
+	    this.showScanModal = this.showScanModal.bind(this);
+	    this.search = this.search.bind(this);
+	  }
+
+	  _createClass(DeliveryDistributePannel, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props4 = this.props;
+	      var filter = _props4.filter;
+	      var area = _props4.area;
+	      var deliveryman = _props4.deliveryman;
+	      var orders = _props4.orders;
+	      var main = _props4.main;
+	      var signOrder = _props4.signOrder;
+	      var unsignOrder = _props4.unsignOrder;
+	      var searchByScan = _props4.searchByScan;
+	      var getOrderOptRecord = _props4.getOrderOptRecord;
+	      var resetOrderOptRecord = _props4.resetOrderOptRecord;
+	      var operationRecord = _props4.operationRecord;
+	      var submitting = main.submitting;
+	      var loading = orders.loading;
+	      var refresh = orders.refresh;
+	      var page_no = orders.page_no;
+	      var total = orders.total;
+	      var list = orders.list;
+	      var check_order_info = orders.check_order_info;
+	      var active_order_id = orders.active_order_id;
+	      var search = this.search;
+	      var showSignedModal = this.showSignedModal;
+	      var showUnSignedModal = this.showUnSignedModal;
+	      var showScanModal = this.showScanModal;
+	      var checkOrderHandler = this.checkOrderHandler;
+	      var viewOrderDetail = this.viewOrderDetail;
+	      var activeOrderHandler = this.activeOrderHandler;
+	      var viewOrderOperationRecord = this.viewOrderOperationRecord;
+	      var scan = main.scan;
+	      var scan_list = main.scan_list;
+	      //扫描
+	      if (scan) {
+	        list = scan_list;
+	      }
+	      var content = list.map(function (n, i) {
+	        return _react2['default'].createElement(OrderRow, _extends({
+	          key: n.order_id
+	        }, _extends({}, n, { active_order_id: active_order_id, showSignedModal: showSignedModal, showUnSignedModal: showUnSignedModal,
+	          viewOrderDetail: viewOrderDetail, checkOrderHandler: checkOrderHandler, activeOrderHandler: activeOrderHandler, viewOrderOperationRecord: viewOrderOperationRecord })));
+	      });
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'order-manage' },
+	        _react2['default'].createElement(TopHeader, null),
+	        _react2['default'].createElement(FilterHeader, _extends({}, _extends({}, this.props, filter, area, { showScanModal: showScanModal, all_deliveryman: deliveryman.list }), {
+	          page_size: this.state.page_size
+	        })),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'panel' },
+	          _react2['default'].createElement(
+	            'header',
+	            { className: 'panel-heading' },
+	            '送货列表'
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'panel-body' },
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'table-responsive main-list' },
+	              _react2['default'].createElement(
+	                'table',
+	                { className: 'table table-hover text-center' },
+	                _react2['default'].createElement(
+	                  'thead',
+	                  null,
+	                  _react2['default'].createElement(
+	                    'tr',
+	                    null,
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      _react2['default'].createElement('input', { onChange: this.checkAll.bind(this), type: 'checkbox' })
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '管理操作'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '送达时间'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '货到付款金额'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '下单人'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '收货人信息'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '订单号'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '配送方式'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '备注'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '订单完成时间'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '订单状态'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '操作人'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '操作时间'
+	                    )
+	                  )
+	                ),
+	                _react2['default'].createElement(
+	                  'tbody',
+	                  null,
+	                  (0, _commonLoading.tableLoader)(loading || refresh, content)
+	                )
+	              )
+	            ),
+	            scan ? null : _react2['default'].createElement(_commonPagination2['default'], {
+	              page_no: page_no,
+	              total_count: total,
+	              page_size: this.state.page_size,
+	              onPageChange: this.onPageChange
+	            })
+	          )
+	        ),
+	        check_order_info ? _react2['default'].createElement(
+	          'div',
+	          { className: 'panel' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'panel-body' },
+	            _react2['default'].createElement(
+	              'div',
+	              null,
+	              '订单产品详情'
+	            ),
+	            _react2['default'].createElement(_commonOrder_products_detail2['default'], { products: check_order_info.products })
+	          )
+	        ) : null,
+	        _react2['default'].createElement(_commonOrder_detail_modal2['default'], { ref: 'detail_modal', data: check_order_info || {} }),
+	        _react2['default'].createElement(SignedModal, _extends({ ref: 'SignedModal' }, { submitting: submitting, signOrder: signOrder, callback: search })),
+	        _react2['default'].createElement(UnSignedModal, _extends({ ref: 'UnSignedModal' }, { submitting: submitting, unsignOrder: unsignOrder, callback: search })),
+	        _react2['default'].createElement(_commonScan_modal2['default'], { ref: 'ScanModal', submitting: submitting, search: searchByScan }),
+	        _react2['default'].createElement(_commonOperation_record_modalJs2['default'], _extends({ ref: 'OperationRecordModal' }, _extends({ getOrderOptRecord: getOrderOptRecord, resetOrderOptRecord: resetOrderOptRecord }, operationRecord)))
+	      );
+	    }
+	  }, {
+	    key: 'onPageChange',
+	    value: function onPageChange(page) {
+	      this.search(page);
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.search();
+
+	      (0, _utilsLazy_load2['default'])('noty');
+	    }
+	  }, {
+	    key: 'search',
+	    value: function search(page) {
+	      var _props5 = this.props;
+	      var getOrderDistributeList = _props5.getOrderDistributeList;
+	      var orders = _props5.orders;
+
+	      page = typeof page == 'undefined' ? orders.page_no : page;
+	      getOrderDistributeList({ page_no: page, page_size: this.state.page_size });
+	    }
+	  }, {
+	    key: 'activeOrderHandler',
+	    value: function activeOrderHandler(order_id) {
+	      if (this.props.orders.active_order_id != order_id) this.props.activeOrder(order_id);
+	    }
+	  }, {
+	    key: 'checkOrderHandler',
+	    value: function checkOrderHandler(order_id, checked) {
+	      this.props.checkOrder(order_id, checked);
+	    }
+	  }, {
+	    key: 'checkAll',
+	    value: function checkAll(e) {
+	      this.props.checkAllOrders(e.target.checked);
+	    }
+	  }, {
+	    key: 'viewOrderDetail',
+	    value: function viewOrderDetail() {
+	      this.refs.detail_modal.show();
+	    }
+	  }, {
+	    key: 'viewOrderOperationRecord',
+	    value: function viewOrderOperationRecord(order) {
+	      this.refs.OperationRecordModal.show(order);
+	    }
+	  }, {
+	    key: 'showSignedModal',
+	    value: function showSignedModal(n) {
+	      this.refs.SignedModal.show(n);
+	    }
+	  }, {
+	    key: 'showUnSignedModal',
+	    value: function showUnSignedModal(n) {
+	      this.refs.UnSignedModal.show(n);
+	    }
+	  }, {
+	    key: 'showScanModal',
+	    value: function showScanModal() {
+	      this.refs.ScanModal.show();
+	    }
+	  }]);
+
+	  return DeliveryDistributePannel;
+	})(_react.Component);
+
+	function mapStateToProps(_ref) {
+	  var distributeManage = _ref.distributeManage;
+
+	  return distributeManage;
+	}
+
+	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
+	function mapDispatchToProps(dispatch) {
+	  return (0, _redux.bindActionCreators)(_extends({}, OrderActions, (0, _actionsArea2['default'])(), DeliverymanActions, DeliveryDistributeActions, { getPayModes: _actionsOrder_manage_form.getPayModes }), dispatch);
+	}
+
+	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DeliveryDistributePannel);
+
+	/***************   *******   *****************/
+	/***************   子模态框   *****************/
+	/***************   *******   *****************/
+
+	var SignedModal = _react2['default'].createClass({
+	  displayName: 'SignedModal',
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      CASH: 'CASH', //现金赔偿
+	      REFUND: 'REFUND', //全额退款
+
+	      order: {},
+
+	      signin_date: (0, _utilsIndex.dateFormat)(new Date()),
+	      // signin_hour: '',  // 直接 TimeInput.val()获取
+	      late_minutes: 0,
+	      refund_method: '',
+	      refund_money: 0,
+	      refund_reson: ''
+	    };
+	  },
+	  mixins: [_reactAddonsLinkedStateMixin2['default']],
+	  render: function render() {
+	    var _state = this.state;
+	    var signin_date = _state.signin_date;
+	    var late_minutes = _state.late_minutes;
+	    var refund_method = _state.refund_method;
+	    var refund_money = _state.refund_money;
+	    var refund_reson = _state.refund_reson;
+
+	    return _react2['default'].createElement(
+	      _commonStd_modal2['default'],
+	      { submitting: this.props.submitting, onConfirm: this.submitHandler, onCancel: this.hideCallback, title: '订单完成页面', ref: 'modal' },
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group mg-15 form-inline' },
+	        _react2['default'].createElement(
+	          'label',
+	          null,
+	          '签收时间：'
+	        ),
+	        _react2['default'].createElement(_commonDatepicker2['default'], { value: signin_date, onChange: this.onSignInDateChange, className: 'short-input' }),
+	        '　',
+	        _react2['default'].createElement(_commonTime_input2['default'], { onChange: this.onTimeChange, ref: 'timeinput' })
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group form-inline mg-15' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'row' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'col-xs-6' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '迟到时长：'
+	            ),
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'inline-block input-group input-group-xs' },
+	              _react2['default'].createElement('input', { value: late_minutes, onChange: this.onLateTimeChange, type: 'text', className: 'form-control', style: { 'width': 50 } }),
+	              _react2['default'].createElement(
+	                'span',
+	                { className: 'input-group-addon' },
+	                'Min'
+	              )
+	            )
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'col-xs-6' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '货到付款金额：'
+	            ),
+	            _react2['default'].createElement('input', { value: this.state.order.total_amount || 0, readOnly: true, className: 'form-control input-xs short-input', style: { 'width': 50 } })
+	          )
+	        )
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group mg-15' },
+	        _react2['default'].createElement(
+	          'label',
+	          { className: '' },
+	          _react2['default'].createElement('input', { value: this.state.CASH, onClick: this.checkMethod, checked: this.state.CASH == refund_method, type: 'radio', name: 'method' }),
+	          ' 现金赔偿（迟到30mins以内）'
+	        ),
+	        this.state.refund_method == this.state.CASH ? _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'input-group input-group-xs pl-20' },
+	            _react2['default'].createElement('input', { valueLink: this.linkState('refund_money'), className: 'form-control input-xs', style: { 'width': 50 } }),
+	            _react2['default'].createElement(
+	              'span',
+	              { className: 'input-group-addon' },
+	              'RMB'
+	            )
+	          )
+	        ) : null
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group mg-15' },
+	        _react2['default'].createElement(
+	          'label',
+	          { className: '' },
+	          _react2['default'].createElement('input', { value: this.state.REFUND, onClick: this.checkMethod, checked: this.state.REFUND == refund_method, type: 'radio', name: 'method' }),
+	          ' 全额退款（迟到时间>=30mins）'
+	        ),
+	        this.state.refund_method == this.state.REFUND ? _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group pl-20' },
+	          _react2['default'].createElement(_commonRadio_group2['default'], {
+	            value: refund_reson,
+	            vertical: true,
+	            name: 'refund_reson',
+	            radios: [{ value: '迟到30mins以上', text: '迟到30mins以上' }, { value: '款式不符', text: '款式不符' }, { value: '尺寸、规格不符', text: '尺寸、规格不符' }],
+	            onChange: this.checkReason
+	          })
+	        ) : null
+	      )
+	    );
+	  },
+	  submitHandler: function submitHandler() {
+	    var _state2 = this.state;
+	    var order = _state2.order;
+	    var CASH = _state2.CASH;
+	    var late_minutes = _state2.late_minutes;
+	    var refund_method = _state2.refund_method;
+	    var refund_money = _state2.refund_money;
+	    var refund_reson = _state2.refund_reson;
+	    var signin_date = _state2.signin_date;
+
+	    var signin_hour = this.refs.timeinput.val();
+	    if (!_utilsIndex.form.isNumber(late_minutes) || late_minutes < 0) {
+	      (0, _utilsIndex.Noty)('warning', '迟到时间输入有误');return;
+	    }
+	    if (!signin_date || !signin_hour) {
+	      (0, _utilsIndex.Noty)('warning', '请填写签收时间');return;
+	    }
+	    if (late_minutes > 0) {
+	      if (!refund_method) {
+	        (0, _utilsIndex.Noty)('warning', '请选择赔偿方式');return;
+	      }
+	      if (refund_method == CASH) {
+	        if (!_utilsIndex.form.isNumber(refund_money)) {
+	          (0, _utilsIndex.Noty)('warning', '请输入现金赔偿金额');return;
+	        }
+	      } else {
+	        if (!refund_reson) {
+	          (0, _utilsIndex.Noty)('warning', '请勾选全额退款原因');return;
+	        }
+	      }
+	    }
+	    this.props.signOrder(order.order_id, {
+	      late_minutes: late_minutes,
+	      payfor_type: refund_method,
+	      payfor_amount: refund_money,
+	      payfor_reason: refund_reson,
+	      signin_time: signin_date + ' ' + signin_hour
+	    }).done((function () {
+	      this.refs.modal.hide();
+	      this.props.callback();
+	      (0, _utilsIndex.Noty)('success', '签收成功！');
+	    }).bind(this)).fail(function (msg, code) {
+	      (0, _utilsIndex.Noty)('error', msg || '提交失败');
+	    });
+	  },
+	  onSignInDateChange: function onSignInDateChange(value) {
+	    this.setState({ signin_date: value });
+	  },
+	  onTimeChange: function onTimeChange(value) {
+	    this.setState({ signin_hour: value });
+	  },
+	  onLateTimeChange: function onLateTimeChange(e) {
+	    var value = e.target.value;
+
+	    this.setState({ late_minutes: value, refund_money: value <= 30 ? value : '' });
+	  },
+	  checkMethod: function checkMethod(e) {
+	    this.setState({ refund_method: e.target.value });
+	  },
+	  checkReason: function checkReason(value) {
+	    this.setState({ refund_reson: value });
+	  },
+	  show: function show(order) {
+	    this.refs.modal.show();
+	    this.setState({ order: order });
+	  },
+	  hideCallback: function hideCallback() {
+	    this.refs.timeinput.reset();
+	    this.setState(this.getInitialState());
+	  }
+	});
+
+	var UnSignedModal = _react2['default'].createClass({
+	  displayName: 'UnSignedModal',
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      NOTFOUND: 'NOTFOUND',
+	      OTHER: 'OTHER',
+
+	      order: {},
+
+	      reason_type: '',
+	      notfound_reason: '联系不上用户，无人签收',
+	      other_reason: '',
+	      real_pay: 0,
+	      black_list: '0'
+	    };
+	  },
+	  mixins: [_reactAddonsLinkedStateMixin2['default']],
+	  render: function render() {
+	    var notfound_reason = this.state.notfound_reason;
+
+	    return _react2['default'].createElement(
+	      _commonStd_modal2['default'],
+	      { submitting: this.props.submitting, onConfirm: this.submitHandler, onCancel: this.hideCallback, title: '订单未完成页面', ref: 'modal' },
+	      _react2['default'].createElement(
+	        'div',
+	        { className: ' mg-15' },
+	        _react2['default'].createElement(
+	          'label',
+	          { className: 'strong-label' },
+	          '未签收原因：'
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            _react2['default'].createElement('input', { value: this.state.NOTFOUND,
+	              checked: this.state.reason_type == this.state.NOTFOUND,
+	              onClick: this.checkReason, type: 'radio', name: 'reason' }),
+	            ' ' + notfound_reason
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            _react2['default'].createElement('input', { value: this.state.OTHER,
+	              checked: this.state.reason_type == this.state.OTHER,
+	              onClick: this.checkReason, type: 'radio', name: 'reason' }),
+	            ' 其他'
+	          ),
+	          '　',
+	          _react2['default'].createElement('input', { valueLink: this.linkState('other_reason'), className: 'form-control input-xs long-input' })
+	        )
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-inline mg-15' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'row' },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'col-xs-6' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '货到付款金额：'
+	            ),
+	            _react2['default'].createElement('input', { value: this.state.order.total_amount || 0, readOnly: true, className: 'form-control input-xs short-input', style: { 'width': 50 } })
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'col-xs-6' },
+	            _react2['default'].createElement(
+	              'label',
+	              null,
+	              '实收金额：'
+	            ),
+	            _react2['default'].createElement('input', { valueLink: this.linkState('real_pay'), className: 'form-control input-xs', style: { 'width': 50 } })
+	          )
+	        )
+	      ),
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'form-group mg-15' },
+	        _react2['default'].createElement(
+	          'label',
+	          { className: 'strong-label' },
+	          '是否将该用户列入黑名单：'
+	        ),
+	        '　',
+	        _react2['default'].createElement(_commonRadio_group2['default'], {
+	          value: this.state.black_list,
+	          className: 'inline-block',
+	          radios: [{ value: "1", text: '是' }, { value: "0", text: '否' }],
+	          onChange: this.checkBlackList
+	        }),
+	        _react2['default'].createElement(
+	          'p',
+	          { className: 'font-xs gray' },
+	          '（列入黑名单后，此用户ID下单无法再选择货到付款模式）'
+	        )
+	      )
+	    );
+	  },
+	  submitHandler: function submitHandler() {
+	    var _state3 = this.state;
+	    var order = _state3.order;
+	    var reason_type = _state3.reason_type;
+	    var OTHER = _state3.OTHER;
+	    var notfound_reason = _state3.notfound_reason;
+	    var other_reason = _state3.other_reason;
+	    var real_pay = _state3.real_pay;
+	    var black_list = _state3.black_list;
+
+	    if (!reason_type) {
+	      (0, _utilsIndex.Noty)('warning', '请选择未签收原因');return;
+	    }
+	    if (reason_type == OTHER && !other_reason.trim()) {
+	      (0, _utilsIndex.Noty)('warning', '请填写其他未签收原因');return;
+	    }
+	    if (!_utilsIndex.form.isNumber(real_pay)) {
+	      (0, _utilsIndex.Noty)('warning', '请填写正确的实收金额');return;
+	    }
+	    this.props.unsignOrder(order.order_id, {
+	      COD_amount: real_pay * 100,
+	      unsignin_reason: reason_type == OTHER ? other_reason : notfound_reason,
+	      is_blacklist: black_list
+	    }).done((function () {
+	      this.refs.modal.hide();
+	      this.props.callback();
+	      (0, _utilsIndex.Noty)('success', '操作成功！');
+	    }).bind(this)).fail(function (msg, code) {
+	      (0, _utilsIndex.Noty)('error', msg || '提交失败');
+	    });
+	  },
+	  checkReason: function checkReason(e) {
+	    var reason_type = e.target.value;
+	    this.setState({ reason_type: reason_type, other_reason: reason_type == this.state.NOTFOUND ? '' : this.state.other_reason });
+	  },
+	  checkBlackList: function checkBlackList(value) {
+	    this.setState({ black_list: value });
+	  },
+	  show: function show(order) {
+	    this.refs.modal.show();
+	    this.setState({ order: order });
+	  },
+	  hideCallback: function hideCallback() {
+	    this.setState(this.getInitialState());
+	  }
+	});
+	module.exports = exports['default'];
+
+/***/ },
+/* 338 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var TimeInput = (function (_Component) {
+	  _inherits(TimeInput, _Component);
+
+	  function TimeInput(props) {
+	    _classCallCheck(this, TimeInput);
+
+	    _get(Object.getPrototypeOf(TimeInput.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      hour: '',
+	      minute: '',
+	      hour_error: '',
+	      minute_error: ''
+	    };
+	  }
+
+	  _createClass(TimeInput, [{
+	    key: 'render',
+	    value: function render() {
+	      var _state = this.state;
+	      var hour = _state.hour;
+	      var minute = _state.minute;
+	      var hour_error = _state.hour_error;
+	      var minute_error = _state.minute_error;
+
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'form-inline inline-block' },
+	        _react2['default'].createElement('input', {
+	          value: this.state.hour,
+	          onChange: this.onHourChange.bind(this),
+	          className: 'form-control input-xs time-input ' + hour_error }),
+	        _react2['default'].createElement(
+	          'span',
+	          { className: 'gray' },
+	          ' : '
+	        ),
+	        _react2['default'].createElement('input', {
+	          value: this.state.minute,
+	          onChange: this.onMinuteChange.bind(this),
+	          className: 'form-control input-xs time-input ' + minute_error })
+	      );
+	    }
+	  }, {
+	    key: 'val',
+	    value: function val() {
+	      var _state2 = this.state;
+	      var hour = _state2.hour;
+	      var minute = _state2.minute;
+
+	      return !hour || !minute ? '' : (hour > 9 ? hour : '0' + hour) + ':' + (minute > 9 ? minute : '0' + minute);
+	    }
+	  }, {
+	    key: 'reset',
+	    value: function reset() {
+	      this.setState({
+	        hour: '',
+	        minute: '',
+	        hour_error: '',
+	        minute_error: ''
+	      });
+	    }
+	  }, {
+	    key: 'onHourChange',
+	    value: function onHourChange(e) {
+	      var value = e.target.value;var hour_error;
+	      if (_utilsIndex.form.isNumber(value) && value >= 0 && value < 24) {
+	        hour_error = '';
+	      } else {
+	        hour_error = 'error';
+	      }
+	      this.setState({ hour: value, hour_error: hour_error });
+	    }
+	  }, {
+	    key: 'onMinuteChange',
+	    value: function onMinuteChange(e) {
+	      var value = e.target.value;var minute_error;
+	      if (_utilsIndex.form.isNumber(value) && value >= 0 && value < 60) {
+	        minute_error = '';
+	      } else {
+	        minute_error = 'error';
+	      }
+	      this.setState({ minute: e.target.value, minute_error: minute_error });
+	    }
+	  }]);
+
+	  return TimeInput;
+	})(_react.Component);
+
+	exports['default'] = TimeInput;
+	module.exports = exports['default'];
+
+/***/ },
+/* 339 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.signOrder = signOrder;
+	exports.unsignOrder = unsignOrder;
+	exports.searchByScan = searchByScan;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _utilsRequest = __webpack_require__(234);
+
+	//Promise
+
+	var _configUrl = __webpack_require__(239);
+
+	var _configUrl2 = _interopRequireDefault(_configUrl);
+
+	var _actionsOrder_manage_form = __webpack_require__(292);
+
+	var SIGN_ORDER = 'SIGN_ORDER';exports.SIGN_ORDER = SIGN_ORDER;
+	//key: 0->正在处理，1->成功，2->失败
+
+	function signOrder(order_id, data) {
+	  //若是异步的话，那么该函数必须也返回一个函数
+	  return (0, _utilsRequest.PUT)(_configUrl2['default'].order_sign.toString(order_id), data, SIGN_ORDER);
+	  // return TEST(null, [
+	  //   {type: SIGN_ORDER, key: 0},  //立即派发
+	  //   {type: SIGN_ORDER, key: 1}   //2000毫秒后派发
+	  // ], 2000, true);
+	}
+
+	var UNSIGN_ORDER = 'UNSIGN_ORDER';exports.UNSIGN_ORDER = UNSIGN_ORDER;
+	//key: 0->正在处理，1->成功，2->失败
+
+	function unsignOrder(order_id, data) {
+	  //若是异步的话，那么该函数必须也返回一个函数
+	  return (0, _utilsRequest.PUT)(_configUrl2['default'].order_unsign.toString(order_id), data, UNSIGN_ORDER);
+	  // return TEST(null, [
+	  //   {type: UNSIGN_ORDER, key: 0},  //立即派发
+	  //   {type: UNSIGN_ORDER, key: 1}   //2000毫秒后派发
+	  // ], 2000, true);
+	}
+
+	var GET_DISTRIBUTE_SCAN_LIST = 'GET_DISTRIBUTE_SCAN_LIST';
+	exports.GET_DISTRIBUTE_SCAN_LIST = GET_DISTRIBUTE_SCAN_LIST;
+
+	function searchByScan(order_ids) {
+	  return (0, _utilsRequest.POST)(_configUrl2['default'].order_distribute.toString(), { order_ids: order_ids }, GET_DISTRIBUTE_SCAN_LIST);
+	}
+
+	var getDeliveryStations = _actionsOrder_manage_form.getDeliveryStations;
+	exports.getDeliveryStations = getDeliveryStations;
+
+/***/ },
+/* 340 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(154);
+
+	var _reactRedux = __webpack_require__(216);
+
+	var _redux = __webpack_require__(223);
+
+	var _reactAddonsLinkedStateMixin = __webpack_require__(284);
+
+	var _reactAddonsLinkedStateMixin2 = _interopRequireDefault(_reactAddonsLinkedStateMixin);
+
+	var _reduxForm = __webpack_require__(242);
+
+	var _commonDatepicker = __webpack_require__(300);
+
+	var _commonDatepicker2 = _interopRequireDefault(_commonDatepicker);
+
+	var _commonSelect = __webpack_require__(301);
+
+	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+
+	var _commonPagination = __webpack_require__(302);
+
+	var _commonPagination2 = _interopRequireDefault(_commonPagination);
+
+	var _commonStd_modal = __webpack_require__(306);
+
+	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
+
+	var _commonLine_router = __webpack_require__(319);
+
+	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
+
+	var _commonRadio_group = __webpack_require__(314);
+
+	var _commonRadio_group2 = _interopRequireDefault(_commonRadio_group);
+
+	var _commonLoading = __webpack_require__(305);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _history_instance = __webpack_require__(211);
+
+	var _history_instance2 = _interopRequireDefault(_history_instance);
+
+	var _utilsLazy_load = __webpack_require__(308);
+
+	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
+
+	var _commonOrder_products_detail = __webpack_require__(311);
+
+	var _commonOrder_products_detail2 = _interopRequireDefault(_commonOrder_products_detail);
+
+	var _commonOrder_detail_modal = __webpack_require__(312);
+
+	var _commonOrder_detail_modal2 = _interopRequireDefault(_commonOrder_detail_modal);
+
+	var _actionsOrders = __webpack_require__(290);
+
+	var OrderActions = _interopRequireWildcard(_actionsOrders);
+
+	var _actionsDelivery_print_review = __webpack_require__(341);
+
+	var DeliverPrintReviewActions = _interopRequireWildcard(_actionsDelivery_print_review);
+
+	var TopHeader = (function (_Component) {
+	  _inherits(TopHeader, _Component);
+
+	  function TopHeader() {
+	    _classCallCheck(this, TopHeader);
+
+	    _get(Object.getPrototypeOf(TopHeader.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(TopHeader, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'clearfix top-header' },
+	        _react2['default'].createElement(_commonLine_router2['default'], {
+	          routes: [{ name: '送货单管理', link: '/dm/change' }, { name: '打印审核', link: '' }] })
+	      );
+	    }
+	  }]);
+
+	  return TopHeader;
+	})(_react.Component);
+
+	var FilterHeader = (function (_Component2) {
+	  _inherits(FilterHeader, _Component2);
+
+	  function FilterHeader(props) {
+	    _classCallCheck(this, FilterHeader);
+
+	    _get(Object.getPrototypeOf(FilterHeader.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      search_ing: false
+	    };
+	  }
+
+	  _createClass(FilterHeader, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var _props$fields = _props.fields;
+	      var order_id = _props$fields.order_id;
+	      var begin_time = _props$fields.begin_time;
+	      var end_time = _props$fields.end_time;
+	      var is_reprint = _props$fields.is_reprint;
+	      var status = _props$fields.status;
+	      var yes_or_no = _props.yes_or_no;
+	      var all_review_status = _props.all_review_status;
+	      var search_ing = this.state.search_ing;
+
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'panel search' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'panel-body form-inline' },
+	          _react2['default'].createElement('input', _extends({}, order_id, { className: 'form-control input-xs v-mg', placeholder: '订单号' })),
+	          ' 开始时间',
+	          _react2['default'].createElement(_commonDatepicker2['default'], { 'redux-form': begin_time, editable: true, className: 'short-input' }),
+	          ' 结束时间',
+	          _react2['default'].createElement(_commonDatepicker2['default'], { 'redux-form': end_time, editable: true, className: 'short-input space-right' }),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, is_reprint, { options: yes_or_no, 'default-text': '是否打印', className: 'space-right' })),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, status, { options: all_review_status, 'default-text': '选择审核状态', className: 'space-right' })),
+	          _react2['default'].createElement(
+	            'button',
+	            { disabled: search_ing, 'data-submitting': search_ing, onClick: this.search.bind(this), className: 'btn btn-theme btn-xs' },
+	            _react2['default'].createElement('i', { className: 'fa fa-search', style: { 'padding': '0 3px' } })
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'search',
+	    value: function search() {
+	      var _this = this;
+
+	      this.setState({ search_ing: true });
+	      this.props.search(0).always(function () {
+	        _this.setState({ search_ing: false });
+	      });
+	    }
+	  }]);
+
+	  return FilterHeader;
+	})(_react.Component);
+
+	FilterHeader = (0, _reduxForm.reduxForm)({
+	  form: 'print_review',
+	  fields: ['order_id', 'begin_time', 'end_time', 'is_reprint', 'status']
+	}, function (state) {
+	  var now = (0, _utilsIndex.dateFormat)(new Date());
+	  return {
+	    //赋初始值
+	    initialValues: {
+	      begin_time: now,
+	      end_time: now
+	    }
+	  };
+	})(FilterHeader);
+
+	var ReviewRow = (function (_Component3) {
+	  _inherits(ReviewRow, _Component3);
+
+	  function ReviewRow() {
+	    _classCallCheck(this, ReviewRow);
+
+	    _get(Object.getPrototypeOf(ReviewRow.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(ReviewRow, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props2 = this.props;
+	      var props = _props2 === undefined ? {} : _props2;
+
+	      return _react2['default'].createElement(
+	        'tr',
+	        null,
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.order_id
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.applicant_name
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.applicant_mobile
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.apply_time
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.apply_reason
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.validate_code
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.audit_opinion
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.audit_time
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.auditor
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _configAppConfig.PRINT_REVIEW_STATUS[props.status]
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.reprint_time
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          props.status != 'AUDITED' ? [_react2['default'].createElement(
+	            'a',
+	            { key: 'review', onClick: this.reviewHandler.bind(this), href: 'javascript:;', className: 'nowrap' },
+	            '[审核]'
+	          ), _react2['default'].createElement('br', { key: 'br' })] : null
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'reviewHandler',
+	    value: function reviewHandler() {
+	      this.props.showReviewModal(this.props);
+	    }
+	  }]);
+
+	  return ReviewRow;
+	})(_react.Component);
+
+	var DeliverPrintReviewPannel = (function (_Component4) {
+	  _inherits(DeliverPrintReviewPannel, _Component4);
+
+	  function DeliverPrintReviewPannel(props) {
+	    _classCallCheck(this, DeliverPrintReviewPannel);
+
+	    _get(Object.getPrototypeOf(DeliverPrintReviewPannel.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      page_size: 10,
+	      review_order: {}
+	    };
+	    this.showReviewModal = this.showReviewModal.bind(this);
+	    this.search = this.search.bind(this);
+	  }
+
+	  _createClass(DeliverPrintReviewPannel, [{
+	    key: 'render',
+	    value: function render() {
+	      var showReviewModal = this.showReviewModal;
+	      var search = this.search;
+	      var _props3 = this.props;
+	      var filter = _props3.filter;
+	      var reviewPrintApply = _props3.reviewPrintApply;
+	      var _props3$main = _props3.main;
+	      var loading = _props3$main.loading;
+	      var refresh = _props3$main.refresh;
+	      var page_no = _props3$main.page_no;
+	      var total = _props3$main.total;
+	      var list = _props3$main.list;
+	      var submitting = _props3$main.submitting;
+
+	      var content = list.map(function (n, i) {
+	        return _react2['default'].createElement(ReviewRow, _extends({ key: n.apply_id }, _extends({}, n, { showReviewModal: showReviewModal })));
+	      });
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'order-manage' },
+	        _react2['default'].createElement(TopHeader, null),
+	        _react2['default'].createElement(FilterHeader, _extends({}, filter, { search: search })),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'panel' },
+	          _react2['default'].createElement(
+	            'header',
+	            { className: 'panel-heading' },
+	            '送货列表'
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'panel-body' },
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'table-responsive' },
+	              _react2['default'].createElement(
+	                'table',
+	                { className: 'table table-hover text-center' },
+	                _react2['default'].createElement(
+	                  'thead',
+	                  null,
+	                  _react2['default'].createElement(
+	                    'tr',
+	                    null,
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '订单号'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '申请人'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '申请人电话'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '申请时间'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '申请理由'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '验证码'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '审核意见'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '审核时间'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '审核人'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '审核状态'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '打印时间'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '管理操作'
+	                    )
+	                  )
+	                ),
+	                _react2['default'].createElement(
+	                  'tbody',
+	                  null,
+	                  (0, _commonLoading.tableLoader)(loading || refresh, content)
+	                )
+	              )
+	            ),
+	            _react2['default'].createElement(_commonPagination2['default'], {
+	              page_no: page_no,
+	              total_count: total,
+	              page_size: this.state.page_size,
+	              onPageChange: this.onPageChange.bind(this)
+	            })
+	          )
+	        ),
+	        _react2['default'].createElement(ReviewModal, _extends({ data: this.state.review_order, reviewPrintApply: reviewPrintApply, submitting: submitting, callback: search }, { ref: 'ReviewModal' }))
+	      );
+	    }
+	  }, {
+	    key: 'showReviewModal',
+	    value: function showReviewModal(n) {
+	      this.setState({ review_order: n }, this.refs.ReviewModal.show());
+	    }
+	  }, {
+	    key: 'onPageChange',
+	    value: function onPageChange(page) {
+	      this.search(page);
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.search();
+
+	      (0, _utilsLazy_load2['default'])('noty');
+	    }
+	  }, {
+	    key: 'search',
+	    value: function search(page) {
+	      var _props4 = this.props;
+	      var getPrintReviewList = _props4.getPrintReviewList;
+	      var main = _props4.main;
+
+	      page = typeof page == 'undefined' ? main.page_no : page;
+	      return getPrintReviewList({ page_no: page, page_size: this.state.page_size });
+	    }
+	  }]);
+
+	  return DeliverPrintReviewPannel;
+	})(_react.Component);
+
+	function mapStateToProps(_ref) {
+	  var deliveryPrintReview = _ref.deliveryPrintReview;
+
+	  return deliveryPrintReview;
+	}
+
+	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
+	function mapDispatchToProps(dispatch) {
+	  return (0, _redux.bindActionCreators)(_extends({}, OrderActions, DeliverPrintReviewActions), dispatch);
+	}
+
+	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(DeliverPrintReviewPannel);
+
+	/***************   *******   *****************/
+	/***************   子模态框   *****************/
+	/***************   *******   *****************/
+
+	var ReviewModal = _react2['default'].createClass({
+	  displayName: 'ReviewModal',
+
+	  propTypes: {
+	    data: _react.PropTypes.object.isRequired,
+	    reviewPrintApply: _react.PropTypes.func.isRequired,
+	    submitting: _react.PropTypes.bool.isRequired
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      radios: [{ value: 'AUDITED', text: '是' }, { value: 'AUDITFAILED', text: '否' }],
+	      audit_opinion: '',
+	      status: 'AUDITED'
+	    };
+	  },
+	  render: function render() {
+	    var submitting = this.props.submitting;
+
+	    return _react2['default'].createElement(
+	      _commonStd_modal2['default'],
+	      { onConfirm: this.onConfirm, onCancel: this.hideCallback, submitting: submitting, size: 'sm', ref: 'modal', title: '审核打印申请' },
+	      _react2['default'].createElement(
+	        'div',
+	        { className: 'pl-50' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　订单编号：'
+	          ),
+	          _react2['default'].createElement(
+	            'span',
+	            null,
+	            ' ' + this.props.data.order_id
+	          )
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　审核意见：'
+	          ),
+	          _react2['default'].createElement('textarea', { valueLink: this.linkState('audit_opinion'), cols: '25', rows: '2', className: 'form-control input-xs' })
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '　是否通过：'
+	          ),
+	          _react2['default'].createElement(_commonRadio_group2['default'], {
+	            radios: this.state.radios,
+	            value: this.state.status,
+	            className: 'inline-block',
+	            name: 'review_status',
+	            onChange: this.onStatusChange })
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'form-group form-inline' },
+	          _react2['default'].createElement(
+	            'label',
+	            null,
+	            '申请人手机：'
+	          ),
+	          _react2['default'].createElement(
+	            'span',
+	            null,
+	            ' ' + this.props.data.applicant_mobile
+	          )
+	        )
+	      )
+	    );
+	  },
+	  onStatusChange: function onStatusChange(value) {
+	    this.setState({ status: value });
+	  },
+	  mixins: [_reactAddonsLinkedStateMixin2['default']],
+	  show: function show() {
+	    this.refs.modal.show();
+	  },
+	  hideCallback: function hideCallback() {
+	    this.setState(this.getInitialState());
+	  },
+	  onConfirm: function onConfirm() {
+	    var _props$data = this.props.data;
+	    var apply_id = _props$data.apply_id;
+	    var applicant_mobile = _props$data.applicant_mobile;
+	    var order_id = _props$data.order_id;
+	    var _state = this.state;
+	    var status = _state.status;
+	    var audit_opinion = _state.audit_opinion;
+
+	    this.props.reviewPrintApply(apply_id, { applicant_mobile: applicant_mobile, order_id: order_id, status: status, audit_opinion: audit_opinion }).done((function () {
+	      this.refs.modal.hide();
+	      this.props.callback();
+	    }).bind(this)).fail(function () {
+	      (0, _utilsIndex.Noty)('error', '服务器异常');
+	    });
+	  }
+	});
+	module.exports = exports['default'];
+
+/***/ },
+/* 341 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	exports.getPrintReviewList = getPrintReviewList;
+	exports.reviewPrintApply = reviewPrintApply;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _utilsRequest = __webpack_require__(234);
+
+	//Promise
+
+	var _configUrl = __webpack_require__(239);
+
+	var _configUrl2 = _interopRequireDefault(_configUrl);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var _reduxForm = __webpack_require__(242);
+
+	var GET_PRINT_REVIEW_LIST_ING = 'GET_PRINT_REVIEW_LIST_ING';
+	exports.GET_PRINT_REVIEW_LIST_ING = GET_PRINT_REVIEW_LIST_ING;
+	var GET_PRINT_REVIEW_LIST = 'GET_PRINT_REVIEW_LIST';
+	exports.GET_PRINT_REVIEW_LIST = GET_PRINT_REVIEW_LIST;
+
+	function getPrintReviewList(data) {
+	  return function (dispatch, getState) {
+	    var filter_data = (0, _reduxForm.getValues)(getState().form.print_review);
+	    filter_data = (0, _utilsIndex.formCompile)(filter_data);
+	    dispatch({ type: GET_PRINT_REVIEW_LIST_ING });
+	    return (0, _utilsRequest.GET)(_configUrl2['default'].print_review_list.toString(), _extends({}, data, filter_data), GET_PRINT_REVIEW_LIST)(dispatch);
+	  };
+	  /*
+	    return TEST({
+	      total: 1,
+	      page_no: 0,
+	      list: [{
+	        'applicant_mobile':  '申请人手机-todo',
+	        'applicant_name':  '申请人名字-todo',
+	        'apply_id':  '申请记录ID-todo',
+	        'apply_reason':  '申请理由-todo',
+	        'apply_time':  '申请时间-todo',
+	        'audit_':  '审核意见-todo',
+	        'audit_time':  '审核时间-todo',
+	        'auditor': '审核人-todo',
+	        'is_reprint':  '是否已经重新打印-todo',
+	        'order_id':  '订单号-todo',
+	        'reprint_time':  '重新打印时间-todo',
+	        'status':  '审核状态-todo',
+	        'validate_code':  '短信验证码-todo',
+	      }]
+	    }, GET_PRINT_REVIEW_LIST, 2000)
+	  */
+	}
+
+	//审核重新打印申请
+	var REVIEW_PRINT_APPLY = 'REVIEW_PRINT_APPLY';exports.REVIEW_PRINT_APPLY = REVIEW_PRINT_APPLY;
+	//key: 0->正在处理，1->成功，2->失败
+
+	function reviewPrintApply(apply_id, data) {
+	  //若是异步的话，那么该函数必须也返回一个函数
+	  return (0, _utilsRequest.PUT)(_configUrl2['default'].review_print_apply.toString(apply_id), data, REVIEW_PRINT_APPLY);
+	  // return TEST(null, [
+	  //   {type: REVIEW_PRINT_APPLY, key: 0},  //立即派发
+	  //   {type: REVIEW_PRINT_APPLY, key: 1}   //2000毫秒后派发
+	  // ], 1000, true);
+		}
+
+/***/ },
+/* 342 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(154);
+
+	var _reactRedux = __webpack_require__(216);
+
+	var _redux = __webpack_require__(223);
+
+	var _reduxForm = __webpack_require__(242);
+
+	var _commonSearch_input = __webpack_require__(304);
+
+	var _commonSearch_input2 = _interopRequireDefault(_commonSearch_input);
+
+	var _commonSelect = __webpack_require__(301);
+
+	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+
+	var _commonPagination = __webpack_require__(302);
+
+	var _commonPagination2 = _interopRequireDefault(_commonPagination);
+
+	var _commonLine_router = __webpack_require__(319);
+
+	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
+
+	var _commonLoading = __webpack_require__(305);
+
+	var _history_instance = __webpack_require__(211);
+
+	var _history_instance2 = _interopRequireDefault(_history_instance);
+
+	var _autocomplete = __webpack_require__(343);
+
+	var _autocomplete2 = _interopRequireDefault(_autocomplete);
+
+	var _actionsArea = __webpack_require__(288);
+
+	var _actionsArea2 = _interopRequireDefault(_actionsArea);
+
+	var _actionsStation_scope_manage = __webpack_require__(344);
+
+	var _actionsStation_scope_manage2 = _interopRequireDefault(_actionsStation_scope_manage);
+
+	// import * as StationAction from 'actions/station_manage';
+
+	var _utilsLazy_load = __webpack_require__(308);
+
+	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
+
+	var TopHeader = (function (_Component) {
+	  _inherits(TopHeader, _Component);
+
+	  function TopHeader() {
+	    _classCallCheck(this, TopHeader);
+
+	    _get(Object.getPrototypeOf(TopHeader.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(TopHeader, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'clearfix top-header' },
+	        _react2['default'].createElement(_commonLine_router2['default'], {
+	          routes: [{ name: '配送管理', link: '/sm/station' }, { name: '配送站管理', link: '' }] })
+	      );
+	    }
+	  }]);
+
+	  return TopHeader;
+	})(_react.Component);
+
+	var FilterHeader = (function (_Component2) {
+	  _inherits(FilterHeader, _Component2);
+
+	  function FilterHeader(props) {
+	    _classCallCheck(this, FilterHeader);
+
+	    _get(Object.getPrototypeOf(FilterHeader.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      search_ing: false
+	    };
+	  }
+
+	  _createClass(FilterHeader, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var _props$fields = _props.fields;
+	      var station_name = _props$fields.station_name;
+	      var province_id = _props$fields.province_id;
+	      var city_id = _props$fields.city_id;
+	      var district_id = _props$fields.district_id;
+	      var _props$area = _props.area;
+	      var provinces = _props$area.provinces;
+	      var cities = _props$area.cities;
+	      var districts = _props$area.districts;
+	      var stations = _props.station.stations;
+
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'panel search' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'panel-body form-inline' },
+	          _react2['default'].createElement(_autocomplete2['default'], { focusHandler: this.focusHandler, placeholder: '请输入配送站名称', searchHandler: this.props.getStationByName, options: stations, className: 'pull-left' }),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { options: provinces, 'no-default': 'true', onChange: this.onProvinceChange.bind(this, province_id.onChange), ref: 'province', className: 'space-left space-right' })),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, city_id, { options: cities, 'no-default': 'true', onChange: this.onCityChange.bind(this, city_id.onChange), ref: 'city', className: 'space-right' })),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, district_id, { options: districts, ref: 'district', className: 'space-right' })),
+	          _react2['default'].createElement(
+	            'button',
+	            { disabled: this.state.search_ing, onClick: this.search.bind(this), className: 'btn btn-theme btn-xs' },
+	            _react2['default'].createElement('i', { className: 'fa fa-search', style: { 'padding': '0 5px' } }),
+	            '查询'
+	          ),
+	          _react2['default'].createElement(
+	            'a',
+	            { className: 'pull-right btn btn-theme btn-xs' },
+	            _react2['default'].createElement('i', { className: 'fa fa-plus-circle', style: { 'padding': '0 5px' } }),
+	            '添加'
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      setTimeout((function () {
+	        var _props2 = this.props;
+	        var getProvinces = _props2.getProvinces;
+	        var getStations = _props2.getStations;
+
+	        getProvinces();
+	        getStations();
+	        console.log('ok');
+	        (0, _utilsLazy_load2['default'])('noty');
+	      }).bind(this), 0);
+
+	      var intial_province_id = '110000';
+	      var intial_city_id = '110000';
+	      $((0, _reactDom.findDOMNode)(this.refs.province)).children('option[value=' + intial_province_id + ']').attr('selected', 'true');
+	      var $city = $((0, _reactDom.findDOMNode)(this.refs.city));
+	      this.props.getCities(intial_province_id);
+	    }
+	  }, {
+	    key: 'onProvinceChange',
+	    value: function onProvinceChange(callback, e) {
+	      var value = e.target.value;
+
+	      this.props.provinceReset();
+	      if (value != this.refs.province.props['default-value']) var $city = $((0, _reactDom.findDOMNode)(this.refs.city));
+	      this.props.getCities(value).done(function () {
+	        $city.trigger('focus'); //聚焦已使city_id的值更新
+	      });
+	      callback(e);
+	    }
+	  }, {
+	    key: 'onCityChange',
+	    value: function onCityChange(callback, e) {
+	      var value = e.target.value;
+
+	      this.props.cityReset();
+	      if (value != this.refs.city.props['default-value']) var $district = $((0, _reactDom.findDOMNode)(this.refs.district));
+	      this.props.getDistricts(value).done(function () {
+	        $district.trigger('focus'); //聚焦已使city_id的值更新
+	      });
+	      callback(e);
+	    }
+	  }, {
+	    key: 'search',
+	    value: function search() {
+	      var _this = this;
+
+	      var city_id = $((0, _reactDom.findDOMNode)(this.refs.city)).children('option:selected').attr('value');
+	      this.setState({ search_ing: true });
+	      this.props.getStationByCity(city_id).always(function () {
+	        _this.setState({ search_ing: false });
+	      });
+	      // this.props.getOrderExchangeList({page_no: 0, page_size: this.props.page_size})
+	      //   .always(()=>{
+	      //     this.setState({search_ing: false});
+	      //   });
+	    }
+	  }]);
+
+	  return FilterHeader;
+	})(_react.Component);
+
+	FilterHeader = (0, _reduxForm.reduxForm)({
+	  form: 'station_manage',
+	  fields: ['province_id', 'city_id', 'district_id']
+	})(FilterHeader);
+
+	var StationRow = (function (_Component3) {
+	  _inherits(StationRow, _Component3);
+
+	  function StationRow() {
+	    _classCallCheck(this, StationRow);
+
+	    _get(Object.getPrototypeOf(StationRow.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(StationRow, [{
+	    key: 'render',
+	    value: function render() {
+	      var station_id = this.props.station_id;
+
+	      return _react2['default'].createElement(
+	        'tr',
+	        null,
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement('input', { type: 'checkbox' })
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          this.props.province_id
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          this.props.city_id
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          this.props.district_id
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          this.props.station_name
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          this.props.address
+	        ),
+	        _react2['default'].createElement(
+	          'td',
+	          null,
+	          _react2['default'].createElement(
+	            'a',
+	            { onClick: this.editScope, href: 'javascript:;' },
+	            '[编辑配送区域]'
+	          ),
+	          _react2['default'].createElement(
+	            'a',
+	            { onClick: this.viewDetail, href: 'javascript:;', className: 'no-wrap' },
+	            '[查看备注]'
+	          ),
+	          _react2['default'].createElement(
+	            'a',
+	            { onClick: this.editStation, href: 'javascript:;', className: 'no-wrap' },
+	            '[编辑]'
+	          ),
+	          _react2['default'].createElement(
+	            'a',
+	            { onClick: this.deleteStation, href: 'javascript:;', className: 'no-wrap' },
+	            '[删除]'
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'editScope',
+	    value: function editScope(e) {
+	      _history_instance2['default'].push('/sm/station' + this.props.station_id);
+	      e.stopPropagation();
+	    }
+	  }, {
+	    key: 'viewDetail',
+	    value: function viewDetail() {}
+	  }, {
+	    key: 'editStation',
+	    value: function editStation() {}
+	  }, {
+	    key: 'deleteStation',
+	    value: function deleteStation() {}
+	  }]);
+
+	  return StationRow;
+	})(_react.Component);
+
+	var StationManagePannel = (function (_Component4) {
+	  _inherits(StationManagePannel, _Component4);
+
+	  function StationManagePannel() {
+	    _classCallCheck(this, StationManagePannel);
+
+	    _get(Object.getPrototypeOf(StationManagePannel.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(StationManagePannel, [{
+	    key: 'render',
+	    value: function render() {
+	      var _this2 = this;
+
+	      var station = this.props.station;
+
+	      var content = station.station_list_info.map(function (n, i) {
+	        return _react2['default'].createElement(StationRow, _extends({ key: n.id
+	        }, _this2.props));
+	      });
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'station-manage' },
+	        _react2['default'].createElement(TopHeader, null),
+	        _react2['default'].createElement(FilterHeader, this.props),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'panel' },
+	          _react2['default'].createElement(
+	            'header',
+	            { className: 'panel-heading' },
+	            '送货列表'
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'panel-body' },
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'table-responsive' },
+	              _react2['default'].createElement(
+	                'table',
+	                { className: 'table table-hover text-center' },
+	                _react2['default'].createElement(
+	                  'thead',
+	                  null,
+	                  _react2['default'].createElement(
+	                    'tr',
+	                    null,
+	                    _react2['default'].createElement('th', null),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '省份'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '城市'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '区域'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '配送站名称'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '详细地址'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '操作'
+	                    )
+	                  )
+	                ),
+	                _react2['default'].createElement(
+	                  'tbody',
+	                  null,
+	                  content
+	                )
+	              )
+	            ),
+	            _react2['default'].createElement(
+	              'button',
+	              { className: 'btn btn-theme btn-xs' },
+	              _react2['default'].createElement('i', { className: 'fa fa-minus-square', style: { 'padding': '0 5px' } }),
+	              '删除'
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return StationManagePannel;
+	})(_react.Component);
+
+	exports['default'] = StationManagePannel;
+
+	function mapStateToProps(_ref) {
+	  var stationManage = _ref.stationManage;
+
+	  return stationManage;
+	}
+
+	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
+	function mapDispatchToProps(dispatch) {
+	  return (0, _redux.bindActionCreators)(_extends({}, (0, _actionsArea2['default'])(), (0, _actionsStation_scope_manage2['default'])()), dispatch);
+	}
+
+	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(StationManagePannel);
+	module.exports = exports['default'];
+
+/***/ },
+/* 343 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(154);
+
+	var Autocomplete = (function (_Component) {
+	  _inherits(Autocomplete, _Component);
+
+	  function Autocomplete(props) {
+	    _classCallCheck(this, Autocomplete);
+
+	    _get(Object.getPrototypeOf(Autocomplete.prototype), 'constructor', this).call(this, props);
+	    this.searchHandler = this.searchHandler.bind(this);
+	    this.focusHandler = this.focusHandler.bind(this);
+	  }
+
+	  _createClass(Autocomplete, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var className = _props.className;
+	      var searching = _props.searching;
+	      var size = _props.size;
+	      var placeholder = _props.placeholder;
+	      var searchHandler = _props.searchHandler;
+	      var focusHandler = _props.focusHandler;
+
+	      var i_className = searching ? 'fa fa-spinner fa-spin disabled' : 'fa fa-search';
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'search-input ' + className },
+	        _react2['default'].createElement('input', { ref: 'input',
+	          className: 'form-control ' + size,
+	          placeholder: placeholder,
+	          onFocus: this.focusHandler.bind(this),
+	          onKeyDown: this.keyDownHandler.bind(this) }),
+	        _react2['default'].createElement('i', { className: i_className, onClick: this.searchHandler })
+	      );
+	    }
+	  }, {
+	    key: 'keyDownHandler',
+	    value: function keyDownHandler(e) {
+	      //enter键
+	      if (!this.props.searching && e.which == 13) {
+	        this.searchHandler();
+	      }
+	    }
+	  }, {
+	    key: 'searchHandler',
+	    value: function searchHandler() {
+	      if (!this.props.searching) {
+	        console.log('search: ' + this.refs.input.value);
+	        var station_name = this.refs.input.value;
+	        if (station_name !== '') {
+	          this.props.searchHandler({ station_name: this.refs.input.value });
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'focusHandler',
+	    value: function focusHandler() {
+	      var options = this.props.options;
+
+	      var $inp = $((0, _reactDom.findDOMNode)(this.refs.input));
+	      var stations = [];
+	      options.forEach(function (n) {
+	        stations.push(n['text']);
+	      });
+	      LazyLoad('autocomplete', function () {
+	        $inp.autocomplete({
+	          source: stations
+	        });
+	      });
+	    }
+	  }]);
+
+	  return Autocomplete;
+	})(_react.Component);
+
+	exports['default'] = Autocomplete;
+
+	Autocomplete.defaultProps = {
+	  className: '',
+	  searching: false,
+	  size: 'input-xs',
+	  placeholder: '',
+	  searchHandler: function searchHandler() {}
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 344 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports['default'] = Stations;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _utilsRequest = __webpack_require__(234);
+
+	//Promise
+
+	var _configUrl = __webpack_require__(239);
+
+	var _configUrl2 = _interopRequireDefault(_configUrl);
+
+	var FAIL = 'FAIL';
+	exports.FAIL = FAIL;
+	var GOT_STATIONS = 'GOT_STATIONS';
+	exports.GOT_STATIONS = GOT_STATIONS;
+	var GOT_STATIONS_BY_CITY = 'GOT_STATIONS_BY_CITY';
+	exports.GOT_STATIONS_BY_CITY = GOT_STATIONS_BY_CITY;
+	var GOT_STATIONS_BY_DISTRICT = 'GOT_STATIONS_BY_DISTRICT';
+	exports.GOT_STATIONS_BY_DISTRICT = GOT_STATIONS_BY_DISTRICT;
+	var GOT_STATIONS_BY_NAME = 'GOT_STATIONS_BY_NAME';
+	exports.GOT_STATIONS_BY_NAME = GOT_STATIONS_BY_NAME;
+	var GOT_STATIONS_SCOPE = 'GOT_STATIONS_SCOPE';
+	exports.GOT_STATIONS_SCOPE = GOT_STATIONS_SCOPE;
+	var MODIFY_STATIONS_SCOPE = 'MODIFY_STATIONS_SCOPE';
+
+	exports.MODIFY_STATIONS_SCOPE = MODIFY_STATIONS_SCOPE;
+
+	function Stations() {
+	  function _resolve(url, signal) {
+	    return function (dispatch) {
+	      return (0, _utilsRequest.get)(url).done(function (json) {
+	        dispatch({
+	          type: signal,
+	          data: json
+	        });
+	      }).fail(function (msg) {
+	        dispatch({
+	          type: FAIL,
+	          msg: msg
+	        });
+	      });
+	    };
+	  };
+	  return {
+	    getStations: function getStations() {
+	      return _resolve(_configUrl2['default'].stations.toString(), GOT_STATIONS);
+	      // return {
+	      //   type: ActionTypes.GOT_STATIONS,
+	      //   data: [1: '沙井配送站']
+	      // }
+	    },
+
+	    getStationByCity: function getStationByCity(city_id) {
+	      return _resolve(_configUrl2['default'].station_list_info.toString(city_id), GOT_STATIONS_BY_CITY);
+	    },
+
+	    getStationByDistrict: function getStationByDistrict(district_id) {
+	      return _resolve(_configUrl2['default'].station_list_info.toString(district_id), GOT_STATIONS_BY_DISTRICT);
+	    },
+
+	    getStationByName: function getStationByName(station_name) {
+	      return (0, _utilsRequest.GET)(_configUrl2['default'].station_info.toString(), station_name, GOT_STATIONS_BY_NAME);
+	    },
+
+	    getStationScope: function getStationScope(station_id, station_name) {
+	      return (0, _utilsRequest.GET)(_configUrl2['default'].station_scope.toString(station_id), station_name, GOT_STATIONS_SCOPE);
+	    },
+
+	    modifyStationScope: function modifyStationScope(station_id, coords) {
+	      return PUT(_configUrl2['default'].new_station_scope.toString(station_id), coords, MODIFY_STATIONS_SCOPE);
+	    }
+
+	  };
+	}
+
+/***/ },
+/* 345 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(154);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var _redux = __webpack_require__(223);
+
+	var _reduxForm = __webpack_require__(242);
+
+	var _reactRedux = __webpack_require__(216);
+
+	var _commonPagination = __webpack_require__(302);
+
+	var _commonPagination2 = _interopRequireDefault(_commonPagination);
+
+	var _commonStd_modal = __webpack_require__(306);
+
+	var _commonStd_modal2 = _interopRequireDefault(_commonStd_modal);
+
+	var _commonLine_router = __webpack_require__(319);
+
+	var _commonLine_router2 = _interopRequireDefault(_commonLine_router);
+
+	var _commonSearch_input = __webpack_require__(304);
+
+	var _commonSearch_input2 = _interopRequireDefault(_commonSearch_input);
+
+	var _commonSelect = __webpack_require__(301);
+
+	var _commonSelect2 = _interopRequireDefault(_commonSelect);
+
+	var _autocomplete = __webpack_require__(343);
+
+	var _autocomplete2 = _interopRequireDefault(_autocomplete);
+
+	var _actionsArea = __webpack_require__(288);
+
+	var _actionsArea2 = _interopRequireDefault(_actionsArea);
+
+	var _actionsStation_scope_manage = __webpack_require__(344);
+
+	var _actionsStation_scope_manage2 = _interopRequireDefault(_actionsStation_scope_manage);
+
+	var _utilsLazy_load = __webpack_require__(308);
+
+	var _utilsLazy_load2 = _interopRequireDefault(_utilsLazy_load);
+
+	var TopHeader = (function (_React$Component) {
+	  _inherits(TopHeader, _React$Component);
+
+	  function TopHeader() {
+	    _classCallCheck(this, TopHeader);
+
+	    _get(Object.getPrototypeOf(TopHeader.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(TopHeader, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'clearfix top-header' },
+	        _react2['default'].createElement(_commonLine_router2['default'], {
+	          routes: [{ name: '配送管理', link: '/sm/index' }, { name: '配送站管理', link: '' }] })
+	      );
+	    }
+	  }]);
+
+	  return TopHeader;
+	})(_react2['default'].Component);
+
+	var StationRow = (function (_React$Component2) {
+	  _inherits(StationRow, _React$Component2);
+
+	  function StationRow() {
+	    _classCallCheck(this, StationRow);
+
+	    _get(Object.getPrototypeOf(StationRow.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(StationRow, [{
+	    key: 'render',
+	    value: function render() {
+	      var _this = this;
+
+	      var list = this.props.stationList;
+	      var content = list.map(function (n) {
+	        return _react2['default'].createElement(
+	          'tr',
+	          { key: n.id },
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            _react2['default'].createElement('input', { type: 'checkbox' })
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.district_name
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            { ref: 'station_name' },
+	            n.station_name
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            n.address
+	          ),
+	          _react2['default'].createElement(
+	            'td',
+	            null,
+	            _react2['default'].createElement(
+	              'a',
+	              { href: 'javascript:;', id: n.id, ref: 'edit', onClick: _this.stationScopeEdit.bind(_this) },
+	              '编辑'
+	            )
+	          )
+	        );
+	      });
+
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: '' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'panel' },
+	          _react2['default'].createElement(
+	            'header',
+	            { className: 'panel-heading' },
+	            '配送站列表'
+	          ),
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'panel-body' },
+	            _react2['default'].createElement(
+	              'div',
+	              { className: 'table-responsive' },
+	              _react2['default'].createElement(
+	                'table',
+	                { className: 'table table-hover text-center' },
+	                _react2['default'].createElement(
+	                  'thead',
+	                  null,
+	                  _react2['default'].createElement(
+	                    'tr',
+	                    null,
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      _react2['default'].createElement('input', { type: 'checkbox' })
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '区域'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '名称'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '地址'
+	                    ),
+	                    _react2['default'].createElement(
+	                      'th',
+	                      null,
+	                      '操作'
+	                    )
+	                  )
+	                ),
+	                _react2['default'].createElement(
+	                  'tbody',
+	                  null,
+	                  content
+	                )
+	              )
+	            ),
+	            _react2['default'].createElement(_commonPagination2['default'], null)
+	          )
+	        ),
+	        _react2['default'].createElement(MapModal, { ref: 'map', size: 'lg', title: '编辑配送站范围' })
+	      );
+	    }
+	  }, {
+	    key: 'onPageChange',
+	    value: function onPageChange(page) {
+	      this.search(page);
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.search();
+	    }
+	  }, {
+	    key: 'search',
+	    value: function search(page) {
+	      // page = typeof page == 'undefined' ? this.props.orders.page_no : page;
+	      // this.props.getOrderList({page_no: page, page_size: this.state.page_size});
+	    }
+	  }, {
+	    key: 'stationScopeEdit',
+	    value: function stationScopeEdit() {
+	      var getStationScope = this.props.getStationScope;
+
+	      var station_id = $((0, _reactDom.findDOMNode)(this.refs.edit)).attr('id');
+	      var station_name = $((0, _reactDom.findDOMNode)(this.refs.station_name)).text();
+
+	      getStationScope(station_id, { 'station_name': station_name });
+	      this.refs.map.show();
+	    }
+	  }]);
+
+	  return StationRow;
+	})(_react2['default'].Component);
+
+	var FilterHeader = (function (_React$Component3) {
+	  _inherits(FilterHeader, _React$Component3);
+
+	  function FilterHeader(props) {
+	    _classCallCheck(this, FilterHeader);
+
+	    _get(Object.getPrototypeOf(FilterHeader.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      search_ing: false
+	    };
+	  }
+
+	  _createClass(FilterHeader, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var _props$fields = _props.fields;
+	      var province_id = _props$fields.province_id;
+	      var city_id = _props$fields.city_id;
+	      var station_id = _props$fields.station_id;
+	      var _props$area = _props.area;
+	      var provinces = _props$area.provinces;
+	      var cities = _props$area.cities;
+	      var _props$station = _props.station;
+	      var stations = _props$station.stations;
+	      var station_list_info = _props$station.station_list_info;
+	      var search_ing = this.state.search_ing;
+
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'panel search' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'panel-body form-inline' },
+	          _react2['default'].createElement(_autocomplete2['default'], { focusHandler: this.focusHandler, placeholder: '请输入配送站名称', searchHandler: this.getStationByName, options: stations, className: 'pull-left' }),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({}, province_id, { onChange: this.onProvinceChange.bind(this, province_id.onChange), options: provinces, ref: 'province', 'default-text': '选择省份', className: 'space-left space-right' })),
+	          _react2['default'].createElement(_commonSelect2['default'], _extends({ ref: 'city' }, city_id, { options: cities, 'default-text': '选择城市', className: 'space-right' })),
+	          _react2['default'].createElement(
+	            'button',
+	            { disabled: search_ing, 'data-submitting': search_ing, onClick: this.search.bind(this), className: 'btn btn-theme btn-xs' },
+	            '查找',
+	            _react2['default'].createElement('i', { className: 'fa fa-search', style: { 'padding': '0 3px' } })
+	          ),
+	          _react2['default'].createElement(StationRow, _extends({ stationList: station_list_info }, this.props))
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      setTimeout((function () {
+	        var _props2 = this.props;
+	        var getProvinces = _props2.getProvinces;
+	        var getAllDeliveryStations = _props2.getAllDeliveryStations;
+	        var getStations = _props2.getStations;
+	        var getStationByCity = _props2.getStationByCity;
+
+	        getProvinces();
+	        getStations();
+	        (0, _utilsLazy_load2['default'])('noty');
+	      }).bind(this), 0);
+	    }
+	  }, {
+	    key: 'focusHandler',
+	    value: function focusHandler() {
+	      var $inp = $((0, _reactDom.findDOMNode)(this.refs.inp));
+	      var data = this.props.station.stations;
+	      var stations = [];
+	      data.forEach(function (n) {
+	        stations.push(n['text']);
+	      });
+	      (0, _utilsLazy_load2['default'])('autocomplete', function () {
+	        console.log('asnfostganeoganrsdgnaren');
+	        $inp.autocomplete({
+	          source: stations
+	        });
+	      });
+	    }
+	  }, {
+	    key: 'onProvinceChange',
+	    value: function onProvinceChange(callback, e) {
+	      var value = e.target.value;
+
+	      this.props.provinceReset();
+	      if (value != this.refs.province.props['default-value']) var $city = $((0, _reactDom.findDOMNode)(this.refs.city));
+	      this.props.getCities(value).done(function () {
+	        $city.trigger('focus'); //聚焦已使city_id的值更新
+	      });
+	      callback(e);
+	    }
+	  }, {
+	    key: 'search',
+	    value: function search() {
+	      var _this2 = this;
+
+	      var city_id = $((0, _reactDom.findDOMNode)(this.refs.city)).children('option:selected').attr('value');
+	      this.setState({ search_ing: true });
+	      this.props.getStationByCity(city_id).always(function () {
+	        _this2.setState({ search_ing: false });
+	      });
+	    }
+	  }]);
+
+	  return FilterHeader;
+	})(_react2['default'].Component);
+
+	FilterHeader = (0, _reduxForm.reduxForm)({
+	  form: 'station_scope_manage',
+	  fields: ['province_id', 'city_id']
+	})(FilterHeader);
+
+	var stationScopeManagePannel = (function (_React$Component4) {
+	  _inherits(stationScopeManagePannel, _React$Component4);
+
+	  function stationScopeManagePannel() {
+	    _classCallCheck(this, stationScopeManagePannel);
+
+	    _get(Object.getPrototypeOf(stationScopeManagePannel.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(stationScopeManagePannel, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2['default'].createElement(
+	        'div',
+	        null,
+	        _react2['default'].createElement(TopHeader, null),
+	        _react2['default'].createElement(FilterHeader, this.props)
+	      );
+	    }
+	  }]);
+
+	  return stationScopeManagePannel;
+	})(_react2['default'].Component);
+
+	function mapStateToProps(_ref) {
+	  var stationScopeManage = _ref.stationScopeManage;
+
+	  return stationScopeManage;
+	}
+
+	/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
+	function mapDispatchToProps(dispatch) {
+	  return (0, _redux.bindActionCreators)(_extends({}, (0, _actionsArea2['default'])(), (0, _actionsStation_scope_manage2['default'])()), dispatch);
+	}
+
+	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(stationScopeManagePannel);
+
+	/***************   *******   *****************/
+	/***************   子模态框   *****************/
+	/***************   *******   *****************/
+
+	var MapModal = (function (_React$Component5) {
+	  _inherits(MapModal, _React$Component5);
+
+	  function MapModal() {
+	    _classCallCheck(this, MapModal);
+
+	    _get(Object.getPrototypeOf(MapModal.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(MapModal, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2['default'].createElement(
+	        _commonStd_modal2['default'],
+	        { ref: 'modal', title: '批量转换操作' },
+	        _react2['default'].createElement(MapScope, null)
+	      );
+	    }
+	  }, {
+	    key: 'show',
+	    value: function show() {
+	      this.refs.modal.show();
+	    }
+	  }, {
+	    key: 'hide',
+	    value: function hide() {
+	      this.refs.modal.hide();
+	    }
+	  }]);
+
+	  return MapModal;
+	})(_react2['default'].Component);
+
+	;
+
+	var MapScope = (function (_React$Component6) {
+	  _inherits(MapScope, _React$Component6);
+
+	  function MapScope() {
+	    _classCallCheck(this, MapScope);
+
+	    _get(Object.getPrototypeOf(MapScope.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(MapScope, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2['default'].createElement('div', { ref: 'map' });
+	    }
+	  }]);
+
+	  return MapScope;
+	})(_react2['default'].Component);
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 346 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _redux = __webpack_require__(223);
+
+	var _reduxLogger = __webpack_require__(347);
+
+	var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
+
+	var _reduxThunk = __webpack_require__(348);
+
+	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
+
+	var _reducersIndex = __webpack_require__(349);
+
+	var _reducersIndex2 = _interopRequireDefault(_reducersIndex);
+
+	if (true) {
+	  //生产环境不需要logger
+	  var createStoreWithMiddleware = (0, _redux.applyMiddleware)(_reduxThunk2['default'])(_redux.createStore);
+	} else {
+	  var createStoreWithMiddleware = (0, _redux.compose)((0, _redux.applyMiddleware)(_reduxThunk2['default'], (0, _reduxLogger2['default'])()), window.devToolsExtension ? window.devToolsExtension() : function (f) {
+	    return f;
+	  })(_redux.createStore);
+	}
+
+	var store = createStoreWithMiddleware(_reducersIndex2['default']);
+
+	//考虑到有些reducer中将使用到store
+	window.STORE = store;
+
+	exports['default'] = store;
+	module.exports = exports['default'];
+
+/***/ },
+/* 347 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var repeat = function repeat(str, times) {
+	  return new Array(times + 1).join(str);
+	};
+	var pad = function pad(num, maxLength) {
+	  return repeat("0", maxLength - num.toString().length) + num;
+	};
+	var formatTime = function formatTime(time) {
+	  return " @ " + pad(time.getHours(), 2) + ":" + pad(time.getMinutes(), 2) + ":" + pad(time.getSeconds(), 2) + "." + pad(time.getMilliseconds(), 3);
+	};
+
+	// Use the new performance api to get better precision if available
+	var timer = typeof performance !== "undefined" && typeof performance.now === "function" ? performance : Date;
+
+	/**
+	 * Creates logger with followed options
+	 *
+	 * @namespace
+	 * @property {object} options - options for logger
+	 * @property {string} options.level - console[level]
+	 * @property {bool} options.duration - print duration of each action?
+	 * @property {bool} options.timestamp - print timestamp with each action?
+	 * @property {object} options.colors - custom colors
+	 * @property {object} options.logger - implementation of the `console` API
+	 * @property {boolean} options.collapsed - is group collapsed?
+	 * @property {boolean} options.predicate - condition which resolves logger behavior
+	 * @property {function} options.stateTransformer - transform state before print
+	 * @property {function} options.actionTransformer - transform action before print
+	 */
+
+	function createLogger() {
+	  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+	  return function (_ref) {
+	    var getState = _ref.getState;
+	    return function (next) {
+	      return function (action) {
+	        var _options$level = options.level;
+	        var level = _options$level === undefined ? "log" : _options$level;
+	        var _options$logger = options.logger;
+	        var logger = _options$logger === undefined ? window.console : _options$logger;
+	        var collapsed = options.collapsed;
+	        var predicate = options.predicate;
+	        var _options$duration = options.duration;
+	        var duration = _options$duration === undefined ? false : _options$duration;
+	        var _options$timestamp = options.timestamp;
+	        var timestamp = _options$timestamp === undefined ? true : _options$timestamp;
+	        var transformer = options.transformer;
+	        var _options$stateTransfo = options.stateTransformer;
+	        var // deprecated
+	        stateTransformer = _options$stateTransfo === undefined ? function (state) {
+	          return state;
+	        } : _options$stateTransfo;
+	        var _options$actionTransf = options.actionTransformer;
+	        var actionTransformer = _options$actionTransf === undefined ? function (actn) {
+	          return actn;
+	        } : _options$actionTransf;
+	        var _options$colors = options.colors;
+	        var colors = _options$colors === undefined ? {
+	          title: function title() {
+	            return "#000000";
+	          },
+	          prevState: function prevState() {
+	            return "#9E9E9E";
+	          },
+	          action: function action() {
+	            return "#03A9F4";
+	          },
+	          nextState: function nextState() {
+	            return "#4CAF50";
+	          }
+	        } : _options$colors;
+
+	        // exit if console undefined
+
+	        if (typeof logger === "undefined") {
+	          return next(action);
+	        }
+
+	        // exit early if predicate function returns false
+	        if (typeof predicate === "function" && !predicate(getState, action)) {
+	          return next(action);
+	        }
+
+	        if (transformer) {
+	          console.error("Option 'transformer' is deprecated, use stateTransformer instead");
+	        }
+
+	        var started = timer.now();
+	        var prevState = stateTransformer(getState());
+
+	        var formattedAction = actionTransformer(action);
+	        var returnedValue = next(action);
+
+	        var took = timer.now() - started;
+	        var nextState = stateTransformer(getState());
+
+	        // message
+	        var time = new Date();
+	        var isCollapsed = typeof collapsed === "function" ? collapsed(getState, action) : collapsed;
+
+	        var formattedTime = formatTime(time);
+	        var titleCSS = colors.title ? "color: " + colors.title(formattedAction) + ";" : null;
+	        var title = "action " + formattedAction.type + (timestamp ? formattedTime : "") + (duration ? " in " + took.toFixed(2) + " ms" : "");
+
+	        // render
+	        try {
+	          if (isCollapsed) {
+	            if (colors.title) logger.groupCollapsed("%c " + title, titleCSS);else logger.groupCollapsed(title);
+	          } else {
+	            if (colors.title) logger.group("%c " + title, titleCSS);else logger.group(title);
+	          }
+	        } catch (e) {
+	          logger.log(title);
+	        }
+
+	        if (colors.prevState) logger[level]("%c prev state", "color: " + colors.prevState(prevState) + "; font-weight: bold", prevState);else logger[level]("prev state", prevState);
+
+	        if (colors.action) logger[level]("%c action", "color: " + colors.action(formattedAction) + "; font-weight: bold", formattedAction);else logger[level]("action", formattedAction);
+
+	        if (colors.nextState) logger[level]("%c next state", "color: " + colors.nextState(nextState) + "; font-weight: bold", nextState);else logger[level]("next state", nextState);
+
+	        try {
+	          logger.groupEnd();
+	        } catch (e) {
+	          logger.log("—— log end ——");
+	        }
+
+	        return returnedValue;
+	      };
+	    };
+	  };
+	}
+
+	exports.default = createLogger;
+	module.exports = exports['default'];
+
+/***/ },
+/* 348 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	exports.__esModule = true;
+	exports['default'] = thunkMiddleware;
+
+	function thunkMiddleware(_ref) {
+	  var dispatch = _ref.dispatch;
+	  var getState = _ref.getState;
+
+	  return function (next) {
+	    return function (action) {
+	      return typeof action === 'function' ? action(dispatch, getState) : next(action);
+	    };
+	  };
+	}
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 349 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _redux = __webpack_require__(223);
+
+	var _login = __webpack_require__(350);
+
+	var _login2 = _interopRequireDefault(_login);
+
+	var _order_manage = __webpack_require__(351);
+
+	var _order_manage2 = _interopRequireDefault(_order_manage);
+
+	var _order_manage_form = __webpack_require__(356);
+
+	var _order_manage_form2 = _interopRequireDefault(_order_manage_form);
+
+	var _delivery_change = __webpack_require__(357);
+
+	var _delivery_change2 = _interopRequireDefault(_delivery_change);
+
+	var _delivery_manage = __webpack_require__(358);
+
+	var _delivery_manage2 = _interopRequireDefault(_delivery_manage);
+
+	var _distribute_manage = __webpack_require__(360);
+
+	var _distribute_manage2 = _interopRequireDefault(_distribute_manage);
+
+	var _delivery_print_review = __webpack_require__(361);
+
+	var _delivery_print_review2 = _interopRequireDefault(_delivery_print_review);
+
+	var _form = __webpack_require__(323);
+
+	var _form2 = _interopRequireDefault(_form);
+
+	var _station_manage = __webpack_require__(362);
+
+	var _station_manage2 = _interopRequireDefault(_station_manage);
+
+	var _station_scope_manage = __webpack_require__(363);
+
+	var _station_scope_manage2 = _interopRequireDefault(_station_scope_manage);
+
+	var _reduxSimpleRouter = __webpack_require__(353);
+
+	var rootReducer = (0, _redux.combineReducers)({
+	  login: _login2['default'],
+	  orderManage: _order_manage2['default'],
+	  orderManageForm: _order_manage_form2['default'],
+	  deliveryChange: _delivery_change2['default'],
+	  deliveryManage: _delivery_manage2['default'],
+	  distributeManage: _distribute_manage2['default'],
+	  deliveryPrintReview: _delivery_print_review2['default'],
+	  form: _form2['default'],
+	  routing: _reduxSimpleRouter.routeReducer,
+	  stationManage: _station_manage2['default'],
+	  stationScopeManage: _station_scope_manage2['default']
+	});
+
+	exports['default'] = rootReducer;
+	module.exports = exports['default'];
+
+/***/ },
+/* 350 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _redux = __webpack_require__(223);
+
+	var _actionsLogin = __webpack_require__(233);
+
+	var initial_state = {
+	  login_ing: false,
+	  validate: false, //好像已经没用了
+	  error_msg: '',
+
+	  username: '',
+	  password: ''
+	};
+
+	function login(state, action) {
+	  if (state === undefined) state = initial_state;
+
+	  switch (action.type) {
+	    case _actionsLogin.LOGIN_START:
+	      return _extends({}, state, { login_ing: true });
+	    case _actionsLogin.LOGIN_SUCCESS:
+	      return _extends({}, state, { validate: true, login_ing: false });
+	    case _actionsLogin.LOGIN_FAIL:
+	      return _extends({}, state, { error_msg: action.msg, login_ing: false });
+	    case _actionsLogin.USERNAME_CHANGE:
+	      return _extends({}, state, { username: action.username });
+	    case _actionsLogin.PASSWORD_CHANGE:
+	      return _extends({}, state, { password: action.password });
+	    case _actionsLogin.RESET_ERROR_MSG:
+	      return _extends({}, state, { error_msg: '' });
+	    default:
+	      return state;
+	  }
+	}
+
+	exports['default'] = login;
+	module.exports = exports['default'];
+
+/***/ },
+/* 351 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var _redux = __webpack_require__(223);
+
+	var _actionsOrder_manage = __webpack_require__(291);
+
+	var Actions = _interopRequireWildcard(_actionsOrder_manage);
+
+	var _actionsOrder_manage_form = __webpack_require__(292);
+
+	var _actionsOrders = __webpack_require__(290);
+
+	var _actionsAction_types = __webpack_require__(289);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _reducersArea_select = __webpack_require__(352);
+
+	var _reducersDelivery_stations = __webpack_require__(354);
+
+	var _reducersDelivery_stations2 = _interopRequireDefault(_reducersDelivery_stations);
+
+	var _reducersOrders = __webpack_require__(355);
+
+	var filter_state = {
+	  search_ing: false,
+	  all_order_srcs: [],
+	  all_order_status: (0, _utilsIndex.map)(_configAppConfig.order_status, function (_ref, id) {
+	    var value = _ref.value;
+	    return { id: id, text: value };
+	  })
+	};
+
+	function filter(state, action) {
+	  if (state === undefined) state = filter_state;
+
+	  switch (action.type) {
+	    case _actionsOrder_manage_form.GOT_ORDER_SRCS:
+	      var l1 = [],
+	          l2 = [];
+	      var data = _utilsIndex.core.isArray(action.data) ? action.data : [];
+	      //level最多为2级
+	      data.forEach(function (n) {
+	        n.text = n.name; //转换
+	        if (n.level == 1) {
+	          l1.push(n);
+	        } else {
+	          l2.push(n);
+	        }
+	      });
+	      return _extends({}, state, { all_order_srcs: !l2.length ? [l1] : [l1, l2] });
+	    default:
+	      return state;
+	  }
+	}
+
+	var main_state = {
+	  submitting: false,
+
+	  prepare_delivery_data_ok: false };
+	//AlterDeliveryModal和AlterStationModal辅助数据是否已经获取完毕
+	// delivery_stations: [],  //这个用于AlterDeliveryModal和AlterStationModal中
+	function main(state, action) {
+	  if (state === undefined) state = main_state;
+
+	  switch (action.type) {
+	    case Actions.CANCEL_ORDER:
+	    case Actions.ORDER_EXCEPTION:
+	    case Actions.ALTER_DELIVERY:
+	      if (action.key == _configAppConfig.REQUEST.ING) {
+	        return _extends({}, state, { submitting: true });
+	      } else if (action.key == _configAppConfig.REQUEST.SUCCESS || action.key == _configAppConfig.REQUEST.FAIL) {
+	        return _extends({}, state, { submitting: false });
+	      } else {
+	        console.error('nali?');
+	      }
+
+	    case Actions.PREPARE_DELIVERY_DATA_OK:
+	      return _extends({}, state, { prepare_delivery_data_ok: true });
+	    case _actionsOrders.GET_ORDER_DETAIL_PRODUCTS:
+	      return _extends({}, state, { prepare_delivery_data_ok: false }); //重新拉取订单详情时，先置否，等待拉取 prepare_delivery_data
+
+	    default:
+	      return state;
+	  }
+	}
+
+	exports['default'] = (0, _redux.combineReducers)({
+	  filter: filter,
+	  area: (0, _reducersArea_select.area)(),
+	  orders: _reducersOrders.orders,
+	  operationRecord: _reducersOrders.operationRecord,
+	  main: main,
+	  alter_delivery_area: (0, _reducersArea_select.area)(_actionsAction_types.AreaActionTypes2),
+	  delivery_stations: _reducersDelivery_stations2['default']
+	});
+	module.exports = exports['default'];
+
+/***/ },
+/* 352 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	exports.area = area;
+
+	var _redux = __webpack_require__(223);
+
+	var _actionsAction_types = __webpack_require__(289);
+
+	var _reduxSimpleRouter = __webpack_require__(353);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var initial_state = {
+	  provinces: [],
+	  cities: [],
+	  districts: [],
+	  delivery_shops: []
+	};
+
+	function _t(data) {
+	  return (0, _utilsIndex.map)(data, function (text, id) {
+	    return { id: id, text: text };
+	  });
+	}
+
+	function area() {
+	  var Actions = arguments.length <= 0 || arguments[0] === undefined ? _actionsAction_types.AreaActionTypes1 : arguments[0];
+
+	  return function area(state, action) {
+	    if (state === undefined) state = initial_state;
+
+	    switch (action.type) {
+	      case _reduxSimpleRouter.UPDATE_PATH:
+	        return initial_state;
+
+	      case Actions.GOT_PROVINCES:
+	        return _extends({}, state, { provinces: _t(action.data) });
+	      case Actions.PROVINCE_RESET:
+	        return _extends({}, state, { cities: [], districts: [], delivery_shops: [] });
+	      case Actions.GOT_CITIES:
+	        return _extends({}, state, { cities: _t(action.data) });
+	      case Actions.CITY_RESET:
+	        return _extends({}, state, { districts: [], delivery_shops: [] });
+	      case Actions.GOT_DISTRICTS:
+	        return _extends({}, state, { districts: _t(action.data) });
+	      case Actions.GOT_DELIVERY_SHOPS:
+	        return _extends({}, state, { delivery_shops: (0, _utilsIndex.map)(action.data, function (text) {
+	            return { id: text, text: text };
+	          }) });
+	      case Actions.DISTRICT_RESET:
+	        return _extends({}, state, { delivery_shops: [] });
+	      default:
+	        return state;
+	    }
+	  };
+	}
+
+/***/ },
+/* 353 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.routeReducer = exports.UPDATE_PATH = undefined;
+	exports.pushPath = pushPath;
+	exports.replacePath = replacePath;
+	exports.syncReduxAndRouter = syncReduxAndRouter;
+
+	var _deepEqual = __webpack_require__(173);
+
+	var _deepEqual2 = _interopRequireDefault(_deepEqual);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	// Constants
+
+	var INIT_PATH = '@@router/INIT_PATH';
+	var UPDATE_PATH = exports.UPDATE_PATH = '@@router/UPDATE_PATH';
+	var SELECT_STATE = function SELECT_STATE(state) {
+	  return state.routing;
+	};
+
+	// Action creators
+
+	function initPath(path, state) {
+	  return {
+	    type: INIT_PATH,
+	    payload: {
+	      path: path,
+	      state: state,
+	      replace: false,
+	      avoidRouterUpdate: true
+	    }
+	  };
+	}
+
+	function pushPath(path, state) {
+	  var _ref = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+	  var _ref$avoidRouterUpdat = _ref.avoidRouterUpdate;
+	  var avoidRouterUpdate = _ref$avoidRouterUpdat === undefined ? false : _ref$avoidRouterUpdat;
+
+	  return {
+	    type: UPDATE_PATH,
+	    payload: {
+	      path: path,
+	      state: state,
+	      replace: false,
+	      avoidRouterUpdate: !!avoidRouterUpdate
+	    }
+	  };
+	}
+
+	function replacePath(path, state) {
+	  var _ref2 = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+	  var _ref2$avoidRouterUpda = _ref2.avoidRouterUpdate;
+	  var avoidRouterUpdate = _ref2$avoidRouterUpda === undefined ? false : _ref2$avoidRouterUpda;
+
+	  return {
+	    type: UPDATE_PATH,
+	    payload: {
+	      path: path,
+	      state: state,
+	      replace: true,
+	      avoidRouterUpdate: !!avoidRouterUpdate
+	    }
+	  };
+	}
+
+	// Reducer
+
+	var initialState = {
+	  changeId: 1,
+	  path: undefined,
+	  state: undefined,
+	  replace: false
+	};
+
+	function update() {
+	  var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
+	  var _ref3 = arguments[1];
+	  var type = _ref3.type;
+	  var payload = _ref3.payload;
+
+	  if (type === INIT_PATH || type === UPDATE_PATH) {
+	    return _extends({}, state, {
+	      path: payload.path,
+	      changeId: state.changeId + (payload.avoidRouterUpdate ? 0 : 1),
+	      state: payload.state,
+	      replace: payload.replace
+	    });
+	  }
+	  return state;
+	}
+
+	// Syncing
+
+	function locationsAreEqual(a, b) {
+	  return a != null && b != null && a.path === b.path && (0, _deepEqual2.default)(a.state, b.state);
+	}
+
+	function createPath(location) {
+	  var pathname = location.pathname;
+	  var search = location.search;
+	  var hash = location.hash;
+
+	  var result = pathname;
+	  if (search) result += search;
+	  if (hash) result += hash;
+	  return result;
+	}
+
+	function syncReduxAndRouter(history, store) {
+	  var selectRouterState = arguments.length <= 2 || arguments[2] === undefined ? SELECT_STATE : arguments[2];
+
+	  var getRouterState = function getRouterState() {
+	    return selectRouterState(store.getState());
+	  };
+
+	  // To properly handle store updates we need to track the last route.
+	  // This route contains a `changeId` which is updated on every
+	  // `pushPath` and `replacePath`. If this id changes we always
+	  // trigger a history update. However, if the id does not change, we
+	  // check if the location has changed, and if it is we trigger a
+	  // history update. It's possible for this to happen when something
+	  // reloads the entire app state such as redux devtools.
+	  var lastRoute = undefined;
+
+	  if (!getRouterState()) {
+	    throw new Error('Cannot sync router: route state does not exist. Did you ' + 'install the routing reducer?');
+	  }
+
+	  var unsubscribeHistory = history.listen(function (location) {
+	    var route = {
+	      path: createPath(location),
+	      state: location.state
+	    };
+
+	    if (!lastRoute) {
+	      // `initialState` *should* represent the current location when
+	      // the app loads, but we cannot get the current location when it
+	      // is defined. What happens is `history.listen` is called
+	      // immediately when it is registered, and it updates the app
+	      // state with an UPDATE_PATH action. This causes problem when
+	      // users are listening to UPDATE_PATH actions just for
+	      // *changes*, and with redux devtools because "revert" will use
+	      // `initialState` and it won't revert to the original URL.
+	      // Instead, we specialize the first route notification and do
+	      // different things based on it.
+	      initialState = {
+	        changeId: 1,
+	        path: route.path,
+	        state: route.state,
+	        replace: false
+	      };
+
+	      // Also set `lastRoute` so that the store subscriber doesn't
+	      // trigger an unnecessary `pushState` on load
+	      lastRoute = initialState;
+
+	      store.dispatch(initPath(route.path, route.state));
+	    } else if (!locationsAreEqual(getRouterState(), route)) {
+	      // The above check avoids dispatching an action if the store is
+	      // already up-to-date
+	      var method = location.action === 'REPLACE' ? replacePath : pushPath;
+	      store.dispatch(method(route.path, route.state, { avoidRouterUpdate: true }));
+	    }
+	  });
+
+	  var unsubscribeStore = store.subscribe(function () {
+	    var routing = getRouterState();
+
+	    // Only trigger history update if this is a new change or the
+	    // location has changed.
+	    if (lastRoute.changeId !== routing.changeId || !locationsAreEqual(lastRoute, routing)) {
+
+	      lastRoute = routing;
+	      var method = routing.replace ? 'replaceState' : 'pushState';
+	      history[method](routing.state, routing.path);
+	    }
+	  });
+
+	  return function unsubscribe() {
+	    unsubscribeHistory();
+	    unsubscribeStore();
+	  };
+	}
+
+	exports.routeReducer = update;
+
+
+/***/ },
+/* 354 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	var _actionsOrder_manage_form = __webpack_require__(292);
+
+	var FormActions = _interopRequireWildcard(_actionsOrder_manage_form);
+
+	var _actionsOrder_manage = __webpack_require__(291);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var initial_state = {
+	  delivery_stations: [],
+	  delivery_stations_backup: []
+	};
+
+	function delivery_stations(state, action) {
+	  if (state === undefined) state = initial_state;
+
+	  switch (action.type) {
+	    case _actionsOrder_manage.RESET_DELIVERY_STATIONS:
+	      return _extends({}, state, { delivery_stations: state.delivery_stations_backup });
+	    case FormActions.GOT_DELIVERY_STATIONS:
+	      var __delivery_stations = (0, _utilsIndex.map)(action.data, function (text, id) {
+	        return { id: id, text: text };
+	      });
+	      return _extends({}, state, { delivery_stations: __delivery_stations, delivery_stations_backup: __delivery_stations });
+	    case FormActions.AUTO_GOT_DELIVERY_STATIONS:
+	      return (function () {
+	        var d = action.data;
+	        if (action.key == _configAppConfig.REQUEST.SUCCESS) {
+	          return _extends({}, state, { delivery_stations: [{ id: d.delivery_id, text: d.delivery_name }] });
+	        } else if (action.key == _configAppConfig.REQUEST.FAIL) {
+	          return _extends({}, state, { delivery_stations: state.delivery_stations_backup });
+	        } else {
+	          return state;
+	        }
+	      })();
+	    default:
+	      return state;
+	  }
+	}
+
+	exports['default'] = delivery_stations;
+	module.exports = exports['default'];
+
+/***/ },
+/* 355 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	exports.orders = orders;
+	exports.operationRecord = operationRecord;
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	var _actionsOrders = __webpack_require__(290);
+
+	var OrderActions = _interopRequireWildcard(_actionsOrders);
+
+	var _actionsDelivery_manage = __webpack_require__(335);
+
+	var _actionsDelivery_distribute = __webpack_require__(339);
+
+	var _reduxSimpleRouter = __webpack_require__(353);
+
+	var orders_state = {
+	  loading: true, //初始化加载，
+	  refresh: false, //列表数据更新（用于当某些操作所引发的数据刷新）
+	  page_no: 0,
+	  total: 0,
+	  list: [],
+	  checked_order_ids: [],
+	  checked_orders: [],
+	  active_order_id: undefined,
+	  check_order_info: null,
+	  show_products_detail: false
+	};
+
+	function orders(state, action) {
+	  if (state === undefined) state = orders_state;
+
+	  switch (action.type) {
+
+	    case _reduxSimpleRouter.UPDATE_PATH:
+	      return _extends({}, orders_state);
+
+	    case OrderActions.GET_ORDER_LIST_ING:
+	      return _extends({}, orders_state, { refresh: true });
+	    case OrderActions.GET_ORDER_LIST:
+	      return _extends({}, orders_state, action.data, { loading: false, refresh: false });
+
+	    case OrderActions.CHECK_ORDER:
+	      return (function () {
+	        var checked_order_ids = [],
+	            checked_orders = [];
+	        state.list.forEach(function (n) {
+	          if (n.order_id == action.order_id) {
+	            n.checked = action.checked;
+	          }
+	          if (n.checked) {
+	            checked_order_ids.push(n.order_id);
+	            checked_orders.push(n);
+	          }
+	        });
+	        return _extends({}, state, { checked_order_ids: checked_order_ids, checked_orders: checked_orders });
+	      })();
+
+	    case OrderActions.CHECK_ALL_ORDERS:
+	      return (function () {
+	        var checked_order_ids = [],
+	            checked_orders = [];
+	        state.list.forEach(function (n) {
+	          n.checked = action.checked;
+	          if (action.checked) {
+	            checked_order_ids.push(n.order_id);
+	            checked_orders.push(n);
+	          }
+	        });
+	        return _extends({}, state, { checked_order_ids: checked_order_ids, checked_orders: checked_orders });
+	      })();
+
+	    case OrderActions.ACTIVE_ORDER:
+	      return _extends({}, state, { active_order_id: action.active_order_id, show_products_detail: false });
+
+	    case OrderActions.SHOW_PRODUCTS_DETAIL:
+	      return _extends({}, state, { show_products_detail: true });
+
+	    case OrderActions.GET_ORDER_DETAIL_PRODUCTS:
+	      return _extends({}, state, { check_order_info: action.data });
+
+	    //特殊情况：送货单管理，配送单管理 -> 获取扫描搜索结果列表
+	    case _actionsDelivery_manage.GET_DELIVERY_SCAN_LIST:
+	    case _actionsDelivery_distribute.GET_DISTRIBUTE_SCAN_LIST:
+	      return _extends({}, orders_state, { loading: false }); //重置
+
+	    default:
+	      return state;
+	  }
+	}
+
+	var operation_record = {
+	  page_no: 0,
+	  total: 0,
+	  list: []
+	};
+
+	function operationRecord(state, action) {
+	  if (state === undefined) state = operation_record;
+
+	  switch (action.type) {
+	    case OrderActions.RESET_ORDER_OPT_RECORD:
+	      return _extends({}, operation_record);
+	    case OrderActions.GET_ORDER_OPT_RECORD:
+	      return _extends({}, state, action.data);
+	    default:
+	      return state;
+	  }
+		}
+
+/***/ },
+/* 356 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
+	var _redux = __webpack_require__(223);
+
+	var _area_select = __webpack_require__(352);
+
+	var _actionsOrder_manage_form = __webpack_require__(292);
+
+	var FormActions = _interopRequireWildcard(_actionsOrder_manage_form);
+
+	var _actionsOrder_products = __webpack_require__(325);
+
+	var OrderProductsActions = _interopRequireWildcard(_actionsOrder_products);
+
+	var _reduxSimpleRouter = __webpack_require__(353);
+
+	var _actionsArea = __webpack_require__(288);
+
+	var _actionsArea2 = _interopRequireDefault(_actionsArea);
+
+	var _actionsForm = __webpack_require__(293);
+
+	var _utilsIndex = __webpack_require__(160);
+
+	var _reduxForm = __webpack_require__(242);
+
+	var _configAppConfig = __webpack_require__(157);
+
+	var _reducersDelivery_stations = __webpack_require__(354);
+
+	var _reducersDelivery_stations2 = _interopRequireDefault(_reducersDelivery_stations);
+
+	var _clone = __webpack_require__(295);
+
+	var _clone2 = _interopRequireDefault(_clone);
+
+	var _storesGetter = __webpack_require__(324);
+
+	var initial_state = {
+	  all_pay_status: (0, _utilsIndex.map)(_configAppConfig.pay_status, function (text, id) {
+	    return { id: id, text: text };
+	  }),
+	  all_delivery_time: _configAppConfig.DELIVERY_TIME_MAP.map(function (n) {
+	    return { id: n, text: n };
+	  }),
+	  all_order_srcs: [],
+	  all_pay_modes: [],
+
+	  save_ing: false,
+	  save_success: true,
+	  submit_ing: false,
+
+	  //edit data from server
+	  data: {}
+	};
+
+	function mainForm(state, action) {
+	  if (state === undefined) state = initial_state;
+
+	  var store = (0, _storesGetter.getGlobalStore)();
+	  switch (action.type) {
+	    case _reduxSimpleRouter.UPDATE_PATH:
+	      return _extends({}, initial_state);
+	    case FormActions.GOT_ORDER_SRCS:
+	      var l1 = [],
+	          l2 = [];
+	      var order_src_data = _utilsIndex.core.isArray(action.data) ? action.data : [];
+	      //level最多为2级
+	      order_src_data.forEach(function (n) {
+	        n.text = n.name; //转换
+	        if (n.level == 1) {
+	          l1.push(n);
+	        } else {
+	          l2.push(n);
+	        }
+	      });
+	      return _extends({}, state, { all_order_srcs: !l2.length ? [l1] : [l1, l2] });
+
+	    case FormActions.GOT_PAY_MODES:
+	      return _extends({}, state, { all_pay_modes: (0, _utilsIndex.map)(action.data, function (text, id) {
+	          return { id: id, text: text };
+	        }) });
+
+	    case FormActions.SAVE_ORDER_INFO_ING:
+	      return _extends({}, state, { save_ing: true });
+	    case FormActions.SAVE_ORDER_INFO_SUCCESS:
+	      return _extends({}, state, { save_success: true, save_ing: false });
+	    case FormActions.SAVE_ORDER_INFO_FAIL:
+	      return _extends({}, state, { save_success: false, save_ing: false });
+
+	    case FormActions.SUBMIT_ORDER_ING:
+	      return _extends({}, state, { submit_ing: true });
+	    case FormActions.SUBMIT_ORDER_COMPLETE:
+	      return _extends({}, state, { submit_ing: true });
+
+	    case FormActions.GOT_ORDER_BY_ID:
+	    case FormActions.GOT_COPY_ORDER_BY_ID:
+	      return (function () {
+	        var data = action.data;
+
+	        var tmp = data.delivery_time.split(' ');
+	        data.delivery_date = tmp[0];
+	        data.delivery_hours = tmp[1];
+
+	        //
+
+	        var _AreaActions = (0, _actionsArea2['default'])();
+
+	        var getCities = _AreaActions.getCities;
+	        var getDistricts = _AreaActions.getDistricts;
+	        var getDeliveryShops = _AreaActions.getDeliveryShops;
+
+	        store.dispatch(getCities(data.province_id));
+	        store.dispatch(getDistricts(data.city_id));
+	        store.dispatch(getDeliveryShops(data.regionalism_id));
+
+	        return _extends({}, state, { data: data });
+	      })();
+
+	    default:
+	      return state;
+	  }
+	}
+
+	//正在选择的商品
+	var products_choosing_state = {
+	  all_categories: [],
+	  search_results: {
+	    total: 0,
+	    list: []
+	  },
+	  selected_list: [], //modal 里面的 选择列表
+	  confirm_list: [] };
+	//modal 里面确认后，主面板的已选产品列表
+	function products_choosing(state, action) {
+	  if (state === undefined) state = products_choosing_state;
+
+	  var sku_id, new_selected_list;
+	  var store = (0, _storesGetter.getGlobalStore)();
+
+	  switch (action.type) {
+	    case _reduxSimpleRouter.UPDATE_PATH:
+	      return products_choosing_state;
+	    case OrderProductsActions.GOT_CATEGORIES:
+	      return _extends({}, state, { all_categories: action.data });
+	    case OrderProductsActions.SEARCH_PRODUCTS:
+	      //如果检索到已被选商品，那么则要标明已被勾选
+	      state.selected_list.forEach(function (n) {
+	        for (var i = 0, len = action.data.list.length; i < len; i++) {
+	          for (var j = 0, jlen = action.data.list[i].skus.length; j < jlen; j++) {
+	            if (action.data.list[i].skus[j].sku_id == n.sku_id) {
+	              action.data.list[i].skus[j].checked = true;
+	            }
+	          }
+	        }
+	      });
+	      return _extends({}, state, { search_results: action.data });
+	    case OrderProductsActions.SELECT_PRODUCT:
+	      sku_id = action.data.sku_id;
+	      if (state.selected_list.some(function (n) {
+	        return n.sku_id == sku_id;
+	      })) {
+	        return state;
+	      }
+	      /*****  这个地方已突变，应该使用 immutablejs *****/
+	      state.search_results.list.forEach(function (n) {
+	        n.skus.forEach(function (m) {
+	          if (m.sku_id == sku_id) {
+	            m.checked = !m.checked;
+	          }
+	        });
+	      });
+	      action.data.num = 1; //默认1
+	      return _extends({}, state, { selected_list: [].concat(_toConsumableArray(state.selected_list), [action.data]) });
+	    case OrderProductsActions.DELETE_SELECTED_PRODUCT:
+	      sku_id = action.data.sku_id;
+	      state.search_results.list.forEach(function (n) {
+	        n.skus.forEach(function (m) {
+	          if (m.sku_id == sku_id) {
+	            m.checked = false;
+	          }
+	        });
+	      });
+	      new_selected_list = [].concat(_toConsumableArray(state.selected_list)).filter(function (n) {
+	        return n.sku_id != sku_id;
+	      });
+	      return _extends({}, state, { selected_list: new_selected_list });
+	    case OrderProductsActions.CHANGE_PRODUCT_NUM:
+	      var num = action.num;
+
+	      sku_id = action.sku_id;
+	      new_selected_list = (0, _clone2['default'])(state.selected_list);
+	      new_selected_list.forEach(function (n) {
+	        if (n.sku_id == sku_id) {
+	          n.num = num;
+	        }
+	      });
+	      return _extends({}, state, { selected_list: new_selected_list });
+
+	    case OrderProductsActions.CONFIRM_ALL_SELECTED_PRODUCTS:
+	      return (function () {
+	        var base = {
+	          discount_price: 0,
+	          choco_board: '生日快乐', //巧克力牌
+	          greeting_card: '', //祝福语
+	          atlas: true, //产品图册
+	          custom_name: '', //自定义名称
+	          custom_desc: '' };
+	        //自定义描述
+	        var confirm_list = state.selected_list.map(function (n) {
+	          var new_item = _extends({}, n, base);
+	          new_item.discount_price = n.discount_price / 100 || 0;
+	          new_item.amount = new_item.discount_price * n.num;
+	          return new_item;
+	        });
+	        (0, _utilsIndex.delay)(function () {
+	          return store.dispatch((0, _actionsForm.updateAddOrderForm)());
+	        }); //商品数变化，通知add_order表单更新，支付方式、支付状态的默认值与所选商品数是紧密相关的
+	        (0, _utilsIndex.delay)(function () {
+	          return store.dispatch(OrderProductsActions.updateConfirmProductDiscountPrice());
+	        }); //更新商品应收金额
+	        return _extends({}, state, { confirm_list: confirm_list });
+	      })();
+
+	    case OrderProductsActions.CANCEL_ALL_SELECTED_PRODUCTS:
+	      state.search_results.list.forEach(function (n) {
+	        n.skus.forEach(function (m) {
+	          m.checked = state.confirm_list.some(function (j) {
+	            return m.sku_id == j.sku_id;
+	          });
+	        });
+	      });
+	      return _extends({}, state, { selected_list: [].concat(_toConsumableArray((0, _clone2['default'])(state.confirm_list))) });
+
+	    case OrderProductsActions.CONFIRM_PRODUCT_ATTR_CHANGE:
+	      sku_id = action.data.sku_id;
+	      //突变
+	      state.confirm_list.forEach(function (n) {
+	        if (n.sku_id == sku_id) {
+	          n[action.data.attr.name] = action.data.attr.value;
+	        }
+	      });
+	      return _extends({}, state);
+
+	    case OrderProductsActions.DELETE_CONFIRM_PRODUCT:
+	      sku_id = action.data.sku_id;
+	      // 突变
+	      state.search_results.list.forEach(function (n) {
+	        n.skus.forEach(function (m) {
+	          if (m.sku_id == sku_id) {
+	            m.checked = false;
+	          }
+	        });
+	      });
+	      var new_confirm_list = (0, _clone2['default'])(state.confirm_list);
+	      new_confirm_list.splice(new_confirm_list.findIndex(function (n) {
+	        return n.sku_id == sku_id;
+	      }), 1);
+	      new_selected_list = (0, _clone2['default'])(state.selected_list);
+	      new_selected_list.splice(new_selected_list.findIndex(function (n) {
+	        return n.sku_id == sku_id;
+	      }), 1);
+	      (0, _utilsIndex.delay)(function () {
+	        return store.dispatch((0, _actionsForm.updateAddOrderForm)());
+	      }); //商品数变化，通知add_order表单更新，支付方式、支付状态的默认值与所选商品数是紧密相关的
+	      (0, _utilsIndex.delay)(function () {
+	        return store.dispatch(OrderProductsActions.updateConfirmProductDiscountPrice());
+	      }); //更新商品应收金额
+	      return _extends({}, state, { confirm_list: new_confirm_list, selected_list: new_selected_list });
+
+	    case OrderProductsActions.UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE:
+	      return (function () {
+	        var global_state = store.getState();
+	        var order = (0, _reduxForm.getValues)(global_state.form.add_order);
+	        var pay_status = _configAppConfig.pay_status[order.pay_status];
+	        var confirm_list = state.confirm_list;
+
+	        if (pay_status == '已付款') {
+	          confirm_list.forEach(function (n) {
+	            n.amount = 0;
+	          });
+	        } else if (pay_status == '部分付款') {
+	          confirm_list.forEach(function (n, i) {
+	            n.amount = i == 0 ? 0 : n.discount_price;
+	          });
+	        } else {
+	          confirm_list.forEach(function (n) {
+	            n.amount = n.discount_price;
+	          });
+	        }
+	        return _extends({}, state);
+	      })();
+
+	    case FormActions.GOT_ORDER_BY_ID:
+	      action.data.products.forEach(function (n) {
+	        n.discount_price /= 100;
+	        n.amount /= 100;
+	      });
+	      return _extends({}, state, { confirm_list: action.data.products, selected_list: action.data.products });
+	    default:
+	      return state;
+	  }
+	}
+
+	var history_orders_state = {
+	  page_no: 0,
+	  total: 0,
+	  list: [],
+	  active_order_id: undefined,
+	  check_order_info: null
+	};
+	function history_orders(state, action) {
+	  if (state === undefined) state = history_orders_state;
+
+	  switch (action.type) {
+	    case FormActions.GET_HISTORY_ORDERS:
+	      return _extends({}, state, action.data, { active_order_id: undefined, check_order_info: null });
+
+	    case FormActions.CHECK_HISTORY_ORDER:
+	      return _extends({}, state, { active_order_id: action.active_order_id });
+	    case FormActions.GET_HISTORY_ORDER_DETAIL_PRODUCTS:
+	      return _extends({}, state, { check_order_info: action.data });
+	    default:
+	      return state;
+	  }
+	}
+
+	var orderAddReducer = (0, _redux.combineReducers)({
+	  area: (0, _area_select.area)(),
+	  mainForm: mainForm,
+	  products: products_choosing,
+	  history_orders: history_orders,
+	  delivery_stations: _reducersDelivery_stations2['default']
+	});
+
+	exports['default'] = orderAddReducer;
+	module.exports = exports['default'];
 
 /***/ },
 /* 357 */
@@ -47372,15 +47414,15 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _actionsDelivery_change = __webpack_require__(327);
+	var _actionsDelivery_change = __webpack_require__(332);
 
 	var ChangeActions = _interopRequireWildcard(_actionsDelivery_change);
 
 	var _actionsOrder_manage_form = __webpack_require__(292);
 
-	var _reducersOrders = __webpack_require__(350);
+	var _reducersOrders = __webpack_require__(355);
 
-	var _reducersArea_select = __webpack_require__(347);
+	var _reducersArea_select = __webpack_require__(352);
 
 	var _configAppConfig = __webpack_require__(157);
 
@@ -47435,13 +47477,13 @@
 
 	var _redux = __webpack_require__(223);
 
-	var _reducersOrders = __webpack_require__(350);
+	var _reducersOrders = __webpack_require__(355);
 
-	var _reducersArea_select = __webpack_require__(347);
+	var _reducersArea_select = __webpack_require__(352);
 
 	var _reducersDeliveryman = __webpack_require__(359);
 
-	var _actionsDelivery_manage = __webpack_require__(330);
+	var _actionsDelivery_manage = __webpack_require__(335);
 
 	var Actions = _interopRequireWildcard(_actionsDelivery_manage);
 
@@ -47449,7 +47491,7 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _reduxSimpleRouter = __webpack_require__(348);
+	var _reduxSimpleRouter = __webpack_require__(353);
 
 	var filter_state = {
 	  search_ing: false
@@ -47533,7 +47575,7 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-	var _actionsDeliveryman = __webpack_require__(329);
+	var _actionsDeliveryman = __webpack_require__(334);
 
 	var Actions = _interopRequireWildcard(_actionsDeliveryman);
 
@@ -47553,7 +47595,7 @@
 	    default:
 	      return state;
 	  }
-	}
+		}
 
 /***/ },
 /* 360 */
@@ -47575,21 +47617,21 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _reducersOrders = __webpack_require__(350);
+	var _reducersOrders = __webpack_require__(355);
 
 	var _reducersDeliveryman = __webpack_require__(359);
 
-	var _reducersArea_select = __webpack_require__(347);
+	var _reducersArea_select = __webpack_require__(352);
 
 	var _actionsOrder_manage_form = __webpack_require__(292);
 
 	var _actionsOrders = __webpack_require__(290);
 
-	var _actionsDelivery_distribute = __webpack_require__(334);
+	var _actionsDelivery_distribute = __webpack_require__(339);
 
 	var Actions = _interopRequireWildcard(_actionsDelivery_distribute);
 
-	var _reduxSimpleRouter = __webpack_require__(348);
+	var _reduxSimpleRouter = __webpack_require__(353);
 
 	var filter_state = {
 	  search_ing: false,
@@ -47683,7 +47725,7 @@
 
 	var _configAppConfig = __webpack_require__(157);
 
-	var _actionsDelivery_print_review = __webpack_require__(336);
+	var _actionsDelivery_print_review = __webpack_require__(341);
 
 	var Actions = _interopRequireWildcard(_actionsDelivery_print_review);
 
@@ -47756,7 +47798,7 @@
 
 	var _utilsIndex = __webpack_require__(160);
 
-	var _reducersArea_select = __webpack_require__(347);
+	var _reducersArea_select = __webpack_require__(352);
 
 	var _reducersStation_scope_manage = __webpack_require__(363);
 
@@ -47784,9 +47826,9 @@
 
 	var _utilsIndex = __webpack_require__(160);
 
-	var _reducersArea_select = __webpack_require__(347);
+	var _reducersArea_select = __webpack_require__(352);
 
-	var _actionsStation_scope_manage = __webpack_require__(339);
+	var _actionsStation_scope_manage = __webpack_require__(344);
 
 	var initial_state = {
 	  stations: [],
@@ -47829,3 +47871,4 @@
 
 /***/ }
 /******/ ]);
+//# sourceMappingURL=app.js.map

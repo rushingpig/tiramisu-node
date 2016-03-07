@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 import * as ChangeActions from 'actions/delivery_change';
 import { GOT_DELIVERY_STATIONS } from 'actions/order_manage_form';
 import { orders, operationRecord } from 'reducers/orders';
+import * as OrderSupportReducers from 'reducers/order_support';
 import { area } from 'reducers/area_select';
 import { REQUEST } from 'config/app.config';
 
@@ -29,9 +30,23 @@ function filter(state = filter_state, action){
   }
 }
 
+var main_state = {
+  all_order_srcs: [],
+  all_pay_modes: [],
+}
+function main( state = main_state, action ){
+  switch (action.type) {
+    case ChangeActions.ORDERS_EXCHANGE:
+
+    default:
+      return state
+  }
+}
+
 export default combineReducers({
   filter,
   area: area(),
   orders,
   operationRecord,
+  ...OrderSupportReducers
 })

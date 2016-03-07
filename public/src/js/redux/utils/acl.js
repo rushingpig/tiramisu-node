@@ -1,7 +1,7 @@
 /**
  * access_control_list : 权限列表
  */
-
+import { acl } from 'config/app.config';
 
 var  PERMISSIONS = undefined;
 //测试数据
@@ -26,10 +26,12 @@ var  PERMISSIONS = undefined;
  * @param  {String} role 权限名
  */
 export default function validate ( role ){
+  //禁用权限控制
+  if( !acl ){ return true; }
   //初始化PERMISSIONS：分两种情况
   //1. 第一次登录后；2. 已登陆后刷新；
   if( !PERMISSIONS ){
-    var { user } = window.xfxb; 
+    var { user } = window.xfxb;
     if( user ){
       if( typeof user === 'string' ){
         try {
@@ -55,8 +57,11 @@ export default function validate ( role ){
  */
 export function onEnter( role ){
   return function (state, replace) {
-    if( !validate( role ) ){
-      replace({}, '/403', null);
+    //登录成功之后，才有必要进行validate
+    if( window.xfxb.login ){
+      if( !validate( role ) ){
+        replace({}, '/403', null);
+      }
     }
   }
 }

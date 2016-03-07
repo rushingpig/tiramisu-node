@@ -131,7 +131,7 @@ DeliveryService.prototype.applyForRePrint = (req,res,next) => {
             "phone" : req.body.director_mobile,
             "params" : {
                 "order_id" : req.body.order_id,
-                "code" : ""
+                "applicant" : req.session.user.name
             }
         };
         request.post({

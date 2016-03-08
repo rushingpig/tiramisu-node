@@ -19380,7 +19380,7 @@
 	exports['default'] = {
 	  root: '/',
 	  ajax: '/v1/a',
-	  acl: false,
+	  acl: true,
 
 	  REQUEST: {
 	    ING: 0,

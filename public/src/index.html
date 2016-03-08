@@ -12,7 +12,12 @@
   <link href="{{root}}plugins/font-awesome-4.4.0/css/font-awesome.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{root}}css/style.min.css?rev=@@hash">
   <script type="text/javascript">
-    window.xfxb = { login: {{isLogin}}, root: "{{root}}"{{#if user}}, user : JSON.parse('{{{user}}}') || {} {{/if}} };
+    window.xfxb = {
+      login: {{isLogin}},
+      root: "{{root}}",
+      version: "{{version}}"
+      {{#if user}}, user : JSON.parse('{{{user}}}') || {} {{/if}}
+    };
   </script>
 </head>
 

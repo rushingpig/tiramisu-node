@@ -9,11 +9,6 @@ export default class DetailModal extends Component {
     this.show = this.show.bind(this);
     this.hide = this.hide.bind(this);
   }
-  // componentWillReceiveProps(nextProps){
-  //   if(nextProps['data-id'] != this.props['data-id']){
-  //     this.show();
-  //   }
-  // }
   render(){
     var { data, data: {products = []} } = this.props;
     var products = products.map( n => {

@@ -28,7 +28,7 @@ import V from 'utils/acl';
 import { createMap, autoMatch } from 'mixins/map';
 
 import OrderProductsDetail from 'common/order_products_detail';
-import OrderDetailModal from 'common/order_detail_modal';
+import OrderDetailModal from './order_detail_modal';
 import AlterDeliveryModal from './manage_alter_delivery_modal';
 import OrderSrcsSelects from 'common/order_srcs_selects';
 import OperationRecordModal from 'common/operation_record_modal.js';
@@ -115,7 +115,7 @@ class FilterHeader extends Component {
           }
           <Select {...status} options={all_order_status} default-text="订单状态" className="space-right"/>
           <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
-            <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
+            <i className="fa fa-search"></i>{' 搜索'}
           </button>
         </div>
       </div>
@@ -202,7 +202,7 @@ var OrderRow = React.createClass({
           应收金额：￥{props.total_amount/100}
         </td>
         {/*订单状态*/}
-        <td><div style={{color: _order_status.color || 'inherit'}}>{_order_status.value}</div></td>
+        <td><div className="bordered bold" style={{color: _order_status.color || 'inherit', background: _order_status.bg }}>{_order_status.value}</div></td>
         <td>{props.delivery_name}</td>
         <td><div className="time">{props.delivery_time}</div></td>
         <td>{props.is_submit == '1' ? '是' : '否'}</td>

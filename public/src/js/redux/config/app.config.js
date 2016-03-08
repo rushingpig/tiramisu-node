@@ -54,16 +54,16 @@ export default {
   ],
 
   order_status: {
-    CANCEL : {value: '取消', key: -10, color: '#BDB8B8'},
-    UNTREATED : {value: '未处理', key: 0, color: '#585353'},
-    TREATED : {value: '已处理', key: 10, color: '#585353'},
-    STATION : {value: '已分配配送站', key: 20, color: ''},
-    CONVERT : {value: '已转换', key: 30, color: ''},
-    INLINE : {value: '生产中', key: 40, color: ''},
-    DELIVERY : {value: '已分配配送员', key: 50, color: ''},
+    CANCEL : {value: '取消', key: -10, color: '#BDB8B8', bg: '#dac7a7'},
+    UNTREATED : {value: '未处理', key: 0, color: '#585353', bg: '#dac7a7'},
+    TREATED : {value: '已处理', key: 10, color: '#585353', bg: '#dac7a7'},
+    STATION : {value: '已分配配送站', key: 20, color: '', bg: '#dac7a7'},
+    CONVERT : {value: '已转换', key: 30, color: '', bg: '#dac7a7'},
+    INLINE : {value: '生产中', key: 40, color: '', bg: '#dac7a7'},
+    DELIVERY : {value: '已分配配送员', key: 50, color: '', bg: '#dac7a7'},
 
-    COMPLETED : {value: '订单完成', key: 100, color: '#0f0'},
-    EXCEPTION : {value: '订单异常', key: 100, color: '#f00'}
+    COMPLETED : {value: '订单完成', key: 100, color: '#e84c0d', bg: '#dac7a7'},
+    EXCEPTION : {value: '订单异常', key: 100, color: '##E44949', bg: '#dac7a7'}
   },
   pay_status: {
     'COD': '货到付款',

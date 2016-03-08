@@ -65,17 +65,17 @@ var AddedProductsRow = React.createClass({
   render(){
     var { handleChange } = this;
     var { editable, edit_input_classname } = this.state;
-    var { sku_id, name, size, original_price, num,
+    var { sku_id, name, size, original_price, num, total_discount_price,
       discount_price, amount, choco_board, greeting_card, atlas, custom_name, custom_desc } = this.props.data;
     return (
       <tr className="form-inline">
         <td>{name}</td>
         <td>{size}</td>
-        <td>￥{original_price/100}</td>
+        <td>￥{discount_price}</td>
         <td>{num}</td>
         <td>{editable 
-          ? <input value={discount_price} onChange={handleChange.bind(this, 'discount_price')} className={edit_input_classname} style={{width: 50}} type="text" /> 
-          : '￥' + discount_price}</td>
+          ? <input value={total_discount_price} onChange={handleChange.bind(this, 'total_discount_price')} className={edit_input_classname} style={{width: 50}} type="text" /> 
+          : '￥' + total_discount_price}</td>
         <td>{editable 
           ? <input value={amount} onChange={handleChange.bind(this, 'amount')} className={edit_input_classname} style={{width: 50}} type="text" /> 
           : '￥' + amount}</td>

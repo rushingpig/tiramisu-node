@@ -16,8 +16,7 @@ var Login = React.createClass({
       <div className="container">
         <div className="form-signin">
           <div className="form-signin-heading text-center">
-            <h1 className="sign-title">登录</h1>
-            <img src={config.root + "images/login-logo.png"} alt="" />
+            <img src={config.root + "images/logo.png"} alt="" />
           </div>
           <div className="login-wrap">
             <input value={username} ref="username"
@@ -25,8 +24,8 @@ var Login = React.createClass({
             <input value={password} ref="password"
                 onChange={this.onPasswordChange} onKeyDown={this.onEnterHandler} type="password" className="form-control" placeholder="密码"/>
             <div className="error-msg">{error_msg}</div>
-            <button disabled={login_ing} onClick={this.login} className="btn btn-lg btn-login btn-block">
-                <i className="fa fa-check"></i>
+            <button disabled={login_ing} onClick={this.login} className="btn-login btn-block">
+                登录
             </button>
 
             <div className="registration hidden">
@@ -67,8 +66,10 @@ var Login = React.createClass({
     )
   },
   login(){
-    var {username, password, dispatch} = this.props;
-    if(!username){
+    var {username, password, dispatch, login_ing} = this.props;
+    if(login_ing){
+      return;
+    }else if(!username){
       this.tipNoInput('username'); return ;
     }else if(!password){
       this.tipNoInput('password'); return ;

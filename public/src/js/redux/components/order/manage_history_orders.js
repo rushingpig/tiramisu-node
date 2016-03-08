@@ -73,6 +73,7 @@ class HistoryOrders extends Component {
         <button onClick={this.search} className="btn btn-default btn-xs">查询</button>
         {'　'}
         <button onClick={this.copyOrder.bind(this)} className="btn btn-default btn-xs">复制订单</button>
+        <span className="pull-right theme">{ window.xfxb.user.name }</span>
       </div>
       <div className="table-responsive">
         <table className="table table-hover text-center">

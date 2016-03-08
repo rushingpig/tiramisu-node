@@ -104,9 +104,9 @@ function getPayModesId(state, action){
     if(action.type == actionTypes.RESET){
       return {value: SELECT_DEFAULT_VALUE};
     }else{
-      if(isSrc('第三方预约', src_id)){
+      if(isSrc('团购网站', src_id)){
         return { value: getMode('团购券').id }; //团购券id（TODO）
-      }else if(isSrc('有赞', src_id)){  
+      }else if(isSrc('有赞微商城', src_id)){  
         return { value: getMode('微信支付').id }; //微信支付id
       }else if(isSrc('电话', src_id)){
         // var mode_cash = getMode('货到付款（现金）');
@@ -130,7 +130,7 @@ function getPayStatus(state, action){
     if(action.type == actionTypes.RESET){
       return {value: SELECT_DEFAULT_VALUE};
     }else{
-      if(isSrc('第三方预约', src_id) || isSrc('有赞', src_id)){
+      if(isSrc('团购网站', src_id) || isSrc('有赞微商城', src_id)){
         var { orderManageForm: { products: { confirm_list }}} = getGlobalState();
         //属于第三方预约
         if(confirm_list.length > 1 || (confirm_list[0] && confirm_list[0].num > 1)){

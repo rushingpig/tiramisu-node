@@ -18,9 +18,6 @@ import { DELIVERY_MAP, PRINT_REVIEW_STATUS } from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
 
-import OrderProductsDetail from 'common/order_products_detail';
-import OrderDetailModal from 'common/order_detail_modal';
-
 import * as OrderActions from 'actions/orders';
 import * as DeliverPrintReviewActions from 'actions/delivery_print_review';
 
@@ -65,7 +62,7 @@ class FilterHeader extends Component {
           <Select {...status} options={all_review_status} default-text="选择审核状态" className="space-right"/>
 
           <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
-            <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
+            <i className="fa fa-search"></i>{' 搜索'}
           </button>
         </div>
       </div>

@@ -231,7 +231,7 @@ function products_choosing(state = products_choosing_state, action){
           })
         }else if(pay_status == '部分付款'){
           confirm_list.forEach(function(n, i){
-            n.amount = i == 0 ? 0 : n.discount_price;
+            n.amount = i == 0 ? 0 : n.discount_price * n.num;
           })
         }else{
           confirm_list.forEach(function(n){

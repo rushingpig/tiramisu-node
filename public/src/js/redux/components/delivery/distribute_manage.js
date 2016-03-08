@@ -26,9 +26,10 @@ import AreaActions from 'actions/area';
 import * as DeliverymanActions from 'actions/deliveryman';
 import * as DeliveryDistributeActions from 'actions/delivery_distribute';
 import { getPayModes } from 'actions/order_manage_form';
+import * as OrderSupportActions from 'actions/order_support';
 
 import OrderProductsDetail from 'common/order_products_detail';
-import OrderDetailModal from 'common/order_detail_modal';
+import OrderDetailModal from './order_detail_modal';
 import ScanModal from 'common/scan_modal';
 import OperationRecordModal from 'common/operation_record_modal.js';
 
@@ -100,7 +101,7 @@ class FilterHeader extends Component {
               : null
             }
             <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs space-right">
-              <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
+              <i className="fa fa-search"></i>{' 搜索'}
             </button>
             {'　'}
             <button onClick={this.onScanHandler.bind(this)} className="btn btn-theme btn-xs space-right">扫描</button>
@@ -244,8 +245,8 @@ class DeliveryDistributePannel extends Component {
     this.search = this.search.bind(this);
   }
   render(){
-    var { filter, area, deliveryman, orders, main, signOrder, unsignOrder, searchByScan, 
-      getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
+    var { filter, area, deliveryman, orders, main, all_order_srcs, all_pay_modes, signOrder, unsignOrder, 
+      searchByScan, getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
     var { submitting } = main;
     var { loading, refresh, page_no, total, list, check_order_info, active_order_id } = orders;
     var { search, showSignedModal, showUnSignedModal, showScanModal, checkOrderHandler, 
@@ -321,7 +322,7 @@ class DeliveryDistributePannel extends Component {
             </div>
           : null }
 
-        <OrderDetailModal ref="detail_modal" data={check_order_info || {}} />
+        <OrderDetailModal ref="detail_modal" data={check_order_info || {}} all_order_srcs={all_order_srcs.map} all_pay_modes={all_pay_modes} />
         <SignedModal ref="SignedModal" {...{submitting, signOrder, callback: search}} />
         <UnSignedModal ref="UnSignedModal" {...{submitting, unsignOrder, callback: search}} />
         <ScanModal ref="ScanModal" submitting={submitting} search={searchByScan}  />
@@ -336,6 +337,10 @@ class DeliveryDistributePannel extends Component {
     this.search();
 
     LazyLoad('noty');
+
+    var { getOrderSrcs, getPayModes } = this.props;
+    getOrderSrcs();
+    getPayModes();
   }
   search(page){
     var { getOrderDistributeList, orders } = this.props;
@@ -376,7 +381,14 @@ function mapStateToProps({distributeManage}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  return bindActionCreators({...OrderActions, ...AreaActions(), ...DeliverymanActions, ...DeliveryDistributeActions, getPayModes}, dispatch);
+  return bindActionCreators({
+    ...OrderActions,
+    ...AreaActions(),
+    ...OrderSupportActions,
+    ...DeliverymanActions,
+    ...DeliveryDistributeActions,
+    getPayModes
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeliveryDistributePannel);

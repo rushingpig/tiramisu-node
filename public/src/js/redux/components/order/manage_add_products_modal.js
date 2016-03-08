@@ -193,7 +193,11 @@ class ProductSet extends Component {
           <td>￥{ toFixed(n.discount_price / 100, 2) }</td>
           <td>{yes_or_no(n.is_local_site)}</td>
           <td>{yes_or_no(n.is_delivery)}</td>
-          <td><a onClick={choose.bind(this, n)} href="javascript:;">[选择]</a></td>
+          <td>
+            {n.checked
+              ? <span className="silver">[选择]</span>
+              : <a onClick={choose.bind(this, n)} href="javascript:;">[选择]</a>}
+          </td>
         </tr>
       )
     });

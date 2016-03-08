@@ -23,9 +23,10 @@ import * as OrderActions from 'actions/orders';
 import AreaActions from 'actions/area';
 import * as DeliverymanActions from 'actions/deliveryman';
 import * as DeliveryManageActions from 'actions/delivery_manage';
+import * as OrderSupportActions from 'actions/order_support';
 
 import OrderProductsDetail from 'common/order_products_detail';
-import OrderDetailModal from 'common/order_detail_modal';
+import OrderDetailModal from './order_detail_modal';
 import ScanModal from 'common/scan_modal';
 import OperationRecordModal from 'common/operation_record_modal.js';
 
@@ -87,8 +88,8 @@ class FilterHeader extends Component {
               : null
             }
             <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
-            <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
-          </button>
+              <i className="fa fa-search"></i>{' 搜索'}
+            </button>
           </div>
           <div className="form-group form-inline">
             <button onClick={this.printHandler.bind(this)} className="btn btn-theme space-right btn-xs">批量打印</button>
@@ -248,8 +249,9 @@ class DeliveryManagePannel extends Component {
     this.showScanModal = this.showScanModal.bind(this);
   }
   render(){
-    var { filter, area, deliveryman, main, getAllDeliveryman, applyDeliveryman, startPrint, applyPrint, validatePrintCode, rePrint, searchByScan,
-    getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
+    var { filter, area, deliveryman, main, all_order_srcs, all_pay_modes,
+      getAllDeliveryman, applyDeliveryman, startPrint, applyPrint, validatePrintCode, rePrint, searchByScan,
+      getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
     var { loading, refresh, page_no, total, list, checked_orders, check_order_info, active_order_id } = this.props.orders;
     var { showBatchPrintModal, printHandler, showEditModal, showScanModal, showBatchEditModal,
        checkOrderHandler, viewOrderDetail, activeOrderHandler, viewOrderOperationRecord } = this;
@@ -326,7 +328,7 @@ class DeliveryManagePannel extends Component {
           : null }
 
         <EditModal ref="EditModal" {...{getAllDeliveryman, applyDeliveryman, deliveryman, submitting: main.submitting }} callback={this.search} />
-        <OrderDetailModal ref="detail_modal" data={check_order_info || {}} />
+        <OrderDetailModal ref="detail_modal" data={check_order_info || {}} all_order_srcs={all_order_srcs.map} all_pay_modes={all_pay_modes} />
         <PrintModal ref="PrintModal" {...{checked_orders, startPrint, callback: this.search}} />
         <ApplyPrintModal ref="ApplyPrintModal" {...{applyPrint, submitting: main.submitting}} callback={this.search} />
         <RePrintModal ref="RePrintModal" {...{validatePrintCode, rePrint, submitting: main.submitting}} callback={this.search} />
@@ -396,6 +398,10 @@ class DeliveryManagePannel extends Component {
 
     LazyLoad('noty');
     LazyLoad('chinese_py');
+
+    var { getOrderSrcs, getPayModes } = this.props;
+    getOrderSrcs();
+    getPayModes();
   }
   search(page){
     page = typeof page == 'undefined' ? this.props.orders.page_no : page;
@@ -409,7 +415,13 @@ function mapStateToProps({deliveryManage}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  return bindActionCreators({...OrderActions, ...AreaActions(), ...DeliverymanActions, ...DeliveryManageActions}, dispatch);
+  return bindActionCreators({
+    ...OrderActions,
+    ...AreaActions(),
+    ...OrderSupportActions,
+    ...DeliverymanActions,
+    ...DeliveryManageActions
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeliveryManagePannel);
@@ -520,27 +532,27 @@ var EditModal = React.createClass({
     });
     return (
       <StdModal onConfirm={this.saveHandler} onCancel={this.hideCallback} submitting={submitting} ref="modal" title="编辑配送人员">
-        <div className="form-group form-inline mg-15">
-          <div className="input-group input-group-sm">
-            <span className="input-group-addon"><i className="fa fa-filter"></i></span>
+        <div className="form-group form-inline mg-15" style={{marginTop: 15}}>
+          <div className="input-group input-group-sm" style={{marginLeft: 168}}>
+            <span className="input-group-addon"><i className="fa fa-search"></i></span>
             <input onChange={this.filterHandler} type="text" 
               className="form-control" style={{'width': '200'}} placeholder="配送员拼音首字母 或 手机号码" />
           </div>
         </div>
-        <center className="form-inline mg-15" style={{'padding': '33px 0', 'textIndent': -15}}>
+        <div className="form-inline mg-15" style={{'padding': '14px 0'}}>
           {
             orders.length > 1
-            ? <div>
+            ? <center>
                 <h5 style={{'marginTop': 0}}>
                   您已同时勾选
                   <span className="strong font-lg">{' ' + orders.length + ' '}</span>
                   个订单
                 </h5>
                 <h5 style={{'marginBottom': 30}}>来编辑配送人员</h5>
-              </div>
+              </center>
             : null
           }
-          <div style={{'textIndent': -38}}>
+          <div style={{marginLeft: 168}}>
             <label>{'配送人员　'}</label>
             <select onChange={this.onSelectDeliveryman} value={selected_deliveryman_id} className="form-control input-sm" style={{'minWidth': '145px'}}>
               {
@@ -550,7 +562,7 @@ var EditModal = React.createClass({
               }
             </select>
           </div>
-        </center>
+        </div>
       </StdModal>
     )
   },

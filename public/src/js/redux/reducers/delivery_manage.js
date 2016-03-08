@@ -3,6 +3,7 @@ import { orders, operationRecord } from 'reducers/orders';
 import { area } from 'reducers/area_select';
 import { deliveryman } from 'reducers/deliveryman';
 import * as Actions from 'actions/delivery_manage';
+import * as OrderSupportReducers from 'reducers/order_support';
 import { GET_ORDER_LIST } from 'actions/orders';
 import { REQUEST } from 'config/app.config';
 import { UPDATE_PATH } from 'redux-simple-router';
@@ -65,5 +66,6 @@ export default combineReducers({
   operationRecord,
   deliveryman,
   main,
-  area: area()
+  area: area(),
+  ...OrderSupportReducers
 })

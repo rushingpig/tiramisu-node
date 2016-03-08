@@ -18,7 +18,7 @@ import history, { go } from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
 
 import OrderProductsDetail from 'common/order_products_detail';
-import OrderDetailModal from 'common/order_detail_modal';
+import OrderDetailModal from './order_detail_modal';
 import OperationRecordModal from 'common/operation_record_modal.js';
 
 import * as OrderActions from 'actions/orders';
@@ -84,7 +84,7 @@ class FilterHeader extends Component {
               : null
           }
           <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
-            <i className="fa fa-search" style={{'padding': '0 3px'}}></i>
+            <i className="fa fa-search"></i>{' 搜索'}
           </button>
           {'　'}
           <button disabled={change_submitting} data-submitting={change_submitting} onClick={changeHandler} className="btn btn-theme btn-xs">
@@ -264,7 +264,7 @@ class DeliverChangePannel extends Component {
           : null }
 
         <ChangeModal {...{exchangeOrders, search, change_submitting, checked_order_ids}} ref="changeModal" />
-        <OrderDetailModal ref="detail_modal" data={check_order_info || {}} all_order_srcs={all_order_srcs} all_pay_modes={all_pay_modes} />
+        <OrderDetailModal ref="detail_modal" data={check_order_info || {}} all_order_srcs={all_order_srcs.map} all_pay_modes={all_pay_modes} />
         <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
       </div>
     )

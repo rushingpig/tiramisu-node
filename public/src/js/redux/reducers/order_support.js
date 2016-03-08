@@ -1,6 +1,9 @@
 import * as OrderSupportActions from 'actions/order_support';
 
-function all_order_srcs( state = [], action ){
+var initial_state = {
+  map: {}
+}
+export function all_order_srcs( state = initial_state, action ){
   switch( action.type ){
     case OrderSupportActions.GOT_ORDER_SRCS:
       // let l1 = [], l2 = [];
@@ -15,13 +18,17 @@ function all_order_srcs( state = [], action ){
       //   }
       // })
       // return order_src_data;
-      return action.data;
+      var new_map = {};
+      action.data.forEach( n => {
+        new_map[n.id] = n.name;
+      });
+      return { ...state, map: new_map };
     default:
       return state;
   }
 }
 
-function all_pay_modes( state = [], action ){
+export function all_pay_modes( state = [], action ){
   switch( action.type ){    
     case OrderSupportActions.GOT_PAY_MODES:
       // return map(action.data, (text, id) => ({id, text}));

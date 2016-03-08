@@ -8,6 +8,7 @@ import { GOT_DELIVERY_STATIONS, GOT_PAY_MODES } from 'actions/order_manage_form'
 import { GET_ORDER_LIST } from 'actions/orders';
 import * as Actions from 'actions/delivery_distribute';
 import { UPDATE_PATH } from 'redux-simple-router';
+import * as OrderSupportReducers from 'reducers/order_support';
 
 var filter_state = {
   search_ing: false,
@@ -70,4 +71,5 @@ export default combineReducers({
   main,
   area: area(),
   deliveryman,
+  ...OrderSupportReducers
 })

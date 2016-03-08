@@ -127,7 +127,7 @@ var sms_host = "http://xfxb-production:3000/sms/internal";
 
 var login_required = true;
 
-var coupon_host = "http://xfxb-qa:3000";
+var coupon_host = "http://120.76.25.32:3000";
 
 module .exports = {
     exp_static_options : exp_static_options,

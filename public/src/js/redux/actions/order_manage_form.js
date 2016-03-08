@@ -79,21 +79,23 @@ export function checkGroupbuyPsd(data){
 
 function _getFormData(form_data, getState){
   var products = getState().orderManageForm.products.confirm_list;
-  var total_amount = 0, original_price = 0, discount_price = 0;
+  var total_amount = 0, total_original_price = 0, total_discount_price = 0;
   var gretting_card = [];
   products = clone( products );
   products.forEach(n => {
-    total_amount += n.amount * 100;
     n.discount_price *= 100;
-    original_price += n.original_price * n.num;
-    discount_price += n.discount_price * n.num;
+    n.amount *= 100;
+
+    total_amount += n.amount;
+    total_original_price += n.original_price * n.num * 100;
+    total_discount_price += n.discount_price;
     gretting_card.push(n.gretting_card);
   })
   return {
     ...form_data,
     total_amount,
-    original_price,
-    discount_price,
+    total_original_price,
+    total_discount_price,
     products,
     gretting_card: gretting_card.join('|')
   };

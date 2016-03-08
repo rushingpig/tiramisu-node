@@ -73,6 +73,7 @@ export default formReducer.plugin({
       }else{
         //订单来源，支付方式，支付状态，产品应收 联动
         switch(action.type) {
+          case actionTypes.FOCUS:
           case actionTypes.BLUR:
           case actionTypes.CHANGE:
           case actionTypes.RESET:
@@ -108,7 +109,7 @@ function getPayModesId(state, action){
         return { value: getMode('团购券').id }; //团购券id（TODO）
       }else if(isSrc('有赞微商城', src_id)){  
         return { value: getMode('微信支付').id }; //微信支付id
-      }else if(isSrc('电话', src_id)){
+      }else if(isSrc('400电话', src_id)){
         // var mode_cash = getMode('货到付款（现金）');
         // var mode_card = getMode('货到付款（POS）');
         var mode_cash = getMode('现金');
@@ -132,13 +133,13 @@ function getPayStatus(state, action){
     }else{
       if(isSrc('团购网站', src_id) || isSrc('有赞微商城', src_id)){
         var { orderManageForm: { products: { confirm_list }}} = getGlobalState();
-        //属于第三方预约
+        //属于团购网站
         if(confirm_list.length > 1 || (confirm_list[0] && confirm_list[0].num > 1)){
           return { value: 'PARTPAYED' }; //部分付款（TODO）
         }else{
           return { value: 'PAYED' }; //已付款（TODO）
         }
-      }else if(isSrc('电话', src_id)){
+      }else if(isSrc('400电话', src_id)){
         return { value: 'COD' }; //货到付款
       }else{
         return {touched: false, value: SELECT_DEFAULT_VALUE, visited: false};

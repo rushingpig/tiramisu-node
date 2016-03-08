@@ -244,7 +244,7 @@ class ProductSelectedRow extends Component {
         <td><NumberPicker value={data.num} onChange={this.onNumChange.bind(this)} /></td>
         <td>{yes_or_no(data.is_local_site)}</td>
         <td>{yes_or_no(data.is_delivery)}</td>
-        <td><a onClick={this.delete.bind(this)} href="javascript:;">[删除]</a></td>
+        <td><a onClick={this.delete.bind(this)} href="javascript:;">[ 删除 ]</a></td>
       </tr>
     )
   }

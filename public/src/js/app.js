@@ -19415,8 +19415,8 @@
 	    INLINE: { value: '生产中', key: 40, color: '', bg: '#dac7a7' },
 	    DELIVERY: { value: '已分配配送员', key: 50, color: '', bg: '#dac7a7' },
 
-	    COMPLETED: { value: '订单完成', key: 100, color: '#e84c0d', bg: '#dac7a7' },
-	    EXCEPTION: { value: '订单异常', key: 100, color: '##E44949', bg: '#dac7a7' }
+	    COMPLETED: { value: '订单完成', key: 100, color: '#2FB352', bg: '#dac7a7' },
+	    EXCEPTION: { value: '订单异常', key: 100, color: '#E44949', bg: '#dac7a7' }
 	  },
 	  pay_status: {
 	    'COD': '货到付款',
@@ -28745,11 +28745,11 @@
 	        'td',
 	        { className: 'nowrap text-left' },
 	        '原价：￥',
-	        props.original_price / 100,
+	        props.total_original_price / 100,
 	        ' ',
 	        _react2['default'].createElement('br', null),
 	        '实际售价：￥',
-	        props.discount_price / 100,
+	        props.total_discount_price / 100,
 	        ' ',
 	        _react2['default'].createElement('br', null),
 	        '应收金额：￥',
@@ -33136,21 +33136,23 @@
 	function _getFormData(form_data, getState) {
 	  var products = getState().orderManageForm.products.confirm_list;
 	  var total_amount = 0,
-	      original_price = 0,
-	      discount_price = 0;
+	      total_original_price = 0,
+	      total_discount_price = 0;
 	  var gretting_card = [];
 	  products = (0, _clone2['default'])(products);
 	  products.forEach(function (n) {
-	    total_amount += n.amount * 100;
 	    n.discount_price *= 100;
-	    original_price += n.original_price * n.num;
-	    discount_price += n.discount_price * n.num;
+	    n.amount *= 100;
+
+	    total_amount += n.amount;
+	    total_original_price += n.original_price * n.num * 100;
+	    total_discount_price += n.discount_price;
 	    gretting_card.push(n.gretting_card);
 	  });
 	  return _extends({}, form_data, {
 	    total_amount: total_amount,
-	    original_price: original_price,
-	    discount_price: discount_price,
+	    total_original_price: total_original_price,
+	    total_discount_price: total_discount_price,
 	    products: products,
 	    gretting_card: gretting_card.join('|')
 	  });
@@ -33330,10 +33332,10 @@
 
 	var _configFormFields2 = _interopRequireDefault(_configFormFields);
 
-	//可以手动触发redux-form的normalize动作
+	//可以手动触发redux-form的plugin: reducer
 
 	function updateAddOrderForm() {
-	  return (0, _reduxForm.focus)('add_order', '_update'); //form_name, field_name
+	  return (0, _reduxForm.focus)('add_order', 'src_id'); //form_name, field_name
 	}
 
 	//手动更改指定form的表单值
@@ -37342,6 +37344,8 @@
 	      (0, _utilsIndex.Noty)('warning', '请填写完整的配送地址');return;
 	    } else if (delivery_id == _configAppConfig.SELECT_DEFAULT_VALUE) {
 	      (0, _utilsIndex.Noty)('warning', '请选择配送中心');return;
+	    } else if (delivery_type == _configAppConfig.DELIVERY_TO_STORE && this.refs.shop.props['default-text'] == this.findSelectedOptionText('shop')) {
+	      (0, _utilsIndex.Noty)('warning', '请选择门店地址');return;
 	    }
 	    var prefix_address = this.findSelectedOptionText('province') + this.findSelectedOptionText('city') + this.findSelectedOptionText('district');
 	    this.props.actions.alterDelivery(this.props.active_order_id, {
@@ -38284,7 +38288,7 @@
 	    }
 
 	  //团购密码
-	  if ((0, _reducersForm.isSrc)('第三方预约', values.src_id)) {
+	  if ((0, _reducersForm.isSrc)('团购网站', values.src_id)) {
 	    if (form['coupon'] && form['coupon'].touched && !values['coupon'] || form['coupon'] && !form['coupon'].focus && values['coupon'] && !_utilsIndex.form.isCoupon(values['coupon'])) {
 	      errors['coupon'] = msg;
 	    }
@@ -38380,13 +38384,14 @@
 	      var delivery_shops = _props$area.delivery_shops;
 	      var _state = this.state;
 	      var invoices = _state.invoices;
-	      var selected_order_src_level1_id = _state.selected_order_src_level1_id;
+	      var _state$selected_order_src_level1_id = _state.selected_order_src_level1_id;
+	      var selected_order_src_level1_id = _state$selected_order_src_level1_id === undefined ? src_id.value : _state$selected_order_src_level1_id;
 	      var groupbuy_psd = _state.groupbuy_psd;
 	      var groupbuy_check_ing = _state.groupbuy_check_ing;
 	      var groupbuy_msg = _state.groupbuy_msg;
 	      var groupbuy_success = _state.groupbuy_success;
 
-	      var isThird = (0, _reducersForm.isSrc)('第三方预约', src_id.value); //是否第三方，显示团购密码组件
+	      var isThird = (0, _reducersForm.isSrc)('团购网站', src_id.value); //是否第三方，显示团购密码组件
 
 	      //{{表单处于编辑状态时的额外处理
 	      if (editable && !this.editable_initial) {
@@ -38685,7 +38690,6 @@
 
 	        var order_info = _this2.props['form-data'].data;
 	        if (!Object.keys(errors).length) {
-	          form_data.delivery_id = 1;
 	          form_data.delivery_time = form_data.delivery_date + ' ' + form_data.delivery_hours;
 	          delete form_data.delivery_date;
 	          delete form_data.delivery_hours;
@@ -38693,7 +38697,13 @@
 	          form_data.order_id = order_id;
 	          form_data.updated_time = order_info.updated_time;
 	          form_data.recipient_id = order_info.recipient_id;
-	          form_data.delivery_name = _this2.findSelectedOptionText('delivery_center');
+
+	          if (form_data.delivery_id == _configAppConfig.SELECT_DEFAULT_VALUE) {
+	            form_data.delivery_id = '';
+	            form_data.delivery_name = '';
+	          } else {
+	            form_data.delivery_name = _this2.findSelectedOptionText('delivery_center');
+	          }
 
 	          //拼接省市区
 	          form_data.prefix_address = _this2.findSelectedOptionText('province') + _this2.findSelectedOptionText('city') + _this2.findSelectedOptionText('district');
@@ -38703,7 +38713,7 @@
 	            form_data.recipient_landmark = '';
 	          }
 	          //团购密码验证
-	          if ((0, _reducersForm.isSrc)('第三方预约', form_data.src_id)) {
+	          if ((0, _reducersForm.isSrc)('团购网站', form_data.src_id)) {
 	            if (!_this2.state.groupbuy_success) {
 	              (0, _utilsIndex.Noty)('warning', '请确定团购密码已验证通过');return;
 	            }
@@ -39444,6 +39454,7 @@
 	      } else {
 	        //订单来源，支付方式，支付状态，产品应收 联动
 	        switch (action.type) {
+	          case _reduxForm.actionTypes.FOCUS:
 	          case _reduxForm.actionTypes.BLUR:
 	          case _reduxForm.actionTypes.CHANGE:
 	          case _reduxForm.actionTypes.RESET:
@@ -39479,7 +39490,7 @@
 	        return { value: getMode('团购券').id }; //团购券id（TODO）
 	      } else if (isSrc('有赞微商城', src_id)) {
 	          return { value: getMode('微信支付').id }; //微信支付id
-	        } else if (isSrc('电话', src_id)) {
+	        } else if (isSrc('400电话', src_id)) {
 	            // var mode_cash = getMode('货到付款（现金）');
 	            // var mode_card = getMode('货到付款（POS）');
 	            var mode_cash = getMode('现金');
@@ -39506,13 +39517,13 @@
 
 	        var confirm_list = _getGlobalState3.orderManageForm.products.confirm_list;
 
-	        //属于第三方预约
+	        //属于团购网站
 	        if (confirm_list.length > 1 || confirm_list[0] && confirm_list[0].num > 1) {
 	          return { value: 'PARTPAYED' }; //部分付款（TODO）
 	        } else {
 	            return { value: 'PAYED' }; //已付款（TODO）
 	          }
-	      } else if (isSrc('电话', src_id)) {
+	      } else if (isSrc('400电话', src_id)) {
 	          return { value: 'COD' }; //货到付款
 	        } else {
 	            return { touched: false, value: _configAppConfig.SELECT_DEFAULT_VALUE, visited: false };
@@ -39929,7 +39940,6 @@
 	    var size = _props$data.size;
 	    var original_price = _props$data.original_price;
 	    var num = _props$data.num;
-	    var total_discount_price = _props$data.total_discount_price;
 	    var discount_price = _props$data.discount_price;
 	    var amount = _props$data.amount;
 	    var choco_board = _props$data.choco_board;
@@ -39955,7 +39965,7 @@
 	        'td',
 	        null,
 	        '￥',
-	        discount_price
+	        original_price
 	      ),
 	      _react2['default'].createElement(
 	        'td',
@@ -39965,7 +39975,7 @@
 	      _react2['default'].createElement(
 	        'td',
 	        null,
-	        editable ? _react2['default'].createElement('input', { value: total_discount_price, onChange: handleChange.bind(this, 'total_discount_price'), className: edit_input_classname, style: { width: 50 }, type: 'text' }) : '￥' + total_discount_price
+	        editable ? _react2['default'].createElement('input', { value: discount_price, onChange: handleChange.bind(this, 'discount_price'), className: edit_input_classname, style: { width: 50 }, type: 'text' }) : '￥' + discount_price
 	      ),
 	      _react2['default'].createElement(
 	        'td',
@@ -40662,7 +40672,7 @@
 	          _react2['default'].createElement(
 	            'a',
 	            { onClick: this['delete'].bind(this), href: 'javascript:;' },
-	            '[删除]'
+	            '[ 删除 ]'
 	          )
 	        )
 	      );
@@ -47782,9 +47792,8 @@
 	        //自定义描述
 	        var confirm_list = state.selected_list.map(function (n) {
 	          var new_item = _extends({}, n, base);
-	          new_item.discount_price = n.discount_price / 100 || 0;
-	          new_item.total_discount_price = new_item.discount_price * n.num;
-	          new_item.amount = new_item.total_discount_price;
+	          new_item.discount_price = n.discount_price * n.num / 100 || 0;
+	          new_item.amount = new_item.discount_price;
 	          return new_item;
 	        });
 	        (0, _utilsIndex.delay)(function () {
@@ -47855,11 +47864,11 @@
 	          });
 	        } else if (pay_status == '部分付款') {
 	          confirm_list.forEach(function (n, i) {
-	            n.amount = i == 0 ? 0 : n.discount_price * n.num;
+	            n.amount = i == 0 ? 0 : n.discount_price;
 	          });
 	        } else {
 	          confirm_list.forEach(function (n) {
-	            n.amount = n.discount_price * n.num;
+	            n.amount = n.discount_price;
 	          });
 	        }
 	        return _extends({}, state);

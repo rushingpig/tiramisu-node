@@ -62,8 +62,8 @@ export default {
     INLINE : {value: '生产中', key: 40, color: '', bg: '#dac7a7'},
     DELIVERY : {value: '已分配配送员', key: 50, color: '', bg: '#dac7a7'},
 
-    COMPLETED : {value: '订单完成', key: 100, color: '#e84c0d', bg: '#dac7a7'},
-    EXCEPTION : {value: '订单异常', key: 100, color: '##E44949', bg: '#dac7a7'}
+    COMPLETED : {value: '订单完成', key: 100, color: '#2FB352', bg: '#dac7a7'},
+    EXCEPTION : {value: '订单异常', key: 100, color: '#E44949', bg: '#dac7a7'}
   },
   pay_status: {
     'COD': '货到付款',

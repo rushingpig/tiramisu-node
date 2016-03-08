@@ -173,9 +173,8 @@ function products_choosing(state = products_choosing_state, action){
         }
         var confirm_list = state.selected_list.map(function(n){
           var new_item = {...n, ...base};
-          new_item.discount_price = n.discount_price / 100 || 0;
-          new_item.total_discount_price = new_item.discount_price * n.num;
-          new_item.amount = new_item.total_discount_price;
+          new_item.discount_price = n.discount_price * n.num / 100 || 0;
+          new_item.amount = new_item.discount_price;
           return new_item;
         })
         delay(() => store.dispatch(updateAddOrderForm())); //商品数变化，通知add_order表单更新，支付方式、支付状态的默认值与所选商品数是紧密相关的
@@ -231,11 +230,11 @@ function products_choosing(state = products_choosing_state, action){
           })
         }else if(pay_status == '部分付款'){
           confirm_list.forEach(function(n, i){
-            n.amount = i == 0 ? 0 : n.discount_price * n.num;
+            n.amount = i == 0 ? 0 : n.discount_price;
           })
         }else{
           confirm_list.forEach(function(n){
-            n.amount = n.discount_price * n.num;
+            n.amount = n.discount_price;
           })
         }
         return {...state};

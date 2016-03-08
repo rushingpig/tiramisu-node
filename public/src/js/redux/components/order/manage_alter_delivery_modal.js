@@ -136,6 +136,10 @@ var AlterDeliveryModal = React.createClass({
       Noty('warning', '请填写完整的配送地址'); return;
     }else if(delivery_id == SELECT_DEFAULT_VALUE){
       Noty('warning', '请选择配送中心'); return;
+    }else if(
+      delivery_type == DELIVERY_TO_STORE && 
+      ( this.refs.shop.props['default-text'] == this.findSelectedOptionText('shop') )){
+        Noty('warning', '请选择门店地址'); return;
     }
     var prefix_address = (
       this.findSelectedOptionText('province') +

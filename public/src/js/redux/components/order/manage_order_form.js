@@ -61,7 +61,7 @@ const validate = (values, props) => {
   }
 
   //团购密码
-  if( isSrc('第三方预约', values.src_id) ){
+  if( isSrc('团购网站', values.src_id) ){
     if (form['coupon'] && form['coupon'].touched && !values['coupon'] || (form['coupon'] && !form['coupon'].focus && values['coupon'] && !uForm.isCoupon(values['coupon']))){
       errors['coupon'] = msg;
     }
@@ -123,9 +123,9 @@ class ManageAddForm extends Component {
       all_delivery_time, all_pay_status, all_order_srcs, 
       delivery_stations, all_pay_modes} = this.props['form-data'];
     var {provinces, cities, districts, delivery_shops} = this.props.area;
-    var {invoices, selected_order_src_level1_id, groupbuy_psd, groupbuy_check_ing, groupbuy_msg, groupbuy_success} = this.state;
+    var {invoices, selected_order_src_level1_id = src_id.value, groupbuy_psd, groupbuy_check_ing, groupbuy_msg, groupbuy_success} = this.state;
 
-    var isThird = isSrc('第三方预约', src_id.value); //是否第三方，显示团购密码组件
+    var isThird = isSrc('团购网站', src_id.value); //是否第三方，显示团购密码组件
     
     //{{表单处于编辑状态时的额外处理
     if(editable && !this.editable_initial){
@@ -307,7 +307,6 @@ class ManageAddForm extends Component {
       var { errors, dispatch, actions: {createOrder}, order_id } = this.props;
       var order_info = this.props['form-data'].data;
       if(!Object.keys(errors).length){
-        form_data.delivery_id = 1;
         form_data.delivery_time = form_data.delivery_date + ' ' + form_data.delivery_hours;
         delete form_data.delivery_date;
         delete form_data.delivery_hours;
@@ -315,7 +314,13 @@ class ManageAddForm extends Component {
         form_data.order_id = order_id;
         form_data.updated_time = order_info.updated_time;
         form_data.recipient_id = order_info.recipient_id;
-        form_data.delivery_name = this.findSelectedOptionText('delivery_center');
+
+        if( form_data.delivery_id == SELECT_DEFAULT_VALUE ){
+          form_data.delivery_id = '';
+          form_data.delivery_name = '';
+        }else {
+          form_data.delivery_name = this.findSelectedOptionText('delivery_center');
+        }
 
         //拼接省市区
         form_data.prefix_address = (
@@ -329,7 +334,7 @@ class ManageAddForm extends Component {
           form_data.recipient_landmark = '';
         }
         //团购密码验证
-        if( isSrc('第三方预约', form_data.src_id) ){
+        if( isSrc('团购网站', form_data.src_id) ){
           if( !this.state.groupbuy_success ){
             Noty('warning', '请确定团购密码已验证通过'); return;
           }

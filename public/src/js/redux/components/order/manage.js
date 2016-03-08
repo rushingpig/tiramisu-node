@@ -197,8 +197,8 @@ var OrderRow = React.createClass({
         </td>
         <td><strong className="strong">{props.pay_status}</strong></td>
         <td className="nowrap text-left">
-          原价：￥{props.original_price/100} <br />
-          实际售价：￥{props.discount_price/100} <br />
+          原价：￥{props.total_original_price/100} <br />
+          实际售价：￥{props.total_discount_price/100} <br />
           应收金额：￥{props.total_amount/100}
         </td>
         {/*订单状态*/}

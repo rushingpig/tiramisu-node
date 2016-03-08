@@ -2,9 +2,9 @@ import { reset, focus, blur, actionTypes, initialize, destroy } from 'redux-form
 // import * as RF from 'redux-form';
 import FormFields from 'config/form.fields';
 
-//可以手动触发redux-form的normalize动作
+//可以手动触发redux-form的plugin: reducer
 export function updateAddOrderForm(){
-  return focus('add_order', '_update'); //form_name, field_name
+  return focus('add_order', 'src_id'); //form_name, field_name
 }
 
 //手动更改指定form的表单值

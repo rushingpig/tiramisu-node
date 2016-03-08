@@ -350,6 +350,7 @@ OrderService.prototype.editOrder = function (is_submit) {
       } else if (updated_time !== _res[0].updated_time) {
         throw new TiramisuError(res_obj.OPTION_EXPIRED);
       }
+      console.log(_res);
       //===========for history begin=============
       let current_order = _res[0],
         order_history_obj = {
@@ -415,7 +416,7 @@ OrderService.prototype.editOrder = function (is_submit) {
             isDelete = false;
           }
         }
-        if (isDelete) {
+        if (isDelete && _res[i].sku_id) {
           let curr = _res[i];
           option += '删除{' + curr.product_name + '}\n';
           delete_skuIds.push(curr.sku_id);
@@ -610,14 +611,14 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
           delivery_time: curr.delivery_time,
           delivery_type: Constant.DTD[curr.delivery_type],
           delivery_name: curr.delivery_name,
-          discount_price: curr.total_discount_price,
+          total_discount_price: curr.total_discount_price,
           is_deal: curr.is_deal,
           is_submit: curr.is_submit,
           merchant_id: curr.merchant_id,
           coupon: curr.coupon,
           print_status: curr.print_status,
           order_id: systemUtils.getShowOrderId(curr.id, curr.created_time),
-          original_price: curr.total_original_price,
+          total_original_price: curr.total_original_price,
           total_amount: curr.total_amount,
           owner_mobile: curr.owner_mobile,
           owner_name: curr.owner_name,

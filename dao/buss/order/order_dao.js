@@ -424,6 +424,7 @@ OrderDao.prototype.editOrder = function (order_obj, order_id, recipient_obj, rec
                         if (err_cb && trans.rollback) {
                             trans.rollback();
                             reject(err_cb);
+                            logger.error('when to update order skus exception',err_cb);
                             return;
                         }
                     };
@@ -441,8 +442,8 @@ OrderDao.prototype.editOrder = function (order_obj, order_id, recipient_obj, rec
                     }
                     if (!toolUtils.isEmptyArray(update_skus)) {
                         update_skus.forEach((curr) => {
-                            let order_sku_update_sql = this.base_update_sql + " where order_id = ? and sku_id = ?";
-                            let order_sku_update_params = [tables.buss_order_sku, curr, order_id, curr.sku_id];
+                            let order_sku_update_sql = this.base_update_sql + " where order_id = ? and sku_id = ? and del_flag = ?";
+                            let order_sku_update_params = [tables.buss_order_sku, curr, order_id, curr.sku_id,del_flag.SHOW];
                             trans.query(order_sku_update_sql, order_sku_update_params, cb);
                         });
                     }

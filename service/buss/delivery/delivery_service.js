@@ -624,6 +624,7 @@ DeliveryService.prototype.print = (req,res,next)=>{
                 data.remarks = curr.remarks;
                 data.coupon = curr.coupon;
                 data.src_id = curr.src_id;
+                data.merge_name = curr.merge_name;
                 data.province_id = curr.province_id;
                 data.province_name = curr.province_name;
                 data.city_id = curr.city_id;

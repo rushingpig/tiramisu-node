@@ -27,6 +27,7 @@
   margin: 142px auto;
   background: $theme-bg-color;
   border-radius: 5px;
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.15);
   .form-signin-heading {
     margin: 0;
     padding: 42px 15px 10px;
@@ -79,7 +80,7 @@
     font-size: 16px;
     height: auto;
     padding: 10px;
-    border-radius: none !important;
+    border-radius: 0 !important;
     box-sizing: border-box;
     transition: transform .4s;
 
@@ -97,12 +98,15 @@
   }
   input[type="text"], input[type="password"] {
     margin-bottom: 15px;
-    border: 1px solid $login-color;
+    border: 1px solid lighten($login-color, 30);
     // background: $login-color;
     box-shadow: none;
     font-size: 12px;
     border-radius: 0;
     // color: rgba(255, 255, 255, 0.68);
+    &:focus {
+      border: 1px solid $login-color;
+    }
   }
   .btn-login {
     background: transparent;

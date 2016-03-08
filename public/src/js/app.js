@@ -47875,11 +47875,14 @@
 	      })();
 
 	    case FormActions.GOT_ORDER_BY_ID:
-	      action.data.products.forEach(function (n) {
-	        n.discount_price /= 100;
-	        n.amount /= 100;
-	      });
-	      return _extends({}, state, { confirm_list: action.data.products, selected_list: action.data.products });
+	      return (function () {
+	        var confirm_list = (0, _clone2['default'])(action.data.products);
+	        confirm_list.forEach(function (n) {
+	          n.discount_price /= 100;
+	          n.amount /= 100;
+	        });
+	        return _extends({}, state, { confirm_list: confirm_list, selected_list: (0, _clone2['default'])(action.data.products) });
+	      })();
 	    default:
 	      return state;
 	  }

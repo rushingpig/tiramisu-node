@@ -241,11 +241,14 @@ function products_choosing(state = products_choosing_state, action){
       })()
 
     case FormActions.GOT_ORDER_BY_ID:
-      action.data.products.forEach( n => {
-        n.discount_price /= 100;
-        n.amount /= 100;
-      });
-      return {...state, confirm_list: action.data.products, selected_list: action.data.products };
+      return (function(){
+        var confirm_list = clone(action.data.products);
+        confirm_list.forEach( n => {
+          n.discount_price /= 100;
+          n.amount /= 100;
+        });
+        return {...state, confirm_list, selected_list: clone(action.data.products) };
+      })()
     default:
       return state;
   }

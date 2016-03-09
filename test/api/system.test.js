@@ -53,16 +53,18 @@ module.exports = function () {
         });
         //================== hooks end ==================
 
-        it('GET /v1/a/city/:cityId/stations correct request', function (done) {
+        it('GET /v1/a/stations/getStationsByDistrictId correct request', function (done) {
             agent
-                .get('/v1/a/city/110100/stations')
+                .get('/v1/a/stations/getStationsByDistrictId?province_id=110000')
                 .expect('Content-Type', /json/)
                 .expect(200)
                 .end(err(done));
         });
 
-        it('PUT /v1/a/station/:stationId/coords correct request', function (done) {
+        it('PUT /v1/a/station/:stationId correct request', function (done) {
             const req_body = {
+                regionalism_id: 110101,
+                name: 'xxx配送站',
                 coords: '[{"longitude":113.733327,"latitude":22.717183},{"longitude":113.810729,"latitude":22.625355}]'
             };
             const res_body = {
@@ -70,7 +72,7 @@ module.exports = function () {
                 "msg": "everything goes well -> enjoy yourself...",
                 "data": {}
             };
-            agent.put('/v1/a/station/1/coords')
+            agent.put('/v1/a/station/1')
                 .set('Content-Type', 'application/json')
                 .send(req_body)
                 .expect(200, res_body, err(done));
@@ -85,6 +87,34 @@ module.exports = function () {
                 .expect('Content-Type', /json/)
                 .expect(200)
                 .end(err(done));
+        });
+
+        it('POST /v1/a/station correct request', function (done) {
+            const req_body = {
+                regionalism_id: 110101,
+                name: 'xxx配送站',
+                coords: '[{"longitude":113.733327,"latitude":22.717183},{"longitude":113.810729,"latitude":22.625355}]'
+            };
+            const res_body = {
+                "code": "0000",
+                "msg": "everything goes well -> enjoy yourself...",
+                "data": {}
+            };
+            agent.post('/v1/a/station')
+                .set('Content-Type', 'application/json')
+                .send(req_body)
+                .expect(200, res_body, err(done));
+        });
+
+        it('DELETE /v1/a/station correct request', function (done) {
+            const res_body = {
+                "code": "0000",
+                "msg": "everything goes well -> enjoy yourself...",
+                "data": {}
+            };
+            agent.delete('/v1/a/station/1')
+                .set('Content-Type', 'application/json')
+                .expect(200, res_body, err(done));
         });
     });
 };

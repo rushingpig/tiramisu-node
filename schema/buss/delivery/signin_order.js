@@ -12,8 +12,7 @@ module.exports = {
         isInt : true
     },
     'payfor_amount' : {
-        optional : true,
-        isInt : true
+        optional : true
     },
     'payfor_reason' : {
         optional : true

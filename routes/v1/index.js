@@ -54,6 +54,8 @@ a.get('/orders',orderService.listOrders(Constant.OSR.LIST));    // 获取订单�
 a.get('/order/:orderId/products',productService.listOrderProducts); // 获取指定订单下的产品列表
 a.get('/order/:orderId/history',orderService.history);  // 获取指定订单的历史记录
 
+a.get('/orders/export',orderService.exportExcel);    //导出 订单 && 配送单 到excel文件
+
 a.get('/orders/exchange',orderService.listOrders(Constant.OSR.DELIVERY_EXCHANGE));  // 订单转送单列表
 a.get('/orders/delivery',orderService.listOrders(Constant.OSR.DELIVER_LIST));   // 送货单管理列表
 a.get('/orders/signin',orderService.listOrders(Constant.OSR.RECEIVE_LIST));     // 配送单管理列表

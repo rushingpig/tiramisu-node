@@ -576,10 +576,10 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
       query_data.status = Constant.OS.STATION;
     } else if (entrance === Constant.OSR.DELIVER_LIST) {
       query_data.order_sorted_rules = entrance;
-      query_data.status = [Constant.OS.CONVERT, Constant.OS.INLINE];
+      query_data.status = query_data.status || [Constant.OS.CONVERT, Constant.OS.INLINE];
     } else if (entrance === Constant.OSR.RECEIVE_LIST) {
       query_data.order_sorted_rules = entrance;
-      query_data.status = [Constant.OS.DELIVERY, Constant.OS.COMPLETED, Constant.OS.EXCEPTION];
+      query_data.status = query_data.status || [Constant.OS.DELIVERY, Constant.OS.COMPLETED, Constant.OS.EXCEPTION];
     }
 
     let promise = orderDao.findOrderList(systemUtils.assemblePaginationObj(req, query_data)).then((resObj) => {
@@ -890,5 +890,14 @@ OrderService.prototype.exceptionOrder = (req,rex,next)=>{
     res.api();
   });
   systemUtils.wrapService(res,next,promise);
+};
+/**
+ * exprot the order list
+ * @param req
+ * @param res
+ * @param next
+ */
+OrderService.prototype.exportExcel = (req,res,next) => {
+
 };
 module.exports = new OrderService();

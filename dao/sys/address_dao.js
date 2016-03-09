@@ -34,7 +34,9 @@ AddressDao.prototype.findDistrictsByCityId = function(cityId){
 AddressDao.prototype.findStationsByRegionalismId = function(query_obj){
     let sql = util.format("select b.id 'station_id',b.name 'station_name',b.address 'station_address'," +
         "b.remarks 'remarks',b.capacity 'capacity',b.phone 'phone'," +
-        "a.name 'regionalism_name',c.name 'city_name',d.name 'province_name' " +
+        "a.id 'regionalism_id',a.name 'regionalism_name'," +
+        "c.id 'city_id',c.name 'city_name'," +
+        "d.id 'province_id',d.name 'province_name' " +
         "from %s a join %s c on a.parent_id = c.id " +
         "join %s d on c.parent_id = d.id " +
         "join %s b on a.id = b.regionalism_id " +
@@ -53,7 +55,9 @@ AddressDao.prototype.findStationsByRegionalismId = function(query_obj){
 AddressDao.prototype.findStationsByCityId = function(query_obj){
     let sql = util.format("select b.id 'station_id',b.name 'station_name',b.address 'station_address'," +
         "b.remarks 'remarks',b.capacity 'capacity',b.phone 'phone'," +
-        "a.name 'regionalism_name',c.name 'city_name',d.name 'province_name' " +
+        "a.id 'regionalism_id',a.name 'regionalism_name'," +
+        "c.id 'city_id',c.name 'city_name'," +
+        "d.id 'province_id',d.name 'province_name' " +
         "from %s a join %s c on a.parent_id = c.id " +
         "join %s d on c.parent_id = d.id " +
         "join %s b on a.id = b.regionalism_id " +
@@ -72,7 +76,9 @@ AddressDao.prototype.findStationsByCityId = function(query_obj){
 AddressDao.prototype.findStationsByProvinceId = function(query_obj){
     let sql = util.format("select b.id 'station_id',b.name 'station_name',b.address 'station_address'," +
         "b.remarks 'remarks',b.capacity 'capacity',b.phone 'phone'," +
-        "a.name 'regionalism_name',c.name 'city_name',d.name 'province_name' " +
+        "a.id 'regionalism_id',a.name 'regionalism_name'," +
+        "c.id 'city_id',c.name 'city_name'," +
+        "d.id 'province_id',d.name 'province_name' " +
         "from %s a join %s c on a.parent_id = c.id " +
         "join %s d on c.parent_id = d.id " +
         "join %s b on a.id = b.regionalism_id " +

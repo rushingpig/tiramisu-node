@@ -117,8 +117,8 @@ export default class DetailModal extends Component {
                     <label>{'总金额：'}</label>
                     <span className="theme">
                       {
-                        isNumber( data.total_discount_price )
-                          ? '￥' + data.total_discount_price / 100
+                        isNumber( data.total_original_price )
+                          ? '￥' + data.total_original_price / 100
                           : ' - '
                       }
                     </span>

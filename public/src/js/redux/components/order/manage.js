@@ -189,7 +189,13 @@ var OrderRow = React.createClass({
         <td><div className="time">{props.created_time}</div></td>
         {/*收货人信息*/}
         <RecipientInfo data={props} />
-        <td>{props.delivery_type}</td>
+        {/*配送方式*/}
+        <td>{[
+          props.delivery_type,
+          props.delivery_type == '门店自提'
+            ? <div key="shop" className="theme-font-bg round-2">{props.recipient_address.split(/\s+/g)[1] || ' - '}</div>
+            : null
+        ]}</td>
         {/*订单来源*/}
         <td className="nowrap">
           {src_name[0]}

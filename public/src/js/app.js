@@ -19380,7 +19380,7 @@
 	exports['default'] = {
 	  root: '/',
 	  ajax: '/v1/a',
-	  acl: true,
+	  acl: false,
 
 	  REQUEST: {
 	    ING: 0,
@@ -28720,7 +28720,11 @@
 	      _react2['default'].createElement(
 	        'td',
 	        null,
-	        props.delivery_type
+	        [props.delivery_type, props.delivery_type == '门店自提' ? _react2['default'].createElement(
+	          'div',
+	          { key: 'shop', className: 'theme-font-bg round-2' },
+	          props.recipient_address.split(/\s+/g)[1] || ' - '
+	        ) : null]
 	      ),
 	      _react2['default'].createElement(
 	        'td',
@@ -29505,7 +29509,7 @@
 	  }
 	});
 	module.exports = exports['default'];
-	/*收货人信息*/ /*订单来源*/ /*订单状态*/
+	/*收货人信息*/ /*配送方式*/ /*订单来源*/ /*订单状态*/
 
 /***/ },
 /* 242 */
@@ -39965,7 +39969,7 @@
 	        'td',
 	        null,
 	        '￥',
-	        original_price
+	        original_price / 100
 	      ),
 	      _react2['default'].createElement(
 	        'td',
@@ -41909,7 +41913,7 @@
 	                      _react2['default'].createElement(
 	                        'span',
 	                        { className: 'theme' },
-	                        isNumber(data.total_discount_price) ? '￥' + data.total_discount_price / 100 : ' - '
+	                        isNumber(data.total_original_price) ? '￥' + data.total_original_price / 100 : ' - '
 	                      )
 	                    )
 	                  )
@@ -44673,7 +44677,7 @@
 	              null,
 	              '货到付款金额：'
 	            ),
-	            _react2['default'].createElement('input', { value: this.state.order.total_amount || 0, readOnly: true, className: 'form-control input-xs short-input', style: { 'width': 50 } })
+	            _react2['default'].createElement('input', { value: this.state.order.total_amount / 100 || 0, readOnly: true, className: 'form-control input-xs short-input', style: { 'width': 50 } })
 	          ),
 	          _react2['default'].createElement(
 	            'div',

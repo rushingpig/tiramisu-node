@@ -87,7 +87,7 @@ AddressService.prototype.getDistricts = (req, res, next)=> {
  * @param res
  * @param next
  */
-AddressService.prototype.getStationsById = (req,res,next)=>{
+AddressService.prototype.getStationsByDistrictId = (req,res,next)=>{
     req.checkQuery('regionalism_id').optional().isInt();
     req.checkQuery('city_id').optional().isInt();
     req.checkQuery('province_id').optional().isInt();

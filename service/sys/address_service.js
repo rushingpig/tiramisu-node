@@ -175,6 +175,18 @@ AddressService.prototype.deleteStation = (req,res,next)=>{
     });
     systemUtils.wrapService(res, next, promise);
 };
+/**
+ * add station
+ * @param req
+ * @param res
+ * @param next
+ */
+AddressService.prototype.addStation = (req,res,next)=>{
+    let promise = addressDao.addStation(req.body).then(() => {
+        res.api();
+    });
+    systemUtils.wrapService(res, next, promise);
+};
 
 
 module.exports = new AddressService();

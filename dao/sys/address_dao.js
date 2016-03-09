@@ -14,6 +14,7 @@ var baseDao = require('../base_dao'),
 function AddressDao(table){
     this.table = table || tables.dict_regionalism;
     this.baseSql = util.format('select ?? from %s where 1=1 and level_type = ? and del_flag = ?',this.table);
+    this.base_insert_sql = 'insert into ?? set ?';
     this.base_update_sql = "update ?? set ?";
     this.base_delete_sql = 'delete from ?? where id = ?';
     this.baseColumns = ['id','name'];
@@ -102,6 +103,10 @@ AddressDao.prototype.getStationsByName = function(station_name){
 AddressDao.prototype.deleteStationById = function(stationId){
     let params = [tables.buss_delivery_station, stationId];
     return baseDao.select(this.base_delete_sql, params);
+};
+AddressDao.prototype.addStation = function(insert_obj){
+    let params = [tables.buss_delivery_station, insert_obj];
+    return baseDao.insert(this.base_insert_sql, params);
 };
 
 module.exports = AddressDao;

@@ -77,6 +77,7 @@ a.post('/order/reprint/apply',deliveryService.applyForRePrint); // 申请重新�
 
 a.post('/coupon',orderService.validateCoupon);
 
+a.post('/station', addressService.addStation);  //新增配送站
 //*********************
 //******** PUT ********
 //*********************

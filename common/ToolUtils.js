@@ -110,5 +110,7 @@ ToolUtils.getClientIP = function (req) {
     req.connection.socket.remoteAddress ||
     req.ip;
 };
-
+ToolUtils.isAlphaNumeric = function(param){
+  return stringValidator.isAlphanumeric(param);
+};
 module.exports = ToolUtils;

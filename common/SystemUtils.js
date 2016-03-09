@@ -101,7 +101,12 @@ module.exports = {
       logger.warn('the object to be encode is not valid string ...');
     } else {
       for (let i = 0; i < obj.length; i++) {
-        str += (encodeURIComponent(obj.charAt(i)).replace(/%/g, '') + ' ');
+        let curr_char = obj.charAt(i);
+        if(toolUtils.isAlphaNumeric(curr_char)){
+          str += curr_char;
+          continue;
+        }
+        str += (' '+encodeURIComponent(curr_char).replace(/%/g, '') + ' ');
       }
     }
     return str;

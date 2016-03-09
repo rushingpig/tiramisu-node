@@ -360,7 +360,9 @@ OrderDao.prototype.findOrderList = function (query_data) {
         ds_sql += temp_sql.replace(/^ or/,'');
         ds_sql += ")";
     }
-
+    if(query_data.user && query_data.user.is_admin){
+        ds_sql = "";
+    }
     // data filter end
     switch (query_data.order_sorted_rules) {
         case constant.OSR.LIST:

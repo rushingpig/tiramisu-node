@@ -348,7 +348,7 @@ CREATE TABLE `buss_product` (
   `original_price` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX_NAME` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=240 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='产品实体';
+) ENGINE=InnoDB AUTO_INCREMENT=500 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='产品实体';
 
 -- ----------------------------
 --  Records of `buss_product`

@@ -155,8 +155,8 @@ DeliveryDao.prototype.findDeliverymansByStation = function(city_id){
     sql += " inner join ?? sur on sur.user_id = su.id and sur.role_id = 2";
     params.push(tables.sys_user_role);
     //sql += " inner join ?? dr on bds.regionalism_id = dr.id and dr.parent_id = ?";
-    //params.push(tables.dict_regionalism);
-    sql += " inner join ?? dr on dr.id = "
+    sql += " inner join ?? dr on dr.id = ?";
+    params.push(tables.dict_regionalism);
     params.push(city_id);
 
     return baseDao.select(sql,params);

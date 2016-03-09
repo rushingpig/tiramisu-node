@@ -35,14 +35,13 @@ module.exports = {
         isInt : true
     },
     'delivery_name' : {
-        notEmpty : true
+        optional : true
     },
     'recipient_address': {
         notEmpty: true
     },
     'delivery_id': {
-        notEmpty: true,
-        isInt : true
+        optional : true
     },
     'src_id': {
         notEmpty: true,

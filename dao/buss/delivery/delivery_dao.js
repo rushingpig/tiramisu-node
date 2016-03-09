@@ -150,8 +150,10 @@ DeliveryDao.prototype.findDeliverymansByStation = function(city_id){
     ].join(','),params = [];
     let sql = "select "+columns+" from ?? su";
     params.push(tables.sys_user);
-    sql += " inner join ?? bds on su.station_id = bds.id";
-    params.push(tables.buss_delivery_station);
+    //sql += " inner join ?? bds on su.station_id = bds.id";
+    //params.push(tables.buss_delivery_station);
+    sql += " inner join ?? sur on sur.user_id = su.id and sur.role_id = 2";
+    params.push(tables.sys_user_role);
     sql += " inner join ?? dr on bds.regionalism_id = dr.id and dr.parent_id = ?";
     params.push(tables.dict_regionalism);
     params.push(city_id);

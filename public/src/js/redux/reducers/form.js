@@ -73,10 +73,15 @@ export default formReducer.plugin({
       }else{
         //订单来源，支付方式，支付状态，产品应收 联动
         switch(action.type) {
-          case actionTypes.FOCUS:
-          case actionTypes.BLUR:
-          case actionTypes.CHANGE:
           case actionTypes.RESET:
+            if(action.field == 'src_id' || action.key == 'src_id'){
+              state.src_id = {touched: false, value: SELECT_DEFAULT_VALUE, visited: false};
+              state.pay_modes_id = {touched: false, visited: false};
+              state.pay_status = {touched: false, visited: false};
+            }
+          case actionTypes.FOCUS:
+          // case actionTypes.BLUR:
+          case actionTypes.CHANGE:
             if(action.field == 'src_id' || action.key == 'src_id'){
               state.pay_modes_id = {...state.pay_modes_id, ...getPayModesId(state, action)};
               state.pay_status = {...state.pay_status, ...getPayStatus(state, action)};
@@ -110,15 +115,17 @@ function getPayModesId(state, action){
       }else if(isSrc('有赞微商城', src_id)){  
         return { value: getMode('微信支付').id }; //微信支付id
       }else if(isSrc('400电话', src_id)){
-        // var mode_cash = getMode('货到付款（现金）');
-        // var mode_card = getMode('货到付款（POS）');
         var mode_cash = getMode('现金');
         var mode_card = getMode('现金');
         if(pay_modes_id != mode_cash.id || pay_modes_id != mode_card.id){
           return { value: mode_cash.id };
         }
       }else{
-        return {touched: false, value: SELECT_DEFAULT_VALUE, visited: false};
+        if( action.type == actionTypes.CHANGE ){
+          return {touched: false, value: SELECT_DEFAULT_VALUE, visited: false};
+        }else{
+          return state;
+        }
       }
     }
   }
@@ -142,7 +149,11 @@ function getPayStatus(state, action){
       }else if(isSrc('400电话', src_id)){
         return { value: 'COD' }; //货到付款
       }else{
-        return {touched: false, value: SELECT_DEFAULT_VALUE, visited: false};
+        if( action.type == actionTypes.CHANGE ){
+          return {touched: false, value: SELECT_DEFAULT_VALUE, visited: false};
+        }else{
+          return state;
+        }
       }
     }
   }

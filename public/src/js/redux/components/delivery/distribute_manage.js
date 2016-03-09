@@ -59,7 +59,7 @@ class FilterHeader extends Component {
         begin_time,
         end_time,
         pay_modes_id,
-        order_status,
+        status,
         deliveryman_id,
         delivery_id,
         province_id,
@@ -83,7 +83,7 @@ class FilterHeader extends Component {
             {' 配送时间'}
             <DatePicker editable redux-form={end_time} className="short-input space-right" />
             <Select {...pay_modes_id} options={all_pay_modes} default-text="选择支付方式" className="space-right"/>
-            <Select {...order_status} options={all_order_status} default-text="选择订单状态" className="space-right"/>
+            <Select {...status} options={all_order_status} default-text="选择订单状态" className="space-right"/>
             <Select {...deliveryman_id} options={all_deliveryman.map(n => ({id: n.deliveryman_id, text: n.deliveryman_name}))} default-text="选择配送员" className="space-right"/>
             {
               V( 'DeliveryManageDistributeStationFilter' )
@@ -157,7 +157,7 @@ FilterHeader = reduxForm({
     'begin_time',
     'end_time',
     'pay_modes_id',
-    'order_status',
+    'status',
     'deliveryman_id',
     'delivery_id',
     'province_id',
@@ -307,7 +307,7 @@ class DeliveryDistributePannel extends Component {
                     page_no={page_no} 
                     total_count={total} 
                     page_size={this.state.page_size} 
-                    onPageChange={this.onPageChange}
+                    onPageChange={this.onPageChange.bind(this)}
                   />
             }
           </div>

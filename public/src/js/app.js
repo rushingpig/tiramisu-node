@@ -33328,13 +33328,17 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
 	var _reduxForm = __webpack_require__(242);
 
-	// import * as RF from 'redux-form';
+	var RF = _interopRequireWildcard(_reduxForm);
 
 	var _configFormFields = __webpack_require__(294);
 
 	var _configFormFields2 = _interopRequireDefault(_configFormFields);
+
+	console.log(RF);
 
 	//可以手动触发redux-form的plugin: reducer
 
@@ -33345,7 +33349,7 @@
 	//手动更改指定form的表单值
 
 	function triggerFormUpdate(form_name, field_name, field_value) {
-	  return (0, _reduxForm.blur)(form_name, field_name, field_value);
+	  return (0, _reduxForm.change)(form_name, field_name, field_value);
 	}
 
 	function resetFormUpdate(form_name, field_name, field_value) {
@@ -39458,10 +39462,15 @@
 	      } else {
 	        //订单来源，支付方式，支付状态，产品应收 联动
 	        switch (action.type) {
-	          case _reduxForm.actionTypes.FOCUS:
-	          case _reduxForm.actionTypes.BLUR:
-	          case _reduxForm.actionTypes.CHANGE:
 	          case _reduxForm.actionTypes.RESET:
+	            if (action.field == 'src_id' || action.key == 'src_id') {
+	              state.src_id = { touched: false, value: _configAppConfig.SELECT_DEFAULT_VALUE, visited: false };
+	              state.pay_modes_id = { touched: false, visited: false };
+	              state.pay_status = { touched: false, visited: false };
+	            }
+	          case _reduxForm.actionTypes.FOCUS:
+	          // case actionTypes.BLUR:
+	          case _reduxForm.actionTypes.CHANGE:
 	            if (action.field == 'src_id' || action.key == 'src_id') {
 	              state.pay_modes_id = _extends({}, state.pay_modes_id, getPayModesId(state, action));
 	              state.pay_status = _extends({}, state.pay_status, getPayStatus(state, action));
@@ -39495,15 +39504,17 @@
 	      } else if (isSrc('有赞微商城', src_id)) {
 	          return { value: getMode('微信支付').id }; //微信支付id
 	        } else if (isSrc('400电话', src_id)) {
-	            // var mode_cash = getMode('货到付款（现金）');
-	            // var mode_card = getMode('货到付款（POS）');
 	            var mode_cash = getMode('现金');
 	            var mode_card = getMode('现金');
 	            if (pay_modes_id != mode_cash.id || pay_modes_id != mode_card.id) {
 	              return { value: mode_cash.id };
 	            }
 	          } else {
-	            return { touched: false, value: _configAppConfig.SELECT_DEFAULT_VALUE, visited: false };
+	            if (action.type == _reduxForm.actionTypes.CHANGE) {
+	              return { touched: false, value: _configAppConfig.SELECT_DEFAULT_VALUE, visited: false };
+	            } else {
+	              return state;
+	            }
 	          }
 	    }
 	  }
@@ -39530,7 +39541,11 @@
 	      } else if (isSrc('400电话', src_id)) {
 	          return { value: 'COD' }; //货到付款
 	        } else {
-	            return { touched: false, value: _configAppConfig.SELECT_DEFAULT_VALUE, visited: false };
+	            if (action.type == _reduxForm.actionTypes.CHANGE) {
+	              return { touched: false, value: _configAppConfig.SELECT_DEFAULT_VALUE, visited: false };
+	            } else {
+	              return state;
+	            }
 	          }
 	    }
 	  }
@@ -41397,7 +41412,7 @@
 	              page_no: page_no,
 	              total_count: total,
 	              page_size: this.state.page_size,
-	              onPageChange: this.onPageChange
+	              onPageChange: this.onPageChange.bind(this)
 	            })
 	          )
 	        ),
@@ -42732,7 +42747,7 @@
 	              page_no: page_no,
 	              total_count: total,
 	              page_size: this.state.page_size,
-	              onPageChange: this.onPageChange
+	              onPageChange: this.onPageChange.bind(this)
 	            })
 	          )
 	        ),
@@ -43844,7 +43859,7 @@
 	      var begin_time = _props$fields.begin_time;
 	      var end_time = _props$fields.end_time;
 	      var pay_modes_id = _props$fields.pay_modes_id;
-	      var order_status = _props$fields.order_status;
+	      var status = _props$fields.status;
 	      var deliveryman_id = _props$fields.deliveryman_id;
 	      var delivery_id = _props$fields.delivery_id;
 	      var province_id = _props$fields.province_id;
@@ -43872,7 +43887,7 @@
 	            ' 配送时间',
 	            _react2['default'].createElement(_commonDatepicker2['default'], { editable: true, 'redux-form': end_time, className: 'short-input space-right' }),
 	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, pay_modes_id, { options: all_pay_modes, 'default-text': '选择支付方式', className: 'space-right' })),
-	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, order_status, { options: all_order_status, 'default-text': '选择订单状态', className: 'space-right' })),
+	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, status, { options: all_order_status, 'default-text': '选择订单状态', className: 'space-right' })),
 	            _react2['default'].createElement(_commonSelect2['default'], _extends({}, deliveryman_id, { options: all_deliveryman.map(function (n) {
 	                return { id: n.deliveryman_id, text: n.deliveryman_name };
 	              }), 'default-text': '选择配送员', className: 'space-right' })),
@@ -43958,7 +43973,7 @@
 	};
 	FilterHeader = (0, _reduxForm.reduxForm)({
 	  form: 'order_distribute_filter',
-	  fields: ['keywords', 'begin_time', 'end_time', 'pay_modes_id', 'order_status', 'deliveryman_id', 'delivery_id', 'province_id', 'city_id']
+	  fields: ['keywords', 'begin_time', 'end_time', 'pay_modes_id', 'status', 'deliveryman_id', 'delivery_id', 'province_id', 'city_id']
 	}, function (state) {
 	  var now = (0, _utilsIndex.dateFormat)(new Date());
 	  return {
@@ -44288,7 +44303,7 @@
 	              page_no: page_no,
 	              total_count: total,
 	              page_size: this.state.page_size,
-	              onPageChange: this.onPageChange
+	              onPageChange: this.onPageChange.bind(this)
 	            })
 	          )
 	        ),

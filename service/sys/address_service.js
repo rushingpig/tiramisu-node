@@ -159,6 +159,25 @@ AddressService.prototype.getStationsByName = (req,res,next)=>{
     });
     systemUtils.wrapService(res, next, promise);
 };
+/**
+ * delete station by station id
+ * @param req
+ * @param res
+ * @param next
+ */
+AddressService.prototype.deleteStation = (req,res,next)=>{
+    req.checkParams('stationId').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,null);
+        return;
+    }
+    let stationId = req.params['stationId'];
+    let promise = addressDao.deleteStationById(stationId).then(() => {
+        res.api();
+    });
+    systemUtils.wrapService(res, next, promise);
+};
 
 
 module.exports = new AddressService();

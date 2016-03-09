@@ -97,8 +97,7 @@ a.put('/station/:stationId/coords', addressService.modifyStation);   //修改配
 //************************
 //******** DELETE ********
 //************************
-
-
+a.delete('/station/:stationId', addressService.deleteStation);
 
 //=====================router for business end======================
 

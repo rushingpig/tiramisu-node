@@ -8,6 +8,7 @@
 "use strict";
 var config = require('../../config');
 var res_obj = require('../../util/res_obj');
+var systemUtils = require('../../common/SystemUtils');
 
 function LoginMiddleware() {
 }
@@ -24,7 +25,7 @@ LoginMiddleware.loginFilter = function (req, res, next) {
         if(req.xhr){
             res.api(res_obj.SESSION_TIME_OUT,null);
         }else{
-            res.render('index',{isLogin : false});
+            systemUtils.commonRender(req,res);
         }
     }else{
         next();

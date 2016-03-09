@@ -82,7 +82,7 @@ var Pagination = React.createClass({
   _nextPage: function(){
     var total_pages = this.total_pages;
     if (total_pages == -1  || this.props.page_no < total_pages-1){
-        this._selectPage(this.props.page_no + 1);
+        this._selectPage(~~this.props.page_no + 1);
     }
   },
   _longJumpPre: function(){

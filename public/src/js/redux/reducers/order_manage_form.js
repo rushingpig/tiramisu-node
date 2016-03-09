@@ -13,6 +13,7 @@ import delivery_stations from 'reducers/delivery_stations';
 
 import { 
   DELIVERY_TO_HOME,
+  DELIVERY_TO_STORE,
   DELIVERY_TIME_MAP,
   pay_status,
   INVOICE,
@@ -78,6 +79,11 @@ function mainForm(state = initial_state, action) {
         var tmp = data.delivery_time.split(' ');
         data.delivery_date = tmp[0];
         data.delivery_hours = tmp[1];
+        //门店自提
+        if(data.delivery_type == DELIVERY_TO_STORE){
+          data.recipient_shop_address = data.recipient_address;
+          data.recipient_address = null;
+        }
 
         //
         var {getCities, getDistricts, getDeliveryShops} = AreaActions();

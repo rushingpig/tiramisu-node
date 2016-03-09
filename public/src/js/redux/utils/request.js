@@ -13,7 +13,7 @@ function _end_callback(resolve, reject){
     if(res.ok){
       var {code, msg, data} = res.body;
       if(code === SUCCESS_CODE){
-        resolve(data);
+        resolve(data, msg);
       }else if(code === NO_MORE_CODE){
         resolve(data);
       }else if(code === EXPIRE_CODE){
@@ -132,12 +132,12 @@ export function PUT(url, send_data, action_type){
  * @param  {Boolean} ajax_status true代表成功，false代表失败
  * @param  {[type]} ajax_time   ajax 持续时间
  */
-export function test(ajax_status = true, ajax_time = 2000){
+export function test(ajax_status = true, ajax_time = 2000, data){
   return dispatch => {
     return new Promise(function(resolve, reject){
       setTimeout(function(){
         dispatch({type: '__JUST_A_TEST_ACTION'});
-        ajax_status ? resolve() : reject();
+        ajax_status ? resolve(data) : reject(data);
       }, ajax_time);
     })
   }

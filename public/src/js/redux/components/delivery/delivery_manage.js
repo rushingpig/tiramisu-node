@@ -200,7 +200,7 @@ class OrderRow extends Component {
         <RecipientInfo data={props} />
         <td className="text-left">{reactReplace(props.greeting_card, '|', <br />)}</td>
         <td>{props.exchange_time}</td>
-        <td><div className="order-status" style={{color: _order_status.color}}>{_order_status.value}</div></td>
+        <td><div className="bordered bold order-status" style={{color: _order_status.color || 'inherit', background: _order_status.bg }}>{_order_status.value}</div></td>
         <td><a onClick={props.viewOrderDetail} href="javascript:;">{props.order_id}</a></td>
         <td>{props.remarks}</td>
         <td>{props.updated_by}</td>

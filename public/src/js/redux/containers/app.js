@@ -31,10 +31,10 @@ export default class App extends Component {
           </Route>
 
           <Route path="dm">
-            <Route path="change" component={DeliveryChangePannel} />
-            <Route path="delivery" component={DeliveryManagePannel} />
-            <Route path="distribute" component={DistributeManagePannel} />
-            <Route path="review" component={DeliverPrintReviewPannel} />
+            <Route path="change" onEnter={onEnter('DeliveryChange')} component={DeliveryChangePannel} />
+            <Route path="delivery" onEnter={onEnter('DeliveryManage')} component={DeliveryManagePannel} />
+            <Route path="distribute" onEnter={onEnter('DistributeManage')} component={DistributeManagePannel} />
+            <Route path="review" onEnter={onEnter('PrintReview')} component={DeliverPrintReviewPannel} />
           </Route>
 
           <Route path="sm">

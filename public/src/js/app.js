@@ -19109,10 +19109,10 @@
 	          _react2['default'].createElement(
 	            _reactRouter.Route,
 	            { path: 'dm' },
-	            _react2['default'].createElement(_reactRouter.Route, { path: 'change', component: _componentsDeliveryChange2['default'] }),
-	            _react2['default'].createElement(_reactRouter.Route, { path: 'delivery', component: _componentsDeliveryDelivery_manage2['default'] }),
-	            _react2['default'].createElement(_reactRouter.Route, { path: 'distribute', component: _componentsDeliveryDistribute_manage2['default'] }),
-	            _react2['default'].createElement(_reactRouter.Route, { path: 'review', component: _componentsDeliveryPrint_review2['default'] })
+	            _react2['default'].createElement(_reactRouter.Route, { path: 'change', onEnter: (0, _utilsAcl.onEnter)('DeliveryChange'), component: _componentsDeliveryChange2['default'] }),
+	            _react2['default'].createElement(_reactRouter.Route, { path: 'delivery', onEnter: (0, _utilsAcl.onEnter)('DeliveryManage'), component: _componentsDeliveryDelivery_manage2['default'] }),
+	            _react2['default'].createElement(_reactRouter.Route, { path: 'distribute', onEnter: (0, _utilsAcl.onEnter)('DistributeManage'), component: _componentsDeliveryDistribute_manage2['default'] }),
+	            _react2['default'].createElement(_reactRouter.Route, { path: 'review', onEnter: (0, _utilsAcl.onEnter)('PrintReview'), component: _componentsDeliveryPrint_review2['default'] })
 	          ),
 	          _react2['default'].createElement(
 	            _reactRouter.Route,
@@ -26611,7 +26611,7 @@
 	      var data = _res$body.data;
 
 	      if (code === _configAppConfig.SUCCESS_CODE) {
-	        resolve(data);
+	        resolve(data, msg);
 	      } else if (code === _configAppConfig.NO_MORE_CODE) {
 	        resolve(data);
 	      } else if (code === _configAppConfig.EXPIRE_CODE) {
@@ -26716,15 +26716,15 @@
 	 * @param  {[type]} ajax_time   ajax 持续时间
 	 */
 
-	function test() {
-	  var ajax_status = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
-	  var ajax_time = arguments.length <= 1 || arguments[1] === undefined ? 2000 : arguments[1];
+	function test(ajax_status, ajax_time, data) {
+	  if (ajax_status === undefined) ajax_status = true;
+	  if (ajax_time === undefined) ajax_time = 2000;
 
 	  return function (dispatch) {
 	    return new _promise2['default'](function (resolve, reject) {
 	      setTimeout(function () {
 	        dispatch({ type: '__JUST_A_TEST_ACTION' });
-	        ajax_status ? resolve() : reject();
+	        ajax_status ? resolve(data) : reject(data);
 	      }, ajax_time);
 	    });
 	  };
@@ -28764,7 +28764,7 @@
 	        null,
 	        _react2['default'].createElement(
 	          'div',
-	          { className: 'bordered bold', style: { color: _order_status.color || 'inherit', background: _order_status.bg } },
+	          { className: 'bordered bold order-status', style: { color: _order_status.color || 'inherit', background: _order_status.bg } },
 	          _order_status.value
 	        )
 	      ),
@@ -35643,7 +35643,7 @@
 	    _nextPage: function _nextPage() {
 	        var total_pages = this.total_pages;
 	        if (total_pages == -1 || this.props.page_no < total_pages - 1) {
-	            this._selectPage(this.props.page_no + 1);
+	            this._selectPage(~ ~this.props.page_no + 1);
 	        }
 	    },
 	    _longJumpPre: function _longJumpPre() {
@@ -38702,9 +38702,9 @@
 	          form_data.updated_time = order_info.updated_time;
 	          form_data.recipient_id = order_info.recipient_id;
 
-	          if (form_data.delivery_id == _configAppConfig.SELECT_DEFAULT_VALUE) {
-	            form_data.delivery_id = '';
-	            form_data.delivery_name = '';
+	          if (form_data.delivery_id == _configAppConfig.SELECT_DEFAULT_VALUE || !form_data.delivery_id) {
+	            form_data.delivery_id = undefined;
+	            form_data.delivery_name = undefined;
 	          } else {
 	            form_data.delivery_name = _this2.findSelectedOptionText('delivery_center');
 	          }
@@ -38885,8 +38885,8 @@
 	      }
 	      if (coupon && _utilsIndex.form.isCoupon(coupon)) {
 	        this.setState({ groupbuy_check_ing: true });
-	        this.props.actions.checkGroupbuyPsd({ coupon: coupon, city_name: city_name }).done(function () {
-	          _this4.setState({ groupbuy_success: true, groupbuy_msg: _react2['default'].createElement('i', { className: 'fa fa-check' }) });
+	        this.props.actions.checkGroupbuyPsd({ coupon: coupon, city_name: city_name }).done(function (data, msg) {
+	          _this4.setState({ groupbuy_success: true, groupbuy_msg: msg || _react2['default'].createElement('i', { className: 'fa fa-check' }) });
 	        }).fail(function (msg) {
 	          _this4.setState({ groupbuy_success: false, groupbuy_msg: msg || '团购券验证有误，请手动确认！' });
 	        }).always(function () {
@@ -42474,7 +42474,7 @@
 	          null,
 	          _react2['default'].createElement(
 	            'div',
-	            { className: 'order-status', style: { color: _order_status.color } },
+	            { className: 'bordered bold order-status', style: { color: _order_status.color || 'inherit', background: _order_status.bg } },
 	            _order_status.value
 	          )
 	        ),
@@ -44058,7 +44058,7 @@
 	          null,
 	          _react2['default'].createElement(
 	            'div',
-	            { className: 'order-status', style: { color: _order_status.color || 'inherit' } },
+	            { className: 'bordered bold order-status', style: { color: _order_status.color || 'inherit', background: _order_status.bg } },
 	            _order_status.value
 	          )
 	        ),
@@ -47688,6 +47688,11 @@
 	        var tmp = data.delivery_time.split(' ');
 	        data.delivery_date = tmp[0];
 	        data.delivery_hours = tmp[1];
+	        //门店自提
+	        if (data.delivery_type == _configAppConfig.DELIVERY_TO_STORE) {
+	          data.recipient_shop_address = data.recipient_address;
+	          data.recipient_address = null;
+	        }
 
 	        //
 

@@ -202,7 +202,7 @@ class OrderRow extends Component {
         <td>{props.delivery_type}</td>
         <td><div className="remark-in-table">{props.remarks}</div></td>
         <td>{parseTime(props.signin_time)}</td>
-        <td><div className="order-status" style={{color: _order_status.color || 'inherit'}}>{_order_status.value}</div></td>
+        <td><div className="bordered bold order-status" style={{color: _order_status.color || 'inherit', background: _order_status.bg }}>{_order_status.value}</div></td>
         <td>{props.updated_by}</td>
         <td><a onClick={this.viewOrderOperationRecord.bind(this)} className="inline-block time" href="javascript:;">{props.updated_time}</a></td>
       </tr>

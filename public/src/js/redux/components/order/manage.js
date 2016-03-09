@@ -208,7 +208,7 @@ var OrderRow = React.createClass({
           应收金额：￥{props.total_amount/100}
         </td>
         {/*订单状态*/}
-        <td><div className="bordered bold" style={{color: _order_status.color || 'inherit', background: _order_status.bg }}>{_order_status.value}</div></td>
+        <td><div className="bordered bold order-status" style={{color: _order_status.color || 'inherit', background: _order_status.bg }}>{_order_status.value}</div></td>
         <td>{props.delivery_name}</td>
         <td><div className="time">{props.delivery_time}</div></td>
         <td>{props.is_submit == '1' ? '是' : '否'}</td>

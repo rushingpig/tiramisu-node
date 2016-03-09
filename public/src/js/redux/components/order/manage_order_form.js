@@ -315,9 +315,9 @@ class ManageAddForm extends Component {
         form_data.updated_time = order_info.updated_time;
         form_data.recipient_id = order_info.recipient_id;
 
-        if( form_data.delivery_id == SELECT_DEFAULT_VALUE ){
-          form_data.delivery_id = '';
-          form_data.delivery_name = '';
+        if( form_data.delivery_id == SELECT_DEFAULT_VALUE || !form_data.delivery_id){
+          form_data.delivery_id = undefined;
+          form_data.delivery_name = undefined;
         }else {
           form_data.delivery_name = this.findSelectedOptionText('delivery_center');
         }
@@ -459,8 +459,8 @@ class ManageAddForm extends Component {
     if(coupon && uForm.isCoupon(coupon)){
       this.setState({ groupbuy_check_ing: true });
       this.props.actions.checkGroupbuyPsd({coupon, city_name})
-        .done(() => {
-          this.setState({ groupbuy_success: true, groupbuy_msg: <i className="fa fa-check"></i>})
+        .done((data, msg) => {
+          this.setState({ groupbuy_success: true, groupbuy_msg: msg || <i className="fa fa-check"></i>})
         })
         .fail((msg) => {
           this.setState({ groupbuy_success: false, groupbuy_msg: msg || '团购券验证有误，请手动确认！'})

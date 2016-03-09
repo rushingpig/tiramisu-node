@@ -33149,7 +33149,7 @@
 	    n.amount *= 100;
 
 	    total_amount += n.amount;
-	    total_original_price += n.original_price * n.num * 100;
+	    total_original_price += n.original_price * n.num;
 	    total_discount_price += n.discount_price;
 	    gretting_card.push(n.gretting_card);
 	  });

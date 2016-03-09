@@ -29,14 +29,55 @@ AddressDao.prototype.findDistrictsByCityId = function(cityId){
     let sql = this.baseSql + ' and parent_id = ?';
     return baseDao.select(sql,[this.baseColumns,3,del_flag.SHOW,cityId]);
 };
+AddressDao.prototype.findStationsByRegionalismId = function(query_obj){
+    let sql = util.format("select b.id 'station_id',b.name 'station_name',b.address 'station_address'," +
+        "b.remarks 'remarks',b.capacity 'capacity',b.phone 'phone'," +
+        "a.name 'regionalism_name',c.name 'city_name',d.name 'province_name' " +
+        "from %s a join %s c on a.parent_id = c.id " +
+        "join %s d on c.parent_id = d.id " +
+        "join %s b on a.id = b.regionalism_id " +
+        "where a.level_type = ? and b.del_flag = ? and a.id = ?", this.table, this.table, this.table, tables.buss_delivery_station);
+    let countSql = dbHelper.countSql(sql);
+    let pagination_sql = dbHelper.paginate(sql,query_obj.page_no,query_obj.page_size);
+    let params = [3, del_flag.SHOW, query_obj.regionalismId];
+    return baseDao.select(countSql, params).then((count_result) => {
+        return baseDao.select(pagination_sql, params).then((pagination_result) => {
+            return {
+                count_result, pagination_result
+            };
+        });
+    });
+};
 AddressDao.prototype.findStationsByCityId = function(query_obj){
-    let sql = util.format("select b.id 'id',a.name 'district_name',b.name 'station_name'," +
-        "b.address 'address',b.position 'position' " +
-        "from %s a join %s b on a.id = b.regionalism_id " +
-        "where a.level_type = ? and a.del_flag = ? and a.parent_id = ?", this.table, tables.buss_delivery_station);
+    let sql = util.format("select b.id 'station_id',b.name 'station_name',b.address 'station_address'," +
+        "b.remarks 'remarks',b.capacity 'capacity',b.phone 'phone'," +
+        "a.name 'regionalism_name',c.name 'city_name',d.name 'province_name' " +
+        "from %s a join %s c on a.parent_id = c.id " +
+        "join %s d on c.parent_id = d.id " +
+        "join %s b on a.id = b.regionalism_id " +
+        "where a.level_type = ? and b.del_flag = ? and c.id = ?", this.table, this.table, this.table, tables.buss_delivery_station);
     let countSql = dbHelper.countSql(sql);
     let pagination_sql = dbHelper.paginate(sql,query_obj.page_no,query_obj.page_size);
     let params = [3, del_flag.SHOW, query_obj.cityId];
+    return baseDao.select(countSql, params).then((count_result) => {
+        return baseDao.select(pagination_sql, params).then((pagination_result) => {
+            return {
+                count_result, pagination_result
+            };
+        });
+    });
+};
+AddressDao.prototype.findStationsByProvinceId = function(query_obj){
+    let sql = util.format("select b.id 'station_id',b.name 'station_name',b.address 'station_address'," +
+        "b.remarks 'remarks',b.capacity 'capacity',b.phone 'phone'," +
+        "a.name 'regionalism_name',c.name 'city_name',d.name 'province_name' " +
+        "from %s a join %s c on a.parent_id = c.id " +
+        "join %s d on c.parent_id = d.id " +
+        "join %s b on a.id = b.regionalism_id " +
+        "where a.level_type = ? and b.del_flag = ? and d.id = ?", this.table, this.table, this.table, tables.buss_delivery_station);
+    let countSql = dbHelper.countSql(sql);
+    let pagination_sql = dbHelper.paginate(sql,query_obj.page_no,query_obj.page_size);
+    let params = [3, del_flag.SHOW, query_obj.provinceId];
     return baseDao.select(countSql, params).then((count_result) => {
         return baseDao.select(pagination_sql, params).then((pagination_result) => {
             return {

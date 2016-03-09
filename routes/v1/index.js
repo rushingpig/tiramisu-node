@@ -40,7 +40,7 @@ a.get('/provinces',addressService.getProvinces);    // 获取所有省份信息
 a.get('/province/:provinceId/cities',addressService.getCities); // 获取指定省份下的所有城市信息
 //a.get(/^\/city\/(\d+)\/districts$/,addressService.getDistricts);
 a.get('/city/:cityId/districts',addressService.getDistricts);   // 获取指定城市下的所有行政区域信息
-a.get('/city/:cityId/stations',addressService.getStationsByCityId);   // 获取指定城市下的所有配送站信息
+a.get('/stations/getStationsById',addressService.getStationsById);   // 获取区域(包括省市区)下的所有配送站信息
 a.get('/stations/getStationsByName',addressService.getStationsByName);   // 根据配送站名称查询配送站信息
 a.get('/stations',deliveryService.getDeliveryStationList);  // 获取所有配送站信息
 a.get('/station/:stationId',deliveryService.getStationInfo);   // 获取指定配送站信息

@@ -87,19 +87,25 @@ AddressService.prototype.getDistricts = (req, res, next)=> {
  * @param res
  * @param next
  */
-AddressService.prototype.getStationsByCityId = (req,res,next)=>{
-    req.checkParams('cityId').notEmpty().isInt();
+AddressService.prototype.getStationsById = (req,res,next)=>{
+    req.checkQuery('regionalism_id').optional().isInt();
+    req.checkQuery('city_id').optional().isInt();
+    req.checkQuery('province_id').optional().isInt();
     let errors = req.validationErrors();
     if (errors) {
         res.api(res_obj.INVALID_PARAMS,null);
         return;
     }
     let query_obj = {
-        cityId: req.params.cityId,
-        page_no: req.query.page_no,
-        page_size: req.query.page_size
+        regionalismId: req.query.regionalism_id,
+        cityId: req.query.city_id,
+        provinceId: req.query.province_id,
+        page_no: req.query.page_no || 0,
+        page_size: req.query.page_size || 20
     };
-    let promise = addressDao.findStationsByCityId(query_obj).then((results) => {
+    let method = query_obj.regionalismId ? 'findStationsByRegionalismId' :
+        query_obj.cityId ? 'findStationsByCityId' : 'findStationsByProvinceId';
+    let promise = addressDao[method](query_obj).then((results) => {
         if (!results || results.length == 0) {
             res.api(res_obj.NO_MORE_RESULTS, null);
             return;

@@ -108,11 +108,12 @@ Constant.PFT = {
 };
 
 Constant.DS = {
-    ALLCOMPANY : 1,
-    OFFICEANDCHILD : 2,
-    OFFICE : 3,
-    STATION : 4,
-    CITY : 5
+    ALLCOMPANY : 1,         // 公司所有数据
+    OFFICEANDCHILD : 2,     // 部门及子公司
+    OFFICE : 3,             // 本部门
+    STATION : 4,            // 本配送站
+    CITY : 5,                // 本城市下的所有配送站
+    SELF_DELIVERY : 6        // 分给自己(配送员)的订单
 };
 
 

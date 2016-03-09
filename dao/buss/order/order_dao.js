@@ -349,6 +349,10 @@ OrderDao.prototype.findOrderList = function (query_data) {
                 temp_sql += " or dr3.parent_id = ?";
                 params.push(query_data.user.city_id);
             }
+            if(curr == constant.DS.SELF_DELIVERY){
+                temp_sql += " or bo.deliveryman_id = ?";
+                params.push(query_data.user.id);
+            }
             if(curr == constant.DS.ALLCOMPANY){
                 temp_sql += " or 1 = 1";
             }
@@ -562,8 +566,8 @@ OrderDao.prototype.insertOrderInTransaction = function (req) {
         invoice = req.body.invoice,
         remarks = req.body.remarks,
         total_amount = req.body.total_amount,
-        total_original_price = req.body.original_price,
-        total_discount_price = req.body.discount_price,
+        total_original_price = req.body.total_original_price,
+        total_discount_price = req.body.total_discount_price,
         products = req.body.products,
         prefix_address = req.body.prefix_address,
         greeting_card = req.body.greeting_card,

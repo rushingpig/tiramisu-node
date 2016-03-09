@@ -26,10 +26,12 @@ function config_index() {
                 config = require('./dev');
             }
         }
-    }else if ('test' === tiramisu_env) {
+    } else if ('test' === tiramisu_env) {
         config = require('./test');
     } else if ('production' === tiramisu_env) {
         config = require('./production');
+    } else if('qa' === tiramisu_env){
+        config = require('./qa');
     } else{
         throw new Error('please set the param : NODE_ENV in your PATH....');
     }

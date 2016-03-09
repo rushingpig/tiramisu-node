@@ -11,7 +11,24 @@ copy a one local config to connect to your own machine's mysql database
 ```bash
 cp config/dev.js config/local.js
 ```
+# Quick Start
+#### frontend
+```bash
+npm run frontend
+```
+#### backend
+to load the **test** db config
 
+```bash
+npm run dev
+```
+or
+
+to load the **dev** or **test** db config
+
+```bash
+npm run frontend
+```
 # update frontend compile js
 ```bash
 sudo npm install -g gulp

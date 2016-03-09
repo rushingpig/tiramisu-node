@@ -9,6 +9,7 @@
 var express = require('express');
 var config = require('../config');
 var router = express.Router(config.exp_router_options);
+var systemUtils = require('../common/Systemutils');
 
 
 router.get('/',function(req,res){
@@ -19,8 +20,7 @@ router.get('/',function(req,res){
             permissions : userInfo.permissions
         };
     };
-
-    res.render('index',{isLogin : userInfo ? true : false,user:JSON.stringify(user)});
+    systemUtils.commonRender(req,res);
 });
 
 router.get('/logout',function(req,res){

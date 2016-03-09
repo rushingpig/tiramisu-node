@@ -360,6 +360,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
     // data filter end
     switch (query_data.order_sorted_rules) {
         case constant.OSR.LIST:
+            sql += ds_sql;
             sql += " order by bo.created_time desc";
             break;
         case constant.OSR.DELIVERY_EXCHANGE:

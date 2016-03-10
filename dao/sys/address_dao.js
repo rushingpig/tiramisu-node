@@ -32,7 +32,7 @@ AddressDao.prototype.findDistrictsByCityId = function(cityId){
     return baseDao.select(sql,[this.baseColumns,3,del_flag.SHOW,cityId]);
 };
 AddressDao.prototype.findStationsByRegionalismId = function(query_obj){
-    let sql = util.format("select b.id 'station_id',b.name 'name',b.address 'address'," +
+    let sql = util.format("select b.id 'station_id',b.name 'name',b.address 'address',b.coords 'coords'," +
         "b.remarks 'remarks',b.capacity 'capacity',b.phone 'phone'," +
         "a.id 'regionalism_id',a.name 'regionalism_name'," +
         "c.id 'city_id',c.name 'city_name'," +
@@ -53,7 +53,7 @@ AddressDao.prototype.findStationsByRegionalismId = function(query_obj){
     });
 };
 AddressDao.prototype.findStationsByCityId = function(query_obj){
-    let sql = util.format("select b.id 'station_id',b.name 'name',b.address 'address'," +
+    let sql = util.format("select b.id 'station_id',b.name 'name',b.address 'address',b.coords 'coords'," +
         "b.remarks 'remarks',b.capacity 'capacity',b.phone 'phone'," +
         "a.id 'regionalism_id',a.name 'regionalism_name'," +
         "c.id 'city_id',c.name 'city_name'," +
@@ -74,7 +74,7 @@ AddressDao.prototype.findStationsByCityId = function(query_obj){
     });
 };
 AddressDao.prototype.findStationsByProvinceId = function(query_obj){
-    let sql = util.format("select b.id 'station_id',b.name 'name',b.address 'address'," +
+    let sql = util.format("select b.id 'station_id',b.name 'name',b.address 'address',b.coords 'coords'," +
         "b.remarks 'remarks',b.capacity 'capacity',b.phone 'phone'," +
         "a.id 'regionalism_id',a.name 'regionalism_name'," +
         "c.id 'city_id',c.name 'city_name'," +

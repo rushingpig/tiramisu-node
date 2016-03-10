@@ -435,7 +435,7 @@ var SignedModal = React.createClass({
             </div>
             <div className="col-xs-6">
               <label>货到付款金额：</label>
-              <input value={this.state.order.total_amount || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+              <input value={this.state.order.total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
             </div>
           </div>
         </div>

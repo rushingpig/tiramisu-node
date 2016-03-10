@@ -48,7 +48,7 @@ export default class ProductsModal extends Component {
               {' '}
               <button onClick={this.search.bind(this)} className="btn btn-xs btn-default"><i className="fa fa-search"></i>{' 查询'}</button>
             </div>
-            <div className="table-responsive table-modal">
+            <div className="table-responsive table-modal modal-list">
               <table className="table table-hover table-click text-center">
                 <thead>
                 <tr>

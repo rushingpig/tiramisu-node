@@ -39468,7 +39468,7 @@
 	              state.pay_modes_id = { touched: false, visited: false };
 	              state.pay_status = { touched: false, visited: false };
 	            }
-	          case _reduxForm.actionTypes.FOCUS:
+	          // case actionTypes.FOCUS:
 	          // case actionTypes.BLUR:
 	          case _reduxForm.actionTypes.CHANGE:
 	            if (action.field == 'src_id' || action.key == 'src_id') {
@@ -39527,7 +39527,7 @@
 	    if (action.type == _reduxForm.actionTypes.RESET) {
 	      return { value: _configAppConfig.SELECT_DEFAULT_VALUE };
 	    } else {
-	      if (isSrc('团购网站', src_id) || isSrc('有赞微商城', src_id)) {
+	      if (isSrc('团购网站', src_id)) {
 	        var _getGlobalState3 = (0, _storesGetter.getGlobalState)();
 
 	        var confirm_list = _getGlobalState3.orderManageForm.products.confirm_list;
@@ -39538,7 +39538,9 @@
 	        } else {
 	            return { value: 'PAYED' }; //已付款（TODO）
 	          }
-	      } else if (isSrc('400电话', src_id)) {
+	      } else if (isSrc('有赞微商城', src_id)) {
+	          return { value: 'PAYED' };
+	        } else if (isSrc('400电话', src_id)) {
 	          return { value: 'COD' }; //货到付款
 	        } else {
 	            if (action.type == _reduxForm.actionTypes.CHANGE) {
@@ -40221,7 +40223,7 @@
 	              ),
 	              _react2['default'].createElement(
 	                'div',
-	                { className: 'table-responsive table-modal' },
+	                { className: 'table-responsive table-modal modal-list' },
 	                _react2['default'].createElement(
 	                  'table',
 	                  { className: 'table table-hover table-click text-center' },
@@ -44496,7 +44498,7 @@
 	              null,
 	              '货到付款金额：'
 	            ),
-	            _react2['default'].createElement('input', { value: this.state.order.total_amount || 0, readOnly: true, className: 'form-control input-xs short-input', style: { 'width': 50 } })
+	            _react2['default'].createElement('input', { value: this.state.order.total_amount / 100 || 0, readOnly: true, className: 'form-control input-xs short-input', style: { 'width': 50 } })
 	          )
 	        )
 	      ),

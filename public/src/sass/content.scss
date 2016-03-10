@@ -16,5 +16,6 @@
   .table-responsive.main-list{ max-height: 419px; }
 }
 @media screen and ( max-height: 808px ) {
-  .table-responsive.main-list{ max-height: 329px; }
+  .table-responsive.main-list{ max-height: 329px; } //主列表
+  .table-responsive.modal-list{ max-height: 292px; } //弹窗列表
 }

@@ -256,10 +256,8 @@ class DeliveryManagePannel extends Component {
     var { showBatchPrintModal, printHandler, showEditModal, showScanModal, showBatchEditModal,
        checkOrderHandler, viewOrderDetail, activeOrderHandler, viewOrderOperationRecord } = this;
 
-    var {scan, scan_list} = main; //扫描
-    if(scan){
-      list = scan_list;
-    }
+    var {scan} = main; //扫描
+
     var content = list.map((n, i) => {
       return <OrderRow 
         key={n.order_id} 

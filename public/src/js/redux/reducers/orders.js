@@ -25,6 +25,8 @@ export function orders(state = orders_state, action){
     case OrderActions.GET_ORDER_LIST_ING:
       return {...orders_state, refresh: true }
     case OrderActions.GET_ORDER_LIST:
+    case GET_DELIVERY_SCAN_LIST:
+    case GET_DISTRIBUTE_SCAN_LIST:
       return {...orders_state, ...action.data, loading: false, refresh: false }
 
     case OrderActions.CHECK_ORDER:
@@ -63,11 +65,6 @@ export function orders(state = orders_state, action){
 
     case OrderActions.GET_ORDER_DETAIL_PRODUCTS:
       return {...state, check_order_info: action.data}
-
-    //特殊情况：送货单管理，配送单管理 -> 获取扫描搜索结果列表
-    case GET_DELIVERY_SCAN_LIST:
-    case GET_DISTRIBUTE_SCAN_LIST:
-      return {...orders_state, loading: false} //重置
 
     default:
       return state;

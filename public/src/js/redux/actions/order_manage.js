@@ -23,11 +23,11 @@ export function orderException(order_id, data){
 export const ALTER_DELIVERY = 'ALTER_DELIVERY';
 //修改配送
 export function alterDelivery(order_id, data){
-  return PUT(Url.alter_delivery.toString(order_id), data, ALTER_DELIVERY);
-  // return TEST(null, [
-  //   {type: ALTER_DELIVERY, key: 0},  //立即派发
-  //   {type: ALTER_DELIVERY, key: 1}   //2000毫秒后派发
-  // ], 2000);
+  // return PUT(Url.alter_delivery.toString(order_id), data, ALTER_DELIVERY);
+  return TEST(null, [
+    {type: ALTER_DELIVERY, key: 0},  //立即派发
+    {type: ALTER_DELIVERY, key: 1}   //2000毫秒后派发
+  ], 2000);
 }
 
 export const ALTER_STATION = 'ALTER_STATION';

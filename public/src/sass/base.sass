@@ -277,17 +277,20 @@ hr.dotted
 .deleteable-row
   .del-btn
     float: right
-    height: 0
+    width: 0
+    // height: 0
+    margin-right: 15px;
     overflow: hidden
     font-size: 16px
     line-height: 16px
     font-weight: bold
     cursor: pointer
     color: #CCC
+    transition: width .3s ease
   &:hover
     .del-btn
-      //width: 20px
-      height: 16px
+      width: 10px
+      // height: 16px
       color: #ECA2A2
 
 .modal

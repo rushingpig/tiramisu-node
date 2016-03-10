@@ -73,6 +73,8 @@ class ScanModal extends Component {
     if(value.length == 16){
       if(!order_ids.some(n => n == value)){
         this.setState({value: '', order_ids: order_ids.concat(value)});
+      }else{
+        this.setState({value: ''});
       }
     }else{
       this.setState({value})

@@ -4,7 +4,7 @@ import { area } from 'reducers/area_select';
 import { deliveryman } from 'reducers/deliveryman';
 import * as Actions from 'actions/delivery_manage';
 import * as OrderSupportReducers from 'reducers/order_support';
-import { GET_ORDER_LIST } from 'actions/orders';
+import { GET_ORDER_LIST, CHECK_ALL_ORDERS } from 'actions/orders';
 import { REQUEST } from 'config/app.config';
 import { UPDATE_PATH } from 'redux-simple-router';
 
@@ -23,7 +23,6 @@ var main_state = {
   submitting: false, //多处提交状态共享, 因为不可能多出同时提交
 
   scan: false, //为true时显示scan_list（不分页）
-  scan_list: [], //扫描搜索列表
 }
 function main(state = main_state, action){
   switch(action.type){
@@ -40,20 +39,18 @@ function main(state = main_state, action){
         return {...state, submitting: false}
       }else{
         console.error('nali');
+        return state;
       }
 
     case Actions.GET_DELIVERY_SCAN_LIST:
       if(action.key == REQUEST.ING){
         return {...state, submitting: true}
       }else if(action.key == REQUEST.SUCCESS || action.key == REQUEST.FAIL){
-        return {...state, submitting: false, scan: true, scan_list: action.data.list}
+        return {...state, submitting: false, scan: true}
       }else{
         console.error('nali');
         return state;
       }
-
-    case GET_ORDER_LIST:
-      return {...state, scan: false, scan_list: []}
 
     default:
       return state

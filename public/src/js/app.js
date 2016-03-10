@@ -19380,7 +19380,7 @@
 	exports['default'] = {
 	  root: '/',
 	  ajax: '/v1/a',
-	  acl: false,
+	  acl: true,
 
 	  REQUEST: {
 	    ING: 0,
@@ -19699,7 +19699,7 @@
 	}, {
 	    "key": "station_management",
 	    "name": "配送管理",
-	    "short_name": "送货",
+	    "short_name": "配送",
 	    "icon": "",
 	    "link": [{
 	        "key": "sm_station",
@@ -28849,7 +28849,7 @@
 	      case 'CONVERT':
 	        roles = ['OrderManageCancel', 'OrderManageAlterDelivery'];break;
 	      case 'INLINE':
-	        roles = ['OrderManageAlterDelivery', 'OrderManageException'];break;
+	        roles = ['OrderManageException'];break;
 	      case 'DELIVERY':
 	        roles = ['OrderManageException'];break;
 	      default:
@@ -32971,11 +32971,10 @@
 	//修改配送
 
 	function alterDelivery(order_id, data) {
-	  return (0, _utilsRequest.PUT)(_configUrl2['default'].alter_delivery.toString(order_id), data, ALTER_DELIVERY);
-	  // return TEST(null, [
-	  //   {type: ALTER_DELIVERY, key: 0},  //立即派发
-	  //   {type: ALTER_DELIVERY, key: 1}   //2000毫秒后派发
-	  // ], 2000);
+	  // return PUT(Url.alter_delivery.toString(order_id), data, ALTER_DELIVERY);
+	  return (0, _utilsRequest.TEST)(null, [{ type: ALTER_DELIVERY, key: 0 }, //立即派发
+	  { type: ALTER_DELIVERY, key: 1 } //2000毫秒后派发
+	  ], 2000);
 	}
 
 	var ALTER_STATION = 'ALTER_STATION';
@@ -42606,11 +42605,8 @@
 	      var activeOrderHandler = this.activeOrderHandler;
 	      var viewOrderOperationRecord = this.viewOrderOperationRecord;
 	      var scan = main.scan;
-	      var scan_list = main.scan_list;
 	      //扫描
-	      if (scan) {
-	        list = scan_list;
-	      }
+
 	      var content = list.map(function (n, i) {
 	        return _react2['default'].createElement(OrderRow, _extends({
 	          key: n.order_id
@@ -43610,6 +43606,8 @@
 	          return n == value;
 	        })) {
 	          this.setState({ value: '', order_ids: order_ids.concat(value) });
+	        } else {
+	          this.setState({ value: '' });
 	        }
 	      } else {
 	        this.setState({ value: value });
@@ -44167,11 +44165,8 @@
 	      var activeOrderHandler = this.activeOrderHandler;
 	      var viewOrderOperationRecord = this.viewOrderOperationRecord;
 	      var scan = main.scan;
-	      var scan_list = main.scan_list;
 	      //扫描
-	      if (scan) {
-	        list = scan_list;
-	      }
+
 	      var content = list.map(function (n, i) {
 	        return _react2['default'].createElement(OrderRow, _extends({
 	          key: n.order_id
@@ -47528,6 +47523,8 @@
 	    case OrderActions.GET_ORDER_LIST_ING:
 	      return _extends({}, orders_state, { refresh: true });
 	    case OrderActions.GET_ORDER_LIST:
+	    case _actionsDelivery_manage.GET_DELIVERY_SCAN_LIST:
+	    case _actionsDelivery_distribute.GET_DISTRIBUTE_SCAN_LIST:
 	      return _extends({}, orders_state, action.data, { loading: false, refresh: false });
 
 	    case OrderActions.CHECK_ORDER:
@@ -47568,11 +47565,6 @@
 
 	    case OrderActions.GET_ORDER_DETAIL_PRODUCTS:
 	      return _extends({}, state, { check_order_info: action.data });
-
-	    //特殊情况：送货单管理，配送单管理 -> 获取扫描搜索结果列表
-	    case _actionsDelivery_manage.GET_DELIVERY_SCAN_LIST:
-	    case _actionsDelivery_distribute.GET_DISTRIBUTE_SCAN_LIST:
-	      return _extends({}, orders_state, { loading: false }); //重置
 
 	    default:
 	      return state;
@@ -48168,9 +48160,8 @@
 	var main_state = {
 	  submitting: false, //多处提交状态共享, 因为不可能多出同时提交
 
-	  scan: false, //为true时显示scan_list（不分页）
-	  scan_list: [] };
-	//扫描搜索列表
+	  scan: false };
+	//为true时显示scan_list（不分页）
 	function main(state, action) {
 	  if (state === undefined) state = main_state;
 
@@ -48188,20 +48179,18 @@
 	        return _extends({}, state, { submitting: false });
 	      } else {
 	        console.error('nali');
+	        return state;
 	      }
 
 	    case Actions.GET_DELIVERY_SCAN_LIST:
 	      if (action.key == _configAppConfig.REQUEST.ING) {
 	        return _extends({}, state, { submitting: true });
 	      } else if (action.key == _configAppConfig.REQUEST.SUCCESS || action.key == _configAppConfig.REQUEST.FAIL) {
-	        return _extends({}, state, { submitting: false, scan: true, scan_list: action.data.list });
+	        return _extends({}, state, { submitting: false, scan: true });
 	      } else {
 	        console.error('nali');
 	        return state;
 	      }
-
-	    case _actionsOrders.GET_ORDER_LIST:
-	      return _extends({}, state, { scan: false, scan_list: [] });
 
 	    default:
 	      return state;
@@ -48325,9 +48314,8 @@
 	var main_state = {
 	  submitting: false,
 
-	  scan: false, //为true时显示scan_list（不分页）
-	  scan_list: [] };
-	//扫描搜索列表
+	  scan: false };
+	//为true时显示scan_list（不分页）
 	function main(state, action) {
 	  if (state === undefined) state = main_state;
 
@@ -48346,14 +48334,11 @@
 	      if (action.key == _configAppConfig.REQUEST.ING) {
 	        return _extends({}, state, { submitting: true });
 	      } else if (action.key == _configAppConfig.REQUEST.SUCCESS || action.key == _configAppConfig.REQUEST.FAIL) {
-	        return _extends({}, state, { submitting: false, scan: true, scan_list: action.data.list });
+	        return _extends({}, state, { submitting: false, scan: true });
 	      } else {
 	        console.error('nali');
 	        return state;
 	      }
-
-	    case _actionsOrders.GET_ORDER_LIST:
-	      return _extends({}, state, { scan: false, scan_list: [] });
 
 	    default:
 	      return state;

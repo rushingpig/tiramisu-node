@@ -32,7 +32,6 @@ var main_state = {
   submitting: false,
 
   scan: false, //为true时显示scan_list（不分页）
-  scan_list: [], //扫描搜索列表
 }
 function main(state = main_state, action){
   switch (action.type) {
@@ -50,14 +49,11 @@ function main(state = main_state, action){
       if(action.key == REQUEST.ING){
         return {...state, submitting: true}
       }else if(action.key == REQUEST.SUCCESS || action.key == REQUEST.FAIL){
-        return {...state, submitting: false, scan: true, scan_list: action.data.list}
+        return {...state, submitting: false, scan: true}
       }else{
         console.error('nali');
         return state;
       }
-
-    case GET_ORDER_LIST:
-      return {...state, scan: false, scan_list: []}
 
     default:
       return state

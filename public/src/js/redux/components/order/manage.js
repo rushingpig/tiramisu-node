@@ -235,7 +235,7 @@ var OrderRow = React.createClass({
       case 'CONVERT':
         roles = ['OrderManageCancel', 'OrderManageAlterDelivery']; break;
       case 'INLINE':
-        roles = ['OrderManageAlterDelivery', 'OrderManageException']; break;
+        roles = ['OrderManageException']; break;
       case 'DELIVERY':
         roles = ['OrderManageException']; break;
       default:

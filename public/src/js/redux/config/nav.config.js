@@ -54,7 +54,7 @@ export default [
 }, {
   "key": "station_management",
   "name": "配送管理",
-  "short_name": "送货",
+  "short_name": "配送",
   "icon": "",
   "link": [{
       "key": "sm_station",

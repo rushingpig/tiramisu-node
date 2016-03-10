@@ -1,5 +1,4 @@
 import { reducer as formReducer, actionTypes } from 'redux-form';
-import * as xxx from 'redux-form';
 // import store from 'stores/configureStore'; //循环引用
 import { getGlobalStore, getGlobalState } from 'stores/getter';
 import { SELECT_DEFAULT_VALUE, pay_status as PAY_STATUS } from 'config/app.config';
@@ -73,13 +72,17 @@ export default formReducer.plugin({
       }else{
         //订单来源，支付方式，支付状态，产品应收 联动
         switch(action.type) {
+          case actionTypes.FOCUS:
+            if(action.field == '_update'){
+              state.pay_status = {...state.pay_status, ...getPayStatus(state, action)};
+            }
+            return {...state};
           case actionTypes.RESET:
             if(action.field == 'src_id' || action.key == 'src_id'){
               state.src_id = {touched: false, value: SELECT_DEFAULT_VALUE, visited: false};
               state.pay_modes_id = {touched: false, visited: false};
               state.pay_status = {touched: false, visited: false};
             }
-          // case actionTypes.FOCUS:
           // case actionTypes.BLUR:
           case actionTypes.CHANGE:
             if(action.field == 'src_id' || action.key == 'src_id'){

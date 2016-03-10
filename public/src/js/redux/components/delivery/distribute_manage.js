@@ -281,7 +281,7 @@ class DeliveryDistributePannel extends Component {
                 <tr>
                   <th><input onChange={this.checkAll.bind(this)} type="checkbox" /></th>
                   <th>管理操作</th>
-                  <th>送达时间</th>
+                  <th>配送时间</th>
                   <th>货到付款金额</th>
                   <th>下单人</th>
                   <th>收货人信息</th>
@@ -422,7 +422,7 @@ var SignedModal = React.createClass({
           <label>签收时间：</label>
           <DatePicker value={signin_date} onChange={this.onSignInDateChange} className="short-input" />
           {'　'}
-          <TimeInput onChange={this.onTimeChange} ref="timeinput" />
+          <TimeInput onChange={this.onTimeChange} onOK={this.onTimeOK} ref="timeinput" />
         </div>
         <div className="form-group form-inline mg-15">
           <div className="row">
@@ -434,7 +434,7 @@ var SignedModal = React.createClass({
               </div>
             </div>
             <div className="col-xs-6">
-              <label>货到付款金额：</label>
+              <label>货到付款金额：￥</label>
               <input value={this.state.order.total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
             </div>
           </div>
@@ -524,6 +524,24 @@ var SignedModal = React.createClass({
   onTimeChange: function(value){
     this.setState({signin_hour: value})
   },
+  onTimeOK(signin_time){
+    var { delivery_time } = this.state.order;
+    try{
+      delivery_time = (delivery_time.match(/\d{2}:\d{2}$/)[0]).split(':');
+      signin_time = signin_time.split(':');
+      let delivery_date = new Date(0);
+      let signin_date = new Date(0);
+      delivery_date.setHours(delivery_time[0]);
+      delivery_date.setMinutes(delivery_time[1]);
+      signin_date.setHours(signin_time[0]);
+      signin_date.setMinutes(signin_time[1]);
+      let late_minutes = ( signin_date - delivery_date ) / (1000*60);
+
+      this.onLateTimeChange({target: {value: late_minutes}}); //模拟
+    }catch(e){
+      console.log(e);
+    }
+  },
   onLateTimeChange: function(e){
     var { value } = e.target;
     this.setState({ late_minutes: value, refund_money: value <=30 ? value : ''})
@@ -588,7 +606,7 @@ var UnSignedModal = React.createClass({
         <div className="form-inline mg-15">
           <div className="row">
             <div className="col-xs-6">
-              <label>货到付款金额：</label>
+              <label>货到付款金额：￥</label>
               <input value={this.state.order.total_amount/100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
             </div>
             <div className="col-xs-6">

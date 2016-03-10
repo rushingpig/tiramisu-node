@@ -227,7 +227,7 @@ class DeliverChangePannel extends Component {
                 <thead>
                 <tr>
                   <th><input onChange={this.checkAll.bind(this)} type="checkbox" /></th>
-                  <th>送达时间</th>
+                  <th>配送时间</th>
                   <th>下单人</th>
                   <th>收货人</th>
                   <th>验证码</th>

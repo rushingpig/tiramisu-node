@@ -21,6 +21,7 @@ export default class TimeInput extends Component {
           className={`form-control input-xs time-input ${hour_error}`} />
         <span className="gray">{' : '}</span>
         <input 
+          ref="minute"
           value={this.state.minute} 
           onChange={this.onMinuteChange.bind(this)} 
           className={`form-control input-xs time-input ${minute_error}`} />
@@ -46,7 +47,10 @@ export default class TimeInput extends Component {
     }else{
       hour_error = 'error';
     }
-    this.setState({ hour: value, hour_error });
+    this.setState({ hour: value, hour_error }, this.checkTime.bind(this));
+    if( !hour_error && value.length == 2){
+      $(this.refs.minute).get(0).focus();
+    }
   }
   onMinuteChange(e){
     var {value} = e.target, minute_error;
@@ -55,6 +59,12 @@ export default class TimeInput extends Component {
     }else{
       minute_error = 'error';
     }
-    this.setState({ minute: e.target.value, minute_error });
+    this.setState({ minute: e.target.value, minute_error }, this.checkTime.bind(this));
+  }
+  checkTime(){
+    var time = this.val();
+    if(/\d{2}:\d{2}$/.test(time)){
+      this.props.onOK( time );
+    }
   }
 }

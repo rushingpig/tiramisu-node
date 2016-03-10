@@ -19,6 +19,7 @@ export default class DetailModal extends Component {
         <tr key={n.sku_id}>
           <td>{n.name}</td>
           <td className="text-left">规格：{n.size}<br/>数量：{n.num}</td>
+          <td className="text-left">原价：￥{n.original_price / 100}<br/>实际售价：￥{n.discount_price/100}</td>
           <td>{n.choco_board}</td>
           <td>{n.greeting_card}</td>
           <td><input checked={n.atlas} disabled type="checkbox" /></td>
@@ -41,80 +42,52 @@ export default class DetailModal extends Component {
           </div>
           <div className="modal-body strong-label">
             <div className="form-group form-inline">
-              <label>{'订单来源：'}</label>
-              <span className="theme">{ all_order_srcs[data.src_id] }</span>
-            </div>
-            <div className="form-group form-inline">
-              <label>{'支付方式：'}</label>
-              <span className="theme">{ all_pay_modes[data.pay_modes_id] }</span>
-            </div>
-            <div className="form-group form-inline">
-              <label>{'支付状态：'}</label>
-              <span className="theme">{ pay_status[data.pay_status] }</span>
-            </div>
-            <div className="form-group form-inline">
-              <label>{'　验证码：'}</label>
-              <span className="theme">{ data.coupon || ' -' }</span>
-            </div>
-            <div className="form-group form-inline">
-              <label>{'配送方式：'}</label>
-              <span className="theme">{ DELIVERY_MAP[data.delivery_type] }</span>
-            </div>
-            <div className="form-group form-inline">
               <div className="row">
-                <div className="col-xs-6">
-                  <div className="form-group form-inline">
-                    <label>{'发票内容：'}</label>
-                    <span className="theme">{ data.invoice || ' -'}</span>
+                <div className="col-xs-6" style={{paddingLeft: 25}}>
+                  <div className="mg-4">
+                    <label>{'订单来源：'}</label>
+                    <span className="theme">{ all_order_srcs[data.src_id] }</span>
                   </div>
-                </div>
-                <div className="col-xs-6">
-                  <div className="form-group form-inline">
-                    <label>{'实际金额：'}</label>
-                    <span className="theme">
-                      {
-                        isNumber( data.total_discount_price )
-                          ? '￥' + data.total_discount_price/100
-                          : ' - '
-                      }
-                    </span>
+                  <div className="mg-4">
+                    <label>{'支付方式：'}</label>
+                    <span className="theme">{ all_pay_modes[data.pay_modes_id] }</span>
                   </div>
-                </div>
-              </div>
-            </div>
-            <div className="form-group form-inline">
-              <div className="row">
-                <div className="col-xs-6">
-                  <div className="form-group form-inline">
+                  <div className="mg-4">
+                    <label>{'支付状态：'}</label>
+                    <span className="theme">{ pay_status[data.pay_status] }</span>
+                  </div>
+                  <div className="mg-4">
+                    <label>{'　验证码：'}</label>
+                    <span className="theme">{ data.coupon || ' -' }</span>
+                  </div>
+                  <div className="mg-4">
+                    <label>{'配送方式：'}</label>
+                    <span className="theme">{ DELIVERY_MAP[data.delivery_type] }</span>
+                  </div>
+                  {
+                    data.invoice && (
+                      <div className="mg-4">
+                        <label>{'发票内容：'}</label>
+                        <span className="theme">{ data.invoice }</span>
+                      </div>
+                    )
+                  }
+                  <div className="mg-4">
                     <label>{'所属城市：'}</label>
                     <span className="theme">{ data.city_name }</span>
                   </div>
+                  {
+                    data.delivery_name && (
+                      <div className="mg-4">
+                        <label>{'　配送站：'}</label>
+                        <span className="theme">{data.delivery_name}</span>
+                      </div>
+                    )
+                  }
                 </div>
                 <div className="col-xs-6">
-                  <div className="form-group form-inline">
-                    <label>{'优惠金额：'}</label>
-                    <span className="theme">
-                      {
-                        isNumber( data.total_original_price / data.total_discount_price )
-                          ? '￥' + (data.total_original_price - data.total_discount_price) / 100 
-                          : ' - '
-                      }
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="form-group form-inline">
-              <div className="row">
-                <div className="col-xs-6">
-                  <div className="form-group form-inline">
-                    <label>{'　配送站：'}</label>
-                    <span className="theme">{data.delivery_name}</span>
-                  </div>
-                </div>
-                <div className="col-xs-6">
-                  <div className="form-group form-inline">
-                    <label>{'总金额：'}</label>
+                  <div className="mg-4">
+                    <label>{'　总金额：'}</label>
                     <span className="theme">
                       {
                         isNumber( data.total_original_price )
@@ -123,11 +96,33 @@ export default class DetailModal extends Component {
                       }
                     </span>
                   </div>
+                  <div className="">
+                    <label>{'实际金额：'}</label>
+                    <span className="theme">
+                      {
+                        isNumber( data.total_discount_price )
+                          ? '￥' + data.total_discount_price / 100
+                          : ' - '
+                      }
+                    </span>
+                  </div>
+                  <div className="">
+                    <label>{'应收金额：'}</label>
+                    <span className="theme">
+                      {
+                        isNumber( data.total_amount )
+                          ? '￥' + data.total_amount / 100
+                          : ' - '
+                      }
+                    </span>
+                  </div>
+                  
                 </div>
               </div>
             </div>
 
             <hr className="dotted" />
+
             <div className="form-group form-inline">
               <label>{'　产品信息：'}</label>
             </div>
@@ -137,6 +132,7 @@ export default class DetailModal extends Component {
                 <tr>
                   <th>产品名称</th>
                   <th>货品数量信息</th>
+                  <th>金额</th>
                   <th>巧克力牌</th>
                   <th>祝福贺卡</th>
                   <th>产品图册</th>

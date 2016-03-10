@@ -19380,7 +19380,7 @@
 	exports['default'] = {
 	  root: '/',
 	  ajax: '/v1/a',
-	  acl: true,
+	  acl: false,
 
 	  REQUEST: {
 	    ING: 0,
@@ -28688,6 +28688,10 @@
 	          'a',
 	          { onClick: this.cancelOrder, key: 'OrderManageCancel', href: 'javascript:;', className: 'nowrap' },
 	          '[订单取消]'
+	        )], [_react2['default'].createElement(
+	          'a',
+	          { onClick: this.orderException, key: 'OrderManageException', href: 'javascript:;', className: 'nowrap' },
+	          '[订单异常]'
 	        )])
 	      ),
 	      _react2['default'].createElement(
@@ -28838,18 +28842,20 @@
 	    var roles = null;
 	    switch (status) {
 	      case 'UNTREATED':
-	        roles = ['OrderManageEdit', 'OrderManageCancel', 'OrderManageView'];break;
+	        roles = ['OrderManageEdit', 'OrderManageCancel'];break;
 	      case 'TREATED':
-	        roles = ['OrderManageEdit', 'OrderManageCancel', 'OrderManageView'];break;
+	        roles = ['OrderManageEdit', 'OrderManageCancel'];break;
 	      case 'STATION':
-	        roles = ['OrderManageCancel', 'OrderManageAlterDelivery', 'OrderManageView'];break;
+	      case 'CONVERT':
+	        roles = ['OrderManageCancel', 'OrderManageAlterDelivery'];break;
 	      case 'INLINE':
-	        roles = ['OrderManageAlterDelivery', 'OrderManageView'];break;
+	        roles = ['OrderManageAlterDelivery', 'OrderManageException'];break;
 	      case 'DELIVERY':
-	      case 'DELIVERY':
+	        roles = ['OrderManageException'];break;
 	      default:
-	        roles = ['OrderManageView'];break;
+	        roles = [];break;
 	    }
+	    roles.push('OrderManageView');
 	    var results = [];
 	    for (var i = 0, len = arguments.length; i < len; i++) {
 	      var ele = arguments[i][0];
@@ -28915,7 +28921,6 @@
 	    e.stopPropagation();
 	  },
 	  orderException: function orderException(e) {
-	    //已被弃用
 	    this.props.showOrderException(this.props);
 	    this.activeOrder();
 	    e.stopPropagation();
@@ -33328,22 +33333,16 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
 	var _reduxForm = __webpack_require__(242);
-
-	var RF = _interopRequireWildcard(_reduxForm);
 
 	var _configFormFields = __webpack_require__(294);
 
 	var _configFormFields2 = _interopRequireDefault(_configFormFields);
 
-	console.log(RF);
-
 	//可以手动触发redux-form的plugin: reducer
 
 	function updateAddOrderForm() {
-	  return (0, _reduxForm.focus)('add_order', 'src_id'); //form_name, field_name
+	  return (0, _reduxForm.focus)('add_order', '_update'); //form_name, field_name
 	}
 
 	//手动更改指定form的表单值
@@ -39363,11 +39362,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
 	var _reduxForm = __webpack_require__(242);
-
-	var xxx = _interopRequireWildcard(_reduxForm);
 
 	// import store from 'stores/configureStore'; //循环引用
 
@@ -39462,13 +39457,17 @@
 	      } else {
 	        //订单来源，支付方式，支付状态，产品应收 联动
 	        switch (action.type) {
+	          case _reduxForm.actionTypes.FOCUS:
+	            if (action.field == '_update') {
+	              state.pay_status = _extends({}, state.pay_status, getPayStatus(state, action));
+	            }
+	            return _extends({}, state);
 	          case _reduxForm.actionTypes.RESET:
 	            if (action.field == 'src_id' || action.key == 'src_id') {
 	              state.src_id = { touched: false, value: _configAppConfig.SELECT_DEFAULT_VALUE, visited: false };
 	              state.pay_modes_id = { touched: false, visited: false };
 	              state.pay_status = { touched: false, visited: false };
 	            }
-	          // case actionTypes.FOCUS:
 	          // case actionTypes.BLUR:
 	          case _reduxForm.actionTypes.CHANGE:
 	            if (action.field == 'src_id' || action.key == 'src_id') {
@@ -41354,7 +41353,7 @@
 	                    _react2['default'].createElement(
 	                      'th',
 	                      null,
-	                      '送达时间'
+	                      '配送时间'
 	                    ),
 	                    _react2['default'].createElement(
 	                      'th',
@@ -41679,6 +41678,15 @@
 	          ),
 	          _react2['default'].createElement(
 	            'td',
+	            { className: 'text-left' },
+	            '原价：￥',
+	            n.original_price / 100,
+	            _react2['default'].createElement('br', null),
+	            '实际售价：￥',
+	            n.discount_price / 100
+	          ),
+	          _react2['default'].createElement(
+	            'td',
 	            null,
 	            n.choco_board
 	          ),
@@ -41738,84 +41746,84 @@
 	                'div',
 	                { className: 'form-group form-inline' },
 	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '订单来源：'
-	                ),
-	                _react2['default'].createElement(
-	                  'span',
-	                  { className: 'theme' },
-	                  all_order_srcs[data.src_id]
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '支付方式：'
-	                ),
-	                _react2['default'].createElement(
-	                  'span',
-	                  { className: 'theme' },
-	                  all_pay_modes[data.pay_modes_id]
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '支付状态：'
-	                ),
-	                _react2['default'].createElement(
-	                  'span',
-	                  { className: 'theme' },
-	                  _configAppConfig.pay_status[data.pay_status]
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '　验证码：'
-	                ),
-	                _react2['default'].createElement(
-	                  'span',
-	                  { className: 'theme' },
-	                  data.coupon || ' -'
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'label',
-	                  null,
-	                  '配送方式：'
-	                ),
-	                _react2['default'].createElement(
-	                  'span',
-	                  { className: 'theme' },
-	                  _configAppConfig.DELIVERY_MAP[data.delivery_type]
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
 	                  'div',
 	                  { className: 'row' },
 	                  _react2['default'].createElement(
 	                    'div',
-	                    { className: 'col-xs-6' },
+	                    { className: 'col-xs-6', style: { paddingLeft: 25 } },
 	                    _react2['default'].createElement(
 	                      'div',
-	                      { className: 'form-group form-inline' },
+	                      { className: 'mg-4' },
+	                      _react2['default'].createElement(
+	                        'label',
+	                        null,
+	                        '订单来源：'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'span',
+	                        { className: 'theme' },
+	                        all_order_srcs[data.src_id]
+	                      )
+	                    ),
+	                    _react2['default'].createElement(
+	                      'div',
+	                      { className: 'mg-4' },
+	                      _react2['default'].createElement(
+	                        'label',
+	                        null,
+	                        '支付方式：'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'span',
+	                        { className: 'theme' },
+	                        all_pay_modes[data.pay_modes_id]
+	                      )
+	                    ),
+	                    _react2['default'].createElement(
+	                      'div',
+	                      { className: 'mg-4' },
+	                      _react2['default'].createElement(
+	                        'label',
+	                        null,
+	                        '支付状态：'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'span',
+	                        { className: 'theme' },
+	                        _configAppConfig.pay_status[data.pay_status]
+	                      )
+	                    ),
+	                    _react2['default'].createElement(
+	                      'div',
+	                      { className: 'mg-4' },
+	                      _react2['default'].createElement(
+	                        'label',
+	                        null,
+	                        '　验证码：'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'span',
+	                        { className: 'theme' },
+	                        data.coupon || ' -'
+	                      )
+	                    ),
+	                    _react2['default'].createElement(
+	                      'div',
+	                      { className: 'mg-4' },
+	                      _react2['default'].createElement(
+	                        'label',
+	                        null,
+	                        '配送方式：'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'span',
+	                        { className: 'theme' },
+	                        _configAppConfig.DELIVERY_MAP[data.delivery_type]
+	                      )
+	                    ),
+	                    data.invoice && _react2['default'].createElement(
+	                      'div',
+	                      { className: 'mg-4' },
 	                      _react2['default'].createElement(
 	                        'label',
 	                        null,
@@ -41824,42 +41832,12 @@
 	                      _react2['default'].createElement(
 	                        'span',
 	                        { className: 'theme' },
-	                        data.invoice || ' -'
+	                        data.invoice
 	                      )
-	                    )
-	                  ),
-	                  _react2['default'].createElement(
-	                    'div',
-	                    { className: 'col-xs-6' },
+	                    ),
 	                    _react2['default'].createElement(
 	                      'div',
-	                      { className: 'form-group form-inline' },
-	                      _react2['default'].createElement(
-	                        'label',
-	                        null,
-	                        '实际金额：'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'span',
-	                        { className: 'theme' },
-	                        isNumber(data.total_discount_price) ? '￥' + data.total_discount_price / 100 : ' - '
-	                      )
-	                    )
-	                  )
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'div',
-	                  { className: 'row' },
-	                  _react2['default'].createElement(
-	                    'div',
-	                    { className: 'col-xs-6' },
-	                    _react2['default'].createElement(
-	                      'div',
-	                      { className: 'form-group form-inline' },
+	                      { className: 'mg-4' },
 	                      _react2['default'].createElement(
 	                        'label',
 	                        null,
@@ -41870,40 +41848,10 @@
 	                        { className: 'theme' },
 	                        data.city_name
 	                      )
-	                    )
-	                  ),
-	                  _react2['default'].createElement(
-	                    'div',
-	                    { className: 'col-xs-6' },
-	                    _react2['default'].createElement(
+	                    ),
+	                    data.delivery_name && _react2['default'].createElement(
 	                      'div',
-	                      { className: 'form-group form-inline' },
-	                      _react2['default'].createElement(
-	                        'label',
-	                        null,
-	                        '优惠金额：'
-	                      ),
-	                      _react2['default'].createElement(
-	                        'span',
-	                        { className: 'theme' },
-	                        isNumber(data.total_original_price / data.total_discount_price) ? '￥' + (data.total_original_price - data.total_discount_price) / 100 : ' - '
-	                      )
-	                    )
-	                  )
-	                )
-	              ),
-	              _react2['default'].createElement(
-	                'div',
-	                { className: 'form-group form-inline' },
-	                _react2['default'].createElement(
-	                  'div',
-	                  { className: 'row' },
-	                  _react2['default'].createElement(
-	                    'div',
-	                    { className: 'col-xs-6' },
-	                    _react2['default'].createElement(
-	                      'div',
-	                      { className: 'form-group form-inline' },
+	                      { className: 'mg-4' },
 	                      _react2['default'].createElement(
 	                        'label',
 	                        null,
@@ -41921,16 +41869,44 @@
 	                    { className: 'col-xs-6' },
 	                    _react2['default'].createElement(
 	                      'div',
-	                      { className: 'form-group form-inline' },
+	                      { className: 'mg-4' },
 	                      _react2['default'].createElement(
 	                        'label',
 	                        null,
-	                        '总金额：'
+	                        '　总金额：'
 	                      ),
 	                      _react2['default'].createElement(
 	                        'span',
 	                        { className: 'theme' },
 	                        isNumber(data.total_original_price) ? '￥' + data.total_original_price / 100 : ' - '
+	                      )
+	                    ),
+	                    _react2['default'].createElement(
+	                      'div',
+	                      { className: '' },
+	                      _react2['default'].createElement(
+	                        'label',
+	                        null,
+	                        '实际金额：'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'span',
+	                        { className: 'theme' },
+	                        isNumber(data.total_discount_price) ? '￥' + data.total_discount_price / 100 : ' - '
+	                      )
+	                    ),
+	                    _react2['default'].createElement(
+	                      'div',
+	                      { className: '' },
+	                      _react2['default'].createElement(
+	                        'label',
+	                        null,
+	                        '应收金额：'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'span',
+	                        { className: 'theme' },
+	                        isNumber(data.total_amount) ? '￥' + data.total_amount / 100 : ' - '
 	                      )
 	                    )
 	                  )
@@ -41967,6 +41943,11 @@
 	                        'th',
 	                        null,
 	                        '货品数量信息'
+	                      ),
+	                      _react2['default'].createElement(
+	                        'th',
+	                        null,
+	                        '金额'
 	                      ),
 	                      _react2['default'].createElement(
 	                        'th',
@@ -44240,7 +44221,7 @@
 	                    _react2['default'].createElement(
 	                      'th',
 	                      null,
-	                      '送达时间'
+	                      '配送时间'
 	                    ),
 	                    _react2['default'].createElement(
 	                      'th',
@@ -44463,7 +44444,7 @@
 	        ),
 	        _react2['default'].createElement(_commonDatepicker2['default'], { value: signin_date, onChange: this.onSignInDateChange, className: 'short-input' }),
 	        '　',
-	        _react2['default'].createElement(_commonTime_input2['default'], { onChange: this.onTimeChange, ref: 'timeinput' })
+	        _react2['default'].createElement(_commonTime_input2['default'], { onChange: this.onTimeChange, onOK: this.onTimeOK, ref: 'timeinput' })
 	      ),
 	      _react2['default'].createElement(
 	        'div',
@@ -44496,7 +44477,7 @@
 	            _react2['default'].createElement(
 	              'label',
 	              null,
-	              '货到付款金额：'
+	              '货到付款金额：￥'
 	            ),
 	            _react2['default'].createElement('input', { value: this.state.order.total_amount / 100 || 0, readOnly: true, className: 'form-control input-xs short-input', style: { 'width': 50 } })
 	          )
@@ -44600,6 +44581,25 @@
 	  onTimeChange: function onTimeChange(value) {
 	    this.setState({ signin_hour: value });
 	  },
+	  onTimeOK: function onTimeOK(signin_time) {
+	    var delivery_time = this.state.order.delivery_time;
+
+	    try {
+	      delivery_time = delivery_time.match(/\d{2}:\d{2}$/)[0].split(':');
+	      signin_time = signin_time.split(':');
+	      var delivery_date = new Date(0);
+	      var signin_date = new Date(0);
+	      delivery_date.setHours(delivery_time[0]);
+	      delivery_date.setMinutes(delivery_time[1]);
+	      signin_date.setHours(signin_time[0]);
+	      signin_date.setMinutes(signin_time[1]);
+	      var late_minutes = (signin_date - delivery_date) / (1000 * 60);
+
+	      this.onLateTimeChange({ target: { value: late_minutes } }); //模拟
+	    } catch (e) {
+	      console.log(e);
+	    }
+	  },
 	  onLateTimeChange: function onLateTimeChange(e) {
 	    var value = e.target.value;
 
@@ -44692,7 +44692,7 @@
 	            _react2['default'].createElement(
 	              'label',
 	              null,
-	              '货到付款金额：'
+	              '货到付款金额：￥'
 	            ),
 	            _react2['default'].createElement('input', { value: this.state.order.total_amount / 100 || 0, readOnly: true, className: 'form-control input-xs short-input', style: { 'width': 50 } })
 	          ),
@@ -44842,6 +44842,7 @@
 	          ' : '
 	        ),
 	        _react2['default'].createElement('input', {
+	          ref: 'minute',
 	          value: this.state.minute,
 	          onChange: this.onMinuteChange.bind(this),
 	          className: 'form-control input-xs time-input ' + minute_error })
@@ -44875,7 +44876,10 @@
 	      } else {
 	        hour_error = 'error';
 	      }
-	      this.setState({ hour: value, hour_error: hour_error });
+	      this.setState({ hour: value, hour_error: hour_error }, this.checkTime.bind(this));
+	      if (!hour_error && value.length == 2) {
+	        $(this.refs.minute).get(0).focus();
+	      }
 	    }
 	  }, {
 	    key: 'onMinuteChange',
@@ -44886,7 +44890,15 @@
 	      } else {
 	        minute_error = 'error';
 	      }
-	      this.setState({ minute: e.target.value, minute_error: minute_error });
+	      this.setState({ minute: e.target.value, minute_error: minute_error }, this.checkTime.bind(this));
+	    }
+	  }, {
+	    key: 'checkTime',
+	    value: function checkTime() {
+	      var time = this.val();
+	      if (/\d{2}:\d{2}$/.test(time)) {
+	        this.props.onOK(time);
+	      }
 	    }
 	  }]);
 
@@ -47890,7 +47902,15 @@
 	          });
 	        } else if (pay_status == '部分付款') {
 	          confirm_list.forEach(function (n, i) {
-	            n.amount = i == 0 ? 0 : n.discount_price;
+	            if (i == 0) {
+	              if (n.num > 1) {
+	                n.amount = n.discount_price * (n.num - 1) / n.num;
+	              } else {
+	                n.amount = 0;
+	              }
+	            } else {
+	              n.amount = n.discount_price;
+	            }
 	          });
 	        } else {
 	          confirm_list.forEach(function (n) {

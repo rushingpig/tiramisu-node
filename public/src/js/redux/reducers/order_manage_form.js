@@ -236,7 +236,15 @@ function products_choosing(state = products_choosing_state, action){
           })
         }else if(pay_status == '部分付款'){
           confirm_list.forEach(function(n, i){
-            n.amount = i == 0 ? 0 : n.discount_price;
+            if( i == 0 ){
+              if( n.num > 1 ){
+                n.amount = n.discount_price * (n.num - 1) / n.num;
+              }else{
+                n.amount = 0;
+              }
+            }else{
+              n.amount = n.discount_price;
+            }
           })
         }else{
           confirm_list.forEach(function(n){

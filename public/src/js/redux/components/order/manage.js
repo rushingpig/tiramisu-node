@@ -179,7 +179,8 @@ var OrderRow = React.createClass({
             [<a onClick={this.viewOrderDetail} key="OrderManageView" href="javascript:;">[查看]</a>, <br key="2" />],
             [<a onClick={this.alterDelivery} key="OrderManageAlterDelivery" href="javascript:;" className="nowrap">[修改配送]</a>, <br key="3" />],
             [<a onClick={this.alterStation} key="OrderManageAlterStation" href="javascript:;" className="nowrap">[分配配送站]</a>, <br key="4" />],
-            [<a onClick={this.cancelOrder} key="OrderManageCancel" href="javascript:;" className="nowrap">[订单取消]</a>]
+            [<a onClick={this.cancelOrder} key="OrderManageCancel" href="javascript:;" className="nowrap">[订单取消]</a>],
+            [<a onClick={this.orderException} key="OrderManageException" href="javascript:;" className="nowrap">[订单异常]</a>]
           )
         }
         </td>
@@ -227,18 +228,20 @@ var OrderRow = React.createClass({
     var roles = null;
     switch( status ){
       case 'UNTREATED':
-        roles = ['OrderManageEdit', 'OrderManageCancel', 'OrderManageView']; break;
+        roles = ['OrderManageEdit', 'OrderManageCancel']; break;
       case 'TREATED':
-        roles = ['OrderManageEdit', 'OrderManageCancel', 'OrderManageView']; break;
+        roles = ['OrderManageEdit', 'OrderManageCancel']; break;
       case 'STATION':
-        roles = ['OrderManageCancel', 'OrderManageAlterDelivery', 'OrderManageView']; break;
+      case 'CONVERT':
+        roles = ['OrderManageCancel', 'OrderManageAlterDelivery']; break;
       case 'INLINE':
-        roles = ['OrderManageAlterDelivery', 'OrderManageView']; break;
+        roles = ['OrderManageAlterDelivery', 'OrderManageException']; break;
       case 'DELIVERY':
-      case 'DELIVERY':
+        roles = ['OrderManageException']; break;
       default:
-        roles = ['OrderManageView']; break;
+        roles = []; break;
     }
+    roles.push('OrderManageView');
     var results = []
     for(var i=0,len=arguments.length; i<len; i++){
       var ele = arguments[i][0];
@@ -301,7 +304,6 @@ var OrderRow = React.createClass({
     e.stopPropagation();
   },
   orderException(e){
-    //已被弃用
     this.props.showOrderException(this.props);
     this.activeOrder();
     e.stopPropagation();

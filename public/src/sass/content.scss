@@ -12,6 +12,9 @@
     overflow: hidden !important;
 }
 
+@media screen and ( max-height: 1000px ) {
+  .table-responsive.main-list{ max-height: 434px; }
+}
 @media screen and ( max-height: 880px ) {
   .table-responsive.main-list{ max-height: 419px; }
 }

@@ -291,7 +291,8 @@ OrderDao.prototype.findOrderList = function (query_data) {
         sql += " and bo.is_submit = 1";
     }
     if (query_data.src_id) {
-        sql += " and src_id = ?";
+        sql += " and (src_id = ? or bos.parent_id = ?)";
+        params.push(query_data.src_id);
         params.push(query_data.src_id);
     }
     if (query_data.status) {

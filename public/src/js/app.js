@@ -19810,7 +19810,7 @@
 	}
 	//简单版
 	function form_isMobile(input) {
-	  return (/^\d{11}$/.test(input)
+	  return (/(^1\d{10}$)|(^0\d{9,11}$)/.test(input)
 	  );
 	}
 
@@ -28976,6 +28976,7 @@
 	    this.showOrderException = this.showOrderException.bind(this);
 	    this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
 	    this.search = this.search.bind(this);
+	    this.refreshDataList = this.refreshDataList.bind(this);
 	    this.state = {
 	      page_size: 5
 	    };
@@ -29005,6 +29006,7 @@
 	      var orderException = _props3.orderException;
 	      var _props$orders = this.props.orders;
 	      var loading = _props$orders.loading;
+	      var refresh = _props$orders.refresh;
 	      var page_no = _props$orders.page_no;
 	      var total = _props$orders.total;
 	      var list = _props$orders.list;
@@ -29017,7 +29019,7 @@
 	      var showCancelOrder = this.showCancelOrder;
 	      var showOrderException = this.showOrderException;
 	      var viewOrderOperationRecord = this.viewOrderOperationRecord;
-	      var search = this.search;
+	      var refreshDataList = this.refreshDataList;
 
 	      var content = list.map(function (n, i) {
 	        return _react2['default'].createElement(OrderRow, _extends({ key: n.order_id
@@ -29163,7 +29165,7 @@
 	                _react2['default'].createElement(
 	                  'tbody',
 	                  null,
-	                  (0, _commonLoading.tableLoader)(loading, content)
+	                  (0, _commonLoading.tableLoader)(loading || refresh, content)
 	                )
 	              )
 	            ),
@@ -29191,14 +29193,14 @@
 	        ) : null,
 	        _react2['default'].createElement(_order_detail_modal2['default'], { ref: 'detail_modal', data: check_order_info || {} }),
 	        _react2['default'].createElement(_commonOperation_record_modalJs2['default'], _extends({ ref: 'OperationRecordModal' }, _extends({ getOrderOptRecord: getOrderOptRecord, resetOrderOptRecord: resetOrderOptRecord }, operationRecord))),
-	        _react2['default'].createElement(CancelOrderModal, _extends({ ref: 'CancelOrderModal' }, { submitting: submitting, cancelOrder: cancelOrder, callback: search })),
-	        _react2['default'].createElement(OrderExceptionModal, _extends({ ref: 'OrderExceptionModal' }, { submitting: submitting, orderException: orderException, callback: search })),
+	        _react2['default'].createElement(CancelOrderModal, _extends({ ref: 'CancelOrderModal' }, { submitting: submitting, cancelOrder: cancelOrder, callback: refreshDataList })),
+	        _react2['default'].createElement(OrderExceptionModal, _extends({ ref: 'OrderExceptionModal' }, { submitting: submitting, orderException: orderException, callback: refreshDataList })),
 	        _react2['default'].createElement(AlterStationModal, _extends({ ref: 'AlterStationModal'
 	        }, _extends({ submitting: submitting }, delivery_stations, { order: check_order_info, active_order_id: active_order_id, show_products_detail: show_products_detail, loading: !prepare_delivery_data_ok
-	        }, alter_delivery_area, { actions: this.props, callback: search }))),
+	        }, alter_delivery_area, { actions: this.props, callback: refreshDataList }))),
 	        _react2['default'].createElement(_manage_alter_delivery_modal2['default'], _extends({ ref: 'AlterDeliveryModal'
 	        }, _extends({ submitting: submitting }, delivery_stations, { order: check_order_info, active_order_id: active_order_id, show_products_detail: show_products_detail, loading: !prepare_delivery_data_ok
-	        }, alter_delivery_area, { actions: this.props, callback: search })))
+	        }, alter_delivery_area, { actions: this.props, callback: refreshDataList })))
 	      );
 	    }
 	  }, {
@@ -29214,8 +29216,16 @@
 	  }, {
 	    key: 'search',
 	    value: function search(page) {
+	      //搜索数据，无需loading图
 	      page = typeof page == 'undefined' ? this.props.orders.page_no : page;
 	      this.props.getOrderList({ page_no: page, page_size: this.state.page_size });
+	    }
+	  }, {
+	    key: 'refreshDataList',
+	    value: function refreshDataList() {
+	      //更新数据，需要loading图
+	      this.props.refreshDataList();
+	      this.search();
 	    }
 	  }, {
 	    key: 'viewOrderDetail',
@@ -32713,6 +32723,7 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+	exports.refreshDataList = refreshDataList;
 	exports.getOrderList = getOrderList;
 	exports.getOrderExchangeList = getOrderExchangeList;
 	exports.getOrderDeliveryList = getOrderDeliveryList;
@@ -32747,7 +32758,14 @@
 	var GET_ORDER_LIST = 'GET_ORDER_LIST';
 	exports.GET_ORDER_LIST = GET_ORDER_LIST;
 	var GET_ORDER_LIST_ING = 'GET_ORDER_LIST_ING';
+
 	exports.GET_ORDER_LIST_ING = GET_ORDER_LIST_ING;
+
+	function refreshDataList() {
+	  return {
+	    type: GET_ORDER_LIST_ING
+	  };
+	}
 
 	function getOrderList(data) {
 	  return function (dispatch, getState) {
@@ -32797,7 +32815,7 @@
 	  return function (dispatch, getState) {
 	    var filter_data = (0, _reduxForm.getValues)(getState().form.order_exchange_filter);
 	    filter_data = (0, _utilsIndex.formCompile)(filter_data);
-	    dispatch({ type: GET_ORDER_LIST_ING });
+	    // dispatch({ type: GET_ORDER_LIST_ING });
 	    return (0, _utilsRequest.GET)(_configUrl2['default'].order_exchange.toString(), _extends({}, data, filter_data), GET_ORDER_LIST)(dispatch);
 	  };
 	}
@@ -32806,7 +32824,7 @@
 	  return function (dispatch, getState) {
 	    var filter_data = (0, _reduxForm.getValues)(getState().form.order_delivery_filter);
 	    filter_data = (0, _utilsIndex.formCompile)(filter_data);
-	    dispatch({ type: GET_ORDER_LIST_ING });
+	    // dispatch({ type: GET_ORDER_LIST_ING });
 	    return (0, _utilsRequest.GET)(_configUrl2['default'].order_delivery.toString(), _extends({}, data, filter_data), GET_ORDER_LIST)(dispatch);
 	  };
 	}
@@ -32815,7 +32833,7 @@
 	  return function (dispatch, getState) {
 	    var filter_data = (0, _reduxForm.getValues)(getState().form.order_distribute_filter);
 	    filter_data = (0, _utilsIndex.formCompile)(filter_data);
-	    dispatch({ type: GET_ORDER_LIST_ING });
+	    // dispatch({ type: GET_ORDER_LIST_ING });
 	    return (0, _utilsRequest.GET)(_configUrl2['default'].order_distribute.toString(), _extends({}, data, filter_data), GET_ORDER_LIST)(dispatch);
 	  };
 	}
@@ -36710,79 +36728,79 @@
 /* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
+	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var _react = __webpack_require__(2);
 
 	var _react2 = _interopRequireDefault(_react);
 
 	function ProductRow(product) {
-	  return _react2["default"].createElement(
-	    "tr",
+	  return _react2['default'].createElement(
+	    'tr',
 	    { key: product.sku_id },
-	    _react2["default"].createElement(
-	      "td",
+	    _react2['default'].createElement(
+	      'td',
 	      null,
 	      product.name
 	    ),
-	    _react2["default"].createElement(
-	      "td",
+	    _react2['default'].createElement(
+	      'td',
 	      null,
-	      "￥",
+	      '￥',
 	      product.original_price / 100
 	    ),
-	    _react2["default"].createElement(
-	      "td",
+	    _react2['default'].createElement(
+	      'td',
 	      null,
 	      product.size
 	    ),
-	    _react2["default"].createElement(
-	      "td",
+	    _react2['default'].createElement(
+	      'td',
 	      null,
 	      product.num
 	    ),
-	    _react2["default"].createElement(
-	      "td",
+	    _react2['default'].createElement(
+	      'td',
 	      null,
-	      "￥",
+	      '￥',
 	      product.discount_price / 100
 	    ),
-	    _react2["default"].createElement(
-	      "td",
+	    _react2['default'].createElement(
+	      'td',
 	      null,
 	      product.choco_board
 	    ),
-	    _react2["default"].createElement(
-	      "td",
+	    _react2['default'].createElement(
+	      'td',
 	      null,
 	      product.greeting_card
 	    ),
-	    _react2["default"].createElement(
-	      "td",
+	    _react2['default'].createElement(
+	      'td',
 	      null,
-	      product.atlas
+	      (product.atlas == 0 ? '不' : '') + '需要'
 	    ),
-	    _react2["default"].createElement(
-	      "td",
+	    _react2['default'].createElement(
+	      'td',
 	      null,
 	      product.custom_name
 	    ),
-	    _react2["default"].createElement(
-	      "td",
+	    _react2['default'].createElement(
+	      'td',
 	      null,
 	      product.custom_desc
 	    )
@@ -36795,81 +36813,81 @@
 	  function OrderProductsDetail() {
 	    _classCallCheck(this, OrderProductsDetail);
 
-	    _get(Object.getPrototypeOf(OrderProductsDetail.prototype), "constructor", this).apply(this, arguments);
+	    _get(Object.getPrototypeOf(OrderProductsDetail.prototype), 'constructor', this).apply(this, arguments);
 	  }
 
 	  _createClass(OrderProductsDetail, [{
-	    key: "render",
+	    key: 'render',
 	    value: function render() {
 	      var products = this.props.products.map(function (n) {
 	        return ProductRow(n);
 	      });
-	      return _react2["default"].createElement(
-	        "div",
-	        { className: "table-responsive" },
-	        _react2["default"].createElement(
-	          "table",
-	          { className: "table text-center" },
-	          _react2["default"].createElement(
-	            "thead",
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'table-responsive' },
+	        _react2['default'].createElement(
+	          'table',
+	          { className: 'table text-center' },
+	          _react2['default'].createElement(
+	            'thead',
 	            null,
-	            _react2["default"].createElement(
-	              "tr",
+	            _react2['default'].createElement(
+	              'tr',
 	              null,
-	              _react2["default"].createElement(
-	                "th",
+	              _react2['default'].createElement(
+	                'th',
 	                null,
-	                "产品名称"
+	                '产品名称'
 	              ),
-	              _react2["default"].createElement(
-	                "th",
+	              _react2['default'].createElement(
+	                'th',
 	                null,
-	                "原价"
+	                '原价'
 	              ),
-	              _react2["default"].createElement(
-	                "th",
+	              _react2['default'].createElement(
+	                'th',
 	                null,
-	                "规格"
+	                '规格'
 	              ),
-	              _react2["default"].createElement(
-	                "th",
+	              _react2['default'].createElement(
+	                'th',
 	                null,
-	                "数量"
+	                '数量'
 	              ),
-	              _react2["default"].createElement(
-	                "th",
+	              _react2['default'].createElement(
+	                'th',
 	                null,
-	                "实际售价"
+	                '实际售价'
 	              ),
-	              _react2["default"].createElement(
-	                "th",
+	              _react2['default'].createElement(
+	                'th',
 	                null,
-	                "巧克力牌"
+	                '巧克力牌'
 	              ),
-	              _react2["default"].createElement(
-	                "th",
+	              _react2['default'].createElement(
+	                'th',
 	                null,
-	                "祝福贺卡"
+	                '祝福贺卡'
 	              ),
-	              _react2["default"].createElement(
-	                "th",
+	              _react2['default'].createElement(
+	                'th',
 	                null,
-	                "产品图册"
+	                '产品图册'
 	              ),
-	              _react2["default"].createElement(
-	                "th",
+	              _react2['default'].createElement(
+	                'th',
 	                null,
-	                "自由拼名称"
+	                '自由拼名称'
 	              ),
-	              _react2["default"].createElement(
-	                "th",
+	              _react2['default'].createElement(
+	                'th',
 	                null,
-	                "自由拼描述"
+	                '自由拼描述'
 	              )
 	            )
 	          ),
-	          _react2["default"].createElement(
-	            "tbody",
+	          _react2['default'].createElement(
+	            'tbody',
 	            null,
 	            products
 	          )
@@ -36881,12 +36899,12 @@
 	  return OrderProductsDetail;
 	})(_react.Component);
 
-	exports["default"] = OrderProductsDetail;
+	exports['default'] = OrderProductsDetail;
 
 	OrderProductsDetail.PropTypes = {
 	  products: _react.PropTypes.array.isRequired
 	};
-	module.exports = exports["default"];
+	module.exports = exports['default'];
 
 /***/ },
 /* 314 */
@@ -37737,7 +37755,6 @@
 	      var order_srcs_level2 = all_order_srcs.length > 1 ? all_order_srcs[1].filter(function (n) {
 	        return n.parent_id == selected_order_src_level1_id;
 	      }) : [];
-	      console.log(all_order_srcs && all_order_srcs.length, all_order_srcs[0] && all_order_srcs[0].length, order_srcs_level2.length);
 	      return _react2['default'].createElement(
 	        'div',
 	        { className: 'inline-block' },
@@ -38473,6 +38490,7 @@
 
 	      groupbuy_check_ing: false,
 	      groupbuy_success: undefined, //验券是否成功
+	      groupbuy_checked: false, //是否已进行过验券操作(现在的逻辑是不管有没验证通过，都可以创建订单)
 	      groupbuy_msg: '', //验券结果
 	      auto_match_delivery_center: false,
 	      auto_match_msg: ''
@@ -38876,7 +38894,7 @@
 	          }
 	          //团购密码验证
 	          if ((0, _reducersForm.isSrc)('团购网站', form_data.src_id)) {
-	            if (!_this2.state.groupbuy_success) {
+	            if (!_this2.state.groupbuy_checked) {
 	              (0, _utilsIndex.Noty)('warning', '请确定团购密码已验证通过');return;
 	            }
 	          }
@@ -39051,7 +39069,7 @@
 	        }).fail(function (msg) {
 	          _this4.setState({ groupbuy_success: false, groupbuy_msg: msg || '团购券验证有误，请手动确认！' });
 	        }).always(function () {
-	          _this4.setState({ groupbuy_check_ing: false });
+	          _this4.setState({ groupbuy_check_ing: false, groupbuy_checked: true });
 	        });
 	      } else {
 	        (0, _utilsIndex.Noty)('warning', '请填写正确的团购密码');
@@ -41475,6 +41493,7 @@
 	    this.viewOrderDetail = this.viewOrderDetail.bind(this);
 	    this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
 	    this.search = this.search.bind(this);
+	    this.refreshDataList = this.refreshDataList.bind(this);
 	  }
 
 	  _createClass(DeliverChangePannel, [{
@@ -41494,6 +41513,7 @@
 	      var loading = _props$orders.loading;
 	      var refresh = _props$orders.refresh;
 	      var page_no = _props$orders.page_no;
+	      var checkall = _props$orders.checkall;
 	      var total = _props$orders.total;
 	      var list = _props$orders.list;
 	      var checked_order_ids = _props$orders.checked_order_ids;
@@ -41505,6 +41525,7 @@
 	      var viewOrderDetail = this.viewOrderDetail;
 	      var activeOrderHandler = this.activeOrderHandler;
 	      var viewOrderOperationRecord = this.viewOrderOperationRecord;
+	      var refreshDataList = this.refreshDataList;
 
 	      var content = list.map(function (n, i) {
 	        return _react2['default'].createElement(OrderRow, _extends({ key: n.order_id }, _extends({}, n, { active_order_id: active_order_id, activeOrderHandler: activeOrderHandler, checkOrderHandler: checkOrderHandler, viewOrderDetail: viewOrderDetail, viewOrderOperationRecord: viewOrderOperationRecord })));
@@ -41542,7 +41563,7 @@
 	                    _react2['default'].createElement(
 	                      'th',
 	                      null,
-	                      _react2['default'].createElement('input', { onChange: this.checkAll.bind(this), type: 'checkbox' })
+	                      _react2['default'].createElement('input', { checked: checkall, onChange: this.checkAll.bind(this), type: 'checkbox' })
 	                    ),
 	                    _react2['default'].createElement(
 	                      'th',
@@ -41667,7 +41688,7 @@
 	  }, {
 	    key: 'onPageChange',
 	    value: function onPageChange(page) {
-	      this.setState({ page_no: page });
+	      this.search(page);
 	    }
 	  }, {
 	    key: 'componentDidMount',
@@ -41683,12 +41704,16 @@
 	    }
 	  }, {
 	    key: 'search',
-	    value: function search() {
-	      var _props6 = this.props;
-	      var getOrderExchangeList = _props6.getOrderExchangeList;
-	      var orders = _props6.orders;
-
-	      getOrderExchangeList({ page_no: orders.page_no, page_size: this.state.page_size });
+	    value: function search(page) {
+	      page = typeof page == 'undefined' ? this.props.orders.page_no : page;
+	      this.props.getOrderExchangeList({ page_no: page, page_size: this.state.page_size });
+	    }
+	  }, {
+	    key: 'refreshDataList',
+	    value: function refreshDataList() {
+	      //更新数据，需要loading图
+	      this.props.refreshDataList();
+	      this.search();
 	    }
 	  }]);
 
@@ -41768,10 +41793,10 @@
 	  }, {
 	    key: 'onConfirm',
 	    value: function onConfirm() {
-	      var _props7 = this.props;
-	      var exchangeOrders = _props7.exchangeOrders;
-	      var search = _props7.search;
-	      var checked_order_ids = _props7.checked_order_ids;
+	      var _props6 = this.props;
+	      var exchangeOrders = _props6.exchangeOrders;
+	      var search = _props6.search;
+	      var checked_order_ids = _props6.checked_order_ids;
 
 	      exchangeOrders(checked_order_ids).done((function () {
 	        // search();
@@ -42758,6 +42783,7 @@
 	    this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
 	    this.printHandler = this.printHandler.bind(this);
 	    this.search = this.search.bind(this);
+	    this.refreshDataList = this.refreshDataList.bind(this);
 	    this.showScanModal = this.showScanModal.bind(this);
 	  }
 
@@ -42785,6 +42811,7 @@
 	      var loading = _props$orders.loading;
 	      var refresh = _props$orders.refresh;
 	      var page_no = _props$orders.page_no;
+	      var checkall = _props$orders.checkall;
 	      var total = _props$orders.total;
 	      var list = _props$orders.list;
 	      var checked_orders = _props$orders.checked_orders;
@@ -42799,6 +42826,7 @@
 	      var viewOrderDetail = this.viewOrderDetail;
 	      var activeOrderHandler = this.activeOrderHandler;
 	      var viewOrderOperationRecord = this.viewOrderOperationRecord;
+	      var refreshDataList = this.refreshDataList;
 	      var scan = main.scan;
 	      //扫描
 
@@ -42841,7 +42869,7 @@
 	                    _react2['default'].createElement(
 	                      'th',
 	                      null,
-	                      _react2['default'].createElement('input', { onChange: this.checkAll.bind(this), type: 'checkbox' })
+	                      _react2['default'].createElement('input', { checked: checkall, onChange: this.checkAll.bind(this), type: 'checkbox' })
 	                    ),
 	                    _react2['default'].createElement(
 	                      'th',
@@ -42939,11 +42967,11 @@
 	            _react2['default'].createElement(_commonOrder_products_detail2['default'], { products: check_order_info.products })
 	          )
 	        ) : null,
-	        _react2['default'].createElement(EditModal, _extends({ ref: 'EditModal' }, { getAllDeliveryman: getAllDeliveryman, applyDeliveryman: applyDeliveryman, deliveryman: deliveryman, submitting: main.submitting }, { callback: this.search })),
+	        _react2['default'].createElement(EditModal, _extends({ ref: 'EditModal' }, { getAllDeliveryman: getAllDeliveryman, applyDeliveryman: applyDeliveryman, deliveryman: deliveryman, submitting: main.submitting }, { callback: refreshDataList })),
 	        _react2['default'].createElement(_order_detail_modal2['default'], { ref: 'detail_modal', data: check_order_info || {}, all_order_srcs: all_order_srcs.map, all_pay_modes: all_pay_modes }),
-	        _react2['default'].createElement(PrintModal, _extends({ ref: 'PrintModal' }, { checked_orders: checked_orders, startPrint: startPrint, callback: this.search })),
-	        _react2['default'].createElement(ApplyPrintModal, _extends({ ref: 'ApplyPrintModal' }, { applyPrint: applyPrint, submitting: main.submitting }, { callback: this.search })),
-	        _react2['default'].createElement(RePrintModal, _extends({ ref: 'RePrintModal' }, { validatePrintCode: validatePrintCode, rePrint: rePrint, submitting: main.submitting }, { callback: this.search })),
+	        _react2['default'].createElement(PrintModal, _extends({ ref: 'PrintModal' }, { checked_orders: checked_orders, startPrint: startPrint, callback: refreshDataList })),
+	        _react2['default'].createElement(ApplyPrintModal, _extends({ ref: 'ApplyPrintModal' }, { applyPrint: applyPrint, submitting: main.submitting }, { callback: refreshDataList })),
+	        _react2['default'].createElement(RePrintModal, _extends({ ref: 'RePrintModal' }, { validatePrintCode: validatePrintCode, rePrint: rePrint, submitting: main.submitting }, { callback: refreshDataList })),
 	        _react2['default'].createElement(_commonScan_modal2['default'], { ref: 'ScanModal', submitting: main.submitting, search: searchByScan }),
 	        _react2['default'].createElement(_commonOperation_record_modalJs2['default'], _extends({ ref: 'OperationRecordModal' }, _extends({ getOrderOptRecord: getOrderOptRecord, resetOrderOptRecord: resetOrderOptRecord }, operationRecord)))
 	      );
@@ -43050,6 +43078,13 @@
 	    value: function search(page) {
 	      page = typeof page == 'undefined' ? this.props.orders.page_no : page;
 	      this.props.getOrderDeliveryList({ page_no: page, page_size: this.state.page_size });
+	    }
+	  }, {
+	    key: 'refreshDataList',
+	    value: function refreshDataList() {
+	      //更新数据，需要loading图
+	      this.props.refreshDataList();
+	      this.search();
 	    }
 	  }]);
 
@@ -44324,6 +44359,7 @@
 	    this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
 	    this.showScanModal = this.showScanModal.bind(this);
 	    this.search = this.search.bind(this);
+	    this.refreshDataList = this.refreshDataList.bind(this);
 	  }
 
 	  _createClass(DeliveryDistributePannel, [{
@@ -44347,6 +44383,7 @@
 	      var loading = orders.loading;
 	      var refresh = orders.refresh;
 	      var page_no = orders.page_no;
+	      var checkall = orders.checkall;
 	      var total = orders.total;
 	      var list = orders.list;
 	      var check_order_info = orders.check_order_info;
@@ -44359,6 +44396,7 @@
 	      var viewOrderDetail = this.viewOrderDetail;
 	      var activeOrderHandler = this.activeOrderHandler;
 	      var viewOrderOperationRecord = this.viewOrderOperationRecord;
+	      var refreshDataList = this.refreshDataList;
 	      var scan = main.scan;
 	      //扫描
 
@@ -44401,7 +44439,7 @@
 	                    _react2['default'].createElement(
 	                      'th',
 	                      null,
-	                      _react2['default'].createElement('input', { onChange: this.checkAll.bind(this), type: 'checkbox' })
+	                      _react2['default'].createElement('input', { checked: checkall, onChange: this.checkAll.bind(this), type: 'checkbox' })
 	                    ),
 	                    _react2['default'].createElement(
 	                      'th',
@@ -44495,8 +44533,8 @@
 	          )
 	        ) : null,
 	        _react2['default'].createElement(_order_detail_modal2['default'], { ref: 'detail_modal', data: check_order_info || {}, all_order_srcs: all_order_srcs.map, all_pay_modes: all_pay_modes }),
-	        _react2['default'].createElement(SignedModal, _extends({ ref: 'SignedModal' }, { submitting: submitting, signOrder: signOrder, callback: search })),
-	        _react2['default'].createElement(UnSignedModal, _extends({ ref: 'UnSignedModal' }, { submitting: submitting, unsignOrder: unsignOrder, callback: search })),
+	        _react2['default'].createElement(SignedModal, _extends({ ref: 'SignedModal' }, { submitting: submitting, signOrder: signOrder, callback: refreshDataList })),
+	        _react2['default'].createElement(UnSignedModal, _extends({ ref: 'UnSignedModal' }, { submitting: submitting, unsignOrder: unsignOrder, callback: refreshDataList })),
 	        _react2['default'].createElement(_commonScan_modal2['default'], { ref: 'ScanModal', submitting: submitting, search: searchByScan }),
 	        _react2['default'].createElement(_commonOperation_record_modalJs2['default'], _extends({ ref: 'OperationRecordModal' }, _extends({ getOrderOptRecord: getOrderOptRecord, resetOrderOptRecord: resetOrderOptRecord }, operationRecord)))
 	      );
@@ -44529,6 +44567,13 @@
 
 	      page = typeof page == 'undefined' ? orders.page_no : page;
 	      getOrderDistributeList({ page_no: page, page_size: this.state.page_size });
+	    }
+	  }, {
+	    key: 'refreshDataList',
+	    value: function refreshDataList() {
+	      //更新数据，需要loading图
+	      this.props.refreshDataList();
+	      this.search();
 	    }
 	  }, {
 	    key: 'activeOrderHandler',
@@ -47700,6 +47745,7 @@
 	  page_no: 0,
 	  total: 0,
 	  list: [],
+	  checkall: false,
 	  checked_order_ids: [],
 	  checked_orders: [],
 	  active_order_id: undefined,
@@ -47716,7 +47762,7 @@
 	      return _extends({}, orders_state);
 
 	    case OrderActions.GET_ORDER_LIST_ING:
-	      return _extends({}, orders_state, { refresh: true });
+	      return _extends({}, state, { refresh: true });
 	    case OrderActions.GET_ORDER_LIST:
 	    case _actionsDelivery_manage.GET_DELIVERY_SCAN_LIST:
 	    case _actionsDelivery_distribute.GET_DISTRIBUTE_SCAN_LIST:
@@ -47749,7 +47795,7 @@
 	            checked_orders.push(n);
 	          }
 	        });
-	        return _extends({}, state, { checked_order_ids: checked_order_ids, checked_orders: checked_orders });
+	        return _extends({}, state, { checkall: action.checked, checked_order_ids: checked_order_ids, checked_orders: checked_orders });
 	      })();
 
 	    case OrderActions.ACTIVE_ORDER:

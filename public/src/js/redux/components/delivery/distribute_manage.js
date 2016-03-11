@@ -243,14 +243,15 @@ class DeliveryDistributePannel extends Component {
     this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
     this.showScanModal = this.showScanModal.bind(this);
     this.search = this.search.bind(this);
+    this.refreshDataList = this.refreshDataList.bind(this);
   }
   render(){
     var { filter, area, deliveryman, orders, main, all_order_srcs, all_pay_modes, signOrder, unsignOrder, 
       searchByScan, getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
     var { submitting } = main;
-    var { loading, refresh, page_no, total, list, check_order_info, active_order_id } = orders;
+    var { loading, refresh, page_no, checkall, total, list, check_order_info, active_order_id } = orders;
     var { search, showSignedModal, showUnSignedModal, showScanModal, checkOrderHandler, 
-      viewOrderDetail, activeOrderHandler, viewOrderOperationRecord } = this;
+      viewOrderDetail, activeOrderHandler, viewOrderOperationRecord, refreshDataList } = this;
 
     var {scan} = main; //扫描
 
@@ -277,7 +278,7 @@ class DeliveryDistributePannel extends Component {
               <table className="table table-hover text-center">
                 <thead>
                 <tr>
-                  <th><input onChange={this.checkAll.bind(this)} type="checkbox" /></th>
+                  <th><input checked={checkall} onChange={this.checkAll.bind(this)} type="checkbox" /></th>
                   <th>管理操作</th>
                   <th>配送时间</th>
                   <th>货到付款金额</th>
@@ -321,8 +322,8 @@ class DeliveryDistributePannel extends Component {
           : null }
 
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} all_order_srcs={all_order_srcs.map} all_pay_modes={all_pay_modes} />
-        <SignedModal ref="SignedModal" {...{submitting, signOrder, callback: search}} />
-        <UnSignedModal ref="UnSignedModal" {...{submitting, unsignOrder, callback: search}} />
+        <SignedModal ref="SignedModal" {...{submitting, signOrder, callback: refreshDataList}} />
+        <UnSignedModal ref="UnSignedModal" {...{submitting, unsignOrder, callback: refreshDataList}} />
         <ScanModal ref="ScanModal" submitting={submitting} search={searchByScan}  />
         <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
       </div>
@@ -344,6 +345,11 @@ class DeliveryDistributePannel extends Component {
     var { getOrderDistributeList, orders } = this.props;
     page = typeof page == 'undefined' ? orders.page_no : page;
     getOrderDistributeList({page_no: page, page_size: this.state.page_size});
+  }
+  refreshDataList(){
+    //更新数据，需要loading图
+    this.props.refreshDataList();
+    this.search();
   }
   activeOrderHandler(order_id){
     if(this.props.orders.active_order_id != order_id)

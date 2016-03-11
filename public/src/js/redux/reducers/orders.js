@@ -9,6 +9,7 @@ var orders_state = {
   page_no: 0,
   total: 0,
   list: [],
+  checkall: false,
   checked_order_ids: [],
   checked_orders: [],
   active_order_id: undefined,
@@ -23,7 +24,7 @@ export function orders(state = orders_state, action){
       return {...orders_state}
     
     case OrderActions.GET_ORDER_LIST_ING:
-      return {...orders_state, refresh: true }
+      return {...state, refresh: true }
     case OrderActions.GET_ORDER_LIST:
     case GET_DELIVERY_SCAN_LIST:
     case GET_DISTRIBUTE_SCAN_LIST:
@@ -54,7 +55,7 @@ export function orders(state = orders_state, action){
             checked_orders.push(n);
           }
         })
-        return {...state, checked_order_ids, checked_orders}
+        return {...state, checkall: action.checked, checked_order_ids, checked_orders}
       })()
 
     case OrderActions.ACTIVE_ORDER:

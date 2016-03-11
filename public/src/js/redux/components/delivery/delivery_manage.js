@@ -246,15 +246,16 @@ class DeliveryManagePannel extends Component {
     this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
     this.printHandler = this.printHandler.bind(this);
     this.search = this.search.bind(this);
+    this.refreshDataList = this.refreshDataList.bind(this);
     this.showScanModal = this.showScanModal.bind(this);
   }
   render(){
     var { filter, area, deliveryman, main, all_order_srcs, all_pay_modes,
       getAllDeliveryman, applyDeliveryman, startPrint, applyPrint, validatePrintCode, rePrint, searchByScan,
       getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
-    var { loading, refresh, page_no, total, list, checked_orders, check_order_info, active_order_id } = this.props.orders;
+    var { loading, refresh, page_no, checkall, total, list, checked_orders, check_order_info, active_order_id } = this.props.orders;
     var { showBatchPrintModal, printHandler, showEditModal, showScanModal, showBatchEditModal,
-       checkOrderHandler, viewOrderDetail, activeOrderHandler, viewOrderOperationRecord } = this;
+       checkOrderHandler, viewOrderDetail, activeOrderHandler, viewOrderOperationRecord, refreshDataList } = this;
 
     var {scan} = main; //扫描
 
@@ -281,7 +282,7 @@ class DeliveryManagePannel extends Component {
               <table className="table table-hover text-center">
                 <thead>
                 <tr>
-                  <th><input onChange={this.checkAll.bind(this)} type="checkbox" /></th>
+                  <th><input checked={checkall} onChange={this.checkAll.bind(this)} type="checkbox" /></th>
                   <th>管理操作</th>
                   <th>是否打印</th>
                   <th>配送员</th>
@@ -325,11 +326,11 @@ class DeliveryManagePannel extends Component {
             </div>
           : null }
 
-        <EditModal ref="EditModal" {...{getAllDeliveryman, applyDeliveryman, deliveryman, submitting: main.submitting }} callback={this.search} />
+        <EditModal ref="EditModal" {...{getAllDeliveryman, applyDeliveryman, deliveryman, submitting: main.submitting }} callback={refreshDataList} />
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} all_order_srcs={all_order_srcs.map} all_pay_modes={all_pay_modes} />
-        <PrintModal ref="PrintModal" {...{checked_orders, startPrint, callback: this.search}} />
-        <ApplyPrintModal ref="ApplyPrintModal" {...{applyPrint, submitting: main.submitting}} callback={this.search} />
-        <RePrintModal ref="RePrintModal" {...{validatePrintCode, rePrint, submitting: main.submitting}} callback={this.search} />
+        <PrintModal ref="PrintModal" {...{checked_orders, startPrint, callback: refreshDataList}} />
+        <ApplyPrintModal ref="ApplyPrintModal" {...{applyPrint, submitting: main.submitting}} callback={refreshDataList} />
+        <RePrintModal ref="RePrintModal" {...{validatePrintCode, rePrint, submitting: main.submitting}} callback={refreshDataList} />
         <ScanModal ref="ScanModal" submitting={main.submitting} search={searchByScan} />
         <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
       </div>
@@ -404,6 +405,11 @@ class DeliveryManagePannel extends Component {
   search(page){
     page = typeof page == 'undefined' ? this.props.orders.page_no : page;
     this.props.getOrderDeliveryList({page_no: page, page_size: this.state.page_size});
+  }
+  refreshDataList(){
+    //更新数据，需要loading图
+    this.props.refreshDataList();
+    this.search();
   }
 }
 

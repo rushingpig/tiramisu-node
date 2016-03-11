@@ -16,7 +16,6 @@ export default class OrderSrcsSelects extends React.Component {
     var order_srcs_level2 = all_order_srcs.length > 1
       ? all_order_srcs[1].filter(n => n.parent_id == selected_order_src_level1_id)
       : [];
-    console.log(all_order_srcs && all_order_srcs.length, all_order_srcs[0] && all_order_srcs[0].length, order_srcs_level2.length);
     return (
       <div className="inline-block">
       {

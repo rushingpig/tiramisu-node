@@ -80,6 +80,7 @@ class ManageAddForm extends Component {
 
       groupbuy_check_ing: false,
       groupbuy_success: undefined, //验券是否成功
+      groupbuy_checked: false, //是否已进行过验券操作(现在的逻辑是不管有没验证通过，都可以创建订单)
       groupbuy_msg: '', //验券结果
       auto_match_delivery_center: false,
       auto_match_msg: '',
@@ -335,7 +336,7 @@ class ManageAddForm extends Component {
         }
         //团购密码验证
         if( isSrc('团购网站', form_data.src_id) ){
-          if( !this.state.groupbuy_success ){
+          if( !this.state.groupbuy_checked ){
             Noty('warning', '请确定团购密码已验证通过'); return;
           }
         }
@@ -469,7 +470,7 @@ class ManageAddForm extends Component {
           this.setState({ groupbuy_success: false, groupbuy_msg: msg || '团购券验证有误，请手动确认！'})
         })
         .always(() => {
-          this.setState({ groupbuy_check_ing: false })
+          this.setState({ groupbuy_check_ing: false, groupbuy_checked: true })
         })
     }else{
       Noty('warning', '请填写正确的团购密码');

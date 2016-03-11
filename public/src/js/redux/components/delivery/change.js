@@ -200,12 +200,13 @@ class DeliverChangePannel extends Component {
     this.viewOrderDetail = this.viewOrderDetail.bind(this);
     this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
     this.search = this.search.bind(this);
+    this.refreshDataList = this.refreshDataList.bind(this);
   }
   render(){
     var { filter, area, all_order_srcs, all_pay_modes, exchangeOrders, getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
     var { change_submitting } = filter;
-    var { loading, refresh, page_no, total, list, checked_order_ids, check_order_info, active_order_id } = this.props.orders;
-    var { search, changeHandler, checkOrderHandler, viewOrderDetail, activeOrderHandler, viewOrderOperationRecord } = this;
+    var { loading, refresh, page_no, checkall, total, list, checked_order_ids, check_order_info, active_order_id } = this.props.orders;
+    var { search, changeHandler, checkOrderHandler, viewOrderDetail, activeOrderHandler, viewOrderOperationRecord, refreshDataList } = this;
 
     var content = list.map((n, i) => {
       return <OrderRow key={n.order_id} {...{...n, active_order_id, activeOrderHandler, checkOrderHandler, viewOrderDetail, viewOrderOperationRecord}} />;
@@ -226,7 +227,7 @@ class DeliverChangePannel extends Component {
               <table className="table table-hover text-center">
                 <thead>
                 <tr>
-                  <th><input onChange={this.checkAll.bind(this)} type="checkbox" /></th>
+                  <th><input checked={checkall} onChange={this.checkAll.bind(this)} type="checkbox" /></th>
                   <th>配送时间</th>
                   <th>下单人</th>
                   <th>收货人</th>
@@ -293,7 +294,7 @@ class DeliverChangePannel extends Component {
     this.refs.OperationRecordModal.show(order);
   }
   onPageChange(page){
-    this.setState({page_no: page});
+    this.search(page);
   }
   componentDidMount() {
     this.search();
@@ -302,9 +303,14 @@ class DeliverChangePannel extends Component {
     getOrderSrcs();
     getPayModes();
   }
-  search(){
-    var { getOrderExchangeList, orders } = this.props;
-    getOrderExchangeList({page_no: orders.page_no, page_size: this.state.page_size});
+  search(page){
+    page = typeof page == 'undefined' ? this.props.orders.page_no : page;
+    this.props.getOrderExchangeList({page_no: page, page_size: this.state.page_size});
+  }
+  refreshDataList(){
+    //更新数据，需要loading图
+    this.props.refreshDataList();
+    this.search();
   }
 }
 

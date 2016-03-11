@@ -356,6 +356,7 @@ class ManagePannel extends Component {
     this.showOrderException = this.showOrderException.bind(this);
     this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
     this.search = this.search.bind(this);
+    this.refreshDataList = this.refreshDataList.bind(this);
     this.state = {
       page_size: 5,
     }
@@ -364,8 +365,8 @@ class ManagePannel extends Component {
     var { filter, area, alter_delivery_area, delivery_stations,
       main: {submitting, prepare_delivery_data_ok},
       activeOrder, showProductsDetail, operationRecord, dispatch, getOrderList, getOrderOptRecord, resetOrderOptRecord, cancelOrder, orderException } = this.props;
-    var { loading, page_no, total, list, check_order_info, active_order_id, show_products_detail } = this.props.orders;
-    var { viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, search } = this;
+    var { loading, refresh, page_no, total, list, check_order_info, active_order_id, show_products_detail } = this.props.orders;
+    var { viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, refreshDataList } = this;
 
     var content = list.map((n, i) => {
       return <OrderRow key={n.order_id} 
@@ -410,7 +411,7 @@ class ManagePannel extends Component {
                 </tr>
                 </thead>
                 <tbody>
-                { tableLoader( loading, content ) }
+                { tableLoader( loading || refresh, content ) }
                 </tbody>
               </table>
             </div>
@@ -435,14 +436,14 @@ class ManagePannel extends Component {
 
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} />
         <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
-        <CancelOrderModal ref="CancelOrderModal" {...{submitting, cancelOrder, callback: search}} />
-        <OrderExceptionModal ref="OrderExceptionModal" {...{submitting, orderException, callback: search}} />
+        <CancelOrderModal ref="CancelOrderModal" {...{submitting, cancelOrder, callback: refreshDataList}} />
+        <OrderExceptionModal ref="OrderExceptionModal" {...{submitting, orderException, callback: refreshDataList}} />
         <AlterStationModal ref="AlterStationModal" 
           {...{submitting, ...delivery_stations, order: check_order_info, active_order_id, show_products_detail, loading: !prepare_delivery_data_ok,
-            ...alter_delivery_area, actions: this.props, callback: search}} />
+            ...alter_delivery_area, actions: this.props, callback: refreshDataList}} />
         <AlterDeliveryModal ref="AlterDeliveryModal" 
           {...{submitting, ...delivery_stations, order: check_order_info, active_order_id, show_products_detail, loading: !prepare_delivery_data_ok,
-            ...alter_delivery_area, actions: this.props, callback: search}} />
+            ...alter_delivery_area, actions: this.props, callback: refreshDataList}} />
       </div>
     )
   }
@@ -453,8 +454,14 @@ class ManagePannel extends Component {
     this.search();
   }
   search(page){
+    //搜索数据，无需loading图
     page = typeof page == 'undefined' ? this.props.orders.page_no : page;
     this.props.getOrderList({page_no: page, page_size: this.state.page_size});
+  }
+  refreshDataList(){
+    //更新数据，需要loading图
+    this.props.refreshDataList();
+    this.search();
   }
   viewOrderDetail(){
     this.refs.detail_modal.show();

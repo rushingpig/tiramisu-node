@@ -10,7 +10,7 @@ function ProductRow(product){
       <td>￥{product.discount_price/100}</td>
       <td>{product.choco_board}</td>
       <td>{product.greeting_card}</td>
-      <td>{product.atlas}</td>
+      <td>{(product.atlas == 0 ? '不' : '') + '需要'}</td>
       <td>{product.custom_name}</td>
       <td>{product.custom_desc}</td>
     </tr>

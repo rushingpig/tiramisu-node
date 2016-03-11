@@ -15,16 +15,18 @@ module.exports = {
   },
   'owner_mobile': {
     notEmpty: true,
-    // TODO: flexible matching for phone numbers
-    isNumeric: true,
+    matches: {
+      options: [/^[0-9\*]+$/]
+    }
   },
   'recipient_name': {
     notEmpty: true
   },
   'recipient_mobile': {
     notEmpty: true,
-    // TODO: flexible matching for phone numbers
-    isNumeric: true,
+    matches: {
+      options: [/^[0-9\*]+$/]
+    }
   },
   'regionalism_id': {
     notEmpty: true,

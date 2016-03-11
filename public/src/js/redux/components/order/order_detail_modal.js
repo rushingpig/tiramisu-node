@@ -65,10 +65,10 @@ export default class DetailModal extends Component {
               <span className="gray">{data.delivery_name}</span>
             </div>
             <div className="form-group form-inline">
-              <label className="inline-block">{'　支付方式：'}<br/>{data.coupon ? [' ', <br/>] : null}{' '}<br/></label>
+              <label className="inline-block">{'　支付方式：'}</label>
               <span className="inline-block gray">
-                {data.pay_name}<br/>
-                {data.coupon ? ['团购密码 ' + data.coupon, <br/>] : null}
+                {data.pay_name} <br/>
+                {data.src_name + '　' + data.coupon} <br/>
                 {pay_status[data.pay_status]}
               </span>
             </div>

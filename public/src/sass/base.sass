@@ -94,6 +94,12 @@ a
   font-size: 15px !important
 .transition
   transition: all .8s ease-in
+.transition-fast
+  transition: all .2s ease
+.transition-normal
+  transition: all .4s ease
+.transition-slow
+  transition: all .6s ease
 .success-form-animate
   border: 1px solid rgba(69, 255, 69, 0.84)
   box-shadow: 0 0 7px 2px rgba(150,218,150,.55)
@@ -108,6 +114,8 @@ a
   color: $theme-font-color
 .theme-font-bg
   background-color: $theme-colour-bg
+.relative
+  position: relative !important
 
 /**************************/
 /********* 组件类 **********/
@@ -195,6 +203,13 @@ hr.dotted
       @extend .btn-data-submitting-after
       color: #ddd
 
+.tool-tip
+  position: absolute
+  background-color: $theme-colour-bg
+  @extend .round-2
+  // padding: 7px
+  font-weight: normal
+  z-index: 1000
 
 .number-picker
   @extend .tc

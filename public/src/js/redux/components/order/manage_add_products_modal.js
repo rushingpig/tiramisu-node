@@ -56,6 +56,7 @@ export default class ProductsModal extends Component {
                   <th>产品名称</th>
                   <th>规格</th>
                   <th>产品类型名称</th>
+                  <th>所属城市</th>
                   <th>所属网站</th>
                   <th>价格</th>
                   <th>是否本站产品</th>
@@ -84,6 +85,7 @@ export default class ProductsModal extends Component {
                   <th>产品名称</th>
                   <th>规格</th>
                   <th>产品类型名称</th>
+                  <th>所属城市</th>
                   <th>所属网站</th>
                   <th>价格</th>
                   <th>数量</th>
@@ -169,6 +171,7 @@ class ProductSet extends Component {
         <td>{name}</td>
         <td>{size}</td>
         <td>{category_name}</td>
+        <td>{sku0.regionalism_name}</td>
         <td>{sku0.website}</td>
         <td>￥{ toFixed(sku0.discount_price / 100, 2) }</td>
         <td>{yes_or_no(sku0.is_local_site)}</td>
@@ -189,6 +192,7 @@ class ProductSet extends Component {
         <tr key={n.sku_id + '' + i} className={active ? "" : "hidden"}>
           <td><input type="checkbox" checked={n.checked} onClick={choose.bind(this, n)} disabled={n.checked} /></td>
           <td colSpan="3"></td>
+          <td>{n.regionalism_name}</td>
           <td>{n.website}</td>
           <td>￥{ toFixed(n.discount_price / 100, 2) }</td>
           <td>{yes_or_no(n.is_local_site)}</td>
@@ -239,6 +243,7 @@ class ProductSelectedRow extends Component {
         <td>{data.name}</td>
         <td>{data.size}</td>
         <td>{data.category_name}</td>
+        <td>{data.regionalism_name}</td>
         <td>{data.website}</td>
         <td>￥{toFixed(data.discount_price / 100, 2)}</td>
         <td><NumberPicker value={data.num} onChange={this.onNumChange.bind(this)} /></td>

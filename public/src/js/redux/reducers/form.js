@@ -103,7 +103,18 @@ export default formReducer.plugin({
     }else{
       return state;
     }
-  }
+  },
+  // order_manage_filter: (state, action) => {
+  //   if(action && action.form == 'order_manage_filter'){
+  //     // switch( action.type ){
+  //     //   case actionTypes.CHANGE:
+  //     //     if(action.field == 'src_id' || action.key == 'src_id'){
+  //     //       state.pay_modes_id = {...state.pay_modes_id, ...getPayModesId(state, action)};
+  //     //       state.pay_status = {...state.pay_status, ...getPayStatus(state, action)};
+  //     //     }
+  //     // }
+  //   }
+  // }
 })
 
 function getPayModesId(state, action){

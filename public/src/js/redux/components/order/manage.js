@@ -9,6 +9,7 @@ import AreaActions from 'actions/area';
 import { AreaActionTypes2 } from 'actions/action_types';
 import * as OrderActions from 'actions/orders';
 import * as OrderManageActions from 'actions/order_manage';
+import * as FormActions from 'actions/form';
 import { getOrderSrcs, getDeliveryStations, autoGetDeliveryStations } from 'actions/order_manage_form';
 
 import DatePicker from 'common/datepicker';
@@ -21,6 +22,7 @@ import SearchInput from 'common/search_input';
 import { tableLoader, get_table_empty } from 'common/loading';
 import StdModal from 'common/std_modal';
 import RecipientInfo from 'common/recipient_info';
+import ToolTip from 'common/tooltip';
 
 import LazyLoad from 'utils/lazy_load';
 import { colour, Noty, core } from 'utils/index';
@@ -104,7 +106,7 @@ class FilterHeader extends Component {
           <DatePicker editable redux-form={end_time} className="short-input space-right" />
           <Select {...is_submit} options={this.state.submit_opts} default-text="是否提交" className="space-right"/>
           <Select {...is_deal} options={this.state.deal_opts} default-text="是否处理" className="space-right"/>
-          <OrderSrcsSelects {...{all_order_srcs, src_id}} />
+          <OrderSrcsSelects {...{all_order_srcs, src_id}} actions={this.props.actions} reduxFormName="order_manage_filter" />
           {
             V( 'OrderManageAddressFilter' )
               ? [
@@ -204,12 +206,46 @@ var OrderRow = React.createClass({
         </td>
         <td><strong className="strong">{props.pay_status}</strong></td>
         <td className="nowrap text-left">
-          原价：￥{props.total_original_price/100} <br />
-          实际售价：￥{props.total_discount_price/100} <br />
-          应收金额：￥{props.total_amount/100}
+          <div
+            // className="relative"
+            // onMouseEnter={() => this.refs.tooltip_price.show()}
+            // onMouseLeave={() => this.refs.tooltip_price.hide()}
+          >
+            原价：￥{props.total_original_price/100} <br />
+            实际售价：￥{props.total_discount_price/100} <br />
+            应收金额：￥{props.total_amount/100}
+            {/*<ToolTip key="tooltip" ref="tooltip_price" >
+              <div className="">
+                原价：￥{props.total_original_price/100} <br />
+                实际售价：￥{props.total_discount_price/100} <br />
+                优惠金额：￥{(props.total_original_price - props.total_discount_price < 0 ? 0 : props.total_original_price - props.total_discount_price)/100} <br />
+                应收金额：￥{props.total_amount/100}
+              </div>
+            </ToolTip>*/}
+          </div>
         </td>
         {/*订单状态*/}
-        <td><div className="bordered bold order-status" style={{color: _order_status.color || 'inherit', background: _order_status.bg }}>{_order_status.value}</div></td>
+        <td>
+          <div 
+            className="bordered bold order-status"
+            style={{color: _order_status.color || 'inherit', background: _order_status.bg }}
+            onMouseEnter={() => props.status == 'DELIVERY' && this.refs.tooltip_delivery.show()}
+            onMouseLeave={() => props.status == 'DELIVERY' && this.refs.tooltip_delivery.hide()}
+            >
+            {_order_status.value}
+            {
+              props.status == 'DELIVERY'
+                ? (
+                    <ToolTip key="tooltip" ref="tooltip_delivery" >
+                      <div className="nowrap">
+                        配送员：{props.deliveryman_name}　{props.deliveryman_mobile}
+                      </div>
+                    </ToolTip>
+                  )
+                : null
+            }
+          </div>
+        </td>
         <td>{props.delivery_name}</td>
         <td><div className="time">{props.delivery_time}</div></td>
         <td>{props.is_submit == '1' ? '是' : '否'}</td>
@@ -340,7 +376,7 @@ class ManagePannel extends Component {
 
         <TopHeader {...{getOrderList, pageSize: this.state.page_size}} />
         <FilterHeader {...{...filter, ...area}}
-           actions={{...bindActionCreators({...AreaActions(), getOrderSrcs}, dispatch), getOrderList}}
+           actions={{...bindActionCreators({...AreaActions(), getOrderSrcs, ...FormActions}, dispatch), getOrderList}}
            page_size={this.state.page_size} />
 
         <div className="panel">

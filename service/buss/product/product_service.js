@@ -85,7 +85,8 @@ ProductService.prototype.listProducts = (req, res, next) => {
                 is_delivery: curr.is_delivery,
                 is_local_site: curr.is_local_site,
                 sku_id: curr.id,
-                website: curr.website
+                website: curr.website,
+                regionalism_name : curr.regionalism_name
             };
             temp_obj[key].skus.push(sku_obj);
         });

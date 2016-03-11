@@ -859,7 +859,7 @@ OrderService.prototype.validateCoupon = (req,res,next)=>{
  * @param rex
  * @param next
  */
-OrderService.prototype.exceptionOrder = (req,rex,next)=>{
+OrderService.prototype.exceptionOrder = (req,res,next)=>{
   req.checkParams('orderId').isOrderId();
   req.checkBody('cancel_reason').notEmpty();
   req.checkBody('updated_time','请带上订单的最后更新时间').isDate();

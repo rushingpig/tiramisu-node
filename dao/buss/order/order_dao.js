@@ -379,7 +379,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
             break;
         case constant.OSR.RECEIVE_LIST:
             sql += ds_sql;
-            sql += " order by bo.delivery_time asc,bo.`status` asc";
+            sql += " order by bo.`status` asc,bo.delivery_time asc";
             break;
         default:
         // do nothing && order by with the db self

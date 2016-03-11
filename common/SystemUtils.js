@@ -126,7 +126,7 @@ module.exports = {
       || order_status === Constant.OS.EXCEPTION);
   },
   isOrderCanException : (order_status) => {
-    return !this.isOrderCanCancel(order_status);
+    return module.exports.isOrderCanCancel(order_status);
   },
   //  是否在配送范围内
   isInDeliveryScope: (lng, lat, coords) => {

@@ -50,6 +50,7 @@ ProductService.prototype.getCategories = (req, res, next)=> {
 ProductService.prototype.listProducts = (req, res, next) => {
     let product_name = req.query.name,
         category_id = req.query.category_id,
+        regionalism_id = req.query.regionalism_id,
         page_no = req.query.page_no,
         page_size = req.query.page_size;
     let res_data = {
@@ -57,7 +58,7 @@ ProductService.prototype.listProducts = (req, res, next) => {
         page_no : page_no
     }, temp_obj = {};
     // 要通过子查询进行分页
-    let promise = productDao.findProductsCount(product_name, category_id).then((data)=> {
+    let promise = productDao.findProductsCount(product_name, category_id ,regionalism_id).then((data)=> {
         if (toolUtils.isEmptyArray(data.results)) {
             throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);
         }

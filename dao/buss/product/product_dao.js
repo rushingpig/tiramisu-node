@@ -28,7 +28,7 @@ ProductDao.prototype.findAllCatetories = function(){
 /**
  * query for the product list
  */
-ProductDao.prototype.findProductsCount = function(product_name,category_id){
+ProductDao.prototype.findProductsCount = function(product_name,category_id,regionalism_id){
     let sql = "",params = [];
     sql += "select bp.id,bps.size,bp.name,bp.original_price,bpc.name as category_name ";
     sql += " from ?? bp";
@@ -44,6 +44,10 @@ ProductDao.prototype.findProductsCount = function(product_name,category_id){
     if(category_id){
         sql += " and bp.category_id = ? ";
         params.push(category_id);
+    }
+    if(regionalism_id){
+        sql += " and bps.regionalism_id = ?";
+        parmas.push(regionalism_id);
     }
     sql += ' group by bp.id,bps.size';
     return baseDao.select(dbHelper.countSql(sql),params).then((results)=>{

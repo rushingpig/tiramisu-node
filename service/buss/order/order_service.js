@@ -26,7 +26,8 @@ var res_obj = require('../../../util/res_obj'),
   OrderDao = dao.order,
   orderDao = new OrderDao(),
   util = require('util'),
-  config = require('../../../config');
+  config = require('../../../config'),
+  nodeExcel = require('excel-export');;
 
 function OrderService() {
 }
@@ -898,6 +899,18 @@ OrderService.prototype.exceptionOrder = (req,res,next)=>{
  * @param next
  */
 OrderService.prototype.exportExcel = (req,res,next) => {
-
+    var conf ={};
+    conf.name = "订单数据";
+    conf.cols = [{
+      caption:'string',
+      type:'string'
+    }];
+    conf.rows = [
+      ['pi', new Date(Date.UTC(2013, 4, 1)), true, 3.14]
+    ];
+    var result = nodeExcel.execute(conf);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats');
+    res.setHeader("Content-Disposition", "attachment; filename=" + ".xlsx");
+    res.end(result, 'binary');
 };
 module.exports = new OrderService();

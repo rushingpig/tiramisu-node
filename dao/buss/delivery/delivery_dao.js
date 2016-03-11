@@ -12,7 +12,8 @@ var baseDao = require('../../base_dao'),
     toolUtils = require('../../../common/ToolUtils'),
     dbHelper = require('../../../common/DBHelper'),
     constant = require('../../../common/Constant'),
-    systemUtils = require('../../../common/SystemUtils');
+    systemUtils = require('../../../common/SystemUtils'),
+    util = require('util');
 function DeliveryDao(){
     this.baseColumns = ['id','name'];
     this.base_insert_sql = "insert into ?? set ?";
@@ -168,8 +169,16 @@ DeliveryDao.prototype.findDeliverymansByStation = function(city_id){
  * @returns {Promise}
  */
 DeliveryDao.prototype.findStationById = function(station_id){
-    let sql = "select * from ?? where del_flag = ? and id = ?";
-    let params = [tables.buss_delivery_station, del_flag.SHOW, station_id];
+    let sql = util.format("select b.id 'station_id',b.name 'name',b.address 'address',b.coords 'coords'," +
+        "b.remarks 'remarks',b.capacity 'capacity',b.phone 'phone'," +
+        "a.id 'regionalism_id',a.name 'regionalism_name'," +
+        "c.id 'city_id',c.name 'city_name'," +
+        "d.id 'province_id',d.name 'province_name' " +
+        "from %s a join %s c on a.parent_id = c.id " +
+        "join %s d on c.parent_id = d.id " +
+        "join %s b on a.id = b.regionalism_id " +
+        "where a.level_type = ? and b.del_flag = ? and b.id = ?", tables.dict_regionalism, tables.dict_regionalism, tables.dict_regionalism, tables.buss_delivery_station);
+    let params = [3, del_flag.SHOW, station_id];
     return baseDao.select(sql,params);
 };
 module.exports = DeliveryDao;

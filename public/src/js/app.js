@@ -32971,10 +32971,11 @@
 	//修改配送
 
 	function alterDelivery(order_id, data) {
-	  // return PUT(Url.alter_delivery.toString(order_id), data, ALTER_DELIVERY);
-	  return (0, _utilsRequest.TEST)(null, [{ type: ALTER_DELIVERY, key: 0 }, //立即派发
-	  { type: ALTER_DELIVERY, key: 1 } //2000毫秒后派发
-	  ], 2000);
+	  return (0, _utilsRequest.PUT)(_configUrl2['default'].alter_delivery.toString(order_id), data, ALTER_DELIVERY);
+	  // return TEST(null, [
+	  //   {type: ALTER_DELIVERY, key: 0},  //立即派发
+	  //   {type: ALTER_DELIVERY, key: 1}   //2000毫秒后派发
+	  // ], 2000);
 	}
 
 	var ALTER_STATION = 'ALTER_STATION';
@@ -33313,7 +33314,11 @@
 	      });
 	    });
 	  };
-	}
+	  // return TEST(null, [
+	  //   {type: SUBMIT_ING},  //立即派发
+	  //   {type: SUBMIT_COMPLETE}   //2000毫秒后派发
+	  // ], 2000);
+		}
 
 /***/ },
 /* 293 */
@@ -38761,6 +38766,9 @@
 	  }, {
 	    key: 'handleSubmitOrder',
 	    value: function handleSubmitOrder(form_data) {
+	      if (!form_data.delivery_id) {
+	        (0, _utilsIndex.Noty)('warning', '请选择配送中心');return;
+	      }
 	      this.props.actions.submitOrder(form_data).done(function () {
 	        (0, _utilsIndex.Noty)('success', '已成功提交！');
 	        _history_instance2['default'].push('/om/index');

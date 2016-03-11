@@ -241,4 +241,8 @@ export function submitOrder(form_data){
         })
       })
   }
+  // return TEST(null, [
+  //   {type: SUBMIT_ING},  //立即派发
+  //   {type: SUBMIT_COMPLETE}   //2000毫秒后派发
+  // ], 2000);
 }

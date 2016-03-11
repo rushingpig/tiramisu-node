@@ -370,6 +370,9 @@ class ManageAddForm extends Component {
       });
   }
   handleSubmitOrder(form_data){
+    if(!form_data.delivery_id){
+      Noty('warning', '请选择配送中心'); return;
+    }
     this.props.actions.submitOrder(form_data).done(function(){
       Noty('success', '已成功提交！');
       history.push('/om/index');

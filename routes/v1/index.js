@@ -43,7 +43,7 @@ a.get('/city/:cityId/districts',addressService.getDistricts);   // 获取指定�
 a.get('/stations/getStationsByDistrictId',addressService.getStationsByDistrictId);   // 获取区域(包括省市区)下的所有配送站信息
 a.get('/stations/getStationsByName',addressService.getStationsByName);   // 根据配送站名称查询配送站信息
 a.get('/stations',deliveryService.getDeliveryStationList);  // 获取所有配送站信息
-a.get('/station/:stationId',deliveryService.getStationInfo);   // 获取指定配送站信息
+a.get('/station',deliveryService.getStationInfo);   // 获取指定配送站信息
 a.get('/order/srcs',orderService.getOrderSrcList);  // 获取所有订单来源信息
 a.get('/pay/modes',orderService.getPayModeList);    // 获取所有支付方式信息
 a.get('/district/:districtId/shops',orderService.getShopList);  // 获取指定行政区域下的门店信息

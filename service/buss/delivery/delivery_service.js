@@ -754,21 +754,17 @@ DeliveryService.prototype.autoAllocateStation = (req,res,next)=>{
  * @param next
  */
 DeliveryService.prototype.getStationInfo = (req,res,next) => {
-    req.checkParams('stationId','请输入有效的配送站ID...').isInt();
-    req.checkQuery('station_name','请填写有效的配送站名称...').notEmpty();
+    req.checkQuery('id','请输入有效的配送站ID...').isInt();
     let errors = req.validationErrors();
     if (errors) {
         res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
-    let promise = deliveryDao.findStationById(req.params.stationId).then((result)=>{
+    let promise = deliveryDao.findStationById(req.query.id).then((result)=>{
         if(toolUtils.isEmptyArray(result)){
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
-        let res_data = {
-            coords : result[0].coords
-        };
-        res.api(res_data);
+        res.api(result);
     });
     systemUtils.wrapService(res,next,promise);
 };

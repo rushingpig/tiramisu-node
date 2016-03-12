@@ -2,6 +2,8 @@
 module.exports = {
   addOrder: require('./buss/order/add_order'),
   addExternalOrder: require('./buss/order/add_external_order'),
+  addOrderError: require('./buss/order/add_order_error'),
+  editOrderError: require('./buss/order/edit_order_error'),
   addProduct: require('./buss/product/add_product'),
   getOrder: require('./buss/order/get_order'),
   listOrder: require('./buss/order/list_order'),

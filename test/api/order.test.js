@@ -450,5 +450,91 @@ module.exports = function () {
         .send(req_body)
         .expect(200, res_body, err(done));
     });
+
+    it('POST /v1/i/order/error correct', function (done) {
+      const req_body = {
+        'merchant_id': 'abcde',
+        'src_id': 29,
+        'type': 'GENERAL',
+        'detail': 'a test wrong order message'
+      };
+      agent.post('/v1/i/order/error')
+        .type('application/json')
+        .send(req_body)
+        .end((err, res) => {
+          assert.strictEqual(res.body.code, '0000');
+          assert.strictEqual(res.statusCode, 200);
+          done();
+        });
+    });
+
+    it('POST /v1/i/order/error duplicate', function (done) {
+      const req_body = {
+        'merchant_id': 'abcde1',
+        'src_id': 29,
+        'type': 'GENERAL',
+        'detail': 'a test wrong order message'
+      };
+      agent.post('/v1/i/order/error')
+        .type('application/json')
+        .send(req_body)
+        .end((err, res) => {
+          assert.strictEqual(res.body.code, '0000');
+          assert.strictEqual(res.statusCode, 200);
+          agent.post('/v1/i/order/error')
+            .type('application/json')
+            .send(req_body)
+            .end((err, res) => {
+              assert.strictEqual(res.body.code, '2007');
+              assert.strictEqual(res.statusCode, 200);
+              done();
+            });
+        });
+    });
+
+    it('PUT /v1/i/order/error correct', function (done) {
+      const req_body = {
+        'merchant_id': 'abcde2',
+        'src_id': 29,
+        'type': 'GENERAL',
+        'detail': 'a test wrong order message'
+      };
+      agent.post('/v1/i/order/error')
+        .type('application/json')
+        .send(req_body)
+        .end((err, res) => {
+          assert.strictEqual(res.body.code, '0000');
+          assert.strictEqual(res.statusCode, 200);
+          const req_body = {
+            'merchant_id': 'abcde2',
+            'src_id': 29,
+            'status': 'CLOSE'
+          };
+          agent.put('/v1/i/order/error')
+            .type('application/json')
+            .send(req_body)
+            .end((err, res) => {
+              assert.strictEqual(res.body.code, '0000');
+              assert.strictEqual(res.statusCode, 200);
+              done();
+            });
+        });
+    });
+
+    it('PUT /v1/i/order/error update 0 rows', function (done) {
+      const req_body = {
+        'merchant_id': 'abcde3',
+        'src_id': 29,
+        'status': 'CLOSE'
+      };
+      agent.put('/v1/i/order/error')
+        .type('application/json')
+        .send(req_body)
+        .end((err, res) => {
+          assert.strictEqual(res.body.code, '9996');
+          assert.strictEqual(res.statusCode, 200);
+          done();
+        });
+    });
   });
 };

@@ -31,6 +31,8 @@ router.use('/i', routerI);
 
 // add order from external source
 routerI.post('/order', orderService.addExternalOrder);
+routerI.post('/order/error', orderService.addOrderError);
+routerI.put('/order/error', orderService.editOrderError);
 //=====================router for business begin====================
 
 //*********************

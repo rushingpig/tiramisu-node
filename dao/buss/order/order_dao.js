@@ -42,6 +42,24 @@ OrderDao.prototype.insertOrder = function (orderObj) {
             throw err;
         });
 };
+
+OrderDao.prototype.addOrderError = function (orderErrorObj) {
+  return baseDao
+    .insert(this.base_insert_sql, [tables.buss_order_error, orderErrorObj])
+    .catch(err => {
+        if (err.code === 'ER_DUP_ENTRY') {
+            throw new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, orderErrorObj.merchant_id);
+        }
+        throw err;
+    });
+};
+
+OrderDao.prototype.editOrderError = function (orderErrorObj, merchant_id, src_id) {
+  const updateSQL = this.base_update_sql + ' WHERE merchant_id = ? AND src_id = ?';
+  return baseDao
+    .update(updateSQL, [tables.buss_order_error, orderErrorObj, merchant_id, src_id]);
+};
+
 /**
  * new recipient record
  */

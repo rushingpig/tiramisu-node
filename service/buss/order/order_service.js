@@ -193,6 +193,40 @@ OrderService.prototype.addExternalOrder = (req, res, next) => {
     });
   systemUtils.wrapService(res, next, promise);
 };
+
+OrderService.prototype.addOrderError = (req, res, next) => {
+  req.checkBody(schema.addOrderError);
+  const errors = req.validationErrors();
+  if (errors) {
+    return res.api(res_obj.INVALID_PARAMS, errors);
+  }
+  const params = req.body;
+  const promise = orderDao
+    .addOrderError(params)
+    .then(result => {
+      res.api({});
+    });
+  systemUtils.wrapService(res, next, promise);
+};
+
+OrderService.prototype.editOrderError = (req, res, next) => {
+  req.checkBody(schema.editOrderError);
+  const errors = req.validationErrors();
+  if (errors) {
+    return res.api(res_obj.INVALID_PARAMS, errors);
+  }
+  const params = req.body;
+  const promise = orderDao
+    .editOrderError({status: params.status}, params.merchant_id, params.src_id)
+    .then(affectedRows => {
+      if (affectedRows !== 1) {
+        res.api(res_obj.INVALID_UPDATE_ID, {affectedRows: affectedRows}, null);
+      } else {
+        res.api({});
+      }
+    });
+  systemUtils.wrapService(res, next, promise);
+};
 /**
  * get the order detail info
  * @param req

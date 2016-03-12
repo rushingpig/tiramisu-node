@@ -84,10 +84,10 @@ export default {
     'AUDITFAILED': '审核失败',
   },
   PRINT_STATUS: {
-    'PRINTABLE': '是',
-    'UNPRINTABLE': '否',
-    'AUDITING': '否',
-    'REPRINTABLE': '是',
+    'PRINTABLE': '否',
+    'UNPRINTABLE': '是',
+    'AUDITING': '是',
+    'REPRINTABLE': '否',
   }
 
 }

@@ -603,17 +603,25 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
     } else {
       query_data.keywords = req.query.keywords;
     }
+    query_data.order_sorted_rules = entrance;
     if (entrance === Constant.OSR.LIST) {
-      query_data.order_sorted_rules = entrance;
+      // do nothing to add sort rules
     } else if (entrance === Constant.OSR.DELIVERY_EXCHANGE) {
-      query_data.order_sorted_rules = entrance;
       query_data.status = Constant.OS.STATION;
     } else if (entrance === Constant.OSR.DELIVER_LIST) {
-      query_data.order_sorted_rules = entrance;
-      query_data.status = query_data.status || [Constant.OS.CONVERT, Constant.OS.INLINE];
+      let sts = [Constant.OS.CONVERT, Constant.OS.INLINE];
+      if(query_data.status && sts.indexOf(query_data.status) === -1){
+        return res.api(res_obj.NO_MORE_PAGE_RESULTS,'can not find the order status not beyond this scope...');
+      }
+      query_data.status = query_data.status || sts;
     } else if (entrance === Constant.OSR.RECEIVE_LIST) {
-      query_data.order_sorted_rules = entrance;
-      query_data.status = query_data.status || [Constant.OS.DELIVERY, Constant.OS.COMPLETED, Constant.OS.EXCEPTION];
+      let sts = [Constant.OS.DELIVERY, Constant.OS.COMPLETED, Constant.OS.EXCEPTION];
+      if(query_data.status && sts.indexOf(query_data.status) === -1){
+        return res.api(res_obj.NO_MORE_PAGE_RESULTS,'can not find the order status not beyond this scope...');
+      }
+      query_data.status = query_data.status || sts;
+    }else{
+      delete query_data.order_sorted_rules;
     }
 
     let promise = orderDao.findOrderList(systemUtils.assemblePaginationObj(req, query_data)).then((resObj) => {
@@ -932,18 +940,18 @@ OrderService.prototype.exceptionOrder = (req,res,next)=>{
  * @param next
  */
 OrderService.prototype.exportExcel = (req,res,next) => {
-    var conf ={};
-    conf.name = "订单数据";
-    conf.cols = [{
-      caption:'string',
-      type:'string'
-    }];
-    conf.rows = [
-      ['pi', new Date(Date.UTC(2013, 4, 1)), true, 3.14]
-    ];
-    var result = nodeExcel.execute(conf);
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats');
-    res.setHeader("Content-Disposition", "attachment; filename=" + ".xlsx");
-    res.end(result, 'binary');
+  var xlsx = require('node-xlsx');
+
+  var fileName = "订单列表.xlsx";
+
+
+  var buffer = xlsx.build([{name: "订单列表", data: data}]); // returns a buffer
+  res.set({
+    'Content-Type': 'application/vnd.ms-excel',
+    'Content-Disposition':  "attachment;filename="+encodeURIComponent(fileName) ,
+    'Pragma':'no-cache',
+    'Expires': 0
+  });
+  res.send(buffer);
 };
 module.exports = new OrderService();

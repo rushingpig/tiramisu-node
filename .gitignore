@@ -3,6 +3,6 @@
 node_modules/
 npm-debug.log
 log/*
-mytest
+mytest/
 config/local.js
 typings/

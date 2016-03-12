@@ -87,9 +87,14 @@ class FilterHeader extends Component {
             <i className="fa fa-search"></i>{' 搜索'}
           </button>
           {'　'}
-          <button disabled={change_submitting} data-submitting={change_submitting} onClick={changeHandler} className="btn btn-theme btn-xs">
-            转换
-          </button>
+          {
+            V( 'DeliveryManageChangeChange' )
+              ? <button disabled={change_submitting} data-submitting={change_submitting} onClick={changeHandler} className="btn btn-theme btn-xs">
+                  转换
+                </button>
+              : null
+          }
+          
         </div>
       </div>
     )

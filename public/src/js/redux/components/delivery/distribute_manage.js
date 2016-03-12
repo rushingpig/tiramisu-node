@@ -187,8 +187,11 @@ class OrderRow extends Component {
           {
             props.status == 'DELIVERY'
               ? [
-                  <a onClick={this.showSignedModal.bind(this)} key="signin" href="javascript:;">[签收]</a>,
-                  <br key="br" />,
+                  V('DeliveryManageDistributeSigninOrder') && [
+                    <a onClick={this.showSignedModal.bind(this)} key="signin" href="javascript:;">[签收]</a>,
+                    <br key="br" />,
+                  ],
+                  V('DeliveryManageDistributeUnSigninOrder') &&
                   <a onClick={this.showUnSignedModal.bind(this)} key="unsignin" href="javascript:;">[未签收]</a>
                 ]
               : null

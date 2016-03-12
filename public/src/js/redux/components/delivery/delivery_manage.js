@@ -92,9 +92,18 @@ class FilterHeader extends Component {
             </button>
           </div>
           <div className="form-group form-inline">
-            <button onClick={this.printHandler.bind(this)} className="btn btn-theme space-right btn-xs">批量打印</button>
-            <button onClick={this.onScanHandler.bind(this)} className="btn btn-theme btn-xs space-right">扫描</button>
-            <button onClick={this.batchEdit.bind(this)} className="btn btn-theme btn-xs">批量编辑配送员</button>
+            {
+              V('DeliveryManageDeliveryBatchPrint') && 
+              <button onClick={this.printHandler.bind(this)} className="btn btn-theme space-right btn-xs">批量打印</button>
+            }
+            {
+              V('DeliveryManageDeliveryScan') &&
+              <button onClick={this.onScanHandler.bind(this)} className="btn btn-theme btn-xs space-right">扫描</button>
+            }
+            {
+              V('DeliveryManageDeliveryBatchAllocateDeliveryman') &&
+              <button onClick={this.batchEdit.bind(this)} className="btn btn-theme btn-xs">批量编辑配送员</button>
+            }
           </div>
         </div>
       </div>
@@ -174,23 +183,25 @@ class OrderRow extends Component {
         </td>
         <td>
           {
-            props.print_status != 'PRINTABLE'
+            V('DeliveryManageDeliveryAllocateDeliveryman') && props.print_status != 'PRINTABLE'
               ? [<a onClick={this.showEditModal.bind(this)} key="edit" href="javascript:;" className="nowrap">[编辑配送员]</a>, <br key="br" />]
               : null
           }
           {
-            props.print_status == 'AUDITING'
-              ? <span key="auditing">[正在审核]</span>
-              : <a onClick={this.printHandler.bind(this)} key="print" href="javascript:;">
-                  {
-                    props.print_status == 'PRINTABLE'
-                      ? <span key="printable">[打印]</span>
-                      : ( props.print_status == 'UNPRINTABLE'
-                            ? <span key="unprintable">[申请打印]</span>
-                            : <span key="reprintable">[重新打印]</span>
-                        )
-                  }
-                </a>
+            V('DeliveryManageDeliveryPrint') && (
+              props.print_status == 'AUDITING'
+                ? <span key="auditing">[正在审核]</span>
+                : <a onClick={this.printHandler.bind(this)} key="print" href="javascript:;" className="nowrap">
+                    {
+                      props.print_status == 'PRINTABLE'
+                        ? <span key="printable">[打印]</span>
+                        : ( props.print_status == 'UNPRINTABLE'
+                              ? <span key="unprintable">[申请打印]</span>
+                              : <span key="reprintable">[重新打印]</span>
+                          )
+                    }
+                  </a>
+            )
           }
         </td>
         <td>{PRINT_STATUS[props.print_status]}</td>

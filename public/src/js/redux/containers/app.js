@@ -20,9 +20,9 @@ export default class App extends Component {
         <Route path="/" component={Entry}>
 
           <Route path="om">
-            <Route path="index" onEnter={onEnter('OrderManage')}>
+            <Route path="index" onEnter={onEnter('OrderManageAccess')}>
               <IndexRoute component={OrderPannel} />
-              <Route path="add" component={OrderDetailPannel} />
+              <Route path="add" onEnter={onEnter('OrderManageAddOrder')} component={OrderDetailPannel} />
               <Route path=":id" component={OrderDetailPannel} />
             </Route>
             <Route path="refund" component={ComingSoon} />
@@ -31,10 +31,10 @@ export default class App extends Component {
           </Route>
 
           <Route path="dm">
-            <Route path="change" onEnter={onEnter('DeliveryChange')} component={DeliveryChangePannel} />
-            <Route path="delivery" onEnter={onEnter('DeliveryManage')} component={DeliveryManagePannel} />
-            <Route path="distribute" onEnter={onEnter('DistributeManage')} component={DistributeManagePannel} />
-            <Route path="review" onEnter={onEnter('PrintReview')} component={DeliverPrintReviewPannel} />
+            <Route path="change" onEnter={onEnter('DeliveryChangeAccess')} component={DeliveryChangePannel} />
+            <Route path="delivery" onEnter={onEnter('DeliveryManageAccess')} component={DeliveryManagePannel} />
+            <Route path="distribute" onEnter={onEnter('DistributeManageAccess')} component={DistributeManagePannel} />
+            <Route path="review" onEnter={onEnter('PrintReviewAccess')} component={DeliverPrintReviewPannel} />
           </Route>
 
           <Route path="sm">

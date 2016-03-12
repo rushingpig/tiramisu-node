@@ -6,3 +6,5 @@ log/*
 mytest/
 config/local.js
 typings/
+public/src/js/app.js.map
+public/src/js/app.js

@@ -19097,9 +19097,9 @@
 	            { path: 'om' },
 	            _react2['default'].createElement(
 	              _reactRouter.Route,
-	              { path: 'index', onEnter: (0, _utilsAcl.onEnter)('OrderManage') },
+	              { path: 'index', onEnter: (0, _utilsAcl.onEnter)('OrderManageAccess') },
 	              _react2['default'].createElement(_reactRouter.IndexRoute, { component: _componentsOrderManage2['default'] }),
-	              _react2['default'].createElement(_reactRouter.Route, { path: 'add', component: _componentsOrderManage_order_detail_pannel2['default'] }),
+	              _react2['default'].createElement(_reactRouter.Route, { path: 'add', onEnter: (0, _utilsAcl.onEnter)('OrderManageAddOrder'), component: _componentsOrderManage_order_detail_pannel2['default'] }),
 	              _react2['default'].createElement(_reactRouter.Route, { path: ':id', component: _componentsOrderManage_order_detail_pannel2['default'] })
 	            ),
 	            _react2['default'].createElement(_reactRouter.Route, { path: 'refund', component: _componentsBody.ComingSoon }),
@@ -19109,10 +19109,10 @@
 	          _react2['default'].createElement(
 	            _reactRouter.Route,
 	            { path: 'dm' },
-	            _react2['default'].createElement(_reactRouter.Route, { path: 'change', onEnter: (0, _utilsAcl.onEnter)('DeliveryChange'), component: _componentsDeliveryChange2['default'] }),
-	            _react2['default'].createElement(_reactRouter.Route, { path: 'delivery', onEnter: (0, _utilsAcl.onEnter)('DeliveryManage'), component: _componentsDeliveryDelivery_manage2['default'] }),
-	            _react2['default'].createElement(_reactRouter.Route, { path: 'distribute', onEnter: (0, _utilsAcl.onEnter)('DistributeManage'), component: _componentsDeliveryDistribute_manage2['default'] }),
-	            _react2['default'].createElement(_reactRouter.Route, { path: 'review', onEnter: (0, _utilsAcl.onEnter)('PrintReview'), component: _componentsDeliveryPrint_review2['default'] })
+	            _react2['default'].createElement(_reactRouter.Route, { path: 'change', onEnter: (0, _utilsAcl.onEnter)('DeliveryChangeAccess'), component: _componentsDeliveryChange2['default'] }),
+	            _react2['default'].createElement(_reactRouter.Route, { path: 'delivery', onEnter: (0, _utilsAcl.onEnter)('DeliveryManageAccess'), component: _componentsDeliveryDelivery_manage2['default'] }),
+	            _react2['default'].createElement(_reactRouter.Route, { path: 'distribute', onEnter: (0, _utilsAcl.onEnter)('DistributeManageAccess'), component: _componentsDeliveryDistribute_manage2['default'] }),
+	            _react2['default'].createElement(_reactRouter.Route, { path: 'review', onEnter: (0, _utilsAcl.onEnter)('PrintReviewAccess'), component: _componentsDeliveryPrint_review2['default'] })
 	          ),
 	          _react2['default'].createElement(
 	            _reactRouter.Route,
@@ -19650,7 +19650,7 @@
 	    "short_name": "订单",
 	    "icon": "clipboard",
 	    "link": [{
-	        "key": "OrderManage", //key值，主要用来进行访问权限控制
+	        "key": "OrderManageAccess", //key值，主要用来进行访问权限控制
 	        "name": "订单管理",
 	        "icon": "",
 	        "link": "/om/index"
@@ -19676,22 +19676,22 @@
 	    "short_name": "送货",
 	    "icon": "truck",
 	    "link": [{
-	        "key": "DeliveryChange",
+	        "key": "DeliveryChangeAccess",
 	        "name": "订单转送货单",
 	        "icon": "",
 	        "link": "/dm/change"
 	    }, {
-	        "key": "DeliveryManage",
+	        "key": "DeliveryManageAccess",
 	        "name": "送货单管理",
 	        "icon": "",
 	        "link": "/dm/delivery"
 	    }, {
-	        "key": "DistributeManage",
+	        "key": "DistributeManageAccess",
 	        "name": "配送单管理",
 	        "icon": "",
 	        "link": "/dm/distribute"
 	    }, {
-	        "key": "PrintReview",
+	        "key": "PrintReviewAccess",
 	        "name": "打印审核",
 	        "icon": "",
 	        "link": "/dm/review"
@@ -28518,11 +28518,11 @@
 	      return _react2['default'].createElement(
 	        'div',
 	        { className: 'clearfix top-header' },
-	        _react2['default'].createElement(
+	        (0, _utilsAcl2['default'])('OrderManageAddOrder') ? _react2['default'].createElement(
 	          'button',
 	          { onClick: this.addOrder.bind(this), className: 'btn btn-sm btn-theme pull-left' },
 	          '添加订单'
-	        ),
+	        ) : null,
 	        _react2['default'].createElement(_commonLinkers2['default'], {
 	          data: ['总订单页面', '处理页面'],
 	          active: '总订单页面',
@@ -28744,7 +28744,7 @@
 	        'td',
 	        { className: 'nowrap' },
 	        src_name[0],
-	        src_name[1] ? [_react2['default'].createElement('br', null), _react2['default'].createElement(
+	        src_name[1] ? [_react2['default'].createElement('br', { key: 'br' }), _react2['default'].createElement(
 	          'span',
 	          { key: 'src_2', className: 'bordered bg-warning' },
 	          src_name[1]
@@ -41275,11 +41275,11 @@
 	            ' 搜索'
 	          ),
 	          '　',
-	          _react2['default'].createElement(
+	          (0, _utilsAcl2['default'])('DeliveryManageChangeChange') ? _react2['default'].createElement(
 	            'button',
 	            { disabled: change_submitting, 'data-submitting': change_submitting, onClick: changeHandler, className: 'btn btn-theme btn-xs' },
 	            '转换'
-	          )
+	          ) : null
 	        )
 	      );
 	    }
@@ -42500,17 +42500,17 @@
 	          _react2['default'].createElement(
 	            'div',
 	            { className: 'form-group form-inline' },
-	            _react2['default'].createElement(
+	            (0, _utilsAcl2['default'])('DeliveryManageDeliveryBatchPrint') && _react2['default'].createElement(
 	              'button',
 	              { onClick: this.printHandler.bind(this), className: 'btn btn-theme space-right btn-xs' },
 	              '批量打印'
 	            ),
-	            _react2['default'].createElement(
+	            (0, _utilsAcl2['default'])('DeliveryManageDeliveryScan') && _react2['default'].createElement(
 	              'button',
 	              { onClick: this.onScanHandler.bind(this), className: 'btn btn-theme btn-xs space-right' },
 	              '扫描'
 	            ),
-	            _react2['default'].createElement(
+	            (0, _utilsAcl2['default'])('DeliveryManageDeliveryBatchAllocateDeliveryman') && _react2['default'].createElement(
 	              'button',
 	              { onClick: this.batchEdit.bind(this), className: 'btn btn-theme btn-xs' },
 	              '批量编辑配送员'
@@ -42618,18 +42618,18 @@
 	        _react2['default'].createElement(
 	          'td',
 	          null,
-	          props.print_status != 'PRINTABLE' ? [_react2['default'].createElement(
+	          (0, _utilsAcl2['default'])('DeliveryManageDeliveryAllocateDeliveryman') && props.print_status != 'PRINTABLE' ? [_react2['default'].createElement(
 	            'a',
 	            { onClick: this.showEditModal.bind(this), key: 'edit', href: 'javascript:;', className: 'nowrap' },
 	            '[编辑配送员]'
 	          ), _react2['default'].createElement('br', { key: 'br' })] : null,
-	          props.print_status == 'AUDITING' ? _react2['default'].createElement(
+	          (0, _utilsAcl2['default'])('DeliveryManageDeliveryPrint') && (props.print_status == 'AUDITING' ? _react2['default'].createElement(
 	            'span',
 	            { key: 'auditing' },
 	            '[正在审核]'
 	          ) : _react2['default'].createElement(
 	            'a',
-	            { onClick: this.printHandler.bind(this), key: 'print', href: 'javascript:;' },
+	            { onClick: this.printHandler.bind(this), key: 'print', href: 'javascript:;', className: 'nowrap' },
 	            props.print_status == 'PRINTABLE' ? _react2['default'].createElement(
 	              'span',
 	              { key: 'printable' },
@@ -42643,7 +42643,7 @@
 	              { key: 'reprintable' },
 	              '[重新打印]'
 	            )
-	          )
+	          ))
 	        ),
 	        _react2['default'].createElement(
 	          'td',
@@ -44222,11 +44222,11 @@
 	        _react2['default'].createElement(
 	          'td',
 	          null,
-	          props.status == 'DELIVERY' ? [_react2['default'].createElement(
+	          props.status == 'DELIVERY' ? [(0, _utilsAcl2['default'])('DeliveryManageDistributeSigninOrder') && [_react2['default'].createElement(
 	            'a',
 	            { onClick: this.showSignedModal.bind(this), key: 'signin', href: 'javascript:;' },
 	            '[签收]'
-	          ), _react2['default'].createElement('br', { key: 'br' }), _react2['default'].createElement(
+	          ), _react2['default'].createElement('br', { key: 'br' })], (0, _utilsAcl2['default'])('DeliveryManageDistributeUnSigninOrder') && _react2['default'].createElement(
 	            'a',
 	            { onClick: this.showUnSignedModal.bind(this), key: 'unsignin', href: 'javascript:;' },
 	            '[未签收]'

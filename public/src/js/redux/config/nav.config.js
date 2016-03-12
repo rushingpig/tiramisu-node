@@ -5,7 +5,7 @@ export default [
   "short_name": "订单",
   "icon": "clipboard",
   "link": [{
-      "key": "OrderManage", //key值，主要用来进行访问权限控制
+      "key": "OrderManageAccess", //key值，主要用来进行访问权限控制
       "name": "订单管理",
       "icon": "",
       "link": "/om/index"
@@ -31,22 +31,22 @@ export default [
   "short_name": "送货",
   "icon": "truck",
   "link": [{
-      "key": "DeliveryChange",
+      "key": "DeliveryChangeAccess",
       "name": "订单转送货单",
       "icon": "",
       "link": "/dm/change"
   }, {
-      "key": "DeliveryManage",
+      "key": "DeliveryManageAccess",
       "name": "送货单管理",
       "icon": "",
       "link": "/dm/delivery",
   }, {
-      "key": "DistributeManage",
+      "key": "DistributeManageAccess",
       "name": "配送单管理",
       "icon": "",
       "link": "/dm/distribute",
   }, {
-      "key": "PrintReview",
+      "key": "PrintReviewAccess",
       "name": "打印审核",
       "icon": "",
       "link": "/dm/review",

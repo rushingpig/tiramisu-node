@@ -39,7 +39,11 @@ class TopHeader extends Component {
   render(){
     return (
       <div className="clearfix top-header">
-        <button onClick={this.addOrder.bind(this)} className="btn btn-sm btn-theme pull-left">添加订单</button>
+        {
+          V( 'OrderManageAddOrder' )
+            ? <button onClick={this.addOrder.bind(this)} className="btn btn-sm btn-theme pull-left">添加订单</button>
+            : null
+        }
         <Linkers
           data={['总订单页面', '处理页面']}
           active="总订单页面"
@@ -202,7 +206,7 @@ var OrderRow = React.createClass({
         {/*订单来源*/}
         <td className="nowrap">
           {src_name[0]}
-          {src_name[1] ? [<br />, <span key="src_2" className="bordered bg-warning">{src_name[1]}</span>] : null}
+          {src_name[1] ? [<br key="br" />, <span key="src_2" className="bordered bg-warning">{src_name[1]}</span>] : null}
         </td>
         <td><strong className="strong">{props.pay_status}</strong></td>
         <td className="nowrap text-left">

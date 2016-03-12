@@ -9,6 +9,7 @@
 * 修改配送：OrderManageAlterDelivery
 * 修改配送站：OrderManageAlterStation
 * 按地区筛选：OrderManageAddressFilter
+* +添加订单: OrderManageAddOrder
 
 ###2.订单转送货单
 * 页面访问：DeliveryChange

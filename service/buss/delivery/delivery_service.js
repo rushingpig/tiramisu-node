@@ -413,13 +413,13 @@ DeliveryService.prototype.allocateDeliveryman = (req,res,next)=>{
  * @param next
  */
 DeliveryService.prototype.listDeliverymans = (req,res,next)=>{
-    let currentUserId = req.session.user.id;
-    if(!currentUserId){
+    let currentUser = req.session.user;
+    if(!currentUser){
         res.api(res_obj.SESSION_TIME_OUT,null);
         return;
     }
-    let city_id = req.session.user.city_id;
-    let promise = deliveryDao.findDeliverymansByStation(city_id).then((results)=>{
+    let city_id = currentUser.city_id;
+    let promise = deliveryDao.findDeliverymansByStation(city_id,currentUser).then((results)=>{
         if(toolUtils.isEmptyArray(results)){
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }

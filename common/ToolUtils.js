@@ -12,7 +12,8 @@ ToolUtils.isEmptyObject = function (object) {
 };
 
 ToolUtils.isInt = function (param) {
-  return stringValidator.isInt(param, {min: 0});
+  //return stringValidator.isInt(param, {min: 0});
+  return Number.isInteger();
 };
 
 ToolUtils.sum = function (arr) {

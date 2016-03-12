@@ -116,6 +116,18 @@ Constant.DS = {
     SELF_DELIVERY : 6        // 分给自己(配送员)的订单
 };
 
+Constant.BUSS_ORDER_ERROR = {
+  TYPE: {
+    GENERAL: 0,
+    SYSTEM_ERROR: 1,
+    NOTIFY_MANAGER: 2
+  },
+  STATUS: {
+    OPEN: 0,
+    CLOSE: 1
+  }
+};
+
 
 
 module.exports = Constant;

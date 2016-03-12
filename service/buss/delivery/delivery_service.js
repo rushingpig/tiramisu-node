@@ -22,7 +22,7 @@ var dao = require('../../../dao'),
     config = require('../../../config'),
     logger = require('../../../common/LogHelper').systemLog();
 function DeliveryService(){
-    
+
 }
 /**
  * get all delivery station list
@@ -175,9 +175,13 @@ DeliveryService.prototype.listReprintApplies = (req,res,next)=>{
         order_id : req.query.order_id ? systemUtils.getDBOrderId(req.query.order_id) : null,
         status : req.query.status
     };
+    if(req.session.user){
+        query_obj.city_id = req.session.user.city_id;
+        query_obj.is_admin = req.session.user.is_admin;
+    }
     let promise = deliveryDao.findReprintApplies(systemUtils.assemblePaginationObj(req,query_obj)).then((_res)=>{
         if(toolUtils.isEmptyArray(_res._results) || toolUtils.isEmptyArray(_res.results)){
-            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+            throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);
         }
         let res_data = {
             total : _res.results[0].total,
@@ -372,7 +376,7 @@ DeliveryService.prototype.allocateDeliveryman = (req,res,next)=>{
         status : Constant.OS.DELIVERY,
         deliveryman_id : req.body.deliveryman_id
     };
-    
+
     let orderIds = [],order_history_params = [],deliveryman_name = req.body.deliveryman_name,deliveryman_mobile = req.body.deliveryman_mobile;
     let order_fulltext_obj = {
         deliveryman_name : systemUtils.encodeForFulltext(deliveryman_name),
@@ -676,6 +680,7 @@ DeliveryService.prototype.print = (req,res,next)=>{
         });
         res_data.list = Array.from(map.values());
         res_data.baseHref = req.protocol + '://' + req.headers.host;
+
         res.render('print',res_data);
     });
     systemUtils.wrapService(res,next,promise);

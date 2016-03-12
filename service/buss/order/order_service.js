@@ -26,9 +26,7 @@ var res_obj = require('../../../util/res_obj'),
   OrderDao = dao.order,
   orderDao = new OrderDao(),
   util = require('util'),
-  config = require('../../../config'),
-  nodeExcel = require('excel-export');;
-
+  config = require('../../../config');
 function OrderService() {
 }
 /**
@@ -234,6 +232,7 @@ OrderService.prototype.getOrderDetail = (req, res, next) => {
       data.recipient_id = curr.recipient_id;
       data.remarks = curr.remarks;
       data.src_id = curr.src_id;
+      data.src_name = curr.merge_name;
       data.province_id = curr.province_id;
       data.province_name = curr.province_name;
       data.city_id = curr.city_id;

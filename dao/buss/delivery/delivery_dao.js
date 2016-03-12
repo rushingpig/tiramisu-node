@@ -67,8 +67,13 @@ DeliveryDao.prototype.findReprintApplies = function(query_obj){
     ].join(','),params = [];
     let sql = "select "+ columns + " from ?? bpa";
     params.push(tables.buss_print_apply);
-    sql += " left join sys_user su1 on su1.id = bpa.created_by";
-    sql += " left join sys_user su2 on su2.id = bpa.updated_by";
+    sql += " left join ?? su1 on su1.id = bpa.created_by";
+    sql += " left join ?? su2 on su2.id = bpa.updated_by";
+    params.push(tables.sys_user);
+    params.push(tables.sys_user);
+    sql += " inner join buss_order bo on bo.id = bpa.order_id";
+    sql += " inner join buss_delivery_station bds on bds.id = bo.delivery_id";
+    sql += " inner join dict_regionalism dr on dr.id = bds.regionalism_id";
     sql += " where 1=1 ";
     if(query_obj.begin_time){
         sql += " and bpa.created_time >= ?";
@@ -90,6 +95,10 @@ DeliveryDao.prototype.findReprintApplies = function(query_obj){
     if(query_obj.status){
         sql += " and bpa.status = ?";
         params.push(query_obj.status);
+    }
+    if(query_obj.city_id && !query_obj.is_admin){
+        sql += " and dr.parent_id = ?";
+        params.push(query_obj.city_id);
     }
     sql += " order by bpa.created_time desc";
     let countSql = dbHelper.countSql(sql),pagination_sql = dbHelper.paginate(sql,query_obj.page_no,query_obj.page_size);

@@ -127,6 +127,11 @@ Constant.BUSS_ORDER_ERROR = {
     CLOSE: 1
   }
 };
+/**
+ * the role of deliveryman id in the db
+ * @type {number}
+ */
+Constant.DELIVERYMAN_ID = 4;
 
 
 

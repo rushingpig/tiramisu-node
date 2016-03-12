@@ -78,6 +78,7 @@ function api(res) {
         temp.data = res_tpl || {};
       } else if (err === undefined && arguments.length === 2) {
         temp = clone(res_tpl);
+        // TODO: should not redefined the second parameter
         temp.data = temp.data || {};
         temp.err = data || '';
       } else {

@@ -331,6 +331,10 @@ OrderDao.prototype.findOrderList = function (query_data) {
         sql += " and bo.delivery_id = ?";
         params.push(query_data.delivery_id);
     }
+    if(query_data.delivery_type){
+        sql += " and br.delivery_type = ?";
+        params.push(query_data.delivery_type);
+    }
     if (query_data.deliveryman_id) {
         sql += " and bo.deliveryman_id = ?";
         params.push(query_data.deliveryman_id);
@@ -339,7 +343,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
         sql += " and (bo.print_status = ? or bo.print_status = ?)";
         params.push(constant.PS.UNPRINTABLE);
         params.push(constant.PS.AUDITING);
-    } else if (parseInt(query_data.is_print) === 0) {
+    } else if (parseInt(query_data.print_status) === 0) {
         sql += " and (bo.print_status = ? or bo.print_status = ?)";
         params.push(constant.PS.PRINTABLE);
         params.push(constant.PS.REPRINTABLE);
@@ -710,5 +714,92 @@ OrderDao.prototype.batchUpdateOrderFulltext = function(orderIds,updateObj){
     let sql = "update ?? set ? where order_id in" + dbHelper.genInSql(orderIds);
     let params = [tables.buss_order_fulltext,updateObj];
     return baseDao.update(sql,params);
+};
+/**
+ * find order list for export excel
+ * @param orderIdOrIds
+ * @returns {Promise}
+ */
+OrderDao.prototype.findOrdersForExport = function (query_data) {
+    let columns = ['br.delivery_type',
+        'bo.owner_name',
+        'bo.id',
+        'bo.owner_mobile',
+        'br.id as recipient_id',
+        'br.`name` as recipient_name',
+        'br.mobile as recipient_mobile',
+        'br.address as recipient_address',
+        'br.landmark',
+        'bds.id as delivery_id',
+        'bds.name as delivery_name',
+        'bpm.id as pay_modes_id',
+        'bpm.name as pay_name',
+        'bo.pay_status',
+        'bo.delivery_time',
+        'bo.src_id',
+        'bo.remarks',
+        'bo.status',
+        'bo.coupon',
+        'bo.invoice',
+        'bo.total_amount',
+        'bo.total_discount_price',
+        'bo.total_original_price',
+        'bp.`name` as product_name',
+        'bp.original_price',
+        'bos.amount',
+        'bos.num',
+        'bps.size',
+        'bps.price',
+        'bos.sku_id',
+        'bos.discount_price',
+        'bos.choco_board',
+        'bos.greeting_card',
+        'bos.custom_name',
+        'bos.custom_desc',
+        'bos.atlas',
+        'bosrc.merge_name',
+        'dr.name as regionalism_name',
+        'dr.id as regionalism_id',
+        'dr2.name as city_name',
+        'dr2.id as city_id',
+        'dr3.name as province_name',
+        'dr3.id as province_id',
+        'bo.updated_time',
+        'bo.created_time',
+        'su1.name as created_by',
+        'su2.name as deliveryman_name'
+    ].join(',');
+    let sql = "select " + columns + " from ?? bo", params = [];
+    params.push(tables.buss_order);
+    sql += " left join ?? br on bo.recipient_id = br.id";
+    params.push(tables.buss_recipient);
+    sql += " left join ?? bosrc on bo.src_id = bosrc.id";
+    params.push(tables.buss_order_src);
+    sql += " left join ?? bpm on bo.pay_modes_id = bpm.id";
+    params.push(tables.buss_pay_modes);
+    sql += " left join ?? bds on bo.delivery_id = bds.id";
+    params.push(tables.buss_delivery_station);
+    sql += " left join ?? dr on br.regionalism_id = dr.id";
+    params.push(tables.dict_regionalism);
+    sql += " left join ?? dr2 on dr.parent_id = dr2.id";
+    params.push(tables.dict_regionalism);
+    sql += " left join ?? dr3 on dr2.parent_id = dr3.id";
+    params.push(tables.dict_regionalism);
+    sql += " left join ?? bos on bo.id = bos.order_id and bos.del_flag = ?";
+    params.push(tables.buss_order_sku);
+    params.push(del_flag.SHOW);
+    sql += " left join ?? bps on bos.sku_id = bps.id";
+    params.push(tables.buss_product_sku);
+    sql += " left join ?? bp on bps.product_id = bp.id";
+    params.push(tables.buss_product);
+    sql += " left join ?? su1 on bo.created_by = su1.id";
+    params.push(tables.sys_user);
+    sql += " left join ?? su2 on bo.deliveryman_id = su2.id";
+    params.push(tables.sys_user);
+    sql += " where 1=1 and bo.del_flag = ? ";
+    params.push(del_flag.SHOW);
+
+
+    return baseDao.select(sql, params);
 };
 module.exports = OrderDao;

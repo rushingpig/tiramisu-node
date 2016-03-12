@@ -581,6 +581,7 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
         return;
       }
       query_data = {
+        delivery_type : req.query.delivery_type,
         begin_time: req.query.begin_time,
         end_time: req.query.end_time,
         is_deal: req.query.is_deal,

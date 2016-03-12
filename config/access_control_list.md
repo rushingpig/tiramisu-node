@@ -32,6 +32,7 @@
 * 按地区筛选：DeliveryManageDistributeAddressFilter
 * +签收：DeliveryManageDistributeSigninOrder
 * +未签收：DeliveryManageDistributeUnSigninOrder
+* +扫描: DeliveryManageDistributeScan
  
 ###5.打印审核
 * +页面访问：PrintReviewAccess

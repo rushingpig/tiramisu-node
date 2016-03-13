@@ -137,7 +137,7 @@ class FilterHeader extends Component {
   }
   onProvinceChange(callback, e){
     var {value} = e.target;
-    this.props.actions.provinceReset();
+    this.props.actions.resetCities();
     if(value != this.refs.province.props['default-value'])
       var $city = $(findDOMNode(this.refs.city));
       this.props.actions.getCities(value).done(() => {

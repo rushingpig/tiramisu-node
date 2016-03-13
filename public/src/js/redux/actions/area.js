@@ -29,9 +29,9 @@ export default function Area(ActionTypes = AreaActionTypes1){
       // }
     },
 
-    provinceReset: function (){
+    resetCities: function (){
       return {
-        type: ActionTypes.PROVINCE_RESET,
+        type: ActionTypes.RESET_CITIES,
       }
     },
 
@@ -43,9 +43,9 @@ export default function Area(ActionTypes = AreaActionTypes1){
       // }
     },
 
-    cityReset: function (){
+    resetDistricts: function (){
       return {
-        type: ActionTypes.CITY_RESET,
+        type: ActionTypes.RESET_DISTRICTS,
       }
     },
 
@@ -62,9 +62,9 @@ export default function Area(ActionTypes = AreaActionTypes1){
     },
 
     //清空shop
-    districtReset: function (){
+    resetShops: function (){
       return {
-        type: ActionTypes.DISTRICT_RESET,
+        type: ActionTypes.RESET_SHOPS,
       }
     }
   }

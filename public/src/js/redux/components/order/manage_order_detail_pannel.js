@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import AreaActions from 'actions/area';
 import * as OrderFormActions from 'actions/order_manage_form';
 import * as FormActions from 'actions/form';
+import { ProductsModalActionTypes } from 'actions/action_types';
 
 import DatePicker from 'common/datepicker';
 import Alert from 'common/alert';
@@ -29,7 +30,7 @@ class TopHeader extends Component {
 
 class ManageOrderDetailPannel extends Component {
   render(){
-    var { mainForm, delivery_stations, history_orders, area, dispatch, products, params } = this.props;
+    var { mainForm, delivery_stations, history_orders, area, dispatch, products, products_area_filter, params } = this.props;
     var editable = !!(params && params.id);
 
     var actions = {
@@ -39,6 +40,15 @@ class ManageOrderDetailPannel extends Component {
     };
 
     mainForm = {...mainForm, ...delivery_stations};
+    var manageOrderProducts = (
+      <ManageOrderProducts
+        dispatch={dispatch}
+        {...products}
+        actions={{...bindActionCreators(AreaActions(ProductsModalActionTypes), dispatch)}}
+        provinces={area.provinces}
+        cities={products_area_filter.cities}
+      />
+    );
     return (
       <div className="order-manage">
         <TopHeader editable={editable} />
@@ -54,7 +64,7 @@ class ManageOrderDetailPannel extends Component {
                     editable={editable}
                     order_id={params.id}
                     actions={actions}>
-                      <ManageOrderProducts dispatch={dispatch} {...products} />
+                      {manageOrderProducts}
                   </ManageOrderFormCreate>
                 : <ManageOrderFormEdit
                     form-data={mainForm}
@@ -63,7 +73,7 @@ class ManageOrderDetailPannel extends Component {
                     editable={editable}
                     order_id={params.id}
                     actions={actions}>
-                      <ManageOrderProducts dispatch={dispatch} {...products} />
+                      {manageOrderProducts}
                   </ManageOrderFormEdit>
             }
           </div>

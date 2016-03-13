@@ -173,21 +173,21 @@ var AlterDeliveryModal = React.createClass({
   },
   onProvinceChange(e){
     var {value} = e.target;
-    this.props.actions.provinceReset();
+    this.props.actions.resetCities();
     this.setState({province_id: value})
     if(value != this.refs.province.props['default-value'])
       this.props.actions.getCities(value);
   },
   onCityChange(e){
     var {value} = e.target;
-    this.props.actions.cityReset();
+    this.props.actions.resetDistricts();
     this.setState({city_id: e.target.value})
     if(value != this.refs.city.props['default-value'])
       this.props.actions.getDistricts(value);
   },
   onDistrictChange(e){
     var {value} = e.target;
-    this.props.actions.districtReset();
+    this.props.actions.resetShops();
     this.setState({regionalism_id: e.target.value})
     if(value != this.refs.district.props['default-value'])
       this.props.actions.getDeliveryShops(value);

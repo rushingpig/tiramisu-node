@@ -42,7 +42,7 @@ export default [
       "link": "/dm/delivery",
   }, {
       "key": "DistributeManageAccess",
-      "name": "配送单管理",
+      "name": "订单完成管理",  //以前叫：配送单管理
       "icon": "",
       "link": "/dm/distribute",
   }, {

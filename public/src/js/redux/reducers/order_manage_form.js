@@ -4,6 +4,7 @@ import * as FormActions from 'actions/order_manage_form';
 import * as OrderProductsActions from 'actions/order_products';
 import { UPDATE_PATH } from 'redux-simple-router';
 import AreaActions from 'actions/area';
+import { ProductsModalActionTypes } from 'actions/action_types';
 import { updateAddOrderForm, initForm } from 'actions/form';
 import { map, delay, core } from 'utils/index';
 import { getValues } from 'redux-form';
@@ -118,6 +119,8 @@ function products_choosing(state = products_choosing_state, action){
       return products_choosing_state;
     case OrderProductsActions.GOT_CATEGORIES:
       return {...state, all_categories: action.data};
+    case OrderProductsActions.GOT_CITIES_TO_FILTER_PRODUCTS:
+      return {...state, cities: action.data};
     case OrderProductsActions.SEARCH_PRODUCTS:
       //如果检索到已被选商品，那么则要标明已被勾选
       state.selected_list.forEach(function(n){
@@ -292,7 +295,10 @@ function history_orders(state = history_orders_state, action){
 const orderAddReducer = combineReducers({
   area: area(),
   mainForm,
+
   products: products_choosing,
+  products_area_filter: area(ProductsModalActionTypes),
+
   history_orders,
   delivery_stations,
 })

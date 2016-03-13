@@ -38,7 +38,7 @@ class TopHeader extends Component {
     return (
       <div className="clearfix top-header">
         <LineRouter 
-          routes={[{name: '送货单管理', link: ''}, {name: '配送单列表', link: ''}]} />
+          routes={[{name: '送货单管理', link: ''}, {name: '完成列表', link: ''}]} />
       </div>
     )
   }
@@ -122,7 +122,7 @@ class FilterHeader extends Component {
   }
   onProvinceChange(callback, e){
     var {value} = e.target;
-    this.props.provinceReset();
+    this.props.resetCities();
     if(value != this.refs.province.props['default-value'])
       var $city = $(findDOMNode(this.refs.city));
       this.props.getCities(value).done(() => {

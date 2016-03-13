@@ -64,14 +64,14 @@ class StationManageForm extends Component {
 
 	onProvinceChange(callback, e){
     var {value} = e.target;
-    this.props.actions.provinceReset();
+    this.props.actions.resetCities();
     if(value != this.refs.province.props['default-value'])
       this.props.actions.getCities(value);
     callback(e);
   }
   onCityChange(callback, e){
     var {value} = e.target;
-    this.props.actions.cityReset();
+    this.props.actions.resetDistricts();
     if(value != this.refs.city.props['default-value'])
       this.props.actions.getDistricts(value);
     callback(e);

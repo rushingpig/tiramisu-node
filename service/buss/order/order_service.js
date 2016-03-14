@@ -1133,7 +1133,9 @@ OrderService.prototype.exportExcel = (req,res,next) => {
       res.send(buffer);
     });
 
+  }).catch((err)=>{
+      res.render('error',{err:'亲,该条件下没有可选订单,请重新筛选...'});
   });
-  systemUtils.wrapService(res, next, promise);
+
 };
 module.exports = new OrderService();

@@ -133,7 +133,7 @@ var ping_xx = {
 
 var sms_host = "http://127.0.0.1:3000/sms/internal";
 
-var coupon_host = "http://xfxb-qa:3000";
+var coupon_host = "http://120.76.25.32:3000";
 
 var login_required = true;
 

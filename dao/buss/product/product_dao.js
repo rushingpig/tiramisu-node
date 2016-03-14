@@ -30,9 +30,9 @@ ProductDao.prototype.findAllCatetories = function(){
  */
 ProductDao.prototype.findProductsCount = function(product_name,category_id,regionalism_id){
     let sql = "",params = [];
-    sql += "select bp.id,bps.size,bp.name,bp.original_price,bpc.name as category_name ";
+    sql += "select bp.id,bps.size,bp.name,bp.original_price,bpc.name as category_name,bps.regionalism_id ";
     sql += " from ?? bp";
-    sql += " left join ?? bpc on bp.category_id = bpc.id";
+    sql += " inner join ?? bpc on bp.category_id = bpc.id";
     sql += " inner join ?? bps on bp.id = bps.product_id where 1=1";
     params.push(tables.buss_product);
     params.push(tables.buss_product_category);
@@ -67,7 +67,7 @@ ProductDao.prototype.findProductsCount = function(product_name,category_id,regio
 ProductDao.prototype.findProducts = function(preSql,preParams,page_no,page_size){
     let sql = "select t.name,t.category_name,t.original_price,bps2.*,dr.name as regionalism_name from (";
     sql += dbHelper.paginate(preSql,page_no,page_size);
-    sql += ")t left join  buss_product_sku bps2 on t.id = bps2.product_id and t.size = bps2.size ";
+    sql += ")t left join  buss_product_sku bps2 on t.id = bps2.product_id and t.size = bps2.size and t.regionalism_id = bps2.regionalism_id";
     sql += " left join dict_regionalism dr on dr.id = bps2.regionalism_id order by bps2.sort asc";
     return baseDao.select(sql,preParams);
 };

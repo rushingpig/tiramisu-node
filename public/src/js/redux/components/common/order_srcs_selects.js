@@ -50,11 +50,11 @@ export default class OrderSrcsSelects extends React.Component {
     var { value } = e.target;
     var { all_order_srcs } = this.props;
     //如果没有二级订单来源，则表明只是一个一级来源
-    if(all_order_srcs[1] && !all_order_srcs[1].filter(n => n.parent_id == value).length){
+    // if(all_order_srcs[1] && !all_order_srcs[1].filter(n => n.parent_id == value).length){
       this.props.actions.triggerFormUpdate(this.props.reduxFormName, 'src_id', value); //此时只能模拟form表单更新
-    }else{
-      this.props.actions.resetFormUpdate(this.props.reduxFormName, 'src_id');
-    }
+    // }else{
+    //   this.props.actions.resetFormUpdate(this.props.reduxFormName, 'src_id');
+    // }
     this.setState({selected_order_src_level1_id: value});
   }
 }

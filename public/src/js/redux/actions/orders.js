@@ -3,6 +3,8 @@ import Url from 'config/url';
 import { getValues } from 'redux-form';
 import { NO_MORE_CODE } from 'config/app.config';
 import { Noty, formCompile } from 'utils/index';
+import { searchByScan as searchByScanInDeliveryManage } from 'actions/delivery_manage';
+import { searchByScan as searchByScanInDistributeManage } from 'actions/delivery_distribute';
 
 /**
  * GET_ORDER_LIST 这里共用了这个信号，代表获取列表数据（订单管理，订单转送单，送货单管理，配送单管理）
@@ -74,7 +76,11 @@ export function getOrderDeliveryList(data){
     var filter_data = getValues(getState().form.order_delivery_filter);
     filter_data = formCompile(filter_data);
     // dispatch({ type: GET_ORDER_LIST_ING });
-    return GET(Url.order_delivery.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch);
+    if( filter_data.order_ids ){
+      return searchByScanInDeliveryManage( filter_data.order_ids )(dispatch); //按扫描结果搜索
+    }else{
+      return GET(Url.order_delivery.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch);
+    }
   }
 }
 
@@ -83,7 +89,11 @@ export function getOrderDistributeList(data){
     var filter_data = getValues(getState().form.order_distribute_filter);
     filter_data = formCompile(filter_data);
     // dispatch({ type: GET_ORDER_LIST_ING });
-    return GET(Url.order_distribute.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch);
+    if( filter_data.order_ids ){
+      return searchByScanInDistributeManage( filter_data.order_ids )(dispatch); //按扫描结果搜索
+    }else{
+      return GET(Url.order_distribute.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch);
+    }
   }
 }
 

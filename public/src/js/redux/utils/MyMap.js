@@ -16,6 +16,9 @@ MyMap.prototype._initialize = function() {
 };
    
 MyMap.prototype.create = function(callback) {
+  if(this == window){
+    throw new Error('create调用错误，maybe you should be call the method like this: MyMap.create(this)');
+  }
   if(!this.init_flag){
     this.init_flag = 1;
     window._bmap_callback = this._initialize.bind(this);

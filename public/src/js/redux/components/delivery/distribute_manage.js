@@ -14,6 +14,7 @@ import StdModal from 'common/std_modal';
 import { tableLoader } from 'common/loading';
 import RadioGroup from 'common/radio_group';
 import RecipientInfo from 'common/recipient_info';
+import ToolTip from 'common/tooltip';
 
 import { order_status, DELIVERY_MAP, YES_OR_NO } from 'config/app.config';
 import history from 'history_instance';
@@ -27,6 +28,7 @@ import * as DeliverymanActions from 'actions/deliveryman';
 import * as DeliveryDistributeActions from 'actions/delivery_distribute';
 import { getPayModes } from 'actions/order_manage_form';
 import * as OrderSupportActions from 'actions/order_support';
+import { triggerFormUpdate } from 'actions/form';
 
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from './order_detail_modal';
@@ -37,6 +39,9 @@ class TopHeader extends Component {
   render(){
     return (
       <div className="clearfix top-header">
+        <button onClick={this.props.exportExcel} className="btn btn-theme btn-xs pull-right" style={{marginLeft: 20}}>
+          <i className="fa fa-download"></i> 导出
+        </button>
         <LineRouter 
           routes={[{name: '送货单管理', link: ''}, {name: '完成列表', link: ''}]} />
       </div>
@@ -132,6 +137,7 @@ class FilterHeader extends Component {
   }
   search(){
     this.setState({search_ing: true});
+    this.props.triggerFormUpdate('order_distribute_filter', 'order_ids', undefined); //清空扫描列表
     this.props.getOrderDistributeList({page_no: 0, page_size: this.props.page_size})
       .always(()=>{
         this.setState({search_ing: false});
@@ -161,7 +167,9 @@ FilterHeader = reduxForm({
     'deliveryman_id',
     'delivery_id',
     'province_id',
-    'city_id'
+    'city_id',
+
+    'order_ids' //扫描结果
   ]
 }, state => {
   var now = dateFormat(new Date());
@@ -205,7 +213,27 @@ class OrderRow extends Component {
         <td>{props.delivery_type}</td>
         <td><div className="remark-in-table">{props.remarks}</div></td>
         <td>{parseTime(props.signin_time)}</td>
-        <td><div className="bordered bold order-status" style={{color: _order_status.color || 'inherit', background: _order_status.bg }}>{_order_status.value}</div></td>
+        <td>
+          <div 
+            className="bordered bold order-status"
+            style={{color: _order_status.color || 'inherit', background: _order_status.bg }}
+            onMouseEnter={() => props.status == 'DELIVERY' && this.refs.tooltip_delivery.show()}
+            onMouseLeave={() => props.status == 'DELIVERY' && this.refs.tooltip_delivery.hide()}
+            >
+            {_order_status.value}
+            {
+              props.status == 'DELIVERY'
+                ? (
+                    <ToolTip key="tooltip" placement="left" ref="tooltip_delivery" >
+                      <div className="nowrap">
+                        配送员：{props.deliveryman_name}　{props.deliveryman_mobile}
+                      </div>
+                    </ToolTip>
+                  )
+                : null
+            }
+          </div>
+        </td>
         <td>{props.updated_by}</td>
         <td><a onClick={this.viewOrderOperationRecord.bind(this)} className="inline-block time" href="javascript:;">{props.updated_time}</a></td>
       </tr>
@@ -250,7 +278,7 @@ class DeliveryDistributePannel extends Component {
   }
   render(){
     var { filter, area, deliveryman, orders, main, all_order_srcs, all_pay_modes, signOrder, unsignOrder, 
-      searchByScan, getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
+      searchByScan, exportExcel, getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
     var { submitting } = main;
     var { loading, refresh, page_no, checkall, total, list, check_order_info, active_order_id } = orders;
     var { search, showSignedModal, showUnSignedModal, showScanModal, checkOrderHandler, 
@@ -268,7 +296,7 @@ class DeliveryDistributePannel extends Component {
     return (
       <div className="order-manage">
 
-        <TopHeader />
+        <TopHeader exportExcel={exportExcel} />
         <FilterHeader
           {...{...this.props, ...filter, ...area, showScanModal, all_deliveryman: deliveryman.list}}
           page_size={this.state.page_size}
@@ -394,7 +422,8 @@ function mapDispatchToProps(dispatch){
     ...OrderSupportActions,
     ...DeliverymanActions,
     ...DeliveryDistributeActions,
-    getPayModes
+    getPayModes,
+    triggerFormUpdate,
   }, dispatch);
 }
 

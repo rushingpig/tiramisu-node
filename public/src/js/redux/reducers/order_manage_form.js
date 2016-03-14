@@ -105,7 +105,8 @@ var products_choosing_state = {
   all_categories: [],
   search_results: {
     total: 0,
-    list: []
+    list: [],
+    page_no: 0,
   },
   selected_list: [],  //modal 里面的 选择列表
   confirm_list: [],   //modal 里面确认后，主面板的已选产品列表

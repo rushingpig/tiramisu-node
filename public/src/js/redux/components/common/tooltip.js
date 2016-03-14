@@ -46,8 +46,9 @@ var ToolTip = React.createClass({
         case 'right':
         case 'top':
         case 'bottom':
+          style = { top: Math.ceil((base_h - h) / 2 ), left: base_w + 2}; break;
         case 'left':
-          style = { top: Math.ceil((base_h - h) / 2 ), left: base_w + 2}; break; //3 代表间隙
+          style = { top: Math.ceil((base_h - h) / 2 ), left: - (w + 2) }; break;
         default:
           console.error('tooltip placement error: ', this.props.placement);
           break;

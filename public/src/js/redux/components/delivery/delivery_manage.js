@@ -12,6 +12,7 @@ import StdModal from 'common/std_modal';
 import LineRouter from 'common/line_router';
 import { tableLoader } from 'common/loading';
 import RecipientInfo from 'common/recipient_info';
+import ToolTip from 'common/tooltip';
 
 import { order_status, YES_OR_NO, DELIVERY_MAP, PRINT_STATUS } from 'config/app.config';
 import history from 'history_instance';
@@ -24,6 +25,7 @@ import AreaActions from 'actions/area';
 import * as DeliverymanActions from 'actions/deliveryman';
 import * as DeliveryManageActions from 'actions/delivery_manage';
 import * as OrderSupportActions from 'actions/order_support';
+import { triggerFormUpdate } from 'actions/form';
 
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from './order_detail_modal';
@@ -128,6 +130,7 @@ class FilterHeader extends Component {
   }
   search(){
     this.setState({search_ing: true});
+    this.props.triggerFormUpdate('order_delivery_filter', 'order_ids', undefined); //清空扫描列表
     this.props.getOrderDeliveryList({page_no: 0, page_size: this.props.page_size})
       .always(()=>{
         this.setState({search_ing: false});
@@ -159,6 +162,8 @@ FilterHeader = reduxForm({
     'print_status',
     'province_id',
     'city_id',
+
+    'order_ids' //扫描结果
   ]
 }, state => {
   var now = dateFormat(new Date());
@@ -211,7 +216,27 @@ class OrderRow extends Component {
         <RecipientInfo data={props} />
         <td className="text-left">{reactReplace(props.greeting_card, '|', <br />)}</td>
         <td>{props.exchange_time}</td>
-        <td><div className="bordered bold order-status" style={{color: _order_status.color || 'inherit', background: _order_status.bg }}>{_order_status.value}</div></td>
+        <td>
+          <div 
+            className="bordered bold order-status"
+            style={{color: _order_status.color || 'inherit', background: _order_status.bg }}
+            onMouseEnter={() => props.status == 'DELIVERY' && this.refs.tooltip_delivery.show()}
+            onMouseLeave={() => props.status == 'DELIVERY' && this.refs.tooltip_delivery.hide()}
+            >
+            {_order_status.value}
+            {
+              props.status == 'DELIVERY'
+                ? (
+                    <ToolTip key="tooltip" ref="tooltip_delivery" >
+                      <div className="nowrap">
+                        配送员：{props.deliveryman_name}　{props.deliveryman_mobile}
+                      </div>
+                    </ToolTip>
+                  )
+                : null
+            }
+          </div>
+        </td>
         <td><a onClick={props.viewOrderDetail} href="javascript:;">{props.order_id}</a></td>
         <td>{props.remarks}</td>
         <td>{props.updated_by}</td>
@@ -435,7 +460,8 @@ function mapDispatchToProps(dispatch){
     ...AreaActions(),
     ...OrderSupportActions,
     ...DeliverymanActions,
-    ...DeliveryManageActions
+    ...DeliveryManageActions,
+    triggerFormUpdate,
   }, dispatch);
 }
 
@@ -477,8 +503,8 @@ var PrintModal = React.createClass({
       .done(function(){
         Noty('success', '操作成功');
         this.setState({submitting: false});
-        this.props.callback();
         this.refs.modal.hide();
+        this.props.callback();
       }.bind(this))
       .fail(function(e){
         Noty('error', e || '异常错误');
@@ -502,6 +528,7 @@ var EditModal = React.createClass({
     return {
       all_deliveryman: [],
       filter_results: [],
+      search_txt: '',
       selected_deliveryman_id: undefined,
       orders: [],
     };
@@ -540,7 +567,7 @@ var EditModal = React.createClass({
 
   },
   render: function(){
-    var { filter_results, selected_deliveryman_id, orders } = this.state;
+    var { filter_results, search_txt, selected_deliveryman_id, orders } = this.state;
     var { batch_edit, submitting } = this.props;
     var content = filter_results.map( n => {
       return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
@@ -550,7 +577,7 @@ var EditModal = React.createClass({
         <div className="form-group form-inline mg-15" style={{marginTop: 15}}>
           <div className="input-group input-group-sm" style={{marginLeft: 168}}>
             <span className="input-group-addon"><i className="fa fa-search"></i></span>
-            <input onChange={this.filterHandler} type="text" 
+            <input value={search_txt} onChange={this.filterHandler} type="text" 
               className="form-control" style={{'width': '200'}} placeholder="配送员拼音首字母 或 手机号码" />
           </div>
         </div>
@@ -597,7 +624,7 @@ var EditModal = React.createClass({
     }else{ //中文全称
       results = all_deliveryman.filter(n => n.text.indexOf(value) != -1)
     }
-    this.setState({ filter_results: results, selected_deliveryman_id: results.length && results[0].deliveryman_id });
+    this.setState({ filter_results: results, search_txt: value, selected_deliveryman_id: results.length && results[0].deliveryman_id });
   },
   onSelectDeliveryman: function(e){
     this.setState({ selected_deliveryman_id: e.target.value});
@@ -612,8 +639,8 @@ var EditModal = React.createClass({
       order_ids: orders.map(n => n.order_id)
     }).done(function(json){
       Noty('success', '操作成功！');
-      this.props.callback();
       this.refs.modal.hide();
+      this.props.callback();
     }.bind(this)).fail(function(json){
       console.error(json);
       Noty('error', '操作失败！');
@@ -632,7 +659,7 @@ var EditModal = React.createClass({
   hideCallback: function(){
     this.setState({
       filter_results: this.state.all_deliveryman,
-      selected_deliveryman_id: undefined,
+      search_txt: '',
       orders: []
     });
   },
@@ -682,8 +709,8 @@ var ApplyPrintModal = React.createClass({
     }
     this.props.applyPrint({...this.state, order_id: this.state.order_id})
       .done(function(){
-        this.props.callback();
         this.refs.modal.hide();
+        this.props.callback();
       }.bind(this))
       .fail(function(msg, code){
         Noty('error', msg || '服务器异常')

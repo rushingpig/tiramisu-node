@@ -226,6 +226,28 @@ function delay(task) {
   setTimeout(task, 0);
 }
 
+/**
+ * 解析url参数（get请求）
+ * @param url: 一般为location.href 或 location.search
+ * @returns {obj}
+ */
+function url_parse(url){
+    var paramsObj = {};
+    url.replace(/^.*\?/, '').replace(/([^&=]+)=([^&]*)/g, function(a, b, c){
+        paramsObj[b] = c;
+    });
+    return paramsObj;
+}
+
+function url_toParams(obj){
+    var params = [];
+    obj = obj || {};
+    for(var a in obj){
+        typeof obj[a] != 'undefined' && params.push(a + '=' + obj[a]);
+    }
+    return params.join('&');
+}
+
 export default {
   core: {
     isArray: core_isArray,
@@ -243,6 +265,10 @@ export default {
     isTime: form_isTime, //HH:mm:ss 或 HH:mm
     isMobile: form_isMobile, //简单版
     isCoupon: form_isCoupon, //验券  
+  },
+  url: {
+    parse: url_parse,       //将一个url的参数取出来（与以下过程正好相反）
+    toParams: url_toParams, //将一个对象转化为url参数
   },
   dateFormat,
   getDate,

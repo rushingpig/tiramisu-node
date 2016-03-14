@@ -1,6 +1,7 @@
 import { put, PUT, POST, TEST, test } from 'utils/request'; //Promise
 import Url from 'config/url';
 import Promise from 'utils/promise';
+import { triggerFormUpdate } from 'actions/form';
 
 export const APPLY_DELIVERYMAN = 'APPLY_DELIVERYMAN'; //key: 0->正在处理，1->成功，2->失败
 export function applyDeliveryman(data) {
@@ -67,5 +68,8 @@ export function rePrint(order_id){
 
 export const GET_DELIVERY_SCAN_LIST = 'GET_DELIVERY_SCAN_LIST';
 export function searchByScan(order_ids){
-  return POST(Url.order_delivery.toString(), {order_ids}, GET_DELIVERY_SCAN_LIST);
+  return dispatch => {
+    dispatch( triggerFormUpdate('order_delivery_filter', 'order_ids', order_ids) );
+    return POST(Url.order_delivery.toString(), {order_ids}, GET_DELIVERY_SCAN_LIST)(dispatch);
+  }
 }

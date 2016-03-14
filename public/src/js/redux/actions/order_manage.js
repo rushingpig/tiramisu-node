@@ -1,5 +1,7 @@
 import {post, GET, POST, PUT, TEST } from 'utils/request'; //Promise
 import Url from 'config/url';
+import Utils from 'utils/index';
+import { getValues } from 'redux-form';
 
 export const CANCEL_ORDER = 'CANCEL_ORDER';
 export function cancelOrder(order_id, data){
@@ -51,5 +53,15 @@ export const RESET_DELIVERY_STATIONS = 'RESET_DELIVERY_STATIONS';
 export function resetDeliveryStations(){
   return {
     type: RESET_DELIVERY_STATIONS
+  }
+}
+
+export function exportExcel(){
+  return (dispatch, getState) => {
+    var data = getValues( getState().form.order_manage_filter ) || {};
+    if(!data.begin_time && !data.end_time){
+      Utils.Noty('warning', '请选定时间');return;
+    }
+    window.open(Url.orders_export + Utils.url.toParams({...data, entrance: 'LIST'}));
   }
 }

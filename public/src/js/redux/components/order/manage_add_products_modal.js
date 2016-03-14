@@ -20,13 +20,12 @@ export default class ProductsModal extends Component {
       category_id: SELECT_DEFAULT_VALUE,
       province_id: SELECT_DEFAULT_VALUE,
       city_id: SELECT_DEFAULT_VALUE,
-      page_no: 0,
       page_size: 8,
     }
   }
   render(){
     //借用父组件的省份数据
-    var { all_categories, search_results: { total, list}, selected_list, dispatch, provinces, cities } = this.props;
+    var { all_categories, search_results: { total, list, page_no }, selected_list, dispatch, provinces, cities } = this.props;
     var s = this.state;
     var product_list = list.map(function(n, i){
       return <ProductSet data={n} key={i} dispatch={dispatch} />;
@@ -53,7 +52,7 @@ export default class ProductsModal extends Component {
               {' '}
               <Select value={s.city_id} onChange={this.onCityChange.bind(this)} options={cities} default-text="选择城市" ref="city" key="city"/>
               {' '}
-              <button onClick={this.search.bind(this)} className="btn btn-xs btn-default"><i className="fa fa-search"></i>{' 查询'}</button>
+              <button onClick={this.search.bind(this, 0)} className="btn btn-xs btn-default"><i className="fa fa-search"></i>{' 查询'}</button>
             </div>
             <div className="table-responsive table-modal modal-list">
               <table className="table table-hover table-click text-center">
@@ -76,7 +75,7 @@ export default class ProductsModal extends Component {
             </div>
 
             <Pagination 
-              page_no={s.page_no} 
+              page_no={page_no} 
               total_count={total} 
               page_size={s.page_size} 
               onPageChange={this.onPageChange.bind(this)}
@@ -133,18 +132,20 @@ export default class ProductsModal extends Component {
     var {value} = e.target;
     this.setState({city_id: value})
   }
-  search(){
-    var { sku_name, category_id, city_id, page_no, page_size } = this.state;
+  search(page){
+    var { sku_name, category_id, city_id, page_size } = this.state;
     this.props.dispatch(
       OrderProductsActions.searchProducts({
-        name: sku_name, page_no, page_size,
+        name: sku_name, 
+        page_no: page,
+        page_size,
         category_id: category_id == SELECT_DEFAULT_VALUE ? undefined : category_id,
         city_id: city_id == SELECT_DEFAULT_VALUE ? undefined : city_id
       })
     );
   }
   onPageChange(page){
-    this.setState({ page_no: page }, this.search)
+    this.search.call(this, page);
   }
   onCancel(){
     this.props.dispatch(OrderProductsActions.cancelAllSelectedProducts());

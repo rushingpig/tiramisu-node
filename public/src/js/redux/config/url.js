@@ -47,6 +47,7 @@ const URL = (function(){
     alter_delivery: '/order/:orderId/delivery',
     alter_station: '/order/:orderId/station',
     check_groupbuy_psd: '/coupon', //验券
+    orders_export: '/', //导出的唯一接口（根据参数转化）
 
     //产品
     categories: '/product/categories',

@@ -65,9 +65,9 @@ var AlterDeliveryModal = React.createClass({
       <StdModal submitting={this.props.submitting} onConfirm={this.onConfirm} loading={loading} onCancel={this.hideCallback} title="修改配送" ref="modal">
         <div className="form-group form-inline">
           {
-            _order_status && _order_status.key >= 30
-              ? <span className="gray">订单已转换，请与配送站确认是否能修改信息再提交！</span>
-              : <span className="gray">订单尚未生产，可直接更改！</span>
+            _order_status && _order_status.key <= 30
+              ? <span className="gray">订单尚未生产，可直接更改！</span>
+              : null
           }
         </div>
         <div className="form-group form-inline">

@@ -265,10 +265,12 @@ button, .btn:focus, .btn.focus, .btn:active:focus, .btn:active.focus, .btn.activ
   border-top: none;
 }
 .table-hover > tbody > tr:hover {
-  background-color: #F9F2E8;
+  background-color: #F7E4D1 //黄
+  // background-color: #E5F0D8 //绿
 }
 .table > tbody > tr.active > td, .table > tbody > tr.active:hover > td {
-  background-color: #FBF0E1;
+  background-color: #FBDCBD //黄
+  // background-color: #DBEAC8 //绿
 }
 table.no-padding tbody>tr>td{
   padding: 0;

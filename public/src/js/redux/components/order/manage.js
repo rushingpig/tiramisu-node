@@ -44,6 +44,9 @@ class TopHeader extends Component {
             ? <button onClick={this.addOrder.bind(this)} className="btn btn-sm btn-theme pull-left">添加订单</button>
             : null
         }
+        <button onClick={this.props.exportExcel} className="btn btn-theme btn-xs pull-right" style={{marginLeft: 20}}>
+          <i className="fa fa-download"></i> 导出
+        </button>
         <Linkers
           data={['总订单页面', '处理页面']}
           active="总订单页面"
@@ -368,7 +371,7 @@ class ManagePannel extends Component {
   render(){
     var { filter, area, alter_delivery_area, delivery_stations,
       main: {submitting, prepare_delivery_data_ok},
-      activeOrder, showProductsDetail, operationRecord, dispatch, getOrderList, getOrderOptRecord, resetOrderOptRecord, cancelOrder, orderException } = this.props;
+      activeOrder, showProductsDetail, operationRecord, dispatch, getOrderList, exportExcel, getOrderOptRecord, resetOrderOptRecord, cancelOrder, orderException } = this.props;
     var { loading, refresh, page_no, total, list, check_order_info, active_order_id, show_products_detail } = this.props.orders;
     var { viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, refreshDataList } = this;
 
@@ -379,7 +382,7 @@ class ManagePannel extends Component {
     return (
       <div className="order-manage">
 
-        <TopHeader {...{getOrderList, pageSize: this.state.page_size}} />
+        <TopHeader {...{getOrderList, exportExcel, pageSize: this.state.page_size}} />
         <FilterHeader {...{...filter, ...area}}
            actions={{...bindActionCreators({...AreaActions(), getOrderSrcs, ...FormActions}, dispatch), getOrderList}}
            page_size={this.state.page_size} />

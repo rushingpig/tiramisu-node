@@ -949,10 +949,10 @@ OrderService.prototype.exportExcel = (req,res,next) => {
     res.api(res_obj.INVALID_PARAMS, errors);
     return;
   }
-  //if(!(req.query.begin_time || req.query.end_time)){
-  //  req.query.begin_time = new Date();
-  //  req.query.end_time = new Date();
-  //}
+  if(!(req.query.begin_time || req.query.end_time)){
+    req.query.begin_time = new Date();
+    req.query.end_time = new Date();
+  }
   let entrance = req.query.entrance,data = [],fileName = '',isList = false,isReceiveList = false;
   let query_data = {
     delivery_type : req.query.delivery_type,
@@ -970,7 +970,7 @@ OrderService.prototype.exportExcel = (req,res,next) => {
     is_greeting_card: req.query.is_greeting_card,
     user : req.session.user,
     page_no : 0,
-    page_size : 2   // safe Threshold
+    page_size : 1000000   // safe Threshold
   };
   if (req.query.keywords && isNaN(parseInt(req.query.keywords))) {
     query_data.keywords = systemUtils.encodeForFulltext(req.query.keywords);

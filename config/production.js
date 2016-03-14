@@ -1,4 +1,11 @@
-'use strict';
+/**
+ * @des    : the config for dev environment
+ * @author : pigo.can
+ * @date   : 15/12/2 上午10:03
+ * @email  : rushingpig@163.com
+ * @version: v1.0
+ */
+"use strict";
 //  express static config options
 var exp_static_options = {
     dotfiles: "ignore",
@@ -92,29 +99,21 @@ var mysql_options = {
     host            : 'rds6612933l1ooqks2sj.mysql.rds.aliyuncs.com',
     port            : 3306,
     user            : 'tiramisu_pro',
-    password        : 'tiramisupro',
+    password        : 'Tiramisupro2016',
     database        : 'tiramisu',
     charset         : 'utf8mb4',
     timezone        : 'local',
     supportBigNumbers : true,
-    multipleStatements : false,  //  if in the production recommend to be false
+    multipleStatements : true,  //  if in the production recommend to be false
     dateStrings     : true, //  Force date types (TIMESTAMP, DATETIME, DATE) to be returned as strings rather then inflated into JavaScript Date objects.
-    debug           : false, //  when in production or test environment ,it should be set to false. it just be used in dev
+    debug           : false //  when in production or test environment ,it should be set to false. it just be used in dev
 
 };
 
 //  exclude path arrays of login filter
 var exclude_paths = ['/','/v1/a/login','/payment'];
 
-var white_ips = [
-  '1',
-  '127.0.0.1',
-  // xfxb_ecommerce
-  '112.74.135.144',
-  '10.46.89.45',
-  '120.76.25.32'
-];
-
+var white_ips = ['1','127.0.0.1'];
 var log4js_options = {
     reloadSecs: 3000 ,   // the interval to reload the log4js config file
     cwd : './log/'
@@ -124,7 +123,9 @@ var ping_xx = {
     apiKey: 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
 };
 
-var sms_host = "http://xfxb-production:3000/sms/internal";
+var sms_host = "http://127.0.0.1:3000/sms/internal";
+
+var coupon_host = "http://localhost:3000";
 
 var login_required = true;
 
@@ -140,6 +141,7 @@ module .exports = {
     log4js_options : log4js_options,
     exclude_paths : exclude_paths,
     white_ips : white_ips,
-    sms_host : sms_host
+    sms_host : sms_host,
+    coupon_host : coupon_host
 };
 

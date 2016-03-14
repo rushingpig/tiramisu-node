@@ -24,9 +24,9 @@ var exp_session_options = {
     saveUninitialized : true,
     cookie : {
         secure : false,
-        //maxAge : 1000000,
-        //expires : new Date(Date.now() + 1000000)
-        expires : false
+        maxAge : 72000000,
+        expires : new Date(Date.now() + 72000000)
+        //expires : false
     }
 };
 //  express router config options

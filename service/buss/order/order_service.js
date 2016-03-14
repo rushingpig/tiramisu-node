@@ -1097,20 +1097,20 @@ OrderService.prototype.exportExcel = (req,res,next) => {
             let order_obj = result_map.get(curr.id);
             if(isList){
               // avoid the data in db null been convert to string 'null'
-              order_obj.product_names += curr.product_name ? curr.product_name : '' + ',';
-              order_obj.sizes += curr.size ? curr.size : '' + ',';
-              order_obj.nums += curr.num ? curr.num : '' + ',';
-              order_obj.discount_prices += curr.discount_price ? curr.discount_price : '' + ',';
-              order_obj.amounts += curr.amount ? curr.amount : '' + ',';
-              order_obj.greeting_cards += curr.greeting_card ? curr.greeting_card : '' + ',';
-              order_obj.choco_boards += curr.choco_board ? curr.choco_board : '' + ',';
-              order_obj.atlases += curr.atlas ? '需要' : '不需要' + ',';
+              order_obj.product_names += (curr.product_name ? curr.product_name : '' + ',');
+              order_obj.sizes += (curr.size ? curr.size : '' + ',');
+              order_obj.nums += (curr.num ? curr.num : '' + ',');
+              order_obj.discount_prices += (curr.discount_price ? curr.discount_price/100 : '' + ',');
+              order_obj.amounts += (curr.amount ? curr.amount/100 : '' + ',');
+              order_obj.greeting_cards += (curr.greeting_card ? curr.greeting_card : '' + ',');
+              order_obj.choco_boards += (curr.choco_board ? curr.choco_board : '' + ',');
+              order_obj.atlases += (curr.atlas ? '需要' : '不需要' + ',');
             }else if(isReceiveList){
-              order_obj.nums += curr.num ? curr.num : '' + ',';
-              order_obj.product_names += curr.product_name ? curr.product_name : '' + ',';
-              order_obj.sizes += curr.size ? curr.size : '' + ',';
-              order_obj.discount_prices += curr.discount_price ? curr.discount_price : '' + ',';
-              order_obj.amounts += curr.amount ? curr.amount : '' + ',';
+              order_obj.nums += (curr.num ? curr.num : '' + ',');
+              order_obj.product_names += (curr.product_name ? curr.product_name : '' + ',');
+              order_obj.sizes += (curr.size ? curr.size : '' + ',');
+              order_obj.discount_prices += (curr.discount_price ? curr.discount_price/100 : '' + ',');
+              order_obj.amounts += (curr.amount ? curr.amount/100 : '' + ',');
             }
           }
         });

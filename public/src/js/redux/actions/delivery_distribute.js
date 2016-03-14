@@ -41,6 +41,6 @@ export function exportExcel(){
     if(!data.begin_time && !data.end_time){
       Utils.Noty('warning', '请选定时间');return;
     }
-    window.open(Url.orders_export + Utils.url.toParams({...data, entrance: 'RECEIVE_LIST'}));
+    window.open(Url.orders_export + '?' + Utils.url.toParams({...data, entrance: 'RECEIVE_LIST'}));
   }
 }

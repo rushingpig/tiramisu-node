@@ -27,7 +27,7 @@ or
 to load the **dev** or **test** db config
 
 ```bash
-npm run frontend
+npm run frontend | npm run fe 
 ```
 # update frontend compile js
 ```bash

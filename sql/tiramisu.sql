@@ -16939,4 +16939,14 @@ INSERT INTO `sys_user_role` VALUES
    ('18', '5');
 COMMIT;
 
+DROP TABLE IF EXISTS `buss_order_error`;
+CREATE TABLE `buss_order_error` (
+  `merchant_id` VARCHAR(50) NOT NULL COMMENT '外部订单编号',
+  `src_id` INT(11) NOT NULL COMMENT '订单来源ID',
+  `type` ENUM('GENERAL', 'SYSTEM_ERROR', 'NOTIFY_MANAGER') DEFAULT 'GENERAL' COMMENT '错误类型：一般，系统错误，通知经理',
+  `detail` TEXT NOT NULL COMMENT '详细错误信息',
+  `status` ENUM('OPEN', 'CLOSE') DEFAULT 'OPEN' COMMENT '处理状态：等待处理，已处理',
+  PRIMARY KEY (`merchant_id`,`src_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统-错误订单';
+
 SET FOREIGN_KEY_CHECKS = 1;

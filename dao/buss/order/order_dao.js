@@ -259,9 +259,15 @@ OrderDao.prototype.findOrderList = function (query_data) {
     let sql = "select " + columns + " from ?? bo";
     params.push(tables.buss_order);
     if (query_data.keywords) {
+        let match = '';
         sql += " inner join ?? bof on match(bof.owner_name,bof.owner_mobile,bof.recipient_name,bof.recipient_mobile,bof.recipient_address,bof.landmark,bof.show_order_id) against(? IN BOOLEAN MODE) and bof.order_id = bo.id";
         params.push(tables.buss_order_fulltext);
-        params.push('+' + query_data.keywords + '*');
+        query_data.keywords.split(' ').forEach((curr)=>{
+            if(curr){
+                match += '+'+curr+' ';
+            }
+        });
+        params.push(match + '*');
     }
     sql += " inner join ?? br on bo.recipient_id = br.id";
     params.push(tables.buss_recipient);

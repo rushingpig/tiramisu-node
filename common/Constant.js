@@ -98,6 +98,12 @@ Constant.PS = {
     AUDITING : 'AUDITING',
     REPRINTABLE : 'REPRINTABLE'
 };
+Constant.PTSD = {
+    PRINTABLE : '否',
+    UNPRINTABLE : '是',
+    AUDITING : '是',
+    REPRINTABLE : '否'
+};
 /**
  * the type of pay for
  * @type {{}}
@@ -106,13 +112,16 @@ Constant.PFT = {
     CASH : 'CASH',
     FULL_REFUND:'FULL_REFUND'
 };
-
+/**
+ * the data scop for different role to see
+ * @type {{}}
+ */
 Constant.DS = {
     ALLCOMPANY : 1,         // 公司所有数据
     OFFICEANDCHILD : 2,     // 部门及子公司
     OFFICE : 3,             // 本部门
-    STATION : 4,            // 本配送站
-    CITY : 5,                // 本城市下的所有配送站
+    STATION : 4,            // 本配送站订单及配送员列表
+    CITY : 5,                // 本城市下的所有配送站订单及配送员
     SELF_DELIVERY : 6        // 分给自己(配送员)的订单
 };
 

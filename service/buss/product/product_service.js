@@ -50,7 +50,7 @@ ProductService.prototype.getCategories = (req, res, next)=> {
 ProductService.prototype.listProducts = (req, res, next) => {
     let product_name = req.query.name,
         category_id = req.query.category_id,
-        regionalism_id = req.query.regionalism_id,
+        regionalism_id = req.query.city_id,
         page_no = req.query.page_no,
         page_size = req.query.page_size;
     let res_data = {

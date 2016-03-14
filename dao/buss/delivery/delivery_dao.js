@@ -166,7 +166,7 @@ DeliveryDao.prototype.findDeliverymansByStation = function(city_id,currentUser){
     params.push(tables.sys_user_role);
     params.push(constant.DELIVERYMAN_ID);
     //sql += " inner join ?? dr on bds.regionalism_id = dr.id and dr.parent_id = ?";
-    if(city_id && !currentUser.is_admin){
+    if(city_id && systemUtils.isToFilterDeliverymans(currentUser)){
         sql += " inner join ?? dr on dr.id = su.city_id and dr.id = ?";
         params.push(tables.dict_regionalism);
         params.push(city_id);

@@ -47,7 +47,7 @@ ProductDao.prototype.findProductsCount = function(product_name,category_id,regio
     }
     if(regionalism_id){
         sql += " and bps.regionalism_id = ?";
-        parmas.push(regionalism_id);
+        params.push(regionalism_id);
     }
     sql += ' group by bp.id,bps.size';
     return baseDao.select(dbHelper.countSql(sql),params).then((results)=>{

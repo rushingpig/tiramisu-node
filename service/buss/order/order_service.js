@@ -26,7 +26,9 @@ var res_obj = require('../../../util/res_obj'),
   OrderDao = dao.order,
   orderDao = new OrderDao(),
   util = require('util'),
-  config = require('../../../config');
+  config = require('../../../config'),
+  order_excel_caption = require('../../../config/excel/OrderTpl'),
+  xlsx = require('node-xlsx');
 function OrderService() {
 }
 /**
@@ -941,18 +943,197 @@ OrderService.prototype.exceptionOrder = (req,res,next)=>{
  * @param next
  */
 OrderService.prototype.exportExcel = (req,res,next) => {
-  var xlsx = require('node-xlsx');
+  req.checkQuery('entrance','请确认要导出订单的来源...').notEmpty();
+  let errors = req.validationErrors();
+  if (errors) {
+    res.api(res_obj.INVALID_PARAMS, errors);
+    return;
+  }
+  //if(!(req.query.begin_time || req.query.end_time)){
+  //  req.query.begin_time = new Date();
+  //  req.query.end_time = new Date();
+  //}
+  let entrance = req.query.entrance,data = [],fileName = '',isList = false,isReceiveList = false;
+  let query_data = {
+    delivery_type : req.query.delivery_type,
+    begin_time: req.query.begin_time,
+    end_time: req.query.end_time,
+    is_deal: req.query.is_deal,
+    is_submit: req.query.is_submit,
+    src_id: req.query.src_id,
+    status: req.query.status,
+    city_id: req.query.city_id,
+    owner_mobile: req.query.owner_mobile,
+    delivery_id: req.query.delivery_id,
+    deliveryman_id: req.query.deliveryman_id,
+    print_status: req.query.print_status,
+    is_greeting_card: req.query.is_greeting_card,
+    user : req.session.user,
+    page_no : 0,
+    page_size : 2   // safe Threshold
+  };
+  if (req.query.keywords && isNaN(parseInt(req.query.keywords))) {
+    query_data.keywords = systemUtils.encodeForFulltext(req.query.keywords);
+  } else {
+    query_data.keywords = req.query.keywords;
+  }
+  query_data.order_sorted_rules = entrance;
+  if (entrance === Constant.OSR.LIST) {
+    data.push(order_excel_caption.order_caption);
+    fileName = '订单列表_'+dateUtils.format(new Date())+'.xlsx';
+    isList = true;
+  } else if (entrance === Constant.OSR.DELIVERY_EXCHANGE) {
+    query_data.status = Constant.OS.STATION;
+  } else if (entrance === Constant.OSR.DELIVER_LIST) {
+    let sts = [Constant.OS.CONVERT, Constant.OS.INLINE];
+    if(query_data.status && sts.indexOf(query_data.status) === -1){
+      return res.api(res_obj.NO_MORE_PAGE_RESULTS,'can not find the order status not beyond this scope...');
+    }
+    query_data.status = query_data.status || sts;
+  } else if (entrance === Constant.OSR.RECEIVE_LIST) {
+    data.push(order_excel_caption.delivery_caption);
+    fileName = '配送单列表_'+dateUtils.format(new Date())+'.xlsx';
+    isReceiveList = true;
+    let sts = [Constant.OS.DELIVERY, Constant.OS.COMPLETED, Constant.OS.EXCEPTION];
+    if(query_data.status && sts.indexOf(query_data.status) === -1){
+      return res.api(res_obj.NO_MORE_PAGE_RESULTS,'can not find the order status not beyond this scope...');
+    }
+    query_data.status = query_data.status || sts;
+  }else{
+    delete query_data.order_sorted_rules;
+  }
+  let result_map = new Map();
+  let promise = orderDao.findOrderList(query_data).then((resObj) => {
+    if (!(resObj.result && resObj._result)) {
+      throw new TiramisuError(res_obj.FAIL);
+    } else if (toolUtils.isEmptyArray(resObj._result)) {
+      throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);
+    }
+    for (let curr of resObj._result) {
+      let delivery_adds = [],city_name = '';
+      if(curr.merger_name){
+        delivery_adds = curr.merger_name.split(',');
+        city_name = delivery_adds[2];
+      }
 
-  var fileName = "订单列表.xlsx";
+      delivery_adds.shift();
+//  do not change the order in the object
+      let list_obj = null;
+      if(isList){
+        list_obj = {
+            order_id: systemUtils.getShowOrderId(curr.id, curr.created_time),
+            src_name: curr.src_name,
+            accepted_by: curr.created_by,
+            accepted_time: curr.created_time,
+            owner_name: curr.owner_name,
+            owner_mobile: curr.owner_mobile,
+            created_time: curr.created_time,
+            recipient_name: curr.recipient_name,
+            recipient_mobile: curr.recipient_mobile,
+            recipient_address: delivery_adds.join(',') + '  '+curr.address,
+            delivery_type: Constant.DTD[curr.delivery_type],
+            shop_name : curr.delivery_type == Constant.DT.COLLECT ? curr.address : '',
+            pay_modes_name : curr.pay_modes_name,
+            print_status: Constant.PSD[curr.print_status],
+            total_original_price: curr.total_original_price,
+            total_discount_price: curr.total_discount_price,
+            coupon_amount : '',
+            status : Constant.OSD[curr.status],
+            delivery_time: curr.delivery_time,
+            delivery_name: curr.delivery_name,
+            invoice : curr.invoice,
+            coupon: curr.coupon,
+            city: city_name,
+            cancel_reason: curr.cancel_reason,
+            remarks: curr.remarks,
+//  the products properties
+            product_names : '',
+            sizes : '',
+            nums : '',
+            discount_prices : '',
+            amounts : '',
+            greeting_cards : '',
+            choco_boards : '',
+            atlases : ''
+        };
+      }else if(isReceiveList){
+        list_obj = {
+          order_id: systemUtils.getShowOrderId(curr.id, curr.created_time),
+          owner_name: curr.owner_name,
+          owner_mobile: curr.owner_mobile,
+          accepted_time: curr.created_time,
+          src_name: curr.src_name,
+          recipient_name: curr.recipient_name,
+          recipient_mobile: curr.recipient_mobile,
+          recipient_address: delivery_adds.join(',') + '  '+curr.address,
+          delivery_time: curr.delivery_time,
+          pay_modes_name : curr.pay_modes_name,
+          delivery_name: curr.delivery_name,
+          accepted_by: curr.created_by,
+          status : Constant.OSD[curr.status],
+          deliveryman_name : curr.deliveryman_name,
+          signin_time : curr.signin_time,
+          cost : '',
+          total_discount_price: curr.total_discount_price,
+//  the products properties
+          nums : '',
+          product_names : '',
+          sizes : '',
+          discount_prices : '',
+          amounts : ''
+        };
+      }
 
+      result_map.set(curr.id,list_obj);
+    }
+  }).then(()=>{
 
-  var buffer = xlsx.build([{name: "订单列表", data: data}]); // returns a buffer
-  res.set({
-    'Content-Type': 'application/vnd.ms-excel',
-    'Content-Disposition':  "attachment;filename="+encodeURIComponent(fileName) ,
-    'Pragma':'no-cache',
-    'Expires': 0
+    let order_ids = Array.from(result_map.keys());
+
+    return orderDao.findOrderById(order_ids).then((results)=>{
+      if(results){
+        results.forEach((curr)=>{
+          if(result_map.has(curr.id)){
+            let order_obj = result_map.get(curr.id);
+            if(isList){
+              // avoid the data in db null been convert to string 'null'
+              order_obj.product_names += curr.product_name ? curr.product_name : '' + ',';
+              order_obj.sizes += curr.size ? curr.size : '' + ',';
+              order_obj.nums += curr.num ? curr.num : '' + ',';
+              order_obj.discount_prices += curr.discount_price ? curr.discount_price : '' + ',';
+              order_obj.amounts += curr.amount ? curr.amount : '' + ',';
+              order_obj.greeting_cards += curr.greeting_card ? curr.greeting_card : '' + ',';
+              order_obj.choco_boards += curr.choco_board ? curr.choco_board : '' + ',';
+              order_obj.atlases += curr.atlas ? '需要' : '不需要' + ',';
+            }else if(isReceiveList){
+              order_obj.nums += curr.num ? curr.num : '' + ',';
+              order_obj.product_names += curr.product_name ? curr.product_name : '' + ',';
+              order_obj.sizes += curr.size ? curr.size : '' + ',';
+              order_obj.discount_prices += curr.discount_price ? curr.discount_price : '' + ',';
+              order_obj.amounts += curr.amount ? curr.amount : '' + ',';
+            }
+          }
+        });
+      }
+    }).then(()=>{
+      for(let obj of result_map.values()){
+        let order_data = [];
+        for(let key in obj){
+          order_data.push(obj[key]);
+        }
+        data.push(order_data);
+      }
+      let buffer = xlsx.build([{name: "订单列表", data: data}]); // returns a buffer
+      res.set({
+        'Content-Type': 'application/vnd.ms-excel',
+        'Content-Disposition':  "attachment;filename="+encodeURIComponent(fileName) ,
+        'Pragma':'no-cache',
+        'Expires': 0
+      });
+      res.send(buffer);
+    });
+
   });
-  res.send(buffer);
+  systemUtils.wrapService(res, next, promise);
 };
 module.exports = new OrderService();

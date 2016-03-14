@@ -7,7 +7,8 @@ var dateUtils = require('./DateUtils'),
   Constant = require('./Constant'),
   res_obj = require('../util/res_obj'),
   geolib = require('geolib'),
-  version = require('../package.json').version;
+  version = require('../package.json').version,
+  constant = require('./Constant');
 
 module.exports = {
   /**
@@ -145,5 +146,13 @@ module.exports = {
       };
     }
     res.render('index', {isLogin: userInfo ? true : false, user: JSON.stringify(user),version : version});
+  },
+  isToFilterDeliverymans : (user) => {
+    return !user.is_admin &&
+        (
+          user.data_scopes.indexOf(constant.DS.STATION) !== -1
+          || user.data_scopes.indexOf(constant.DS.CITY) !== -1
+        );
   }
+
 };

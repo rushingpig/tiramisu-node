@@ -1,5 +1,5 @@
 /**
- * @des    :
+ * @des    : get the provinces / cities / districts
  * @author : pigo.can
  * @date   : 15/12/16 下午2:43
  * @email  : zhenglin.zhu@xfxb.net

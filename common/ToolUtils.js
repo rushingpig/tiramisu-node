@@ -13,7 +13,7 @@ ToolUtils.isEmptyObject = function (object) {
 
 ToolUtils.isInt = function (param) {
   //return stringValidator.isInt(param, {min: 0});
-  return Number.isInteger();
+  return Number.isInteger() || !isNaN(parseInt(param));
 };
 
 ToolUtils.sum = function (arr) {

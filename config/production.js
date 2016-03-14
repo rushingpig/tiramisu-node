@@ -113,7 +113,15 @@ var mysql_options = {
 //  exclude path arrays of login filter
 var exclude_paths = ['/','/v1/a/login','/payment'];
 
-var white_ips = ['1','127.0.0.1'];
+var white_ips = [
+    '1',
+    '127.0.0.1',
+    // xfxb_ecommerce
+    '112.74.135.144',
+    '10.46.89.45',
+    '120.76.25.32'
+];
+
 var log4js_options = {
     reloadSecs: 3000 ,   // the interval to reload the log4js config file
     cwd : './log/'
@@ -125,7 +133,7 @@ var ping_xx = {
 
 var sms_host = "http://127.0.0.1:3000/sms/internal";
 
-var coupon_host = "http://localhost:3000";
+var coupon_host = "http://xfxb-qa:3000";
 
 var login_required = true;
 

@@ -107,7 +107,12 @@ module.exports = {
           str += curr_char;
           continue;
         }
-        str += (' '+encodeURIComponent(curr_char).replace(/%/g, '') + ' ');
+        try{
+          str += (' '+encodeURIComponent(curr_char).replace(/%/g, '') + ' ');
+        }catch(e){
+          logger.warn('encode the obj['+obj+']exception',e);
+        }
+
       }
     }
     return str;

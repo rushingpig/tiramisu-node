@@ -95,7 +95,7 @@ var mysql_options = {
     acquireTimeout  : 10000,
     waitForConnections : true,
     queueLimit      : 100,
-    connectionLimit : 50,
+    connectionLimit : 5,
     host            : 'localhost',
     port            : 3306,
     user            : 'root',

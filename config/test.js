@@ -87,8 +87,8 @@ var tables = {
 var mysql_options = {
     acquireTimeout  : 10000,
     waitForConnections : true,
-    queueLimit      : 100,
-    connectionLimit : 50,
+    queueLimit      : 3,
+    connectionLimit : 3,
     host            : '120.76.25.32',
     port            : 3307,
     user            : 'xfxb_qa',

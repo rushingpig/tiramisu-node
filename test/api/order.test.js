@@ -49,7 +49,7 @@ module.exports = function () {
 
     it('POST /v1/a/order correct request', function (done) {
       const req_body = {
-        "delivery_time": "2016-01-05 13:00～14:00",
+        "delivery_time": "2016-01-05 13:00~14:00",
         "owner_mobile": "13309879988",
         "recipient_mobile": "13309879988",
         "delivery_id": 1,
@@ -133,7 +133,7 @@ module.exports = function () {
         "owner_name": "梁展钊",
         "owner_mobile": "13760000000",
         "remarks": "有赞订单",
-        "delivery_time": "2016-01-05 13:00～14:00",
+        "delivery_time": "2016-01-05 13:00~14:00",
         "delivery_type": "DELIVERY",
         "total_amount": 48000,
         "total_original_price": 60000,
@@ -206,7 +206,7 @@ module.exports = function () {
         "owner_name": "梁展钊",
         "owner_mobile": "13760000000",
         "remarks": "有赞订单",
-        "delivery_time": "2016-01-05 13:00～14:00",
+        "delivery_time": "2016-01-05 13:00~14:00",
         "delivery_type": "DELIVERY",
         "total_amount": 48000,
         "total_original_price": 60000,
@@ -279,7 +279,7 @@ module.exports = function () {
         "owner_name": "",
         "owner_mobile": "13760000000",
         "remarks": "有赞订单",
-        "delivery_time": "2016-01-05 13:00～14:00",
+        "delivery_time": "2016-01-05 13:00~14:00",
         "delivery_type": "DELIVERY",
         "total_amount": 48000,
         "total_original_price": 60000,

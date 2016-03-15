@@ -52,7 +52,11 @@ module.exports = {
     }
   },
   'delivery_time': {
-    optional: true
+    optional: true,
+    matches: {
+      options: [/\d{4}-\d{2}-\d{2} \d{2}:\d{2}~\d{2}:\d{2}/],
+      errorMessage: 'Sample: 2016-01-18 19:30~20:30'
+    }
   },
   'total_amount': {
     notEmpty: true,

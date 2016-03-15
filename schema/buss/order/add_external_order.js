@@ -52,7 +52,7 @@ module.exports = {
     }
   },
   'delivery_time': {
-    notEmpty: true
+    optional: true
   },
   'total_amount': {
     notEmpty: true,

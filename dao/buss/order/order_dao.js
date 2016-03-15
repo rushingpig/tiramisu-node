@@ -770,7 +770,6 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
         regionalism_id = req.body.regionalism_id,
         recipient_address = req.body.recipient_address,
         recipient_landmark = req.body.recipient_landmark,
-        delivery_id = req.body.delivery_id,
         src_id = req.body.src_id >= 10000? srcIdMapping.get(req.body.src_id): req.body.src_id,
         pay_modes_id = req.body.pay_modes_id,
         pay_status = req.body.pay_status,
@@ -821,7 +820,8 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                 let orderObj = {
                     //office_id : req.session.user.office_id,
                     recipient_id: recipientId,
-                    delivery_id: delivery_id,
+                    // force not setting the delivery station id
+                    delivery_id: -1,
                     src_id: src_id,
                     pay_modes_id: pay_modes_id,
                     pay_status: pay_status,

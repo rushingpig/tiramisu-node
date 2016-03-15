@@ -70,10 +70,6 @@ module.exports = {
     notEmpty: true,
     isFloat: true
   },
-  'delivery_id': {
-    notEmpty: true,
-    isInt: true
-  },
   'merchant_id': {
     notEmpty: true
   },

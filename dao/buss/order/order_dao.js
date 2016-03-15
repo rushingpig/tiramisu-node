@@ -783,7 +783,8 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
         products = req.body.products,
         prefix_address = req.body.prefix_address,
         greeting_card = req.body.greeting_card,
-        coupon = req.body.coupon;
+        coupon = req.body.coupon,
+        merchant_id = req.body.merchant_id;;
     let recipientObj = {
         regionalism_id: regionalism_id,
         name: recipient_name,
@@ -837,7 +838,8 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                     total_original_price: total_original_price,
                     total_discount_price: total_discount_price,
                     greeting_card: greeting_card,
-                    coupon : coupon
+                    coupon : coupon,
+                    merchant_id : merchant_id
                 };
                 // order
                 trans.query(this.base_insert_sql,[tables.buss_order,systemUtils.assembleInsertObj(req,orderObj)],(order_err,result)=>{
@@ -869,7 +871,8 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                         recipient_name: systemUtils.encodeForFulltext(recipient_name),
                         recipient_mobile: recipient_mobile,
                         recipient_address: systemUtils.encodeForFulltext(prefix_address + recipient_address),
-                        landmark: systemUtils.encodeForFulltext(recipient_landmark)
+                        landmark: systemUtils.encodeForFulltext(recipient_landmark),
+                        merchant_id : merchant_id
                     };
                     let order_history_obj = {
                         order_id: orderId,

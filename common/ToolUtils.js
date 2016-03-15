@@ -3,6 +3,8 @@ var validator = require('validate.js');
 var stringValidator = require('validator');
 var ToolUtils = {};
 
+ToolUtils.SPECIAL_CHAR_REG = /((?=[\x21-\x7e]+)[^A-Za-z0-9])+/g;
+
 ToolUtils.isEmptyArray = function (array) {
   return !array || (validator.isArray(array) && validator.isEmpty(array));
 };
@@ -98,6 +100,10 @@ ToolUtils.hash = function (input) {
   } while (value >>= 6);
 
   return retValue;
+};
+
+ToolUtils.isConstainSpecialCharacter = function(string){
+  return ToolUtils.SPECIAL_CHAR_REG.test(string);
 };
 /**
  * get the client ip

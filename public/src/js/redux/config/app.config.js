@@ -90,6 +90,16 @@ export default {
     'UNPRINTABLE': '是',
     'AUDITING': '是',
     'REPRINTABLE': '否',
+  },
+  SRC: {
+    group_site: 3, //团购网站
+    youzan: 29, //有赞微商城
+    telephone400: 2, //400电话
+  },
+  MODES: {
+    group_psd: 4, //团购密码
+    wechat: 13, //微信支付
+    cash: 18, //货到付款（现金）
+    card: 19, //货到付款（POS）
   }
-
 }

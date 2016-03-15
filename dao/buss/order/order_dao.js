@@ -843,6 +843,9 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                 };
                 // order
                 trans.query(this.base_insert_sql,[tables.buss_order,systemUtils.assembleInsertObj(req,orderObj)],(order_err,result)=>{
+                    if (order_err && order_err.code === 'ER_DUP_ENTRY') {
+                        return reject(new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, orderObj.merchant_id));
+                    }
                     if (order_err || !result.insertId) {
                         if (trans.rollback) trans.rollback();
                         reject(order_err || new TiramisuError(errorMessage.FAIL));

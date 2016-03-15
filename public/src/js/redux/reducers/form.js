@@ -140,7 +140,7 @@ function getPayModesId(state, action){
       return {value: SELECT_DEFAULT_VALUE};
     }else{
       if(isSrc('团购网站', src_id)){
-        return { value: getMode('团购券').id }; //团购券id（TODO）
+        return { value: getMode('团购密码').id }; //团购密码id
       }else if(isSrc('有赞微商城', src_id)){  
         return { value: getMode('微信支付').id }; //微信支付id
       }else if(isSrc('400电话', src_id)){
@@ -171,9 +171,9 @@ function getPayStatus(state, action){
         var { orderManageForm: { products: { confirm_list }}} = getGlobalState();
         //属于团购网站
         if(confirm_list.length > 1 || (confirm_list[0] && confirm_list[0].num > 1)){
-          return { value: 'PARTPAYED' }; //部分付款（TODO）
+          return { value: 'PARTPAYED' }; //部分付款
         }else{
-          return { value: 'PAYED' }; //已付款（TODO）
+          return { value: 'PAYED' }; //已付款
         }
       }else if(isSrc('有赞微商城', src_id)){
         return { value: 'PAYED'};

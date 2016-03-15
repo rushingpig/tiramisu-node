@@ -819,7 +819,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                 }
                 let recipientId = info.insertId;
                 let orderObj = {
-                    office_id : req.session.user.office_id,
+                    //office_id : req.session.user.office_id,
                     recipient_id: recipientId,
                     delivery_id: delivery_id,
                     src_id: src_id,

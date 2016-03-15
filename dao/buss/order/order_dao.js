@@ -260,7 +260,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
     params.push(tables.buss_order);
     if (query_data.keywords) {
         let match = '';
-        sql += " inner join ?? bof on match(bof.owner_name,bof.owner_mobile,bof.recipient_name,bof.recipient_mobile,bof.recipient_address,bof.landmark,bof.show_order_id) against(? IN BOOLEAN MODE) and bof.order_id = bo.id";
+        sql += " inner join ?? bof on match(bof.owner_name,bof.owner_mobile,bof.recipient_name,bof.recipient_mobile,bof.recipient_address,bof.landmark,bof.show_order_id,bof.merchant_id) against(? IN BOOLEAN MODE) and bof.order_id = bo.id";
         params.push(tables.buss_order_fulltext);
         query_data.keywords.split(' ').forEach((curr)=>{
             if(curr){

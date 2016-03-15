@@ -50,6 +50,7 @@ export default formReducer.plugin({
       }
       return {...state};
     }
+    return state;
   },
   add_order: (state, action) => {
   //这里注意：所有的action都会进入，所以得使用以下判断, 以确保当前form为add_order

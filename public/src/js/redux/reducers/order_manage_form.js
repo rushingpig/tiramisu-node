@@ -77,9 +77,9 @@ function mainForm(state = initial_state, action) {
     case FormActions.GOT_COPY_ORDER_BY_ID:
       return (function(){
         var {data} = action;
-        var tmp = data.delivery_time.split(' ');
-        data.delivery_date = tmp[0];
-        data.delivery_hours = tmp[1];
+        var tmp = data.delivery_time && data.delivery_time.split(' '); //天猫没有delivery_time
+        data.delivery_date = data.delivery_time && tmp[0];
+        data.delivery_hours = data.delivery_time && tmp[1];
         //门店自提
         if(data.delivery_type == DELIVERY_TO_STORE){
           data.recipient_shop_address = data.recipient_address;

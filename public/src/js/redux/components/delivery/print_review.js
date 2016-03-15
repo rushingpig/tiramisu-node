@@ -9,7 +9,6 @@ import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import Pagination from 'common/pagination';
 import StdModal from 'common/std_modal';
-import LineRouter from 'common/line_router';
 import RadioGroup from 'common/radio_group';
 import { tableLoader } from 'common/loading';
 
@@ -21,16 +20,9 @@ import LazyLoad from 'utils/lazy_load';
 import * as OrderActions from 'actions/orders';
 import * as DeliverPrintReviewActions from 'actions/delivery_print_review';
 
-class TopHeader extends Component {
-  render(){
-    return (
-      <div className="clearfix top-header">
-        <LineRouter 
-          routes={[{name: '送货单管理', link: '/dm/change'}, {name: '打印审核', link: ''}]} />
-      </div>
-    )
-  }
-}
+import getTopHeader from '../top_header';
+
+const TopHeader = getTopHeader([{name: '送货单管理', link: '/dm/change'}, {name: '打印审核', link: ''}]);
 
 class FilterHeader extends Component {
   constructor(props){

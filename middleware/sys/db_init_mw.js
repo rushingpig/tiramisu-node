@@ -6,12 +6,23 @@ var pool = require('../../dao/base_dao').pool;
 function DBInitMiddleware() {}
 
 function loadSQL() {
-  let filePath = path.join(__dirname, '../../sql/tiramisu.sql');
-  let sql = fs.readFileSync(filePath, {
-    flag: 'rs',
-    encoding: 'utf-8'
+  const filePaths = [
+    '../../sql/tiramisu.sql',
+    '../../sql/iteration.sql'
+  ];
+  const sql = [];
+  filePaths.forEach(filePath => {
+    sql.push(
+      fs.readFileSync(
+        path.join(__dirname, filePath),
+        {
+          flag: 'rs',
+          encoding: 'utf-8'
+        }
+      )
+    );
   });
-  return sql;
+  return sql.join('\n');
 }
 
 DBInitMiddleware.initdb = (callback) => {

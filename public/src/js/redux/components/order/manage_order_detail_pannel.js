@@ -7,6 +7,7 @@ import AreaActions from 'actions/area';
 import * as OrderFormActions from 'actions/order_manage_form';
 import * as FormActions from 'actions/form';
 import { ProductsModalActionTypes } from 'actions/action_types';
+import { resetOrderStore } from 'actions/orders';
 
 import DatePicker from 'common/datepicker';
 import Alert from 'common/alert';
@@ -33,11 +34,9 @@ class ManageOrderDetailPannel extends Component {
     var { mainForm, delivery_stations, history_orders, area, dispatch, products, products_area_filter, params } = this.props;
     var editable = !!(params && params.id);
 
-    var actions = {
-      ...bindActionCreators(AreaActions(), dispatch), 
-      ...bindActionCreators(OrderFormActions, dispatch),
-      ...bindActionCreators(FormActions, dispatch),
-    };
+    var actions = bindActionCreators(
+      {...AreaActions(), ...OrderFormActions, ...FormActions, resetOrderStore}, dispatch
+    );
 
     mainForm = {...mainForm, ...delivery_stations};
     var manageOrderProducts = (

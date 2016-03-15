@@ -13,7 +13,7 @@ import HistoryOrders from './manage_history_orders';
 import { isSrc } from 'reducers/form';
 
 import { DELIVERY_TO_HOME, DELIVERY_TO_STORE,
-  SELECT_DEFAULT_VALUE, INVOICE } from 'config/app.config';
+  SELECT_DEFAULT_VALUE, INVOICE, SRC } from 'config/app.config';
 import autoMatchDeliveryStations from 'mixins/map';
 import FormFields from 'config/form.fields';
 
@@ -61,7 +61,7 @@ const validate = (values, props) => {
   }
 
   //团购密码
-  if( isSrc('团购网站', values.src_id) ){
+  if( isSrc(SRC.group_site, values.src_id) ){
     if (form['coupon'] && form['coupon'].touched && !values['coupon'] || (form['coupon'] && !form['coupon'].focus && values['coupon'] && !uForm.isCoupon(values['coupon']))){
       errors['coupon'] = msg;
     }
@@ -126,7 +126,7 @@ class ManageAddForm extends Component {
     var {provinces, cities, districts, delivery_shops} = this.props.area;
     var {invoices, selected_order_src_level1_id = src_id.value, groupbuy_psd, groupbuy_check_ing, groupbuy_msg, groupbuy_success} = this.state;
 
-    var isThird = isSrc('团购网站', src_id.value); //是否第三方，显示团购密码组件
+    var isThird = isSrc(SRC.group_site, src_id.value); //是否第三方，显示团购密码组件
     
     //{{表单处于编辑状态时的额外处理
     if(editable && !this.editable_initial){
@@ -187,7 +187,7 @@ class ManageAddForm extends Component {
         <Select ref="province" options={provinces} {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} className="form-select" />{' '}
         <Select ref="city" options={cities} {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} />{' '}
         <Select ref="district" options={districts} {...regionalism_id} onChange={this.onDistrictChange.bind(this, regionalism_id.onChange)} className={`${regionalism_id.error}`} />{' '}
-        <input ref="recipient_address" {...recipient_address} className={`form-control input-xs ${recipient_address.error} ${delivery_type.value == DELIVERY_TO_HOME ? '' : 'hidden'}`} type="text" />
+        <input ref="recipient_address" {...recipient_address} className={`form-control input-xs ${recipient_address.error} ${delivery_type.value == DELIVERY_TO_HOME ? '' : 'hidden'}`} style={{width: 193}} type="text" />
         <Select ref="shop" options={delivery_shops} {...recipient_shop_address} className={`${recipient_shop_address.error} ${delivery_type.value == DELIVERY_TO_HOME ? 'hidden' : ''}`} />
       </div>
       {
@@ -335,7 +335,7 @@ class ManageAddForm extends Component {
           form_data.recipient_landmark = '';
         }
         //团购密码验证
-        if( isSrc('团购网站', form_data.src_id) ){
+        if( isSrc(SRC.group_site, form_data.src_id) ){
           if( !this.state.groupbuy_checked ){
             Noty('warning', '请确定团购密码已验证通过'); return;
           }
@@ -354,8 +354,10 @@ class ManageAddForm extends Component {
     this.props.actions.createOrder(form_data)
       .done(function(){
         Noty('success', '保存成功');
+        this.props.actions.resetOrderStore(); //重置order_manage状态
+        this.props.actions.destroyForm('order_manage_filter'); //重置order_manage 过滤条件
         history.push('/om/index');
-      })
+      }.bind(this))
       .fail(function(msg, code){
         Noty('error', msg || '保存异常');
       });

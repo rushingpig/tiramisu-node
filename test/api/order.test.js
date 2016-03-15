@@ -49,7 +49,7 @@ module.exports = function () {
 
     it('POST /v1/a/order correct request', function (done) {
       const req_body = {
-        "delivery_time": "2016-01-05 13:00～14:00",
+        "delivery_time": "2016-01-05 13:00~14:00",
         "owner_mobile": "13309879988",
         "recipient_mobile": "13309879988",
         "delivery_id": 1,
@@ -133,7 +133,7 @@ module.exports = function () {
         "owner_name": "梁展钊",
         "owner_mobile": "13760000000",
         "remarks": "有赞订单",
-        "delivery_time": "2016-01-05 13:00～14:00",
+        "delivery_time": "2016-01-05 13:00~14:00",
         "delivery_type": "DELIVERY",
         "total_amount": 48000,
         "total_original_price": 60000,
@@ -206,7 +206,7 @@ module.exports = function () {
         "owner_name": "梁展钊",
         "owner_mobile": "13760000000",
         "remarks": "有赞订单",
-        "delivery_time": "2016-01-05 13:00～14:00",
+        "delivery_time": "2016-01-05 13:00~14:00",
         "delivery_type": "DELIVERY",
         "total_amount": 48000,
         "total_original_price": 60000,
@@ -253,16 +253,170 @@ module.exports = function () {
           }
         ]
       };
-      const res_body_second = {
-        "code": "2007",
-        "msg": "This order is in system already",
-        "data": {},
-        "err": 'e123'
+      agent.post('/v1/i/order')
+        .type('application/json')
+        .send(req_body)
+        .end((err, res) => {
+          assert.strictEqual(res.body.code, '2007');
+          assert.strictEqual(res.statusCode, 200);
+          done();
+        });
+    });
+
+    it('POST /v1/i/order with coupon', function (done) {
+      const req_body = {
+        "regionalism_id": 330204,
+        "recipient_name": "有赞收货员",
+        "recipient_mobile": "13760008615",
+        "recipient_landmark": "",
+        "recipient_address": "丽雅查尔顿酒店",
+        "delivery_id": -1,
+        "src_id": 6,
+        "pay_modes_id": 3,
+        "pay_status": "PAYED",
+        "owner_name": "梁展钊",
+        "owner_mobile": "13760000000",
+        "remarks": "有赞订单",
+        "delivery_time": "2016-01-05 13:00~14:00",
+        "delivery_type": "DELIVERY",
+        "total_amount": 48000,
+        "total_original_price": 60000,
+        "total_discount_price": 12000,
+        "merchant_id": "e12345",
+        "coupon": '123456',
+        "products": [
+          {
+            "product_id": 1,
+            "name": "zhang",
+            "size": "zhang1",
+            "category_name": "类型1",
+            "original_price": 20000,
+            "sku_id": 22,
+            "website": "website2",
+            "discount_price": 180,
+            "is_local_site": "0",
+            "is_delivery": "1",
+            "num": 2,
+            "choco_board": "巧克力牌xxx",
+            "greeting_card": "祝福语xxx",
+            "atlas": true,
+            "custom_name": "自定义名称xxx",
+            "custom_desc": "自定义描述xxx",
+            "amount": 360
+          },
+          {
+            "product_id": 2,
+            "name": "li",
+            "size": "li3",
+            "category_name": "类型3",
+            "original_price": 20000,
+            "sku_id": 24,
+            "website": "website3",
+            "discount_price": 300,
+            "is_local_site": "1",
+            "is_delivery": "1",
+            "num": 5,
+            "choco_board": "巧克力牌xxx",
+            "greeting_card": "祝福语xxx",
+            "atlas": true,
+            "custom_name": "自定义名称xxx",
+            "custom_desc": "自定义描述xxx",
+            "amount": 1500
+          }
+        ]
       };
       agent.post('/v1/i/order')
         .type('application/json')
         .send(req_body)
-        .expect(200, res_body_second, err(done));
+        .end((err, res) => {
+          assert.strictEqual(res.body.code, '0000');
+          assert.strictEqual(res.statusCode, 200);
+          done();
+        });
+    });
+
+    it('POST /v1/i/order wrong delivery_time', function (done) {
+      const req_body = {
+        "regionalism_id": 330204,
+        "recipient_name": "有赞收货员",
+        "recipient_mobile": "13760008615",
+        "recipient_landmark": "",
+        "recipient_address": "丽雅查尔顿酒店",
+        "delivery_id": -1,
+        "src_id": 6,
+        "pay_modes_id": 3,
+        "pay_status": "PAYED",
+        "owner_name": "梁展钊",
+        "owner_mobile": "13760000000",
+        "remarks": "有赞订单",
+        "delivery_time": "2016-01-05 13:00-14:00",
+        "delivery_type": "DELIVERY",
+        "total_amount": 48000,
+        "total_original_price": 60000,
+        "total_discount_price": 12000,
+        "merchant_id": "e123",
+        "products": [
+          {
+            "product_id": 1,
+            "name": "zhang",
+            "size": "zhang1",
+            "category_name": "类型1",
+            "original_price": 20000,
+            "sku_id": 22,
+            "website": "website2",
+            "discount_price": 180,
+            "is_local_site": "0",
+            "is_delivery": "1",
+            "num": 2,
+            "choco_board": "巧克力牌xxx",
+            "greeting_card": "祝福语xxx",
+            "atlas": true,
+            "custom_name": "自定义名称xxx",
+            "custom_desc": "自定义描述xxx",
+            "amount": 360
+          },
+          {
+            "product_id": 2,
+            "name": "li",
+            "size": "li3",
+            "category_name": "类型3",
+            "original_price": 20000,
+            "sku_id": 24,
+            "website": "website3",
+            "discount_price": 300,
+            "is_local_site": "1",
+            "is_delivery": "1",
+            "num": 5,
+            "choco_board": "巧克力牌xxx",
+            "greeting_card": "祝福语xxx",
+            "atlas": true,
+            "custom_name": "自定义名称xxx",
+            "custom_desc": "自定义描述xxx",
+            "amount": 1500
+          }
+        ]
+      };
+      agent.post('/v1/i/order')
+        .type('application/json')
+        .send(req_body)
+        .end((err, res) => {
+          assert.deepEqual(
+            res.body,
+            {
+              "code": "9997",
+              "data": {},
+              "err": [
+                {
+                  "msg": "Sample: 2016-01-18 19:30~20:30",
+                  "param": "delivery_time",
+                  "value": "2016-01-05 13:00-14:00"
+                }
+              ],
+              "msg": "非法请求参数..."
+            });
+          assert.strictEqual(res.statusCode, 200);
+          done();
+        });
     });
 
     it('POST /v1/i/order empty buyer_nick E20160211222845015655359', function (done) {
@@ -279,7 +433,7 @@ module.exports = function () {
         "owner_name": "",
         "owner_mobile": "13760000000",
         "remarks": "有赞订单",
-        "delivery_time": "2016-01-05 13:00～14:00",
+        "delivery_time": "2016-01-05 13:00~14:00",
         "delivery_type": "DELIVERY",
         "total_amount": 48000,
         "total_original_price": 60000,

@@ -1,9 +1,9 @@
 import { reducer as formReducer, actionTypes } from 'redux-form';
 // import store from 'stores/configureStore'; //循环引用
 import { getGlobalStore, getGlobalState } from 'stores/getter';
-import { SELECT_DEFAULT_VALUE, pay_status as PAY_STATUS } from 'config/app.config';
+import { SELECT_DEFAULT_VALUE, pay_status as PAY_STATUS, SRC, MODES } from 'config/app.config';
 import { updateConfirmProductDiscountPrice } from 'actions/order_products';
-import { delay, each } from 'utils/index';
+import { delay, each, getDate, form as FORM } from 'utils/index';
 
 import { REDUX_FORM_REINIT } from 'actions/form';
 import FormFields from 'config/form.fields';
@@ -13,12 +13,12 @@ function preCheck(){
   return pathname.startsWith('/om/index') && getGlobalState();
 }
 
-export function isSrc(name, src_id){
+export function isSrc(special_src_id, src_id){
   if(preCheck()){
     var { orderManageForm: { mainForm: { all_order_srcs }}} = getGlobalState();
     //注意all_order_srcs是一个二维数组，第一个是一级，第二个是二维，src_id可能位于一维，也可能在二维
     if(all_order_srcs.length > 1 && src_id){
-      var src1 = all_order_srcs[0].filter( n => n.name === name)[0] || {};
+      var src1 = all_order_srcs[0].filter( n => n.id === special_src_id)[0] || {};
       if(src1.id == src_id){
         return true;
       }else{
@@ -37,6 +37,21 @@ function getMode(mode_name){
 }
 
 export default formReducer.plugin({
+  order_manage_filter: (state, action) => {
+    if( action && action.form == 'order_manage_filter' ){
+      if(
+        action.field == 'begin_time' && action.value && state.begin_time && FORM.isDate(state.begin_time.value) ){
+        try{
+          var end_time = getDate( state.begin_time.value, 30 );
+        }catch(e){
+          end_time = undefined;
+        }
+        state.end_time = {touched: false, value: end_time, visited: false};
+      }
+      return {...state};
+    }
+    return state;
+  },
   add_order: (state, action) => {
   //这里注意：所有的action都会进入，所以得使用以下判断, 以确保当前form为add_order
     if(action && action.form == 'add_order'){
@@ -104,18 +119,7 @@ export default formReducer.plugin({
       return state;
     }
   },
-  // order_manage_filter: (state, action) => {
-  //   if(action && action.form == 'order_manage_filter'){
-  //     // switch( action.type ){
-  //     //   case actionTypes.CHANGE:
-  //     //     if(action.field == 'src_id' || action.key == 'src_id'){
-  //     //       state.pay_modes_id = {...state.pay_modes_id, ...getPayModesId(state, action)};
-  //     //       state.pay_status = {...state.pay_status, ...getPayStatus(state, action)};
-  //     //     }
-  //     // }
-  //   }
-  // }
-})
+});
 
 function getPayModesId(state, action){
   var src_id = state.src_id.value;
@@ -124,15 +128,13 @@ function getPayModesId(state, action){
     if(action.type == actionTypes.RESET){
       return {value: SELECT_DEFAULT_VALUE};
     }else{
-      if(isSrc('团购网站', src_id)){
-        return { value: getMode('团购券').id }; //团购券id（TODO）
-      }else if(isSrc('有赞微商城', src_id)){  
-        return { value: getMode('微信支付').id }; //微信支付id
-      }else if(isSrc('400电话', src_id)){
-        var mode_cash = getMode('现金');
-        var mode_card = getMode('现金');
-        if(pay_modes_id != mode_cash.id || pay_modes_id != mode_card.id){
-          return { value: mode_cash.id };
+      if(isSrc( SRC.group_site, src_id )){ //团购网站
+        return { value: MODES.group_psd };
+      }else if(isSrc( SRC.youzan, src_id)){ //有赞微商城
+        return { value: MODES.wechat };
+      }else if(isSrc( SRC.telephone400, src_id)){ //400电话
+        if(pay_modes_id != MODES.cash || pay_modes_id != MODES.card){
+          return { value: MODES.cash }; //默认一个
         }
       }else{
         if( action.type == actionTypes.CHANGE ){
@@ -152,17 +154,17 @@ function getPayStatus(state, action){
     if(action.type == actionTypes.RESET){
       return {value: SELECT_DEFAULT_VALUE};
     }else{
-      if(isSrc('团购网站', src_id)){
+      if(isSrc( SRC.group_site, src_id)){ //团购网站
         var { orderManageForm: { products: { confirm_list }}} = getGlobalState();
         //属于团购网站
         if(confirm_list.length > 1 || (confirm_list[0] && confirm_list[0].num > 1)){
-          return { value: 'PARTPAYED' }; //部分付款（TODO）
+          return { value: 'PARTPAYED' }; //部分付款
         }else{
-          return { value: 'PAYED' }; //已付款（TODO）
+          return { value: 'PAYED' }; //已付款
         }
-      }else if(isSrc('有赞微商城', src_id)){
+      }else if(isSrc( SRC.youzan, src_id)){ //有赞微商城
         return { value: 'PAYED'};
-      }else if(isSrc('400电话', src_id)){
+      }else if(isSrc( SRC.telephone400, src_id )){
         return { value: 'COD' }; //货到付款
       }else{
         if( action.type == actionTypes.CHANGE ){

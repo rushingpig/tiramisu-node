@@ -260,7 +260,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
     params.push(tables.buss_order);
     if (query_data.keywords) {
         let match = '';
-        sql += " inner join ?? bof on match(bof.owner_name,bof.owner_mobile,bof.recipient_name,bof.recipient_mobile,bof.recipient_address,bof.landmark,bof.show_order_id) against(? IN BOOLEAN MODE) and bof.order_id = bo.id";
+        sql += " inner join ?? bof on match(bof.owner_name,bof.owner_mobile,bof.recipient_name,bof.recipient_mobile,bof.recipient_address,bof.landmark,bof.show_order_id,bof.merchant_id) against(? IN BOOLEAN MODE) and bof.order_id = bo.id";
         params.push(tables.buss_order_fulltext);
         query_data.keywords.split(' ').forEach((curr)=>{
             if(curr){
@@ -693,6 +693,188 @@ OrderDao.prototype.insertOrderInTransaction = function (req) {
                         recipient_mobile: recipient_mobile,
                         recipient_address: systemUtils.encodeForFulltext(prefix_address + recipient_address),
                         landmark: systemUtils.encodeForFulltext(recipient_landmark)
+                    };
+                    let order_history_obj = {
+                        order_id: orderId,
+                        option: '添加订单'
+                    };
+                    let skus_sql = "insert into " + tables.buss_order_sku + "(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price,amount) values ?";
+                    trans.query(skus_sql, [params], cb);
+                    trans.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], cb);
+                    trans.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], cb);
+                    trans.commit(()=> {
+                        connection.release();
+                        resolve();
+                    });
+                });
+
+            });
+        });
+
+    });
+
+};
+
+const srcIdMapping = new Map(
+    [
+        [ 10000,1 ],
+        [ 10001,2 ],
+        [ 10002,3 ],
+        [ 10003,4 ],
+        [ 10004,5 ],
+        [ 10005,6 ],
+        [ 10006,7 ],
+        [ 10007,8 ],
+        [ 10008,9 ],
+        [ 10009,10 ],
+        [ 10010,11 ],
+        [ 10011,12 ],
+        [ 10012,13 ],
+        [ 10013,14 ],
+        [ 10014,15 ],
+        [ 10015,16 ],
+        [ 10016,17 ],
+        [ 10017,18 ],
+        [ 10018,19 ],
+        [ 10019,20 ],
+        [ 10020,21 ],
+        [ 10021,22 ],
+        [ 10022,23 ],
+        [ 10023,24 ],
+        [ 10024,25 ],
+        [ 10025,26 ],
+        [ 10026,27 ],
+        [ 10027,28 ],
+        [ 11027,29 ],
+        [ 11029,30 ],
+        [ 11030,31 ],
+        [ 12030,32 ],
+        [ 12031,33 ],
+        [ 12032,34 ],
+        [ 12033,35 ],
+        [ 11007,38 ],
+        [ 11012,39 ],
+        [ 11013,40 ],
+        [ 11014,41 ],
+        [ 11015,42 ],
+        [ 12011,43 ],
+        [ 12012,44 ],
+    ]
+);
+OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
+    let delivery_type = req.body.delivery_type,
+        owner_name = req.body.owner_name,
+        owner_mobile = req.body.owner_mobile,
+        recipient_name = req.body.recipient_name,
+        recipient_mobile = req.body.recipient_mobile,
+        regionalism_id = req.body.regionalism_id,
+        recipient_address = req.body.recipient_address,
+        recipient_landmark = req.body.recipient_landmark,
+        delivery_id = req.body.delivery_id,
+        src_id = req.body.src_id >= 10000? srcIdMapping.get(req.body.src_id): req.body.src_id,
+        pay_modes_id = req.body.pay_modes_id,
+        pay_status = req.body.pay_status,
+        delivery_time = req.body.delivery_time,
+        invoice = req.body.invoice,
+        remarks = req.body.remarks,
+        total_amount = req.body.total_amount,
+        total_original_price = req.body.total_original_price,
+        total_discount_price = req.body.total_discount_price,
+        products = req.body.products,
+        prefix_address = req.body.prefix_address,
+        greeting_card = req.body.greeting_card,
+        coupon = req.body.coupon,
+        merchant_id = req.body.merchant_id;
+    let recipientObj = {
+        regionalism_id: regionalism_id,
+        name: recipient_name,
+        mobile: recipient_mobile,
+        landmark: recipient_landmark,
+        delivery_type: delivery_type,
+        address: recipient_address,
+        del_flag: del_flag.SHOW
+    };
+    let trans, connection;
+
+    return baseDao.trans().then((tranconn)=> {
+        trans = tranconn.trans;
+        connection = tranconn.connection;
+        return new Promise((resolve, reject)=> {
+            let cb = function (err_cb) {
+                if (err_cb && trans.rollback) {
+                    trans.rollback();
+                    return reject(err_cb);
+                }
+            };
+            // recipient
+            trans.query(this.base_insert_sql, [tables.buss_recipient, recipientObj], (recipient_err, info)=> {
+                if (recipient_err || !info.insertId) {
+                    if (trans.rollback) trans.rollback();
+                    reject(recipient_err || new TiramisuError(errorMessage.FAIL));
+                    return;
+                }
+                if (toolUtils.isEmptyArray(products)) {
+                    reject(new TiramisuError(errorMessage.ORDER_NO_PRODUCT));
+                    return;
+                }
+                let recipientId = info.insertId;
+                let orderObj = {
+                    //office_id : req.session.user.office_id,
+                    recipient_id: recipientId,
+                    delivery_id: delivery_id,
+                    src_id: src_id,
+                    pay_modes_id: pay_modes_id,
+                    pay_status: pay_status,
+                    owner_name: owner_name,
+                    owner_mobile: owner_mobile,
+                    is_submit: 0,
+                    is_deal: 1,
+                    status: Constant.OS.TREATED,
+                    remarks: remarks,
+                    invoice: invoice,
+                    delivery_time: delivery_time,
+                    total_amount: total_amount,
+                    total_original_price: total_original_price,
+                    total_discount_price: total_discount_price,
+                    greeting_card: greeting_card,
+                    coupon : coupon,
+                    merchant_id : merchant_id
+                };
+                // order
+                trans.query(this.base_insert_sql,[tables.buss_order,systemUtils.assembleInsertObj(req,orderObj)],(order_err,result)=>{
+                    if (order_err && order_err.code === 'ER_DUP_ENTRY') {
+                        return reject(new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, orderObj.merchant_id));
+                    }
+                    if (order_err || !result.insertId) {
+                        if (trans.rollback) trans.rollback();
+                        reject(order_err || new TiramisuError(errorMessage.FAIL));
+                        return;
+                    }
+                    let orderId = result.insertId, params = [];
+                    products.forEach((curr) => {
+                        let arr = [];
+                        arr.push(orderId);
+                        arr.push(curr.sku_id);
+                        arr.push(curr.num);
+                        arr.push(curr.choco_board || '');
+                        arr.push(curr.greeting_card || '');
+                        arr.push(curr.atlas);
+                        arr.push(curr.custom_name || '');
+                        arr.push(curr.custom_desc || '');
+                        arr.push(curr.discount_price || 0);
+                        arr.push(curr.amount || 0);
+                        params.push(arr);
+                    });
+                    let order_fulltext_obj = {
+                        order_id: orderId,
+                        show_order_id: systemUtils.getShowOrderId(orderId, new Date()),
+                        owner_name: systemUtils.encodeForFulltext(owner_name),
+                        owner_mobile: owner_mobile,
+                        recipient_name: systemUtils.encodeForFulltext(recipient_name),
+                        recipient_mobile: recipient_mobile,
+                        recipient_address: systemUtils.encodeForFulltext(prefix_address + recipient_address),
+                        landmark: systemUtils.encodeForFulltext(recipient_landmark),
+                        merchant_id : merchant_id
                     };
                     let order_history_obj = {
                         order_id: orderId,

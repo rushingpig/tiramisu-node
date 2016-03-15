@@ -85,7 +85,7 @@ class FilterHeader extends Component {
             <input {...keywords} className="form-control input-xs v-mg" placeholder="关键字" />
             {' 开始时间'}
             <DatePicker editable redux-form={begin_time} className="short-input" />
-            {' 配送时间'}
+            {' 结束时间'}
             <DatePicker editable redux-form={end_time} className="short-input space-right" />
             <Select {...pay_modes_id} options={all_pay_modes} default-text="选择支付方式" className="space-right"/>
             <Select {...status} options={all_order_status} default-text="选择订单状态" className="space-right"/>
@@ -205,7 +205,7 @@ class OrderRow extends Component {
               : null
           }
         </td>
-        <td>{parseTime(props.delivery_time)}</td>
+        <td>{props.delivery_time ? parseTime(props.delivery_time) : '未知'}</td>
         <td>￥{props.total_amount/100}</td>
         <td>{props.owner_name}<br />{props.owner_mobile}</td>
         <RecipientInfo data={props} />

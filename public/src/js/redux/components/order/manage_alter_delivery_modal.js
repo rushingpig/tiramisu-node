@@ -28,11 +28,11 @@ var AlterDeliveryModal = React.createClass({
   },
   initSetState(order){
     var {delivery_type, delivery_time, province_id, city_id, regionalism_id, recipient_address, delivery_id} = order;
-      delivery_time = delivery_time.split(' ');
+      delivery_time = delivery_time && delivery_time.split(' ');
     this.setState({
       delivery_type,
-      delivery_date: delivery_time[0],
-      delivery_hour: delivery_time[1],
+      delivery_date: delivery_time && delivery_time[0],
+      delivery_hour: delivery_time && delivery_time[1],
       province_id,
       city_id,
       regionalism_id,

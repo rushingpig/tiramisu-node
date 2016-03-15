@@ -62,7 +62,7 @@ function main(state = main_state, action){
 
 export default combineReducers({
   filter,
-  orders,
+  orders: orders(),
   operationRecord,
   main,
   area: area(),

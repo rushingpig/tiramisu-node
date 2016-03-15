@@ -12,7 +12,7 @@ copy a one local config to connect to your own machine's mysql database
 cp config/dev.js config/local.js
 ```
 # Quick Start
-#### frontend
+#### frontend   
 ```bash
 npm run frontend
 ```

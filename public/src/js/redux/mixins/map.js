@@ -27,8 +27,8 @@ export default function autoMatchDeliveryStations(success_cb, fail_cb){
 //step: 1
 export function createMap(t){
   //初始化地图
-  MyMap.create( (map) => {
-    t._bmap = map;
+  MyMap.create( (map, geocoder) => {
+    t._bmap = geocoder; //解析地址貌似只需要 geocoder就够了
   });
 }
 //step: 2
@@ -42,15 +42,11 @@ export function autoMatch(city, address){
   return new Promise((resolve, reject) => {
     if(BMap){
       let map = self._bmap;
-      map.centerAndZoom(city);
-      let localSearch = new BMap.LocalSearch(map);
-      localSearch.setSearchCompleteCallback( function(searchResult){
-        var poi = searchResult && searchResult.getPoi(0);
+      map.getPoint(address, function(poi){
         if(poi){
-          console.log(poi.point.lng + "," + poi.point.lat);
           autoGetDeliveryStations({
-            lng: poi.point.lng,
-            lat: poi.point.lat
+            lng: poi.lng,
+            lat: poi.lat
           })
           .done(function(data){
             setTimeout(function(){
@@ -73,8 +69,7 @@ export function autoMatch(city, address){
         }else{
           reject();
         }
-      });
-      localSearch.search(address);
+      }, city);
     }else{
       reject('地图服务加载失败，请稍后再试');
     }

@@ -1,7 +1,8 @@
 var MyMap = function(){
   this.callback = null;
   this.d = $.Deferred();
-  this.map = null;
+  this.map = null;  //用于绘制地图
+  this.geocoder = null; //用于精准地址解析
   this.init_flag = 0;
 }
 
@@ -12,7 +13,8 @@ MyMap.prototype._initialize = function() {
   container.setAttribute('id', id);
   document.body.appendChild(container);
   this.map = new BMap.Map(id);
-  this.d.resolve(this.map);
+  this.geocoder = new BMap.Geocoder();
+  this.d.resolve(this.map, this.geocoder);
 };
    
 MyMap.prototype.create = function(callback) {

@@ -369,7 +369,7 @@ class ManagePannel extends Component {
     this.search = this.search.bind(this);
     this.refreshDataList = this.refreshDataList.bind(this);
     this.state = {
-      page_size: 5,
+      page_size: 8,
     }
   }
   render(){

@@ -4,6 +4,13 @@ import { get_table_empty } from 'common/loading';
 import { findDOMNode } from 'react-dom';
 import { form } from 'utils/index';
 
+const Info = props => (
+    <div className="mg-4">
+        <label>{props.label}</label>
+        <span className="theme">{props.children}</span>
+    </div>
+)
+
 export default class DetailModal extends Component {
   constructor(props){
     super(props);
@@ -27,128 +34,101 @@ export default class DetailModal extends Component {
           <td>{n.custom_desc}</td>
         </tr>
       )
-    })
+    });
+
     /**
      * 这里就不要使用封装更好的StdModal了
      */
     return (
-    <div ref="modal" aria-hidden="false" aria-labelledby="myModalLabel" role="dialog" className="modal fade" >
-      <div ref="modal-backdrop" className="modal-backdrop fade"></div>
-      <div className="modal-dialog modal-lg">
-        <div className="modal-content">
-          <div className="modal-header">
-            <button aria-hidden="true" data-dismiss="modal" className="close" type="button">×</button>
-            <h4 className="modal-title">查看订单详情</h4>
-          </div>
-          <div className="modal-body strong-label">
-            <div className="form-group form-inline">
-              <div className="row">
-                <div className="col-xs-6" style={{paddingLeft: 25}}>
-                  <div className="mg-4">
-                    <label>{'订单来源：'}</label>
-                    <span className="theme">{ all_order_srcs[data.src_id] }</span>
+      <div ref="modal" aria-hidden="false" aria-labelledby="myModalLabel" role="dialog" className="modal fade" >
+        <div ref="modal-backdrop" className="modal-backdrop fade"></div>
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className="modal-header">
+              <button aria-hidden="true" data-dismiss="modal" className="close" type="button">×</button>
+              <h4 className="modal-title">查看订单详情</h4>
+            </div>
+            <div className="modal-body strong-label">
+              <div className="form-group form-inline">
+                <div className="row">
+                  <div className="col-xs-6" style={{paddingLeft: 25}}>
+                    <Info label="订单来源：">{ all_order_srcs[data.src_id] }</Info>
+                    <Info label="支付方式：">{ all_pay_modes[data.pay_modes_id] }</Info>
+                    <Info label="支付状态：">{ pay_status[data.pay_status] }</Info>
+                    <Info label="　验证码：">{ data.coupon || ' -' }</Info>
+                    <Info label="配送方式：">{ DELIVERY_MAP[data.delivery_type] }</Info>
+                    {
+                      data.invoice && (
+                        <Info label="发票内容：">{ data.invoice }</Info>
+                      )
+                    }
+                    <Info label="所属城市：">{data.city_name}</Info>
+                    {
+                      data.delivery_name && (
+                        <Info label="　配送站：">{data.delivery_name}</Info>
+                      )
+                    }
                   </div>
-                  <div className="mg-4">
-                    <label>{'支付方式：'}</label>
-                    <span className="theme">{ all_pay_modes[data.pay_modes_id] }</span>
-                  </div>
-                  <div className="mg-4">
-                    <label>{'支付状态：'}</label>
-                    <span className="theme">{ pay_status[data.pay_status] }</span>
-                  </div>
-                  <div className="mg-4">
-                    <label>{'　验证码：'}</label>
-                    <span className="theme">{ data.coupon || ' -' }</span>
-                  </div>
-                  <div className="mg-4">
-                    <label>{'配送方式：'}</label>
-                    <span className="theme">{ DELIVERY_MAP[data.delivery_type] }</span>
-                  </div>
-                  {
-                    data.invoice && (
-                      <div className="mg-4">
-                        <label>{'发票内容：'}</label>
-                        <span className="theme">{ data.invoice }</span>
-                      </div>
-                    )
-                  }
-                  <div className="mg-4">
-                    <label>{'所属城市：'}</label>
-                    <span className="theme">{ data.city_name }</span>
-                  </div>
-                  {
-                    data.delivery_name && (
-                      <div className="mg-4">
-                        <label>{'　配送站：'}</label>
-                        <span className="theme">{data.delivery_name}</span>
-                      </div>
-                    )
-                  }
-                </div>
-                <div className="col-xs-6">
-                  <div className="mg-4">
-                    <label>{'　总金额：'}</label>
-                    <span className="theme">
+                  <div className="col-xs-6">
+                    <Info label="　总金额：">
                       {
                         isNumber( data.total_original_price )
                           ? '￥' + data.total_original_price / 100
                           : ' - '
                       }
-                    </span>
+                    </Info>
+                    <div className="">
+                      <label>{'实际金额：'}</label>
+                      <span className="theme">
+                        {
+                          isNumber( data.total_discount_price )
+                            ? '￥' + data.total_discount_price / 100
+                            : ' - '
+                        }
+                      </span>
+                    </div>
+                    <div className="">
+                      <label>{'应收金额：'}</label>
+                      <span className="theme">
+                        {
+                          isNumber( data.total_amount )
+                            ? '￥' + data.total_amount / 100
+                            : ' - '
+                        }
+                      </span>
+                    </div>
                   </div>
-                  <div className="">
-                    <label>{'实际金额：'}</label>
-                    <span className="theme">
-                      {
-                        isNumber( data.total_discount_price )
-                          ? '￥' + data.total_discount_price / 100
-                          : ' - '
-                      }
-                    </span>
-                  </div>
-                  <div className="">
-                    <label>{'应收金额：'}</label>
-                    <span className="theme">
-                      {
-                        isNumber( data.total_amount )
-                          ? '￥' + data.total_amount / 100
-                          : ' - '
-                      }
-                    </span>
-                  </div>
-                  
                 </div>
               </div>
-            </div>
 
-            <hr className="dotted" />
+              <hr className="dotted" />
 
-            <div className="form-group form-inline">
-              <label>{'　产品信息：'}</label>
-            </div>
-            <div className="table-responsive">
-              <table className="table table-hover table-click text-center">
-                <thead>
-                <tr>
-                  <th>产品名称</th>
-                  <th>货品数量信息</th>
-                  <th>金额</th>
-                  <th>巧克力牌</th>
-                  <th>祝福贺卡</th>
-                  <th>产品图册</th>
-                  <th>自定义名称</th>
-                  <th>自定义描述</th>
-                </tr>
-                </thead>
-                <tbody>
-                  { products.length ? products : get_table_empty() }
-                </tbody>
-              </table>
+              <div className="form-group form-inline">
+                <label>{'　产品信息：'}</label>
+              </div>
+              <div className="table-responsive">
+                <table className="table table-hover table-click text-center">
+                  <thead>
+                  <tr>
+                    <th>产品名称</th>
+                    <th>货品数量信息</th>
+                    <th>金额</th>
+                    <th>巧克力牌</th>
+                    <th>祝福贺卡</th>
+                    <th>产品图册</th>
+                    <th>自定义名称</th>
+                    <th>自定义描述</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    { products.length ? products : get_table_empty() }
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
     )
   }
   componentDidMount(){

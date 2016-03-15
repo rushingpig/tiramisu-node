@@ -253,16 +253,14 @@ module.exports = function () {
           }
         ]
       };
-      const res_body_second = {
-        "code": "2007",
-        "msg": "This order is in system already",
-        "data": {},
-        "err": 'e123'
-      };
       agent.post('/v1/i/order')
         .type('application/json')
         .send(req_body)
-        .expect(200, res_body_second, err(done));
+        .end((err, res) => {
+          assert.strictEqual(res.body.code, '2007');
+          assert.strictEqual(res.statusCode, 200);
+          done();
+        });
     });
 
     it('POST /v1/i/order empty buyer_nick E20160211222845015655359', function (done) {

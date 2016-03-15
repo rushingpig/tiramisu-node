@@ -784,7 +784,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
         prefix_address = req.body.prefix_address,
         greeting_card = req.body.greeting_card,
         coupon = req.body.coupon,
-        merchant_id = req.body.merchant_id;;
+        merchant_id = req.body.merchant_id;
     let recipientObj = {
         regionalism_id: regionalism_id,
         name: recipient_name,
@@ -803,8 +803,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
             let cb = function (err_cb) {
                 if (err_cb && trans.rollback) {
                     trans.rollback();
-                    reject(err_cb);
-                    return;
+                    return reject(err_cb);
                 }
             };
             // recipient

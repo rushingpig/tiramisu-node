@@ -8,7 +8,6 @@ import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import Pagination from 'common/pagination';
 import StdModal from 'common/std_modal';
-import LineRouter from 'common/line_router';
 import { tableLoader } from 'common/loading';
 
 import { Noty, parseTime, dateFormat } from 'utils/index';
@@ -26,17 +25,9 @@ import * as OrderSupportActions from 'actions/order_support';
 import AreaActions from 'actions/area';
 import * as ChangeActions from 'actions/delivery_change';
 
+import getTopHeader from '../top_header';
 
-class TopHeader extends Component {
-  render(){
-    return (
-      <div className="clearfix top-header">
-        <LineRouter 
-          routes={[{name: '送货单管理', link: '/dm/change'}, {name: '订单转送货单列表', link: ''}]} />
-      </div>
-    )
-  }
-}
+const TopHeader = getTopHeader([{name: '送货单管理', link: '/dm/change'}, {name: '订单转送货单列表', link: ''}]);
 
 class FilterHeader extends Component {
   constructor(props){

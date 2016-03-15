@@ -9,22 +9,12 @@ import { NAV_COLLAPSED_CLASS, NAV_COLLAPSED_COOKIE,
   NAV_COLLAPSED_COOKIE_NO, NAV_COLLAPSED_COOKIE_YES } from 'config/app.config';
 import V from 'utils/acl';
 
-export class Entry extends Component {
-  render(){
-    return xfxb.login
-      ? <Main>{this.props.children}</Main>
-      : <Login />
-  }
-}
+export const Entry = props => xfxb.login ? (<Main>{props.children}</Main>) : <Login />;
 
-export class Main extends Component {
-  render(){
-    var c = '';
-    if(cookie.get(NAV_COLLAPSED_COOKIE) == NAV_COLLAPSED_COOKIE_YES){
-      c = NAV_COLLAPSED_CLASS;
-    }
-    return (
-      <div id="app-container" className={`sticky-header ${c}`}>
+export const Main = props => {
+  const c = cookie.get(NAV_COLLAPSED_COOKIE) == NAV_COLLAPSED_COOKIE_YES ? NAV_COLLAPSED_CLASS : '';
+  return (
+    <div id="app-container" className={`sticky-header ${c}`}>
         <div className="left-side">
           <div className="logo text-center">
             <a href="#"><img src={config.root + "images/logo.png"} alt="" /></a>
@@ -41,31 +31,15 @@ export class Main extends Component {
         <div className="right-side">
           <Header />
           <div className="main-content">
-            {this.props.children}
+            {props.children}
           </div>
         </div>
       </div>
-    )
-  }
+  )
 }
-export class NoPermission extends Component {
-  render(){
-    return (
-      <h1><center>没有权限</center></h1>
-    )
-  }
-}
-export class NoPage extends Component {
-  render(){
-    return (
-      <h1><center>404</center></h1>
-    )
-  }
-}
-export class ComingSoon extends Component {
-  render(){
-    return (
-      <h1><center><i>Coming Soon !</i></center></h1>
-    )
-  }
-}
+
+export const NoPermission = () => (<h1><center>没有权限</center></h1>);
+
+export const NoPage = () => (<h1><center>404</center></h1>);
+
+export const ComingSoon = () => (<h1><center><i>Coming Soon !</i></center></h1>);

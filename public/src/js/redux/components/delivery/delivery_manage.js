@@ -32,16 +32,12 @@ import OrderDetailModal from './order_detail_modal';
 import ScanModal from 'common/scan_modal';
 import OperationRecordModal from 'common/operation_record_modal.js';
 
-class TopHeader extends Component {
-  render(){
-    return (
-      <div className="clearfix top-header">
-        <LineRouter 
-          routes={[{name: '送货单管理', link: '/dm/change'}, {name: '送货单列表', link: ''}]} />
-      </div>
-    )
-  }
-}
+const TopHeader = () => (
+  <div className="clearfix top-header">
+    <LineRouter 
+      routes={[{name: '送货单管理', link: '/dm/change'}, {name: '送货单列表', link: ''}]} />
+  </div>
+)
 
 class FilterHeader extends Component {
   constructor(props){
@@ -449,24 +445,6 @@ class DeliveryManagePannel extends Component {
   }
 }
 
-function mapStateToProps({deliveryManage}){
-  return deliveryManage;
-}
-
-/* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
-function mapDispatchToProps(dispatch){
-  return bindActionCreators({
-    ...OrderActions,
-    ...AreaActions(),
-    ...OrderSupportActions,
-    ...DeliverymanActions,
-    ...DeliveryManageActions,
-    triggerFormUpdate,
-  }, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(DeliveryManagePannel);
-
 /***************   *******   *****************/
 /***************   子模态框   *****************/
 /***************   *******   *****************/
@@ -776,4 +754,16 @@ var RePrintModal = React.createClass({
   hideCallback: function(){
     this.setState(this.getInitialState());
   },
-})
+});
+
+export default connect(
+  ({deliveryManage}) => deliveryManage,
+  dispatch => bindActionCreators({
+    ...OrderActions,
+    ...AreaActions(),
+    ...OrderSupportActions,
+    ...DeliverymanActions,
+    ...DeliveryManageActions,
+    triggerFormUpdate
+  }, dispatch)
+)(DeliveryManagePannel);

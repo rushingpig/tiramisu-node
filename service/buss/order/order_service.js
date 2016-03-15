@@ -57,56 +57,11 @@ OrderService.prototype.addOrder = (req, res, next) => {
   if (errors) {
     return res.api(res_obj.INVALID_PARAMS, errors);
   }
-  let promise = orderDao.insertOrderInTransaction(req).then(()=>{res.api()});
+  let promise = orderDao.insertExternalOrderInTransaction(req).then(()=>{res.api()});
   systemUtils.wrapService(res, next, promise);
 };
 
-const srcIdMapping = new Map(
-  [
-    [ 10000,1 ],
-    [ 10001,2 ],
-    [ 10002,3 ],
-    [ 10003,4 ],
-    [ 10004,5 ],
-    [ 10005,6 ],
-    [ 10006,7 ],
-    [ 10007,8 ],
-    [ 10008,9 ],
-    [ 10009,10 ],
-    [ 10010,11 ],
-    [ 10011,12 ],
-    [ 10012,13 ],
-    [ 10013,14 ],
-    [ 10014,15 ],
-    [ 10015,16 ],
-    [ 10016,17 ],
-    [ 10017,18 ],
-    [ 10018,19 ],
-    [ 10019,20 ],
-    [ 10020,21 ],
-    [ 10021,22 ],
-    [ 10022,23 ],
-    [ 10023,24 ],
-    [ 10024,25 ],
-    [ 10025,26 ],
-    [ 10026,27 ],
-    [ 10027,28 ],
-    [ 11027,29 ],
-    [ 11029,30 ],
-    [ 11030,31 ],
-    [ 12030,32 ],
-    [ 12031,33 ],
-    [ 12032,34 ],
-    [ 12033,35 ],
-    [ 11007,38 ],
-    [ 11012,39 ],
-    [ 11013,40 ],
-    [ 11014,41 ],
-    [ 11015,42 ],
-    [ 12011,43 ],
-    [ 12012,44 ],
-  ]
-);
+
 
 OrderService.prototype.addExternalOrder = (req, res, next) => {
   req.checkBody(schema.addExternalOrder);
@@ -114,86 +69,9 @@ OrderService.prototype.addExternalOrder = (req, res, next) => {
   if (errors) {
     return res.api(res_obj.INVALID_PARAMS, errors);
   }
-  const params = req.body;
-
-  let promise = OrderService.prototype.addRecipient(
-    req,
-    params.regionalism_id,
-    params.recipient_name,
-    params.recipient_mobile,
-    params.recipient_landmark,
-    params.delivery_type,
-    params.recipient_address)
-    .then((recipientId) => {
-      let orderObj = {
-        recipient_id: recipientId,
-        delivery_id: params.delivery_id,
-        // HACK: transform id >= 10000 to new src_id mapping
-        src_id: params.src_id >= 10000? srcIdMapping.get(params.src_id): params.src_id,
-        pay_modes_id: params.pay_modes_id,
-        pay_status: params.pay_status,
-        owner_name: params.owner_name,
-        owner_mobile: params.owner_mobile,
-        is_submit: 0,
-        is_deal: 0,
-        status: Constant.OS.UNTREATED,
-        remarks: params.remarks,
-        delivery_time: params.delivery_time,
-        total_amount: params.total_amount,
-        total_original_price: params.total_original_price,
-        total_discount_price: params.total_discount_price,
-        merchant_id: params.merchant_id,
-        // TODO: change to future defined user/program
-        created_by: 1
-      };
-      orderObj = systemUtils.assembleInsertObj(req, orderObj);
-      return orderDao.insertOrder(orderObj);
-    }).then((orderId) => {
-      let orders = [];
-      if (toolUtils.isEmptyArray(params.products)) {
-        throw new TiramisuError(res_obj.ORDER_NO_PRODUCT);
-      }
-      params.products.forEach(product => {
-        orders.push([
-          orderId,
-          product.sku_id,
-          product.num,
-          product.choco_board || '',
-          product.greeting_card || '',
-          product.atlas || 0,
-          product.custom_name || '',
-          product.custom_desc || '',
-          product.discount_price || 0,
-          product.amount || 0
-        ]);
-      });
-      let order_fulltext_obj = {
-        order_id: orderId,
-        show_order_id: systemUtils.getShowOrderId(orderId, new Date()),
-        owner_name: systemUtils.encodeForFulltext(params.owner_name),
-        owner_mobile: params.owner_mobile,
-        recipient_name: systemUtils.encodeForFulltext(params.recipient_name),
-        recipient_mobile: params.recipient_mobile,
-        recipient_address: systemUtils.encodeForFulltext(params.prefix_address + params.recipient_address),
-        landmark: systemUtils.encodeForFulltext(params.recipient_landmark)
-      };
-      let order_history_obj = {
-        order_id: orderId,
-        option: '添加订单',
-        created_by: 1
-      };
-      return orderDao.insertOrderFulltext(order_fulltext_obj).then(() => {
-        return orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
-      }).then(() => {
-        return orderDao.batchInsertOrderSku(orders);
-      });
-    }).then((_re) => {
-      if (!_re) {
-        throw new TiramisuError(res_obj.FAIL);
-      }
-      res.api();
-    });
+  let promise = orderDao.insertExternalOrderInTransaction(req).then(()=>{res.api()});
   systemUtils.wrapService(res, next, promise);
+
 };
 
 OrderService.prototype.addOrderError = (req, res, next) => {

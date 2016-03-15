@@ -23,7 +23,7 @@ class OrderRow extends Component {
         <td><div className="time">{props.created_time}</div></td>
         <td>{props.owner_name}<br />{props.owner_mobile}</td>
         <RecipientInfo data={props} />
-        <td>{props.delivery_time}</td>
+        <td>{props.delivery_time ? props.delivery_time : '未知'}</td>
         <td><div className="remark-in-table">{props.remarks}</div></td>
         {/*订单来源*/}
         <td className="nowrap">

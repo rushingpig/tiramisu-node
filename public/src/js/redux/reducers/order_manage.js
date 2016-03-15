@@ -70,7 +70,7 @@ function main(state = main_state, action){
 export default combineReducers({
   filter,
   area: area(),
-  orders,
+  orders: orders(true),
   operationRecord,
   main,
   alter_delivery_area: area(AreaActionTypes2),

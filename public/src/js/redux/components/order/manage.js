@@ -109,7 +109,7 @@ class FilterHeader extends Component {
           <input {...keywords} className="form-control input-xs v-mg" placeholder="关键字" />
           {' 开始时间'}
           <DatePicker editable redux-form={begin_time} className="short-input" />
-          {' 配送时间'}
+          {' 结束时间'}
           <DatePicker editable redux-form={end_time} className="short-input space-right" />
           <Select {...is_submit} options={this.state.submit_opts} default-text="是否提交" className="space-right"/>
           <Select {...is_deal} options={this.state.deal_opts} default-text="是否处理" className="space-right"/>
@@ -132,8 +132,10 @@ class FilterHeader extends Component {
   }
   componentDidMount(){
     setTimeout(()=>{
-      var { getProvinces, getOrderSrcs } = this.props.actions;
+      var { getProvinces, getCities, getOrderSrcs } = this.props.actions;
+      var { fields: { province_id } } = this.props;
       getProvinces();
+      province_id.value && getCities( province_id.value );
       getOrderSrcs();
       LazyLoad('noty');
     },0)
@@ -170,8 +172,9 @@ FilterHeader = reduxForm({
     'src_id',
     'province_id',
     'city_id',
-    'status',
-  ]
+    'status'
+  ],
+  destroyOnUnmount: false,
 })( FilterHeader );
 
 var OrderRow = React.createClass({
@@ -184,7 +187,7 @@ var OrderRow = React.createClass({
         <td>
         {
           this.ACL(
-            [<a onClick={this.editHandler} key="OrderManageEdit" href="javascript:;">[编辑]</a>, <br key="1" />],
+            [<a onClick={this.editHandler} key="OrderManageEdit" href={'/om/index/' + props.order_id}>[编辑]</a>, <br key="1" />],
             [<a onClick={this.viewOrderDetail} key="OrderManageView" href="javascript:;">[查看]</a>, <br key="2" />],
             [<a onClick={this.alterDelivery} key="OrderManageAlterDelivery" href="javascript:;" className="nowrap">[修改配送]</a>, <br key="3" />],
             [<a onClick={this.alterStation} key="OrderManageAlterStation" href="javascript:;" className="nowrap">[分配配送站]</a>, <br key="4" />],
@@ -254,7 +257,7 @@ var OrderRow = React.createClass({
           </div>
         </td>
         <td>{props.delivery_name}</td>
-        <td><div className="time">{props.delivery_time}</div></td>
+        <td><div className="time">{props.delivery_time || '未知'}</div></td>
         <td>{props.is_submit == '1' ? '是' : '否'}</td>
         <td>{props.is_deal == '1' ? '是' : '否'}</td>
         <td>{props.city}</td>
@@ -321,6 +324,7 @@ var OrderRow = React.createClass({
   editHandler(e){
     history.push('/om/index/' + this.props.order_id);
     e.stopPropagation();
+    e.preventDefault();
   },
   viewOrderDetail(e){
     this.props.viewOrderDetail(this.props);

@@ -160,7 +160,7 @@ class OrderRow extends Component {
         <td>
           <input onChange={this.checkOrderHandler.bind(this)} checked={props.checked} type="checkbox" />
         </td>
-        <td>{parseTime(props.delivery_time)}</td>
+        <td>{props.delivery_time ? parseTime(props.delivery_time) : '未知'}</td>
         <td>{props.owner_name}<br />{props.owner_mobile}</td>
         <td className="text-left">
           姓名：{props.recipient_name}<br />

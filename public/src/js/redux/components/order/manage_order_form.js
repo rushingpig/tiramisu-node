@@ -354,8 +354,10 @@ class ManageAddForm extends Component {
     this.props.actions.createOrder(form_data)
       .done(function(){
         Noty('success', '保存成功');
+        this.props.actions.resetOrderStore(); //重置order_manage状态
+        this.props.actions.destroyForm('order_manage_filter'); //重置order_manage 过滤条件
         history.push('/om/index');
-      })
+      }.bind(this))
       .fail(function(msg, code){
         Noty('error', msg || '保存异常');
       });

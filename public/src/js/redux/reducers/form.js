@@ -3,7 +3,7 @@ import { reducer as formReducer, actionTypes } from 'redux-form';
 import { getGlobalStore, getGlobalState } from 'stores/getter';
 import { SELECT_DEFAULT_VALUE, pay_status as PAY_STATUS } from 'config/app.config';
 import { updateConfirmProductDiscountPrice } from 'actions/order_products';
-import { delay, each } from 'utils/index';
+import { delay, each, getDate, form as FORM } from 'utils/index';
 
 import { REDUX_FORM_REINIT } from 'actions/form';
 import FormFields from 'config/form.fields';
@@ -37,6 +37,20 @@ function getMode(mode_name){
 }
 
 export default formReducer.plugin({
+  order_manage_filter: (state, action) => {
+    if( action && action.form == 'order_manage_filter' ){
+      if(
+        action.field == 'begin_time' && action.value && state.begin_time && FORM.isDate(state.begin_time.value) ){
+        try{
+          var end_time = getDate( state.begin_time.value, 30 );
+        }catch(e){
+          end_time = undefined;
+        }
+        state.end_time = {touched: false, value: end_time, visited: false};
+      }
+      return {...state};
+    }
+  },
   add_order: (state, action) => {
   //这里注意：所有的action都会进入，所以得使用以下判断, 以确保当前form为add_order
     if(action && action.form == 'add_order'){

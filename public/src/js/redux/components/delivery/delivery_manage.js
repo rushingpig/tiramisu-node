@@ -76,7 +76,7 @@ class FilterHeader extends Component {
             <input {...keywords} className="form-control input-xs v-mg" placeholder="关键字" />
             {' 开始时间'}
             <DatePicker editable redux-form={begin_time} className="short-input" />
-            {' 配送时间'}
+            {' 结束时间'}
             <DatePicker editable redux-form={end_time} className="short-input space-right" />
             <Select {...delivery_type} options={delivery_types} default-text="选择配送方式" className="space-right"/>
             <Select {...print_status} options={all_print_status} default-text="是否打印" className="space-right"/>
@@ -179,7 +179,7 @@ FilterHeader = reduxForm({
 class OrderRow extends Component {
   render(){
     var { props } = this;
-    var delivery_time = props.delivery_time.split(' ');
+    var delivery_time = props.delivery_time && props.delivery_time.split(' ');
     var _order_status = order_status[props.status] || {};
     return (
       <tr onClick={this.clickHandler.bind(this)} className={props.active_order_id == props.order_id ? 'active' : ''}>
@@ -211,7 +211,7 @@ class OrderRow extends Component {
         </td>
         <td>{PRINT_STATUS[props.print_status]}</td>
         <td>{props.deliveryman_name}<br />{props.deliveryman_mobile}</td>
-        <td><div className="time">{delivery_time[0]}<br/>{delivery_time[1]}</div></td>
+        <td>{delivery_time ? <div className="time">{delivery_time[0]}<br/>{delivery_time[1]}</div> : null}</td>
         <td>{props.owner_name}<br />{props.owner_mobile}</td>
         <RecipientInfo data={props} />
         <td className="text-left">{reactReplace(props.greeting_card, '|', <br />)}</td>

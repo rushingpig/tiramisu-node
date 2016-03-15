@@ -152,6 +152,13 @@ export function activeOrder(id){
   }, GET_ORDER_DETAIL_PRODUCTS);*/
 }
 
+export const RESET_ORDER_STORE = 'RESET_ORDER_STORE';
+export function resetOrderStore(){
+  return {
+    type: RESET_ORDER_STORE
+  }
+}
+
 export const SHOW_PRODUCTS_DETAIL = 'SHOW_PRODUCTS_DETAIL';  //允许订单对应的产品详情显示出来
 export function showProductsDetail(){
   return {

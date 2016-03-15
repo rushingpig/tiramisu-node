@@ -86,5 +86,14 @@ module.exports = {
   },
   'remarks': {
     optional: true
+  },
+  'coupon': {
+    optional: true,
+    notEmpty: true
+    /*
+    matches: {
+      options: [/^[0-9]+$/]
+    }
+    */
   }
 };

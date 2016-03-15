@@ -878,7 +878,8 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                     };
                     let order_history_obj = {
                         order_id: orderId,
-                        option: '添加订单'
+                        option: '添加订单',
+                        created_by : 1
                     };
                     let skus_sql = "insert into " + tables.buss_order_sku + "(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price,amount) values ?";
                     trans.query(skus_sql, [params], cb);

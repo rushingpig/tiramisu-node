@@ -187,7 +187,7 @@ class ManageAddForm extends Component {
         <Select ref="province" options={provinces} {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} className="form-select" />{' '}
         <Select ref="city" options={cities} {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} />{' '}
         <Select ref="district" options={districts} {...regionalism_id} onChange={this.onDistrictChange.bind(this, regionalism_id.onChange)} className={`${regionalism_id.error}`} />{' '}
-        <input ref="recipient_address" {...recipient_address} className={`form-control input-xs ${recipient_address.error} ${delivery_type.value == DELIVERY_TO_HOME ? '' : 'hidden'}`} style={{width: 193}} type="text" />
+        <input ref="recipient_address" {...recipient_address} className={`form-control input-xs ${recipient_address.error} ${delivery_type.value == DELIVERY_TO_HOME ? '' : 'hidden'}`} style={{width: 237}} type="text" />
         <Select ref="shop" options={delivery_shops} {...recipient_shop_address} className={`${recipient_shop_address.error} ${delivery_type.value == DELIVERY_TO_HOME ? 'hidden' : ''}`} />
       </div>
       {
@@ -262,7 +262,7 @@ class ManageAddForm extends Component {
         <textarea {...remarks} className="form-control input-xs" rows="2" cols="40"></textarea>
         {'　　'}
         <label>{'发票备注：'}</label>
-        <textarea {...invoice} placeholder="" rows="2" cols="22" className={`form-control input-xs ${invoice.error}`} />
+        <textarea {...invoice} placeholder="" rows="2" cols="22" style={{width: 200}} className={`form-control input-xs ${invoice.error}`} />
       </div>
 
       <hr className="dotted" />

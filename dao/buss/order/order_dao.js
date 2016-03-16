@@ -829,7 +829,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                     owner_mobile: owner_mobile,
                     is_submit: 0,
                     is_deal: 1,
-                    status: Constant.OS.TREATED,
+                    status: Constant.OS.UNTREATED,
                     remarks: remarks,
                     invoice: invoice,
                     delivery_time: delivery_time,

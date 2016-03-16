@@ -24,9 +24,13 @@ export default class ProductsModal extends Component {
     }
   }
   render(){
-    //借用父组件的省份数据
-    var { all_categories, search_results: { total, list, page_no }, selected_list, dispatch, provinces, cities } = this.props;
+    //借用父组件的省份数据, 默认城市信息
+    var { all_categories, search_results: { total, list, page_no }, selected_list, dispatch, area, area: {provinces}, cities, add_form } = this.props;
     var s = this.state;
+    //如果是默认省份，那就借用父组件的cities
+    if( add_form.province_id && s.province_id == add_form.province_id.value ){
+      cities = area.cities;
+    }
     var product_list = list.map(function(n, i){
       return <ProductSet data={n} key={i} dispatch={dispatch} />;
     });
@@ -136,7 +140,7 @@ export default class ProductsModal extends Component {
     var { sku_name, category_id, city_id, page_size } = this.state;
     this.props.dispatch(
       OrderProductsActions.searchProducts({
-        name: sku_name, 
+        name: sku_name.tirm() ? sku_name.tirm() : undefined, 
         page_no: page,
         page_size,
         category_id: category_id == SELECT_DEFAULT_VALUE ? undefined : category_id,
@@ -156,7 +160,13 @@ export default class ProductsModal extends Component {
   }
   show(){
     this.props.dispatch(OrderProductsActions.getCategories());
-    $(this.refs.modal).modal('show');
+    var { add_form: { province_id, city_id } } = this.props;
+    this.setState({
+      province_id: province_id.value || SELECT_DEFAULT_VALUE, 
+      city_id: city_id.value || SELECT_DEFAULT_VALUE}
+    , function(){
+      $(this.refs.modal).modal('show');
+    })
   }
   hide(){
     $(this.refs.modal).modal('hide');

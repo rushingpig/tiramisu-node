@@ -31,7 +31,7 @@ class TopHeader extends Component {
 
 class ManageOrderDetailPannel extends Component {
   render(){
-    var { mainForm, delivery_stations, history_orders, area, dispatch, products, products_area_filter, params } = this.props;
+    var { mainForm, add_form, delivery_stations, history_orders, area, dispatch, products, products_area_filter, params } = this.props;
     var editable = !!(params && params.id);
 
     var actions = bindActionCreators(
@@ -43,8 +43,9 @@ class ManageOrderDetailPannel extends Component {
       <ManageOrderProducts
         dispatch={dispatch}
         {...products}
+        add_form={add_form} //为了传入province_id, city_id
+        area={area} //传入provinces, cities（默认）
         actions={{...bindActionCreators(AreaActions(ProductsModalActionTypes), dispatch)}}
-        provinces={area.provinces}
         cities={products_area_filter.cities}
       />
     );
@@ -93,8 +94,8 @@ ManageOrderDetailPannel.PropTypes = {
   createOrder: PropTypes.func.isRequired
 };
 
-function mapStateToProps({orderManageForm}){
-  return orderManageForm;
+function mapStateToProps({orderManageForm, form}){
+  return {...orderManageForm, add_form: form.add_order}; //add_form是给products_modal用的，传给其省市信息
 }
 function mapDispatchToProps(dispatch){
   var actions = bindActionCreators(OrderFormActions, dispatch);

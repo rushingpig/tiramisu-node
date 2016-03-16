@@ -265,6 +265,7 @@ module.exports = function () {
 
     it.skip('POST /v1/i/order default delivery_id to -1', function (done) {
       // TODO: default to UNTREATED as well
+      // TODO: check setting created_by (req.session.user.id)
       const req_body = {
         "regionalism_id": 330204,
         "recipient_name": "有赞收货员",

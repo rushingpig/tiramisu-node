@@ -8,4 +8,8 @@ config/local.js
 typings/
 public/src/js/app.js.map
 public/src/js/app.js
+public/js
+public/css
+public/images
 public/index.html
+public/node_modules

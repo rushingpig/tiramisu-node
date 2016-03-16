@@ -9,9 +9,11 @@
     "win_dev": "set NODE_ENV=test&node ./bin/www",
     "team_dev": "./public/nginx/nginx.sh",
     "frontend": "NODE_ENV=test node ./bin/www",
-    "fe": "NODE_ENV=test node ./bin/www"
+    "fe": "NODE_ENV=test node ./bin/www",
+    "dfe" : "./node_modules/.bin/gulp deploy --cwd public"
   },
   "dependencies": {
+    "bluebird": "^3.3.4",
     "body-parser": "~1.13.2",
     "clone": "^1.0.2",
     "commander": "2.9.0",
@@ -23,6 +25,7 @@
     "express-session": "^1.12.1",
     "express-validator": "2.18.0",
     "geolib": "2.0.18",
+    "lodash": "^4.6.1",
     "log4js": "^0.6.29",
     "moment": "^2.10.6",
     "mysql": "^2.9.0",

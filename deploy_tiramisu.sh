@@ -11,7 +11,7 @@ pm2=`which pm2`
 npm=`which npm`
 
 function init(){
-  ${git} pull origin master && \
+  ${git} pull && \
   ${npm} install && \
   ${npm} prune
 }

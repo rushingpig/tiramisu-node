@@ -54,7 +54,7 @@ gulp.task('sass', function() {
   gulp.src(s('sass/style.sass'))
   .pipe(plumber())
   //compressed
-  .pipe(sass({outputStyle: ''}))
+  .pipe(sass().on('error', sass.logError))
   .pipe(prefix('last 2 versions', '> 1%', 'ie 8', 'Android 2', 'Firefox ESR'))
   .pipe(plumber())
   .pipe(minifyCss())

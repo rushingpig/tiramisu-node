@@ -11,6 +11,10 @@ pm2=`which pm2`
 npm=`which npm`
 
 function init(){
+  cd public
+  ${npm} install
+  cd ..
+  ${npm} run dfe && \
   ${git} pull && \
   ${npm} install && \
   ${npm} prune

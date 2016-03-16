@@ -114,12 +114,15 @@ var mysql_options = {
 var exclude_paths = ['/','/v1/a/login','/payment'];
 
 var white_ips = [
+    // localhost
     '1',
     '127.0.0.1',
-    // xfxb_ecommerce
-    '112.74.135.144',
-    '10.46.89.45',
-    '120.76.25.32'
+    // internal xfxb_ecommerce
+    '10.45.185.126',
+    // internal xfxb_qa
+    // '10.46.89.45',
+    // internal production
+    '10.45.190.193'
 ];
 
 var log4js_options = {

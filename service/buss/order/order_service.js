@@ -1,3 +1,4 @@
+/* global , */
 /**
  * @des    : the service module of the order
  * @author : pigo.can
@@ -61,17 +62,22 @@ OrderService.prototype.addOrder = (req, res, next) => {
   systemUtils.wrapService(res, next, promise);
 };
 
-
-
 OrderService.prototype.addExternalOrder = (req, res, next) => {
   req.checkBody(schema.addExternalOrder);
   const errors = req.validationErrors();
   if (errors) {
     return res.api(res_obj.INVALID_PARAMS, errors);
   }
-  let promise = orderDao.insertExternalOrderInTransaction(req).then(()=>{res.api()});
+  // TODO: choose user base on token, 19: internal 20 zhijie
+  req.session.user = {
+    id: 19
+  };
+  const promise = orderDao
+    .insertExternalOrderInTransaction(req)
+    .then(() => {
+      res.api();
+    });
   systemUtils.wrapService(res, next, promise);
-
 };
 
 OrderService.prototype.addOrderError = (req, res, next) => {

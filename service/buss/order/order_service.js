@@ -30,6 +30,7 @@ var res_obj = require('../../../util/res_obj'),
   config = require('../../../config'),
   order_excel_caption = require('../../../config/excel/OrderTpl'),
   xlsx = require('node-xlsx');
+var toolUtils = require('../../../common/ToolUtils');
 function OrderService() {
 }
 /**
@@ -70,8 +71,11 @@ OrderService.prototype.addExternalOrder = (req, res, next) => {
   }
   // TODO: choose user base on token, 19: internal 20 zhijie
   req.session.user = {
-    id: 19
+    id: 20
   };
+  if (['127.0.0.1', '1'].indexOf(toolUtils.getClientIP(req).split(':').pop()) !== -1) {
+    req.session.user.id = 19;
+  }
   const promise = orderDao
     .insertExternalOrderInTransaction(req)
     .then(() => {

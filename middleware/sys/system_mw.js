@@ -7,6 +7,9 @@ function SystemMiddleware(type) {
   this.type = type;
 }
 
+const tiramisu_env = process.env.NODE_ENV;
+const debug_arr = ['dev', 'development','production','qa','test'];
+
 SystemMiddleware.prototype = {
   // intercept and wrap the ServerResponse instance
   wrapperResponse: function (req, res, next) {
@@ -33,8 +36,8 @@ SystemMiddleware.prototype = {
     }
   },
   debugReqAndResParams: function (req, res, next) {
-    let tiramisu_env = process.env.NODE_ENV;
-    if (!tiramisu_env || ['dev', 'development'].indexOf(tiramisu_env) !== -1) {
+
+    if (!tiramisu_env || debug_arr.indexOf(tiramisu_env) !== -1) {
       console.log('******************** 请༗求༗参༗数༗ **********************');
       if ('get' === req.method.toLowerCase()) {
         if (!toolUtils.isEmptyObject(req.params)) {
@@ -85,6 +88,11 @@ function api(res) {
         temp = clone(res_tpl);
         temp.data = data || {};
         temp.err = err || '';
+      }
+      if (!tiramisu_env || debug_arr.indexOf(tiramisu_env) !== -1) {
+        console.log('******************** 返༗回༗参༗数༗ **********************');
+        console.log(temp);
+        console.log('********************************************************\n');
       }
       return res.json(temp);
     } catch (err) {

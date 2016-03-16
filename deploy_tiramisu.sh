@@ -14,8 +14,8 @@ function init(){
   cd public
   ${npm} install
   cd ..
-  ${npm} run dfe && \
   ${git} pull && \
+  ${npm} run dfe && \
   ${npm} install && \
   ${npm} prune
 }

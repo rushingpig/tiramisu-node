@@ -10,7 +10,9 @@
     "team_dev": "./public/nginx/nginx.sh",
     "frontend": "NODE_ENV=test node ./bin/www",
     "fe": "NODE_ENV=test node ./bin/www",
-    "dfe" : "./node_modules/.bin/gulp deploy --cwd public"
+    "dfe" : "./node_modules/.bin/gulp deploy --cwd public",
+    "preqs" : "cd public && npm install && cd .. && ./node_modules/.bin/gulp deploy --cwd public && npm install",
+    "qs" : "NODE_ENV=test node ./bin/www"
   },
   "dependencies": {
     "bluebird": "^3.3.4",

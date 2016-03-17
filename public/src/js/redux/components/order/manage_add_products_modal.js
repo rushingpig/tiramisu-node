@@ -140,7 +140,7 @@ export default class ProductsModal extends Component {
     var { sku_name, category_id, city_id, page_size } = this.state;
     this.props.dispatch(
       OrderProductsActions.searchProducts({
-        name: sku_name.trim() ? sku_name.trim() : undefined, 
+        name: sku_name.trim() || undefined, 
         page_no: page,
         page_size,
         category_id: category_id == SELECT_DEFAULT_VALUE ? undefined : category_id,

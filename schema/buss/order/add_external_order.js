@@ -14,9 +14,9 @@ module.exports = {
     notEmpty: true
   },
   'owner_mobile': {
-    notEmpty: true,
+    optional: true,
     matches: {
-      options: [/^[0-9\*]+$/]
+      options: [/^[0-9\*\-]+$/]
     }
   },
   'recipient_name': {
@@ -25,7 +25,7 @@ module.exports = {
   'recipient_mobile': {
     notEmpty: true,
     matches: {
-      options: [/^[0-9\*]+$/]
+      options: [/^[0-9\*\-]+$/]
     }
   },
   'regionalism_id': {

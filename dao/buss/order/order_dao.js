@@ -443,10 +443,8 @@ OrderDao.prototype.editOrder = function (order_obj, order_id, recipient_obj, rec
     let order_sql = this.base_update_sql + " where id = ?", recipent_sql = order_sql,
         recipient_params = [tables.buss_recipient, recipient_obj, recipient_id],
         order_params = [tables.buss_order, order_obj, order_id],
-        userId = order_obj.update_by,
-        temp_connection = null;
+        userId = order_obj.update_by;
     return baseDao.trans().then((tranconn) => {
-        temp_connection = tranconn.connection;
         let trans = tranconn.trans;
         return new Promise((resolve, reject) => {
             trans.query(recipent_sql, recipient_params, (err_recipient) => {
@@ -490,10 +488,7 @@ OrderDao.prototype.editOrder = function (order_obj, order_id, recipient_obj, rec
                             trans.query(order_sku_update_sql, order_sku_update_params, cb);
                         });
                     }
-                    trans.commit(() => {
-                        temp_connection.release();
-                        resolve();
-                    });
+                    resolve();
                 });
             });
         });
@@ -706,10 +701,7 @@ OrderDao.prototype.insertOrderInTransaction = function (req) {
                     trans.query(skus_sql, [params], cb);
                     trans.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], cb);
                     trans.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], cb);
-                    trans.commit(()=> {
-                        connection.release();
-                        resolve();
-                    });
+                    resolve();
                 });
 
             });
@@ -890,10 +882,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                     trans.query(skus_sql, [params], cb);
                     trans.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], cb);
                     trans.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], cb);
-                    trans.commit(()=> {
-                        connection.release();
-                        resolve();
-                    });
+                    resolve();
                 });
 
             });

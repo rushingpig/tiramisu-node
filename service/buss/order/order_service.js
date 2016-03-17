@@ -59,7 +59,7 @@ OrderService.prototype.addOrder = (req, res, next) => {
   if (errors) {
     return res.api(res_obj.INVALID_PARAMS, errors);
   }
-  let promise = orderDao.insertExternalOrderInTransaction(req).then(()=>{res.api()});
+  let promise = orderDao.insertOrderInTransaction(req).then(()=>{res.api()});
   systemUtils.wrapService(res, next, promise);
 };
 
@@ -259,7 +259,8 @@ OrderService.prototype.editOrder = function (is_submit) {
       total_original_price: total_original_price,
       total_discount_price: total_discount_price,
       is_deal: 1,
-      greeting_card: greeting_card
+      greeting_card: greeting_card,
+      last_opt_cs : req.session.user.id
     };
     if (is_submit) {
       order_obj.is_submit = 1;
@@ -643,7 +644,8 @@ OrderService.prototype.cancelOrder = (req, res, next) => {
 
     let order_update_obj = {
       status: Constant.OS.CANCEL,
-      cancel_reason: req.body.cancel_reason
+      cancel_reason: req.body.cancel_reason,
+      last_opt_cs : req.session.user.id
     };
     return orderDao.updateOrder(systemUtils.assembleUpdateObj(req, order_update_obj), orderId);
   }).then((result) => {
@@ -674,9 +676,10 @@ OrderService.prototype.allocateStation = (req,res,next)=>{
     let order_id = systemUtils.getDBOrderId(req.params.orderId),
         delivery_id = req.body.delivery_id,
         delivery_name = req.body.delivery_name,
-        updated_time = req.body.updated_time;
+        updated_time = req.body.updated_time,
+        last_opt_cs = req.session.user.id;
 
-    let order_obj = {delivery_id};
+    let order_obj = {delivery_id,last_opt_cs};
     let promise = orderDao.findOrderById(order_id).then((_res)=> {
         if (toolUtils.isEmptyArray(_res)) {
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
@@ -727,10 +730,11 @@ OrderService.prototype.changeDelivery = (req,res,next)=>{
         delivery_time = req.body.delivery_time,
         address = req.body.recipient_address,
         prefix_address = req.body.prefix_address,
-        updated_time = req.body.updated_time;
+        updated_time = req.body.updated_time,
+        last_opt_cs = req.session.user.id;
 
     let recipient_obj = {regionalism_id, delivery_type,address};
-    let order_obj = {delivery_id, delivery_time};
+    let order_obj = {delivery_id, delivery_time,last_opt_cs};
     let promise = orderDao.findOrderById(order_id).then((_res)=> {
         if (toolUtils.isEmptyArray(_res)) {
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
@@ -813,7 +817,8 @@ OrderService.prototype.exceptionOrder = (req,res,next)=>{
 
     let order_update_obj = {
       status: Constant.OS.EXCEPTION,
-      cancel_reason: req.body.cancel_reason
+      cancel_reason: req.body.cancel_reason,
+      last_opt_cs : req.session.user.id
     };
     return orderDao.updateOrder(systemUtils.assembleUpdateObj(req, order_update_obj), orderId);
   }).then((result) => {
@@ -913,6 +918,7 @@ OrderService.prototype.exportExcel = (req,res,next) => {
             src_name: curr.src_name,
             accepted_by: curr.created_by,
             accepted_time: curr.created_time,
+            last_opt_cs : curr.last_opt_cs,
             owner_name: curr.owner_name,
             owner_mobile: curr.owner_mobile,
             created_time: curr.created_time,

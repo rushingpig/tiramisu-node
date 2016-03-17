@@ -91,7 +91,7 @@ function api(res) {
       }
       if (!tiramisu_env || debug_arr.indexOf(tiramisu_env) !== -1) {
         console.log('******************** 返༗回༗参༗数༗ **********************');
-        console.log(temp);
+        console.log(JSON.stringify(temp,null,2));
         console.log('********************************************************\n');
       }
       return res.json(temp);

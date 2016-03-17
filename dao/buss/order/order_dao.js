@@ -252,6 +252,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
         'su2.name as updated_by',
         'su3.name as deliveryman_name',
         'su3.mobile as deliveryman_mobile',
+        'su4.name as last_opt_cs',
         'bo.updated_time',
         'bo.greeting_card'
     ].join(',');
@@ -292,6 +293,8 @@ OrderDao.prototype.findOrderList = function (query_data) {
     sql += " left join ?? su2 on su2.id = bo.updated_by";
     params.push(tables.sys_user);
     sql += " left join ?? su3 on su3.id = bo.deliveryman_id";
+    params.push(tables.sys_user);
+    sql += " left join ?? su4 on su4.id = bo.last_opt_cs";
     params.push(tables.sys_user);
     sql += " left join ?? bpm on bpm.id = bo.pay_modes_id";
     params.push(tables.buss_pay_modes);
@@ -362,7 +365,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
     if (parseInt(query_data.is_greeting_card) === 1) {
         sql += " and bo.greeting_card is not null";
     } else if (parseInt(query_data.is_greeting_card) === 0) {
-        sql += " and bo.greeting_card is null";
+        sql += " and bo.greeting_card is null or bo.greeting_card = ''";
     }
 
     if (query_data.order_ids && Array.isArray(query_data.order_ids)) {
@@ -660,7 +663,8 @@ OrderDao.prototype.insertOrderInTransaction = function (req) {
                     total_original_price: total_original_price,
                     total_discount_price: total_discount_price,
                     greeting_card: greeting_card,
-                    coupon : coupon
+                    coupon : coupon,
+                    last_opt_cs : req.session.user.id
                 };
                 // order
                 trans.query(this.base_insert_sql,[tables.buss_order,systemUtils.assembleInsertObj(req,orderObj)],(order_err,result)=>{
@@ -769,8 +773,8 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
         recipient_name = req.body.recipient_name,
         recipient_mobile = req.body.recipient_mobile,
         regionalism_id = req.body.regionalism_id,
-        recipient_address = req.body.recipient_address,
-        recipient_landmark = req.body.recipient_landmark,
+        recipient_address = req.body.recipient_address || '',
+        recipient_landmark = req.body.recipient_landmark || '',
         src_id = req.body.src_id >= 10000? srcIdMapping.get(req.body.src_id): req.body.src_id,
         pay_modes_id = req.body.pay_modes_id,
         pay_status = req.body.pay_status,
@@ -781,7 +785,6 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
         total_original_price = req.body.total_original_price,
         total_discount_price = req.body.total_discount_price,
         products = req.body.products,
-        prefix_address = req.body.prefix_address,
         greeting_card = req.body.greeting_card,
         coupon = req.body.coupon,
         merchant_id = req.body.merchant_id;

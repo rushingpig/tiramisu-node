@@ -144,7 +144,10 @@ module.exports = {
     return geolib.isPointInside(point, coords);
   },
   commonRender : (req,res) => {
-    let userInfo = req.session.user, user;
+    // TODO(pigo): req.session sometimes will be undefined
+    req.session = req.session || {};
+    let userInfo = req.session.user;
+    let user = {};
     if (userInfo) {
       user = {
         name: userInfo.name,

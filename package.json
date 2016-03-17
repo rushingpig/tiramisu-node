@@ -1,6 +1,6 @@
 {
   "name": "tiramisu",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
@@ -10,7 +10,9 @@
     "team_dev": "./public/nginx/nginx.sh",
     "frontend": "NODE_ENV=test node ./bin/www",
     "fe": "NODE_ENV=test node ./bin/www",
-    "dfe" : "./node_modules/.bin/gulp deploy --cwd public"
+    "dfe": "./node_modules/.bin/gulp deploy --cwd public",
+    "preqs": "cd public && npm install && cd .. && ./node_modules/.bin/gulp deploy --cwd public && npm install",
+    "qs": "NODE_ENV=test node ./bin/www"
   },
   "dependencies": {
     "body-parser": "~1.13.2",

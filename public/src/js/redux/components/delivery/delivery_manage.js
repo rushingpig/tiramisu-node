@@ -56,6 +56,7 @@ class FilterHeader extends Component {
         end_time,
         delivery_type,
         print_status,
+        is_greeting_card,
         province_id,
         city_id,
       },
@@ -76,7 +77,7 @@ class FilterHeader extends Component {
             <DatePicker editable redux-form={end_time} className="short-input space-right" />
             <Select {...delivery_type} options={delivery_types} default-text="选择配送方式" className="space-right"/>
             <Select {...print_status} options={all_print_status} default-text="是否打印" className="space-right"/>
-            <Select default-text="是否有祝福贺卡" className="space-right"/>
+            <Select {...is_greeting_card} options={YES_OR_NO} default-text="是否有祝福贺卡" className="space-right"/>
             { 
               V( 'DeliveryManageDeliveryAddressFilter' )
               ? [
@@ -156,6 +157,7 @@ FilterHeader = reduxForm({
     'end_time',
     'delivery_type',
     'print_status',
+    'is_greeting_card',
     'province_id',
     'city_id',
 

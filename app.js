@@ -42,7 +42,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(validator(config.exp_validator_custom));
 app.use(cookieParser());
 app.use(middleware.system.wrapperResponse);
-app.use('/v1/a/*',middleware.system.debugReqAndResParams);
+app.use('/v1/[a,i]/*',middleware.system.debugReqAndResParams);
 app.use('/v1/i/*',middleware.whiteIPList.isInWhiteList);
 app.use(session(config.exp_session_options));
 app.use(express.static(path.join(__dirname, 'public'),config.exp_static_options));

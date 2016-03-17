@@ -877,7 +877,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                         owner_mobile: owner_mobile,
                         recipient_name: systemUtils.encodeForFulltext(recipient_name),
                         recipient_mobile: recipient_mobile,
-                        recipient_address: systemUtils.encodeForFulltext(prefix_address + recipient_address),
+                        recipient_address: systemUtils.encodeForFulltext(recipient_address),
                         landmark: systemUtils.encodeForFulltext(recipient_landmark),
                         merchant_id : merchant_id
                     };

@@ -706,10 +706,6 @@ OrderDao.prototype.insertOrderInTransaction = function (req) {
                     trans.query(skus_sql, [params], cb);
                     trans.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], cb);
                     trans.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], cb);
-                    trans.commit(()=> {
-                        connection.release();
-                        resolve();
-                    });
                 });
 
             });
@@ -890,10 +886,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                     trans.query(skus_sql, [params], cb);
                     trans.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], cb);
                     trans.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], cb);
-                    trans.commit(()=> {
-                        connection.release();
-                        resolve();
-                    });
+                    resolve();
                 });
 
             });

@@ -443,7 +443,7 @@ OrderDao.prototype.editOrder = function (order_obj, order_id, recipient_obj, rec
     let order_sql = this.base_update_sql + " where id = ?", recipent_sql = order_sql,
         recipient_params = [tables.buss_recipient, recipient_obj, recipient_id],
         order_params = [tables.buss_order, order_obj, order_id],
-        userId = order_obj.update_by,
+        userId = order_obj.update_by;
     return baseDao.trans().then((tranconn) => {
         let trans = tranconn.trans;
         return new Promise((resolve, reject) => {

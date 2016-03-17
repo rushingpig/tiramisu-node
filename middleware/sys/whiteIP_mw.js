@@ -23,13 +23,12 @@ function WhiteIPMiddleware(){
  * @returns {boolean}
  */
 WhiteIPMiddleware.isInWhiteList = (req,res,next) => {
-    let clientIP = toolUtils.getClientIP(req).split(':').pop();
-    if(config.white_ips.indexOf(clientIP.toString()) !== -1){
-        next();
-    }else{
+    const clientIP = toolUtils.getClientIP(req).split(':').pop();
+    if(config.white_ips.indexOf(clientIP) === -1){
         res.status(503);
-        res.api(new TiramisuError(res_obj.NO_WHITE_LIST_IP),null);
+        return res.api(res_obj.NO_WHITE_LIST_IP, {ip: clientIP}, null);
     }
+    next();
 };
 
 module.exports = WhiteIPMiddleware;

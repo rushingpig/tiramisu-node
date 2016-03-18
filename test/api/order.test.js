@@ -267,6 +267,7 @@ module.exports = function () {
       // TODO: default to UNTREATED as well
       // TODO: check setting created_by (req.session.user.id)
       // TODO: check differeciate different user by ip
+      // TODO: coupon will be normalized as numbers only
       const req_body = {
         "regionalism_id": 330204,
         "recipient_name": "有赞收货员",

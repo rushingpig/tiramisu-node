@@ -982,41 +982,41 @@ OrderService.prototype.exportExcel = (req,res,next) => {
     }
   }).then(()=>{
 
-    let order_ids = Array.from(result_map.keys()),sep = '/';
+    let order_ids = Array.from(result_map.keys());
 
     return orderDao.findOrderById(order_ids).then((results)=>{
       if(results){
         results.forEach((curr)=>{
           if(result_map.has(curr.id)){
             let order_obj = result_map.get(curr.id);
+            let product_obj = {};
             if(isList){
               // avoid the data in db null been convert to string 'null'
-              order_obj.product_names += (curr.product_name ? curr.product_name : '') + sep;
-              order_obj.sizes += (curr.size ? curr.size : '') + sep;
-              order_obj.nums += (curr.num ? curr.num : '') + sep;
-              order_obj.discount_prices += (curr.discount_price ? curr.discount_price/100 : '') + sep;
-              order_obj.amounts += (curr.amount ? curr.amount/100 : '') + sep;
-              order_obj.greeting_cards += (curr.greeting_card ? curr.greeting_card : '') + sep;
-              order_obj.choco_boards += (curr.choco_board ? curr.choco_board : '') + sep;
-              order_obj.atlases += (curr.atlas ? '需要' : '不需要') + sep;
+              product_obj.product_names = (curr.product_name ? curr.product_name : '');
+              product_obj.sizes = (curr.size ? curr.size : '');
+              product_obj.nums = (curr.num ? curr.num : '');
+              product_obj.discount_prices = (curr.discount_price ? curr.discount_price/100 : '');
+              product_obj.amounts = (curr.amount ? curr.amount/100 : '');
+              product_obj.greeting_cards = (curr.greeting_card ? curr.greeting_card : '');
+              product_obj.choco_boards = (curr.choco_board ? curr.choco_board : '');
+              product_obj.atlases = (curr.atlas ? '需要' : '不需要');
             }else if(isReceiveList){
-              order_obj.nums += (curr.num ? curr.num : '') + sep;
-              order_obj.product_names += (curr.product_name ? curr.product_name : '') + sep;
-              order_obj.sizes += (curr.size ? curr.size : '') + sep;
-              order_obj.discount_prices += (curr.discount_price ? curr.discount_price/100 : '') + sep;
-              order_obj.amounts += (curr.amount ? curr.amount/100 : '') + sep;
+              product_obj.nums = (curr.num ? curr.num : '');
+              product_obj.product_names = (curr.product_name ? curr.product_name : '');
+              product_obj.sizes = (curr.size ? curr.size : '');
+              product_obj.discount_prices = (curr.discount_price ? curr.discount_price/100 : '');
+              product_obj.amounts = (curr.amount ? curr.amount/100 : '');
             }
+            let res_obj = Object.assign(order_obj,product_obj);
+            let temp_arr = [];
+            for(let key in res_obj){
+              temp_arr.push(res_obj[key]);
+            }
+            data.push(temp_arr);
           }
         });
       }
     }).then(()=>{
-      for(let obj of result_map.values()){
-        let order_data = [];
-        for(let key in obj){
-          order_data.push(obj[key]);
-        }
-        data.push(order_data);
-      }
       let buffer = xlsx.build([{name: "订单列表", data: data}]); // returns a buffer
       res.set({
         'Content-Type': 'application/vnd.ms-excel',
@@ -1028,6 +1028,8 @@ OrderService.prototype.exportExcel = (req,res,next) => {
     });
 
   }).catch((err)=>{
+    console.log(err);
+    
       res.render('error',{err:'亲,该条件下没有可选订单,请重新筛选...'});
   });
 

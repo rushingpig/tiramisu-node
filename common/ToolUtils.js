@@ -105,6 +105,10 @@ ToolUtils.hash = function (input) {
 ToolUtils.isConstainSpecialCharacter = function(string){
   return ToolUtils.SPECIAL_CHAR_REG.test(string);
 };
+
+ToolUtils.extractNumbers = function (str) {
+  return str.replace(/[^0-9]/g, '');
+};
 /**
  * get the client ip
  * @param req

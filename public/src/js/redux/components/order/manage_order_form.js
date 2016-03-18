@@ -122,7 +122,7 @@ class ManageAddForm extends Component {
 
     var { save_ing, save_success, submit_ing, 
       all_delivery_time, all_pay_status, all_order_srcs, 
-      delivery_stations, all_pay_modes} = this.props['form-data'];
+      delivery_stations, all_pay_modes, data: { merchant_id }} = this.props['form-data'];
     var {provinces, cities, districts, delivery_shops} = this.props.area;
     var {invoices, selected_order_src_level1_id = src_id.value, groupbuy_psd, groupbuy_check_ing, groupbuy_msg, groupbuy_success} = this.state;
 
@@ -231,6 +231,12 @@ class ManageAddForm extends Component {
                 className={`form-select ${src_id.error}`} />
         }
       </div>
+      { merchant_id && (
+          <div className="form-group form-inline">
+            <label>{'　　　　　　'}</label>{merchant_id}
+          </div>
+        )
+      }
       <div className="form-group form-inline">
         <label>{'　支付方式：'}</label>
        <Select {...pay_modes_id} options={all_pay_modes} onChange={this.onPayModesChange.bind(this, pay_modes_id.onChange)} className={`form-select ${pay_modes_id.error}`} />

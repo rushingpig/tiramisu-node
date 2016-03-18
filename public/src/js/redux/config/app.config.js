@@ -101,5 +101,6 @@ export default {
     wechat: 13, //微信支付
     cash: 18, //货到付款（现金）
     card: 19, //货到付款（POS）
+    free: 11, //免费
   }
 }

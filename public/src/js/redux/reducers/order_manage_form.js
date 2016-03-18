@@ -8,7 +8,7 @@ import { ProductsModalActionTypes } from 'actions/action_types';
 import { updateAddOrderForm, initForm } from 'actions/form';
 import { map, delay, core } from 'utils/index';
 import { getValues } from 'redux-form';
-import { pay_status as PAY_STATUS } from 'config/app.config';
+import { pay_status as PAY_STATUS, MODES } from 'config/app.config';
 
 import delivery_stations from 'reducers/delivery_stations';
 
@@ -182,7 +182,20 @@ function products_choosing(state = products_choosing_state, action){
           custom_desc: '',  //自定义描述
         }
         var confirm_list = state.selected_list.map(function(n){
-          var new_item = {...n, ...base};
+          var confirm_pro = state.confirm_list.filter( m => m.sku_id == n.sku_id )[0];
+          var new_item;
+          if( confirm_pro ){
+            new_item = {
+              ...n,
+              choco_board: confirm_pro.choco_board || '生日快乐',
+              greeting_card: confirm_pro.greeting_card || '',
+              atlas: confirm_pro.greeting_card,
+              custom_name: confirm_pro.custom_name || '',
+              custom_desc: confirm_pro.custom_desc || '',
+            }
+          }else{
+            new_item = {...n, ...base}
+          }
           new_item.discount_price = n.discount_price * n.num / 100 || 0;
           new_item.amount = new_item.discount_price;
           return new_item;
@@ -230,11 +243,11 @@ function products_choosing(state = products_choosing_state, action){
 
     case OrderProductsActions.UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE:
       return (function(){
-        var global_state = store.getState();
-        var order = getValues(global_state.form.add_order);
+        var order = getValues(store.getState().form.add_order);
         var pay_status = PAY_STATUS[order.pay_status];
         var {confirm_list} = state;
-        if(pay_status == '已付款'){
+        //支付状态：已付款，或者，支付方式：免费
+        if(pay_status == '已付款' || order.pay_modes_id == MODES.free){
           confirm_list.forEach(function(n){
             n.amount = 0;
           })

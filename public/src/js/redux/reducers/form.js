@@ -105,8 +105,8 @@ export default formReducer.plugin({
               state.pay_status = {...state.pay_status, ...getPayStatus(state, action)};
             }
             delay(() => {
-              var p = PAY_STATUS[state.pay_status.value];
-              if( p == '已付款' || p == '部分付款' || p == '货到付款' || action.field == 'pay_status' || action.key == 'pay_status'){
+              var { field, key } = action;
+              if( field == 'pay_status' || key == 'pay_status' || field == 'pay_modes_id' || key == 'pay_modes_id' ){
                 getGlobalStore().dispatch(updateConfirmProductDiscountPrice());
               }
             })

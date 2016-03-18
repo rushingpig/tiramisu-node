@@ -99,10 +99,15 @@ AddressDao.prototype.updateStationByStationId = function(stationId, update_obj){
     return baseDao.update(sql,[tables.buss_delivery_station, update_obj, stationId]);
 };
 AddressDao.prototype.getStationsByName = function(station_name){
-    let sql = util.format("select b.id 'id',a.name 'district_name',b.name 'station_name'," +
-        "b.address 'address',b.position 'position' " +
-        "from %s a join %s b on a.id = b.regionalism_id " +
-        "where a.level_type = ? and a.del_flag = ? and b.name = ?", this.table, tables.buss_delivery_station);
+    let sql = util.format("select b.id 'station_id',b.name 'name',b.remarks 'remarks'," +
+        "b.address 'address',b.position 'position',b.capacity 'capacity',b.phone 'phone'," +
+        "a.name 'regionalism_name',a.id 'regionalism_id'," +
+        "c.name 'city_name',c.id 'city_id'," +
+        "d.id 'province_id',d.name 'province_name' " +
+        "from %s a join %s c on a.parent_id = c.id " +
+        "join %s d on c.parent_id = d.id " +
+        "join %s b on a.id = b.regionalism_id " +
+        "where a.level_type = ? and a.del_flag = ? and b.name = ?", this.table, this.table, this.table, tables.buss_delivery_station);
     let params = [3, del_flag.SHOW, station_name];
     return baseDao.select(sql, params);
 };

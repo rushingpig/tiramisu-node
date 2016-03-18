@@ -170,9 +170,6 @@ BaseDao.trans = function(){
                 queues(connection, config.mysql_options.debug);
                 let trans = connection.startTransaction();
                 resolve({trans,connection});
-                trans.commit(()=>{
-                    connection.release();
-                });
                 trans.execute();
             }
         });

@@ -144,6 +144,7 @@ OrderDao.prototype.findOrderById = function (orderIdOrIds) {
         'bo.total_amount',
         'bo.total_discount_price',
         'bo.total_original_price',
+        'bo.merchant_id',
         'bp.`name` as product_name',
         'bp.original_price',
         'bos.amount',
@@ -627,6 +628,14 @@ OrderDao.prototype.insertOrderInTransaction = function (req) {
                     return;
                 }
             };
+            const anyway = function(){
+                if(trans.commit){
+                    trans.commit(()=>{
+                        connection.release();
+                    });
+                }
+
+            };
             // recipient
             trans.query(this.base_insert_sql, [tables.buss_recipient, recipientObj], (recipient_err, info)=> {
                 if (recipient_err || !info.insertId) {
@@ -635,6 +644,7 @@ OrderDao.prototype.insertOrderInTransaction = function (req) {
                     return;
                 }
                 if (toolUtils.isEmptyArray(products)) {
+                    anyway();
                     reject(new TiramisuError(errorMessage.ORDER_NO_PRODUCT));
                     return;
                 }
@@ -701,6 +711,7 @@ OrderDao.prototype.insertOrderInTransaction = function (req) {
                     trans.query(skus_sql, [params], cb);
                     trans.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], cb);
                     trans.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], cb);
+                    anyway();
                     resolve();
                 });
 
@@ -802,6 +813,14 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                     return reject(err_cb);
                 }
             };
+            const anyway = function(){
+                if(trans.commit){
+                    trans.commit(()=>{
+                        connection.release();
+                    });
+                }
+
+            };
             // recipient
             trans.query(this.base_insert_sql, [tables.buss_recipient, recipientObj], (recipient_err, info)=> {
                 if (recipient_err || !info.insertId) {
@@ -810,6 +829,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                     return;
                 }
                 if (toolUtils.isEmptyArray(products)) {
+                    anyway();
                     reject(new TiramisuError(errorMessage.ORDER_NO_PRODUCT));
                     return;
                 }
@@ -841,6 +861,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                 // order
                 trans.query(this.base_insert_sql,[tables.buss_order,systemUtils.assembleInsertObj(req,orderObj)],(order_err,result)=>{
                     if (order_err && order_err.code === 'ER_DUP_ENTRY') {
+                        if (trans.rollback) trans.rollback();
                         return reject(new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, orderObj.merchant_id));
                     }
                     if (order_err || !result.insertId) {
@@ -883,14 +904,12 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                     trans.query(skus_sql, [params], cb);
                     trans.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], cb);
                     trans.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], cb);
+                    anyway();
                     resolve();
                 });
-
             });
         });
-
     });
-
 };
 /**
  * batch update order_fulltext records

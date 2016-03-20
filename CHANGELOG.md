@@ -1,3 +1,7 @@
+### v0.1.5
+* Backend:
+ * Zhanzhao LIANG: 使用node-mysql的transaction，移除mysql-queue库
+
 ### v0.1.3 (18 Mar 2016)
 * Backend:
  * Zhenglin ZHU: fix missing connection release in baseDao

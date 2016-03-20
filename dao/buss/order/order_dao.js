@@ -644,7 +644,7 @@ OrderDao.prototype.insertOrderInTransaction = function (req) {
                     return;
                 }
                 if (toolUtils.isEmptyArray(products)) {
-                    anyway();
+                    if (trans.rollback) trans.rollback();
                     reject(new TiramisuError(errorMessage.ORDER_NO_PRODUCT));
                     return;
                 }
@@ -830,7 +830,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                     return;
                 }
                 if (toolUtils.isEmptyArray(products)) {
-                    anyway();
+                    if (trans.rollback) trans.rollback();
                     reject(new TiramisuError(errorMessage.ORDER_NO_PRODUCT));
                     return;
                 }

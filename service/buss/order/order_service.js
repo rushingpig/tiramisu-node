@@ -486,7 +486,7 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
         deliveryman_id: req.query.deliveryman_id,
         print_status: req.query.print_status,
         is_greeting_card: req.query.is_greeting_card,
-        user : req.session.user
+        user : req.session.user,
       };
     }
 
@@ -864,7 +864,8 @@ OrderService.prototype.exportExcel = (req,res,next) => {
     is_greeting_card: req.query.is_greeting_card,
     user : req.session.user,
     page_no : 0,
-    page_size : 1000000   // safe Threshold
+    page_size : 1000000,   // safe Threshold
+    list_products : true
   };
   if (req.query.keywords && isNaN(parseInt(req.query.keywords))) {
     query_data.keywords = systemUtils.encodeForFulltext(req.query.keywords);
@@ -896,7 +897,6 @@ OrderService.prototype.exportExcel = (req,res,next) => {
   }else{
     delete query_data.order_sorted_rules;
   }
-  let result_map = new Map();
   let promise = orderDao.findOrderList(query_data).then((resObj) => {
     if (!(resObj.result && resObj._result)) {
       throw new TiramisuError(res_obj.FAIL);
@@ -914,110 +914,72 @@ OrderService.prototype.exportExcel = (req,res,next) => {
 //  do not change the order in the object
       let list_obj = null;
       if(isList){
-        list_obj = {
-            order_id: systemUtils.getShowOrderId(curr.id, curr.created_time),
-            src_name: curr.src_name,
-            accepted_by: curr.created_by,
-            accepted_time: curr.created_time,
-            last_opt_cs : curr.last_opt_cs,
-            owner_name: curr.owner_name,
-            owner_mobile: curr.owner_mobile,
-            created_time: curr.created_time,
-            recipient_name: curr.recipient_name,
-            recipient_mobile: curr.recipient_mobile,
-            recipient_address: delivery_adds.join(',') + '  '+curr.address,
-            delivery_type: Constant.DTD[curr.delivery_type],
-            shop_name : curr.delivery_type == Constant.DT.COLLECT ? curr.address : '',
-            pay_modes_name : curr.pay_modes_name,
-            print_status: Constant.PSD[curr.print_status],
-            total_original_price: curr.total_original_price/100,
-            total_discount_price: curr.total_discount_price/100,
-            coupon_amount : '',
-            status : Constant.OSD[curr.status],
-            delivery_time: curr.delivery_time,
-            delivery_name: curr.delivery_name,
-            invoice : curr.invoice,
-            coupon: curr.coupon,
-            city: city_name,
-            cancel_reason: curr.cancel_reason,
-            remarks: curr.remarks,
+        data.push([
+          systemUtils.getShowOrderId(curr.id, curr.created_time),
+          curr.src_name,
+          curr.created_by,
+          curr.created_time,
+          curr.last_opt_cs,
+          curr.owner_name,
+          curr.owner_mobile,
+          curr.created_time,
+          curr.recipient_name,
+          curr.recipient_mobile,
+          delivery_adds.join(',') + '  '+curr.address,
+          Constant.DTD[curr.delivery_type],
+          curr.delivery_type == Constant.DT.COLLECT ? curr.address : '',
+          curr.pay_modes_name,
+          Constant.PSD[curr.print_status],
+          curr.total_original_price/100,
+          curr.total_discount_price/100,
+          '',
+          Constant.OSD[curr.status],
+          curr.delivery_time,
+          curr.delivery_name,
+          curr.invoice,
+          curr.coupon,
+          city_name,
+          curr.cancel_reason,
+          curr.remarks,
 //  the products properties
-            product_names : '',
-            sizes : '',
-            nums : '',
-            discount_prices : '',
-            amounts : '',
-            greeting_cards : '',
-            choco_boards : '',
-            atlases : ''
-        };
+          curr.product_name ? curr.product_name : '',
+          curr.size ? curr.size : '',
+          curr.num ? curr.num : '',
+          curr.discount_price ? curr.discount_price/100 : '',
+          curr.amount ? curr.amount/100 : '',
+           curr.greeting_card ? curr.greeting_card : '',
+          curr.choco_board ? curr.choco_board : '',
+          curr.atlas ? '需要' : '不需要'
+        ]);
       }else if(isReceiveList){
-        list_obj = {
-          order_id: systemUtils.getShowOrderId(curr.id, curr.created_time),
-          owner_name: curr.owner_name,
-          owner_mobile: curr.owner_mobile,
-          accepted_time: curr.created_time,
-          src_name: curr.src_name,
-          recipient_name: curr.recipient_name,
-          recipient_mobile: curr.recipient_mobile,
-          recipient_address: delivery_adds.join(',') + '  '+curr.address,
-          delivery_time: curr.delivery_time,
-          pay_modes_name : curr.pay_modes_name,
-          delivery_name: curr.delivery_name,
-          accepted_by: curr.created_by,
-          status : Constant.OSD[curr.status],
-          deliveryman_name : curr.deliveryman_name,
-          signin_time : curr.signin_time,
-          cost : '',
-          total_discount_price: curr.total_discount_price/100,
+        data.push([
+          systemUtils.getShowOrderId(curr.id, curr.created_time),
+          curr.owner_name,
+          curr.owner_mobile,
+          curr.created_time,
+          curr.src_name,
+          curr.recipient_name,
+          curr.recipient_mobile,
+          delivery_adds.join(',') + '  '+curr.address,
+          curr.delivery_time,
+          curr.pay_modes_name,
+          curr.delivery_name,
+          curr.created_by,
+          Constant.OSD[curr.status],
+          curr.deliveryman_name,
+          curr.signin_time,
+          '',
+          curr.total_discount_price/100,
 //  the products properties
-          nums : '',
-          product_names : '',
-          sizes : '',
-          discount_prices : '',
-          amounts : ''
-        };
+          curr.num ? curr.num : '',
+          curr.product_name ? curr.product_name : '',
+          curr.size ? curr.size : '',
+          curr.discount_price ? curr.discount_price/100 : '',
+          curr.amount ? curr.amount/100 : ''
+        ]);
       }
-
-      result_map.set(curr.id,list_obj);
     }
   }).then(()=>{
-
-    let order_ids = Array.from(result_map.keys());
-
-    return orderDao.findOrderById(order_ids).then((results)=>{
-      if(results){
-        results.forEach((curr)=>{
-          if(result_map.has(curr.id)){
-            let order_obj = result_map.get(curr.id);
-            let product_obj = {};
-            if(isList){
-              // avoid the data in db null been convert to string 'null'
-              product_obj.product_names = (curr.product_name ? curr.product_name : '');
-              product_obj.sizes = (curr.size ? curr.size : '');
-              product_obj.nums = (curr.num ? curr.num : '');
-              product_obj.discount_prices = (curr.discount_price ? curr.discount_price/100 : '');
-              product_obj.amounts = (curr.amount ? curr.amount/100 : '');
-              product_obj.greeting_cards = (curr.greeting_card ? curr.greeting_card : '');
-              product_obj.choco_boards = (curr.choco_board ? curr.choco_board : '');
-              product_obj.atlases = (curr.atlas ? '需要' : '不需要');
-            }else if(isReceiveList){
-              product_obj.nums = (curr.num ? curr.num : '');
-              product_obj.product_names = (curr.product_name ? curr.product_name : '');
-              product_obj.sizes = (curr.size ? curr.size : '');
-              product_obj.discount_prices = (curr.discount_price ? curr.discount_price/100 : '');
-              product_obj.amounts = (curr.amount ? curr.amount/100 : '');
-            }
-            let res_obj = Object.assign(order_obj,product_obj);
-            let temp_arr = [];
-            for(let key in res_obj){
-              temp_arr.push(res_obj[key]);
-            }
-            data.push(temp_arr);
-          }
-        });
-      }
-    }).then(()=>{
       let buffer = xlsx.build([{name: "订单列表", data: data}]); // returns a buffer
       res.set({
         'Content-Type': 'application/vnd.ms-excel',
@@ -1026,11 +988,8 @@ OrderService.prototype.exportExcel = (req,res,next) => {
         'Expires': 0
       });
       res.send(buffer);
-    });
-
   }).catch((err)=>{
-    console.log(err);
-    
+      console.error(err);
       res.render('error',{err:'亲,该条件下没有可选订单,请重新筛选...'});
   });
 

@@ -217,7 +217,7 @@ OrderDao.prototype.findOrderById = function (orderIdOrIds) {
  * query for the order list by the given terms
  */
 OrderDao.prototype.findOrderList = function (query_data) {
-    let columns = [
+    let columns_arr = [
         'bo.id',
         'bo.merchant_id',
         'bo.owner_name',
@@ -256,9 +256,25 @@ OrderDao.prototype.findOrderList = function (query_data) {
         'su4.name as last_opt_cs',
         'bo.updated_time',
         'bo.greeting_card'
-    ].join(',');
+    ];
+    if(query_data.list_products){
+        columns_arr = columns_arr.concat(['bp.`name` as product_name',
+            'bp.original_price',
+            'bosku.amount',
+            'bosku.num',
+            'bps.size',
+            'bps.price',
+            'bosku.sku_id',
+            'bosku.discount_price',
+            'bosku.choco_board',
+            'bosku.greeting_card as product_greeting_card',
+            'bosku.custom_name',
+            'bosku.custom_desc',
+            'bosku.atlas']);
+    }
+    let columns = columns_arr.join(',');
     let params = [],data_scopes = query_data.user.data_scopes;
-    let sql = "select " + columns + " from ?? bo";
+    let sql = "select " + columns + " from ?? bo force index(IDX_DELIVERY_TIME)";
     params.push(tables.buss_order);
     if (query_data.keywords) {
         let match = '';
@@ -285,6 +301,15 @@ OrderDao.prototype.findOrderList = function (query_data) {
         params.push(tables.dict_regionalism);
 
     }
+    if(query_data.list_products){
+        sql += " left join ?? bosku on bo.id = bosku.order_id and bosku.del_flag = ?";
+        params.push(tables.buss_order_sku);
+        params.push(del_flag.SHOW);
+        sql += " left join ?? bps on bosku.sku_id = bps.id";
+        params.push(tables.buss_product_sku);
+        sql += " left join ?? bp on bps.product_id = bp.id";
+        params.push(tables.buss_product);
+    }
     sql += " left join ?? bos on bo.src_id = bos.id";
     params.push(tables.buss_order_src);
     sql += " left join ?? dr on br.regionalism_id = dr.id";
@@ -299,6 +324,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
     params.push(tables.sys_user);
     sql += " left join ?? bpm on bpm.id = bo.pay_modes_id";
     params.push(tables.buss_pay_modes);
+
     sql += " where 1=1";
     if (query_data.owner_mobile) {
         sql += " and bo.owner_mobile = ?";

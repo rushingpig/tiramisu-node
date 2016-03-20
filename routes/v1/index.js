@@ -99,6 +99,7 @@ a.put('/order/:orderId/cancel',orderService.cancelOrder);   // 取消订单
 a.put('/order/:orderId/exception',orderService.exceptionOrder);     // 将订单置为异常状态(以是否投入生产作为节点)
 
 a.put('/station/:stationId', addressService.modifyStation);   //修改配送站信息
+a.put('/stations/scope', addressService.batchModifyStationCoords);   //批量修改配送站范围
 //************************
 //******** DELETE ********
 //************************

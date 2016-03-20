@@ -82,7 +82,8 @@ AddressService.prototype.getDistricts = (req, res, next)=> {
     );
 };
 /**
- * get stations by city id
+ * get stations by district id
+ * include province & city & regionlism
  * @param req
  * @param res
  * @param next
@@ -183,6 +184,25 @@ AddressService.prototype.deleteStation = (req,res,next)=>{
  */
 AddressService.prototype.addStation = (req,res,next)=>{
     let promise = addressDao.addStation(req.body).then(() => {
+        res.api();
+    });
+    systemUtils.wrapService(res, next, promise);
+};
+/**
+ * modify multiple stations coords in transaction
+ * @param req
+ * @param res
+ * @param next
+ */
+AddressService.prototype.batchModifyStationCoords = (req,res,next)=>{
+    req.checkBody('data', 'data为空').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,null);
+        return;
+    }
+    let data = JSON.parse(req.body.data);
+    let promise = addressDao.modifyStationCoordsInTransaction(data).then(() => {
         res.api();
     });
     systemUtils.wrapService(res, next, promise);

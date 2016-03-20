@@ -7,6 +7,7 @@
  */
 "use strict";
 var util = require('util');
+var async = require('async');
 var tables = require('../../config').tables;
 var dbHelper = require('../../common/DBHelper');
 var baseDao = require('../base_dao'),
@@ -118,6 +119,31 @@ AddressDao.prototype.deleteStationById = function(stationId){
 AddressDao.prototype.addStation = function(insert_obj){
     let params = [tables.buss_delivery_station, insert_obj];
     return baseDao.insert(this.base_insert_sql, params);
+};
+AddressDao.prototype.modifyStationCoordsInTransaction = function(arr){
+    return new Promise((resolve, reject) => {
+        baseDao.pool.getConnection((err, connection) => {
+            if(err){
+                return reject(err);
+            }
+            connection.beginTransaction(err => {
+                if(err){
+                    return reject(err);
+                }
+                let sql = this.base_update_sql + ' where id = ? ';
+                async.each(arr, (item, cb) => {
+                    connection.query(sql, [tables.buss_delivery_station, {coords: item.coords}, item.id], cb);
+                }, err => {
+                    if(err){
+                        connection.rollback();
+                        return reject(err);
+                    }
+                    connection.commit();
+                    return resolve();
+                });
+            });
+        });
+    });
 };
 
 module.exports = AddressDao;

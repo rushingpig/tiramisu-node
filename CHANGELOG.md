@@ -1,6 +1,8 @@
-### v0.1.5
+### v0.1.5 (20 Mar 2015)
 * Backend:
  * Zhanzhao LIANG: 使用node-mysql的transaction，移除mysql-queue库
+ * Zhenglin ZHU: 增加订单的配送时间，订单sku的订单号索引，优化订单导出excel时间
+ * Kaiming ZENG: 添加配送站范围坐标添加事务处理
 
 ### v0.1.3 (18 Mar 2016)
 * Backend:

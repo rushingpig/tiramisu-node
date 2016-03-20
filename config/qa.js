@@ -1,7 +1,7 @@
 'use strict';
 //  express static config options
 var exp_static_options = {
-    dotfiles: "ignore",
+    dotfiles: "deny",
     etag: true,
     extensions: false,
     index: "/",     // 设定对根目录的映射

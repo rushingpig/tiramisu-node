@@ -716,10 +716,11 @@ OrderDao.prototype.insertOrderInTransaction = function (req) {
                 });
 
             });
+        }).catch((err)=>{
+            connection.release();
+            throw err;
         });
-
     });
-
 };
 
 const srcIdMapping = new Map(
@@ -908,6 +909,9 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                     resolve();
                 });
             });
+        }).catch((err)=>{
+            connection.release();
+            throw err;
         });
     });
 };

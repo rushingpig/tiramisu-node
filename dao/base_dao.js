@@ -8,8 +8,7 @@
 "use strict";
 var config = require('../config');
 var mysql = require('mysql');
-var pool = mysql.createPool(config.mysql_options),
-    queues = require('mysql-queues');
+var pool = mysql.createPool(config.mysql_options);
 
 function BaseDao() {
     pool.on('connecton', function () {
@@ -100,65 +99,10 @@ BaseDao.batchInsert = (sql, params) => {
 BaseDao.delete = function (sql, params) {
     return BaseDao.insert(sql, params);
 };
-/**
- * example:
- * <b>
- *BaseDao.transaction().then((trans)=> {
-    trans.query("insert into table1 values(null,'zzl1')", null, function (err1, info1) {
-        if (err1) {
-            trans.rollback();
-        } else {
-            trans.query("insert into table2 values(null,'zzl2')", null, function (err2, info2) {
-                if (err2) {
-                    trans.rollback();
-                } else {
-                    trans.commit();
-                }
-            });
-            console.log('.................end..................');
-        }
-    });
-}, (error)=> {
-    console.log(error);
-});
- *
- * </b>
- * @returns {Promise}
- */
-BaseDao.voidTrans = function (sqls,params) {
 
-    return new Promise((resolve, reject)=> {
-        pool.getConnection(function (err, connection) {
-            if (err) {
-                reject(err);
-            } else {
-                queues(connection, config.mysql_options.debug);
-                let trans = connection.startTransaction();
-                let cb = function(err,results){
-                    if(err && trans.rollback){
-                        trans.rollback();
-                        reject(err);
-                    }
-                };
-
-                if(!(Array.isArray(sqls) && Array.isArray(params))){
-                    reject(new Error('the parameters must all be instance of Array...'));
-                }
-                if(sqls.length !== params.length){
-                    reject(new Error('the arguments\'s length should be the same...'));
-                }
-                for(let i = 0;i < sqls.length;i++){
-                    trans.query(sqls[i],params[i],cb);
-                }
-                trans.commit();
-                connection.release();
-                resolve();
-            }
-        });
-    });
-};
 /**
- * if the the sql you want to execute need results
+ * Start a transaction promise, which resolve(connection) for use
+ * Remember to commit/rollback and release the connection
  * @returns {Promise}
  */
 BaseDao.trans = function(){

@@ -167,14 +167,18 @@ BaseDao.trans = function(){
             if (err) {
                 reject(err);
             } else {
-                queues(connection, config.mysql_options.debug);
-                let trans = connection.startTransaction();
-                resolve({trans,connection});
-                trans.execute();
+              connection.beginTransaction(err => {
+                if (err) {
+                  connection.release();
+                  return reject(err);
+                }
+                resolve(connection);
+              });
             }
         });
     });
 };
+
 BaseDao.del_flag = {
     SHOW: 1,
     HIDE: 0

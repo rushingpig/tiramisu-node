@@ -101,7 +101,7 @@ AddressDao.prototype.updateStationByStationId = function(stationId, update_obj){
 };
 AddressDao.prototype.getStationsByName = function(station_name){
     let sql = util.format("select b.id 'station_id',b.name 'name',b.remarks 'remarks'," +
-        "b.address 'address',b.position 'position',b.capacity 'capacity',b.phone 'phone'," +
+        "b.address 'address',b.position 'position',b.capacity 'capacity',b.phone 'phone',b.coords 'coords'," +
         "a.name 'regionalism_name',a.id 'regionalism_id'," +
         "c.name 'city_name',c.id 'city_id'," +
         "d.id 'province_id',d.name 'province_name' " +

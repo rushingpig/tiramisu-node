@@ -189,7 +189,7 @@ function products_choosing(state = products_choosing_state, action){
               ...n,
               choco_board: confirm_pro.choco_board || '生日快乐',
               greeting_card: confirm_pro.greeting_card || '',
-              atlas: confirm_pro.greeting_card,
+              atlas: confirm_pro.atlas,
               custom_name: confirm_pro.custom_name || '',
               custom_desc: confirm_pro.custom_desc || '',
             }

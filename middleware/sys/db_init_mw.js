@@ -27,7 +27,7 @@ function loadSQL() {
 
 DBInitMiddleware.initdb = (callback) => {
   callback = callback || function () {};
-  if (['dev', 'production', 'test'].indexOf(process.env.NODE_ENV) === -1) {
+  if (['dev', 'production', 'qa'].indexOf(process.env.NODE_ENV) === -1) {
     pool.query(
       loadSQL(),
       (err) => {

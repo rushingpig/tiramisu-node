@@ -471,8 +471,9 @@ OrderDao.prototype.editOrder = function (order_obj, order_id, recipient_obj, rec
         recipient_params = [tables.buss_recipient, recipient_obj, recipient_id],
         order_params = [tables.buss_order, order_obj, order_id],
         userId = order_obj.update_by;
-    return baseDao.trans().then((tranconn) => {
+    return baseDao.queue_trans().then((tranconn) => {
         let trans = tranconn.trans;
+        let connection = tranconn.connection;
         return new Promise((resolve, reject) => {
             trans.query(recipent_sql, recipient_params, (err_recipient) => {
                 if (err_recipient) {
@@ -515,9 +516,15 @@ OrderDao.prototype.editOrder = function (order_obj, order_id, recipient_obj, rec
                             trans.query(order_sku_update_sql, order_sku_update_params, cb);
                         });
                     }
-                    resolve();
+                    trans.commit(nothing=>{
+                        connection.release();
+                        resolve();
+                    });
                 });
             });
+        }).catch(err=>{
+            connection.release();
+            throw err;
         });
 
     });

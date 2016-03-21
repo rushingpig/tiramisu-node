@@ -746,5 +746,62 @@ module.exports = function () {
           done();
         });
     });
+
+    it('PUT /v1/a/order/:orderId  edit the order by order id (exist : 9996, no exist : 0000) ', function (done) {
+      const req_body = {
+        "delivery_type": "DELIVERY",
+        "owner_name": "欺骗不必",
+        "owner_mobile": "13824201234",
+        "recipient_name": "赖**",
+        "recipient_mobile": "13824201234",
+        "recipient_address": "下**路下梅湖**村商场",
+        "province_id": 440000,
+        "city_id": 441300,
+        "regionalism_id": 441302,
+        "recipient_landmark": "",
+        "delivery_id": 2,
+        "src_id": 12,
+        "pay_modes_id": 12,
+        "coupon": null,
+        "pay_status": "PAYED",
+        "remarks": "限时特价\n快点派送，急，晚上需要蛋糕",
+        "invoice": null,
+        "delivery_time": "2016-03-21 09:30~10:30",
+        "order_id": "2016032010019270",
+        "updated_time": "2016-03-21 15:43:32",
+        "recipient_id": 19358,
+        "delivery_name": "惠州配送站",
+        "prefix_address": "广东省惠州市惠城区",
+        "total_amount": 0,
+        "total_original_price": 51200,
+        "total_discount_price": 51200,
+        "products": [
+          {
+            "sku_id": 15322,
+            "choco_board": "生日快乐",
+            "custom_desc": "",
+            "custom_name": "",
+            "discount_price": 51200,
+            "greeting_card": "",
+            "num": 2,
+            "original_price": 25600,
+            "name": "爸爸的爱",
+            "atlas": 1,
+            "size": "约2磅",
+            "amount": 0
+          }
+        ],
+        "gretting_card": ""
+      };
+      agent.put('/v1/a/order/2016032010000001')
+          .type('application/json')
+          .send(req_body)
+          .end((err, res) => {
+            assert.strictEqual(res.body.code, '9995');
+            assert.strictEqual(res.statusCode, 200);
+            done();
+          });
+    });
+
   });
 };

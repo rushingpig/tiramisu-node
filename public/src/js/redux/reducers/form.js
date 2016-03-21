@@ -105,10 +105,10 @@ export default formReducer.plugin({
               state.pay_status = {...state.pay_status, ...getPayStatus(state, action)};
             }
             delay(() => {
-              var { field, key } = action;
-              if( field == 'pay_status' || key == 'pay_status' || field == 'pay_modes_id' || key == 'pay_modes_id' ){
+              // var { field, key } = action;
+              // if( field == 'pay_status' || key == 'pay_status' || field == 'pay_modes_id' || key == 'pay_modes_id' ){
                 getGlobalStore().dispatch(updateConfirmProductDiscountPrice());
-              }
+              // }
             })
             return {...state};
           default:

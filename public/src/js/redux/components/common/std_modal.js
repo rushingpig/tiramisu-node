@@ -52,7 +52,7 @@ export default class StdModal extends Component {
   }
 }
 
-StdModal.PropTypes = {
+StdModal.propTypess = {
   title: PropTypes.any.isRequired,
 }
 

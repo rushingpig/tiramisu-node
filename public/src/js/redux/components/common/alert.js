@@ -14,6 +14,6 @@ export default class Alert extends Component {
   }
 }
 
-Alert.PropTypes = {
+Alert.propTypess = {
   type: PropTypes.string.isRequired
 }

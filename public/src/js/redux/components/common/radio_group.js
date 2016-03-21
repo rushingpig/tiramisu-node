@@ -35,7 +35,7 @@ RadioGroup.defaultProps = {
   vertical: false,
 }
 
-RadioGroup.PropTypes = {
+RadioGroup.propTypess = {
   name: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   radios: PropTypes.arrayOf(

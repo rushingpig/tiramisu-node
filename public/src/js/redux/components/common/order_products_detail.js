@@ -48,6 +48,6 @@ export default class OrderProductsDetail extends Component {
   }
 }
 
-OrderProductsDetail.PropTypes = {
+OrderProductsDetail.propTypess = {
   products: PropTypes.array.isRequired,
 }

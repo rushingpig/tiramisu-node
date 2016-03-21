@@ -125,6 +125,6 @@ export default class DetailModal extends Component {
   }
 }
 
-DetailModal.PropTypes = {
+DetailModal.propTypess = {
   data: PropTypes.object.isRequired,
 }

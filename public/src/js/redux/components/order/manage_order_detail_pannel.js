@@ -90,7 +90,7 @@ class ManageOrderDetailPannel extends Component {
   }
 }
 
-ManageOrderDetailPannel.PropTypes = {
+ManageOrderDetailPannel.propTypess = {
   createOrder: PropTypes.func.isRequired
 };
 

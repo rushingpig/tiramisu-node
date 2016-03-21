@@ -165,7 +165,7 @@ class HistoryOrders extends Component {
   }
 }
 
-HistoryOrders.PropTypes = {
+HistoryOrders.propTypess = {
   data: PropTypes.object.isRequired,
   getHistoryOrders: PropTypes.func.isRequired,
   checkHistoryOrder: PropTypes.func.isRequired,

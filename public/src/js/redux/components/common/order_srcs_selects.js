@@ -59,7 +59,7 @@ export default class OrderSrcsSelects extends React.Component {
   }
 }
 
-OrderSrcsSelects.PropTypes = {
+OrderSrcsSelects.propTypess = {
   all_order_srcs: PropTypes.array.isRequired,
   src_id: PropTypes.func.isRequired,
   reduxFormName: PropTypes.string.isRequired,

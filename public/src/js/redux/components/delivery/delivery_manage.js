@@ -143,7 +143,7 @@ class FilterHeader extends Component {
     this.props.showScanModal();
   }
 }
-FilterHeader.propTypes = {
+FilterHeader.propTypess = {
   showBatchPrintModal: PropTypes.func.isRequired,
   showBatchEditModal: PropTypes.func.isRequired,
   provinces: PropTypes.array.isRequired,

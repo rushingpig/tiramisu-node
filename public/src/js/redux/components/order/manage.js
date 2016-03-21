@@ -158,7 +158,7 @@ class FilterHeader extends Component {
       });
   }
 }
-FilterHeader.propTypes = {
+FilterHeader.propTypess = {
   actions: PropTypes.object.isRequired,
 }
 FilterHeader = reduxForm({

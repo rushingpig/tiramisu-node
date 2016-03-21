@@ -197,6 +197,7 @@ function products_choosing(state = products_choosing_state, action){
             new_item = {...n, ...base}
           }
           new_item.discount_price = n.discount_price * n.num / 100 || 0;
+          new_item.old_discount_price = new_item.discount_price;
           new_item.amount = new_item.discount_price;
           return new_item;
         })
@@ -221,7 +222,7 @@ function products_choosing(state = products_choosing_state, action){
           n[action.data.attr.name] = action.data.attr.value;
         }
       });
-      return {...state};
+      return {...state, confirm_list: clone(state.confirm_list)};
 
     case OrderProductsActions.DELETE_CONFIRM_PRODUCT:
       sku_id = action.data.sku_id;
@@ -241,31 +242,36 @@ function products_choosing(state = products_choosing_state, action){
       delay(() => store.dispatch(OrderProductsActions.updateConfirmProductDiscountPrice())); //更新商品应收金额
       return {...state, confirm_list: new_confirm_list, selected_list: new_selected_list }
 
+    //其实这个应该主要是更新应收金额
     case OrderProductsActions.UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE:
       return (function(){
         var order = getValues(store.getState().form.add_order);
         var pay_status = PAY_STATUS[order.pay_status];
         var {confirm_list} = state;
-        //支付状态：已付款，或者，支付方式：免费
+        //支付状态：已付款，或者，支付方式：免费（此时，商品的实际售价和应收金额为0）
         if(pay_status == '已付款' || order.pay_modes_id == MODES.free){
           confirm_list.forEach(function(n){
             n.amount = 0;
+            if(order.pay_modes_id == MODES.free){
+              n.discount_price = 0;
+            }
           })
         }else if(pay_status == '部分付款'){
           confirm_list.forEach(function(n, i){
             if( i == 0 ){
               if( n.num > 1 ){
-                n.amount = n.discount_price * (n.num - 1) / n.num;
+                n.amount = n.old_discount_price * (n.num - 1) / n.num;
               }else{
                 n.amount = 0;
               }
             }else{
-              n.amount = n.discount_price;
+              n.amount = n.old_discount_price;
             }
           })
         }else{
           confirm_list.forEach(function(n){
-            n.amount = n.discount_price;
+            n.discount_price = n.old_discount_price;
+            n.amount = n.old_discount_price;
           })
         }
         return {...state};
@@ -276,6 +282,7 @@ function products_choosing(state = products_choosing_state, action){
         var confirm_list = clone(action.data.products);
         confirm_list.forEach( n => {
           n.discount_price /= 100;
+          n.old_discount_price = n.discount_price;
           n.amount /= 100;
         });
         return {...state, confirm_list, selected_list: clone(action.data.products) };

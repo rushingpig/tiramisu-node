@@ -45,7 +45,7 @@ export default class Linkers extends React.Component {
   }
 }
 
-Linkers.PropTypes = {
+Linkers.propTypess = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,

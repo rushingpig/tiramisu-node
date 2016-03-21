@@ -50,7 +50,7 @@ export default class ManageAddProducts extends Component {
   }
 }
 
-ManageAddProducts.PropTypes = {
+ManageAddProducts.propTypess = {
   products_choosing: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired
 }
@@ -133,7 +133,7 @@ var AddedProductsRow = React.createClass({
   },
 });
 
-AddedProductsRow.PropTypes = {
+AddedProductsRow.propTypess = {
   dispatch: PropTypes.func.isRequired,
   data: PropTypes.shape({
     name: PropTypes.string.isRequired,

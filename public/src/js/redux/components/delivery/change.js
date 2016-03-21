@@ -116,7 +116,7 @@ class FilterHeader extends Component {
       });
   }
 }
-FilterHeader.propTypes = {
+FilterHeader.propTypess = {
   changeHandler: PropTypes.func.isRequired,
   provinces: PropTypes.array.isRequired,
   cities: PropTypes.array.isRequired,
@@ -355,7 +355,7 @@ class ChangeModal extends Component {
   }
 };
 
-ChangeModal.PropTypes = {
+ChangeModal.propTypess = {
   checked_order_ids: PropTypes.array.isRequired,
   exchangeOrders: PropTypes.func.isRequired,
   change_submitting: PropTypes.bool.isRequired,

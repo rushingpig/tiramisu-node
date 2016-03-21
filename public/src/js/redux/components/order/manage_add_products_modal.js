@@ -173,7 +173,7 @@ export default class ProductsModal extends Component {
   }
 }
 
-ProductsModal.PropTypes = {
+ProductsModal.propTypess = {
   dispatch: PropTypes.func.isRequired,
   all_categories: PropTypes.array.isRequired,
   search_results: PropTypes.array.isRequired,
@@ -256,7 +256,7 @@ class ProductSet extends Component {
     e.stopPropagation();
   }
 }
-ProductSet.PropTypes = {
+ProductSet.propTypess = {
   data: PropTypes.array.isRequired,
   dispatch: PropTypes.func.isRequired,
 }
@@ -291,7 +291,7 @@ class ProductSelectedRow extends Component {
     this.props.dispatch(OrderProductsActions.deleteProduct(this.props.data));
   }
 }
-ProductSelectedRow.PropTypes = {
+ProductSelectedRow.propTypess = {
   data: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
 }

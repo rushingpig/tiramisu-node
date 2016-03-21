@@ -112,7 +112,7 @@ class ScanModal extends Component {
   }
 };
 
-ScanModal.PropTypes = {
+ScanModal.propTypess = {
   search: PropTypes.func.isRequired,
 }
 

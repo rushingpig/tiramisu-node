@@ -486,7 +486,7 @@ class ManageAddForm extends Component {
   }
 }
 
-ManageAddForm.PropTypes = {
+ManageAddForm.propTypess = {
   form: PropTypes.shape({
     all_delivery_time: PropTypes.array.isRequired,
     all_pay_status: PropTypes.array.isRequired,

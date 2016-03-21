@@ -97,7 +97,7 @@ class StationManageForm extends Component {
   }
 }
 
-StationManageForm.PropTypes = {
+StationManageForm.propTypess = {
   area: PropTypes.shape({
     provinces: PropTypes.array.isRequired, 
     cities: PropTypes.array.isRequired, 

@@ -147,7 +147,7 @@ class FilterHeader extends Component {
     this.props.showScanModal();
   }
 }
-FilterHeader.propTypes = {
+FilterHeader.propTypess = {
   provinces: PropTypes.array.isRequired,
   cities: PropTypes.array.isRequired,
   all_pay_modes: PropTypes.array.isRequired,

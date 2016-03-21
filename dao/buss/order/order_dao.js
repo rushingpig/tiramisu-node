@@ -392,7 +392,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
     if (parseInt(query_data.is_greeting_card) === 1) {
         sql += " and bo.greeting_card is not null";
     } else if (parseInt(query_data.is_greeting_card) === 0) {
-        sql += " and bo.greeting_card is null or bo.greeting_card = ''";
+        sql += " and (bo.greeting_card is null or bo.greeting_card = '')";
     }
 
     if (query_data.order_ids && Array.isArray(query_data.order_ids)) {

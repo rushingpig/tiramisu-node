@@ -99,7 +99,7 @@ module.exports = {
   encodeForFulltext: (obj) => {
     let str = '';
     if (!obj || typeof obj !== 'string' || obj.length === 0) {
-      logger.warn('the object to be encode is not valid string ...');
+      // logger.warn('the object to be encode is not valid string ...');
     } else {
       obj = obj.replace(toolUtils.SPECIAL_CHAR_REG,'');
       for (let i = 0; i < obj.length; i++) {

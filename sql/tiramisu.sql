@@ -98,7 +98,7 @@ CREATE TABLE `buss_order` (
   UNIQUE KEY `IDX_UNQ_MID` (`merchant_id`),
   KEY `IDX_STATUS` (`status`),
   KEY `IDX_OWNER_MOBILE` (`owner_mobile`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT COMMENT='订单详情表';
+) ENGINE=InnoDB AUTO_INCREMENT=10000001 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT COMMENT='订单详情表';
 
 -- ----------------------------
 --  Table structure for `buss_order_fulltext`

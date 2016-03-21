@@ -201,8 +201,7 @@ AddressService.prototype.batchModifyStationCoords = (req,res,next)=>{
         res.api(res_obj.INVALID_PARAMS,null);
         return;
     }
-    let data = JSON.parse(req.body.data);
-    let promise = addressDao.modifyStationCoordsInTransaction(data).then(() => {
+    let promise = addressDao.modifyStationCoordsInTransaction(req.body.data).then(() => {
         res.api();
     });
     systemUtils.wrapService(res, next, promise);

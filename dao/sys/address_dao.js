@@ -121,28 +121,34 @@ AddressDao.prototype.addStation = function(insert_obj){
     return baseDao.insert(this.base_insert_sql, params);
 };
 AddressDao.prototype.modifyStationCoordsInTransaction = function(arr){
-    return new Promise((resolve, reject) => {
-        baseDao.pool.getConnection((err, connection) => {
-            if(err){
-                return reject(err);
-            }
-            connection.beginTransaction(err => {
+    return baseDao.trans().then(transaction => {
+        return new Promise((resolve, reject) => {
+            let sql = this.base_update_sql + ' where id = ? ';
+            async.each(arr, (item, cb) => {
+                transaction.query(sql, [tables.buss_delivery_station, {coords: item.coords}, item.id], cb);
+            }, err => {
                 if(err){
                     return reject(err);
                 }
-                let sql = this.base_update_sql + ' where id = ? ';
-                async.each(arr, (item, cb) => {
-                    connection.query(sql, [tables.buss_delivery_station, {coords: item.coords}, item.id], cb);
-                }, err => {
-                    if(err){
-                        connection.rollback();
-                        return reject(err);
-                    }
-                    connection.commit();
-                    return resolve();
+                return resolve();
+            });
+        }).then(() => {
+                return new Promise((resolve, reject) => {
+                    transaction.commit(err => {
+                        transaction.release();
+                        if (err) return reject(err);
+                        resolve();
+                    });
+                });
+            }).catch(err => {
+                return new Promise((resolve, reject) => {
+                    transaction.rollback(rollbackError => {
+                        transaction.release();
+                        if (rollbackError) return reject(rollbackError);
+                        reject(err);
+                    });
                 });
             });
-        });
     });
 };
 

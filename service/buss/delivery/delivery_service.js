@@ -421,11 +421,15 @@ DeliveryService.prototype.listDeliverymans = (req,res,next)=>{
     let city_id = currentUser.city_id;
     let promise = deliveryDao.findDeliverymansByStation(city_id,currentUser).then((results)=>{
         if(toolUtils.isEmptyArray(results)){
-            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+            return res.api({
+                code: '9998',
+                msg: 'no more results...',
+                data : [],
+                err : ''
+            });
         }
         res.api(results);
     });
-    systemUtils.wrapService(res,next,promise);
 };
 /**
  * reprint the order

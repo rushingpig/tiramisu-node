@@ -946,7 +946,7 @@ OrderService.prototype.exportExcel = (req,res,next) => {
           curr.num ? curr.num : '',
           curr.discount_price ? curr.discount_price/100 : '',
           curr.amount ? curr.amount/100 : '',
-           curr.greeting_card ? curr.greeting_card : '',
+          curr.greeting_card ? curr.product_greeting_card : '',
           curr.choco_board ? curr.choco_board : '',
           curr.atlas ? '需要' : '不需要'
         ]);

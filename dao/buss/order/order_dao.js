@@ -11,7 +11,7 @@ var baseDao = require('../../base_dao'),
     tables = require('../../../config').tables,
     errorMessage = require('../../../util/res_obj'),
     TiramisuError = require('../../../error/tiramisu_error');
-
+var async = require('async');
 
 function OrderDao() {
     this.baseColumns = ['id', 'name'];
@@ -471,60 +471,63 @@ OrderDao.prototype.editOrder = function (order_obj, order_id, recipient_obj, rec
         recipient_params = [tables.buss_recipient, recipient_obj, recipient_id],
         order_params = [tables.buss_order, order_obj, order_id],
         userId = order_obj.update_by;
-    return baseDao.queue_trans().then((tranconn) => {
-        let trans = tranconn.trans;
-        let connection = tranconn.connection;
+    return baseDao.trans().then(transaction => {
         return new Promise((resolve, reject) => {
-            trans.query(recipent_sql, recipient_params, (err_recipient) => {
+            transaction.query(recipent_sql, recipient_params, (err_recipient) => {
                 if (err_recipient) {
-                    trans.rollback();
                     logger.error('when update recipient with recipient_id:[' + recipient_id + "] exception ==========>", err_recipient);
-                    reject(err_recipient);
-                    return;
+                    return reject(err_recipient);
                 }
-                trans.query(order_sql, order_params, (err_order) => {
+                transaction.query(order_sql, order_params, (err_order) => {
                     if (err_order) {
-                        trans.rollback();
                         logger.error('when update order with order_id:[' + order_id + "] exception ============>", err_order);
-                        reject(err_order);
-                        return;
+                        return reject(err_order);
                     }
-                    let cb = function (err_cb) {
-                        if (err_cb && trans.rollback) {
-                            trans.rollback();
-                            reject(err_cb);
-                            logger.error('when to update order skus exception',err_cb);
-                            return;
-                        }
-                    };
                     if (!toolUtils.isEmptyArray(add_skus)) {
-                        add_skus.forEach((curr) => {
-                            trans.query(this.base_insert_sql, [tables.buss_order_sku, curr], cb);
-                        });
+                      async.each(
+                        add_skus,
+                        (curr, cb) => {
+                          transaction.query(this.base_insert_sql, [tables.buss_order_sku, curr], cb);
+                        },
+                        err => {if (err) throw err;}
+                      );
                     }
                     if (!toolUtils.isEmptyArray(delete_skuIds)) {
-                        let order_sku_batch_update_sql = this.base_update_sql + " where order_id = ? and sku_id in " + dbHelper.genInSql(delete_skuIds);
-                        trans.query(order_sku_batch_update_sql, [tables.buss_order_sku, {
+                        const order_sku_batch_update_sql = this.base_update_sql + " where order_id = ? and sku_id in " + dbHelper.genInSql(delete_skuIds);
+                        transaction.query(order_sku_batch_update_sql, [tables.buss_order_sku, {
                             del_flag: del_flag.HIDE,
                             updated_by: userId
-                        }, order_id], cb);
+                        }, order_id], err => {if (err) throw err;});
                     }
                     if (!toolUtils.isEmptyArray(update_skus)) {
-                        update_skus.forEach((curr) => {
-                            let order_sku_update_sql = this.base_update_sql + " where order_id = ? and sku_id = ? and del_flag = ?";
-                            let order_sku_update_params = [tables.buss_order_sku, curr, order_id, curr.sku_id,del_flag.SHOW];
-                            trans.query(order_sku_update_sql, order_sku_update_params, cb);
-                        });
+                      async.each(
+                        update_skus,
+                        (curr, cb) => {
+                          const order_sku_update_sql = this.base_update_sql + " where order_id = ? and sku_id = ? and del_flag = ?";
+                          const order_sku_update_params = [tables.buss_order_sku, curr, order_id, curr.sku_id,del_flag.SHOW];
+                          transaction.query(order_sku_update_sql, order_sku_update_params, cb);
+                        },
+                        err => {if (err) throw err;}
+                      );
                     }
-                    trans.commit(nothing=>{
-                        connection.release();
-                        resolve();
-                    });
                 });
             });
-        }).catch(err=>{
-            connection.release();
-            throw err;
+        }).then(ignore => {
+          return new Promise((resolve, reject) => {
+            transaction.commit(err => {
+              transaction.release();
+              if (err) return reject(err);
+              resolve();
+            });
+          });
+        }).catch(err => {
+          return new Promise((resolve, reject) => {
+            transaction.rollback(rollbackError => {
+              transaction.release();
+              if (rollbackError) return reject(rollbackError);
+              reject(err);
+            });
+          });
         });
 
     });

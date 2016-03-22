@@ -14,7 +14,7 @@ import { isSrc } from 'reducers/form';
 
 import { DELIVERY_TO_HOME, DELIVERY_TO_STORE,
   SELECT_DEFAULT_VALUE, INVOICE, SRC } from 'config/app.config';
-import autoMatchDeliveryStations from 'mixins/map';
+import { startMatchDeliveryStations, createMap } from 'mixins/map';
 import FormFields from 'config/form.fields';
 
 const validate = (values, props) => {
@@ -86,7 +86,6 @@ class ManageAddForm extends Component {
       auto_match_msg: '',
     };
     this._check = this._check.bind(this);
-    this.autoMatchDeliveryStations = autoMatchDeliveryStations.bind(this);
   }
   render(){
     var {
@@ -187,7 +186,7 @@ class ManageAddForm extends Component {
         <Select ref="province" options={provinces} {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} default-text="--选择省份--" className="form-select" />{' '}
         <Select ref="city" options={cities} {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} default-text="--城市--" />{' '}
         <Select ref="district" options={districts} {...regionalism_id} onChange={this.onDistrictChange.bind(this, regionalism_id.onChange)} className={`${regionalism_id.error}`} default-text="--区/县--" />{' '}
-        <input ref="recipient_address" {...recipient_address} className={`form-control input-xs ${recipient_address.error} ${delivery_type.value == DELIVERY_TO_HOME ? '' : 'hidden'}`} style={{width: 248}} type="text" />
+        <input ref="recipient_address" {...recipient_address} onBlur={this.startMatchStation.bind(this, recipient_address.onBlur)} className={`form-control input-xs ${recipient_address.error} ${delivery_type.value == DELIVERY_TO_HOME ? '' : 'hidden'}`} style={{width: 248}} type="text" />
         <Select ref="shop" options={delivery_shops} {...recipient_shop_address} className={`${recipient_shop_address.error} ${delivery_type.value == DELIVERY_TO_HOME ? 'hidden' : ''}`}  default-text="--分店--" />
       </div>
       {
@@ -200,8 +199,8 @@ class ManageAddForm extends Component {
       }
       <div className="form-group form-inline">
         <label>{'　配送中心：'}</label>
-        <Select {...delivery_id} options={delivery_stations} className={`form-select transition ${delivery_id.error}`} ref="delivery_center" />
-        {' '}
+        <Select {...delivery_id} options={delivery_stations} className={`form-select transition ${delivery_id.error}`} ref="delivery_center" />{' '}
+        <button onClick={this.startMatchStation.bind(this)} className="btn btn-default btn-xs"><i className="fa fa-map-marker fa-fw"></i></button>{' '}
         <span className={this.state.auto_match_delivery_center ? 'text-success' : 'text-danger'}>
           {this.state.auto_match_msg}
         </span>
@@ -390,19 +389,13 @@ class ManageAddForm extends Component {
     });
   }
   componentDidMount(){
-    var {getProvinces, getOrderSrcs, getDeliveryStations, getPayModes, triggerFormUpdate} = this.props.actions;
+    var {getProvinces, getOrderSrcs, getDeliveryStations, getPayModes} = this.props.actions;
     getProvinces();
     getOrderSrcs();
     getPayModes();
     getDeliveryStations();
 
-    this.autoMatchDeliveryStations(delivery_id => {
-      delivery_id = delivery_id || SELECT_DEFAULT_VALUE;
-      $(findDOMNode(this.refs.delivery_center)).val(delivery_id);
-      triggerFormUpdate('add_order', 'delivery_id', delivery_id); //手动更改表单值后，需要使用该方法，主动触发redux-form进行更新，否则数据将不会同步
-    }, () => {
-      triggerFormUpdate('add_order', 'delivery_id', SELECT_DEFAULT_VALUE)
-    });
+    createMap(this);
 
     LazyLoad('noty');
 
@@ -410,6 +403,17 @@ class ManageAddForm extends Component {
   }
   componentWillUnmount(){
     $(findDOMNode(this.refs.delivery_center)).off('click', this.clearMsg.bind(this))
+  }
+  startMatchStation(callback){
+    var { triggerFormUpdate } = this.props.actions;
+    startMatchDeliveryStations.call(this, delivery_id => {
+      delivery_id = delivery_id || SELECT_DEFAULT_VALUE;
+      $(findDOMNode(this.refs.delivery_center)).val(delivery_id);
+      triggerFormUpdate('add_order', 'delivery_id', delivery_id); //手动更改表单值后，需要使用该方法，主动触发redux-form进行更新，否则数据将不会同步
+    }, () => {
+      triggerFormUpdate('add_order', 'delivery_id', SELECT_DEFAULT_VALUE)
+    });
+    typeof callback == 'function' && callback();
   }
   clearMsg(){
     $(findDOMNode(this.refs.delivery_center)).removeClass('alert-success alert-danger')

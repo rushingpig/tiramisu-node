@@ -6,7 +6,7 @@ import Select from 'common/select';
 import StdModal from 'common/std_modal';
 import RadioGroup from 'common/radio_group';
 import { map, Noty } from 'utils/index';
-import autoMatchDeliveryStations, { autoMatchSuccess, autoMatchFail} from 'mixins/map';
+import { startMatchDeliveryStations, createMap } from 'mixins/map';
 
 import { order_status as ORDER_STATUS, SELECT_DEFAULT_VALUE,
  DELIVERY_TIME_MAP, DELIVERY_TO_HOME, DELIVERY_TO_STORE }
@@ -93,15 +93,15 @@ var AlterDeliveryModal = React.createClass({
             <Select ref="district" value={this.state.regionalism_id} onChange={this.onDistrictChange} options={districts} className="mg-8" />{' '}
             {
               delivery_type == DELIVERY_TO_HOME
-                ? <input ref="recipient_address" valueLink={this.linkState('recipient_address')} onBlur={this.onAddressChange} className="form-control input-xs mg-8" type="text" />
+                ? <input ref="recipient_address" valueLink={this.linkState('recipient_address')} onBlur={this.startMatchStation} className="form-control input-xs mg-8" type="text" />
                 : <Select ref="shop" valueLink={this.linkState('recipient_address')} options={delivery_shops} className="mg-8" />
             }
           </div>
         </div>
         <div className="form-group form-inline">
           <label>{'修改配送中心：'}</label>
-          <Select ref="delivery_center" valueLink={this.linkState('delivery_id')} options={delivery_stations} className="input-xs transition" />
-          {' '}
+          <Select ref="delivery_center" valueLink={this.linkState('delivery_id')} options={delivery_stations} className="input-xs transition" />{' '}
+          <button onClick={this.startMatchStation} className="btn btn-default btn-xs"><i className="fa fa-map-marker fa-fw"></i></button>{' '}
           <span className={this.state.auto_match_delivery_center ? 'text-success' : 'text-danger'}>
             {this.state.auto_match_msg}
           </span>
@@ -109,7 +109,7 @@ var AlterDeliveryModal = React.createClass({
       </StdModal>
     )
   },
-  mixins: [LinkedStateMixin, {autoMatchDeliveryStations}],
+  mixins: [LinkedStateMixin],
   componentDidMount(){
     $(findDOMNode(this.refs.delivery_center)).on('click', this.clearMsg)
   },
@@ -192,19 +192,16 @@ var AlterDeliveryModal = React.createClass({
     if(value != this.refs.district.props['default-value'])
       this.props.actions.getDeliveryShops(value);
   },
-  onAddressChange(){
-    this.autoMatchDeliveryStations(delivery_id => {
+  startMatchStation(){
+    startMatchDeliveryStations.call(this, delivery_id => {
       if(delivery_id){
         this.setState({delivery_id});
-        autoMatchSuccess.call(this);
       }else{
         this.setState({delivery_id: SELECT_DEFAULT_VALUE});
-        autoMatchFail.call(this);
       }
     }, () => {
       this.setState({delivery_id: SELECT_DEFAULT_VALUE});
-      autoMatchFail.call(this)
-    }); 
+    });
   },
   show(){
     this.refs.modal.show();
@@ -212,7 +209,8 @@ var AlterDeliveryModal = React.createClass({
     if(order && order.order_id == active_order_id){
       this.initSetState(order);
     }
-    $(findDOMNode(this.refs.delivery_center)).removeClass('alert-success alert-danger')
+    $(findDOMNode(this.refs.delivery_center)).removeClass('alert-success alert-danger');
+    createMap(this);
   },
   hideCallback(){
     this.setState(this.getInitialState());

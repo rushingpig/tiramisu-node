@@ -5,33 +5,43 @@ import Promise from 'utils/promise';
 import { Noty } from 'utils/index';
 import { triggerFormUpdate } from 'actions/form';
 
-//完整封装
-export default function autoMatchDeliveryStations(success_cb, fail_cb){
-  var self = this;
-
-  createMap(self);
-
-  $(this.refs.recipient_address).on('blur', (e) => {
-    var detail = e.target.value;
-    if(detail){
-      let province = self.findSelectedOptionText('province');
-      let city = self.findSelectedOptionText('city');
-      let district = self.findSelectedOptionText('district');
-      let default_text = self.refs.province.props['default-text'];
-      if(province != default_text && city != default_text && district != default_text){
-        autoMatch.call(self, city, district + detail).done(success_cb).fail(fail_cb);
-      }
-    }
-  });
-}
 //step: 1
-export function createMap(t){
+export function createMap(t, callback){
   //初始化地图
   MyMap.create( (map, geocoder) => {
     t._bmap = geocoder; //解析地址貌似只需要 geocoder就够了
+    callback && callback();
   });
 }
 //step: 2
+export function startMatchDeliveryStations(success_cb, fail_cb){
+  if( this == window ){
+    throw new Error('should call like this : startMatchDeliveryStations.call(this, success_cb, fail_cb)')
+  }
+  if( !this._bmap ){
+    MyMap.create( (map, geocoder) => {
+      t._bmap = geocoder; //解析地址貌似只需要 geocoder就够了
+      start.call(this, success_cb, fail_cb);
+    });
+  }else{
+    start.call(this, success_cb, fail_cb);
+  }
+}
+function start(success_cb, fail_cb){
+  var detail = $(this.refs.recipient_address).val();
+  if(detail){
+    let province = this.findSelectedOptionText('province');
+    let city = this.findSelectedOptionText('city');
+    let district = this.findSelectedOptionText('district');
+    let default_text = this.refs.province.props['default-text'];
+    if(province != default_text && city != default_text && district != default_text){
+      autoMatch.call(this, city, district + detail).done(success_cb.bind(this)).fail(fail_cb.bind(this));
+    }
+  }else{
+    Noty('warning', '地址无效')
+  }
+}
+//step: 3
 export function autoMatch(city, address){
   var self = this;
   var { autoGetDeliveryStations } = this.props.actions;
@@ -82,15 +92,12 @@ export function autoMatch(city, address){
 
 function addEffect(animate_name){
   var $dc = $(findDOMNode(this.refs.delivery_center)).removeClass('alert-success alert-danger').addClass(animate_name);
-  // setTimeout(function(){
-  //   $dc.removeClass(animate_name);
-  // }, 1000);
 }
 
-export function autoMatchSuccess(){
+function autoMatchSuccess(){
   this.setState({auto_match_delivery_center: true, auto_match_msg: '已成功匹配！'});
 }
 
-export function autoMatchFail(msg){
+function autoMatchFail(msg){
   this.setState({auto_match_delivery_center: false, auto_match_msg: msg || '无法准确定位配送中心，请与客户联系后手动选择！'});
 }

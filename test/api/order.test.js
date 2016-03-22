@@ -46,6 +46,65 @@ module.exports = function () {
         .expect(302, err(done));
     });
     //================== hooks end ==================
+    it('/v1/a/order/2016032210022857 updated_time lower than 08:00', function (done) {
+      const req = {
+        "delivery_time": "2016-03-22 10:30~11:30",
+        "owner_mobile": "15820717130",
+        "order_id": "2016032210022857",
+        "recipient_mobile": "13824202053",
+        "coupon": null,
+        "owner_name": "糖会晕2015",
+        "delivery_type": "DELIVERY",
+        "updated_time": "2016-03-22 07:58:03",
+        "recipient_address": "河南岸南岸路137号宏益尚城一楼聚客松茶庄商铺",
+        "remarks": "",
+        "recipient_name": "麦伟成",
+        "pay_modes_id": 2,
+        "recipient_id": 22857,
+        "invoice": null,
+        "prefix_address": "广东省惠州市惠城区",
+        "province_id": 440000,
+        "src_id": 1,
+        "regionalism_id": 441302,
+        "recipient_landmark": "宏益尚城",
+        "city_id": 441300,
+        "pay_status": "COD",
+        "total_amount": 19800,
+        "total_original_price": 33600,
+        "total_discount_price": 19800,
+        "products": [{
+          "sku_id": 24708,
+          "choco_board": "妈 生日快乐",
+          "custom_desc": "",
+          "custom_name": "",
+          "discount_price": 19800,
+          "greeting_card": "妈，生日快乐，祝您身体健康，逢赌必赢，天天开心，幸福又多金❤",
+          "num": 1,
+          "original_price": 33600,
+          "name": "雪莓物语蛋糕",
+          "atlas": 0,
+          "size": "约2磅",
+          "amount": 19800,
+          "old_discount_price": 198
+        }],
+        "gretting_card": ""
+      };
+      agent.post('/v1/a/order')
+        .type('application/json')
+        .send(req)
+        .end((err, res) => {
+          agent.put('/v1/a/order/2016032210000001')
+            .type('application/json')
+            .send(req)
+            .end((err, res) => {
+              // ensure the updated_time can pass the validation
+              // it doesn't matter it fails the modification time check
+              assert.strictEqual(res.body.code, '9995');
+              assert.strictEqual(res.statusCode, 200);
+              done();
+            });
+        });
+    });
 
     it('POST /v1/a/order correct request', function (done) {
       const req_body = {
@@ -108,15 +167,14 @@ module.exports = function () {
           }
         ]
       };
-      const res_body = {
-        "code": "0000",
-        "msg": "everything goes well -> enjoy yourself...",
-        "data": {}
-      };
       agent.post('/v1/a/order')
         .type('application/json')
         .send(req_body)
-        .expect(200, res_body, err(done));
+        .end((err, res) => {
+          assert.strictEqual(res.body.code, '0000');
+          assert.strictEqual(res.statusCode, 200);
+          done();
+        });
     });
 
     it('POST /v1/i/order correct request', function (done) {

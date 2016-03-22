@@ -1,4 +1,8 @@
-### v0.1.5 (20 Mar 2015)
+### v0.1.6 (22 Mar 2016)
+* Frontend:
+ * Bo XIONG: update auto match delivery station
+
+### v0.1.5 (20 Mar 2016)
 * Backend:
  * Zhanzhao LIANG: 使用node-mysql的transaction，移除mysql-queue库
  * Zhenglin ZHU: 增加订单的配送时间，订单sku的订单号索引，优化订单导出excel时间

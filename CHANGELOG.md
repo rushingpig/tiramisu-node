@@ -1,6 +1,8 @@
-### v0.1.6 (22 Mar 2016)
+### v0.1.7 (22 Mar 2016)
 * Frontend:
  * Bo XIONG: update auto match delivery station
+* Backend:
+ * Zhanzhao LIANG: 修正提交订单修改时update_time无法通过验证
 
 ### v0.1.5 (20 Mar 2016)
 * Backend:

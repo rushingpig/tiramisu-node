@@ -9,7 +9,6 @@
 var config = require('../config');
 var mysql = require('mysql');
 var pool = mysql.createPool(config.mysql_options);
-var queues = require('mysql-queues');
 
 function BaseDao() {
     pool.on('connecton', function () {
@@ -119,21 +118,6 @@ BaseDao.trans = function(){
                 }
                 resolve(connection);
               });
-            }
-        });
-    });
-};
-
-BaseDao.queue_trans = function(){
-    return new Promise((resolve,reject)=>{
-        pool.getConnection(function (err, connection) {
-            if (err) {
-                reject(err);
-            } else {
-                queues(connection, config.mysql_options.debug);
-                let trans = connection.startTransaction();
-                resolve({trans,connection});
-                trans.execute();
             }
         });
     });

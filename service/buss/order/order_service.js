@@ -250,6 +250,7 @@ OrderService.prototype.editOrder = function (is_submit) {
       recipient_id: recipient_id,
       delivery_id: delivery_id,
       src_id: src_id,
+      pay_modes_id: pay_modes_id,
       pay_status: pay_status,
       owner_name: owner_name,
       owner_mobile: owner_mobile,
@@ -274,6 +275,7 @@ OrderService.prototype.editOrder = function (is_submit) {
       if (toolUtils.isEmptyArray(_res)) {
         throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
       } else if (updated_time !== _res[0].updated_time) {
+        console.log(updated_time, _res[0].updated_time)
         throw new TiramisuError(res_obj.OPTION_EXPIRED);
       }
       //===========for history begin=============

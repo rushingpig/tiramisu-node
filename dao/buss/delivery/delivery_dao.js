@@ -22,9 +22,17 @@ function DeliveryDao(){
 /**
  * query for stations
  */
-DeliveryDao.prototype.findAllStations = function(){
-    let sql = 'select * from ?? where 1=1 and del_flag = ?';
-    let params = [tables.buss_delivery_station,del_flag.SHOW];
+DeliveryDao.prototype.findAllStations = function(query_data){
+    let sql = "select bds.* from ?? bds";
+    let params = [];
+    params.push(tables.buss_delivery_station);
+    if(query_data.city_id){
+        sql += " inner join ?? dr on dr.id = bds.regionalism_id and dr.parent_id = ?";
+        params.push(tables.dict_regionalism);
+        params.push(query_data.city_id);
+    }
+    sql += " where bds.del_flag = ?";
+    params.push(del_flag.SHOW);
     return baseDao.select(sql,params);
 };
 /**

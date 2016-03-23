@@ -31,12 +31,16 @@ function DeliveryService(){
  * @param next
  */
 DeliveryService.prototype.getDeliveryStationList = (req,res,next)=>{
+    req.checkQuery('city_id').optional().isInt();
     let errors = req.validationErrors();
     if (errors) {
         res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
-    let promise = deliveryDao.findAllStations().then(results=>{
+    let query_data = {
+        city_id : req.query.city_id
+    };
+    let promise = deliveryDao.findAllStations(query_data).then(results=>{
         if(toolUtils.isEmptyArray(results)){
             res.api(res_obj.NO_MORE_RESULTS);
             return;

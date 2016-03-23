@@ -16655,10 +16655,10 @@ INSERT INTO `sys_menu` VALUES
 COMMIT;
 
 -- ----------------------------
---  Table structure for `sys_office`
+--  Table structure for `sys_organization`
 -- ----------------------------
-DROP TABLE IF EXISTS `sys_office`;
-CREATE TABLE `sys_office` (
+DROP TABLE IF EXISTS `sys_organization`;
+CREATE TABLE `sys_organization` (
   `id` varchar(64) NOT NULL COMMENT '编号',
   `parent_id` varchar(64) NOT NULL COMMENT '父级编号',
   `parent_ids` varchar(255) NOT NULL COMMENT '所有父级编号',
@@ -16684,16 +16684,16 @@ CREATE TABLE `sys_office` (
   `remarks` varchar(255) DEFAULT NULL COMMENT '备注信息',
   `del_flag` tinyint(1) NOT NULL DEFAULT '0' COMMENT '删除标记',
   PRIMARY KEY (`id`),
-  KEY `sys_office_parent_id` (`parent_id`),
-  KEY `sys_office_del_flag` (`del_flag`),
-  KEY `sys_office_type` (`type`)
+  KEY `sys_organization_parent_id` (`parent_id`),
+  KEY `sys_organization_del_flag` (`del_flag`),
+  KEY `sys_organization_type` (`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='机构表';
 
 -- ----------------------------
---  Records of `sys_office`
+--  Records of `sys_organization`
 -- ----------------------------
 BEGIN;
-INSERT INTO `sys_office` VALUES
+INSERT INTO `sys_organization` VALUES
   ('1', '0', '0,', '深圳总公司', '10', '2', '100000', '1', '1', null, null, null, null, null, null, '1', null, null, '1', '2013-05-27 08:00:00', '1', '2013-05-27 08:00:00', null, '0');
 COMMIT;
 
@@ -16721,7 +16721,7 @@ CREATE TABLE `sys_op_logs` (
 DROP TABLE IF EXISTS `sys_role`;
 CREATE TABLE `sys_role` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '编号',
-  `office_id` varchar(64) DEFAULT NULL COMMENT '归属机构',
+  `org_id` varchar(64) DEFAULT NULL COMMENT '归属机构',
   `name` varchar(100) NOT NULL COMMENT '角色名称',
   `enname` varchar(255) DEFAULT NULL COMMENT '英文名称',
   `role_type` varchar(255) DEFAULT NULL COMMENT '角色类型',
@@ -16847,13 +16847,13 @@ INSERT INTO `sys_role_menu` VALUES
 COMMIT;
 
 -- ----------------------------
---  Table structure for `sys_role_office`
+--  Table structure for `sys_role_org`
 -- ----------------------------
-DROP TABLE IF EXISTS `sys_role_office`;
-CREATE TABLE `sys_role_office` (
+DROP TABLE IF EXISTS `sys_role_org`;
+CREATE TABLE `sys_role_org` (
   `role_id` varchar(64) NOT NULL COMMENT '角色编号',
-  `office_id` varchar(64) NOT NULL COMMENT '机构编号',
-  PRIMARY KEY (`role_id`,`office_id`)
+  `org_id` varchar(64) NOT NULL COMMENT '机构编号',
+  PRIMARY KEY (`role_id`,`org_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='角色-机构';
 
 -- ----------------------------
@@ -16862,7 +16862,7 @@ CREATE TABLE `sys_role_office` (
 DROP TABLE IF EXISTS `sys_user`;
 CREATE TABLE `sys_user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '编号',
-  `office_id` varchar(64) NOT NULL COMMENT '归属部门',
+  `org_id` varchar(64) NOT NULL COMMENT '归属部门',
   `username` varchar(100) NOT NULL COMMENT '登录名',
   `password` varchar(100) NOT NULL COMMENT '密码',
   `no` varchar(100) DEFAULT NULL COMMENT '工号',
@@ -16884,7 +16884,7 @@ CREATE TABLE `sys_user` (
   `city_id` int(10) unsigned DEFAULT NULL COMMENT '所属城市',
   `station_id` int(11) DEFAULT NULL COMMENT '配送站ID',
   PRIMARY KEY (`id`),
-  KEY `sys_user_office_id` (`office_id`),
+  KEY `sys_user_org_id` (`org_id`),
   KEY `sys_user_login_name` (`username`),
   KEY `sys_user_update_date` (`updated_time`),
   KEY `sys_user_del_flag` (`del_flag`)

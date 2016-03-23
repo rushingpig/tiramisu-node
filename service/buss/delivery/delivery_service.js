@@ -42,8 +42,7 @@ DeliveryService.prototype.getDeliveryStationList = (req,res,next)=>{
     };
     let promise = deliveryDao.findAllStations(query_data).then(results=>{
         if(toolUtils.isEmptyArray(results)){
-            res.api(res_obj.NO_MORE_RESULTS);
-            return;
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS,'该条件下没有可选的配送站...');
         }
         let data = {};
         results.forEach((curr)=>{
@@ -425,15 +424,11 @@ DeliveryService.prototype.listDeliverymans = (req,res,next)=>{
     let city_id = currentUser.city_id;
     let promise = deliveryDao.findDeliverymansByStation(city_id,currentUser).then((results)=>{
         if(toolUtils.isEmptyArray(results)){
-            return res.api({
-                code: '9998',
-                msg: 'no more results...',
-                data : [],
-                err : ''
-            });
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS_ARR,'该条件下没有可选的配送员...');
         }
         res.api(results);
     });
+    systemUtils.wrapService(res,next,promise);
 };
 /**
  * reprint the order

@@ -87,6 +87,11 @@ module.exports = {
     code: '9998',
     msg: 'no more results...'
   },
+  NO_MORE_RESULTS_ARR: {
+    code: '9998',
+    msg: 'no more results...',
+    data : []
+  },
   FAIL: {
     code: '9999',
     msg: '服务器开小差了...'

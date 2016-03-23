@@ -22,7 +22,7 @@ UserDao.prototype.findByUsername = (username,password)=>{
     let columns = [
         'su.id',
         'su.`name`',
-        'su.office_id',
+        'su.org_Id',
         'su.username',
         'su.city_id',
         'su.station_id',

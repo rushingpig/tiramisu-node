@@ -34,7 +34,7 @@ UserService.prototype.getUserInfo = (username, password)=> {
                         user.is_admin = true;
                     }
                     user.id = curr.id;
-                    user.office_id = curr.office_id;
+                    user.org_id = curr.org_id;
                     user.username = curr.username;
                     user.city_id = curr.city_id;
                     user.station_id = curr.station_id;

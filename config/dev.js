@@ -70,7 +70,8 @@ var tables = {
     sys_menu : 'sys_menu',
     sys_user_role : 'sys_user_role',
     sys_role_menu : 'sys_role_menu',
-    sys_office : 'sys_office',
+    sys_organization : 'sys_organization',
+    sys_role_org : 'sys_role_org',
 //=================Buss=================
     buss_city : 'buss_city',
     buss_delivery_station : 'buss_delivery_station',
@@ -125,7 +126,7 @@ var ping_xx = {
 
 var sms_host = "http://127.0.0.1:3000/sms/internal";
 
-var coupon_host = "http://localhost:3000";
+var coupon_host = "http://120.76.101.107:3000";
 
 var login_required = true;
 

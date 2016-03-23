@@ -1,9 +1,11 @@
-### v0.1.8
+### v0.1.8 (23 Mar 2016)
 * Frontend:
  * Bo XIONG: 通过城市获取对应的配送站
-* Backend:
+##### Backend:
  * Zhanzhao LIANG: 导入旧商城配送站信息
  * Zhanzhao LIANG: 修正editorder的transaction逻辑，移除mysql-queue库
+ * Zhenglin Zhu : 在获取配送站时,根据用户的收货地址所在城市进行筛选
+ * Zhenglin Zhu : 重新更改自动验券服务到指定的win-server
 
 ### v0.1.7 (22 Mar 2016)
 * Frontend:

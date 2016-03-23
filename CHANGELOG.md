@@ -1,6 +1,7 @@
 ### v0.1.8
 * Backend:
  * Zhanzhao LIANG: 导入旧商城配送站信息
+ * Zhanzhao LIANG: 修正editorder的transaction逻辑，移除mysql-queue库
 
 ### v0.1.7 (22 Mar 2016)
 * Frontend:

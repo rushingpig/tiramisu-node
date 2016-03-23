@@ -491,7 +491,7 @@ OrderDao.prototype.editOrder = function (order_obj, order_id, recipient_obj, rec
                         transaction.query(this.base_insert_sql, [tables.buss_order_sku, curr], cb);
                       },
                       err => {
-                        if (err) throw err;
+                        if (err) return reject(err);
                         async.each(
                           update_skus,
                           (curr, cb) => {
@@ -500,7 +500,7 @@ OrderDao.prototype.editOrder = function (order_obj, order_id, recipient_obj, rec
                             transaction.query(order_sku_update_sql, order_sku_update_params, cb);
                           },
                           err => {
-                            if (err) throw err;
+                            if (err) return reject(err);
                             if (!toolUtils.isEmptyArray(delete_skuIds)) {
                                 const order_sku_batch_update_sql = this.base_update_sql + " where order_id = ? and sku_id in " + dbHelper.genInSql(delete_skuIds);
                                 transaction.query(
@@ -514,7 +514,7 @@ OrderDao.prototype.editOrder = function (order_obj, order_id, recipient_obj, rec
                                     order_id
                                   ],
                                   err => {
-                                    if (err) throw err;
+                                    if (err) return reject(err);
                                     resolve();
                                   }
                                 );

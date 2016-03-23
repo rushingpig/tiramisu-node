@@ -1,3 +1,7 @@
+### v0.1.8
+* Backend:
+ * Zhanzhao LIANG: 导入旧商城配送站信息
+
 ### v0.1.7 (22 Mar 2016)
 * Frontend:
  * Bo XIONG: update auto match delivery station

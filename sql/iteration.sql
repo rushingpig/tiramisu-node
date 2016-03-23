@@ -13,6 +13,7 @@ ALTER TABLE `tiramisu`.`sys_user` CHANGE COLUMN `login_flag` `is_usable` tinyint
 /*2016-03-23 (pigo)*/
 ALTER TABLE `tiramisu`.`buss_order` CHANGE COLUMN `owner_mobile` `owner_mobile` varchar(20) CHARACTER SET utf8 DEFAULT NULL COMMENT '下单人手机';
 ALTER TABLE `tiramisu`.`buss_recipient` CHANGE COLUMN `mobile` `mobile` varchar(20) CHARACTER SET utf8 DEFAULT NULL COMMENT '收货人手机号';
+ALTER TABLE `tiramisu`.`buss_delivery_station` ADD COLUMN `is_national` tinyint(1) UNSIGNED DEFAULT 0 COMMENT '0：非全国属性    1：全国属性' AFTER `phone`;
 # 2016-03-23 Zhanzhao LIANG
 BEGIN;
 REPLACE INTO `buss_delivery_station` VALUES

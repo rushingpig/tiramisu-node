@@ -37,7 +37,6 @@ REPLACE INTO `buss_delivery_station` VALUES
   ('21',440307,'深圳坪山配送中心',null,null,'1',null,null,null,'1',null,null,'','',null),
   ('22',430702,'湖南常德配送中心','湖南常德市',null,'1',null,null,null,'1',null,null,'','',null),
   ('23',440604,'佛山配送中心',null,null,'1',null,null,null,'1',null,null,'','',null),
-  ('24',440303,'鲜花网专用',null,null,'1',null,null,null,'1',null,null,'','',null),
   ('25',500106,'重庆沙坪坝配送中心',null,null,'1',null,null,null,'1',null,null,'','',null),
   ('26',500105,'重庆江北配送中心',null,null,'1',null,null,null,'1',null,null,'','',null),
   ('27',500108,'重庆南岸配送中心',null,null,'1',null,null,null,'1',null,null,'','',null),

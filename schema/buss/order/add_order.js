@@ -6,16 +6,22 @@ module.exports = {
         notEmpty: true
     },
     'owner_mobile': {
-        isMobilePhone: {
-            options: ['zh-CN']
+        // isMobilePhone: {
+        //     options: ['zh-CN']
+        // }
+        matches : {
+            options : [/^[0-9\*\-]{8,14}$/]
         }
     },
     'recipient_name': {
         notEmpty: true
     },
     'recipient_mobile': {
-        isMobilePhone: {
-            options: ['zh-CN']
+        // isMobilePhone: {
+        //     options: ['zh-CN']
+        // }
+        matches : {
+            options : [/^[0-9\*\-]{8,14}$/]
         }
     },
     'regionalism_id': {

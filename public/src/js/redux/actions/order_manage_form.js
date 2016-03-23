@@ -4,14 +4,20 @@ import { getValues } from 'redux-form';
 import { initForm } from 'actions/form';
 import clone from 'clone';
 import * as OrderSupport from 'actions/order_support';
+import { CLEAR_DELIVERY_STATIONS } from 'actions/order_manage';
+import { SELECT_DEFAULT_VALUE } from 'config/app.config';
 
 export const GOT_ORDER_SRCS = OrderSupport.GOT_ORDER_SRCS;
 export const getOrderSrcs = OrderSupport.getOrderSrcs;
 
 //该方法也在其他业务模块中被调用
 export const GOT_DELIVERY_STATIONS = 'GOT_DELIVERY_STATIONS';
-export function getDeliveryStations() {
-  return GET(Url.stations.toString(), null, GOT_DELIVERY_STATIONS);
+export function getDeliveryStations(data) {
+  if(data && data.city_id == SELECT_DEFAULT_VALUE){
+    return { type: CLEAR_DELIVERY_STATIONS };
+  }else{
+    return GET(Url.stations.toString(), data, GOT_DELIVERY_STATIONS);
+  }
 }
 
 export const AUTO_GOT_DELIVERY_STATIONS = 'AUTO_GOT_DELIVERY_STATIONS';

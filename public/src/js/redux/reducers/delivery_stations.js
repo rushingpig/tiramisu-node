@@ -1,5 +1,5 @@
 import * as FormActions from 'actions/order_manage_form';
-import { RESET_DELIVERY_STATIONS } from 'actions/order_manage';
+import { RESET_DELIVERY_STATIONS, CLEAR_DELIVERY_STATIONS } from 'actions/order_manage';
 import { REQUEST } from 'config/app.config';
 import { map } from 'utils/index';
 
@@ -10,6 +10,8 @@ var initial_state = {
 
 function delivery_stations(state = initial_state, action){
   switch(action.type){
+    case CLEAR_DELIVERY_STATIONS:
+      return {...state, delivery_stations: []}
     case RESET_DELIVERY_STATIONS:
       return {...state, delivery_stations: state.delivery_stations_backup}
     case FormActions.GOT_DELIVERY_STATIONS:

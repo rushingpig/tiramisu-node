@@ -1,4 +1,6 @@
 ### v0.1.8
+* Frontend:
+ * Bo XIONG: 通过城市获取对应的配送站
 * Backend:
  * Zhanzhao LIANG: 导入旧商城配送站信息
  * Zhanzhao LIANG: 修正editorder的transaction逻辑，移除mysql-queue库

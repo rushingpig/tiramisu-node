@@ -174,16 +174,18 @@ var AlterDeliveryModal = React.createClass({
   onProvinceChange(e){
     var {value} = e.target;
     this.props.actions.resetCities();
-    this.setState({province_id: value})
+    this.setState({province_id: value, city_id: SELECT_DEFAULT_VALUE, regionalism_id: SELECT_DEFAULT_VALUE})
     if(value != this.refs.province.props['default-value'])
       this.props.actions.getCities(value);
+    this.props.actions.getDeliveryStations({city_id: SELECT_DEFAULT_VALUE}); //等同于clear stations数据
   },
   onCityChange(e){
     var {value} = e.target;
     this.props.actions.resetDistricts();
-    this.setState({city_id: e.target.value})
+    this.setState({city_id: value, delivery_id: SELECT_DEFAULT_VALUE})
     if(value != this.refs.city.props['default-value'])
       this.props.actions.getDistricts(value);
+    this.props.actions.getDeliveryStations({city_id: value});
   },
   onDistrictChange(e){
     var {value} = e.target;

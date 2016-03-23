@@ -311,7 +311,7 @@ var OrderRow = React.createClass({
             getCities(data.province_id),
             getDistricts(data.city_id),
             getDeliveryShops(data.regionalism_id),
-            getDeliveryStations()
+            getDeliveryStations({city_id: data.city_id})
           ).done(prepareDeliveryDataOK)
         }.bind(this), 400)
       });

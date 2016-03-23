@@ -393,7 +393,8 @@ class ManageAddForm extends Component {
     getProvinces();
     getOrderSrcs();
     getPayModes();
-    getDeliveryStations();
+    // getDeliveryStations();
+    //编辑状态获取市，区，配送站数据的逻辑是在order_manage_form -> reducer -> GOT_ORDER_BY_ID中
 
     createMap(this);
 
@@ -425,13 +426,17 @@ class ManageAddForm extends Component {
     if(value != this.refs.province.props['default-value'])
       this.props.actions.getCities(value);
     callback(e);
+    this.props.actions.getDeliveryStations({city_id: SELECT_DEFAULT_VALUE}); //等同于clear stations数据
+    this.props.actions.triggerFormUpdate('add_order', 'delivery_id', SELECT_DEFAULT_VALUE)
   }
   onCityChange(callback, e){
     var {value} = e.target;
     this.props.actions.resetDistricts();
+    this.props.actions.getDeliveryStations({city_id: value});
     if(value != this.refs.city.props['default-value'])
       this.props.actions.getDistricts(value);
     callback(e);
+    this.props.actions.triggerFormUpdate('add_order', 'delivery_id', SELECT_DEFAULT_VALUE)
   }
   onDistrictChange(callback, e){
     var {value} = e.target;

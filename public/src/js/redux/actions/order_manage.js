@@ -49,6 +49,7 @@ export function prepareDeliveryDataOK(){
   }
 }
 
+export const CLEAR_DELIVERY_STATIONS = 'CLEAR_DELIVERY_STATIONS';
 export const RESET_DELIVERY_STATIONS = 'RESET_DELIVERY_STATIONS';
 export function resetDeliveryStations(){
   return {

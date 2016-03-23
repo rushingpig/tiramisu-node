@@ -471,6 +471,8 @@ OrderDao.prototype.editOrder = function (order_obj, order_id, recipient_obj, rec
         recipient_params = [tables.buss_recipient, recipient_obj, recipient_id],
         order_params = [tables.buss_order, order_obj, order_id],
         userId = order_obj.update_by;
+    if (toolUtils.isEmptyArray(add_skus)) add_skus = [];
+    if (toolUtils.isEmptyArray(update_skus)) update_skus = [];
     return baseDao.trans().then(transaction => {
         return new Promise((resolve, reject) => {
             transaction.query(recipent_sql, recipient_params, (err_recipient) => {
@@ -483,33 +485,46 @@ OrderDao.prototype.editOrder = function (order_obj, order_id, recipient_obj, rec
                         logger.error('when update order with order_id:[' + order_id + "] exception ============>", err_order);
                         return reject(err_order);
                     }
-                    if (!toolUtils.isEmptyArray(add_skus)) {
-                      async.each(
-                        add_skus,
-                        (curr, cb) => {
-                          transaction.query(this.base_insert_sql, [tables.buss_order_sku, curr], cb);
-                        },
-                        err => {if (err) throw err;}
-                      );
-                    }
-                    if (!toolUtils.isEmptyArray(delete_skuIds)) {
-                        const order_sku_batch_update_sql = this.base_update_sql + " where order_id = ? and sku_id in " + dbHelper.genInSql(delete_skuIds);
-                        transaction.query(order_sku_batch_update_sql, [tables.buss_order_sku, {
-                            del_flag: del_flag.HIDE,
-                            updated_by: userId
-                        }, order_id], err => {if (err) throw err;});
-                    }
-                    if (!toolUtils.isEmptyArray(update_skus)) {
-                      async.each(
-                        update_skus,
-                        (curr, cb) => {
-                          const order_sku_update_sql = this.base_update_sql + " where order_id = ? and sku_id = ? and del_flag = ?";
-                          const order_sku_update_params = [tables.buss_order_sku, curr, order_id, curr.sku_id,del_flag.SHOW];
-                          transaction.query(order_sku_update_sql, order_sku_update_params, cb);
-                        },
-                        err => {if (err) throw err;}
-                      );
-                    }
+                    async.each(
+                      add_skus,
+                      (curr, cb) => {
+                        transaction.query(this.base_insert_sql, [tables.buss_order_sku, curr], cb);
+                      },
+                      err => {
+                        if (err) throw err;
+                        async.each(
+                          update_skus,
+                          (curr, cb) => {
+                            const order_sku_update_sql = this.base_update_sql + " where order_id = ? and sku_id = ? and del_flag = ?";
+                            const order_sku_update_params = [tables.buss_order_sku, curr, order_id, curr.sku_id,del_flag.SHOW];
+                            transaction.query(order_sku_update_sql, order_sku_update_params, cb);
+                          },
+                          err => {
+                            if (err) throw err;
+                            if (!toolUtils.isEmptyArray(delete_skuIds)) {
+                                const order_sku_batch_update_sql = this.base_update_sql + " where order_id = ? and sku_id in " + dbHelper.genInSql(delete_skuIds);
+                                transaction.query(
+                                  order_sku_batch_update_sql,
+                                  [
+                                    tables.buss_order_sku,
+                                    {
+                                        del_flag: del_flag.HIDE,
+                                        updated_by: userId
+                                    },
+                                    order_id
+                                  ],
+                                  err => {
+                                    if (err) throw err;
+                                    resolve();
+                                  }
+                                );
+                            } else {
+                              resolve();
+                            }
+                          }
+                        );
+                      }
+                    );
                 });
             });
         }).then(ignore => {

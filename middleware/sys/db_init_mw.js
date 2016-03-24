@@ -36,12 +36,13 @@ DBInitMiddleware.initdb = (callback) => {
           console.error('=============================================');
           console.error('==============init db failed=================');
           console.error('=============================================');
+          callback(err);
         } else {
           console.log('==============================================');
           console.log('==============init db success=================');
           console.log('==============================================');
+          callback();
         }
-        callback();
     });
   }
 };

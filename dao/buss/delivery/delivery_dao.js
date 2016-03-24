@@ -26,7 +26,7 @@ DeliveryDao.prototype.findAllStations = function(query_data){
     let sql = "select bds.* from ?? bds";
     let params = [];
     params.push(tables.buss_delivery_station);
-    if(query_data.city_id){
+    if(query_data && query_data.city_id){
         sql += " inner join ?? dr on dr.id = bds.regionalism_id and (dr.parent_id = ? or bds.is_national > 0)";
         params.push(tables.dict_regionalism);
         params.push(query_data.city_id);

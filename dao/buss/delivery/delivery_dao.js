@@ -189,7 +189,7 @@ DeliveryDao.prototype.findDeliverymansByStation = function(city_id,currentUser){
  */
 DeliveryDao.prototype.findStationById = function(station_id){
     let sql = util.format("select b.id 'station_id',b.name 'name',b.address 'address',b.coords 'coords'," +
-        "b.remarks 'remarks',b.capacity 'capacity',b.phone 'phone'," +
+        "b.remarks 'remarks',b.capacity 'capacity',b.phone 'phone',b.is_national 'is_national'," +
         "a.id 'regionalism_id',a.name 'regionalism_name'," +
         "c.id 'city_id',c.name 'city_name'," +
         "d.id 'province_id',d.name 'province_name' " +

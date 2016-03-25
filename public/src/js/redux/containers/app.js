@@ -7,8 +7,6 @@ import DeliveryChangePannel from '../components/delivery/change';
 import DeliveryManagePannel from '../components/delivery/delivery_manage';
 import DistributeManagePannel from '../components/delivery/distribute_manage';
 import DeliverPrintReviewPannel from '../components/delivery/print_review';
-import StationManagePannel from '../components/station/station_manage';
-import StationScopeManagePannel from '../components/station/station_scope_manage';
 import history from 'history_instance';
 import {Router, Route, IndexRoute, Redirect} from 'react-router';
 import V, { onEnter } from 'utils/acl';
@@ -33,12 +31,6 @@ const App = () => (
         <Route path="delivery" onEnter={onEnter('DeliveryManageAccess')} component={DeliveryManagePannel} />
         <Route path="distribute" onEnter={onEnter('DistributeManageAccess')} component={DistributeManagePannel} />
         <Route path="review" onEnter={onEnter('PrintReviewAccess')} component={DeliverPrintReviewPannel} />
-      </Route>
-
-      <Route path="sm">
-        <Route path="station" component={StationManagePannel} />
-        <Route path="station/:id" component={StationManagePannel} />
-        <Route path="scope" component={StationScopeManagePannel} />
       </Route>
 
       <Redirect from="logout" to="/" />

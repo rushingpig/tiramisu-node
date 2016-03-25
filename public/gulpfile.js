@@ -1,27 +1,27 @@
-var gulp                  = require('gulp');
-var path                  = require('path');
-var fs                    = require('fs');
-var sass                  = require('gulp-sass');
-var browserSync           = require('browser-sync');
-var prefix                = require('gulp-autoprefixer');
-var concat                = require('gulp-concat');
-var minifyCss             = require('gulp-minify-css');
-var plumber               = require('gulp-plumber');
-var uglify                = require('gulp-uglify');
-var rename                = require("gulp-rename");
-var imagemin              = require("gulp-imagemin");
-var pngquant              = require('imagemin-pngquant');
-var rev                   = require('gulp-rev-append');
-var gulpSequence          = require('gulp-sequence')
-// var cheerio            = require('gulp-cheerio');
-var replace               = require('gulp-replace');
-// var gzip               = require('gulp-gzip');
+var gulp                   = require('gulp');
+var path                   = require('path');
+var fs                     = require('fs');
+var sass                   = require('gulp-sass');
+var browserSync            = require('browser-sync');
+var prefix                 = require('gulp-autoprefixer');
+var concat                 = require('gulp-concat');
+var minifyCss              = require('gulp-minify-css');
+var plumber                = require('gulp-plumber');
+var uglify                 = require('gulp-uglify');
+var rename                 = require("gulp-rename");
+var imagemin               = require("gulp-imagemin");
+var pngquant               = require('imagemin-pngquant');
+var jpgmin                 = require('imagemin-jpeg-recompress');
+var rev                    = require('gulp-rev-append');
+var gulpSequence           = require('gulp-sequence')
+var replace                = require('gulp-replace');
+var template               = require('gulp-template');
 
-var gutil                 = require("gulp-util");
-var webpack               = require("webpack");
-var WebpackDevServer      = require("webpack-dev-server");
-var webpack_dev_config    = require('./src/js/redux/webpack.dev.config.js');
-var webpack_deploy_config = require('./src/js/redux/webpack.deploy.config.js');
+var gutil                  = require("gulp-util");
+var webpack                = require("webpack");
+var WebpackDevServer       = require("webpack-dev-server");
+var webpack_dev_config     = require('./webpack.dev.config.js');
+var webpack_deploy_config  = require('./webpack.deploy.config.js');
 
 var config = {
   app_port: 8080,
@@ -65,7 +65,7 @@ gulp.task('sass', function() {
 });
 
 gulp.task('browser-sync', function() {
-  browserSync.init(['css/*.css', 'js/*.js', 'index.html'], {
+  browserSync.init(['css/*.css', 'js/*.js', 'build/*.js', './index.html'], {
     // server: {
     //   baseDir: './',
     //   middleware: function(req, res, next){
@@ -106,39 +106,35 @@ gulp.task('lib', function(){
     .pipe(gulp.dest(d('lib')));
 });
 
-gulp.task('template:pre', function(){
-  var wds_server = "http://localhost:3000/"
+gulp.task('template:dev', function(){
+  var wds_server = "http://localhost:3000/";
+  var webpack_assets = JSON.parse(fs.readFileSync('./build/webpack.assets.js').toString());
   return gulp.src(s('index.html'))
-    .pipe(replace(/\{\{root\}\}/g, config.root))
-    .pipe(replace(/\{\{app\.js\}\}/, wds_server + 'app.js'))
-    .pipe(replace(/\{\{webpack-dev-server\.js\}\}/, '<script src="' + wds_server + 'webpack-dev-server.js"></script>'))
-    .pipe(gulp.dest('./'))
-    .pipe(rename({
-      extname: '.hbs'
-    }))
+    .pipe(template({
+      'root': config.root,
+      'webpack_dev_server_js': '<script src="' + wds_server + 'webpack-dev-server.js"></script>',
+      'commons': webpack_assets.commons.js,
+      'index': webpack_assets.index.js,
+     }))
     .pipe(rev())
+    .pipe(gulp.dest('./'))
+    .pipe(rename({extname: '.hbs'}))
     .pipe(gulp.dest(config.views));
 });
 
 gulp.task('template:deploy', function(){
+  var webpack_assets = JSON.parse(fs.readFileSync('./build/webpack.assets.js').toString());
   return gulp.src(s('index.html'))
-    .pipe(replace(/\{\{root\}\}/g, config.root))
-    .pipe(replace(/\{\{app\.js\}\}/, config.root + 'js/app.min.js?rev=@@hash'))
-    .pipe(replace(/\{\{webpack-dev-server\.js\}\}/, ''))
+    .pipe(template({
+      'root': config.root,
+      'webpack_dev_server_js': '',
+      'commons': webpack_assets.commons.js,
+      'index': webpack_assets.index.js,
+     }))
+    .pipe(rev())
     .pipe(gulp.dest('./'))
-    .pipe(rename({
-      extname: '.hbs'
-    }))
-    .pipe(rev())  //这个rev插件有bug，只能放这了
+    .pipe(rename({extname: '.hbs'}))
     .pipe(gulp.dest(config.views));
-});
-gulp.task('template:local', function(){
-  var local_root = '';
-  return gulp.src(s('index.html'))
-    .pipe(replace(/\{\{root\}\}/g, local_root))
-    .pipe(replace(/\{\{app\.js\}\}/, local_root + 'js/app.min.js?rev=@@hash'))
-    .pipe(replace(/\{\{webpack-dev-server\.js\}\}/, ''))
-    .pipe(gulp.dest('./'));
 });
 
 gulp.task('images', function () {
@@ -146,55 +142,39 @@ gulp.task('images', function () {
   .pipe(imagemin({
     progressive: true,
     svgoPlugins: [{removeViewBox: false}],
-    use: [pngquant()]
+    use: [jpgmin({quality: 'low'}), pngquant()]
   }))
   .pipe(gulp.dest(d('images')));
 });
 
 gulp.task("webpack:react", function(callback) {
-    // run webpack
   webpack(webpack_deploy_config, function(err, stats) {
     if(err) throw new gutil.PluginError("webpack", err);
-    gutil.log("[webpack]", stats.toString({
-        // output options
-    }));
-    
+    gutil.log("[webpack]", stats.toString({}));
     callback();
   });
 });
 
-// gulp.task("rev", function(){
-//   return gulp.src('./index.html')
-//     .pipe(rev())
-//     .pipe(gulp.dest('.'));
-// });
-
 //@1: 第一步操作
 gulp.task("webpack-dev-server", function(callback) {
   var port = config.webpack_port;
-  webpack_dev_config.entry.unshift(
-    "webpack-dev-server/client?http://localhost:" + port,
-    'webpack/hot/only-dev-server');
   new WebpackDevServer(webpack(webpack_dev_config), {
     hot: true,
-    // inline: true,
-    // noInfo: true,
     stats: { colors: true },
-    colors: true,
-    contentBase: 'xxxxxx'
-  }).listen(config.webpack_port, "localhost", function(err) {
+  }).listen(port, "localhost", function(err) {
     if(err) throw new gutil.PluginError("webpack-dev-server", err);
     gutil.log("[webpack-dev-server]", "http://localhost:"+ port);
   });
 });
+gulp.task("wds", ['webpack-dev-server']);
 
 //@2: 第二步操作
-gulp.task('default', ['css', 'sass', 'scripts', 'lib', 'images', 'template:pre', 'browser-sync'], function () {
+gulp.task('default', ['css', 'sass', 'scripts', 'lib', 'images', 'template:dev', 'browser-sync'], function () {
   gulp.watch(s('sass/**/*'), ['sass']);
   gulp.watch(s('js/*.js'), ['scripts']);
   gulp.watch(s('images/*'), ['images']);
   gulp.watch(s('css/*.css'), ['css']);
-  gulp.watch(s('*.html'), ['template:pre']);
+  gulp.watch(s('*.html'), ['template:dev']);
 
 });
 

@@ -8,6 +8,7 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link href="/plugins/font-awesome-4.4.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="<%= root %>css/style.min.css?rev=@@hash">
   <script type="text/javascript">
     window.xfxb = {
       login: {{isLogin}},
@@ -16,8 +17,6 @@
       {{#if user}}, user : JSON.parse('{{{user}}}') || {} {{/if}}
     };
   </script>
-  <script>document.write('<script type="text/javascript" src="/build/webpack.assets.js?v=' + (new Date().getTime()) + '"><\/script>');</script>
-  <script>document.write('<link rel="stylesheet" href="' + window.WEBPACK_ASSETS.index.css + '">');</script>
 </head>
 
 <body>
@@ -30,14 +29,13 @@
     </div>
   </div>
   <section id="app"></section>
-  <script src="/lib/vendor/jquery-1.11.3.min.js"></script>
-  <script src="/lib/bootstrap.min.js"></script>
-  <script src="/lib/bootstrap-datepicker.min.js"></script>
-  <script>
-  document.write('<script type="text/javascript" src="' + window.WEBPACK_ASSETS.commons.js + '"><\/script>');
-  document.write('<script type="text/javascript" src="' + window.WEBPACK_ASSETS.index.js + '"><\/script>');
-  $(function(){$('#loader').remove();})
-  </script>
+  <script src="<%= root %>lib/vendor/jquery-1.11.3.min.js"></script>
+  <%=webpack_dev_server_js%>
+  <script type="text/javascript" src="<%= commons %>"></script>
+  <script type="text/javascript" src="<%= index %>"></script>
+  <script>$(function(){$('#loader').remove();})</script>
+  <script src="<%=root%>lib/bootstrap.min.js"></script>
+  <script src="<%=root%>lib/bootstrap-datepicker.min.js"></script>
 </body>
 
 </html>

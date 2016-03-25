@@ -1,11 +1,25 @@
 'use strict';
 
 const webpack           = require('webpack');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const baseConfig        = require('./webpack.config.js');
+const path              = require('path');
+const assign            = require('object-assign');
 
 const config = {
+  output: {
+    path: path.join(__dirname, 'build'),
+    publicPath: 'http://localhost:3000/',
+    filename: '[name].[hash].bundle.js'
+  },
   devtool: 'source-map',
+  module: {
+    loaders: [{
+      test: /\.jsx?$/,
+      loaders: ['react-hot', 'babel'], // 位置不能颠倒
+      exclude: /node_modules/,
+      include: __dirname
+    }]
+  },
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': '"development"'
@@ -13,20 +27,6 @@ const config = {
     new webpack.HotModuleReplacementPlugin(),
     ...baseConfig.plugins
   ],
-  module: Object.assign(baseConfig.module, {
-    loaders: baseConfig.module.loaders.map(
-      (opt, i) => i === 0 ? {
-        test: /\.jsx?$/,
-        loaders: ['react-hot', 'babel'], // 位置不能颠倒
-        exclude: /node_modules/,
-        include: __dirname
-      } : opt
-    )
-  }),
-  devServer: {
-    proxy: {
-      '*': "http://localhost:3001"
-    }
-  }};
+};
 
-module.exports = Object.assign(baseConfig, config);
+module.exports = assign({}, baseConfig, config);

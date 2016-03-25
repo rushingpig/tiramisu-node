@@ -61,7 +61,9 @@ export function onEnter( role ){
     if( window.xfxb.login ){
       if( !validate( role ) ){
         replace({}, '/403', null);
+        return false;
       }
     }
+    return true;
   }
 }

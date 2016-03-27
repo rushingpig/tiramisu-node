@@ -11,7 +11,7 @@ var uglify                 = require('gulp-uglify');
 var rename                 = require("gulp-rename");
 var imagemin               = require("gulp-imagemin");
 var pngquant               = require('imagemin-pngquant');
-var jpgmin                 = require('imagemin-jpeg-recompress');
+// var jpgmin                 = require('imagemin-jpeg-recompress'); //linux上有问题，
 var rev                    = require('gulp-rev-append');
 var gulpSequence           = require('gulp-sequence')
 var replace                = require('gulp-replace');
@@ -142,7 +142,7 @@ gulp.task('images', function () {
   .pipe(imagemin({
     progressive: true,
     svgoPlugins: [{removeViewBox: false}],
-    use: [jpgmin({quality: 'low'}), pngquant()]
+    use: [/*jpgmin({quality: 'low'}), */pngquant()]
   }))
   .pipe(gulp.dest(d('images')));
 });

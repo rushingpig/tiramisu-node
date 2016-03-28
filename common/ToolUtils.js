@@ -124,4 +124,31 @@ ToolUtils.getClientIP = function (req) {
 ToolUtils.isAlphaNumeric = function(param){
   return stringValidator.isAlphanumeric(param);
 };
+ToolUtils.exp_validator_custom = {
+  customValidators: {
+    isArray: function(value) {
+      return value && Array.isArray(value);
+    },
+    gte: function(param, num) {
+      return param >= num;
+    },
+    isOrderId : function(orderId) {
+      return typeof orderId === 'string' && orderId.length === 16 && orderId.substring(8) && !isNaN(parseInt(orderId.substring(8)));
+    },
+    isOrderIds : function(orderIds){
+      if(!orderIds || !Array.isArray(orderIds)){
+        return false;
+      }
+      let result = true;
+      for(let i = 0;i < orderIds.length;i++){
+        let orderId = orderIds[i];
+        result = typeof orderId === 'string' && orderId.length === 16 && orderId.substring(8) && !isNaN(parseInt(orderId.substring(8)));
+        if(!result){
+          break;
+        }
+      }
+      return result;
+    }
+  }
+};
 module.exports = ToolUtils;

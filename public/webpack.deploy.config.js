@@ -22,8 +22,7 @@ const config = {
       },
       minimize: true
     }),
-    ...baseConfig.plugins
-  ]
+  ].concat(baseConfig.plugins)
 }
 
 module.exports = assign({}, baseConfig, config);

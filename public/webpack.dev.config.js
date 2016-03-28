@@ -26,8 +26,7 @@ const config = {
     }),
     new webpack.optimize.CommonsChunkPlugin('commons', '[name].bundle.js'),
     new webpack.HotModuleReplacementPlugin(),
-    ...baseConfig.plugins
-  ],
+  ].concat(baseConfig.plugins),
 };
 
 module.exports = assign({}, baseConfig, config);

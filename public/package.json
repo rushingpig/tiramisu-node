@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "gulp": "gulp",
-    "wds": "gulp webpack-dev-server"
+    "wds": "rm -rf ./build && gulp webpack-dev-server"
   },
   "repository": {
     "type": "git",

@@ -9,7 +9,7 @@ const config = {
   output: {
     path: path.join(__dirname, 'build'),
     publicPath: 'http://localhost:3000/',
-    filename: '[name].[hash].bundle.js'
+    filename: '[name].bundle.js'
   },
   devtool: 'source-map',
   module: {
@@ -24,6 +24,7 @@ const config = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': '"development"'
     }),
+    new webpack.optimize.CommonsChunkPlugin('commons', '[name].bundle.js'),
     new webpack.HotModuleReplacementPlugin(),
     ...baseConfig.plugins
   ],

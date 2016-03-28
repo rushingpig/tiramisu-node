@@ -34,7 +34,6 @@ const config = {
   },
   plugins: [
     new webpack.NoErrorsPlugin(),
-    new webpack.optimize.CommonsChunkPlugin('commons', '[name].[hash].bundle.js'),
     new webpack.optimize.OccurenceOrderPlugin(),
     new AssetsPlugin({
       path: path.join(__dirname, 'build'),

@@ -65,3 +65,10 @@ REPLACE INTO `buss_delivery_station` VALUES
   ('50',430102,'长沙浏阳河配送中心','长沙芙蓉区浏阳河路鑫科明珠十一栋4号',null,'1',null,null,null,'1',null,null,null,null,null,0),
   ('51',310107,'上海普陀配送中心','绥德路2弄8号楼3楼（真如铁三角科技园）',null,'1',null,null,null,'1',null,null,null,null,null,0);
 COMMIT;
+# 29 March Zhanzhao LIANG
+# TODO: fix the postcode and latlon information
+BEGIN;
+INSERT INTO `dict_regionalism` VALUES
+   ('442025', '东区', '442000', '东区', '3', '0760', '528400', '中国,广东省,中山市,东区', '113.378835', '22.52522', 'dongqu', '1', null, null),
+   ('442026', '西区', '442000', '西区', '3', '0760', '528400', '中国,广东省,中山市,西区', '113.378835', '22.52522', 'xiqu', '1', null, null);
+COMMIT;

@@ -188,7 +188,7 @@ class DeliverChangePannel extends Component {
   constructor(props){
     super(props);
     this.state = {
-      page_size: 5,
+      page_size: 8,
     }
     this.checkOrderHandler = this.checkOrderHandler.bind(this);
     this.activeOrderHandler = this.activeOrderHandler.bind(this);

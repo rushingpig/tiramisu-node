@@ -268,7 +268,7 @@ class DeliveryManagePannel extends Component {
   constructor(props){
     super(props);
     this.state = {
-      page_size: 5,
+      page_size: 8,
       batch_edit: false,
     }
     this.showEditModal = this.showEditModal.bind(this);

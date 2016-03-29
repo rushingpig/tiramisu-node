@@ -152,7 +152,7 @@ export function test(ajax_status = true, ajax_time = 2000, data){
  * @param {Number} time
  * @package {Boolean} _resolve : 模拟成功还是失败
  */
-export function TEST(data, signal, time, _resolve = true){
+export function TEST(data, signal = '没指定信号吧..', time = 200, _resolve = true){
   return (dispatch) => {
     //智能派发
     var _dispatch = function(s){
@@ -177,7 +177,7 @@ export function TEST(data, signal, time, _resolve = true){
     return new Promise(function(resolve, reject){
       setTimeout(function(){
         _resolve ? resolve(_dispatch(signal)) : reject(_dispatch(signal));
-      }, time || 200);
+      }, time);
     })
   }
 }

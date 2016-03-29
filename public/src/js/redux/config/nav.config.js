@@ -51,4 +51,15 @@ export default [
       "icon": "",
       "link": "/dm/review",
   }]
+}, {
+  "key": "central_management",
+  "name": "集合管理",
+  "short_name": "集合",
+  "icon": "",
+  "link": [{
+      "key": "SrcChannelManage",
+      "name": "订单来源渠道",
+      "icon": "",
+      "link": "/cm/src"
+  }]
 }];

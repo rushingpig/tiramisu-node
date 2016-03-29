@@ -112,7 +112,6 @@ gulp.task('template:dev', function(){
   return gulp.src(s('index.html'))
     .pipe(template({
       'root': config.root,
-      'webpack_dev_server_js': '<script src="' + wds_server + 'webpack-dev-server.js"></script>',
       'commons': webpack_assets.commons.js,
       'index': webpack_assets.index.js,
      }))
@@ -127,7 +126,6 @@ gulp.task('template:deploy', function(){
   return gulp.src(s('index.html'))
     .pipe(template({
       'root': config.root,
-      'webpack_dev_server_js': '',
       'commons': webpack_assets.commons.js,
       'index': webpack_assets.index.js,
      }))
@@ -158,8 +156,10 @@ gulp.task("webpack:react", function(callback) {
 //@1: 第一步操作
 gulp.task("webpack-dev-server", function(callback) {
   var port = config.webpack_port;
+  webpack_dev_config.entry.index.unshift("webpack-dev-server/client?http://localhost:3000/", "webpack/hot/dev-server");
   new WebpackDevServer(webpack(webpack_dev_config), {
     hot: true,
+    noInfo: true,
     stats: { colors: true },
   }).listen(port, "localhost", function(err) {
     if(err) throw new gutil.PluginError("webpack-dev-server", err);

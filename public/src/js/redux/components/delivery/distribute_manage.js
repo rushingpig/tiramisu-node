@@ -264,7 +264,7 @@ class DeliveryDistributePannel extends Component {
   constructor(props){
     super(props);
     this.state = {
-      page_size: 5,
+      page_size: 8,
     }
     this.showSignedModal = this.showSignedModal.bind(this);
     this.showUnSignedModal = this.showUnSignedModal.bind(this);

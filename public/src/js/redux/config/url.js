@@ -37,7 +37,6 @@ const URL = (function(){
     provinces: '/provinces',
     cities: '/province/:provinceId/cities',
     districts: '/city/:cityId/districts',
-    order_srcs: '/order/srcs',
     pay_modes: '/pay/modes',
     order_sign: '/order/:orderId/signin',
     order_unsign: '/order/:orderId/unsignin',
@@ -48,6 +47,11 @@ const URL = (function(){
     alter_station: '/order/:orderId/station',
     check_groupbuy_psd: '/coupon', //验券
     orders_export: '/orders/export', //导出的唯一接口（根据参数转化）
+
+    order_srcs: '/order/srcs',
+    add_order_src: '/order/src',
+    delete_order_src: '/order/src/:srcId',
+    update_order_src: '/order/src/:srcId',
 
     //产品
     categories: '/product/categories',

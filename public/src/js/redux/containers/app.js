@@ -3,6 +3,7 @@ import {Router, Route, IndexRoute, Redirect} from 'react-router';
 import {Entry, ComingSoon, NoPermission, NoPage} from '../components/body';
 import history from 'history_instance';
 import { onEnter } from 'utils/acl';
+import { connect } from 'react-redux';
 
 let components = {};
 
@@ -33,6 +34,13 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
         callback();
       });
       break;
+    case 'cm':
+      require.ensure([], require => {
+        components = {...components,
+          SrcChannelPannel: require('../components/central/src_channel_manage'),
+        };
+        callback();
+      })
     default:
       break;
   }
@@ -61,6 +69,9 @@ const App = () => (
         <Route path="distribute" onEnter={onEnter('DistributeManageAccess')} getComponent={get('DistributeManagePannel')}   />
         <Route path="review"   onEnter={onEnter('PrintReviewAccess')}    getComponent={get('DeliverPrintReviewPannel')} />
       </Route>
+      <Route path="cm" onEnter={getComponents('cm')}>
+        <Route path="src"   onEnter={onEnter('SrcChannelManage')}   getComponent={get('SrcChannelPannel')}   />
+      </Route>
       <Redirect from="logout" to="/" />
       <Route path="403" component={NoPermission} />
       <Route path="*" component={NoPage}/>
@@ -68,4 +79,4 @@ const App = () => (
   </Router>
 )
 
-export default App
+export default App;

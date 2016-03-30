@@ -27,6 +27,7 @@ var res_obj = require('../../../util/res_obj'),
   OrderDao = dao.order,
   orderDao = new OrderDao(),
   util = require('util'),
+  _ = require('lodash'),
   config = require('../../../config'),
   order_excel_caption = require('../../../config/excel/OrderTpl'),
   xlsx = require('node-xlsx');
@@ -47,6 +48,51 @@ OrderService.prototype.getOrderSrcList = (req, res, next) => {
     res.api(results);
   }));
 };
+OrderService.prototype.addOrderSrc = (req, res, next) => {
+  req.checkBody(schema.addOrderSrc);
+  let errors = req.validationErrors();
+  if (errors) {
+    return res.api(res_obj.INVALID_PARAMS, errors);
+  }
+  let orderSrcObj = {
+    parent_id: req.body.parent_id || '0',
+    name: req.body.name,
+    created_by: req.session.user.id,
+    created_time: new Date()
+  };
+  if (req.body.remark) orderSrcObj.remark = req.body.remark;
+  systemUtils.wrapService(res, next, orderDao.insertOrderSrc(orderSrcObj).then(id=> {
+    orderSrcObj.id = id;
+    res.api(_.pick(orderSrcObj, ['id', 'level', 'name', 'parent_id', 'remark']));
+  }));
+};
+OrderService.regexpOrderSrcId = /[^\d]+/;
+OrderService.prototype.editOrderSrc = (req, res, next) => {
+  req.checkBody(schema.editOrderSrc);
+  let errors = req.validationErrors();
+  if (errors || OrderService.regexpOrderSrcId.test(req.params.srcId)) {
+    return res.api(res_obj.INVALID_PARAMS, errors);
+  }
+  let orderSrcObj = {
+    updated_by: req.session.user.id,
+    updated_time: new Date()
+  };
+  if (req.body.name) orderSrcObj.name = req.body.name;
+  // if (req.body.parent_id) orderSrcObj.parent_id = req.body.parent_id;
+  if (req.body.remark) orderSrcObj.remark = req.body.remark;
+  systemUtils.wrapService(res, next, orderDao.updateOrderSrc(req.params.srcId, orderSrcObj).then(()=> {
+    res.api(_.pick(orderSrcObj, ['id', 'level', 'name', 'parent_id', 'remark']));
+  }));
+};
+OrderService.prototype.delOrderSrc = (req, res, next) => {
+  if (OrderService.regexpOrderSrcId.test(req.params.srcId)) {
+    return res.api(res_obj.INVALID_PARAMS, errors);
+  }
+  systemUtils.wrapService(res, next, orderDao.delOrderSrc(req.params.srcId).then(()=> {
+    res.api();
+  }));
+};
+
 /**
  * add an order record in the table
  * @param req

@@ -9,6 +9,7 @@
 var config = require('../config');
 var mysql = require('mysql');
 var pool = mysql.createPool(config.mysql_options);
+var _ = require('lodash');
 
 function BaseDao() {
     pool.on('connecton', function () {
@@ -121,6 +122,37 @@ BaseDao.trans = function(){
             }
         });
     });
+};
+
+BaseDao.transWrapPromise = function (transaction) {
+    transaction.queryPromise = function (sql, params) {
+        console.log(sql);
+        console.log(params);
+        return new Promise((resolve, reject)=> {
+            transaction.query(sql, params, function (err) {
+                if (err) reject(err);
+                else resolve.apply(this, _.drop(arguments));
+            });
+        });
+    };
+    transaction.commitPromise = function () {
+        return new Promise((resolve, reject)=> {
+            transaction.commit(err=> {
+                transaction.release();
+                if (err) reject(err);
+                else resolve();
+            });
+        });
+    };
+    transaction.rollbackPromise = function () {
+        return new Promise((resolve, reject)=> {
+            transaction.rollback(err=> {
+                transaction.release();
+                if (err) reject(err);
+                else resolve();
+            });
+        });
+    }
 };
 
 BaseDao.del_flag = {

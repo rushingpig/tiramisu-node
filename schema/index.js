@@ -1,5 +1,7 @@
 'use strict';
 module.exports = {
+  addOrderSrc: require('./buss/order/add_order_src'),
+  editOrderSrc: require('./buss/order/edit_order_src'),
   addOrder: require('./buss/order/add_order'),
   addExternalOrder: require('./buss/order/add_external_order'),
   addOrderError: require('./buss/order/add_order_error'),

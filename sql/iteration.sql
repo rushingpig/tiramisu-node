@@ -74,3 +74,6 @@ INSERT INTO `dict_regionalism` VALUES
    ('510185', '高新南区', '510100', '高新南', '3', '028', '611230', '中国,四川省,成都市,高新南区', '103.67285', '30.63014', 'gaoxingnan', '1', null, null),
    ('510186', '天府新区', '510100', '天府新', '3', '028', '611230', '中国,四川省,成都市,天府新区', '103.67285', '30.63014', 'tianfuxin', '1', null, null);
 COMMIT;
+
+# 2016-03-29 Zhao Wei
+ALTER TABLE `tiramisu`.`buss_order_src` ADD `remark` varchar(255) DEFAULT NULL COMMENT '备注';

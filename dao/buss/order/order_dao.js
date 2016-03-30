@@ -1,6 +1,7 @@
 'use strict';
 var baseDao = require('../../base_dao'),
     util = require('util'),
+    co = require('co'),
     toolUtils = require('../../../common/ToolUtils'),
     systemUtils = require('../../../common/SystemUtils'),
     Constant = require('../../../common/Constant'),
@@ -13,6 +14,31 @@ var baseDao = require('../../base_dao'),
     TiramisuError = require('../../../error/tiramisu_error');
 var async = require('async');
 
+// TODO: 后面要考虑移动到其它地方   在跑多例的情况下，需要将根据name存到数据库中。
+// 锁构造方法
+function Lock(name) {
+    let isLocked = false;
+    this.lock = function () {
+        return new Promise((resolve, reject)=> {
+            if (isLocked) {
+                reject();  // TODO: add error code
+            } else {
+                isLocked = true;
+                resolve();
+            }
+        });
+    };
+    this.unlock = function () {
+        return new Promise((resolve, reject)=> {
+            isLocked = false;
+            resolve();
+        });
+    };
+}
+
+var orderSrcLock = new Lock('orderSrcLock');
+
+
 function OrderDao() {
     this.baseColumns = ['id', 'name'];
     this.base_insert_sql = 'insert into ?? set ?';
@@ -23,9 +49,137 @@ function OrderDao() {
  * get the order sources
  */
 OrderDao.prototype.findAllOrderSrc = function () {
-    let params = [['id', 'name', 'parent_id', 'level'], tables.buss_order_src, del_flag.SHOW];
+    let params = [['id', 'name', 'parent_id', 'level', 'remark'], tables.buss_order_src, del_flag.SHOW];
     return baseDao.select(this.base_select_sql, params);
 };
+
+OrderDao.prototype.insertOrderSrc = function (orderSrcObj) {
+    let _this = this,
+        transaction,
+        isLocked = false,
+        isTrans = false;
+    return new Promise((resolve, reject)=> {
+        co(function *() {
+            orderSrcObj.merge_name = orderSrcObj.name;
+            if (orderSrcObj.parent_id == '0') {
+                orderSrcObj.level = 1;
+                orderSrcObj.parent_ids = '0';
+            } else {
+                yield orderSrcLock.lock();
+                isLocked = true;
+                let sql = _this.base_select_sql + 'and id = ?';
+                let params = [['id', 'parent_ids', 'level', 'merge_name'], tables.buss_order_src, del_flag.SHOW, orderSrcObj.parent_id];
+                let parent = yield baseDao.select(sql, params);
+                if (parent.length == 0) {
+                    return yield Promise.reject();  // TODO: add error code
+                }
+                parent = parent[0];
+                orderSrcObj.level = parent.level + 1;
+                orderSrcObj.parent_ids = parent.parent_ids;
+                orderSrcObj.merge_name = parent.merge_name + ',' + orderSrcObj.merge_name;
+                if(parent.level == 1){
+                    orderSrcObj.parent_ids = orderSrcObj.parent_ids.substring(2);
+                }
+            }
+            transaction = yield baseDao.trans();
+            isTrans = true;
+            baseDao.transWrapPromise(transaction);
+            let result = yield transaction.queryPromise(_this.base_insert_sql, [tables.buss_order_src, orderSrcObj]);
+            orderSrcObj.id = result.insertId;
+            orderSrcObj.parent_ids = orderSrcObj.parent_ids + ',' + orderSrcObj.id;
+
+            let sql = _this.base_update_sql + ' WHERE id = ?';
+            yield transaction.queryPromise(sql, [tables.buss_order_src, {parent_ids: orderSrcObj.parent_ids}, orderSrcObj.id]);
+            yield transaction.commitPromise();
+            isTrans = false;
+            if (isLocked) {
+                isLocked = false;
+                yield orderSrcLock.unlock();
+            }
+            return orderSrcObj.id;
+        }).then(resolve).catch((err)=> {
+            if (isLocked) {
+                isLocked = false;
+                orderSrcLock.unlock();
+            }
+            if(isTrans){
+                isTrans = false;
+                transaction.rollbackPromise();
+            }
+            reject(err);
+        });
+    });
+};
+
+OrderDao.prototype.updateOrderSrc = function (orderSrcId, orderSrcObj) {
+    let _this = this,
+        transaction,
+        isLocked = false,
+        isTrans = false;
+    return new Promise((resolve, reject)=> {
+        co(function *() {
+            transaction = yield baseDao.trans();
+            isTrans = true;
+            baseDao.transWrapPromise(transaction);
+            if (orderSrcObj.name !== undefined || orderSrcObj.parent_id !== undefined) {
+                yield orderSrcLock.lock();
+                isLocked = true;
+                let sql = _this.base_select_sql + 'AND id = ?';
+                let params = [['id', 'parent_ids', 'level', 'merge_name'], tables.buss_order_src, del_flag.SHOW, orderSrcId];
+                let self = yield baseDao.select(sql, params);
+                if (self.length == 0) {
+                    return yield Promise.reject();  // TODO: add error code
+                }
+                self = self[0];
+
+                if (self.level == 1) {
+                    orderSrcObj.merge_name = orderSrcObj.name;
+                    let sql = _this.base_select_sql + ' and parent_id = ?';
+                    let params = [['id', 'merge_name'], tables.buss_order_src, del_flag.SHOW, self.id];
+                    let children = yield baseDao.select(sql, params);
+                    if (children.length > 0) {
+                        let re = /^[^,]+/;
+                        let sql = _this.base_update_sql + ' WHERE id = ?';
+                        let updatePromises = [];
+                        children.forEach((child)=> {
+                            child.merge_name = child.merge_name.replace(re, orderSrcObj.name);
+                            updatePromises.push(transaction.queryPromise(sql, [tables.buss_order_src, child, child.id]));
+                        });
+                        yield updatePromises;
+                    }
+                } else {
+                    orderSrcObj.merge_name = self.merge_name.replace(/,+[^,]+$/, ',' + orderSrcObj.name);
+                }
+            }
+            let sql = _this.base_update_sql + ' where id = ?';
+            yield transaction.queryPromise(sql, [tables.buss_order_src, orderSrcObj, orderSrcId]);
+            yield transaction.commitPromise();
+            isTrans = false;
+            if (isLocked) {
+                isLocked = false;
+                yield orderSrcLock.unlock();
+            }
+            yield orderSrcLock.unlock();
+            isTrans = false;
+        }).then(resolve).catch((err)=> {
+            if (isLocked) {
+                isLocked = false;
+                orderSrcLock.unlock();
+            }
+            if (isTrans) {
+                isTrans = false;
+                transaction.rollbackPromise();
+            }
+            reject(err);
+        });
+    });
+};
+
+OrderDao.prototype.delOrderSrc = function (orderSrcId) {
+    let sql = this.base_update_sql + ' WHERE id = ? OR parent_id = ?';
+    return baseDao.update(sql, [tables.buss_order_src, {del_flag: del_flag.HIDE}, orderSrcId, orderSrcId]);
+};
+
 /**
  * new order
  */

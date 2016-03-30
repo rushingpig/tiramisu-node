@@ -861,5 +861,76 @@ module.exports = function () {
           });
     });
 
+    it('POST /v1/a/order/src insert order src ', function (done) {
+      const reqBody = {
+        name: '土星',
+        remark: 'api test'
+      };
+      agent.post('/v1/a/order/src')
+          .type('application/json')
+          .send(reqBody)
+          .end((err, res) => {
+            console.log(res.body);
+            assert.strictEqual(res.body.code, '0000');
+            assert.strictEqual(res.statusCode, 200);
+            done();
+          });
+    });
+
+    it('POST /v1/a/order/src insert order src ', function (done) {
+      const reqBody = {
+        parent_id: 2,
+        name: '土卫二'
+      };
+      agent.post('/v1/a/order/src')
+          .type('application/json')
+          .send(reqBody)
+          .end((err, res) => {
+            console.log(res.body);
+            assert.strictEqual(res.body.code, '0000');
+            assert.strictEqual(res.statusCode, 200);
+            done();
+          });
+    });
+
+    it('PUT /v1/a/order/src/:srcId update order src (1) ', function (done) {
+      const reqBody = {
+        name: '400客服中心'
+      };
+      agent.put('/v1/a/order/src/2')
+          .type('application/json')
+          .send(reqBody)
+          .end((err, res) => {
+            console.log(res.body);
+            assert.strictEqual(res.body.code, '0000');
+            assert.strictEqual(res.statusCode, 200);
+            done();
+          });
+    });
+
+    it('PUT /v1/a/order/src/:srcId update order src (2) ', function (done) {
+      const reqBody = {
+        name: 'PC官方网站'
+      };
+      agent.put('/v1/a/order/src/1')
+          .type('application/json')
+          .send(reqBody)
+          .end((err, res) => {
+            console.log(res.body);
+            assert.strictEqual(res.body.code, '0000');
+            assert.strictEqual(res.statusCode, 200);
+            done();
+          });
+    });
+
+    it('DELETE /v1/a/order/src/:srcId delete order src ', function (done) {
+      agent.delete('/v1/a/order/src/2')
+          .end((err, res) => {
+            console.log(res.body);
+            assert.strictEqual(res.body.code, '0000');
+            assert.strictEqual(res.statusCode, 200);
+            done();
+          });
+    })
   });
 };

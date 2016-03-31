@@ -115,7 +115,6 @@ gulp.task('template:dev', function(){
       'commons': webpack_assets.commons.js,
       'index': webpack_assets.index.js,
      }))
-    .pipe(rev())
     .pipe(gulp.dest('./'))
     .pipe(rename({extname: '.hbs'}))
     .pipe(gulp.dest(config.views));
@@ -129,8 +128,12 @@ gulp.task('template:deploy', function(){
       'commons': webpack_assets.commons.js,
       'index': webpack_assets.index.js,
      }))
-    .pipe(rev())
     .pipe(gulp.dest('./'))
+});
+
+gulp.task('rev', function(){
+  return gulp.src('index.html')
+    .pipe(rev())
     .pipe(rename({extname: '.hbs'}))
     .pipe(gulp.dest(config.views));
 });
@@ -159,7 +162,6 @@ gulp.task("webpack-dev-server", function(callback) {
   webpack_dev_config.entry.index.unshift("webpack-dev-server/client?http://localhost:3000/", "webpack/hot/dev-server");
   new WebpackDevServer(webpack(webpack_dev_config), {
     hot: true,
-    noInfo: true,
     stats: { colors: true },
   }).listen(port, "localhost", function(err) {
     if(err) throw new gutil.PluginError("webpack-dev-server", err);
@@ -178,4 +180,4 @@ gulp.task('default', ['css', 'sass', 'scripts', 'lib', 'images', 'template:dev',
 
 });
 
-gulp.task('deploy', gulpSequence('webpack:react', 'css', 'sass', 'scripts', 'images', 'lib', 'template:deploy'));
+gulp.task('deploy', gulpSequence('webpack:react', 'css', 'sass', 'scripts', 'images', 'lib', 'template:deploy', 'rev'));

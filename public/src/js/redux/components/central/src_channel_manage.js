@@ -6,6 +6,7 @@ import LinkedStateMixin from 'react-addons-linked-state-mixin';
 import classNames from 'classnames';
 
 import DatePicker from 'common/datepicker';
+import { Confirm } from 'common/message_box';
 import Select from 'common/select';
 import Pagination from 'common/pagination';
 import StdModal from 'common/std_modal';
@@ -75,7 +76,7 @@ const EditGroup = function({ editHandler, deleteHandler }){
   return (
     <td>
       <a onClick={editHandler} href="javascript:;">[编辑]</a>{' '}
-      {/*<a onClick={deleteHandler} href="javascript:;">[删除]</a>*/}
+      <a onClick={deleteHandler} href="javascript:;">[删除]</a>
     </td>
   )
 }
@@ -98,8 +99,9 @@ class SrcSet extends Component {
         <td className="text-left" style={{textIndent: 20, fontSize: 13}}>
           {name}
           {
-            srcs.length &&
-            <span className="pull-right space"><i className={"gray fa fa-" + (open ? 'minus' : 'plus')}></i></span>
+            srcs.length
+            ? <span className="pull-right space"><i className={"gray fa fa-" + (open ? 'minus' : 'plus')}></i></span>
+            : null
           }
         </td>
         <EditGroup editHandler={this.editHandler.bind(this, data)} deleteHandler={this.deleteHandler.bind(this, data)} />
@@ -129,7 +131,13 @@ class SrcSet extends Component {
     e.stopPropagation();
   }
   deleteHandler(data, e){
-    this.props.actions.deleteSrcChannel(data);
+    Confirm('请确认是否删除当前渠道，删除后一级分类下的二级分类也将被删除！！！').then( () => {
+      this.props.actions.deleteSrcChannel(data.id)
+        .done( () => {
+          this.props.actions.getOrderSrcs();
+          Noty('success', '删除成功');
+        });
+    })
     e.stopPropagation();
   }
 }
@@ -185,7 +193,9 @@ class SrcChannelPannel extends Component {
               </div>
               <div className="col-lg-5 col-lg-offset-1 col-md-6" style={{paddingTop: 5}}>
                 {
-                  show_edit_panel && <ChannelDetail actions={this.props}  {...{channels: channels_one, data: edit_channel_data, level, submitting}} />
+                  show_edit_panel
+                    ? <ChannelDetail actions={this.props}  {...{channels: channels_one, data: edit_channel_data, level, submitting}} />
+                    : null
                 }
               </div>
             </div>
@@ -219,18 +229,19 @@ const FormGroup = props => <div className="form-group form-inline">{props.childr
 var ChannelDetail = React.createClass({
   getInitialState: function() {
     var {data} = this.props;
+    return this._getState( data );
+  },
+  _getState(data){
     return {
-      name: data ? data.name : '',
+      name: data && data.name || '',
       parent_id: data ? data.parent_id : SELECT_DEFAULT_VALUE,
-    };
+      remark: data && data.remark || '',
+    }
   },
   mixins: [LinkedStateMixin],
   componentWillReceiveProps(nextProps){
     if( nextProps.data != this.props.data){
-      this.setState({
-        name: nextProps.data ? nextProps.data.name : '',
-        parent_id: nextProps.data ? nextProps.data.parent_id : SELECT_DEFAULT_VALUE,
-      })
+      this.setState(this._getState( nextProps.data ))
     }
   },
   render(){
@@ -244,15 +255,16 @@ var ChannelDetail = React.createClass({
           <input valueLink={this.linkState('name')} className="form-control input-xs" type="text"/>
         </FormGroup>
         {
-          !is_level_one &&
-          <FormGroup>
-            <label>选择一级渠道：</label>
-            <Select valueLink={this.linkState('parent_id')} options={channels} className="form-control"></Select>
-          </FormGroup>
+          !is_level_one
+            ? <FormGroup>
+                <label>选择一级渠道：</label>
+                <Select valueLink={this.linkState('parent_id')} options={channels} className="form-control"></Select>
+              </FormGroup>
+            : null
         }
         <FormGroup>
           <label>　　　　备注：</label>
-          <textarea className="form-control" rows="2" cols="30"></textarea>
+          <textarea valueLink={this.linkState('remark')} className="form-control" rows="2" cols="30"></textarea>
         </FormGroup>
         <FormGroup>
           {'　　　　　　　'}
@@ -271,6 +283,8 @@ var ChannelDetail = React.createClass({
     var { name, parent_id } = this.state;
     if(!name){
       Noty('warning', '请填写渠道名称'); return false;
+    }else if(name.indexOf(',') != -1){
+      Noty('warning', '渠道名称不能包含逗号'); return false;
     }
     //添加二级渠道就需要填写 附属于一级渠道
     if(this.props.level != 1 && parent_id == SELECT_DEFAULT_VALUE){
@@ -279,10 +293,13 @@ var ChannelDetail = React.createClass({
     return true;
   },
   saveChannel(){
-    var { name, parent_id } = this.state;
+    var { name, parent_id, remark } = this.state;
+
+    remark = remark || undefined;
     if( this.preCheck() ){
       this.props.actions.updateSrcChannel(
-        this.props.level == 1 ? {name} : {name, parent_id}
+        this.props.data.id,
+        this.props.level == 1 ? {name, remark} : {name, parent_id, remark}
       ).done(() =>{
         this.props.actions.getOrderSrcs()
         Noty('success', '保存成功')
@@ -290,10 +307,11 @@ var ChannelDetail = React.createClass({
     }
   },
   addChannel(){
-    var { name, parent_id } = this.state;
+    var { name, parent_id, remark } = this.state;
+    remark = remark || undefined;
     if( this.preCheck() ){
       this.props.actions.addSrcChannel(
-        this.props.level == 1 ? {name} : {name, parent_id}
+        this.props.level == 1 ? {name, remark} : {name, parent_id, remark}
       ).done(() =>{
         this.props.actions.getOrderSrcs()
         Noty('success', '添加成功')

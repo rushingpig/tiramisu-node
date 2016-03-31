@@ -78,53 +78,42 @@ export function GET(url, query_data, action_type){
   }
 }
 
-export function POST(url, send_data, action_type){
-  return (dispatch, getState) => {
-    //key: 0->正在处理，1->成功，2->失败 (减少信号量)
-    dispatch({
-      type: action_type,
-      key: REQUEST.ING,
-    });
-    return post(url, send_data)
-      .done(function(data){
-        dispatch({
-          type: action_type,
-          key: REQUEST.SUCCESS,
-          data
+function submit( req ){
+  return (url, send_data, action_type) => {
+    return (dispatch, getState) => {
+      //key: 0->正在处理，1->成功，2->失败 (减少信号量)
+      dispatch({
+        type: action_type,
+        key: REQUEST.ING,
+      });
+      return req(url, send_data)
+        .done(function(data){
+          dispatch({
+            type: action_type,
+            key: REQUEST.SUCCESS,
+            data
+          })
         })
-      })
-      .fail(function(msg, code){
-        dispatch({
-          type: action_type,
-          key: REQUEST.FAIL,
-          msg,
-          code
+        .fail(function(msg, code){
+          dispatch({
+            type: action_type,
+            key: REQUEST.FAIL,
+            msg,
+            code
+          })
         })
-      })
+    }
   }
 }
 
+export function POST(url, send_data, action_type){
+  return submit(post)(url, send_data, action_type)
+}
 export function PUT(url, send_data, action_type){
-  return (dispatch, getState) => {
-    //key: 0->正在处理，1->成功，2->失败 (减少信号量)
-    dispatch({
-      type: action_type,
-      key: REQUEST.ING,
-    });
-    return put(url, send_data)
-      .done(function(){
-        dispatch({
-          type: action_type,
-          key: REQUEST.SUCCESS
-        })
-      })
-      .fail(function(){
-        dispatch({
-          type: action_type,
-          key: REQUEST.FAIL
-        })
-      })
-  }
+  return submit(put)(url, send_data, action_type)
+}
+export function DEL(url, send_data, action_type){
+  return submit(del)(url, send_data, action_type)
 }
 
 /**

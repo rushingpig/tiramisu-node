@@ -78,6 +78,9 @@ export default function main(state = initial_state, action){
         total: filter_results.length,
         all_filtered_order_srcs: filter_results,
         order_srcs_show: filter_results.slice(0, state.page_size),
+        show_edit_panel: false,
+        edit_channel_data: null,
+        level: undefined,
       }
 
     case Actions.HIDE_CHANNEL_PANEL:
@@ -107,9 +110,8 @@ export default function main(state = initial_state, action){
       })();
 
     case Actions.ADD_SRC_CHANNEL:
-    case Actions.UPDATE_SRCH_CHANNEL:
+    case Actions.UPDATE_SRC_CHANNEL:
       return (function(){
-        var d = action.data;
         if(action.key == REQUEST.ING){
           return {...state, submitting: true}
         }else if(action.key == REQUEST.SUCCESS){
@@ -120,6 +122,21 @@ export default function main(state = initial_state, action){
           return state;
         }
       })();
+
+    case Actions.DELETE_SRC_CHANNEL:
+      return (function(){
+        if(action.key == REQUEST.SUCCESS || action.key == REQUEST.FAIL){
+          return {
+            ...state,
+            show_edit_panel: false,
+            edit_channel_data: null,
+            level: undefined,
+          }
+        }else{
+          return state;
+        }
+      })();
+
     default:
       return state;
   }

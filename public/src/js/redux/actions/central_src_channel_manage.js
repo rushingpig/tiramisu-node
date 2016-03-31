@@ -1,4 +1,4 @@
-import {post, GET, POST, TEST } from 'utils/request'; //Promise
+import {post, del, test, GET, PUT, POST, DEL, TEST } from 'utils/request'; //Promise
 import Url from 'config/url';
 
 export const FILTER_SRC_CHANNEL = 'FILTER_SRC_CHANNEL';
@@ -34,20 +34,27 @@ export function showAddSrcChannel( level ){
 
 export const ADD_SRC_CHANNEL = 'ADD_SRC_CHANNEL';
 export function addSrcChannel( data ){
-  // return POST(Url.add_src_channel.toString(), data, ADD_SRC_CHANNEL);
-  debugger;
-  return TEST(null, [
-    {type: ADD_SRC_CHANNEL, key: 0},  //立即派发
-    {type: ADD_SRC_CHANNEL, key: 1}   //2000毫秒后派发
-  ], 2000);
+  return POST(Url.add_order_src.toString(), data, ADD_SRC_CHANNEL);
+  // return TEST(null, [
+  //   {type: ADD_SRC_CHANNEL, key: 0},  //立即派发
+  //   {type: ADD_SRC_CHANNEL, key: 1}   //2000毫秒后派发
+  // ], 2000);
 }
 
 export const UPDATE_SRC_CHANNEL = 'UPDATE_SRC_CHANNEL';
-export function updateSrcChannel( data ){
-  // return PUT(Url.edit_src_channel.toString(), data, UPDATE_SRC_CHANNEL);
-  debugger;
-  return TEST(null, [
-    {type: UPDATE_SRC_CHANNEL, key: 0},  //立即派发
-    {type: UPDATE_SRC_CHANNEL, key: 1}   //2000毫秒后派发
-  ], 2000);
+export function updateSrcChannel( id, data ){
+  return PUT(Url.update_order_src.toString(id), data, UPDATE_SRC_CHANNEL);
+  // return TEST(null, [
+  //   {type: UPDATE_SRC_CHANNEL, key: 0},  //立即派发
+  //   {type: UPDATE_SRC_CHANNEL, key: 1}   //2000毫秒后派发
+  // ], 2000);
+}
+
+export const DELETE_SRC_CHANNEL = 'DELETE_SRC_CHANNEL';
+export function deleteSrcChannel( id ){
+  return DEL(Url.delete_order_src.toString(id), null, DELETE_SRC_CHANNEL);
+  // return TEST(null, [
+  //   {type: DELETE_SRC_CHANNEL, key: 0},  //立即派发
+  //   {type: DELETE_SRC_CHANNEL, key: 1}   //2000毫秒后派发
+  // ], 200);
 }

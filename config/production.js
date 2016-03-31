@@ -118,8 +118,6 @@ var white_ips = [
     // localhost
     '1',
     '127.0.0.1',
-    // internal xfxb_ecommerce
-    '10.45.185.126',
     // internal xfxb_qa
     // '10.46.89.45',
     // internal production

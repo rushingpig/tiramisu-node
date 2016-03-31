@@ -78,7 +78,7 @@ OrderService.prototype.editOrderSrc = (req, res, next) => {
     updated_time: new Date()
   };
   if (req.body.name) orderSrcObj.name = req.body.name;
-  // if (req.body.parent_id) orderSrcObj.parent_id = req.body.parent_id;
+  if (req.body.parent_id) orderSrcObj.parent_id = req.body.parent_id;
   if (req.body.remark) orderSrcObj.remark = req.body.remark;
   systemUtils.wrapService(res, next, orderDao.updateOrderSrc(req.params.srcId, orderSrcObj).then(()=> {
     res.api(_.pick(orderSrcObj, ['id', 'level', 'name', 'parent_id', 'remark']));

@@ -11,17 +11,18 @@ var baseDao = require('../../base_dao'),
     del_flag = baseDao.del_flag,
     tables = require('../../../config').tables,
     errorMessage = require('../../../util/res_obj'),
-    TiramisuError = require('../../../error/tiramisu_error');
+    TiramisuError = require('../../../error/tiramisu_error'),
+    res_obj = require('../../../util/res_obj');
 var async = require('async');
 
 // TODO: 后面要考虑移动到其它地方   在跑多例的情况下，需要将根据name存到数据库中。
 // 锁构造方法
 function Lock(name) {
     let isLocked = false;
-    this.lock = function () {
+    this.lock = function (err) {
         return new Promise((resolve, reject)=> {
             if (isLocked) {
-                reject();  // TODO: add error code
+                reject(err);
             } else {
                 isLocked = true;
                 resolve();
@@ -65,21 +66,21 @@ OrderDao.prototype.insertOrderSrc = function (orderSrcObj) {
                 orderSrcObj.level = 1;
                 orderSrcObj.parent_ids = '0';
             } else {
-                yield orderSrcLock.lock();
+                yield orderSrcLock.lock(new TiramisuError(res_obj.FAIL));
                 isLocked = true;
                 let sql = _this.base_select_sql + 'and id = ?';
                 let params = [['id', 'parent_ids', 'level', 'merge_name'], tables.buss_order_src, del_flag.SHOW, orderSrcObj.parent_id];
                 let parent = yield baseDao.select(sql, params);
-                if (parent.length == 0) {
-                    return yield Promise.reject();  // TODO: add error code
+                if (parent.length === 0) {
+                    return yield Promise.reject(new TiramisuError(res_obj.INVALID_ORDER_SRC_PARENT_ID));
                 }
                 parent = parent[0];
-                orderSrcObj.level = parent.level + 1;
-                orderSrcObj.parent_ids = parent.parent_ids;
-                orderSrcObj.merge_name = parent.merge_name + ',' + orderSrcObj.merge_name;
-                if(parent.level == 1){
-                    orderSrcObj.parent_ids = orderSrcObj.parent_ids.substring(2);
+                if (parent.level != 1) {
+                    return yield Promise.reject(new TiramisuError(res_obj.INVALID_ORDER_SRC_PARENT_ID));
                 }
+                orderSrcObj.level = parent.level + 1;
+                orderSrcObj.parent_ids = orderSrcObj.parent_id;
+                orderSrcObj.merge_name = parent.merge_name + ',' + orderSrcObj.merge_name;
             }
             transaction = yield baseDao.trans();
             isTrans = true;
@@ -122,33 +123,57 @@ OrderDao.prototype.updateOrderSrc = function (orderSrcId, orderSrcObj) {
             isTrans = true;
             baseDao.transWrapPromise(transaction);
             if (orderSrcObj.name !== undefined || orderSrcObj.parent_id !== undefined) {
-                yield orderSrcLock.lock();
+                yield orderSrcLock.lock(new TiramisuError(res_obj.FAIL));
                 isLocked = true;
                 let sql = _this.base_select_sql + 'AND id = ?';
-                let params = [['id', 'parent_ids', 'level', 'merge_name'], tables.buss_order_src, del_flag.SHOW, orderSrcId];
+                let params = [['id', 'name', 'parent_ids', 'level', 'merge_name'], tables.buss_order_src, del_flag.SHOW, orderSrcId];
                 let self = yield baseDao.select(sql, params);
-                if (self.length == 0) {
-                    return yield Promise.reject();  // TODO: add error code
+                if (self.length === 0) {
+                    return yield Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID));
                 }
                 self = self[0];
 
-                if (self.level == 1) {
-                    orderSrcObj.merge_name = orderSrcObj.name;
-                    let sql = _this.base_select_sql + ' and parent_id = ?';
-                    let params = [['id', 'merge_name'], tables.buss_order_src, del_flag.SHOW, self.id];
-                    let children = yield baseDao.select(sql, params);
-                    if (children.length > 0) {
-                        let re = /^[^,]+/;
-                        let sql = _this.base_update_sql + ' WHERE id = ?';
-                        let updatePromises = [];
-                        children.forEach((child)=> {
-                            child.merge_name = child.merge_name.replace(re, orderSrcObj.name);
-                            updatePromises.push(transaction.queryPromise(sql, [tables.buss_order_src, child, child.id]));
-                        });
-                        yield updatePromises;
+                // TODO: 目前最多只支持到二级渠道  且只有二级渠道能修改parent_id
+
+                // 暂时不允许做降级处理
+                if(self.level == 1 && orderSrcObj.parent_id){
+                    return yield Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS));
+                }
+
+                if(orderSrcObj.name) {
+                    if (self.level == 1) {
+                        orderSrcObj.merge_name = orderSrcObj.name;
+                        let sql = _this.base_select_sql + ' and parent_id = ?';
+                        let params = [['id', 'merge_name'], tables.buss_order_src, del_flag.SHOW, self.id];
+                        let children = yield baseDao.select(sql, params);
+                        if (children.length > 0) {
+                            let re = /^[^,]+/;
+                            let sql = _this.base_update_sql + ' WHERE id = ?';
+                            let updatePromises = [];
+                            children.forEach((child)=> {
+                                child.merge_name = child.merge_name.replace(re, orderSrcObj.name);
+                                updatePromises.push(transaction.queryPromise(sql, [tables.buss_order_src, child, child.id]));
+                            });
+                            yield updatePromises;
+                        }
+                    } else {
+                        orderSrcObj.merge_name = self.merge_name.replace(/[^,]+$/, orderSrcObj.name);
                     }
-                } else {
-                    orderSrcObj.merge_name = self.merge_name.replace(/,+[^,]+$/, ',' + orderSrcObj.name);
+                }
+                if (orderSrcObj.parent_id) {
+                    let sql = _this.base_select_sql + 'and id = ?';
+                    let params = [['id', 'parent_ids', 'level', 'merge_name'], tables.buss_order_src, del_flag.SHOW, orderSrcObj.parent_id];
+                    let parent = yield baseDao.select(sql, params);
+                    if (parent.length == 0) {
+                        return yield Promise.reject(new TiramisuError(res_obj.INVALID_ORDER_SRC_PARENT_ID));
+                    }
+                    parent = parent[0];
+                    if (parent.level != 1) {
+                        return yield Promise.reject(new TiramisuError(res_obj.INVALID_ORDER_SRC_PARENT_ID));
+                    }
+                    orderSrcObj.level = parent.level + 1;
+                    orderSrcObj.parent_ids = orderSrcObj.parent_id + ',' + orderSrcId;
+                    orderSrcObj.merge_name = parent.merge_name + ',' + (orderSrcObj.name || self.name);
                 }
             }
             let sql = _this.base_update_sql + ' where id = ?';

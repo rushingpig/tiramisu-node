@@ -870,7 +870,6 @@ module.exports = function () {
           .type('application/json')
           .send(reqBody)
           .end((err, res) => {
-            console.log(res.body);
             assert.strictEqual(res.body.code, '0000');
             assert.strictEqual(res.statusCode, 200);
             done();
@@ -886,7 +885,6 @@ module.exports = function () {
           .type('application/json')
           .send(reqBody)
           .end((err, res) => {
-            console.log(res.body);
             assert.strictEqual(res.body.code, '0000');
             assert.strictEqual(res.statusCode, 200);
             done();
@@ -901,7 +899,6 @@ module.exports = function () {
           .type('application/json')
           .send(reqBody)
           .end((err, res) => {
-            console.log(res.body);
             assert.strictEqual(res.body.code, '0000');
             assert.strictEqual(res.statusCode, 200);
             done();
@@ -910,13 +907,13 @@ module.exports = function () {
 
     it('PUT /v1/a/order/src/:srcId update order src (2) ', function (done) {
       const reqBody = {
+        parent_id: 47,
         name: 'PC官方网站'
       };
       agent.put('/v1/a/order/src/1')
           .type('application/json')
           .send(reqBody)
           .end((err, res) => {
-            console.log(res.body);
             assert.strictEqual(res.body.code, '0000');
             assert.strictEqual(res.statusCode, 200);
             done();
@@ -926,7 +923,6 @@ module.exports = function () {
     it('DELETE /v1/a/order/src/:srcId delete order src ', function (done) {
       agent.delete('/v1/a/order/src/2')
           .end((err, res) => {
-            console.log(res.body);
             assert.strictEqual(res.body.code, '0000');
             assert.strictEqual(res.statusCode, 200);
             done();

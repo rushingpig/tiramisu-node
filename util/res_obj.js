@@ -54,6 +54,10 @@ module.exports = {
     code: '2010',
     msg: '订单还未进入生产状态,不能被置为异常...'
   },
+  INVALID_ORDER_SRC_PARENT_ID: {
+    code: '2011',
+    msg: '无效的一级来源渠道id...'
+  },
   NO_OPTIONAL_STATION: {
     code: '3001',
     msg: '没有可选的配送站...'

@@ -563,8 +563,8 @@ var CancelOrderModal = React.createClass({
           this.refs.modal.hide();
           this.props.callback();
         }.bind(this))
-        .fail(function(){
-          Noty('error', '异常错误');
+        .fail(function(msg, code){
+          Noty('error', msg || '异常错误');
         }.bind(this));
     }else{
       Noty('warning', tips);
@@ -714,15 +714,15 @@ var OrderExceptionModal = React.createClass({
     this.setState({reason})
   },
   onConfirm(){
-    var { reason, tips, order } = this.state;
+    var { reason, tips, order: { order_id, updated_time } } = this.state;
     if(reason){
-      this.props.orderException(order.order_id, {cancel_reason: reason})
+      this.props.orderException(order_id, {cancel_reason: reason, updated_time})
         .done(function(){
           this.refs.modal.hide();
           this.props.callback();
         }.bind(this))
-        .fail(function(){
-          Noty('error', '异常错误');
+        .fail(function(msg, code){
+          Noty('error', msg || '异常错误');
         }.bind(this));
     }else{
       Noty('warning', tips);

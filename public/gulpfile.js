@@ -1,27 +1,25 @@
-var gulp                   = require('gulp');
-var path                   = require('path');
-var fs                     = require('fs');
-var sass                   = require('gulp-sass');
-var browserSync            = require('browser-sync');
-var prefix                 = require('gulp-autoprefixer');
-var concat                 = require('gulp-concat');
-var minifyCss              = require('gulp-minify-css');
-var plumber                = require('gulp-plumber');
-var uglify                 = require('gulp-uglify');
-var rename                 = require("gulp-rename");
-var imagemin               = require("gulp-imagemin");
-var pngquant               = require('imagemin-pngquant');
-// var jpgmin                 = require('imagemin-jpeg-recompress'); //linux上有问题，
-var rev                    = require('gulp-rev-append');
-var gulpSequence           = require('gulp-sequence')
-var replace                = require('gulp-replace');
-var template               = require('gulp-template');
+var gulp                  = require('gulp');
+var path                  = require('path');
+var fs                    = require('fs');
+var sass                  = require('gulp-sass');
+var browserSync           = require('browser-sync');
+var prefix                = require('gulp-autoprefixer');
+var concat                = require('gulp-concat');
+var minifyCss             = require('gulp-minify-css');
+var plumber               = require('gulp-plumber');
+var uglify                = require('gulp-uglify');
+var rename                = require("gulp-rename");
+var imageop               = require('gulp-image-optimization');
+var rev                   = require('gulp-rev-append');
+var gulpSequence          = require('gulp-sequence')
+var replace               = require('gulp-replace');
+var template              = require('gulp-template');
 
-var gutil                  = require("gulp-util");
-var webpack                = require("webpack");
-var WebpackDevServer       = require("webpack-dev-server");
-var webpack_dev_config     = require('./webpack.dev.config.js');
-var webpack_deploy_config  = require('./webpack.deploy.config.js');
+var gutil                 = require("gulp-util");
+var webpack               = require("webpack");
+var WebpackDevServer      = require("webpack-dev-server");
+var webpack_dev_config    = require('./webpack.dev.config.js');
+var webpack_deploy_config = require('./webpack.deploy.config.js');
 
 var config = {
   app_port: 8080,
@@ -138,14 +136,24 @@ gulp.task('rev', function(){
     .pipe(gulp.dest(config.views));
 });
 
-gulp.task('images', function () {
+// gulp.task('images', function () {
+//   return gulp.src(s('images/*'))
+//   .pipe(imagemin({
+//     progressive: true,
+//     svgoPlugins: [{removeViewBox: false}],
+//     use: [/*jpgmin({quality: 'low'}), */pngquant()]
+//   }))
+//   .pipe(gulp.dest(d('images')));
+// });
+
+gulp.task('images', function(cb) {
   return gulp.src(s('images/*'))
-  .pipe(imagemin({
-    progressive: true,
-    svgoPlugins: [{removeViewBox: false}],
-    use: [/*jpgmin({quality: 'low'}), */pngquant()]
-  }))
-  .pipe(gulp.dest(d('images')));
+    .pipe(imageop({
+      optimizationLevel: 5,
+      progressive: true,
+      interlaced: true
+    }))
+    .pipe(gulp.dest(d('images')));
 });
 
 gulp.task("webpack:react", function(callback) {

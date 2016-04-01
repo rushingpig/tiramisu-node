@@ -4,7 +4,7 @@ function ProductRow(product){
   return (
     <tr key={product.sku_id}>
       <td>{product.name}</td>
-      <td>￥{product.original_price/100}</td>
+      <td>￥{product.original_price/100} * {product.num}</td>
       <td>{product.size}</td>
       <td>{product.num}</td>
       <td>￥{product.discount_price/100}</td>

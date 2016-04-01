@@ -325,7 +325,6 @@ OrderDao.prototype.findOrderById = function (orderIdOrIds) {
         'bo.total_original_price',
         'bo.merchant_id',
         'bp.`name` as product_name',
-        'bp.original_price',
         'bos.amount',
         'bos.num',
         'bps.size',

@@ -75,13 +75,13 @@ ProductService.prototype.listProducts = (req, res, next) => {
                 temp_obj[key] = {
                     category_name: curr.category_name,
                     name: curr.name,
-                    original_price: curr.original_price,
                     product_id: curr.product_id,
                     size: curr.size,
                     skus: []
                 };
             }
             let sku_obj = {
+                original_price: curr.price,
                 discount_price: curr.price,
                 is_delivery: curr.is_delivery,
                 is_local_site: curr.is_local_site,

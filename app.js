@@ -2,6 +2,7 @@
 var LogHelper = require('./common/LogHelper');
 //  init the log4js config
 new LogHelper(log4js).config();
+var toolUtils = require('./common/ToolUtils');
 var config = require('./config');
 var express = require('express');
 var path = require('path');
@@ -39,7 +40,7 @@ app.set('view engine', '.hbs');
 app.use(log4js.connectLogger(logger, { level: 'auto' ,format:':method :status ✪ :url ✪  [:response-time ms]'}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(validator(config.exp_validator_custom));
+app.use(validator(toolUtils.exp_validator_custom));
 app.use(cookieParser());
 app.use(middleware.system.wrapperResponse);
 app.use('/v1/[a,i]/*',middleware.system.debugReqAndResParams);

@@ -185,40 +185,41 @@ OrderService.prototype.getOrderDetail = (req, res, next) => {
     let data = {
       products: []
     };
-    for (let curr of results) {
-      data.order_id = req.params.orderId;
-      data.delivery_id = curr.delivery_id;
-      data.delivery_name = curr.delivery_name;
-      data.delivery_time = curr.delivery_time;
-      data.delivery_type = curr.delivery_type;
-      data.owner_mobile = curr.owner_mobile;
-      data.owner_name = curr.owner_name;
-      data.pay_modes_id = curr.pay_modes_id;
-      data.pay_name = curr.pay_name;
-      data.coupon = curr.coupon;
-      data.invoice = curr.invoice;
-      data.recipient_address = curr.recipient_address;
-      data.recipient_name = curr.recipient_name;
-      data.recipient_id = curr.recipient_id;
-      data.remarks = curr.remarks;
-      data.src_id = curr.src_id;
-      data.src_name = curr.merge_name;
-      data.province_id = curr.province_id;
-      data.province_name = curr.province_name;
-      data.city_id = curr.city_id;
-      data.city_name = curr.city_name;
-      data.regionalism_id = curr.regionalism_id;
-      data.regionalism_name = curr.regionalism_name;
-      data.pay_status = curr.pay_status;
-      data.recipient_mobile = curr.recipient_mobile;
-      data.recipient_landmark = curr.landmark;
-      data.updated_time = curr.updated_time;
-      data.status = curr.status;
-      data.merchant_id = curr.merchant_id;
-      data.total_amount = curr.total_amount;  // 总应收金额
-      data.total_discount_price = curr.total_discount_price;  // 总实际售价
-      data.total_original_price = curr.total_original_price;  // 总原价
-
+    results.forEach((curr,index)=> {
+      if(index === 0){
+        data.order_id = req.params.orderId;
+        data.delivery_id = curr.delivery_id;
+        data.delivery_name = curr.delivery_name;
+        data.delivery_time = curr.delivery_time;
+        data.delivery_type = curr.delivery_type;
+        data.owner_mobile = curr.owner_mobile;
+        data.owner_name = curr.owner_name;
+        data.pay_modes_id = curr.pay_modes_id;
+        data.pay_name = curr.pay_name;
+        data.coupon = curr.coupon;
+        data.invoice = curr.invoice;
+        data.recipient_address = curr.recipient_address;
+        data.recipient_name = curr.recipient_name;
+        data.recipient_id = curr.recipient_id;
+        data.remarks = curr.remarks;
+        data.src_id = curr.src_id;
+        data.src_name = curr.merge_name;
+        data.province_id = curr.province_id;
+        data.province_name = curr.province_name;
+        data.city_id = curr.city_id;
+        data.city_name = curr.city_name;
+        data.regionalism_id = curr.regionalism_id;
+        data.regionalism_name = curr.regionalism_name;
+        data.pay_status = curr.pay_status;
+        data.recipient_mobile = curr.recipient_mobile;
+        data.recipient_landmark = curr.landmark;
+        data.updated_time = curr.updated_time;
+        data.status = curr.status;
+        data.merchant_id = curr.merchant_id;
+        data.total_amount = curr.total_amount;  // 总应收金额
+        data.total_discount_price = curr.total_discount_price;  // 总实际售价
+        data.total_original_price = curr.total_original_price;  // 总原价
+      }
       if (curr.sku_id) {
         let product_obj = {
           sku_id: curr.sku_id,
@@ -236,7 +237,7 @@ OrderService.prototype.getOrderDetail = (req, res, next) => {
         };
         data.products.push(product_obj);
       }
-    }
+    });
     res.api(data);
   });
   systemUtils.wrapService(res, next, promise);

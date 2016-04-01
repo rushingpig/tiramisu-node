@@ -71,7 +71,7 @@ var AddedProductsRow = React.createClass({
       <tr className="form-inline">
         <td>{name}</td>
         <td>{size}</td>
-        <td>￥{original_price/100}</td>
+        <td>￥{original_price/100} * {num}</td>
         <td>{num}</td>
         <td>{editable 
           ? <input value={discount_price} onChange={handleChange.bind(this, 'discount_price')} className={edit_input_classname} style={{width: 50}} type="text" /> 

@@ -17,7 +17,7 @@ const config = {
       test: /\.jsx?$/,
       loaders: ['react-hot', 'babel'], // 位置不能颠倒
       exclude: /node_modules/,
-      include: __dirname
+      include: path.join(__dirname, 'src/js/redux')
     }]
   },
   plugins: [

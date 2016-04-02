@@ -110,6 +110,7 @@ var products_choosing_state = {
     page_no: 0,
   },
   selected_list: [],  //modal 里面的 选择列表
+  selected_list_deleted: [], //删除的产品回收站，（对于先删除了，后又取消掉了的情况，可以用此来还原）
   confirm_list: [],   //modal 里面确认后，主面板的已选产品列表
 };
 function products_choosing(state = products_choosing_state, action){
@@ -149,6 +150,7 @@ function products_choosing(state = products_choosing_state, action){
         })
       });
       action.data.num = 1;  //默认1
+      action.data.is_new = true; //表示该项是新添加的，便于取消时撤销该产品
       return {...state, selected_list: [...state.selected_list, action.data] };
     case OrderProductsActions.DELETE_SELECTED_PRODUCT:
       sku_id = action.data.sku_id;
@@ -160,7 +162,7 @@ function products_choosing(state = products_choosing_state, action){
         })
       });
       new_selected_list = [...state.selected_list].filter(n => n.sku_id != sku_id);
-      return {...state, selected_list: new_selected_list};
+      return {...state, selected_list: new_selected_list, selected_list_deleted: [...state.selected_list_deleted, action.data]};
     case OrderProductsActions.CHANGE_PRODUCT_NUM:
       let { num } = action;
       sku_id = action.sku_id;
@@ -186,6 +188,7 @@ function products_choosing(state = products_choosing_state, action){
           var confirm_pro = state.confirm_list.filter( m => m.sku_id == n.sku_id )[0];
           var new_item;
           if( confirm_pro ){
+            //如果该产品存在
             new_item = {
               ...n,
               choco_board: confirm_pro.choco_board || '生日快乐',
@@ -195,11 +198,15 @@ function products_choosing(state = products_choosing_state, action){
               custom_desc: confirm_pro.custom_desc || '',
             }
           }else{
+            //如果不存在
             new_item = {...n, ...base}
           }
           new_item.discount_price = n.discount_price * n.num / 100 || 0;
           new_item.old_discount_price = new_item.discount_price;
           new_item.amount = new_item.discount_price;
+          //最后将is_new属性删除
+          delete n.is_new;
+          delete new_item.is_new;
           return new_item;
         })
         delay(() => store.dispatch(updateAddOrderForm())); //商品数变化，通知add_order表单更新，支付方式、支付状态的默认值与所选商品数是紧密相关的
@@ -213,7 +220,18 @@ function products_choosing(state = products_choosing_state, action){
           m.checked = state.confirm_list.some(j => m.sku_id == j.sku_id);
         })
       });
-      return {...state, selected_list: [...clone(state.confirm_list)] };
+      //去除具有is_new属性的选项
+      new_selected_list = state.selected_list.concat(state.selected_list_deleted).filter( n => !n.is_new );
+      //产品数量需还原
+      new_selected_list.forEach( n => {
+        state.confirm_list.forEach( m => {
+          if( m.sku_id == n.sku_id ){
+            n.num = m.num;
+          }
+        })
+      })
+      //如果有删除了的，这时也应该还原
+      return {...state, selected_list: new_selected_list, selected_list_deleted: []};
 
     case OrderProductsActions.CONFIRM_PRODUCT_ATTR_CHANGE:
       sku_id = action.data.sku_id;

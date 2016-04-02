@@ -14,6 +14,11 @@ var NumberPicker = React.createClass({
       value: this.props.value
     }
   },
+  componentWillReceiveProps(nextProps){
+    if( nextProps.value != this.props.value ){
+      this.setState({ value: nextProps.value })
+    }
+  },
   componentDidMount: function() {
     
   },

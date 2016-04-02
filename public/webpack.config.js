@@ -3,7 +3,6 @@
 const path         = require('path');
 const webpack      = require('webpack');
 const AssetsPlugin = require('assets-webpack-plugin');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const config = {
   entry: {
@@ -46,7 +45,7 @@ const config = {
       test: /\.jsx?$/,
       loader: 'babel',
       exclude: /node_modules/,
-      include: __dirname
+      include: path.join(__dirname, 'src/js/redux')
     }]
   }
 }

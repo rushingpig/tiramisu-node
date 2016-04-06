@@ -146,16 +146,17 @@ FilterHeader = reduxForm({
 class StationRow extends Component{
   constructor(props){
     super(props);
-    this.editScope = this.editScope.bind(this)
-    this.checkStationHandler = this.checkStationHandler.bind(this)
-    this.doubleClickHandler = this.doubleClickHandler.bind(this)
     this.state = {actived: false};
+    this.editScope = this.editScope.bind(this);
+    this.closeActive = this.closeActive.bind(this);
+    this.checkStationHandler = this.checkStationHandler.bind(this);
+    this.doubleClickHandler = this.doubleClickHandler.bind(this);
   }
   render(){
     var { props } = this;
     return (
-      <tr ref="station_row" onDoubleClick={this.doubleClickHandler} >
-        <td><input type="checkbox" checked={props.checked} onChange={this.checkStationHandler}/></td>
+      <tr ref="station_row" onDoubleClick={this.doubleClickHandler} className={this.state.actived ? 'active':''} >
+        <td><input type="checkbox" checked={props.checked}  onChange={this.checkStationHandler}/></td>
         <td>{props.regionalism_name}</td>
         <td>{props.name}</td>
         <td>{props.address}</td>
@@ -165,15 +166,26 @@ class StationRow extends Component{
       </tr>
     )
   }
+  componentWillReceiveProps(nextProps) {
+    if(!nextProps.editable){
+      this.setState({
+        actived: nextProps.editable
+      });
+    }
+  }
   checkStationHandler(e){
     const { station_id, checkStationHandler } = this.props;
     checkStationHandler(station_id, e.target.checked);
   }
   editScope(e){
-    const { station_id, editable, openEdit, closeEdit } = this.props;
+    const { station_id, editable, openEdit, closeEdit,editStationScope } = this.props;
+    this.setState({actived: !editable});
     openEdit(editable);
-    this.props.editStationScope(station_id);
+    editStationScope(station_id);
     e.stopPropagation();
+  }
+  closeActive(){
+    this.setState({actived: false});
   }
   doubleClickHandler(){
     const { station_id, name, address } = this.props;
@@ -186,6 +198,7 @@ class StationManagePannel extends Component {
     super(props);
     this.state = {page_size: 10,page_no:0};
     this.search = this.search.bind(this);
+    this.closeActive = this.closeActive.bind(this);
     this.onPageChange = this.onPageChange.bind(this);
     this.checkStationHandler = this.checkStationHandler.bind(this);
     this.checkAllStationsHandler = this.checkAllStationsHandler.bind(this);
@@ -194,7 +207,7 @@ class StationManagePannel extends Component {
   render(){
     var { list, total, page_no, total,checked_station_ids, editable } = this.props.stations;
     var { openEdit, closeEdit, putMultipleStationScope } = this.props;
-    var { viewStationDetail, viewDeleteStation, checkStationHandler, editStationScope } = this;
+    var { viewStationDetail, viewDeleteStation, checkStationHandler, editStationScope,closeActive } = this;
     var content = list.map((n, i) => {
       return <StationRow ref="station_row" key={n.station_id}
         {...{...n, ...this.props, editable, openEdit, closeEdit, viewStationDetail, viewDeleteStation, checkStationHandler, editStationScope }} />
@@ -238,6 +251,7 @@ class StationManagePannel extends Component {
               list={list}
               openEdit={openEdit} 
               closeEdit={closeEdit}
+              closeActive={closeActive}
               putMultipleStationScope={putMultipleStationScope} 
               editable={editable}/>
           </div>
@@ -253,7 +267,7 @@ class StationManagePannel extends Component {
   }
   search(page){
     var { getStationList, stations } = this.props;
-    getStationList({city_id: 440300, page_no: page, page_size: this.state.page_size});
+    getStationList({page_no: page, page_size: this.state.page_size});
   }
   checkStationHandler(station_id, checked){
     this.props.checkStation(station_id, checked);
@@ -263,6 +277,9 @@ class StationManagePannel extends Component {
   }
   editStationScope(station_id){
     this.refs.stationGroupMap.editStationScope(station_id);
+  }
+  closeActive(){
+    this.refs.station_row.closeActive();
   }
 } 
 
@@ -321,8 +338,9 @@ class StationGroupMap extends Component {
   }
   stopEditScope(){
     if(MyMap.onEditIndex === -1){return;}
-    const { editable, closeEdit } = this.props;
+    const { editable, closeEdit, closeActive } = this.props;
     closeEdit();
+    closeActive();
     MyMap.getPath();
     MyMap.onEditIndex = -1;
   }

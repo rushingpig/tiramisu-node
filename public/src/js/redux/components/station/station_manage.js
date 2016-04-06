@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import { render, findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { reduxForm } from 'redux-form';
+import { getValues, reduxForm } from 'redux-form';
 
 import SearchInput from 'common/search_input';
 import Select from 'common/select';
@@ -266,7 +266,7 @@ class StationManagePannel extends Component {
   }
   search(page){
     var { getStationList, stations } = this.props;
-    getStationList({province_id: 440000,page_no: page, page_size: this.state.page_size});
+    getStationList({page_no: page, page_size: this.state.page_size});
   }
   viewStationDetail(station){
     this.refs.detail_station.show(station);

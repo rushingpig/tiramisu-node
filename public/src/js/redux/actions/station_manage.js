@@ -20,6 +20,7 @@ export const PUT_MULTIPLE_SCOPE_FAILURE = 'PUT_MULTIPLE_SCOPE_FAILURE';
 
 export function getStationList(data){
   return (dispatch, getState) => {
+    if(!data.province_id){data.province_id = 440000;}
     var filter_data = getValues(getState().form.station_manage_filter);
     filter_data = formCompile(filter_data);
     return GET(Url.station_list.toString(), {...data, ...filter_data}, GET_STATION_LIST)(dispatch)

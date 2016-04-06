@@ -1,5 +1,5 @@
 import Noty from 'utils/_noty';
-import { outputPonits, changePonits, addInfoWindow} from 'utils/create_visiable_map';
+import { outputPonits, changePonits, addInfoWindow, addMarkerToMap } from 'utils/create_visiable_map';
 
 const oldPolygonStyle = {strokeWeight: '2',strokeColor: '#1215A0',fillColor: ''};
 const newPolygonStyle = {strokeWeight: '3',strokeColor: '#FF0000',fillColor: ''};
@@ -21,6 +21,31 @@ MyMap.prototype.centerAndZoomStation = function(station_id, name, address){
   map.setZoom(12);
   addInfoWindow(map, center, {name: name, address: address});
 }
+
+MyMap.prototype.drawNewScope = function(){
+  let self = this;
+  let map = this.map;
+  let index = 0;
+  let points = [];
+  this.polygons[self.onEditIndex] = new BMap.Polygon(points, newPolygonStyle);
+  map.addOverlay(this.polygons[self.onEditIndex]);
+
+  map.addEventListener('click',function(event){
+    points.push(event.point);
+    var marker = new BMap.Marker(event.point);
+    map.addOverlay(marker);
+    self.markers.push(marker);
+    marker.id = index++;
+    marker.enableDragging();
+    self.polygons[self.onEditIndex].setPath(points);
+
+    marker.addEventListener('dragging', function(event) {
+      points[this.id] = event.point;
+      self.polygons[self.onEditIndex].setPath(points);
+    });
+  });
+}
+
 
 MyMap.prototype.searchStationAdress = function(city, address){
   let map = this.map;
@@ -50,14 +75,12 @@ MyMap.prototype.initialScope = function(){
   map.clearOverlays();
   this.list.map(n => {
     self.station_centers[n.station_id] = self.searchStationAdress(n.city, n.address);
-    console.log(self.searchStationAdress(n.city, n.address))
     if(n.coords){
       let points = changePonits(n.coords);
       let oldPolygon = new BMap.Polygon(points, oldPolygonStyle);
       map.addOverlay(oldPolygon);
     }
   })
-  console.log(self.station_centers)
 }
 
 MyMap.prototype.enableEdit = function(station_id){
@@ -69,7 +92,7 @@ MyMap.prototype.enableEdit = function(station_id){
     }
     return n.station_id == station_id;
   })[0];
-  if(on_edit_station){
+  if(on_edit_station.coords){
     let points = changePonits(on_edit_station.coords);
     points.forEach(function(n, index){
       let marker = new BMap.Marker(n);
@@ -86,6 +109,8 @@ MyMap.prototype.enableEdit = function(station_id){
         self.polygons[self.onEditIndex].setPath(points);
       });
     })
+  }else{
+    self.drawNewScope(on_edit_station.station_id);
   }
   console.log(on_edit_station,this.onEditIndex);
 }

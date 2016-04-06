@@ -12,6 +12,7 @@ var rename                = require("gulp-rename");
 var imageop               = require('gulp-image-optimization');
 var rev                   = require('gulp-rev-append');
 var gulpSequence          = require('gulp-sequence')
+var replace               = require('gulp-replace');
 var template              = require('gulp-template');
 
 var gutil                 = require("gulp-util");

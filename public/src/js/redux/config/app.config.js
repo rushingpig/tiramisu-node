@@ -1,7 +1,7 @@
 export default {
   root: '/',
   ajax: '/v1/a',
-  acl: true,
+  acl: false,  //是否开启权限控制 true 开始，false 禁用
 
   REQUEST: {
     ING: 0,
@@ -102,5 +102,8 @@ export default {
     cash: 18, //货到付款（现金）
     card: 19, //货到付款（POS）
     free: 11, //免费
-  }
+  },
+
+  CHECKBOXGROUP_DEFAULT_VALUE:[],
+
 }

@@ -49,7 +49,7 @@ REPLACE INTO `buss_delivery_station` VALUES
   ('33',350128,'平潭配送中心','福建省平潭县岚城乡上楼工业区，(星海湾1号后面)',null,'1',null,null,null,'1',null,null,null,null,null,0),
   ('34',320111,'南京配送中心','南京市浦口区盘城威盾生态门业（盘城北街东）',null,'1',null,null,null,'1',null,null,null,null,null,0),
   ('35',431202,'湖南怀化配送中心','怀化湖南小商品加工工业园B2栋308房',null,'1',null,null,null,'1',null,null,null,null,null,0),
-  ('36',440802,'湛江配送中心',null,null,'1',null,null,null,'1',null,null,null,null,null,0),
+  ('36',44802,'湛江配送中心',null,null,'1',null,null,null,'1',null,null,null,null,null,0),
   ('37',445302,'云浮配送中心',null,null,'1',null,null,null,'1',null,null,null,null,null,0),
   ('38',440402,'珠海配送中心','珠海市香洲区香洲科技工业区南利大厦504-506室',null,'1',null,null,null,'1',null,null,null,null,null,0),
   ('39',440303,'深圳莲塘配送中心',null,null,'1',null,null,null,'1',null,null,null,null,null,0),
@@ -77,3 +77,17 @@ COMMIT;
 
 # 2016-03-29 Zhao Wei
 ALTER TABLE `tiramisu`.`buss_order_src` ADD `remark` varchar(255) DEFAULT NULL COMMENT '备注';
+/*2016-03-25 (pigo)*/
+ALTER TABLE `tiramisu`.`sys_user` CHANGE COLUMN `city_id` `city_ids` varchar(255) DEFAULT 'NONE' COMMENT '所属城市集合';
+ALTER TABLE `tiramisu`.`sys_user` CHANGE COLUMN `updated_by` `updated_by` varchar(64) COMMENT '更新者';
+ALTER TABLE `tiramisu`.`sys_user` DROP INDEX `sys_user_login_name`, ADD UNIQUE `sys_user_login_name` USING BTREE (`username`) comment '';
+ALTER TABLE `tiramisu`.`sys_organization` CHANGE COLUMN `del_flag` `del_flag` tinyint(1) NOT NULL DEFAULT 1 COMMENT '删除标记';
+ALTER TABLE `tiramisu`.`sys_role` CHANGE COLUMN `office_id` `org_id` int(11) DEFAULT NULL COMMENT '归属机构';
+ALTER TABLE `tiramisu`.`sys_organization` CHANGE COLUMN `is_usable` `is_usable` tinyint(1) DEFAULT 1 COMMENT '是否启用', ADD COLUMN `description` varchar(255) NOT NULL DEFAULT '' COMMENT '机构部门描述' AFTER `del_flag`;
+ALTER TABLE `tiramisu`.`sys_role` ADD COLUMN `description` varchar(255) NOT NULL DEFAULT '' COMMENT '角色描述' AFTER `del_flag`;
+ALTER TABLE `tiramisu`.`sys_menu` ADD COLUMN `module_id` int(11) NOT NULL DEFAULT 0 COMMENT '所属模块名称' AFTER `del_flag`;
+ALTER TABLE `tiramisu`.`sys_menu` ADD COLUMN `description` varchar(100) NOT NULL DEFAULT '' COMMENT '权限动作描述' AFTER `module_name`;
+ALTER TABLE `tiramisu`.`sys_menu` ADD COLUMN `type` enum('LIST','ELEMENT') NOT NULL DEFAULT 'LIST' AFTER `description`;
+ALTER TABLE `tiramisu`.`sys_user` CHANGE COLUMN `station_id` `station_ids` varchar(50) DEFAULT NULL COMMENT '配送站ID集合';
+ALTER TABLE `tiramisu`.`sys_user` CHANGE COLUMN `city_ids` `city_ids` varchar(5000) DEFAULT 'NONE' COMMENT '所属城市集合', CHANGE COLUMN `station_ids` `station_ids` varchar(50000) DEFAULT NULL COMMENT '配送站ID集合';
+

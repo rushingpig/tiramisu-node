@@ -10,7 +10,10 @@ var dao = require('../../dao'),
     AddressDao = dao.address,
     addressDao = new AddressDao(),
     systemUtils = require('../../common/SystemUtils'),
+    toolUtils = require('../../common/ToolUtils'),
+    TiramisuError = require('../../error/tiramisu_error'),
     res_obj = require('../../util/res_obj');
+
 function AddressService() {
 
 }
@@ -64,7 +67,7 @@ AddressService.prototype.getDistricts = (req, res, next)=> {
     req.checkParams('cityId').notEmpty().isInt();
     let errors = req.validationErrors();
     if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
+        res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
     let cityId = req.params.cityId;
@@ -125,7 +128,7 @@ AddressService.prototype.modifyStation = (req,res,next)=>{
     req.checkParams('stationId').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
+        res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
     let stationId = req.params.stationId;
@@ -144,7 +147,7 @@ AddressService.prototype.getStationsByName = (req,res,next)=>{
     req.checkQuery('station_name','请填写有效的配送站名称...').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
+        res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
     let station_name = req.query['station_name'];
@@ -167,7 +170,7 @@ AddressService.prototype.deleteStation = (req,res,next)=>{
     req.checkParams('stationId').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
+        res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
     let stationId = req.params['stationId'];
@@ -198,7 +201,7 @@ AddressService.prototype.batchModifyStationCoords = (req,res,next)=>{
     req.checkBody('data', 'data为空').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
+        res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
     let promise = addressDao.modifyStationCoordsInTransaction(req.body.data).then(() => {
@@ -206,7 +209,19 @@ AddressService.prototype.batchModifyStationCoords = (req,res,next)=>{
     });
     systemUtils.wrapService(res, next, promise);
 };
-
+AddressService.prototype.getAllCities = (req,res,next) => {
+    let promise = addressDao.findAllCities().then(result => {
+        if(toolUtils.isEmptyArray(result)){
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        let data = {};
+        result.forEach(curr => {
+            data[curr.id] = curr.name;
+        });
+        res.api(data);
+    });
+    systemUtils.wrapService(res,next,promise);
+};
 
 module.exports = new AddressService();
 

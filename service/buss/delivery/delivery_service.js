@@ -11,6 +11,7 @@ var dao = require('../../../dao'),
     OrderDao = dao.order,
     deliveryDao = new DeliveryDao(),
     orderDao = new OrderDao(),
+    addressDao = new dao.address(),
     Constant = require('../../../common/Constant'),
     res_obj = require('../../../util/res_obj'),
     systemUtils = require('../../../common/SystemUtils'),
@@ -20,7 +21,8 @@ var dao = require('../../../dao'),
     schema = require('../../../schema'),
     request = require('request'),
     config = require('../../../config'),
-    logger = require('../../../common/LogHelper').systemLog();
+    logger = require('../../../common/LogHelper').systemLog(),
+    async = require('async');
 function DeliveryService(){
 
 }
@@ -32,25 +34,47 @@ function DeliveryService(){
  */
 DeliveryService.prototype.getDeliveryStationList = (req,res,next)=>{
     req.checkQuery('city_id').optional().isInt();
+    req.checkQuery('city_ids').optional().notEmpty();
+    req.checkQuery('is_national').optional().isInt();
     let errors = req.validationErrors();
     if (errors) {
         res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
     let query_data = {
-        city_id : req.query.city_id
+        city_id : req.query.city_id,
+        city_ids : req.query.city_ids ? req.query.city_ids.split(',') : null
     };
-    let promise = deliveryDao.findAllStations(query_data).then(results=>{
-        if(toolUtils.isEmptyArray(results)){
-            throw new TiramisuError(res_obj.NO_MORE_RESULTS,'该条件下没有可选的配送站...');
+    async.series([
+        function(cb){
+            if(parseInt(req.query.is_national) === 1){
+                let city_ids = [];
+                addressDao.findAllCities().then(cities => {
+                    cities.forEach(curr => {
+                        city_ids.push(curr.id);
+                    });
+                });
+                query_data.city_ids = city_ids.join(',');
+                cb(null);
+            }else{
+                cb(null);
+            }
+        },
+        function(cb){
+            let promise = deliveryDao.findAllStations(query_data).then(results=>{
+                if(toolUtils.isEmptyArray(results)){
+                    throw new TiramisuError(res_obj.NO_MORE_RESULTS,'该条件下没有可选的配送站...');
+                }
+                let data = {};
+                results.forEach((curr)=>{
+                    data[curr.id] = curr.name;
+                });
+                res.api(data);
+                cb(null);
+            });
+            systemUtils.wrapService(res,next,promise,cb);
         }
-        let data = {};
-        results.forEach((curr)=>{
-            data[curr.id] = curr.name;
-        });
-        res.api(data);
-    });
-    systemUtils.wrapService(res,next,promise);
+    ]);
 };
 
 /**
@@ -517,10 +541,10 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
                         choco_board : curr.choco_board,
                         custom_desc : curr.custom_desc,
                         custom_name : curr.custom_name,
-                        discount_price : curr.discount_price/100,
+                        discount_price : curr.discount_price/100,   // 总的实际售价
                         greeting_card : curr.greeting_card,
                         num : curr.num,
-                        original_price : curr.original_price/100,
+                        original_price : curr.discount_price/curr.num/100,  // 单价显示为实际售价
                         product_name : curr.product_name,
                         atlas : curr.atlas,
                         size : curr.size,

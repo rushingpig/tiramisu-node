@@ -1,0 +1,217 @@
+import React, {Component, PropTypes} from 'react';
+import { render, findDOMNode } from 'react-dom';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+import LineRouter from 'common/line_router';
+import Select from 'common/select';
+import TreeNav from 'common/tree_nav';
+
+import LazyLoad from 'utils/lazy_load';
+import { Noty } from 'utils/index';
+
+import * as AuthManageActions from 'actions/authority_role_manage'; 
+
+
+class TopHeader extends Component {
+  render(){
+    return (
+      <div className="clearfix top-header">
+        <LineRouter 
+          routes={[{name: '权限管理', link: '/am/user'}, {name: '角色权限管理', link: '/am/roleauthority'}]} />
+      </div>
+    )
+  }
+}
+
+class NavBar extends Component{
+  constructor(props){
+    super(props);
+    this.onToggleDept = this.onToggleDept.bind(this);
+    this.onChooseRole = this.onChooseRole.bind(this);
+  }
+  render(){
+    return (
+      <div className="panel pull-left navbar">
+        <header className="panel-heading">
+          请选择部门
+        </header>
+        <div className="panel-body">
+          <TreeNav ref="navbar" data={this.props.department_list} onToggle={this.onToggleDept} onChoose={this.onChooseRole}/>
+        </div>
+      </div>
+    )
+  }
+  onToggleDept(dept_id){
+    this.props.gotRoletList(dept_id);
+    this.props.toggleDept(dept_id);
+  }
+  onChooseRole(role_id){
+    this.props.onChooseRole(role_id);
+  }
+}
+
+class TableRow extends Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      editable: false,
+    }
+  }
+  render(){
+    const { props } = this;
+    return (
+      <tr className={props.module_name}>
+        <td><input disabled={props.editable ? '' : 'disabled'} checked={this.props.checked_authority_ids.indexOf(props.id) !== -1} onChange={this.clickHandler.bind(this)} type="checkbox"/></td>
+        <td>{props.type == 'LIST' ? `　　`+ props.name: props.name}</td>
+        <td>{props.module_name}</td>
+        <td>{props.description}</td>
+      </tr>
+    )
+  }
+  clickHandler(){
+    const { id, checked_authority_ids } = this.props;
+    let checked = checked_authority_ids.indexOf(id) !== -1;
+    this.props.authorityYesNo(id, !checked);
+  }
+}
+
+class FilterHeader extends Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      editable: false,
+      submitting: false,
+    };
+    this.submitHanler = this.submitHanler.bind(this);
+    this.toggleEditHandler = this.toggleEditHandler.bind(this);
+    this.onSelectModule = this.onSelectModule.bind(this);
+  }
+  render(){
+    let { editable } = this.props;
+    return (
+      <div className="panel search">
+        <div className="panel-body form-inline">
+          <Select ref="modules" options={this.props.options} onChange={this.onSelectModule} default-text="--请选择所属模块--" className="space-right"/>
+          <button onClick={this.toggleEditHandler} className="btn btn-theme btn-xs space-right">{this.state.editable ? '取消修改' :'编辑'}</button>
+          <button data-submitting={this.state.submitting} onClick={this.submitHanler.bind(this)} className="btn btn-theme btn-xs space-left">提交</button>
+        </div>
+      </div>
+    )
+  }
+  submitHanler(){
+    const { checked_authority_ids, role_id, toggleEdit } = this.props
+    this.setState({
+      submitting: true
+    })
+    this.props.putRoleAuthority(role_id, checked_authority_ids)
+      .done(function(){
+        Noty('success', '保存成功');
+        toggleEdit(this.state.editable);
+        this.setState({
+          editable: !this.state.editable
+        });
+      }.bind(this))
+      .fail(function(msg, code){
+        Noty('error', msg || '保存异常');
+      })
+      .always(() => {
+        this.setState({
+          submitting: false
+        })
+      })
+  }
+  onSelectModule(e){
+    let {value} = e.target;
+    if(value != this.refs.modules.props['default-value']){
+      let selected = $(findDOMNode(this.refs.modules)).find(':selected').text();
+      this.props.scrollTop(selected);
+    }
+  }
+  toggleEditHandler(){
+    const { toggleEdit, gotRoleAuthorities, role_id } = this.props;
+    toggleEdit(this.state.editable);
+    if(this.state.editable){
+      role_id?gotRoleAuthorities(role_id): '';
+    }
+    this.setState({
+      editable: !this.state.editable
+    });
+  }
+}
+
+class RoleAuthorityPannel extends Component{
+  render(){
+    const { department_list, list, module_list, editable, checked_authority_ids, submitting, on_role_id } = this.props.roleAccessManage;
+    const { toggleEdit, resetRoleAuthority, gotRoleAuthorities, putRoleAuthority, gotRoletList, toggleDept, authorityYesNo } = this.props;
+    let content = list.map((n, id) => {
+      return <TableRow key={id} {...n}
+        submitting={submitting}
+        editable={editable}
+        authorityYesNo={authorityYesNo}
+        checked_authority_ids={checked_authority_ids}/>;
+    })
+    return (
+      <div className="authority-manage">
+        <TopHeader className="pull-right"/>
+        <FilterHeader scrollTop = {this.scrollTop.bind(this)}
+          checked_authority_ids={checked_authority_ids} 
+          role_id={on_role_id}
+          editable={editable} 
+          options={module_list}
+          toggleEdit={toggleEdit}
+          resetRoleAuthority={resetRoleAuthority}
+          gotRoleAuthorities={gotRoleAuthorities}
+          putRoleAuthority={putRoleAuthority}/>
+        <NavBar
+          department_list={department_list} 
+          gotRoletList={gotRoletList}
+          toggleDept={toggleDept} 
+          onChooseRole={gotRoleAuthorities}/>
+        <div style={{marginLeft: '225px'}}>
+          <div className="panel">
+            <div className="panel-body">
+              <div className="table-responsive authority-list" ref="authoritys_container" >
+                <table className="table table-hover text-center">
+                  <thead>
+                    <tr>
+                      <th>授权</th>
+                      <th>动作名称</th>
+                      <th>所属模块名称</th>
+                      <th>动作描述</th>
+                    </tr>
+                  </thead>
+                  <tbody className="authority_tbody" ref="authoritys" >
+                    { content }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+  componentWillMount() {
+    const { gotDepartmentList, gotModuleList } = this.props;
+    gotDepartmentList();
+    gotModuleList();
+  }
+  componentDidMount() {
+    LazyLoad('noty');
+    this.props.gotAuthorityList();
+  }
+  scrollTop(selected){
+    let container = $(findDOMNode(this.refs.authoritys_container));
+    let onSelected = $(findDOMNode(this.refs.authoritys)).find('.' + selected).first();
+    let height = onSelected.position().top;
+    container.scrollTop(height);
+  }
+}
+
+const mapStateToProps = (state) => state.RoleAuthorityManage;
+
+
+const mapDispatchToProps = (dispatch) => bindActionCreators(AuthManageActions, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(RoleAuthorityPannel);

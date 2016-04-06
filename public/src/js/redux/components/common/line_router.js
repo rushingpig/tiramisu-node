@@ -32,7 +32,7 @@ export default class LineRouter extends React.Component {
   }
 }
 
-LineRouter.propTypess = {
+LineRouter.propTypes = {
   routes: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,

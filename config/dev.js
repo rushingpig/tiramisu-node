@@ -71,7 +71,7 @@ var mysql_options = {
     waitForConnections : true,
     queueLimit      : 100,
     connectionLimit : 5,
-    host            : 'localhost',
+    host            : '192.168.31.195',
     port            : 3306,
     user            : 'root',
     password        : 'pigo2016',

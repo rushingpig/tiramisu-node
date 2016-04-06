@@ -7,8 +7,18 @@
  */
 "use strict";
 var dao = require('../../dao'),
+    del_flag = require('../../dao/base_dao').del_flag,
     UserDao = dao.user,
-    userDao = new UserDao();
+    userDao = new UserDao(),
+    addressDao = new dao.address(),
+    deliveryDao = new dao.delivery(),
+    schema = require('../../schema'),
+    systemUtils = require('../../common/systemUtils'),
+    toolUtils = require('../../common/ToolUtils'),
+    cryptoUtils = require('../../common/CryptoUtils'),
+    res_obj = require('../../util/res_obj'),
+    TiramisuError = require('../../error/tiramisu_error'),
+    async = require('async');
 
 function UserService() {
 
@@ -36,21 +46,310 @@ UserService.prototype.getUserInfo = (username, password)=> {
                     user.id = curr.id;
                     user.org_id = curr.org_id;
                     user.username = curr.username;
-                    user.city_id = curr.city_id;
-                    user.station_id = curr.station_id;
+                    user.city_ids = curr.city_ids.split(',');
+                    user.station_ids = curr.station_ids.split(',');
                     user.user_type = curr.user_type;
                     user.no = curr.no;
                     user.name = curr.name;
                 }
                 if(curr.permission) user.permissions.push(curr.permission);
-                if(curr.role_name) roles_set.add({id:curr.role_id,name:curr.role_name});
+                if(curr.role_name && !roles_set.has(curr.role_id)){
+                    user.roles.push({id:curr.role_id,name:curr.role_name});
+                    roles_set.add(curr.role_id);
+                }
                 if(curr.data_scope)  data_scopes_set.add(curr.data_scope);
             }
-            user.roles = Array.from(roles_set.values());
             user.data_scopes = Array.from(data_scopes_set.values());
             return user;
         }
     });
 };
+/**
+ * add user
+ * @param req
+ * @param res
+ * @param next
+ */
+UserService.prototype.addUser = (req,res,next) => {
+    req.checkBody(schema.addUser);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let b = req.body;
+    let user_obj = {
+        city_ids : b.city_ids.join(','),
+        mobile : b.mobile,
+        name : b.name,
+        password : cryptoUtils.md5(b.password),
+        station_ids : b.station_ids,
+        username : b.username
+    };
+    async.series([
+        function(cb){
+            if(parseInt(b.is_national) === 1){
+                deliveryDao.findAllStations().then(stations => {
+                    let station_ids = [];
+                    stations.forEach(curr => {
+                        station_ids.push(curr.id);
+                    });
+                    user_obj.station_ids = station_ids.join(',');
+                    cb(null);
+                });
+            }else {
+                cb(null);
+            }
+        },
+        function(cb){
+            if(parseInt(b.is_headquarters) === 1){
+                addressDao.findAllCities().then(cities => {
+                    let city_ids = [];
+                    cities.forEach(curr => {
+                        city_ids.push(curr.id);
+                    });
+                    user_obj.city_ids = city_ids.join(',');
+                    cb(null);
+                });
+            }else {
+                cb(null);
+            }
+        },
+        function(cb){
+            let promise = userDao.insertUser(systemUtils.assembleInsertObj(req,user_obj)).then(insertId=>{
+                if(!insertId){
+                    throw new TiramisuError(res_obj.FAIL,'新增用户异常...');
+                }
+                let user_role_objs = [];
+                b.role_ids.forEach(curr=>{
+                    user_role_objs.push([insertId,curr]);
+                });
+                return userDao.batchInsertUserRole(user_role_objs);
+            }).then(affectRows => {
+                if(!affectRows){
+                    throw new TiramisuError(res_obj.FAIL,'新增用户角色映射关系异常...');
+                }
+                res.api();
+                cb(null);
+            }).catch(err => {
+                if(err.code == 'ER_DUP_ENTRY'){
+                    throw new TiramisuError(res_obj.EXIST_USERNAME,err);
+                }
+                throw err;
+            });
+            systemUtils.wrapService(res,next,promise,cb);
+        }
+    ]);
+};
+/**
+ * delete user from the list for display
+ * @param req
+ * @param res
+ * @param next
+ */
+UserService.prototype.deleteUser = (req,res,next) => {
+    req.checkParams('userId','请指定要删除的用户ID...').isInt();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let user_id = req.params.userId;
+    let user_obj = {
+        del_flag : del_flag.HIDE
+    };
+    let promise = userDao.updateUserById(systemUtils.assembleUpdateObj(req,user_obj),user_id).then(affectRows=>{
+        if(!affectRows){
+            throw new TiramisuError(res_obj.FAIL,'删除用户失败,请稍后重试...');
+        }
+        res.api();
+    });
+    systemUtils.wrapService(res,next,promise);
+};
+/**
+ * enable or disable the user
+ * @param req
+ * @param res
+ * @param next
+ */
+UserService.prototype.enOrdisableUser = (req,res,next) => {
+    req.checkParams('userId','请指定要启用或禁用的用户ID...').isInt();
+    // req.checkBody('is_usable','请指定对该用户的操作 启用 | 禁用').isBoolean();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let user_id = req.params.userId;
+    let user_obj = {
+        is_usable : req.body.is_usable ? 1 : 0
+    };
+    let promise = userDao.updateUserById(systemUtils.assembleUpdateObj(req,user_obj),user_id).then(affectRows => {
+        if(!affectRows){
+            throw new TiramisuError(res_obj.FAIL,'启用 | 禁用 用户失败,请稍后重试...');
+        }
+        res.api();
+    });
+    systemUtils.wrapService(res,next,promise);
+};
+UserService.prototype.getUserDetail = (req,res,next) => {
+    req.checkParams('userId','请指定要查询的用户ID...').isInt();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let user_id = req.params.userId;
+    let res_data = {
+        roles : [],
+        cities : [],
+        stations : []
+    };
+    let promise = userDao.findUserById(user_id).then(results => {
+        if(!(results)){
+            throw new TiramisuError(res_obj.USER_NOT_EXIST,'该用户不存在,请确认用户ID...');
+        }
 
+        let city_ids_str = '',station_ids_str = '';
+        results.forEach((curr,index)=> {
+            if(index === 0){
+                city_ids_str = curr.city_ids;
+                res_data.id = curr.id;
+                res_data.mobile = curr.mobile;
+                res_data.name = curr.name;
+                res_data.username = curr.username;
+                station_ids_str = curr.station_ids;
+            }
+            res_data.roles.push({role_id : curr.role_id,role_name : curr.role_name});
+        });
+        let city_ids = city_ids_str.split(','),station_ids = station_ids_str.split(',');
+        return addressDao.findCitiesByIds(city_ids).then(result => {
+            if(result){
+                result.forEach(curr => {
+                    res_data.cities.push({city_id : curr.id,city_name : curr.name});
+                });
+            }
+            return deliveryDao.findAllStations({station_ids});
+        }).then(result => {
+            if(result){
+                result.forEach(curr => {
+                    res_data.stations.push({station_id : curr.id,station_name : curr.name});
+                });
+            }
+            res.api(res_data);
+        });
+    });
+    systemUtils.wrapService(res,next,promise);
+};
+UserService.prototype.listUsers = (req,res,next) => {
+    req.checkQuery(schema.listUsers);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let q = req.query;
+    let query_data = {
+        org_id : q.org_id,
+        uname_or_name : q.uname_or_name,
+        page_no : q.page_no,
+        page_size : q.page_size
+    };
+    let promise = userDao.findUsers(query_data).then(_res => {
+        if(toolUtils.isEmptyArray(_res._result) || toolUtils.isEmptyArray(_res.result)){
+            throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS,null);
+        }
+        let res_data = {
+            list : [],
+            total : _res.result[0].total,
+            page_no : q.page_no
+        };
+        _res._result.forEach(curr=>{
+            let user_obj = {
+                city_names : curr.city_names,
+                id : curr.id,
+                is_usable : curr.is_usable ? '是' : '否',
+                mobile : curr.mobile,
+                name : curr.name,
+                role_name : curr.role_name,
+                username : curr.username
+            };
+            res_data.list.push(user_obj);
+        });
+        res.api(res_data);
+    });
+    systemUtils.wrapService(res,next,promise);
+};
+UserService.prototype.editUser = (req,res,next) => {
+    req.checkBody(schema.editUser);
+    req.checkParams('userId','请指定要编辑的用户ID...').isInt();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let b = req.body,user_id = req.params.userId;
+    let user_obj = {
+        city_ids : b.city_ids.join(','),
+        mobile : b.mobile,
+        name : b.name,
+        password : cryptoUtils.md5(b.password),
+        station_ids : b.station_ids,
+        username : b.username
+    };
+    async.series([
+        function(cb){
+            if(parseInt(b.is_national) === 1){
+                deliveryDao.findAllStations().then(stations => {
+                    let station_ids = [];
+                    stations.forEach(curr => {
+                        station_ids.push(curr.id);
+                    });
+                    user_obj.station_ids = station_ids.join(',');
+                    cb(null);
+                });
+            }else {
+                cb(null);
+            }
+        },
+        function(cb){
+            if(parseInt(b.is_headquarters) === 1){
+                addressDao.findAllCities().then(cities => {
+                    let city_ids = [];
+                    cities.forEach(curr => {
+                        city_ids.push(curr.id);
+                    });
+                    user_obj.city_ids = city_ids.join(',');
+                    cb(null);
+                });
+            }else {
+                cb(null);
+            }
+        },
+        function(cb){
+            let promise = userDao.updateUserById(systemUtils.assembleUpdateObj(req,user_obj),user_id).then(affectRows=>{
+                if(!toolUtils.isInt(affectRows)){
+                    throw new TiramisuError(res_obj.FAIL,'更新用户异常...');
+                }
+                return userDao.deleteUserRole(user_id);
+            }).then(deleteRows => {
+                if(!deleteRows){
+                    throw new TiramisuError(res_obj.FAIL,'更新用户异常...');
+                }
+                let user_role_objs = [];
+                b.role_ids.forEach(curr=>{
+                    user_role_objs.push([insertId,curr]);
+                });
+                return userDao.batchInsertUserRole(user_role_objs);
+            }).then(affectRows => {
+                if(!affectRows){
+                    throw new TiramisuError(res_obj.FAIL,'新增用户角色映射关系异常...');
+                }
+                res.api();
+                cb(null);
+            });
+            systemUtils.wrapService(res,next,promise,cb);
+        }
+    ]);
+};
 module.exports = new UserService();

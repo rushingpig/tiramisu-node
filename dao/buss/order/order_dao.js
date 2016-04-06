@@ -14,6 +14,7 @@ var baseDao = require('../../base_dao'),
     TiramisuError = require('../../../error/tiramisu_error'),
     res_obj = require('../../../util/res_obj');
 var async = require('async');
+var async = require('async');
 
 // TODO: 后面要考虑移动到其它地方   在跑多例的情况下，需要将根据name存到数据库中。
 // 锁构造方法
@@ -474,7 +475,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
     }
     sql += " left join ?? bds2 on bo.delivery_id = bds2.id";
     params.push(tables.buss_delivery_station);
-    if(data_scopes.indexOf(constant.DS.CITY) !== -1){
+    if(data_scopes.indexOf(constant.DS.CITY.id) !== -1){
         sql += " inner join ?? dr3 on dr3.id = bds2.regionalism_id";
         params.push(tables.dict_regionalism);
 
@@ -582,26 +583,23 @@ OrderDao.prototype.findOrderList = function (query_data) {
         ds_sql += " and (";
         data_scopes.forEach((curr)=>{
 
-            if(curr == constant.DS.STATION){
-                temp_sql += " or bo.delivery_id = ?";
-                params.push(query_data.user.station_id);
-            }
-            if(curr == constant.DS.CITY){
-                temp_sql += " or dr3.parent_id = ?";
-                params.push(query_data.user.city_id);
-            }
-            if(curr == constant.DS.SELF_DELIVERY){
+            if(curr == constant.DS.STATION.id){
+                temp_sql += " or bo.delivery_id in "+dbHelper.genInSql(query_data.user.station_ids);
+            }else if(curr == constant.DS.CITY.id){
+                temp_sql += " or dr3.parent_id in "+dbHelper.genInSql(query_data.user.city_ids);
+            }else if(curr == constant.DS.SELF_DELIVERY.id){
                 temp_sql += " or bo.deliveryman_id = ?";
                 params.push(query_data.user.id);
-            }
-            if(curr == constant.DS.ALLCOMPANY){
+            }else if(curr == constant.DS.ALLCOMPANY.id){
                 temp_sql += " or 1 = 1";
+            }else{
+                temp_sql += " 1!=1" // 未分配权限的不予显示数据
             }
         });
         ds_sql += temp_sql.replace(/^ or/,'');
         ds_sql += ")";
     }
-    if(query_data.user && query_data.user.is_admin){
+    if(query_data.user && (query_data.user.is_admin)){
         ds_sql = "";
     }
     // data filter end

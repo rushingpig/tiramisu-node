@@ -22,5 +22,20 @@ export default {
     'remarks',
     'invoice',
     '_update', //业务无关的私有field，用于触发整个form的更新
+  ],
+  add_user:[
+    'username',
+    'pwd',
+    'name',
+    'mobile',
+    'dept_id',
+    'tmp_roles',
+    'role_ids',
+    'province_id',
+    'city_ids',
+    'station_ids',
+    'cities_in',
+    'stations_in',
+    'roles_in',
   ]
 }

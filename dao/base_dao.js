@@ -10,6 +10,8 @@ var config = require('../config');
 var mysql = require('mysql');
 var pool = mysql.createPool(config.mysql_options);
 var _ = require('lodash');
+var toolUtils = require('../common/ToolUtils');
+var constant = require('../common/Constant');
 
 function BaseDao() {
     pool.on('connecton', function () {
@@ -98,7 +100,7 @@ BaseDao.batchInsert = (sql, params) => {
     });
 };
 BaseDao.delete = function (sql, params) {
-    return BaseDao.insert(sql, params);
+    return BaseDao.insert(sql, params,true);
 };
 
 /**
@@ -158,6 +160,10 @@ BaseDao.transWrapPromise = function (transaction) {
 BaseDao.del_flag = {
     SHOW: 1,
     HIDE: 0
+};
+BaseDao.is_usable = {
+    enable : 1,
+    disable : 0
 };
 
 module.exports = BaseDao;

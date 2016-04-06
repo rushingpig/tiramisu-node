@@ -18,6 +18,14 @@ module.exports = {
     code: '1002',
     msg: '验证码输入有误,请重新输入...'
   },
+  EXIST_USERNAME : {
+    code : '1003',
+    msg : '该用户名已存在,请重新输入...'
+  },
+  USER_NOT_EXIST : {
+    code : '1004',
+    msg : '该用户不存在,请确认用户ID...'
+  },
   ORDER_AUDITING: {
     code: '2000',
     msg: '有订单打印正在审核中,请等待审核通过...'

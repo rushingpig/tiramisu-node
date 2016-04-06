@@ -151,5 +151,14 @@ AddressDao.prototype.modifyStationCoordsInTransaction = function(arr){
             });
     });
 };
-
+AddressDao.prototype.findCitiesByIds = function(city_ids){
+    let sql = "select * from ?? where id in " + dbHelper.genInSql(city_ids);
+    let params = [tables.dict_regionalism];
+    return baseDao.select(sql,params);
+};
+AddressDao.prototype.findAllCities = function(){
+    let sql = "select * from ?? where level_type = 2 and del_flag = ?";
+    let params = [tables.dict_regionalism,del_flag.SHOW];
+    return baseDao.select(sql,params);
+};
 module.exports = AddressDao;

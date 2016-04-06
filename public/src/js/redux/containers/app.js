@@ -37,12 +37,12 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
     case 'cm':
       require.ensure([], require => {
         components = {...components,
-          SrcChannelPannel: require('../components/central/src_channel_manage'),
+          SrcChannelPannel:        require('../components/central/src_channel_manage'),
         };
         callback();
       })
-
-     case 'sm':
+      break;
+    case 'sm':
       require.ensure([], require => {
         components = {...components,
           StationManagePannel:         require('../components/station/station_manage'),
@@ -52,7 +52,19 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
         callback();
       });
       break;
-
+    case 'am':
+      require.ensure([], require => {
+        components = {...components,
+          UserManagePannel:            require('../components/authority/user_manage'),
+          DepartRoleManagePannel:      require('../components/authority/depart_role_manage'),
+          UserDetailPannel:            require('../components/authority/manage_user_detail_pannel'),
+          DeptRoleManagePannel:        require('../components/authority/depart_role_manage'),
+          RoleAuthorityManagePannel:   require('../components/authority/authority_role_manage'),
+          SystemAuthorityManagePannel: require('../components/authority/authority_system_manage'),
+        };
+        callback();
+      });
+      break;
     default:
       break;
   }
@@ -84,7 +96,18 @@ const App = () => (
       </Route>
 
       <Route path="cm" onEnter={getComponents('cm')}>
-        <Route path="src"   onEnter={onEnter('SrcChannelManage')}   getComponent={get('SrcChannelPannel')}   />
+        <Route path="src"  getComponent={get('SrcChannelPannel')}   />
+      </Route>
+
+      <Route path="am" onEnter={getComponents('am')}>
+        <Route path="user">
+         <IndexRoute getComponent={get('UserManagePannel')}/>
+         <Route path="add" getComponent={get('UserDetailPannel')} />
+         <Route path=":id" getComponent={get('UserDetailPannel')} />
+        </Route>
+        <Route path="deptrole" getComponent={get('DeptRoleManagePannel')} />
+        <Route path="roleauthority" getComponent={get('RoleAuthorityManagePannel')} />
+        <Route path="systemauthority" getComponent={get('SystemAuthorityManagePannel')} />
       </Route>
 
       <Route path="sm" onEnter={getComponents('sm')}>

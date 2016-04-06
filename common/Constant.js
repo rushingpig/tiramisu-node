@@ -117,12 +117,30 @@ Constant.PFT = {
  * @type {{}}
  */
 Constant.DS = {
-    ALLCOMPANY : 1,         // 公司所有数据
-    OFFICEANDCHILD : 2,     // 部门及子公司
-    OFFICE : 3,             // 本部门
-    STATION : 4,            // 本配送站订单及配送员列表
-    CITY : 5,                // 本城市下的所有配送站订单及配送员
-    SELF_DELIVERY : 6        // 分给自己(配送员)的订单
+    ALLCOMPANY : {
+        id : 1,
+        name : '全公司'
+    },
+    OFFICEANDCHILD : {
+        id : 2,
+        name : '部门及子公司全部用户'
+    },
+    OFFICE : {
+        id : 3,
+        name : '本部门'
+    },             // 本部门
+    STATION : {
+        id : 4,
+        name : '本配送站订单及配送员列表'
+    },
+    CITY : {
+        id : 5,
+        name : '本城市下的所有配送站订单及配送员'
+    },
+    SELF_DELIVERY : {
+        id : 6,
+        name : '分给自己(配送员)的订单'
+    }
 };
 
 Constant.BUSS_ORDER_ERROR = {

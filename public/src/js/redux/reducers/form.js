@@ -119,7 +119,37 @@ export default formReducer.plugin({
       return state;
     }
   },
+  add_user:(state,action) =>{
+    if(action && action.form =='add_user'){
+      if(action.field == 'dept_id'){
+        if(action.type == actionTypes.CHANGE){
+          state.roles_in = {...state.roles_in||[],...state.tmp_roles||[]};
+        }
+      }
+    }
+    return state;  //required!
+  },
 });
+
+  // order_manage_filter: (state, action) => {
+  //   if(action && action.form == 'order_manage_filter'){
+  //     // switch( action.type ){
+  //     //   case actionTypes.CHANGE:
+  //     //     if(action.field == 'src_id' || action.key == 'src_id'){
+  //     //       state.pay_modes_id = {...state.pay_modes_id, ...getPayModesId(state, action)};
+  //     //       state.pay_status = {...state.pay_status, ...getPayStatus(state, action)};
+  //     //     }
+  //     // }
+  //   }
+  // }
+  // 
+/*  add_user:(state,action) => {
+    if (action && action.form == 'add_order'){
+      
+    }
+  },*/
+
+
 
 function getPayModesId(state, action){
   var src_id = state.src_id.value;

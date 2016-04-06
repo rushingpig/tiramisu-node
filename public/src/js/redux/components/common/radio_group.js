@@ -26,6 +26,7 @@ export default class RadioGroup extends Component {
     )
   }
   onCheck(e){
+
     this.props.onChange(e.target.value);
   }
 }

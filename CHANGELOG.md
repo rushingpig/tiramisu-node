@@ -1,6 +1,7 @@
 ### v0.1.9
 * Frontend:
  * Bo XIONG: optimize the app loading by 'load on demand'
+
 ### v0.1.8 (23 Mar 2016)
 * Frontend:
  * Bo XIONG: 通过城市获取对应的配送站

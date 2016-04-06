@@ -33,7 +33,6 @@ class ManageOrderDetailPannel extends Component {
   render(){
     var { mainForm, add_form, delivery_stations, history_orders, area, dispatch, products, products_area_filter, params } = this.props;
     var editable = !!(params && params.id);
-
     var actions = bindActionCreators(
       {...AreaActions(), ...OrderFormActions, ...FormActions, resetOrderStore}, dispatch
     );
@@ -63,7 +62,7 @@ class ManageOrderDetailPannel extends Component {
                     area={area} 
                     editable={editable}
                     order_id={params.id}
-                    actions={actions}>
+                    actions={actions}>  
                       {manageOrderProducts}
                   </ManageOrderFormCreate>
                 : <ManageOrderFormEdit

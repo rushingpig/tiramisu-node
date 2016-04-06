@@ -1,0 +1,283 @@
+import React, {Component, PropTypes} from 'react';
+import {render, findDOMNode} from 'react-dom';
+import { reduxForm } from 'redux-form';
+
+/*import { isSrc } from 'reducers/form';*/
+import Select from 'common/select';
+import { Noty, form as uForm, dateFormat } from 'utils/index';
+import { SELECT_DEFAULT_VALUE ,CHECKBOXGROUP_DEFAULT_VALUE} from 'config/app.config';
+import CheckBoxGroup from 'common/checkbox_group';
+
+import history from 'history_instance';
+
+
+import FormFields from 'config/form.fields';
+
+const validate = (values,props) => {
+  const errors = {};
+  var msg = 'error';
+  var labelmsg = 'labelRed';
+  var { form } = props;
+
+  function _v(key){
+     if (form[key] && form[key].touched && !values[key])
+      errors[key] = msg;   
+  }
+
+  function _v_mobile(key){
+     if (form[key] && form[key].touched && !values[key] || (form[key] && !form[key].focus && values[key] && !uForm.isMobile(values[key]))){
+      errors[key] = msg;
+    }   
+  }
+
+  function _v_select(key){
+    if(form[key] && form[key].touched && (!values[key] || values[key] == SELECT_DEFAULT_VALUE))
+      errors[key] = msg;
+  }
+
+/*  function _v_checkboxgroup(key){
+    //|| values[key].length == 0
+    if(form[key] && form[key].touched && (!values[key]) || values[key].length==0)
+      errors[key] = labelmsg;
+  }*/
+
+  _v('username');
+  _v('pwd');
+  _v('name');
+  _v_mobile('mobile');
+  _v_select('dept_id');
+  _v_select('province_id');
+/*  _v_checkboxgroup('station_ids');
+  _v_checkboxgroup('role_ids');*/
+
+  return errors;
+}
+
+function RoleNode( props ){
+  var { data ,onChoose } = props;
+  return (
+    <span style={{'float':'left','marginLeft':'15'}}>
+      <input type='checkbox' checked={data.active}/>{data.role}
+    </span>
+    )
+}
+
+
+
+class ManageAddForm extends Component{
+  constructor(props){
+    super(props);
+    this._check=this._check.bind(this);
+  }
+  render(){
+    var {
+      editable,
+      handleSubmit,
+      fields:{
+        username,
+        pwd,
+        name,
+        mobile,
+        dept_id,
+        province_id,
+        tmp_roles,
+        role_ids,
+        city_ids,
+        station_ids,
+        cities_in,
+        stations_in,
+        roles_in,
+      },
+      roles_in_test,
+    } = this.props;
+    /*var {depts} = this.props.roleinfo;*/
+    var {dept_role,area} = this.props;
+    var {provinces,cities}= area;
+    var {depts,roles,stations} = dept_role;
+
+    return (
+    <div>
+      <div className="form-group form-inline">
+        <label>{'　　用户名：'}</label>
+        <input {...username} className={`form-control input-xs ${username.error}`} ref='username'  type='text' />
+      </div>
+      <div className="form-group form-inline">
+        <label>{'　　　密码：'}</label>
+        <input {...pwd} className={`form-control input-xs ${pwd.error}`} ref='pwd'  type='password' id="pwd" />
+        <span id="togglePwdStatus" onClick={this.onPwdToggle.bind(this)} style={{marginLeft:10,color:'blue',textDecoration:'underline',cursor:'Default'}}>{'密码可视'}</span>
+      </div>
+      <div className="form-group form-inline">
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-md-6" style={{'paddingLeft':'0'}}>
+              <label>{'　真实姓名：'}</label>
+              <input {...name} className={`form-control input-xs ${name.error}`} type='text' />              
+            </div>
+            <div className="col-md-6" style={{'paddingLeft':'0'}}>
+              <label>{'　电话号码：'}</label>
+              <input {...mobile} className={`form-control input-xs ${mobile.error}`}  type='text' ref='mobile' />
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+      <div className="form-group form-inline">
+        <label>{'　所属角色：'}</label>
+        <Select ref='department' options={[{'id':999,'text':'全部角色'},...depts]} {...dept_id} className={`form-select ${dept_id.error}`} default-text="--请选择用户所属部门--" onChange={this.onDeptChange.bind(this,dept_id.onChange)} />
+        <CheckBoxGroup className="input-xs" ref='role' {...tmp_roles}  checkboxs={roles} />
+        <label >{'　已选角色：'}</label>
+        {/*<CheckBoxGroup  name="已选角色" {...role_ids} checkboxs={roles.filter( n => role_ids.value.some(m => m == n.id) )}/>*/}
+        <CheckBoxGroup  name="已选角色" checkboxs={roles_in.value||[]} value={roles_in.value}  {...roles_in}/>
+        {/*checkboxs={roles.filter( n => role_ids.value.some(m => m == n.id) )}*/}
+      </div>
+      
+
+      <div className="form-group form-inline" style={{'clear':'both'}}>
+        <label>{'　所属城市：'}</label>
+        <Select ref='province' className={`input-xs ${province_id.error}`} options={[{'id':999,'text':'全部城市'},...provinces]} {...province_id} onChange={this.onProvinceChange.bind(this,province_id.onChange)} />
+        <CheckBoxGroup name="城市" {...city_ids} checkboxs={cities} onChange={this.onCityChange.bind(this,city_ids.onChange)}/>
+        <label >{'　已选城市：'}</label>
+        <CheckBoxGroup ref='city' {...city_ids} checkboxs={[{'id':999,'text':'总部'},...cities.filter( n=> city_ids.value.some(m => m== n.id))]} />
+      </div>     
+      <div className="form-group form-inline" style={{clear:'both',}}>
+        <label className={`input-xs ${station_ids.error}`}>{'所属配送站：'}</label>
+          <CheckBoxGroup name="配送站" {...station_ids} checkboxs={[{'id':999,'text':'所属城市全部配送站'},...stations]} />
+      </div>
+      <div className="form-group" >
+      {
+        !editable
+        ?
+        <button
+            key="submitBtn"
+            onClick={handleSubmit(this._check.bind(this, this.handleCreateUser))}
+            className="btn btn-theme btn-xs">提交</button>
+            :
+        <button 
+          onClick={handleSubmit(this._check.bind(this,this.handleSubmitUser))} 
+          className="btn btn-theme btn-xs">提交</button>
+      }
+      </div>
+    </div>
+      )
+  }
+
+  _check(callback,form_data){
+    setTimeout(()=>{
+        var {dispatch,user_id,errors} =this.props;
+        var user_info = this.props['form-data'].data;
+        if(!Object.keys(errors).length){
+          form_data.user_id = user_id;
+          form_data.u_name = user_info.name;
+          callback.call(this,form_data);  //以callback来代替this 调用
+        }else{
+          console.warn(Object.keys(errors).length)
+          Noty('warning','请填写完整');
+        }
+    },0);
+  }
+  handleCreateUser(form_data){
+    this.props.actions.createUser(form_data)
+      .done(function(){
+        Noty('success','保存成功');
+        history.push('/am/user');
+      }.bind(this))
+      .fail(function(msg){
+        Noty('error',msg || '保存异常');
+      })
+  }
+  handleSubmitUser(form_data){
+      this.props.actions.submitUser(form_data).done(function(){
+        Noty('success', '已成功提交！');
+        history.push('/am/user');
+      }).fail(function(msg){
+        Noty('error', msg || '操作异常');
+      });
+
+  }
+  componentDidMount(){
+/*    var {getDepts} = this.props.actions;
+    getDepts();*/
+    var {getProvinces,getDepts} = this.props.actions;
+    var {params} = this.props;
+    getProvinces();
+    getDepts();
+  }
+
+  onProvinceChange(callback,e){
+    var {value} = e.target;
+    this.props.actions.resetCities();
+    if(value == 999)
+      this.props.actions.getAllCities();
+    else
+      if(value != this.refs.province.props['default-value'])
+        this.props.actions.getCities(value);
+    callback(e);
+  }
+
+  onCityChange(callback,e){
+
+    //this.props.actions.
+    this.props.actions.resetStations();
+    if(e != [])
+      this.props.actions.getStationsByCityIds(e);
+    callback(e);
+    //var {value} = e.target;
+    //console.log(value);
+  }
+
+  onDeptChange(callback,e){
+    var {value} = e.target;
+    this.props.actions.resetRoles();
+    if(value == 999 )
+      this.props.actions.getAllRoles(value);
+    else
+      if(value != this.refs.department.props['default-value'])
+          this.props.actions.getRoles(value);
+    callback(e);
+  }
+
+  onRoleChange(callback,e){
+/*    var {value} = e.target;
+    this.props.actions.resetTickedRoles();
+    if(value != this.refs.role.props['default-value'])
+        this.props.actions.getTickedRoles(value);
+
+    callback(e);*/
+  }
+
+  onPwdToggle(){
+    var type = document.getElementById("pwd").getAttribute('type');
+
+    if(type=='password'){
+      document.getElementById("pwd").setAttribute('type','text');
+      document.getElementById("togglePwdStatus").innerHTML = '密码不可视';
+    }else{
+      document.getElementById("pwd").setAttribute('type','password');
+      document.getElementById("togglePwdStatus").innerHTML = '密码可视';
+    }
+  }
+
+}
+ManageAddForm.propTypes = {
+
+  area:PropTypes.shape({
+    provinces:PropTypes.array.isRequired,
+  }),
+  actions:PropTypes.shape({
+    getDepts:PropTypes.func.isRequired
+  }).isRequired,
+
+   editable: PropTypes.bool.isRequired,
+}
+
+
+export default function initManageUserForm( initFunc ){
+  return reduxForm({
+    form:'add_user',
+    fields:FormFields.add_user,
+    validate,
+/*    roleinfo:{roleinfo},
+    depts:{depts},*/
+  },initFunc)(ManageAddForm);
+}

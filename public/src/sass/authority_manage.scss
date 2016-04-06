@@ -1,0 +1,12 @@
+.authority-manage{
+  .navbar{
+    width: 220px;
+    max-height: 500px;
+    overflow: auto;
+  };
+  .authority-list{
+    overflow: auto;
+    position: relative;
+    max-height: 500px;
+  }
+}

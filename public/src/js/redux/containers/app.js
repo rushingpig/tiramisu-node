@@ -41,6 +41,18 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
         };
         callback();
       })
+
+     case 'sm':
+      require.ensure([], require => {
+        components = {...components,
+          StationManagePannel:         require('../components/station/station_manage'),
+          StationManageDetailPannel:   require('../components/station/station_manage_detail_pannel'),
+          StationScopeManagePannel:    require('../components/station/station_scope_manage'),
+        };
+        callback();
+      });
+      break;
+
     default:
       break;
   }
@@ -63,15 +75,26 @@ const App = () => (
         <Route path="invoice" component={ComingSoon} />
         <Route path="winning" component={ComingSoon} />
       </Route>
+
       <Route path="dm" onEnter={getComponents('dm')}>
         <Route path="change"   onEnter={onEnter('DeliveryChangeAccess')}   getComponent={get('DeliveryChangePannel')}   />
         <Route path="delivery"   onEnter={onEnter('DeliveryManageAccess')}   getComponent={get('DeliveryManagePannel')}   />
         <Route path="distribute" onEnter={onEnter('DistributeManageAccess')} getComponent={get('DistributeManagePannel')}   />
         <Route path="review"   onEnter={onEnter('PrintReviewAccess')}    getComponent={get('DeliverPrintReviewPannel')} />
       </Route>
+
       <Route path="cm" onEnter={getComponents('cm')}>
         <Route path="src"   onEnter={onEnter('SrcChannelManage')}   getComponent={get('SrcChannelPannel')}   />
       </Route>
+
+      <Route path="sm" onEnter={getComponents('sm')}>
+        <Route path="station" getComponent={get('StationManagePannel')} />
+        <Route path="station/add" getComponent={get('StationManageDetailPannel')} />
+        <Route path="station/:id" getComponent={get('StationManageDetailPannel')} />
+        <Route path="scope" getComponent={get('StationScopeManagePannel')} />
+        <Route path="scope/:id" getComponent={get('StationScopeManagePannel')} />
+      </Route>
+
       <Redirect from="logout" to="/" />
       <Route path="403" component={NoPermission} />
       <Route path="*" component={NoPage}/>

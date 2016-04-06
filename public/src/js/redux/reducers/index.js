@@ -1,4 +1,6 @@
 import { combineReducers } from 'redux';
+import { routeReducer } from 'redux-simple-router';
+import form from './form';
 import login from './login';
 import orderManage from './order_manage';
 import orderManageForm from './order_manage_form';
@@ -7,10 +9,12 @@ import deliveryManage from './delivery_manage';
 import distributeManage from './distribute_manage';
 import deliveryPrintReview from './delivery_print_review';
 import srcChannelManage from './central_src_channel_manage';
-import form from './form';
-import { routeReducer } from 'redux-simple-router';
+import stationManage from './station_manage';
+import stationManageForm from './station_manage_form';
 
 const rootReducer = combineReducers({
+  form,
+  routing: routeReducer,
   login,
   orderManage,
   orderManageForm,
@@ -21,6 +25,8 @@ const rootReducer = combineReducers({
   srcChannelManage,
   form,
   routing: routeReducer,
+  stationManage,
+  stationManageForm,
 })
 
 export default rootReducer

@@ -1,18 +1,25 @@
-import React from 'react';
+import React, {Component, PropTypes} from 'react';
+import { render, findDOMNode } from 'react-dom';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-export default class SearchInput extends React.Component {
+import * as StationsAction from 'actions/station_manage';
+
+export default class Autocomplete extends Component {
   constructor(props){
     super(props);
     this.searchHandler = this.searchHandler.bind(this);
+    this.focusHandler = this.focusHandler.bind(this);
   }
   render(){
-    var { className, searching, size, placeholder, searchHandler } = this.props;
+    var { className, searching, size, placeholder, searchHandler, focusHandler } = this.props;
     var i_className = searching ? 'fa fa-spinner fa-spin disabled' : 'fa fa-search';
     return (
       <div className={`search-input ${className}`}>
         <input ref="input" 
           className={`form-control ${size}`} 
           placeholder={placeholder} 
+          onFocus={this.focusHandler.bind(this)}
           onKeyDown={this.keyDownHandler.bind(this)} />
         <i className={i_className} onClick={this.searchHandler}></i>
       </div>
@@ -52,13 +59,18 @@ export default class SearchInput extends React.Component {
   }
   searchHandler(){
     if(!this.props.searching){
-      console.log('search: ' + this.refs.input.value);
-      this.props.searchHandler(this.refs.input.value);
+      var station_name = this.refs.input.value;
+      if(station_name !== ''){
+        this.props.searchHandler({station_name: this.refs.input.value,page_no: 0,page_size: 1});
+      }
     }
+  }
+  focusHandler(){
+    
   }
 }
 
-SearchInput.defaultProps = {
+Autocomplete.defaultProps = {
   className: '',
   searching: false,
   size: 'input-xs',

@@ -62,4 +62,20 @@ export default [
       "icon": "",
       "link": "/cm/src"
   }]
+},{
+  "key": "station_management",
+  "name": "配送管理",
+  "short_name": "配送",
+  "icon": "",
+  "link": [{
+     "key": "sm_station",
+     "name": "配送站管理",
+     "icon": "",
+     "link": "/sm/station"
+  },{
+     "key": "sm_scope",
+     "name": "配送区域管理",
+     "icon": "",
+     "link": "/sm/scope"
+  }]
 }];

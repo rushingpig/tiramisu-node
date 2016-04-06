@@ -35,6 +35,8 @@ export default function LazyLoad(name, callback){
           }
           load_map[name] = 1; //已加载过
         }, 0);
+      }else if(callback){
+        callback();
       }
     }else{
       console.error('lazy load "' + name + '" fail');

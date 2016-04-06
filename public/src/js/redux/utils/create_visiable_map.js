@@ -42,7 +42,7 @@ export function addInfoWindow(map,point,station_info){
   map.addOverlay(stationCenter);
   stationCenter.openInfoWindow(infoWindow)
   stationCenter.addEventListener('mouseover', function(){
-    stationCenter.openInfoWindow(infoWindow)
+    stationCenter.openInfoWindow(infoWindow);
   })
 }
 

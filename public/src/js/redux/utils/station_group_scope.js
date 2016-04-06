@@ -17,7 +17,8 @@ var MyMap = function(list){
 MyMap.prototype.centerAndZoomStation = function(station_id, name, address){
   let map = this.map;
   let center = this.station_centers.station_id;
-  this.map.centerAndZoom(center);
+  map.panTo(center);
+  map.setZoom(12);
   addInfoWindow(map, center, {name: name, address: address});
 }
 

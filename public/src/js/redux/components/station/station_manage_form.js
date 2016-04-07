@@ -91,7 +91,7 @@ class StationManageForm extends Component {
       <div>
         <div className="form-group form-inline">
           <label>{'　配送中心名称：'}</label>
-          <input {...name} className={`form-control input-xs ${name.error}`} placeholder="请填写名称" type="text" />
+          <input ref="name" {...name} className={`form-control input-xs ${name.error}`} placeholder="请填写名称" type="text" />
         </div>
         <div className="form-group form-inline">
           <label>{'　配送中心地址：'}</label>
@@ -232,7 +232,8 @@ class StationManageForm extends Component {
   addScope(){
     var city_name = this.findSelectedOptionText('city');
     var address = $(findDOMNode(this.refs.address)).val();
-    this.refs.stationMap.addScope(city_name, address);
+    var name = $(findDOMNode(this.refs.name)).val();
+    this.refs.stationMap.addScope(city_name, address, name);
   }
 
 }

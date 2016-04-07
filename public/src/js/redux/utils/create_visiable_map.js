@@ -10,6 +10,9 @@ function MyMap(){
   this.polygon = null;
 }
 
+const oldPolygonStyle = {strokeWeight: '2',strokeColor: '#1215A0',fillColor: ''};
+const newPolygonStyle = {strokeWeight: '3',strokeColor: '#FF0000',fillColor: ''};
+
 function addMarkerToMap(map,point){
   var marker = new BMap.Marker(point);
   map.addOverlay(marker);
@@ -35,14 +38,14 @@ export function addInfoWindow(map,point,station_info){
   var sContent =
       "<p> 配送站地址：" + station_info.address + "</p>" 
   var infoWindow = new BMap.InfoWindow(sContent, opts);
-  var stationCenter = new BMap.Marker(point);
+  var center = new BMap.Marker(point);
   var icon = new BMap.Icon('/images/point.png', new BMap.Size(24, 40));
-  stationCenter.setIcon(icon);
-  stationCenter.setAnimation(BMAP_ANIMATION_BOUNCE);
-  map.addOverlay(stationCenter);
-  stationCenter.openInfoWindow(infoWindow)
-  stationCenter.addEventListener('mouseover', function(){
-    stationCenter.openInfoWindow(infoWindow);
+  center.setIcon(icon);
+  center.setAnimation(BMAP_ANIMATION_BOUNCE);
+  map.addOverlay(center);
+  center.openInfoWindow(infoWindow)
+  center.addEventListener('mouseover', function(){
+    center.openInfoWindow(infoWindow);
   })
 }
 
@@ -51,8 +54,7 @@ MyMap.prototype.createNewScope = function(){
   var index = 0;
   this.points = [];
   this.markers = [];
-  var opts = {strokeWeight: '2',strokeColor: '#FF0000',fillColor: ''};
-  var polygon = new BMap.Polygon(self.points);
+  var polygon = new BMap.Polygon(self.points, newPolygonStyle);
   this.map.addOverlay(polygon);
 
   this.map.addEventListener('click',function(event){
@@ -123,8 +125,7 @@ MyMap.prototype.editScope = function(){
       marker.id = index++;
       self.map.addOverlay(marker);
       if(!self.polygon){
-        let opts = {strokeWeight: '2',strokeColor: '#1215a0',fillColor: ''};
-        self.polygon = new BMap.Polygon(self.points, opts);
+        self.polygon = new BMap.Polygon(self.points, oldPolygonStyle);
       }
       self.map.addOverlay(self.polygon);
 
@@ -149,8 +150,7 @@ MyMap.prototype.drawScope = function(points){
   this.points = [];
   if(points != undefined){
     this.points = changePonits(points);
-    var opts = {strokeWeight: '2',strokeColor: '#1215a0',fillColor: ''};
-    this.oldPolygon = new BMap.Polygon(this.points, opts);
+    this.oldPolygon = new BMap.Polygon(this.points, oldPolygonStyle);
     this.oldPolygon.setFillColor('');
     this.map.addOverlay(this.oldPolygon);
   }
@@ -172,7 +172,7 @@ MyMap.prototype._initialize = function() {
   this.map.centerAndZoom(point, 12);
   this.map.enableScrollWheelZoom(true);
   this.map.enableDragging();
-};
+}
 
 MyMap.prototype.create = function(callback) {
   if(!this.init_flag){

@@ -14,7 +14,7 @@ var MyMap = function(list){
   this.init_flag = 0;
 }
 
-MyMap.prototype.centerAndZoomStation = function(station_id, name, city_name, address){
+MyMap.prototype.centerAndZoomStation = function(name, city_name, address){
   let map = this.map;
   this.searchStationAdress(city_name, address, name);
   map.setZoom(12);
@@ -83,14 +83,14 @@ MyMap.prototype.initialScope = function(){
 MyMap.prototype.enableEdit = function(station_id){
   let self = this;
   let map = this.map;
-  let on_edit_station = this.list.filter((n, index) => {
+  let _on = this.list.filter((n, index) => {
     if(n.station_id == station_id){
       this.onEditIndex = index;
     }
     return n.station_id == station_id;
   })[0];
-  if(on_edit_station.coords){
-    let points = changePonits(on_edit_station.coords);
+  if(_on.coords){
+    let points = changePonits(_on.coords);
     points.forEach(function(n, index){
       let marker = new BMap.Marker(n);
       self.markers.push(marker);
@@ -107,9 +107,9 @@ MyMap.prototype.enableEdit = function(station_id){
       });
     })
   }else{
-    self.drawNewScope(on_edit_station.station_id);
+    self.drawNewScope(_on.station_id);
   }
-  console.log(on_edit_station,this.onEditIndex);
+  self.centerAndZoomStation(_on.name,_on.city_name,_on.address)
 }
 
 MyMap.prototype.getPath = function(){
@@ -117,7 +117,7 @@ MyMap.prototype.getPath = function(){
   this.markers.forEach(n => {
     map.removeOverlay(n);
   });
-  
+  if(this.onEditIndex === -1){return;}
   let newPath = outputPonits(this.polygons[this.onEditIndex].getPath());
   this.list[this.onEditIndex].coords = newPath;
 
@@ -127,8 +127,12 @@ MyMap.prototype.getPath = function(){
   ];
 } 
 
+MyMap.prototype.getCoords = function(){
+  let newPath = outputPonits(this.polygons[this.onEditIndex].getPath());
+  return newPath;
+}
+
 MyMap.prototype.reset = function(){
-  this.map = null;
   this.list = [];
   this.markers = [];
   this.onEditIndex = -1;

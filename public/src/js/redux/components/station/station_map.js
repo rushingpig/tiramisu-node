@@ -40,12 +40,10 @@ export default class StationMap extends Component {
   editScope(){
     MyMap.editScope();
   }
-  addScope(city, address){
-    var { name, address} = this.props;
-    if(!name.defaultValue){
-      name.defaultValue = '配送站地址'
-      MyMap.locationCenter(city, address.value, {name: name.defaultValue, address: address.value});
-      MyMap.createNewScope();
-    }
+  addScope(city, address, name){
+    MyMap.createNewScope();
+  }
+  locationCenter(){
+    MyMap.locationCenter(city, address, {name: name, address: address});
   }
 }

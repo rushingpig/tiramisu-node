@@ -155,7 +155,7 @@ class StationRow extends Component{
   render(){
     var { props } = this;
     return (
-      <tr ref="station_row" onDoubleClick={this.doubleClickHandler} className={this.state.actived ? 'active':''} >
+      <tr ref="station_row" className={this.state.actived ? 'active':''} >
         <td><input type="checkbox" checked={props.checked}  onChange={this.checkStationHandler}/></td>
         <td>{props.regionalism_name}</td>
         <td>{props.name}</td>
@@ -181,10 +181,7 @@ class StationRow extends Component{
     const { station_id, editable, openEdit, closeEdit,editStationScope } = this.props;
     this.setState({actived: !editable});
     openEdit(editable);
-    if(!editable){
-      
     editStationScope(station_id);
-    }
     e.stopPropagation();
   }
   closeActive(){
@@ -192,7 +189,7 @@ class StationRow extends Component{
   }
   doubleClickHandler(){
     const { station_id, name, address, city_name } = this.props;
-    MyMap.centerAndZoomStation(station_id, name, city_name, address);
+    MyMap.centerAndZoomStation(name, city_name, address);
   }
 }
 
@@ -210,7 +207,7 @@ class StationManagePannel extends Component {
   render(){
     var { list, total, page_no, total,checked_station_ids, editable } = this.props.stations;
     var { openEdit, closeEdit, putMultipleStationScope } = this.props;
-    var { viewStationDetail, viewDeleteStation, checkStationHandler, editStationScope,closeActive } = this;
+    var { viewStationDetail, viewDeleteStation, checkStationHandler, editStationScope, closeActive } = this;
     var content = list.map((n, i) => {
       return <StationRow ref="station_row" key={n.station_id}
         {...{...n, ...this.props, editable, openEdit, closeEdit, viewStationDetail, viewDeleteStation, checkStationHandler, editStationScope }} />
@@ -325,7 +322,7 @@ class StationGroupMap extends Component {
   }
   componentDidUpdate (prevProps) {
     if(prevProps.list !== this.state.list){
-      MyMap.onEditIndex = -1;
+      MyMap.reset();
       MyMap.list = this.state.list;
       setTimeout(() => {
         MyMap.initialScope();

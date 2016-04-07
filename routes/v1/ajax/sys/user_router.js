@@ -23,7 +23,7 @@ module.exports = function(router){
 //******** PUT ********
 //*********************
     router.put('/user/:userId/usable',userService.enOrdisableUser);
-    router.put('/usert/:userId',userService.editUser);
+    router.put('/user/:userId',userService.editUser);
 
 //************************
 //******** DELETE ********

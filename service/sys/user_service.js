@@ -260,7 +260,7 @@ UserService.prototype.listUsers = (req,res,next) => {
                 let user_obj = {
                     city_names : curr.city_names,
                     id : curr.id,
-                    is_usable : curr.is_usable ? '是' : '否',
+                    is_usable : curr.is_usable,
                     mobile : curr.mobile,
                     name : curr.name,
                     username : curr.username,

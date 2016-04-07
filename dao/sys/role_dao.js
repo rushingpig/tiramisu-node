@@ -52,7 +52,7 @@ RoleDao.prototype.updateRoleById = function(role_id,role_obj){
     return baseDao.update(sql,params);
 };
 RoleDao.prototype.findRoleById = function(role_id){
-    let sql = "select * from ?? where role_id = ?";
+    let sql = "select * from ?? where id = ?";
     let params = [this.table,role_id];
     return baseDao.select(sql,params);
 };

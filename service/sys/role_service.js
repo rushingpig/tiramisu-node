@@ -123,7 +123,7 @@ RoleService.prototype.deleteRole = (req, res, next) => {
     systemUtils.wrapService(res, next, promise);
 };
 RoleService.prototype.getRoleDetail = (req, res, next) => {
-    req.checkParams('roleId', '请指定要删除的角色ID....').isInt();
+    req.checkParams('roleId', '请指定要获取的角色ID....').isInt();
     let errors = req.validationErrors();
     if (errors) {
         return res.api(res_obj.INVALID_PARAMS, errors);

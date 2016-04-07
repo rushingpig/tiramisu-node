@@ -95,6 +95,7 @@ UserDao.prototype.findUserById = function(user_id){
     return baseDao.select(sql,params);
 };
 UserDao.prototype.findUsers = function(query_data){
+    let prefix_sql = "select t.*,sr2.name as role_name from (",suffix_sql = "";
     let columns = [
         'su.username',
         'su.id',
@@ -102,16 +103,16 @@ UserDao.prototype.findUsers = function(query_data){
         'su.mobile',
         'su.city_ids',
         'su.is_usable',
-        'su.city_names',
-        'sr.name as role_name'
+        'su.city_names'
     ].join(','),params = [];
-    let sql = "select " + columns + " from ?? su";
+    let sql = "select distinct " + columns + " from ?? su";
     params.push(tables.sys_user);
     sql += " inner join ?? sur on sur.user_id = su.id";
     params.push(tables.sys_user_role);
+    sql += " inner join ?? sr on sr.id = sur.role_id";
+    params.push(tables.sys_role);
     if(query_data.org_id){
-        sql += " inner join ?? sr on sr.id = sur.role_id and sr.org_id = ?";
-        params.push(tables.sys_role);
+        sql += " and sr.org_id = ?";
         params.push(query_data.org_id);
     }
     sql += " where 1=1";
@@ -120,9 +121,16 @@ UserDao.prototype.findUsers = function(query_data){
         params.push('%'+query_data.uname_or_name+'%');
         params.push('%'+query_data.uname_or_name+'%');
     }
-    let count_sql = dbHelper.countSql(sql);
+    sql += " and su.del_flag = ?";
+    params.push(del_flag.SHOW);
+    suffix_sql += " )t inner join ?? sur2 on sur2.user_id = t.id";
+    params.push(tables.sys_user_role);
+    suffix_sql += " inner join ?? sr2 on sr2.id = sur2.role_id";
+    params.push(tables.sys_role);
+
+    let count_sql = dbHelper.countSql(prefix_sql + sql + suffix_sql);
     return baseDao.select(count_sql,params).then(result=>{
-        let pagination_sql = dbHelper.paginate(sql,query_data.page_no,query_data.page_size);
+        let pagination_sql = prefix_sql + dbHelper.paginate(sql,query_data.page_no,query_data.page_size) + suffix_sql;
         return baseDao.select(pagination_sql,params).then(_result => {
             return {result,_result};
         });

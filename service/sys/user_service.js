@@ -46,11 +46,13 @@ UserService.prototype.getUserInfo = (username, password)=> {
                     user.id = curr.id;
                     user.org_id = curr.org_id;
                     user.username = curr.username;
-                    user.city_ids = curr.city_ids.split(',');
-                    user.station_ids = curr.station_ids.split(',');
+                    user.city_ids = curr.city_ids ? curr.city_ids.split(',') : '';
+                    user.station_ids = curr.station_ids ? curr.station_ids.split(',') : '';
                     user.user_type = curr.user_type;
                     user.no = curr.no;
                     user.name = curr.name;
+                    user.is_headquarters = curr.is_headquarters;
+                    user.is_national = curr.is_national;
                 }
                 if(curr.permission) user.permissions.push(curr.permission);
                 if(curr.role_name && !roles_set.has(curr.role_id)){
@@ -79,36 +81,22 @@ UserService.prototype.addUser = (req,res,next) => {
     }
     let b = req.body;
     let user_obj = {
-        city_ids : b.city_ids.join(','),
+        city_ids : b.city_ids ? b.city_ids.join(',') : '',
         mobile : b.mobile,
         name : b.name,
         password : cryptoUtils.md5(b.password),
-        station_ids : b.station_ids,
+        station_ids : b.station_ids ? b.station_ids.join(',') : '',
         username : b.username
     };
     async.series([
         function(cb){
-            if(parseInt(b.is_national) === 1){
-                deliveryDao.findAllStations().then(stations => {
-                    let station_ids = [];
-                    stations.forEach(curr => {
-                        station_ids.push(curr.id);
-                    });
-                    user_obj.station_ids = station_ids.join(',');
-                    cb(null);
-                });
-            }else {
-                cb(null);
-            }
-        },
-        function(cb){
             if(parseInt(b.is_headquarters) === 1){
                 addressDao.findAllCities().then(cities => {
-                    let city_ids = [];
+                    let city_names = [];
                     cities.forEach(curr => {
-                        city_ids.push(curr.id);
+                        city_names.push(curr.name);
                     });
-                    user_obj.city_ids = city_ids.join(',');
+                    user_obj.city_names = city_names.join(',');
                     cb(null);
                 });
             }else {
@@ -213,12 +201,14 @@ UserService.prototype.getUserDetail = (req,res,next) => {
         let city_ids_str = '',station_ids_str = '';
         results.forEach((curr,index)=> {
             if(index === 0){
-                city_ids_str = curr.city_ids;
+                city_ids_str = curr.city_ids || '';
                 res_data.id = curr.id;
                 res_data.mobile = curr.mobile;
                 res_data.name = curr.name;
                 res_data.username = curr.username;
-                station_ids_str = curr.station_ids;
+                res_data.is_headquarters = curr.is_headquarters;
+                res_data.is_national = curr.is_national;
+                station_ids_str = curr.station_ids || '';
             }
             res_data.roles.push({role_id : curr.role_id,role_name : curr.role_name});
         });
@@ -264,18 +254,24 @@ UserService.prototype.listUsers = (req,res,next) => {
             total : _res.result[0].total,
             page_no : q.page_no
         };
+        let user_map = new Map();
         _res._result.forEach(curr=>{
-            let user_obj = {
-                city_names : curr.city_names,
-                id : curr.id,
-                is_usable : curr.is_usable ? '是' : '否',
-                mobile : curr.mobile,
-                name : curr.name,
-                role_name : curr.role_name,
-                username : curr.username
-            };
-            res_data.list.push(user_obj);
+            if(!user_map.has(curr.id)){
+                let user_obj = {
+                    city_names : curr.city_names,
+                    id : curr.id,
+                    is_usable : curr.is_usable ? '是' : '否',
+                    mobile : curr.mobile,
+                    name : curr.name,
+                    username : curr.username,
+                    role_names : curr.role_name
+                };
+                user_map.set(curr.id,user_obj);
+            }else{
+                user_map.get(curr.id).role_names += ','+curr.role_name;
+            }
         });
+        res_data.list = Array.from(user_map.values());
         res.api(res_data);
     });
     systemUtils.wrapService(res,next,promise);
@@ -295,31 +291,19 @@ UserService.prototype.editUser = (req,res,next) => {
         name : b.name,
         password : cryptoUtils.md5(b.password),
         station_ids : b.station_ids,
-        username : b.username
+        username : b.username,
+        is_headquarters : b.is_headquarters,
+        is_national : b.is_national
     };
     async.series([
         function(cb){
-            if(parseInt(b.is_national) === 1){
-                deliveryDao.findAllStations().then(stations => {
-                    let station_ids = [];
-                    stations.forEach(curr => {
-                        station_ids.push(curr.id);
-                    });
-                    user_obj.station_ids = station_ids.join(',');
-                    cb(null);
-                });
-            }else {
-                cb(null);
-            }
-        },
-        function(cb){
             if(parseInt(b.is_headquarters) === 1){
                 addressDao.findAllCities().then(cities => {
-                    let city_ids = [];
+                    let city_names = [];
                     cities.forEach(curr => {
-                        city_ids.push(curr.id);
+                        city_names.push(curr.name);
                     });
-                    user_obj.city_ids = city_ids.join(',');
+                    user_obj.city_names = city_names.join(',');
                     cb(null);
                 });
             }else {

@@ -3,7 +3,8 @@ import { reducer as formReducer, actionTypes } from 'redux-form';
 import { getGlobalStore, getGlobalState } from 'stores/getter';
 import { SELECT_DEFAULT_VALUE, pay_status as PAY_STATUS, SRC, MODES } from 'config/app.config';
 import { updateConfirmProductDiscountPrice } from 'actions/order_products';
-import { delay, each, getDate, form as FORM } from 'utils/index';
+import {getStationsByCityIds} from 'actions/user_manage_form';
+import { delay, each, getDate, form as FORM,map} from 'utils/index';
 
 import { REDUX_FORM_REINIT } from 'actions/form';
 import FormFields from 'config/form.fields';
@@ -34,6 +35,10 @@ export function isSrc(special_src_id, src_id){
 function getMode(mode_name){
   var { orderManageForm: { mainForm: { all_pay_modes }}} = getGlobalState();
   return all_pay_modes.filter( n => n.text == mode_name )[0] || {};
+}
+
+function _t(data){
+  return map(data, (text, id) => ({id, text}))
 }
 
 export default formReducer.plugin({
@@ -121,11 +126,29 @@ export default formReducer.plugin({
   },
   add_user:(state,action) =>{
     if(action && action.form =='add_user'){
-      if(action.field == 'dept_id'){
+/*      if(action.field == 'dept_id'){
         if(action.type == actionTypes.CHANGE){
           state.roles_in = {...state.roles_in||[],...state.tmp_roles||[]};
         }
+      }else if(action.field == 'province_id'){
+        if(action.type == actionTypes.CHANGE){
+          state.cities_in = {...state.cities_in||[],...state.tmp_cities||[]};
+        }
+      }*/
+      if(action.field == 'tmp_roles'){
+        if(action.type == actionTypes.CHANGE){
+          state.roles_in = {...state.roles_in||[],...state.tmp_roles||[]};
+        }
+      }else if(action.field == 'tmp_cities'){
+        if(action.type == actionTypes.CHANGE){
+          state.cities_in = {...state.cities_in||[],...state.tmp_cities||[]};
+        }
+      }else if(action.field == 'tmp_stations'){
+        if(action.type == actionTypes.CHANGE){
+          state.stations_in = {...state.stations_in||[],...state.tmp_stations||[]};
+        }
       }
+      /*if(action.field == '')*/
     }
     return state;  //required!
   },

@@ -103,11 +103,12 @@ export default function dept_role(ActionTypes=DeptRoleActionTypes){
         type:ActionTypes.RESET_ROLES
       }
     },
-    getStationsByCityIds:function(cities){
-      return {
+    getStationsByCityIds:function(city_ids){
+      return GET(Url.station_merge_list.toString(),{city_ids:city_ids},ActionTypes.GOT_STATIONS_BY_CITYIDS);
+/*     return {
         type:ActionTypes.GOT_STATIONS_BY_CITYIDS,
         data:{1:'xxx',2:'xxx'}
-      }
+      }*/
     },
 
   }

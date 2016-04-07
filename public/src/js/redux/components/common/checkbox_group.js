@@ -11,7 +11,7 @@ export default class CheckBoxGroup extends Component {
     var content = checkboxs.map((n, i) => {
       var item = (
         <label style={{ marginRight: space }} key={n.id}>
-          <input checked={value.some( m => m.id== n.id )} value={n.id} onClick={this.onCheck.bind(this,n.text)} type="checkbox" />
+          <input checked={value.some( m => m.id== n.id )} value={n.id} onChange={this.onCheck.bind(this,n.text)} onClick={this.onCheck.bind(this,n.text)} type="checkbox" />
           {' ' + n.text}
         </label>
       );

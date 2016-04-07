@@ -19,6 +19,51 @@ export function getUserById(id){
 	},GOT_USER_BY_ID)
 }
 
+function _getFormData(form_data,getState){
+  var username = form_data.username;
+  var password = form_data.pwd;
+  var mobile = form_data.mobile;
+  var name = form_data.name;
+  var city_ids = [];
+  var city_names=[];
+  var station_ids = [];
+  var role_ids = [];
+  var cities = form_data.cities_in;
+  var roles = form_data.roles_in;
+  var stations = form_data.stations_in;
+  var is_headquarters = 0;
+  var is_national = 0
+  cities.forEach((n)=>{
+    city_ids.push(n.id);
+    city_names.push(n.text);
+    if(n.id == 999){
+      is_headquarters=1;
+    }
+  });
+  roles.forEach((n)=>{
+    role_ids.push(n.id);
+  });
+  stations.forEach((n)=>{
+    station_ids.push(n.id);
+    if(n.id==999){
+      is_national=1;
+    }
+  })
+  return{
+    username,
+    password,
+    mobile,
+    name,
+    city_ids,
+    station_ids,
+    role_ids,
+    is_national,
+    is_headquarters,
+    city_names,
+  }
+
+}
+
 export const SAVE_USER_INFO_ING = 'SAVE_USER_INFO_ING';
 export const SAVE_USER_INFO_SUCCESS = 'SAVE_USER_INFO_SUCCESS';
 export const SAVE_USER_INFO_FAIL = 'SAVE_USER_INFO_FAIL';
@@ -30,7 +75,7 @@ export function createUser(form_data){
     dispatch({
       type: SAVE_USER_INFO_ING,
     });
-    return post(Url.user_add.toString(), form_data)
+    return post(Url.user_add.toString(), data)
       .done(function(){
         dispatch({
           type: SAVE_USER_INFO_SUCCESS,
@@ -79,4 +124,9 @@ export function getDeliveryStationsByCityId(city_ids){
 	return TEST({
 		
 	})
+}*/
+
+/*export const GET_STATIONS_BY_CITYIDS = 'GET_STATIONS_BY_CITYIDS';
+export function getStationsByCityIds(city_ids){
+  return GET(Url.station_merge_list.toString(),{city_ids:city_ids},GET_STATIONS_BY_CITYIDS);  
 }*/

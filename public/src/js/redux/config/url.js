@@ -92,20 +92,27 @@ const URL = (function(){
     //权限
     dept_list_info: '/orgs',   //所有部门信息
     user_list_info: '/users',  //用户列表信息
-    user_usable_alter:'/user/:userId/useable',  //改变用户状态
+    user_usable_alter:'/user/:userId/usable',  //改变用户状态
     
     user_delete:'/user/:userId', //删除用户
     user_detail: '/user/:userId',  //
     submit_user:'/user/:userId',  // 用户编辑
+    user_add:'/user',   //添加用户
 
     role_detail:'/role/:roleId',   //角色详情
     role_list_info: '/roles',  //角色信息
     role_add:'/role',     //角色添加
     role_del:'/role/:roleId',  //删除角色
     role_edit:'/role/:roleId', //角色编辑
+    station_merge_list:'/stations',  //获取多个城市下配送站
     
+
+
+
     role_data_access:'/role/dataScopes',       //角色数据权限
     dept_add:'/org',      //添加部门
+
+    
 
     role_list: '/roles',//角色列表
     authority_list: '/privileges',//权限列表

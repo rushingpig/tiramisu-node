@@ -35,18 +35,21 @@ const validate = (values,props) => {
       errors[key] = msg;
   }
 
-/*  function _v_checkboxgroup(key){
+  function _v_checkboxgroup(key){
     //|| values[key].length == 0
-    if(form[key] && form[key].touched && (!values[key]) || values[key].length==0)
-      errors[key] = labelmsg;
-  }*/
+    if(form[key] && form[key].touched && (!values[key]) || (values[key] != undefined && values[key].length==0))
+      errors[key] = msg;
+  }
 
   _v('username');
   _v('pwd');
   _v('name');
   _v_mobile('mobile');
-  _v_select('dept_id');
-  _v_select('province_id');
+  _v_checkboxgroup('stations_in');
+  _v_checkboxgroup('roles_in');
+
+/*  _v_select('dept_id');
+  _v_select('province_id');*/
 /*  _v_checkboxgroup('station_ids');
   _v_checkboxgroup('role_ids');*/
 
@@ -82,7 +85,9 @@ class ManageAddForm extends Component{
         province_id,
         tmp_roles,
         role_ids,
+        tmp_cities,
         city_ids,
+        tmp_stations,
         station_ids,
         cities_in,
         stations_in,
@@ -123,26 +128,56 @@ class ManageAddForm extends Component{
 
       </div>
       <div className="form-group form-inline">
-        <label>{'　所属角色：'}</label>
-        <Select ref='department' options={[{'id':999,'text':'全部角色'},...depts]} {...dept_id} className={`form-select ${dept_id.error}`} default-text="--请选择用户所属部门--" onChange={this.onDeptChange.bind(this,dept_id.onChange)} />
-        <CheckBoxGroup className="input-xs" ref='role' {...tmp_roles}  checkboxs={roles} />
-        <label >{'　已选角色：'}</label>
-        {/*<CheckBoxGroup  name="已选角色" {...role_ids} checkboxs={roles.filter( n => role_ids.value.some(m => m == n.id) )}/>*/}
-        <CheckBoxGroup  name="已选角色" checkboxs={roles_in.value||[]} value={roles_in.value}  {...roles_in}/>
+        <fieldset className={`box-wrapper ${roles_in.error}`} style={{'border':'1px solid #ddd'}}>
+          <legend style={{'padding':'5px 10px','fontSize':'14','width':'auto','border':'0'}}>角色选择</legend>
+          <div>
+            <label>{'　　　部门：'}</label>
+            <Select ref='department' options={[{'id':999,'text':'全部角色'},...depts]} {...dept_id} className="form-select" default-text="--请选择用户所属部门--" onChange={this.onDeptChange.bind(this,dept_id.onChange)} />
+            <div style={{'marginLeft':60,}}>
+              <CheckBoxGroup className="input-xs"  ref='role' {...tmp_roles}  checkboxs={roles} />
+            </div>
+            
+            <label >{'　已选角色：'}</label>
+            {/*<CheckBoxGroup  name="已选角色" {...role_ids} checkboxs={roles.filter( n => role_ids.value.some(m => m == n.id) )}/>*/}
+            <div style={{'marginLeft':60}}>
+              <CheckBoxGroup  name="已选角色" checkboxs={roles_in.value||[]} value={roles_in.value}  {...roles_in}/>
+            </div>
+          </div>
+        </fieldset>
+
         {/*checkboxs={roles.filter( n => role_ids.value.some(m => m == n.id) )}*/}
       </div>
       
 
       <div className="form-group form-inline" style={{'clear':'both'}}>
-        <label>{'　所属城市：'}</label>
-        <Select ref='province' className={`input-xs ${province_id.error}`} options={[{'id':999,'text':'全部城市'},...provinces]} {...province_id} onChange={this.onProvinceChange.bind(this,province_id.onChange)} />
-        <CheckBoxGroup name="城市" {...city_ids} checkboxs={cities} onChange={this.onCityChange.bind(this,city_ids.onChange)}/>
-        <label >{'　已选城市：'}</label>
-        <CheckBoxGroup ref='city' {...city_ids} checkboxs={[{'id':999,'text':'总部'},...cities.filter( n=> city_ids.value.some(m => m== n.id))]} />
-      </div>     
-      <div className="form-group form-inline" style={{clear:'both',}}>
-        <label className={`input-xs ${station_ids.error}`}>{'所属配送站：'}</label>
-          <CheckBoxGroup name="配送站" {...station_ids} checkboxs={[{'id':999,'text':'所属城市全部配送站'},...stations]} />
+        <fieldset className={`box-wrapper ${stations_in.error}`} style={{'border':'1px solid #ddd'}}>
+          <legend style={{'padding':'5px 10px','fontSize':'14','width':'auto','border':'0'}}>城市及配送站选择</legend>
+          <div>
+            <div className="form-group form-inline" style={{clear:'both',}}>
+              <label>{'　　　省份：'}</label>
+              <Select ref='province' className={`input-xs ${province_id.error}`} options={[{'id':999,'text':'全部城市'},...provinces]} {...province_id} onChange={this.onProvinceChange.bind(this,province_id.onChange)} />
+              <div style={{'marginLeft':60,}}>
+                <CheckBoxGroup name="城市" {...tmp_cities}  checkboxs={cities} onChange={this.onCityChange.bind(this,tmp_cities.onChange)}/>
+              </div>
+              <label >{'　已选城市：'}</label>
+              {/*<CheckBoxGroup ref='city' {...city_ids} checkboxs={[{'id':999,'text':'总部'},...cities.filter( n=> city_ids.value.some(m => m== n.id))]} />*/}
+              <div style={{'marginLeft':60,}}>
+                <CheckBoxGroup ref='city' {...cities_in} checkboxs={[{'id':999,'text':'总部'},...cities_in.value||[]]} value={cities_in.value}/>
+              </div>
+            </div>  
+            <hr/>   
+            <div className="form-group form-inline" style={{clear:'both',}}>
+              <label className={`input-xs ${station_ids.error}`}>{'所属配送站：'}</label>
+                <div style={{'marginLeft':60,}}>
+                  <CheckBoxGroup name="配送站" {...tmp_stations} checkboxs={stations}/>
+                </div>
+              <label  className="input-xs">{'已选配送站：'}</label>
+                <div style={{'marginLeft':60,}}>
+                  <CheckBoxGroup name="配送站" {...stations_in} checkboxs={[{'id':999,'text':'所属城市全部配送站'},...stations_in.value||[]]} value={stations_in.value}/>
+                </div>
+            </div>
+          </div>
+        </fieldset>
       </div>
       <div className="form-group" >
       {
@@ -218,9 +253,17 @@ class ManageAddForm extends Component{
   onCityChange(callback,e){
 
     //this.props.actions.
-    this.props.actions.resetStations();
-    if(e != [])
-      this.props.actions.getStationsByCityIds(e);
+    /*var {value} = e.target;*/
+      this.props.actions.resetStations();
+      if(e != []){
+        var city_id_str='';
+        e.forEach((n)=>{
+          city_id_str=n.id + ',' + city_id_str;
+        });
+        city_id_str=city_id_str.substring(0,city_id_str.length-1);
+        console.warn(city_id_str);
+        this.props.actions.getStationsByCityIds(city_id_str);
+      }
     callback(e);
     //var {value} = e.target;
     //console.log(value);

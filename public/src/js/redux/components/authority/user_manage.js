@@ -50,7 +50,7 @@ class FilterHeader extends Component {
   search(){
     this.setState({search_ing: true});
     var name = this.refs.name.value;
-    this.props.getUserListSearch({page_no: 0, page_size: this.props.page_size,uname_or_name:name})
+    this.props.getUserListSearch(0, this.props.page_size,name)
       .always(()=>{
         this.setState({search_ing: false});
       });
@@ -74,7 +74,7 @@ var UserRow = React.createClass({
   return (
       <tr>
         <td>
-          {props.rolename}
+          {props.role_names}
         </td>
         <td>
           {props.username}
@@ -125,7 +125,7 @@ class UserManagePannel extends Component{
   // console.log(this.props.deptListManage.list);
   var {page_no,total,loading,refresh,list}= this.props.UserListManage;
   var {dept_role} = this.props;
-  var {deleteUser,usableAlter} = this.props.actions;
+  var {userDelete,usableAlter} = this.props.actions;
   var {depts} = dept_role;
 
   var content = list.map((n,i)=>{
@@ -175,7 +175,7 @@ class UserManagePannel extends Component{
             />
           </div>
 
-          <DeleteUserModal ref='deleteUser' deleteUser={deleteUser} />
+          <DeleteUserModal ref='deleteUser' userDelete={userDelete} />
           <UsableAlterModal ref='usableAlter' usableAlter={usableAlter} />
         </div>
 
@@ -239,7 +239,7 @@ class DeleteUserModal extends Component{
     }
     onConfirm(){
       let user_id = this.state.user_id;
-      this.props.deleteUser(user_id);
+      this.props.userDelete(user_id);
       setTimeout(() => {
         this.refs.viewDeleteUserModal.hide();
       },500);

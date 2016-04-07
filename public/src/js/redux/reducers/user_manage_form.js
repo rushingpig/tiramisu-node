@@ -15,6 +15,9 @@ var initial_state={
 	data:{
 
 	},
+	stations:{
+
+	}
 };
 
 function mainForm(state=initial_state,action){
@@ -29,6 +32,8 @@ function mainForm(state=initial_state,action){
 				var cities_in=[];
 				var stations_in=[];
 				var tmp_roles=[];
+				var tmp_cities=[];
+				var tmp_stations=[];
 				data.stations.forEach(n=>{
 					station_ids.push(n.station_id);
 					stations_in.push({id:n.station_id,text:n.station_name});
@@ -41,7 +46,9 @@ function mainForm(state=initial_state,action){
 					city_ids.push(n.city_id);
 					cities_in.push({id:n.city_id,text:n.city_name});
 				});
-				return {...state,data:{...clone(action.data),city_ids:city_ids,station_ids:station_ids,role_ids:role_ids,roles_in:roles_in,stations_in:stations_in,cities_in:cities_in,tmp_roles:tmp_roles}};
+				return {...state,data:{...clone(action.data),city_ids:city_ids,station_ids:station_ids,
+					role_ids:role_ids,roles_in:roles_in,stations_in:stations_in,cities_in:cities_in,
+					tmp_roles:tmp_roles,tmp_cities:tmp_cities,tmp_stations:tmp_stations}};
 			})();
 			/*{...state,data:clone(action.data)};*/
 
@@ -51,6 +58,8 @@ function mainForm(state=initial_state,action){
 		  return {...state, save_success: true, save_ing: false }
 		case FormActions.SAVE_USER_INFO_FAIL:
 		  return {...state, save_success: false, save_ing: false }
+/*		case FormActions.GET_STATIONS_BY_CITYIDS:
+			return {...state,stations:clone(action.data)}*/
 		default:
 			return state;
 	}

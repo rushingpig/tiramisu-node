@@ -37,20 +37,23 @@ export function getRoleInfoList(org_id){
 
 export const GET_ROLE_DETAIL = 'GET_ROLE_DETAIL';
 export function getRoleDetail(roleId){
-/*  return (dispatch) => {
+  return (dispatch) => {
       return get(Url.role_detail.toString(roleId), null)
         .done((data) => {
           dispatch({
             type: GET_ROLE_DETAIL,
             data: data,
-            //id: roleId
+            roleId: roleId
           })
         })
-  } */
-  return {
+  } 
+/*  return {
     type:GET_ROLE_DETAIL,
     data:{description:'xxx',id:1,name:'文员',org_id:1,data_scope_id:2},
+<<<<<<< Updated upstream
   }
+=======
+  }*/
 }
 
 export const ADD_DEPT='ADD_DEPT';

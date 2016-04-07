@@ -1,8 +1,9 @@
 
-import {post, GET, POST, PUT, TEST,DEL } from 'utils/request'; //Promise
+import {post, GET, POST, PUT, TEST,del } from 'utils/request'; //Promise
 import Url from 'config/url';
 import { getValues } from 'redux-form';
 import Utils from 'utils/index';
+import {Noty} from 'utils/index';
 
 
 export const TOGGLE_DEPT = 'TOGGLE_DEPT';
@@ -171,7 +172,7 @@ export function getUserList(org_id,page_no,page_size){
 }
 
 export const GET_USER_LIST_SEARCH = 'GET_USER_LIST_SEARCH';
-export function getUserListSearch(org_id,page_no,page_size,uname_or_name){
+export function getUserListSearch(page_no,page_size,uname_or_name){
   return GET(Url.user_list_info.toString(),{uname_or_name:uname_or_name,page_no:page_no,page_size:page_size},GET_USER_LIST_SEARCH);
  /*
    return (dispatch,getState) =>{
@@ -198,12 +199,12 @@ export function getUserListSearch(org_id,page_no,page_size,uname_or_name){
 
 export const USABLE_ALTER = 'USABLE_ALTER';
 export function usableAlter(userId,is_usable){
-/*  return PUT(Url.user_usable_alter.toString(userId,is_usable),USABLE_ALTER);
-*/
-  return TEST(null,[
+  return PUT(Url.user_usable_alter.toString(userId),{is_usable:is_usable},USABLE_ALTER);
+
+/*  return TEST(null,[
     {type:USABLE_ALTER,key:0},
     {type:USABLE_ALTER,key:1}
-    ],2000);
+    ],2000);*/
 
   // return TEST(null, [
   //   {type: ALTER_STATION, key: 0},  //立即派发
@@ -214,19 +215,33 @@ export function usableAlter(userId,is_usable){
 export const  USER_DELETE = 'USER_DELETE';
 export function userDelete(userId){
   /*return DEL(Url.user_delete.toString(userId),USER_DELETE);*/
-
-  return TEST(null,[
+  return (dispatch) => {
+    return del(Url.user_delete.toString(userId), null)
+      .done(() => {
+        dispatch({
+          id: userId,
+          type: USER_DELETE
+        })
+        Noty('success', '删除成功');
+      })
+      .fail(function(msg, code){
+        Noty('error', msg || '删除异常');
+      });
+  }
+/*  return TEST(null,[
     {type:USER_DELETE,key:0},
     {type:USER_DELETE,key:1}
-    ],2000);
+    ],2000);*/
 }
 
-export const DELETE_USER = 'DELETE_USER';
+/*export const DELETE_USER = 'DELETE_USER';
 export function deleteUser(form_data){
   return {
     type:DELETE_USER
   }
-}
+}*/
+
+
 
 
 

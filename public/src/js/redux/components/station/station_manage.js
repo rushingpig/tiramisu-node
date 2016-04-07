@@ -101,7 +101,7 @@ class FilterHeader extends Component {
 	componentDidMount(){
     var { getProvinces, getAllStationsName, getStationList} = this.props;
     getProvinces();
-    getStationList({province_id: 440000, page_no: 0, page_size: 10})
+    getStationList({page_no: 0, page_size: 10})
     getAllStationsName();
     LazyLoad('noty');
   }

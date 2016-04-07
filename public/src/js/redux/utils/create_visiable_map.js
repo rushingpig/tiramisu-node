@@ -31,7 +31,7 @@ export function changePonits(points){
 }
 
 export function addInfoWindow(map,point,station_info){
-  var opts = {title: station_info.name, width: 220, height:60, offset: new BMap.Size(15,-20)}
+  var opts = {title: station_info.name, width: 0, height:0, offset: new BMap.Size(15,-20)}
   var sContent =
       "<p> 配送站地址：" + station_info.address + "</p>" 
   var infoWindow = new BMap.InfoWindow(sContent, opts);

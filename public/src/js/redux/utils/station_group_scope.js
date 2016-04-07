@@ -14,12 +14,10 @@ var MyMap = function(list){
   this.init_flag = 0;
 }
 
-MyMap.prototype.centerAndZoomStation = function(station_id, name, address){
+MyMap.prototype.centerAndZoomStation = function(station_id, name, city_name, address){
   let map = this.map;
-  let center = this.station_centers.station_id;
-  map.panTo(center);
+  this.searchStationAdress(city_name, address, name);
   map.setZoom(12);
-  addInfoWindow(map, center, {name: name, address: address});
 }
 
 MyMap.prototype.drawNewScope = function(){
@@ -46,8 +44,7 @@ MyMap.prototype.drawNewScope = function(){
   });
 }
 
-
-MyMap.prototype.searchStationAdress = function(city, address){
+MyMap.prototype.searchStationAdress = function(city, address, name){
   let map = this.map;
   if(!city || !address){
     // Noty('error', '地址未找到');
@@ -57,7 +54,8 @@ MyMap.prototype.searchStationAdress = function(city, address){
     localSearch.setSearchCompleteCallback( function(searchResult){
       var poi = searchResult && searchResult.getPoi(0);
       if(poi){
-        return poi.point;
+        map.panTo(poi.point);
+        addInfoWindow(map, poi.point, {name, address})
         console.log(poi.point.lng + "," + poi.point.lat);
       }else{
         console.log('error');
@@ -74,7 +72,6 @@ MyMap.prototype.initialScope = function(){
   let map = this.map;
   map.clearOverlays();
   this.list.map(n => {
-    self.station_centers[n.station_id] = self.searchStationAdress(n.city, n.address);
     if(n.coords){
       let points = changePonits(n.coords);
       let oldPolygon = new BMap.Polygon(points, oldPolygonStyle);

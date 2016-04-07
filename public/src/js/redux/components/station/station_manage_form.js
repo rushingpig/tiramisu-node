@@ -60,10 +60,7 @@ const FormGroup = props => (
 class StationManageForm extends Component {
   constructor(props){
     super(props);
-    this.state = {
-      openEdit: false,
-      closeEdit: false
-    }
+    this.state = {};
   }
   render(){
     var {
@@ -129,9 +126,9 @@ class StationManageForm extends Component {
           {
             editable
             ? [
-                <button key="editBtn" disabled={this.state.openEdit} onClick={this.editScope.bind(this)} className="btn btn-theme btn-xs">修改配送区域</button>,
+                <button key="editBtn" onClick={this.editScope.bind(this)} className="btn btn-theme btn-xs">修改配送区域</button>,
                 '　　',
-                <button key="stopBtn" disabled={this.state.closeEdit} onClick={this.stopEditScope.bind(this)} className="pull-right btn btn-theme btn-xs">停止修改</button>,
+                <button key="stopBtn" onClick={this.stopEditScope.bind(this)} className="pull-right btn btn-theme btn-xs">停止修改</button>,
                 '　　',
                 <button
                   key="saveBtn" 
@@ -141,9 +138,9 @@ class StationManageForm extends Component {
                   className="btn btn-theme btn-xs">保存</button>
               ]
             : [
-                <button key="editBtn" onClick={this.addScope.bind(this)} disabled={this.state.openEdit} className="btn btn-theme btn-xs">添加配送区域</button>,
+                <button key="editBtn" onClick={this.addScope.bind(this)} className="btn btn-theme btn-xs">添加配送区域</button>,
                 '　　',
-                <button key="stopBtn" disabled={this.state.closeEdit} onClick={this.stopEditScope.bind(this)} className="pull-right btn btn-theme btn-xs">停止修改</button>,
+                <button key="stopBtn" onClick={this.stopEditScope.bind(this)} className="pull-right btn btn-theme btn-xs">停止修改</button>,
                 '　　',
                 <button
                   key="saveBtn" 
@@ -227,15 +224,9 @@ class StationManageForm extends Component {
     return $(findDOMNode(this.refs[_refs])).find('option:selected').html();
   }
   stopEditScope(){
-    this.setState({
-      closeEdit: true
-    });
     this.refs.stationMap.stopEditScope();
   }
   editScope(){
-    this.setState({
-      openEdit: true
-    });
     this.refs.stationMap.editScope();
   }
   addScope(){

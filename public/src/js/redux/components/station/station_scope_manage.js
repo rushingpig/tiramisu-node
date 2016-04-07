@@ -102,7 +102,7 @@ class FilterHeader extends Component {
     if(params && params.id){
       getStationListById(params.id)
     }else{
-      getStationList({province_id: 440000, city_id: 440300, page_no: 0, page_size: 10})
+      getStationList({page_no: 0, page_size: 10})
     }
     getAllStationsName();
     LazyLoad('noty');
@@ -181,15 +181,18 @@ class StationRow extends Component{
     const { station_id, editable, openEdit, closeEdit,editStationScope } = this.props;
     this.setState({actived: !editable});
     openEdit(editable);
+    if(!editable){
+      
     editStationScope(station_id);
+    }
     e.stopPropagation();
   }
   closeActive(){
     this.setState({actived: false});
   }
   doubleClickHandler(){
-    const { station_id, name, address } = this.props;
-    MyMap.centerAndZoomStation(station_id, name, address);
+    const { station_id, name, address, city_name } = this.props;
+    MyMap.centerAndZoomStation(station_id, name, city_name, address);
   }
 }
 
@@ -333,7 +336,7 @@ class StationGroupMap extends Component {
     if(MyMap.onEditIndex == -1){
       MyMap.enableEdit(station_id);
     }else{
-      Noty('warning','请确定已停止修改');
+      Noty('warning','请确定已停止当前修改操作或已提交');
     }
   }
   stopEditScope(){

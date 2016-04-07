@@ -54,7 +54,7 @@ DeliveryService.prototype.getDeliveryStationList = (req,res,next)=>{
                         city_ids.push(curr.id);
                     });
                 });
-                query_data.city_ids = city_ids.join(',');
+                query_data.city_ids = city_ids;
                 cb(null);
             }else{
                 cb(null);

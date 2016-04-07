@@ -86,7 +86,8 @@ UserService.prototype.addUser = (req,res,next) => {
         name : b.name,
         password : cryptoUtils.md5(b.password),
         station_ids : b.station_ids ? b.station_ids.join(',') : '',
-        username : b.username
+        username : b.username,
+        city_names : b.city_names ? b.city_names.join(',') : ''
     };
     async.series([
         function(cb){

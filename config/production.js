@@ -95,7 +95,9 @@ var white_ips = [
     // internal xfxb_qa
     // '10.46.89.45',
     // internal production
-    '10.45.190.193'
+    '10.45.190.193',
+    // 聚石塔LANIP
+    '10.132.164.32'
 ];
 
 var log4js_options = {

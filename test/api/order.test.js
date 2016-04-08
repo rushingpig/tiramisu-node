@@ -719,6 +719,49 @@ module.exports = function () {
         .expect(200, res_body, err(done));
     });
 
+    it('POST /v1/i/order with src_id > 10000 without pre-defined', function (done) {
+      const req_body = {
+        "regionalism_id": "430602",
+        "recipient_name": "李雪良",
+        "recipient_mobile": "1387308****",
+        "recipient_landmark": "",
+        "recipient_address": "岳阳火车站后面",
+        "delivery_id": -1,
+        "src_id": 10500,
+        "pay_modes_id": 3,
+        "pay_status": "PAYED",
+        "owner_name": "李慧",
+        "owner_mobile": "1387308****",
+        "remarks": "其他加盟城市满138减59",
+        "delivery_time": "2016-02-15 10:30~11:30",
+        "delivery_type": "DELIVERY",
+        "total_amount": 7900,
+        "total_original_price": 13800,
+        "total_discount_price": 5900,
+        "merchant_id": "old_system_2",
+        "products": [
+          {
+            "sku_id": 23947,
+            "num": 1,
+            "choco_board": "爸爸，祝您生日快乐",
+            "greeting_card": null,
+            "discount_price": 0,
+            "amount": 138
+          }
+        ]
+      };
+      const res_body = {
+        code: "2009",
+        err: "ER_BAD_NULL_ERROR: Column 'src_id' cannot be null",
+        msg: "Error happened when performing query",
+        data: {}
+      };
+      agent.post('/v1/i/order')
+        .type('application/json')
+        .send(req_body)
+        .expect(200, res_body, err(done));
+    });
+
     it('POST /v1/i/order/error correct', function (done) {
       const req_body = {
         'merchant_id': 'abcde',

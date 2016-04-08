@@ -323,7 +323,7 @@ UserService.prototype.editUser = (req,res,next) => {
                 }
                 let user_role_objs = [];
                 b.role_ids.forEach(curr=>{
-                    user_role_objs.push([insertId,curr]);
+                    user_role_objs.push([user_id,curr]);
                 });
                 return userDao.batchInsertUserRole(user_role_objs);
             }).then(affectRows => {

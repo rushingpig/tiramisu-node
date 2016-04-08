@@ -105,7 +105,8 @@ UserDao.prototype.findUsers = function(query_data){
         'su.mobile',
         'su.city_ids',
         'su.is_usable',
-        'su.city_names'
+        'su.city_names',
+        'su.is_headquarters'
     ].join(','),params = [];
     let sql = "select distinct " + columns + " from ?? su";
     params.push(tables.sys_user);

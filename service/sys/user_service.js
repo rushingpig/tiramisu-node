@@ -259,7 +259,7 @@ UserService.prototype.listUsers = (req,res,next) => {
         _res._result.forEach(curr=>{
             if(!user_map.has(curr.id)){
                 let user_obj = {
-                    city_names : curr.city_names,
+                    city_names : curr.is_headquarters ? '总部' : curr.city_names,
                     id : curr.id,
                     is_usable : curr.is_usable,
                     mobile : curr.mobile,

@@ -49,11 +49,13 @@ class ManageUserDetailPannel extends Component{
           <ManageUserFormCreate 
             form-data={mainForm}
             user_id={params.id}
+            editable={editable}
             area = {area}
             {...this.props} />
           :<ManageUserFormEdit 
             form-data = {mainForm}
             user_id={params.id}
+            editable={editable}
             area = {area}
             {...this.props}/>
             /*<ManageUserFormEdit 

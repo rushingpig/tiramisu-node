@@ -19,7 +19,7 @@ import history from 'history_instance';
 class FilterHeader extends Component {
   constructor(props){
     super(props);
-    this.state = {search_ing:false,name:''}
+    this.state = {search_ing:false}
   }
   render(){
     var {search_ing} = this.state;
@@ -50,7 +50,7 @@ class FilterHeader extends Component {
   search(){
     this.setState({search_ing: true});
     var name = this.refs.name.value;
-    this.props.getUserListSearch(0, this.props.page_size,name)
+    this.props.getUserList(0,name,0, this.props.page_size)
       .always(()=>{
         this.setState({search_ing: false});
       });
@@ -115,6 +115,8 @@ class UserManagePannel extends Component{
     super(props);
     this.state={
       page_size:10,
+/*      dept_id:0,
+      uname_or_name:'',*/
     }
     this.viewDeleteUserModal = this.viewDeleteUserModal.bind(this);
     this.viewUsableAlterModal = this.viewUsableAlterModal.bind(this);
@@ -123,7 +125,7 @@ class UserManagePannel extends Component{
   render(){
    // var { loading ,refresh } = this.props;
   // console.log(this.props.deptListManage.list);
-  var {page_no,total,loading,refresh,list}= this.props.UserListManage;
+  var {page_no,dept_id,uname_or_name,total,loading,refresh,list}= this.props.UserListManage;
   var {dept_role} = this.props;
   var {userDelete,usableAlter} = this.props.actions;
   var {depts} = dept_role;
@@ -135,7 +137,7 @@ class UserManagePannel extends Component{
   })
     return (
         <div className="">
-          <FilterHeader page_size={this.state.page_size} getUserListSearch={this.props.actions.getUserListSearch}/>
+          <FilterHeader page_size={this.state.page_size} getUserList={this.props.actions.getUserList}/>
 
           <div className="panel">
             <div className="container-fluid" style={{paddingTop:'20',minHeight:'600'}}>
@@ -190,8 +192,9 @@ class UserManagePannel extends Component{
  
   search(page){
     //搜索数据，无需loading图
-    page = typeof page == 'undefined' ? this.props.UserListManage.page_no : page;
-    this.props.actions.getUserList({page_no: page, page_size: this.state.page_size});
+    var {dept_id,page_no,uname_or_name} = this.props.UserListManage;
+    page = typeof page == 'undefined' ? page_no : page;
+    this.props.actions.getUserList(dept_id,uname_or_name,page,this.state.page_size);      
   }
 
   viewDeleteUserModal(id){
@@ -205,15 +208,18 @@ class UserManagePannel extends Component{
   componentDidMount(){
     setTimeout(()=>{
       var {getUserList,getDepts} = this.props.actions;
+      var {page_no,uname_or_name} = this.props.UserListManage;
+      var dept_id=0;
       getDepts();
-      getUserList(1,0,this.state.page_size);
-      this.search();
+      getUserList(dept_id,uname_or_name,0,this.state.page_size);
+      //this.search();
     },0)
   }
 
   onToggleDept(dept_id){
-    this.props.actions.getDepts(dept_id);
-    this.props.actions.toggleDept(dept_id);
+    //this.props.actions.getDepts(dept_id);
+    var {page_no,uname_or_name} = this.props.UserListManage;
+    this.props.actions.getUserList(dept_id,uname_or_name,0,this.state.page_size);
   }
 }
 

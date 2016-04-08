@@ -34,6 +34,13 @@ function mainForm(state=initial_state,action){
 				var tmp_roles=[];
 				var tmp_cities=[];
 				var tmp_stations=[];
+				var is_headquarers = data.is_headquarers;
+				var is_national = data.is_national;
+
+				if(is_headquarers)
+					cities_in.push({id:'999',text:'总部'});
+				if(is_national)
+					stations_in.push({id:'999',text:'所属城市全部配送站'});
 				data.stations.forEach(n=>{
 					station_ids.push(n.station_id);
 					stations_in.push({id:n.station_id,text:n.station_name});
@@ -46,7 +53,10 @@ function mainForm(state=initial_state,action){
 					city_ids.push(n.city_id);
 					cities_in.push({id:n.city_id,text:n.city_name});
 				});
-				return {...state,data:{...clone(action.data),city_ids:city_ids,station_ids:station_ids,
+				//data.cities.push({id:'999',text:'总部'})
+
+
+				return {...state,data:{...clone(data),city_ids:city_ids,station_ids:station_ids,
 					role_ids:role_ids,roles_in:roles_in,stations_in:stations_in,cities_in:cities_in,
 					tmp_roles:tmp_roles,tmp_cities:tmp_cities,tmp_stations:tmp_stations}};
 			})();

@@ -157,40 +157,44 @@ class ManageAddForm extends Component{
               <label>{'　　　省份：'}</label>
               <Select ref='province' className={`input-xs ${province_id.error}`} options={[{'id':999,'text':'全部城市'},...provinces]} {...province_id} onChange={this.onProvinceChange.bind(this,province_id.onChange)} />
               <div style={{'marginLeft':60,}}>
-                <CheckBoxGroup name="城市" {...tmp_cities}  checkboxs={cities} onChange={this.onCityChange.bind(this,tmp_cities.onChange)}/>
+                <CheckBoxGroup name="城市" {...tmp_cities}  checkboxs={[{'id':999,'text':'总部'},...cities]} onChange={this.onCityChange.bind(this,tmp_cities.onChange)}/>
               </div>
               <label >{'　已选城市：'}</label>
               {/*<CheckBoxGroup ref='city' {...city_ids} checkboxs={[{'id':999,'text':'总部'},...cities.filter( n=> city_ids.value.some(m => m== n.id))]} />*/}
               <div style={{'marginLeft':60,}}>
-                <CheckBoxGroup ref='city' {...cities_in} checkboxs={[{'id':999,'text':'总部'},...cities_in.value||[]]} value={cities_in.value}/>
+                <CheckBoxGroup ref='city' {...cities_in} checkboxs={cities_in.value||[]} value={cities_in.value}/>
               </div>
             </div>  
             <hr/>   
             <div className="form-group form-inline" style={{clear:'both',}}>
               <label className={`input-xs ${station_ids.error}`}>{'所属配送站：'}</label>
                 <div style={{'marginLeft':60,}}>
-                  <CheckBoxGroup name="配送站" {...tmp_stations} checkboxs={stations}/>
+                  <CheckBoxGroup name="配送站" {...tmp_stations} checkboxs={[{'id':999,'text':'所属城市全部配送站'},...stations]}/>
                 </div>
               <label  className="input-xs">{'已选配送站：'}</label>
                 <div style={{'marginLeft':60,}}>
-                  <CheckBoxGroup name="配送站" {...stations_in} checkboxs={[{'id':999,'text':'所属城市全部配送站'},...stations_in.value||[]]} value={stations_in.value}/>
+                  <CheckBoxGroup name="配送站" {...stations_in} checkboxs={stations_in.value||[]} value={stations_in.value}/>
                 </div>
             </div>
           </div>
         </fieldset>
       </div>
       <div className="form-group" >
+        <button
+            key="cancelBtn"
+            onClick={this.cancel}
+            className="btn btn-default btn-xs space-right">取消</button>      
       {
         !editable
         ?
         <button
             key="submitBtn"
             onClick={handleSubmit(this._check.bind(this, this.handleCreateUser))}
-            className="btn btn-theme btn-xs">提交</button>
+            className="btn btn-theme btn-xs space-left">提交</button>
             :
         <button 
           onClick={handleSubmit(this._check.bind(this,this.handleSubmitUser))} 
-          className="btn btn-theme btn-xs">提交</button>
+          className="btn btn-theme btn-xs space-left">提交</button>
       }
       </div>
     </div>
@@ -229,6 +233,9 @@ class ManageAddForm extends Component{
         Noty('error', msg || '操作异常');
       });
 
+  }
+  cancel(){
+    history.push("/am/user");
   }
   componentDidMount(){
 /*    var {getDepts} = this.props.actions;

@@ -6,8 +6,8 @@ import clone from 'clone';
 
 export const  GOT_USER_BY_ID = 'GOT_USER_BY_ID';
 export function getUserById(id){
-	/*return GET(Url.user_info.toString(id),null,GOT_USER_BY_ID);*/
-	return TEST({
+	return GET(Url.user_detail.toString(id),null,GOT_USER_BY_ID);
+/*	return TEST({
 			
 		'mobile':'15814063438',
 		'name':'张娜',		
@@ -16,7 +16,7 @@ export function getUserById(id){
     'cities':[{'city_id':1,'city_name':'xxx'}],
 		'stations':[{'station_id':1,'station_name':'xxx'}],
     'roles':[{'role_id':1,'role_name':'xxx'}],
-	},GOT_USER_BY_ID)
+	},GOT_USER_BY_ID)*/
 }
 
 function _getFormData(form_data,getState){
@@ -101,13 +101,15 @@ export const SUBMIT_USER='SUBMIT_USER';
 export function submitUser(form_data){
   //若是异步的话，那么该函数必须也返回一个函数
   return (dispatch, getState) => {
+    var data = _getFormData(form_data, getState);
+    var userId = form_data.user_id;
     dispatch({
       type: SUBMIT_ING,
     });
-    if(!form_data.user_id){
+    if(!userId){
       throw Error('user_id should not be undefined');
     }
-    return put(Url.submit_user.toString(form_data.user_id), form_data)
+    return put(Url.submit_user.toString(userId), data)
       .always(function(){
         dispatch({
           type: SUBMIT_COMPLETE,

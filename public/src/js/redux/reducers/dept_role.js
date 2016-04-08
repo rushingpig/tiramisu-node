@@ -33,7 +33,7 @@ export function dept_role(Actions=DeptRoleActionTypes){
 			case Actions.GOT_ROLES:
 				return {...state,roles:_c(action.data.list)};
 			case Actions.GOT_ALL_ROLES:
-				return {...state,roles:_t(action.data)};
+				return {...state,roles:_c(action.data.list)};
 			case Actions.GOT_DATA_ACCESS:
 				return {...state,dataaccess:_c(action.data)};
 			case Actions.GOT_STATIONS_BY_CITYIDS:

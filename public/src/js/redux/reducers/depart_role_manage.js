@@ -36,8 +36,7 @@ var initial_roleinfo_state={
 }
 
 var initial_role_state = {
-  role_id:undefined,
-  role_info:null,
+  role_info:{},
 }
 
 function RoleInfoListManage(state=initial_roleinfo_state,action){
@@ -46,6 +45,11 @@ function RoleInfoListManage(state=initial_roleinfo_state,action){
       return {...state,total:clone(action.data.total),list:clone(action.data.list)};
     case Actions.TOGGLE_DEPT:
       return {...state,total:clone(action.data.total),list:clone(action.data.list)};
+    case Actions.DELETE_ROLE:
+      var list = state.list.filter((n)=>{
+        return n.id !== action.roleId;
+      })
+      return {...state,list:clone(list)}
     default:
       return state;
   }

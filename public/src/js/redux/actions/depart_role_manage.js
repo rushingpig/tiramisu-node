@@ -43,7 +43,6 @@ export function getRoleDetail(roleId){
           dispatch({
             type: GET_ROLE_DETAIL,
             data: data,
-            roleId: roleId
           })
         })
   } 
@@ -86,7 +85,8 @@ export function deleteRole(roleId){
     return del(Url.role_del.toString(roleId),null)
       .done(() => {
         dispatch({
-          type: DELETE_ROLE
+          type: DELETE_ROLE,
+          roleId:roleId,
         })
         Noty('success', '删除成功');
       })

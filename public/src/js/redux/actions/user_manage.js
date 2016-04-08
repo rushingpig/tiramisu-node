@@ -1,44 +1,21 @@
 
-import {post, GET, POST, PUT, TEST,del } from 'utils/request'; //Promise
+import {post, GET, POST, PUT, TEST,del,get,put} from 'utils/request'; //Promise
 import Url from 'config/url';
 import { getValues } from 'redux-form';
 import Utils from 'utils/index';
 import {Noty} from 'utils/index';
 
 
-export const TOGGLE_DEPT = 'TOGGLE_DEPT';
-export function toggleDept( dept_id ){
-/*  return {
-    type: TOGGLE_DEPT,
-    id: dept_id
-  }*/
-
-  return TEST({
-    total:2,
-    list:[{
-      'id':301,
-      'city_name':'深圳',
-      'is_usable':true,
-      'mobile':'15814063438',
-      'name':'张娜',
-      'rolename':'物控部文员',   //role_id:101
-      'username':'zhangna',
-    },{
-      'id':302,
-      'city_name':'深圳',
-      'is_usable':false,
-      'mobile':'13424384363',
-      'name':'胡蝶',
-      'rolename':'物控部主管',   //role_id:102
-      'username':'hudie',
-    }]
-
-  },TOGGLE_DEPT);
-  return {
-    type: TOGGLE_DEPT,
-    id: dept_id
+/*export const TOGGLE_DEPT = 'TOGGLE_DEPT';
+export function toggleDept( org_id ,uname_or_name,page_no,page_size){
+  var data = {page_size:page_size,page_no:page_no};
+  if(org_id != 0){
+    data={...data,org_id:org_id};
+  }else if(uname_or_name != ""){
+    data = {...data,uname_or_name:uname_or_name};
   }
-}
+  return GET(Url.user_list_info.toString(),data,TOGGLE_DEPT);
+}*/
 
 export const GET_ROLE_LIST = 'GET_ROLE_LIST';
 export function getRoleList(dept_id){
@@ -70,8 +47,32 @@ export function getDeptList(){
   }*/
 
 export const GET_USER_LIST = 'GET_USER_LIST';
-export function getUserList(org_id,page_no,page_size){
-  return GET(Url.user_list_info.toString(),{org_id:org_id,page_no:page_no,page_size:page_size},GET_USER_LIST);
+export function getUserList(org_id,uname_or_name,page_no,page_size){
+  var data = {page_size:page_size,page_no:page_no};
+  if(org_id != 0){
+    data={...data,org_id:org_id};
+  }else if(uname_or_name != ""){
+    data = {...data,uname_or_name:uname_or_name};
+  }
+  return (dispatch) => {
+    return get(Url.user_list_info.toString(), data,GET_USER_LIST)
+      .done((data)=>{
+        dispatch({
+          dept_id:org_id,
+          uname_or_name:uname_or_name,
+          page_no:page_no,
+          data:data,
+          type: 'GET_USER_LIST',
+        });        
+      });
+/*    dispatch({
+      dept_id:org_id,
+      uname_or_name:uname_or_name,
+      type: 'GET_USER_LIST',
+    })
+    return GET(Url.user_list_info.toString(), data,GET_USER_LIST))(dispatch);*/
+  }
+  /*return GET(Url.user_list_info.toString(),data,GET_USER_LIST),org_id,uname_or_name;*/
 /*  return (dispatch,getState) =>{
     
   }*/
@@ -171,45 +172,26 @@ export function getUserList(org_id,page_no,page_size){
   },GET_USER_LIST);*/
 }
 
-export const GET_USER_LIST_SEARCH = 'GET_USER_LIST_SEARCH';
+/*export const GET_USER_LIST_SEARCH = 'GET_USER_LIST_SEARCH';
 export function getUserListSearch(page_no,page_size,uname_or_name){
   return GET(Url.user_list_info.toString(),{uname_or_name:uname_or_name,page_no:page_no,page_size:page_size},GET_USER_LIST_SEARCH);
- /*
-   return (dispatch,getState) =>{
-    
- }*/
-
-/*   return TEST({
-    total:1,
-    page_no:1,
-    list:[{
-      'id':301,
-      'city_name':'深圳',
-      'is_usable':true,
-      'mobile':'15814063438',
-      'name':'张娜',
-      'rolename':'物控部文员',   //role_id:101
-      'username':'zhangna',
-    }]
-  },
-  GET_USER_LIST_SEARCH);*/
-}
+}*/
 
 
 
 export const USABLE_ALTER = 'USABLE_ALTER';
 export function usableAlter(userId,is_usable){
-  return PUT(Url.user_usable_alter.toString(userId),{is_usable:is_usable},USABLE_ALTER);
-
-/*  return TEST(null,[
-    {type:USABLE_ALTER,key:0},
-    {type:USABLE_ALTER,key:1}
-    ],2000);*/
-
-  // return TEST(null, [
-  //   {type: ALTER_STATION, key: 0},  //立即派发
-  //   {type: ALTER_STATION, key: 1}   //2000毫秒后派发
-  // ], 2000);
+  return (dispatch) => {
+    return put(Url.user_usable_alter.toString(userId),{is_usable:is_usable})
+            .done(()=> {
+              dispatch({
+                id:userId,
+                is_usable:is_usable,
+                type:USABLE_ALTER,
+              })
+            })
+  }
+  /*return PUT(Url.user_usable_alter.toString(userId),{is_usable:is_usable},USABLE_ALTER);*/
 }
 
 export const  USER_DELETE = 'USER_DELETE';

@@ -85,11 +85,11 @@ export default function dept_role(ActionTypes=DeptRoleActionTypes){
     	}*/
     },
     getAllRoles:function(){
-      /*return GET(Url.role_list_info.toString(),null,ActionTypes.GOT_ALL_ROLES);*/
-      return {
+      return GET(Url.role_list_info.toString(),null,ActionTypes.GOT_ALL_ROLES);
+/*      return {
         type:ActionTypes.GOT_ALL_ROLES,
         data:{1:'话务专员',2:'订单专员',3:'售后客服',4:'客服部主管',5:'客服部经理',6:'xxxx',7:'xxxx'}
-      }
+      }*/
     },
     getDataAccess:function(){
       return GET(Url.role_data_access.toString(),null,ActionTypes.GOT_DATA_ACCESS);

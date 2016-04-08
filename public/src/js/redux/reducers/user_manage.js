@@ -29,6 +29,8 @@ import {dept_role} from './dept_role';
 var initial_state = {
   total:0,
   page_no:0,
+  uname_or_name:'',
+  dept_id:0,
   list:[],
 }
 
@@ -111,11 +113,26 @@ function accessManage( state = initial_state, action){
 function UserListManage(state = initial_state,action){
   switch( action.type ){
     case UserActions.GET_USER_LIST:
-      return {...state,total:clone(action.data.total),list:clone(action.data.list)};
-    case UserActions.GET_USER_LIST_SEARCH:
+      return {...state,total:clone(action.data.total),list:clone(action.data.list),
+        uname_or_name:clone(action.uname_or_name),dept_id:clone(action.dept_id),
+        page_no:clone(action.page_no)};
+    case UserActions.USER_DELETE:
+      var list = state.list.filter((n)=>{
+        return n.id !== action.id;
+      })
+      return {...state,list:clone(list)}
+    case UserActions.USABLE_ALTER:
+      var list = state.list;
+      list.forEach((n)=>{
+        if(n.id==action.id){
+          n.is_usable = action.is_usable;
+        }
+      })
+      return {...state,list:clone(list)}
+/*    case UserActions.GET_USER_LIST_SEARCH:
       return {...state,total:clone(action.data.total),list:clone(action.data.list)};
     case UserActions.TOGGLE_DEPT:
-      return {...state,total:clone(action.data.total),list:clone(action.data.list)};
+      return {...state,total:clone(action.data.total),list:clone(action.data.list)};*/
     default:
       return state;
   }
@@ -143,28 +160,12 @@ var main_state={
   submitting:false,
 }
 
-function main(state=main_state,action){
-  switch(action.type){
-    case UserActions.USER_DELETE:
-    case UserActions.USABLE_ALTER:
-      if(action.key == REQUEST.ING){
-        return {...state, submitting: true }
-      }else if(action.key == REQUEST.SUCCESS || action.key == REQUEST.FAIL){
-        return {...state, submitting: false }
-      }else{
-        console.error('error?')
-      }
-    default:
-      return state;
-  }
-}
 export default combineReducers({
   /*area:area(),*/
   accessManage,
   UserListManage,
   RoleListManage,
   UserInfoManage,
-  main,
   dept_role:dept_role(),
 })
 

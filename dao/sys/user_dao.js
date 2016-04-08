@@ -81,6 +81,8 @@ UserDao.prototype.findUserById = function(user_id){
         'su.mobile',
         'su.is_usable',
         'su.station_ids',
+        'su.is_headquarters',
+        'su.is_national',
         'sr.id as role_id',
         'sr.name as role_name'
     ].join(','),params = [];
@@ -128,7 +130,7 @@ UserDao.prototype.findUsers = function(query_data){
     suffix_sql += " inner join ?? sr2 on sr2.id = sur2.role_id";
     params.push(tables.sys_role);
 
-    let count_sql = dbHelper.countSql(prefix_sql + sql + suffix_sql);
+    let count_sql = dbHelper.countSql(sql);
     return baseDao.select(count_sql,params).then(result=>{
         let pagination_sql = prefix_sql + dbHelper.paginate(sql,query_data.page_no,query_data.page_size) + suffix_sql;
         return baseDao.select(pagination_sql,params).then(_result => {

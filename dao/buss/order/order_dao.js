@@ -164,7 +164,7 @@ OrderDao.prototype.updateOrderSrc = function (orderSrcId, orderSrcObj) {
                     let sql = _this.base_select_sql + 'and id = ?';
                     let params = [['id', 'parent_ids', 'level', 'merge_name'], tables.buss_order_src, del_flag.SHOW, orderSrcObj.parent_id];
                     let parent = yield baseDao.select(sql, params);
-                    if (parent.length == 0) {
+                    if (parent.length === 0) {
                         return yield Promise.reject(new TiramisuError(res_obj.INVALID_ORDER_SRC_PARENT_ID));
                     }
                     parent = parent[0];
@@ -522,7 +522,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
         sql += " and bo.is_deal = 1";
     }
     if (query_data.is_submit == 0) {
-        sql += " and bo.is_submit = 0"
+        sql += " and bo.is_submit = 0";
     }else if(query_data.is_submit == 1){
         sql += " and bo.is_submit = 1";
     }
@@ -983,6 +983,12 @@ const srcIdMapping = new Map(
         [ 12031,33 ],
         [ 12032,34 ],
         [ 12033,35 ],
+        /* TODO: add the matching new src_id
+        [ 12034, ],
+        [ 12035, ],
+        [ 12036, ],
+        [ 12037, ]
+        */
         [ 11007,38 ],
         [ 11012,39 ],
         [ 11013,40 ],
@@ -1030,8 +1036,11 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
         return new Promise((resolve, reject)=> {
             // recipient
             transaction.query(this.base_insert_sql, [tables.buss_recipient, recipientObj], (recipient_err, info)=> {
-                if (recipient_err || !info.insertId) {
-                    return reject(recipient_err || new TiramisuError(errorMessage.FAIL));
+                if (recipient_err) {
+                  return reject(new TiramisuError(errorMessage.SQL_ERROR, recipient_err.message));
+                }
+                if (!info.insertId) {
+                    return reject(new TiramisuError(errorMessage.FAIL));
                 }
                 if (toolUtils.isEmptyArray(products)) {
                     return reject(new TiramisuError(errorMessage.ORDER_NO_PRODUCT));
@@ -1063,11 +1072,15 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                 };
                 // order
                 transaction.query(this.base_insert_sql,[tables.buss_order,systemUtils.assembleInsertObj(req,orderObj)],(order_err,result)=>{
-                    if (order_err && order_err.code === 'ER_DUP_ENTRY') {
+                    if (order_err) {
+                      if (order_err.code === 'ER_DUP_ENTRY') {
                         return reject(new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, orderObj.merchant_id));
+                      } else {
+                        return reject(new TiramisuError(errorMessage.SQL_ERROR, order_err.message));
+                      }
                     }
-                    if (order_err || !result.insertId) {
-                        return reject(order_err || new TiramisuError(errorMessage.FAIL));
+                    if (!result.insertId) {
+                        return reject(new TiramisuError(errorMessage.FAIL));
                     }
                     let orderId = result.insertId, params = [];
                     products.forEach((curr) => {
@@ -1102,11 +1115,11 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
                     };
                     let skus_sql = "insert into " + tables.buss_order_sku + "(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price,amount) values ?";
                     transaction.query(skus_sql, [params], err => {
-                      if (err) return reject(err);
+                      if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
                       transaction.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], err => {
-                        if (err) return reject(err);
+                        if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
                         transaction.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], err => {
-                          if (err) return reject(err);
+                          if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
                           resolve();
                         });
                       });
@@ -1117,7 +1130,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
           return new Promise((resolve, reject) => {
             transaction.commit(err => {
               transaction.release();
-              if (err) return reject(err);
+              if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
               resolve();
             });
           });
@@ -1125,7 +1138,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
           return new Promise((resolve, reject) => {
             transaction.rollback(rollbackError => {
               transaction.release();
-              if (rollbackError) return reject(rollbackError);
+              if (rollbackError) return reject(new TiramisuError(errorMessage.SQL_ERROR, rollbackError.message));
               reject(err);
             });
           });

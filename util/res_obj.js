@@ -111,6 +111,10 @@ module.exports = {
   INSERT_FULLTEXT_ERROR: {
     code: '2008',
     msg: 'error when inserting fulltext'
+  },
+  SQL_ERROR: {
+    code: '2009',
+    msg: 'Error happened when performing query'
   }
 };
 

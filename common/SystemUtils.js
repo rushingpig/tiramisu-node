@@ -46,7 +46,7 @@ module.exports = {
    */
   getDBOrderId: (showOrderId) => {
     if (!showOrderId || typeof showOrderId !== 'string' || showOrderId.length < 16) {
-      logger.error('the order_id [', showOrderId, '] to be convert into db order_id is not valid...')
+      logger.error('the order_id [', showOrderId, '] to be convert into db order_id is not valid...');
       throw new Error('the order_id [' + showOrderId + '] for display to convert must be an valid string...');
     }
     return showOrderId.substring(8);
@@ -127,10 +127,11 @@ module.exports = {
     return code.toString();
   },
   isOrderCanCancel: (order_status) => {
-    return !(order_status === Constant.OS.INLINE
-      || order_status === Constant.OS.DELIVERY
-      || order_status === Constant.OS.COMPLETED
-      || order_status === Constant.OS.EXCEPTION);
+    return !(
+      order_status === Constant.OS.INLINE ||
+      order_status === Constant.OS.DELIVERY ||
+      order_status === Constant.OS.COMPLETED ||
+      order_status === Constant.OS.EXCEPTION);
   },
   isOrderCanException : (order_status) => {
     return !module.exports.isOrderCanCancel(order_status);
@@ -159,8 +160,8 @@ module.exports = {
   isToFilterDeliverymans : (user) => {
     return !user.is_admin &&
         (
-          user.data_scopes.indexOf(constant.DS.STATION) !== -1
-          || user.data_scopes.indexOf(constant.DS.CITY) !== -1
+          user.data_scopes.indexOf(constant.DS.STATION) !== -1 ||
+          user.data_scopes.indexOf(constant.DS.CITY) !== -1
         );
   }
 

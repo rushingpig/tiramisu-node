@@ -10,6 +10,8 @@ import AreaActions from 'actions/area';
 import * as UserManageActions from 'actions/user_manage'; 
 import DeptRoleActions from 'actions/dept_role';
 
+import LazyLoad from 'utils/lazy_load';
+
 import StdModal from 'common/std_modal';
 import TreeNav from 'common/tree_nav';
 import Pagination from 'common/pagination';
@@ -206,6 +208,7 @@ class UserManagePannel extends Component{
   }
 
   componentDidMount(){
+    LazyLoad('noty');
     setTimeout(()=>{
       var {getUserList,getDepts} = this.props.actions;
       var {page_no,uname_or_name} = this.props.UserListManage;

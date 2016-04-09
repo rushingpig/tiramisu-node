@@ -96,6 +96,7 @@ class DeptManagePanel extends Component{
     var {dept_role}=this.props;
     var {depts,dataaccess} = dept_role;
     const { list } = this.props.RoleInfoListManage;
+    var {handle_role_id} = this.props.RoleManage;
     const {addDept,addRole,changeRole,deleteRole,reset,getRoleDetail} = this.props.actions;
     let content = list.map((n,id) => {
       return <RoleInfoRow key={id} {...n}
@@ -136,7 +137,7 @@ class DeptManagePanel extends Component{
           </div>
           <AddDeptModal ref='addDept' addDept={addDept} reset={reset} getDepts={this.props.actions.getDepts}/>
           <AddRoleModal ref='addRole' depts={depts} dataaccess={dataaccess} getRoleInfoList={this.props.actions.getRoleInfoList} reset = {reset} addRole={addRole} />
-          <EditRoleModal ref='editRole' depts={depts} dataaccess={dataaccess} reset={reset} changeRole = {changeRole} getRoleDetail={getRoleDetail}/>
+          <EditRoleModal handle_role_id={handle_role_id} ref='editRole' depts={depts} dataaccess={dataaccess} reset={reset} changeRole = {changeRole} getRoleDetail={getRoleDetail}/>
           <DeleteRoleModal ref='deleteRole' deleteRole = {deleteRole} />
         </div>
       )
@@ -178,27 +179,37 @@ class AddDeptModal extends Component{
     //this.saveDept = this.saveDept.bind(this);
     this.state={name:'',description:'',error:false};
     this.onNameChange=this.onNameChange.bind(this);
-    this.onDescChange=this.onDescChange.bind(this);
   }
 
   render() {
     const {addDept} = this.props;
 
     return (
-      <StdModal title='添加部门' ref='viewDeptAdd' onConfirm={this.onConfirm} onCancel={this.onCancel}>
+      <StdModal footer={false} title='添加部门' ref='viewDeptAdd'>
         <div className='form-group form-inline'>
           <label>{'　　部门名称：'}</label>
-          <input type="text" onChange={this.onNameChange} className={`form-control input-xs ${this.state.error?'error':''}`}/>
+          <input ref='name' type="text" onChange={this.onNameChange} className={`form-control input-xs ${this.state.error?'error':''}`}/>
         </div>
         <div className='form-group form-inline'>
           <label>{'部门职能描述：'}</label>
-          <input type="text" onChange={this.onDescChange} className={`form-control input-xs ${this.state.error?'error':''}`}/>
+          <input ref='description' type="text" onChange={this.onDescChange} className="form-control input-xs"/>
+        </div>
+        <div className='clearfix'>
+          <div className='form-group pull-right'>
+            <button className="btn btn-default btn-sm space-right" onClick={this.hide}>取消</button>
+            <button ref='submit_btn' className="btn btn-theme btn-sm space-left" onClick={this.onConfirm}>提交</button>           
+          </div>
         </div> 
       </StdModal>
       )
   }
   show(){
+    this.refs.name = '';
+    this.refs.description = '';
     this.refs.viewDeptAdd.show();
+  }
+  hide(){
+    this.refs.viewDeptAdd.hide();
   }
 
   onNameChange(e){
@@ -209,30 +220,34 @@ class AddDeptModal extends Component{
   }
   onDescChange(e){
     this.setState({
-      description:e.target.value,
+      name:e.target.value,
       error:false
     })
   }
   onConfirm(){
+    this.refs.submit_btn.disabled = true;
     var  name = this.state.name;
-    var  description=this.state.description;
-    if(name && description){
+    var description = this.state.description;
+    if(name){
       this.props.addDept(name,description)
         .done(function(){
           Noty('success', '保存成功');
           setTimeout(()=>{
             this.refs.viewDeptAdd.hide();
             this.props.getDepts();
+            this.refs.submit_btn.disabled = true;
           },500);
         }.bind(this))
         .fail(function(msg, code){
           Noty('error', msg || '保存异常');
+          this.refs.submit_btn.disabled = true;
         });
     }else{
       this.setState({
         error: true
       });
       Noty('warning', '请填写完整');
+      this.refs.submit_btn.disabled = true;
     }
   }
 /*  saveDept(form_data){
@@ -284,11 +299,11 @@ class EditRoleModal extends Component{
 
   }
   render(){
-    const {changeRole,depts,dataaccess} = this.props;
+    const {changeRole,depts,dataaccess,handle_role_id} = this.props;
 
     return (
       <StdModal footer={false} title='编辑角色' ref = 'viewRoleEdit' onConfirm={this.onConfirm} >
-        <RoleFormEdit editable={true} ref='roleFormEdit' depts={depts} dataaccess={dataaccess} changeRole={changeRole}/>
+        <RoleFormEdit handle_role_id={handle_role_id} hide={this.hide} editable={true} ref='roleFormEdit' depts={depts} dataaccess={dataaccess} changeRole={changeRole}/>
       </StdModal>
       )
   }

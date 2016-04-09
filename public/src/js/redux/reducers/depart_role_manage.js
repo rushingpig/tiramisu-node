@@ -37,6 +37,7 @@ var initial_roleinfo_state={
 
 var initial_role_state = {
   role_info:{},
+  handle_role_id:{}
 }
 
 function RoleInfoListManage(state=initial_roleinfo_state,action){
@@ -80,7 +81,7 @@ function RoleManage(state = initial_role_state,action){
         })[0];
         return {...state,role_info:role_info}
       })();*/
-        return {...state,role_info:action.data};
+        return {...state,role_info:action.data,handle_role_id:action.id};
       default:
         return state;
   }

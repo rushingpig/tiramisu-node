@@ -120,7 +120,9 @@ function UserListManage(state = initial_state,action){
       var list = state.list.filter((n)=>{
         return n.id !== action.id;
       })
-      return {...state,list:clone(list)}
+      var total = state.total;
+      total = total -1 ;
+      return {...state,list:clone(list),total:total}
     case UserActions.USABLE_ALTER:
       var list = state.list;
       list.forEach((n)=>{

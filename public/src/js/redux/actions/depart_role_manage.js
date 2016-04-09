@@ -42,6 +42,7 @@ export function getRoleDetail(roleId){
         .done((data) => {
           dispatch({
             type: GET_ROLE_DETAIL,
+            id  : roleId,
             data: data,
           })
         })
@@ -57,6 +58,7 @@ export function getRoleDetail(roleId){
 
 export const ADD_DEPT='ADD_DEPT';
 export function addDept(name,description){
+  description = (!description)?name:description;
   return POST(Url.dept_add.toString(),{name:name,description:description},ADD_DEPT);
 /*  return {
     type:ADD_DEPT
@@ -65,6 +67,9 @@ export function addDept(name,description){
 
 export const ADD_ROLE='ADD_ROLE';
 export function addRole(form_data){
+  var description = form_data.description;
+  var name = form_data.name;
+  form_data.description = (!description)?name:description;
   return POST(Url.role_add.toString(),form_data,ADD_ROLE);
 /*  return {
     type:ADD_ROLE
@@ -72,8 +77,11 @@ export function addRole(form_data){
 }
 
 export const CHANGE_ROLE = 'CHANGE_ROLE';
-export function changeRole(roleId){
-  return PUT(Url.role_edit.toString(roleId),null,CHANGE_ROLE)
+export function changeRole(form_data,roleId){
+ var description = form_data.description;
+ var name = form_data.name;
+ form_data.description = (!description)?name:description; 
+  return PUT(Url.role_edit.toString(roleId),form_data,CHANGE_ROLE)
 /*  return {
     type:CHANGE_ROLE
   }*/

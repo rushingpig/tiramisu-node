@@ -25,7 +25,6 @@ const validate = (values,props) => {
   }
 
   _v('name');
-  _v('description');
   _v_select('org_id');
   _v_select('data_scope_id');
 
@@ -43,7 +42,7 @@ class RoleForm extends Component{
   render(){
     const {
       handleSubmit,
-      fields:{name,org_id,description,data_scope_id,id},
+      fields:{name,org_id,description,data_scope_id},
     } = this.props;
     const { depts,dataaccess}=this.props;
     return (
@@ -54,7 +53,7 @@ class RoleForm extends Component{
         </div>
         <div className='form-group form-inline'>
           <label>{'角色职能描述：'}</label>
-          <input  {...description} type="text" className={`form-control input-xs ${description.error}`}/>
+          <input  {...description} type="text" className="form-control input-xs"/>
         </div>
         <div className='form-group form-inline'>
           <label>{'　　所属部门：'}</label>
@@ -67,7 +66,7 @@ class RoleForm extends Component{
         <div className='clearfix'>
           <div className='form-group pull-right'>
             <button className="btn btn-default btn-sm space-right" onClick={this.hide}>取消</button>
-            <button className="btn btn-theme btn-sm space-left" onClick={handleSubmit(this._check.bind(this, this.saveRole))}>提交</button>           
+            <button ref='submit_btn' className="btn btn-theme btn-sm space-left" onClick={handleSubmit(this._check.bind(this, this.saveRole))}>提交</button>           
           </div>
         </div>                  
       </form>    
@@ -95,28 +94,33 @@ class RoleForm extends Component{
     this.props.hide();
   }
   saveRole(form_data){
-    let { role_id } = this.props;
-    this.props.editable ? this.changeRole(form_data, role_id) : this.addRole(form_data);
+    this.refs.submit_btn.disabled = true;
+    let  {handle_role_id}  = this.props;
+    this.props.editable ? this.changeRole(form_data, handle_role_id) : this.addRole(form_data);
   }
   changeRole(form_data, id){
     this.props.changeRole(form_data, id)
       .done(function(){
         Noty('success', '保存成功');
-        hide();
+        this.hide();
+        this.refs.submit_btn.disabled = false;
       }.bind(this))
       .fail(function(msg, code){
         Noty('error', msg || '保存异常');
+        this.refs.submit_btn.disabled = false;
       });
   }
   addRole(form_data){
     this.props.addRole(form_data)
       .done(function(){
         Noty('success', '保存成功');
-        this.props.hide();
-        this.props.getRoleInfoList();
+        this.hide();
+        this.refs.submit_btn.disabled = false;
+        //this.props.getRoleInfoList();
       }.bind(this))
       .fail(function(msg, code){
         Noty('error', msg || '保存异常');
+        this.refs.submit_btn.disabled = false;
       });
   }
 

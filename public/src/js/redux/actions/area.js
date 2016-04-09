@@ -34,11 +34,12 @@ export default function Area(ActionTypes = AreaActionTypes1){
         type: ActionTypes.RESET_CITIES,
       }
     },
-    getAllCities:function(province_id){
-      return {
+    getAllCities:function(){
+      return _resolve(Url.cities.toString(), ActionTypes.GOT_ALL_CITIES);
+/*      return {
         type:ActionTypes.GOT_ALL_CITIES,
         data:{1:'xxxx',2:'xxx'}
-      }
+      }*/
     },
     getCities: function (province_id){
       return _resolve(Url.cities.toString(province_id), ActionTypes.GOT_CITIES);

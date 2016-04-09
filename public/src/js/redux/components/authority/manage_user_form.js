@@ -134,7 +134,7 @@ class ManageAddForm extends Component{
             <label>{'　　　部门：'}</label>
             <Select ref='department' options={[{'id':999,'text':'全部角色'},...depts]} {...dept_id} className="form-select" default-text="--请选择用户所属部门--" onChange={this.onDeptChange.bind(this,dept_id.onChange)} />
             <div style={{'marginLeft':60,}}>
-              <CheckBoxGroup className="input-xs"  ref='role' {...tmp_roles}  checkboxs={roles} />
+              <CheckBoxGroup className="input-xs"  ref='role' {...tmp_roles} value={roles_in.value || []}  checkboxs={roles} />
             </div>
             
             <label >{'　已选角色：'}</label>
@@ -157,7 +157,7 @@ class ManageAddForm extends Component{
               <label>{'　　　省份：'}</label>
               <Select ref='province' className={`input-xs ${province_id.error}`} options={[{'id':999,'text':'全部城市'},...provinces]} {...province_id} onChange={this.onProvinceChange.bind(this,province_id.onChange)} />
               <div style={{'marginLeft':60,}}>
-                <CheckBoxGroup name="城市" {...tmp_cities}  checkboxs={[{'id':999,'text':'总部'},...cities]} onChange={this.onCityChange.bind(this,tmp_cities.onChange)}/>
+                <CheckBoxGroup name="城市" {...tmp_cities} value={cities_in.value || []}  checkboxs={[{'id':999,'text':'总部'},...cities]} onChange={this.onCityChange.bind(this,tmp_cities.onChange)}/>
               </div>
               <label >{'　已选城市：'}</label>
               {/*<CheckBoxGroup ref='city' {...city_ids} checkboxs={[{'id':999,'text':'总部'},...cities.filter( n=> city_ids.value.some(m => m== n.id))]} />*/}
@@ -169,7 +169,7 @@ class ManageAddForm extends Component{
             <div className="form-group form-inline" style={{clear:'both',}}>
               <label className={`input-xs ${station_ids.error}`}>{'所属配送站：'}</label>
                 <div style={{'marginLeft':60,}}>
-                  <CheckBoxGroup name="配送站" {...tmp_stations} checkboxs={[{'id':999,'text':'所属城市全部配送站'},...stations]}/>
+                  <CheckBoxGroup name="配送站" {...tmp_stations} checkboxs={[{'id':999,'text':'所属城市全部配送站'},...stations]} value={stations_in.value || []}/>
                 </div>
               <label  className="input-xs">{'已选配送站：'}</label>
                 <div style={{'marginLeft':60,}}>
@@ -240,6 +240,7 @@ class ManageAddForm extends Component{
   componentDidMount(){
 /*    var {getDepts} = this.props.actions;
     getDepts();*/
+
     var {getProvinces,getDepts} = this.props.actions;
     var {params} = this.props;
     getProvinces();

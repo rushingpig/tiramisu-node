@@ -26,6 +26,10 @@ module.exports = {
     code : '1004',
     msg : '该用户不存在,请确认用户ID...'
   },
+  USER_NOT_USABLE : {
+    code : '1005',
+    msg : '该用户已被禁用,请联系管理员...'
+  },
   ORDER_AUDITING: {
     code: '2000',
     msg: '有订单打印正在审核中,请等待审核通过...'

@@ -53,6 +53,7 @@ UserService.prototype.getUserInfo = (username, password)=> {
                     user.name = curr.name;
                     user.is_headquarters = curr.is_headquarters;
                     user.is_national = curr.is_national;
+                    user.is_usable = curr.is_usable;
                 }
                 if(curr.permission) user.permissions.push(curr.permission);
                 if(curr.role_name && !roles_set.has(curr.role_id)){

@@ -13,7 +13,8 @@
     "fe": "NODE_ENV=test node ./bin/www",
     "dfe": "./node_modules/.bin/gulp deploy --cwd public",
     "preqs": "cd public && npm install && cd .. && ./node_modules/.bin/gulp deploy --cwd public && npm install",
-    "qs": "NODE_ENV=test node ./bin/www"
+    "qs": "NODE_ENV=test node ./bin/www",
+    "sv": "./node_modules/.bin/supervisor -i node_modules,log,public -x node ./bin/www"
   },
   "dependencies": {
     "async": "^2.0.0-rc.1",
@@ -53,6 +54,7 @@
     "mocha": "^2.3.4",
     "sequelize": "^3.14.2",
     "supertest": "1.1.0",
-    "supertest-session": "2.0.0"
+    "supertest-session": "2.0.0",
+    "supervisor": "^0.10.0"
   }
 }

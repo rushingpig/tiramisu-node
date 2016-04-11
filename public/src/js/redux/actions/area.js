@@ -35,7 +35,7 @@ export default function Area(ActionTypes = AreaActionTypes1){
       }
     },
     getAllCities:function(){
-      return _resolve(Url.cities.toString(), ActionTypes.GOT_ALL_CITIES);
+      return _resolve(Url.all_cities.toString(), ActionTypes.GOT_ALL_CITIES);
 /*      return {
         type:ActionTypes.GOT_ALL_CITIES,
         data:{1:'xxxx',2:'xxx'}

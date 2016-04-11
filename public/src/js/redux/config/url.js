@@ -93,7 +93,7 @@ const URL = (function(){
    role_del:'/role/:roleId',  //删除角色
    role_edit:'/role/:roleId', //角色编辑
    station_merge_list:'/stations',  //获取多个城市下配送站
-   cities:'/cities',  //获取所有城市
+   all_cities:'/cities',  //获取所有城市
    
 
 

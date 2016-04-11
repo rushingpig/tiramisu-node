@@ -44,10 +44,14 @@ export function roleAccessManage( state = initial_state, action){
       return {...state, department_list: clone(action.data.list)};
     case Actions.GOT_ROLE_LIST:
       state.department_list.map(n => {
-        if(n.id === action.id){
-          n.children = action.data.list;
+        if(n.id === action.id) {
+          n.children = action.data.list.map(obj => ({
+            id: obj.id,
+            description: obj.description,
+            text: obj.name
+          }));
         }
-      })
+      });
       return {...state, department_list: clone(state.department_list)};
     case Actions.TOGGLE_DEPARTMENT:
       state.department_list.forEach( n => {

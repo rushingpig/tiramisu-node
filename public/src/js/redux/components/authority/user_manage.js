@@ -141,34 +141,30 @@ class UserManagePannel extends Component{
         <div className="">
           <FilterHeader page_size={this.state.page_size} getUserList={this.props.actions.getUserList}/>
 
-          <div className="panel">
-            <div className="container-fluid" style={{paddingTop:'20',minHeight:'600'}}>
-              <div className="col-md-2">
-                <span className="font-lg bold">{ '请选择部门' }</span>
-                <TreeNav data={depts} onToggle={this.onToggleDept.bind(this)} />
-              </div>
-              <div className="col-md-10">
-                <div className="panel-body">
-                  <div className="table-responsive main-list">
-                    <table className="table table-hove text-center table-bordered">
-                      <thead>
-                        <tr>
-                          <th>职位(角色)</th>
-                          <th>用户名</th>
-                          <th>真实姓名</th>
-                          <th>电话号码</th>
-                          <th>所属城市</th>
-                          <th>是否启用</th>
-                          <th>操作</th>
-                        </tr>
-                      </thead>
-                      <tbody>
+          <div className="authority-manage">
+            <div className="panel pull-left navbar">
+              <span className="font-lg bold">{ '请选择部门' }</span>
+              <TreeNav data={depts} onToggle={this.onToggleDept.bind(this)} />
+            </div>
+            <div className="panel panel-body" style={{marginLeft: '225px'}}>
+              <div className="table-responsive authority-list">
+                <table className="table table-hove text-center table-bordered">
+                  <thead>
+                    <tr>
+                      <th>职位(角色)</th>
+                      <th>用户名</th>
+                      <th>真实姓名</th>
+                      <th>电话号码</th>
+                      <th>所属城市</th>
+                      <th>是否启用</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
 
-                     { tableLoader( loading || refresh, content ) }
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                 { tableLoader( loading || refresh, content ) }
+                  </tbody>
+                </table>
               </div>
             </div>
             <Pagination 

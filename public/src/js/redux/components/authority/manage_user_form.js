@@ -114,14 +114,15 @@ class ManageAddForm extends Component{
       <div className="form-group form-inline">
         <div className="container-fluid">
           <div className="row">
-            <div className="col-md-6" style={{'paddingLeft':'0'}}>
+            <div className="col-md-3" style={{'paddingLeft':'0'}}>
               <label>{'　真实姓名：'}</label>
               <input {...name} className={`form-control input-xs ${name.error}`} type='text' />              
             </div>
-            <div className="col-md-6" style={{'paddingLeft':'0'}}>
+            <div className="col-md-3" style={{'paddingLeft':'0'}}>
               <label>{'　电话号码：'}</label>
               <input {...mobile} className={`form-control input-xs ${mobile.error}`}  type='text' ref='mobile' />
             </div>
+            <div className='col-md-6'></div>
           </div>
         </div>
 

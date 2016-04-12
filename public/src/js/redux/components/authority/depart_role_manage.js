@@ -7,6 +7,7 @@ import { map } from 'utils/index';
 import {reset} from 'redux-form';
 
 import {Noty} from 'utils/index';
+import V from 'utils/acl';
 
 import * as DeptRoleManageActions from 'actions/depart_role_manage';
 import DeptRoleActions from 'actions/dept_role';
@@ -30,14 +31,26 @@ class DeptHeader extends Component{
     return(
       <div className="panel search">
         <div className="panel-body form-inline">
-
+              {
+                V('DeptRoleManageAddDept')
+                ?
                 <button onClick={this.ViewAddDept.bind(this)} className="btn btn-sm btn-theme" style={{marginLeft:'20'}}>
                   <i className=""></i>{'添加部门'}
                 </button>
-
+                :
+                null
+              }
+              {
+                V('DeptRoleManageAddRole')
+                ?
                 <button onClick={this.ViewAddRole.bind(this)} className="btn btn-sm btn-theme" style={{marginLeft:'20'}}>
                   <i className=""></i>{'添加角色'}
                 </button>
+                :
+                null
+              }
+
+
         </div>
         <DeptModal ref="deptModal" {...this.props} />
         <RoleModal ref="roleModal" {...this.props} />
@@ -65,8 +78,21 @@ class RoleInfoRow extends Component{
           <td>{props.name}</td>
           <td>{props.description}</td>
           <td>
-            <a onClick={this.viewEditRoleModal.bind(this)} href="javascript:;">[ 编辑 ]</a>
-            <a onClick={this.viewDeleteRoleModal.bind(this)} href="javascript:;">[ 删除 ]</a>
+            {
+              V('DeptRoleManageRoleEdit')
+              ?
+              <a onClick={this.viewEditRoleModal.bind(this)} href="javascript:;">[ 编辑 ]</a>
+              :
+              null
+            }
+            {
+              V('DeptRoleManageRoleRemove')
+              ?
+              <a onClick={this.viewDeleteRoleModal.bind(this)} href="javascript:;">[ 删除 ]</a>
+              :
+              null
+            }
+            
           </td>
         </tr>
       )

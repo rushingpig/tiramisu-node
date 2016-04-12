@@ -48,3 +48,18 @@
 ###3.2 配送区域管理
 * +页面访问：StationScopeManageAccess
 * +添加配送区域：StationScopeManageAdd
+
+###4.1 用户管理
+* +页面访问：UserManageAccess
+* +按用户名/姓名筛选：UserManageUnameOrNameFilter
+* +添加用户： UserManageAddUser
+* +编辑：UserManageUserEdit
+* +修改用户状态：UserManageUserStatusModify
+* +删除用户：UserManageUserRemove
+
+###4.2 部门角色管理
+* +页面访问：DeptRoleManageAccess
+* +添加部门：DeptRoleManageAddDept
+* +添加角色：DeptRoleManageAddRole
+* +角色编辑：DeptRoleManageRoleEdit
+* +角色删除：DeptRoleManageRoleRemove

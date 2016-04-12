@@ -84,12 +84,12 @@ export default [
   "short_name":"权限",
   "icon":"",
   "link": [{
-      "key":"user_management",
+      "key":"UserManageAccess",
       "name":"用户管理",
       "icon":"",
       "link":"/am/user"
       },{
-        "key":"depart_role_management",
+        "key":"DeptRoleManageAccess",
         "name":"部门角色管理",
         "icon":"",
         "link":"/am/deptrole"

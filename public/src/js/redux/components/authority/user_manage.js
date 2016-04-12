@@ -11,6 +11,7 @@ import * as UserManageActions from 'actions/user_manage';
 import DeptRoleActions from 'actions/dept_role';
 
 import LazyLoad from 'utils/lazy_load';
+import V from 'utils/acl';
 
 import StdModal from 'common/std_modal';
 import TreeNav from 'common/tree_nav';
@@ -29,16 +30,30 @@ class FilterHeader extends Component {
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <span className="">{' 用戶名/姓名:'}</span>
-          <input ref='name'  className="form-control input-xs v-mg" />
-          <button disabled={search_ing} data-submitting={search_ing}  className="btn btn-theme btn-xs space-left" onClick={this.search.bind(this)}>
-            <i className="fa fa-search"></i>{' 查詢'}
-          </button> 
-          <div style={{float:'right',}}>
-            <button onClick={this.addUser.bind(this)} className="btn btn-sm btn-theme pull-right">
-              <i className=""></i>{' 添加用戶'}
-            </button>
-          </div>
+          {
+            V('UserManageUnameOrNameFilter')
+            ?
+            <div  style={{float:'left',}}>
+             <span className="">{' 用戶名/姓名:'}</span>
+             <input ref='name'  className="form-control input-xs v-mg" />
+             <button disabled={search_ing} data-submitting={search_ing}  className="btn btn-theme btn-xs space-left" onClick={this.search.bind(this)}>
+               <i className="fa fa-search"></i>{' 查詢'}
+             </button>
+            </div>
+             :
+             null          
+          }
+          {
+            V('UserManageAddUser')
+            ?
+            <div style={{float:'right',}}>
+              <button onClick={this.addUser.bind(this)} className="btn btn-sm btn-theme pull-right">
+                <i className=""></i>{' 添加用戶'}
+              </button>
+            </div>
+            :
+            null
+          }
         </div>
       </div>
       )
@@ -94,9 +109,27 @@ var UserRow = React.createClass({
           {props.is_usable == true ? '是':'否'}
         </td>
         <td>
-          <a className="space-right"  key="UserManageEdit" href={'/am/user/' + props.id}>[编辑]</a> 
-          <a className="space-right" onClick={this.viewUsableAlterModal} key="UserManageStatus" href="javascript:;">{props.is_usable==true?'[禁用]':'[启用]'}</a>
-          <a onClick={this.viewDeleteUserModal} key="UserManageDelete" href="javascript:;">[删除]</a>        
+          {
+            V('UserManageUserEdit')
+            ?
+            <a className="space-right"  key="UserManageUserEdit" href={'/am/user/' + props.id}>[编辑]</a> 
+            :
+            null
+          }
+          {
+            V('UserManageUserStatusModify')
+            ?
+            <a className="space-right" onClick={this.viewUsableAlterModal} key="UserManageUserStatusModify" href="javascript:;">{props.is_usable==true?'[禁用]':'[启用]'}</a>
+            :
+            null
+          }
+          {
+            V('UserManageUserRemove')
+            ?
+            <a onClick={this.viewDeleteUserModal} key="UserManageDelete" href="javascript:;">[删除]</a>
+            :null
+          }
+          
         </td>
       </tr>
     )   

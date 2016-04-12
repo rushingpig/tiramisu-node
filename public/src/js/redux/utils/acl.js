@@ -5,21 +5,35 @@ import { acl } from 'config/app.config';
 
 var  PERMISSIONS = undefined;
 //测试数据
-// const PERMISSIONS = [
-//   'OrderManage',
-//     'OrderManageView',
-//     'OrderManageEdit',
-//     'OrderManageAddressFilter',
-//   'DeliveryChange',
-//     'DeliveryManageChangeStationFilter',
-//     'DeliveryManageChangeAddressFilter',
-//   'DeliveryManage',
-//     'DeliveryManageDeliveryAddressFilter',
-//   'DistributeManage',
-//     'DeliveryManageDistributeStationFilter',
-//     'DeliveryManageDistributeAddressFilter',
-//   'PrintReview',
-// ];
+/*const PERMISSIONS = [
+  'OrderManage',
+    'OrderManageView',
+    'OrderManageEdit',
+    'OrderManageAddressFilter',
+  'DeliveryChange',
+    'DeliveryManageChangeStationFilter',
+    'DeliveryManageChangeAddressFilter',
+  'DeliveryManage',
+    'DeliveryManageDeliveryAddressFilter',
+  'DistributeManage',
+    'DeliveryManageDistributeStationFilter',
+    'DeliveryManageDistributeAddressFilter',
+  'PrintReview',
+];*/
+
+/*const PERMISSIONS = [
+  'UserManageAccess',
+    'UserManageUnameOrNameFilter',
+    'UserManageAddUser',
+    'UserManageUserEdit',
+    'UserManageUserStatusModify',
+    'UserManageUserRemove',
+  'DeptRoleAccess',
+    'DeptRoleManageAddDept',
+    'DeptRoleManageAddRole',
+    'DeptRoleManageRoleEdit',
+    'DeptRoleManageRoleRemove',
+]*/
 
 /**
  * 有无该权限

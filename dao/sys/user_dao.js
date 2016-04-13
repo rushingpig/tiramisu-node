@@ -9,7 +9,9 @@
 var baseDao = require('../base_dao'),
     del_flag = baseDao.del_flag,
     tables = require('../../config').tables,
-    dbHelper = require('../../common/DBHelper');;
+    dbHelper = require('../../common/DBHelper'),
+    constant = require('../../common/Constant'),
+    toolUtils = require('../../common/ToolUtils');
 function UserDao(table){
     this.table = table || tables.sys_user;
     this.base_insert_sql = "insert into ?? set ?";
@@ -25,7 +27,6 @@ UserDao.prototype.findByUsername = (username,password)=>{
     let columns = [
         'su.id',
         'su.`name`',
-        'su.org_Id',
         'su.username',
         'su.city_ids',
         'su.station_ids',
@@ -36,6 +37,7 @@ UserDao.prototype.findByUsername = (username,password)=>{
         'sr.data_scope',
         'sr.id as role_id',
         'sr.name as role_name',
+        'sr.org_id',
 
         'sm.parent_id',
         'sm.parent_ids',
@@ -45,7 +47,7 @@ UserDao.prototype.findByUsername = (username,password)=>{
     ].join(',');
     let sql = "select distinct " + columns + " from ?? su",params=[];
     params.push(tables.sys_user);
-    sql += " left join ?? sur on su.id = sur.user_id";
+    sql += " inner join ?? sur on su.id = sur.user_id";
     params.push(tables.sys_user_role);
     sql += " left join ?? sr on sr.id = sur.role_id and sr.del_flag = ?";
     params.push(tables.sys_role);
@@ -99,6 +101,7 @@ UserDao.prototype.findUserById = function(user_id){
 };
 UserDao.prototype.findUsers = function(query_data){
     let prefix_sql = "select t.*,sr2.name as role_name from (",suffix_sql = "";
+    let ds = query_data.user.data_scopes,org_ids = query_data.user.org_ids;
     let columns = [
         'su.username',
         'su.id',
@@ -115,6 +118,20 @@ UserDao.prototype.findUsers = function(query_data){
     params.push(tables.sys_user_role);
     sql += " inner join ?? sr on sr.id = sur.role_id";
     params.push(tables.sys_role);
+    // data filter begin
+    if(!toolUtils.isEmptyArray(ds)){
+        if(!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1){
+            ds.forEach(curr => {
+                if(curr == constant.DS.OFFICEANDCHILD.id){
+                    sql += " and sr.org_id in" + dbHelper.genInSql(org_ids);
+                }
+            });
+        }
+    }
+    if(!query_data.user.is_admin){
+        sql += " and su.id != 1";
+    }
+    // data filter end
     if(query_data.org_id){
         sql += " and sr.org_id = ?";
         params.push(query_data.org_id);

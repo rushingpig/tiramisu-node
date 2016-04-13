@@ -20,6 +20,13 @@ DBHelper.countSql = function(sql){
     }
     return 'select count(1) as total from (' + DBHelper.removeOrders(sql) + ')temp';
 };
+
+DBHelper.approximateCountSql = function(sql){
+    if(!(sql && typeof sql === 'string')){
+        return '';
+    }
+    return 'explain ' + DBHelper.removeOrders(sql);
+};
 /**
  * get the pagination sql
  * @param sql

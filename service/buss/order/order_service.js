@@ -532,7 +532,7 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
         deliveryman_id: req.query.deliveryman_id,
         print_status: req.query.print_status,
         is_greeting_card: req.query.is_greeting_card,
-        user : req.session.user,
+        user : req.session.user
       };
     }
 
@@ -571,7 +571,7 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
       }
       let data = {
         list: [],
-        total: resObj.result[0].total,
+        total: resObj.result,
         page_no: req.query.page_no
       };
       for (let curr of resObj._result) {

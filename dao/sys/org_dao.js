@@ -37,7 +37,7 @@ OrgDao.prototype.findAllOrgs = function(query_data){
             }
         });
     }
-    if(query_data.user && query_data.user.is_admin){
+    if(query_data.user && (query_data.user.is_admin || data_scopes.indexOf(constant.DS.ALLCOMPANY.id) != -1)){
         ds_sql = "";
     }
     sql += ds_sql;

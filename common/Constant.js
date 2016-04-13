@@ -128,7 +128,7 @@ Constant.DS = {
     OFFICE : {
         id : 3,
         name : '本部门'
-    },             // 本部门
+    },             
     STATION : {
         id : 4,
         name : '本配送站订单及配送员列表'

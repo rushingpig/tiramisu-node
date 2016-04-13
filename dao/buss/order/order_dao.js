@@ -593,7 +593,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
             }else if(curr == constant.DS.ALLCOMPANY.id){
                 temp_sql += " or 1 = 1";
             }else{
-                temp_sql += " 1!=1" // 未分配权限的不予显示数据
+                temp_sql += " 1!=1";// 未分配权限的不予显示数据
             }
         });
         ds_sql += temp_sql.replace(/^ or/,'');
@@ -623,15 +623,36 @@ OrderDao.prototype.findOrderList = function (query_data) {
         default:
         // do nothing && order by with the db self
     }
-    let countSql = dbHelper.countSql(sql);
-    return baseDao.select(countSql, params).then((result) => {
+    let promise = null,countSql = "",result = 0;
+    //  刚进入订单列表页面,不带筛选条件,用explain来优化获取记录总数
+    if(/^.*(where 1=1 and)\s+\w+/.test(sql)){
+        countSql = dbHelper.countSql(sql);
+        promise = baseDao.select(countSql,params).then(results => {
+            if(!toolUtils.isEmptyArray(results)){
+                result = results[0].total;
+            }
+        });
+    }else{
+        countSql = dbHelper.approximateCountSql(sql);
+        promise = baseDao.select(countSql, params).then((results) => {
+            if(!toolUtils.isEmptyArray(results)){
+                results.forEach(curr => {
+                    if(curr.table === 'bo'){
+                        result = curr.rows;
+                        return;     // out of the loop
+                    }
+                });
+            }
+        });
+    }
+    return promise.then(()=>{
         return baseDao.select(dbHelper.paginate(sql, query_data.page_no, query_data.page_size), params).then((_result) => {
             return {
                 result: result,
                 _result: _result
             };
         });
-    });
+    })
 };
 /**
  * update the order by order id with transaction

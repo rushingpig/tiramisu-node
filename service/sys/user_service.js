@@ -8,6 +8,7 @@
 "use strict";
 var dao = require('../../dao'),
     del_flag = require('../../dao/base_dao').del_flag,
+    is_usable = require('../../dao/base_dao').is_usable,
     UserDao = dao.user,
     userDao = new UserDao(),
     addressDao = new dao.address(),
@@ -32,10 +33,11 @@ UserService.prototype.getUserInfo = (username, password)=> {
                 is_admin : false,
                 permissions : [],
                 roles : [],
-                data_scopes : []
+                data_scopes : [],
+                org_ids : []
             };
             //  ###     tips : 当给user属性赋值set类型时,存入session再取出来,属性值为空     ###
-            let roles_set = new Set(),data_scopes_set = new Set();
+            let roles_set = new Set(),data_scopes_set = new Set(),org_ids_set = new Set();
             for(let i = 0;i < results.length;i++){
                 let curr = results[i];
                 if(i === 0){
@@ -44,7 +46,6 @@ UserService.prototype.getUserInfo = (username, password)=> {
                         user.is_admin = true;
                     }
                     user.id = curr.id;
-                    user.org_id = curr.org_id;
                     user.username = curr.username;
                     user.city_ids = curr.city_ids ? curr.city_ids.split(',') : '';
                     user.station_ids = curr.station_ids ? curr.station_ids.split(',') : '';
@@ -59,10 +60,12 @@ UserService.prototype.getUserInfo = (username, password)=> {
                 if(curr.role_name && !roles_set.has(curr.role_id)){
                     user.roles.push({id:curr.role_id,name:curr.role_name});
                     roles_set.add(curr.role_id);
+                    org_ids_set.add(curr.org_id);
                 }
                 if(curr.data_scope)  data_scopes_set.add(curr.data_scope);
             }
             user.data_scopes = Array.from(data_scopes_set.values());
+            user.org_ids = Array.from(org_ids_set.values());
             return user;
         }
     });
@@ -88,7 +91,8 @@ UserService.prototype.addUser = (req,res,next) => {
         password : cryptoUtils.md5(b.password),
         station_ids : b.station_ids ? b.station_ids.join(',') : '',
         username : b.username,
-        city_names : b.city_names ? b.city_names.join(',') : ''
+        city_names : b.city_names ? b.city_names.join(',') : '',
+        is_usable : is_usable.enable
     };
     async.series([
         function(cb){
@@ -245,7 +249,8 @@ UserService.prototype.listUsers = (req,res,next) => {
         org_id : q.org_id,
         uname_or_name : q.uname_or_name,
         page_no : q.page_no,
-        page_size : q.page_size
+        page_size : q.page_size,
+        user : req.session.user
     };
     let promise = userDao.findUsers(query_data).then(_res => {
         if(toolUtils.isEmptyArray(_res._result) || toolUtils.isEmptyArray(_res.result)){

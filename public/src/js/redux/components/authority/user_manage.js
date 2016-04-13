@@ -175,13 +175,13 @@ class UserManagePannel extends Component{
           <FilterHeader page_size={this.state.page_size} getUserList={this.props.actions.getUserList}/>
 
           <div className="authority-manage">
-            <div className="panel pull-left navbar">
+            <div className="panel pull-left navbar" style={{paddingTop:'15px',paddingLeft:'15px',paddingBottom:'15px'}}>
               <span className="font-lg bold">{ '请选择部门' }</span>
               <TreeNav data={depts} onToggle={this.onToggleDept.bind(this)} />
             </div>
             <div className="panel panel-body" style={{marginLeft: '225px'}}>
               <div className="table-responsive authority-list">
-                <table className="table table-hove text-center table-bordered">
+                <table className="table table-hove text-center table-bordered" style={{border:'1px solid #ddd'}}>
                   <thead>
                     <tr>
                       <th>职位(角色)</th>

@@ -203,6 +203,8 @@ class AddDeptModal extends Component{
     //this.saveDept = this.saveDept.bind(this);
     this.state={name:'',description:'',error:false};
     this.onNameChange=this.onNameChange.bind(this);
+    this.hide = this.hide.bind(this);
+    this.show = this.show.bind(this);
   }
 
   render() {
@@ -228,8 +230,8 @@ class AddDeptModal extends Component{
       )
   }
   show(){
-    this.refs.name = '';
-    this.refs.description = '';
+    this.refs.name.value = '';
+    this.refs.description.value = '';
     this.refs.viewDeptAdd.show();
   }
   hide(){
@@ -259,19 +261,19 @@ class AddDeptModal extends Component{
           setTimeout(()=>{
             this.refs.viewDeptAdd.hide();
             this.props.getDepts();
-            this.refs.submit_btn.disabled = true;
+            this.refs.submit_btn.disabled = false;
           },500);
         }.bind(this))
         .fail(function(msg, code){
           Noty('error', msg || '保存异常');
-          this.refs.submit_btn.disabled = true;
+          this.refs.submit_btn.disabled = false;
         });
     }else{
       this.setState({
         error: true
       });
       Noty('warning', '请填写完整');
-      this.refs.submit_btn.disabled = true;
+      this.refs.submit_btn.disabled = false;
     }
   }
 /*  saveDept(form_data){

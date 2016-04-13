@@ -14,7 +14,7 @@
     "dfe": "./node_modules/.bin/gulp deploy --cwd public",
     "preqs": "cd public && npm install && cd .. && ./node_modules/.bin/gulp deploy --cwd public && npm install",
     "qs": "NODE_ENV=test node ./bin/www",
-    "sv": "./node_modules/.bin/supervisor -i node_modules,log,public -x node ./bin/www"
+    "sv": "NODE_ENV=dev ./node_modules/.bin/supervisor -i node_modules,log,public -x node ./bin/www"
   },
   "dependencies": {
     "async": "^2.0.0-rc.1",

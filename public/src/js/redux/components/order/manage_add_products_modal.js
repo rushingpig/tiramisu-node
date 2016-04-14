@@ -7,7 +7,7 @@ import { get_table_empty } from 'common/loading';
 
 import * as OrderProductsActions from 'actions/order_products';
 import { SELECT_DEFAULT_VALUE } from 'config/app.config';
-import { toFixed } from 'utils/index';
+import { toFixed, dom } from 'utils/index';
 
 export default class ProductsModal extends Component {
   constructor(props){
@@ -58,7 +58,7 @@ export default class ProductsModal extends Component {
               {' '}
               <button onClick={this.search.bind(this, 0)} className="btn btn-xs btn-default"><i className="fa fa-search"></i>{' 查询'}</button>
             </div>
-            <div className="table-responsive table-modal modal-list">
+            <div ref="tableWrapper" className="table-responsive table-modal modal-list">
               <table className="table table-hover table-click text-center">
                 <thead>
                 <tr>
@@ -138,6 +138,7 @@ export default class ProductsModal extends Component {
   }
   search(page){
     var { sku_name, category_id, city_id, page_size } = this.state;
+    var unlock = dom.lock( this.refs.tableWrapper );
     this.props.dispatch(
       OrderProductsActions.searchProducts({
         name: sku_name.trim() || undefined, 
@@ -146,7 +147,7 @@ export default class ProductsModal extends Component {
         category_id: category_id == SELECT_DEFAULT_VALUE ? undefined : category_id,
         city_id: city_id == SELECT_DEFAULT_VALUE ? undefined : city_id
       })
-    );
+    ).always(unlock);
   }
   onPageChange(page){
     this.search.call(this, page);

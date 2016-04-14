@@ -15,6 +15,7 @@ export function orders(ifRetain){
     checked_orders: [],
     active_order_id: undefined,
     check_order_info: null,
+    get_products_detail_ing: false,
     show_products_detail: false,
   }
 
@@ -23,7 +24,7 @@ export function orders(ifRetain){
 
       case UPDATE_PATH:
         //是否要保留store里面的数据，不被清除
-        return ifRetain ? state : {...orders_state};
+        return ifRetain && action.payload.path.startsWith('/om/index/') ? state : {...orders_state};
       case OrderActions.RESET_ORDER_STORE:
         return {...orders_state};
       
@@ -63,13 +64,13 @@ export function orders(ifRetain){
         })()
 
       case OrderActions.ACTIVE_ORDER:
-        return {...state, active_order_id: action.active_order_id, show_products_detail: false}
+        return {...state, active_order_id: action.active_order_id, get_products_detail_ing: true, show_products_detail: false}
 
       case OrderActions.SHOW_PRODUCTS_DETAIL:
         return {...state, show_products_detail: true}
 
       case OrderActions.GET_ORDER_DETAIL_PRODUCTS:
-        return {...state, check_order_info: action.data}
+        return {...state, get_products_detail_ing: false, check_order_info: action.data}
 
       default:
         return state;

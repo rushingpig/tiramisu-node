@@ -17,7 +17,7 @@ import ToolTip from 'common/tooltip';
 import { order_status, YES_OR_NO, DELIVERY_MAP, PRINT_STATUS } from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
-import { Noty, map, reactReplace, form, parseTime, dateFormat } from 'utils/index';
+import { Noty, map, reactReplace, form, parseTime, dateFormat, dom } from 'utils/index';
 import V from 'utils/acl';
 
 import * as OrderActions from 'actions/orders';
@@ -287,7 +287,8 @@ class DeliveryManagePannel extends Component {
     var { filter, area, deliveryman, main, all_order_srcs, all_pay_modes,
       getAllDeliveryman, applyDeliveryman, startPrint, applyPrint, validatePrintCode, rePrint, searchByScan,
       getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
-    var { loading, refresh, page_no, checkall, total, list, checked_orders, check_order_info, active_order_id } = this.props.orders;
+    var { loading, refresh, page_no, checkall, total, list, checked_orders, check_order_info, 
+      active_order_id, get_products_detail_ing } = this.props.orders;
     var { showBatchPrintModal, printHandler, showEditModal, showScanModal, showBatchEditModal,
        checkOrderHandler, viewOrderDetail, activeOrderHandler, viewOrderOperationRecord, refreshDataList } = this;
 
@@ -312,7 +313,7 @@ class DeliveryManagePannel extends Component {
         <div className="panel">
           <header className="panel-heading">送货列表</header>
           <div className="panel-body">
-            <div className="table-responsive main-list">
+            <div ref="table-container" className="table-responsive main-list">
               <table className="table table-hover text-center">
                 <thead>
                 <tr>
@@ -355,7 +356,7 @@ class DeliveryManagePannel extends Component {
           ? <div className="panel">
               <div className="panel-body">
                 <div>订单产品详情</div>
-                <OrderProductsDetail products={check_order_info.products} />
+                <OrderProductsDetail loading={get_products_detail_ing} products={check_order_info.products} />
               </div>
             </div>
           : null }
@@ -424,7 +425,8 @@ class DeliveryManagePannel extends Component {
     this.refs.OperationRecordModal.show(order);
   }
   onPageChange(page){
-    this.search(page);
+    var unlock = dom.lock(this.refs['table-container']);
+    this.search(page).done(unlock);
   }
   componentDidMount() {
     this.search();
@@ -438,7 +440,7 @@ class DeliveryManagePannel extends Component {
   }
   search(page){
     page = typeof page == 'undefined' ? this.props.orders.page_no : page;
-    this.props.getOrderDeliveryList({page_no: page, page_size: this.state.page_size});
+    return this.props.getOrderDeliveryList({page_no: page, page_size: this.state.page_size});
   }
   refreshDataList(){
     //更新数据，需要loading图

@@ -248,6 +248,48 @@ function url_toParams(obj){
     return params.join('&');
 }
 
+/**
+ * 锁定当前dom，一般用于数据正在加载时，锁定dom，并显示loading图
+ */
+function dom_lock( dom ){
+  var $dom = $(dom);
+  var scrollTop = $dom.scrollTop();
+  var scrollLeft = $dom.scrollLeft();
+  if( $dom.css('position') == 'static' ){
+    $dom.css('position', 'relative');
+  }
+  console.log(scrollTop, scrollLeft);
+  var $layer = $dom.data('_lock_layer') || $('<div><i class="fa fa-spin fa-lg fa-spinner"></i></div>');
+  $layer.css({
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    'text-align': 'center',
+    top: scrollTop + 'px',
+    left: scrollLeft + 'px',
+    'z-index': 10,
+    background: 'rgba(253, 253, 253, 0.62)'
+  }).find('i').css({
+    position: 'absolute',
+    top: '50%',
+    'margin-top': '-10px',
+    color: '#fcdfb3'
+  });
+  
+  var onScroll = function(e){
+    e.target.scrollTop = scrollTop;
+    e.target.scrollLeft = scrollLeft;
+  }
+  $dom.append($layer)
+    .data({'_lock_layer': $layer, '_lock_onScroll': onScroll})
+    .on('scroll', onScroll);
+
+  return function(){
+    $layer.remove();
+    $dom.off('scroll', onScroll);
+  }
+}
+
 export default {
   core: {
     isArray: core_isArray,
@@ -269,6 +311,9 @@ export default {
   url: {
     parse: url_parse,       //将一个url的参数取出来（与以下过程正好相反）
     toParams: url_toParams, //将一个对象转化为url参数
+  },
+  dom: {
+    lock: dom_lock       //锁定dom，显示数据正在加载
   },
   dateFormat,
   getDate,

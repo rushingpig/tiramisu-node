@@ -25,7 +25,7 @@ import RecipientInfo from 'common/recipient_info';
 import ToolTip from 'common/tooltip';
 
 import LazyLoad from 'utils/lazy_load';
-import { colour, Noty, core } from 'utils/index';
+import { colour, Noty, core, dom } from 'utils/index';
 import V from 'utils/acl';
 import { createMap, autoMatch } from 'mixins/map';
 
@@ -376,7 +376,7 @@ class ManagePannel extends Component {
     var { filter, area, alter_delivery_area, delivery_stations,
       main: {submitting, prepare_delivery_data_ok},
       activeOrder, showProductsDetail, operationRecord, dispatch, getOrderList, exportExcel, getOrderOptRecord, resetOrderOptRecord, cancelOrder, orderException } = this.props;
-    var { loading, refresh, page_no, total, list, check_order_info, active_order_id, show_products_detail } = this.props.orders;
+    var { loading, refresh, page_no, total, list, check_order_info, active_order_id, show_products_detail, get_products_detail_ing } = this.props.orders;
     var { viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, refreshDataList } = this;
 
     var content = list.map((n, i) => {
@@ -394,7 +394,7 @@ class ManagePannel extends Component {
         <div className="panel">
           <header className="panel-heading">订单列表</header>
           <div className="panel-body">
-            <div className="table-responsive main-list">
+            <div ref="table-container" className="table-responsive main-list">
               <table className="table table-hover text-center">
                 <thead>
                 <tr>
@@ -438,9 +438,9 @@ class ManagePannel extends Component {
 
         { show_products_detail && check_order_info
           ? <div className="panel">
-              <div className="panel-body">
+              <div className="panel-body" style={{position: 'relative'}}>
                 <div>订单管理 >> 产品详情</div>
-                <OrderProductsDetail products={check_order_info.products} />
+                <OrderProductsDetail loading={get_products_detail_ing} products={check_order_info.products} />
               </div>
             </div>
           : null }
@@ -459,7 +459,8 @@ class ManagePannel extends Component {
     )
   }
   onPageChange(page){
-    this.search(page);
+    var unlock = dom.lock(this.refs['table-container']);
+    this.search(page).done(unlock);
   }
   componentDidMount() {
     this.search();
@@ -467,7 +468,7 @@ class ManagePannel extends Component {
   search(page){
     //搜索数据，无需loading图
     page = typeof page == 'undefined' ? this.props.orders.page_no : page;
-    this.props.getOrderList({page_no: page, page_size: this.state.page_size});
+    return this.props.getOrderList({page_no: page, page_size: this.state.page_size});
   }
   refreshDataList(){
     //更新数据，需要loading图

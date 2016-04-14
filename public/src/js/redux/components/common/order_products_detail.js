@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import { tableLoader, get_table_empty } from 'common/loading';
 
 function ProductRow(product){
   return (
@@ -40,7 +41,7 @@ export default class OrderProductsDetail extends Component {
           </tr>
           </thead>
           <tbody>
-            {products}
+            { tableLoader( this.props.loading , products ) }
           </tbody>
         </table>
       </div>

@@ -19,7 +19,7 @@ import ToolTip from 'common/tooltip';
 import { order_status, DELIVERY_MAP, YES_OR_NO } from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
-import { form, Noty, dateFormat, parseTime } from 'utils/index';
+import { form, Noty, dateFormat, parseTime, dom } from 'utils/index';
 import V from 'utils/acl';
 
 import * as OrderActions from 'actions/orders';
@@ -280,7 +280,7 @@ class DeliveryDistributePannel extends Component {
     var { filter, area, deliveryman, orders, main, all_order_srcs, all_pay_modes, signOrder, unsignOrder, 
       searchByScan, exportExcel, getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
     var { submitting } = main;
-    var { loading, refresh, page_no, checkall, total, list, check_order_info, active_order_id } = orders;
+    var { loading, refresh, page_no, checkall, total, list, check_order_info, active_order_id, get_products_detail_ing } = orders;
     var { search, showSignedModal, showUnSignedModal, showScanModal, checkOrderHandler, 
       viewOrderDetail, activeOrderHandler, viewOrderOperationRecord, refreshDataList } = this;
 
@@ -305,7 +305,7 @@ class DeliveryDistributePannel extends Component {
         <div className="panel">
           <header className="panel-heading">送货列表</header>
           <div className="panel-body">
-            <div className="table-responsive main-list">
+            <div ref="table-container" className="table-responsive main-list">
               <table className="table table-hover text-center">
                 <thead>
                 <tr>
@@ -347,7 +347,7 @@ class DeliveryDistributePannel extends Component {
           ? <div className="panel">
               <div className="panel-body">
                 <div>订单产品详情</div>
-                <OrderProductsDetail products={check_order_info.products} />
+                <OrderProductsDetail loading={get_products_detail_ing} products={check_order_info.products} />
               </div>
             </div>
           : null }
@@ -361,7 +361,8 @@ class DeliveryDistributePannel extends Component {
     )
   }
   onPageChange(page){
-    this.search(page);
+    var unlock = dom.lock(this.refs['table-container']);
+    this.search(page).done(unlock);
   }
   componentDidMount() {
     this.search();
@@ -375,7 +376,7 @@ class DeliveryDistributePannel extends Component {
   search(page){
     var { getOrderDistributeList, orders } = this.props;
     page = typeof page == 'undefined' ? orders.page_no : page;
-    getOrderDistributeList({page_no: page, page_size: this.state.page_size});
+    return getOrderDistributeList({page_no: page, page_size: this.state.page_size});
   }
   refreshDataList(){
     //更新数据，需要loading图

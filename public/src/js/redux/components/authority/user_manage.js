@@ -112,7 +112,7 @@ var UserRow = React.createClass({
           {
             V('UserManageUserEdit')
             ?
-            <a className="space-right"  key="UserManageUserEdit" href={'/am/user/' + props.id}>[编辑]</a> 
+            <a className="space-right"  key="UserManageUserEdit" href="javascript:;" onClick={this.editHandler.bind(this)}>[编辑]</a> 
             :
             null
           }
@@ -141,6 +141,10 @@ var UserRow = React.createClass({
 
   viewUsableAlterModal() {
     this.props.viewUsableAlterModal(this.props.id,this.props.is_usable);
+  },
+
+  editHandler(){
+    history.push('/am/user/' + this.props.id);
   }
 
 })

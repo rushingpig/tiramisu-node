@@ -49,7 +49,20 @@ function _getFormData(form_data,getState){
       is_national=1;
     }
   })
-  return{
+  return !password 
+  ? {
+    username,
+    mobile,
+    name,
+    city_ids,
+    station_ids,
+    role_ids,
+    is_national,
+    is_headquarters,
+    city_names,
+  }
+  :
+   {
     username,
     password,
     mobile,

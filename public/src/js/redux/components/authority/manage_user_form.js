@@ -4,6 +4,7 @@ import { reduxForm } from 'redux-form';
 
 /*import { isSrc } from 'reducers/form';*/
 import Select from 'common/select';
+import LazyLoad from 'utils/lazy_load';
 import { Noty, form as uForm, dateFormat } from 'utils/index';
 import { SELECT_DEFAULT_VALUE ,CHECKBOXGROUP_DEFAULT_VALUE} from 'config/app.config';
 import CheckBoxGroup from 'common/checkbox_group';
@@ -18,6 +19,8 @@ const validate = (values,props) => {
   var msg = 'error';
   var labelmsg = 'labelRed';
   var { form } = props;
+
+  var {editable} =props;
 
   function _v(key){
      if (form[key] && form[key].touched && !values[key])
@@ -42,7 +45,9 @@ const validate = (values,props) => {
   }
 
   _v('username');
-  _v('pwd');
+  if(!editable){
+    _v('pwd');   
+  } 
   _v('name');
   _v_mobile('mobile');
   _v_checkboxgroup('stations_in');
@@ -108,7 +113,7 @@ class ManageAddForm extends Component{
       </div>
       <div className="form-group form-inline">
         <label>{'　　　密码：'}</label>
-        <input {...pwd} className={`form-control input-xs ${pwd.error}`} ref='pwd'  type='password' id="pwd" />
+        <input {...pwd} className={`form-control input-xs ${pwd.error}`} ref='pwd'  type='password' id="pwd" autocomplete="off"/>
         <span id="togglePwdStatus" onClick={this.onPwdToggle.bind(this)} style={{marginLeft:10,color:'blue',textDecoration:'underline',cursor:'Default'}}>{'密码可视'}</span>
       </div>
       <div className="form-group form-inline">
@@ -241,7 +246,7 @@ class ManageAddForm extends Component{
   componentDidMount(){
 /*    var {getDepts} = this.props.actions;
     getDepts();*/
-
+    LazyLoad('noty');
     var {getProvinces,getDepts} = this.props.actions;
     var {params} = this.props;
     getProvinces();

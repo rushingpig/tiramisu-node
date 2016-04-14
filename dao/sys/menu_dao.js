@@ -10,7 +10,9 @@ var baseDao = require('../base_dao'),
     del_flag = baseDao.del_flag,
     is_usable = baseDao.is_usable,
     tables = require('../../config').tables,
-    dbHelper = require('../../common/DBHelper');
+    dbHelper = require('../../common/DBHelper'),
+    toolUtils = require('../../common/ToolUtils'),
+    constant = require('../../common/Constant');
 
 
 function MenuDao(table){
@@ -30,6 +32,7 @@ MenuDao.prototype.updateMenuById = function(menu_id,menu_obj){
     return baseDao.update(sql,params);
 };
 MenuDao.prototype.findMenus = function(query_data){
+    let ds = query_data.user.data_scopes;
     let columns = [
         'sm.id',
         'sm.name',
@@ -41,20 +44,34 @@ MenuDao.prototype.findMenus = function(query_data){
     ].join(',');
     let sql = "select " + columns + " from ?? sm";
     let params = [this.table];
-    if(query_data.role_id){
-        sql += " inner join ?? srm on srm.menu_id = sm.id and srm.role_id = ?";
-        params.push(tables.sys_role_menu);
-        params.push(query_data.role_id);
-    }
+    sql += " inner join ?? srm on srm.menu_id = sm.id";
+    params.push(tables.sys_role_menu);
+
     sql += " inner join ?? sm2 on sm.module_id = sm2.id";
     params.push(this.table);
     sql += " where sm.del_flag = ? and sm.type != 'MODULE'";
     params.push(del_flag.SHOW);
+    if(query_data.role_id){
+        sql += " and srm.role_id = ?";
+        params.push(query_data.role_id);
+    }
+    // data filter start
+    if(!toolUtils.isEmptyArray(ds)){
+        if(!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1){
+            ds.forEach(curr => {
+                if(curr == constant.DS.OFFICEANDCHILD.id && query_data.user.role_ids){
+                    sql += " and srm.role_id in " + dbHelper.genInSql(query_data.user.role_ids);
+                }
+            });
+        }
+    }
+    // data filter end
     if(query_data.module_name){
         sql += " and sm.module_name like ?";
         params.push('%'+query_data.module_name+'%');
     }
     sql += " group by sm.module_id,sm.type,sm.id";
+    console.log(sql);
     return baseDao.select(sql,params);
 };
 MenuDao.prototype.findMenuById = function(menu_id){

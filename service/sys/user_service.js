@@ -34,7 +34,8 @@ UserService.prototype.getUserInfo = (username, password)=> {
                 permissions : [],
                 roles : [],
                 data_scopes : [],
-                org_ids : []
+                org_ids : [],
+                role_ids : []
             };
             //  ###     tips : 当给user属性赋值set类型时,存入session再取出来,属性值为空     ###
             let roles_set = new Set(),data_scopes_set = new Set(),org_ids_set = new Set();
@@ -59,6 +60,7 @@ UserService.prototype.getUserInfo = (username, password)=> {
                 if(curr.permission) user.permissions.push(curr.permission);
                 if(curr.role_name && !roles_set.has(curr.role_id)){
                     user.roles.push({id:curr.role_id,name:curr.role_name});
+                    user.role_ids.push(curr.role_id);
                     roles_set.add(curr.role_id);
                     org_ids_set.add(curr.org_id);
                 }
@@ -92,12 +94,14 @@ UserService.prototype.addUser = (req,res,next) => {
         station_ids : b.station_ids ? b.station_ids.join(',') : '',
         username : b.username,
         city_names : b.city_names ? b.city_names.join(',') : '',
-        is_usable : is_usable.enable
+        is_usable : is_usable.enable,
+        is_headquarters : b.is_headquarters,
+        is_national : b.is_national
     };
     async.series([
         function(cb){
-            if(parseInt(b.is_headquarters) === 1){
-                addressDao.findAllCities().then(cities => {
+            if(parseInt(b.is_headquarters) !== 1){
+                addressDao.findCitiesByIds(b.city_ids).then(cities => {
                     let city_names = [];
                     cities.forEach(curr => {
                         city_names.push(curr.name);
@@ -293,19 +297,22 @@ UserService.prototype.editUser = (req,res,next) => {
     }
     let b = req.body,user_id = req.params.userId;
     let user_obj = {
-        city_ids : b.city_ids.join(','),
+        city_ids : b.city_ids ? b.city_ids.join(',') : '',
         mobile : b.mobile,
         name : b.name,
-        password : cryptoUtils.md5(b.password),
-        station_ids : b.station_ids,
+        station_ids : b.station_ids ? b.station_ids.join(',') : '',
         username : b.username,
+        city_names : b.city_names ? b.city_names.join(',') : '',
         is_headquarters : b.is_headquarters,
         is_national : b.is_national
     };
+    if(b.password){
+        user_obj.password = cryptoUtils.md5(b.password);
+    }
     async.series([
         function(cb){
-            if(parseInt(b.is_headquarters) === 1){
-                addressDao.findAllCities().then(cities => {
+            if(parseInt(b.is_headquarters) !== 1){
+                addressDao.findCitiesByIds(b.city_ids).then(cities => {
                     let city_names = [];
                     cities.forEach(curr => {
                         city_names.push(curr.name);

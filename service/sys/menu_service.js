@@ -89,7 +89,8 @@ MenuService.prototype.listMenus = (req,res,next) => {
     let q = req.query;
     let query_data = {
         role_id : q.role_id,
-        module_name : q.module_name
+        module_name : q.module_name,
+        user : req.session.user
     };
     let promise = menuDao.findMenus(query_data).then(result => {
         if(toolUtils.isEmptyArray(result)){

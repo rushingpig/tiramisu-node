@@ -24,7 +24,12 @@ function AddressService() {
  * @param next
  */
 AddressService.prototype.getProvinces = (req, res, next)=> {
-    systemUtils.wrapService(res,next, addressDao.findAllProvinces().then((results)=> {
+    let signal = req.query.signal;
+    let query_data = {
+        signal : signal,
+        user : req.session.user
+    };
+    systemUtils.wrapService(res,next, addressDao.findAllProvinces(query_data).then((results)=> {
         let data = {};
         if (!results || results.length === 0) {
             res.api(res_obj.NO_MORE_RESULTS, null);
@@ -210,7 +215,12 @@ AddressService.prototype.batchModifyStationCoords = (req,res,next)=>{
     systemUtils.wrapService(res, next, promise);
 };
 AddressService.prototype.getAllCities = (req,res,next) => {
-    let promise = addressDao.findAllCities().then(result => {
+    let signal = req.query.signal;
+    let query_data = {
+        signal : signal,
+        user : req.session.user
+    };
+    let promise = addressDao.findAllCities(query_data).then(result => {
         if(toolUtils.isEmptyArray(result)){
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }

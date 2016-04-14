@@ -22,6 +22,7 @@ module.exports = {
         notEmpty : true
     },
     password: {
+        optional : true,
         notEmpty : true
     },
     role_ids: {

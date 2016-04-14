@@ -260,7 +260,7 @@ class ManageAddForm extends Component{
       this.props.actions.getAllCities("authority");
     else
       if(value != this.refs.province.props['default-value'])
-        this.props.actions.getCities(value);
+        this.props.actions.getCities(value,"authority");
     callback(e);
   }
 

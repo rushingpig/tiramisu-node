@@ -53,6 +53,11 @@ export default function Area(ActionTypes = AreaActionTypes1){
       // }
     },
 
+    //添加标志获取城市
+    getCitiesSignal:function(province_id,signal){
+      return GET(Url.cities.toString(province_id),{signal:signal},ActionTypes.GOT_CITIES_SIGNAL);
+    },
+
     resetDistricts: function (){
       return {
         type: ActionTypes.RESET_DISTRICTS,

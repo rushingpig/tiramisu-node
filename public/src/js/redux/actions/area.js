@@ -22,7 +22,7 @@ export default function Area(ActionTypes = AreaActionTypes1){
   };
   return {
     getProvinces: function (){
-      return _resolve(Url.provinces.toString(), ActionTypes.GOT_PROVINCES);
+      return GET(Url.provinces.toString(), ActionTypes.GOT_PROVINCES);
       // return {
       //   type: ActionTypes.GOT_PROVINCES,
       //   data: {1: '广东省', 2: '湖北省', 3: '湖南省'}
@@ -30,7 +30,7 @@ export default function Area(ActionTypes = AreaActionTypes1){
     },
     // 根据来源索取省份
     getProvincesSignal:function(signal){
-      return _resolve(Url.provinces.toString(signal), ActionTypes.GOT_PROVINCES_SIGNAL);
+      return _resolve(Url.provinces.toString(),{signal:signal}, ActionTypes.GOT_PROVINCES_SIGNAL);
     },
 
     resetCities: function (){
@@ -39,7 +39,7 @@ export default function Area(ActionTypes = AreaActionTypes1){
       }
     },
     getAllCities:function(signal){
-      return _resolve(Url.all_cities.toString(signal), ActionTypes.GOT_ALL_CITIES);
+      return GET(Url.all_cities.toString(),{signal:signal}, ActionTypes.GOT_ALL_CITIES);
 /*      return {
         type:ActionTypes.GOT_ALL_CITIES,
         data:{1:'xxxx',2:'xxx'}

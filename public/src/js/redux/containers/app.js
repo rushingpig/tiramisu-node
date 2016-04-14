@@ -88,11 +88,11 @@ const App = () => (
       </Route>
 
       <Route path="sm" onEnter={getComponents('sm')}>
-        <Route path="station" getComponent={get('StationManagePannel')} />
-        <Route path="station/add" getComponent={get('StationManageDetailPannel')} />
-        <Route path="station/:id" getComponent={get('StationManageDetailPannel')} />
-        <Route path="scope" getComponent={get('StationScopeManagePannel')} />
-        <Route path="scope/:id" getComponent={get('StationScopeManagePannel')} />
+        <Route path="station" onEnter={onEnter('StationManageAccess')} getComponent={get('StationManagePannel')} />
+        <Route path="station/add" onEnter={onEnter('StationManageAdd')} getComponent={get('StationManageDetailPannel')} />
+        <Route path="station/:id" onEnter={onEnter('StationScopeManageEdit')} getComponent={get('StationManageDetailPannel')} />
+        <Route path="scope" onEnter={onEnter('StationScopeManageAccess')} getComponent={get('StationScopeManagePannel')} />
+        <Route path="scope/:id" onEnter={onEnter('StationScopeManageEdit')} getComponent={get('StationScopeManagePannel')} />
       </Route>
 
       <Redirect from="logout" to="/" />

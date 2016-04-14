@@ -11,8 +11,6 @@ import StdModal from 'common/std_modal';
 import Alert from 'common/alert';
 import LineRouter from 'common/line_router';
 import { tableLoader } from 'common/loading';
-import history from 'history_instance';
-import { Noty } from 'utils/index';
 
 import Autocomplete from './autocomplete';
 
@@ -21,6 +19,9 @@ import * as StationsAction from 'actions/station_manage';
 
 import { SELECT_DEFAULT_VALUE } from 'config/app.config';
 import LazyLoad from 'utils/lazy_load';
+import V from 'utils/acl';
+import history from 'history_instance';
+import { Noty } from 'utils/index';
 
 class TopHeader extends Component {
   render(){
@@ -91,9 +92,13 @@ class FilterHeader extends Component {
 						<i className="fa fa-search" style={{'padding': '0 5px'}}></i>
 						查询
 					</button>
-          <a href="javascript:;"onClick={this.addStation.bind(this)} className="pull-right btn btn-theme btn-xs">
-            添加配送站
-          </a>
+          {
+            V('StationManageAdd')
+              ? <a href="javascript:;"onClick={this.addStation.bind(this)} className="pull-right btn btn-theme btn-xs">
+                  添加配送站
+                </a>
+              : null
+          }
 				</div>
 			</div>
 		)
@@ -167,14 +172,28 @@ class StationRow extends Component{
         <td>{props.name}</td>
         <td>{props.address}</td>
         <td>
-        	<a onClick={this.editScope.bind(this)} href="javascript:;">[ 编辑配送区域 ] </a>
-        	<a onClick={this.viewStationDetail.bind(this)} href="javascript:;" className="no-wrap"> [ 查看备注 ] </a>
-        	<a onClick={this.editStation.bind(this)} href="javascript:;" className="no-wrap"> [ 编辑 ] </a>
-        	<a onClick={this.viewDeleteStation.bind(this)} href="javascript:;" className="no-wrap"> [ 删除 ] </a>
+          {
+            this.ACL(
+              <a onClick={this.editScope.bind(this)} key="StationManageEditScope" href="javascript:;">[ 编辑配送区域 ] </a>,
+              <a onClick={this.viewStationDetail.bind(this)} key="StationManageViewRemark" href="javascript:;" className="no-wrap"> [ 查看备注 ] </a>,
+              <a onClick={this.editStation.bind(this)} key="StationManageEdit" href="javascript:;" className="no-wrap"> [ 编辑 ] </a>,
+              <a onClick={this.viewDeleteStation.bind(this)} key="StationManageDelete" href="javascript:;" className="no-wrap"> [ 删除 ] </a>
+            )
+          }
         </td>
       </tr>
 		)
 	}
+  ACL(){
+    var results = [];
+    for(var i=0,len=arguments.length; i<len; i++){
+      var ele = arguments[i];
+      if( V( ele.key ) ){
+        results.push(arguments[i]);
+      }
+    }
+    return results;
+  }
   checkStationHandler(e){
     var { station_id, checkStationHandler } = this.props;
     checkStationHandler(station_id, e.target.checked);

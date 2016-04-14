@@ -23,6 +23,7 @@ import { SELECT_DEFAULT_VALUE } from 'config/app.config';
 import LazyLoad from 'utils/lazy_load';
 import Noty from 'utils/_noty';
 import MyMap from 'utils/station_group_scope';
+import V from 'utils/acl';
 
 class TopHeader extends Component {
   render(){
@@ -161,7 +162,12 @@ class StationRow extends Component{
         <td>{props.name}</td>
         <td>{props.address}</td>
         <td>
-          <a onClick={this.editScope} href="javascript:;">{props.coords?'[ 编辑配送区域 ]': '[ 添加配送区域 ]'}</a>
+          <a onClick={this.editScope} href="javascript:;">
+            { props.coords 
+                ? V('StationScopeManageEdit') && '[ 编辑配送区域 ]'
+                : V('StationScopeManageAdd') && '[ 添加配送区域 ]'
+            }
+          </a>
         </td>
       </tr>
     )
@@ -296,10 +302,13 @@ class StationGroupMap extends Component {
   render(){
     return (
       <div className="panel">
-        <div className="panel-heading">
-          <button disabled={this.props.editable?'':'disabled'} onClick={this.stopEditScope} className="btn btn-theme btn-xs" style={{"marginRight": "35px"}}>停止当前修改</button>
-          <button onClick={this.saveNewScope} className="btn btn-theme btn-xs">保存并提交</button>
-        </div>``
+        {
+          V('StationScopeManageEdit') && 
+          <div className="panel-heading">
+            <button disabled={this.props.editable?'':'disabled'} onClick={this.stopEditScope} className="btn btn-theme btn-xs" style={{"marginRight": "35px"}}>停止当前修改</button>
+            <button onClick={this.saveNewScope} className="btn btn-theme btn-xs">保存并提交</button>
+          </div>
+        }
         <div className="panel-body">
           <div ref="map" id="stationMap"/>
         </div>

@@ -247,9 +247,9 @@ class ManageAddForm extends Component{
 /*    var {getDepts} = this.props.actions;
     getDepts();*/
     LazyLoad('noty');
-    var {getProvinces,getDepts} = this.props.actions;
+    var {getProvincesSignal,getDepts} = this.props.actions;
     var {params} = this.props;
-    getProvinces();
+    getProvincesSignal("authority");
     getDepts();
   }
 
@@ -257,7 +257,7 @@ class ManageAddForm extends Component{
     var {value} = e.target;
     this.props.actions.resetCities();
     if(value == 999)
-      this.props.actions.getAllCities();
+      this.props.actions.getAllCities("authority");
     else
       if(value != this.refs.province.props['default-value'])
         this.props.actions.getCities(value);

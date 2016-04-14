@@ -30,7 +30,7 @@ export default function Area(ActionTypes = AreaActionTypes1){
     },
     // 根据来源索取省份
     getProvincesSignal:function(signal){
-      return _resolve(Url.provinces.toString(),{signal:signal}, ActionTypes.GOT_PROVINCES_SIGNAL);
+      return GET(Url.provinces.toString(),{signal:signal}, ActionTypes.GOT_PROVINCES_SIGNAL);
     },
 
     resetCities: function (){

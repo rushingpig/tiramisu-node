@@ -46,8 +46,20 @@ AddressDao.prototype.findAllProvinces = function(query_data){
         return baseDao.select(this.baseSql,[this.baseColumns,1,del_flag.SHOW]);
     }
 };
-AddressDao.prototype.findCitiesByProvinceId = function(provinceId){
+AddressDao.prototype.findCitiesByProvinceId = function(provinceId,query_data){
     let sql = this.baseSql + ' and parent_id = ?';
+    let ds = query_data.user.data_scopes;
+    // data filter start
+    if(!toolUtils.isEmptyArray(ds)){
+        if(!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1){
+            ds.forEach(curr => {
+                if(curr == constant.DS.OFFICEANDCHILD.id && query_data.user.role_ids){
+                    sql += " and id in "+dbHelper.genInSql(query_data.user.city_ids);
+                }
+            });
+        }
+    }
+    // data filter end
     return baseDao.select(sql,[this.baseColumns,2,del_flag.SHOW,provinceId]);
 };
 AddressDao.prototype.findDistrictsByCityId = function(cityId){

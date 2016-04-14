@@ -49,7 +49,12 @@ AddressService.prototype.getProvinces = (req, res, next)=> {
  */
 AddressService.prototype.getCities = (req, res, next)=> {
     let provinceId = req.params.provinceId;
-    systemUtils.wrapService(res,next, addressDao.findCitiesByProvinceId(provinceId).then((results)=> {
+    let signal = req.query.signal;
+    let query_data = {
+        signal : signal,
+        user : req.session.user
+    };
+    systemUtils.wrapService(res,next, addressDao.findCitiesByProvinceId(provinceId,query_data).then((results)=> {
             let data = {};
             if (!results || results.length == 0) {
                 res.api(res_obj.NO_MORE_RESULTS, null);

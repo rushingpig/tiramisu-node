@@ -10,7 +10,9 @@ var baseDao = require('../base_dao'),
     del_flag = baseDao.del_flag,
     is_usable = baseDao.is_usable,
     tables = require('../../config').tables,
-    dbHelper = require('../../common/DBHelper');
+    dbHelper = require('../../common/DBHelper'),
+    toolUtils = require('../../common/ToolUtils'),
+    constant = require('../../common/Constant');
 
 function RoleDao(table){
     this.table = table || tables.sys_role;
@@ -23,6 +25,7 @@ RoleDao.prototype.insertRole = function(role_obj){
 };
 RoleDao.prototype.findRoles = function(query_data){
     let sql = "select * from ?? where 1=1 and del_flag = ?",params = [];
+    let ds = query_data.user.data_scopes;
     params.push(tables.sys_role);
     params.push(del_flag.SHOW);
     if(query_data.org_id){
@@ -33,6 +36,17 @@ RoleDao.prototype.findRoles = function(query_data){
         sql += " and name like ?";
         params.push('%'+query_data.role_name+'%');
     }
+    // data filter start
+    if(!toolUtils.isEmptyArray(ds)){
+        if(!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1){
+            ds.forEach(curr => {
+                if(curr == constant.DS.OFFICEANDCHILD.id && query_data.user.role_ids){
+                    sql += " and org_id in "+dbHelper.genInSql(query_data.user.org_ids);
+                }
+            });
+        }
+    }
+    // data filter end
     let count_sql = dbHelper.countSql(sql);
     return baseDao.select(count_sql,params).then(result => {
         let pagination_sql = '';

@@ -46,7 +46,7 @@ class RoleForm extends Component{
     } = this.props;
     const { depts,dataaccess}=this.props;
     return (
-      <form>
+      <div>
         <div className='form-group form-inline'>
           <label>{'　　角色名称：'}</label>
           <input {...name} type="text" className={`form-control input-xs ${name.error}`}/>
@@ -68,8 +68,8 @@ class RoleForm extends Component{
             <button className="btn btn-default btn-sm space-right" onClick={this.hide}>取消</button>
             <button ref='submit_btn' className="btn btn-theme btn-sm space-left" onClick={handleSubmit(this._check.bind(this, this.saveRole))}>提交</button>           
           </div>
-        </div>                  
-      </form>    
+        </div> 
+      </div>                   
       )    
   }
 

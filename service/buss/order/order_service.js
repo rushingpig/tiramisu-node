@@ -564,7 +564,7 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
     }
 
     let promise = orderDao.findOrderList(systemUtils.assemblePaginationObj(req, query_data)).then((resObj) => {
-      if (!(resObj.result && resObj._result)) {
+      if (!resObj._result) {
         throw new TiramisuError(res_obj.FAIL);
       } else if (toolUtils.isEmptyArray(resObj._result)) {
         throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);

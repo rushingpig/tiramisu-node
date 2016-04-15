@@ -453,7 +453,10 @@ OrderDao.prototype.findOrderList = function (query_data) {
     }
     let columns = columns_arr.join(',');
     let params = [],data_scopes = query_data.user.data_scopes;
-    let sql = "select " + columns + " from ?? bo force index(IDX_DELIVERY_TIME)";
+    let sql = "select " + columns + " from ?? bo ";
+    if(query_data.begin_time || query_data.end_time){
+        sql += "force index(IDX_DELIVERY_TIME)";
+    }
     params.push(tables.buss_order);
     if (query_data.keywords) {
         let match = '';

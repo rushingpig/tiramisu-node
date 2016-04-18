@@ -22,7 +22,7 @@ export default function Area(ActionTypes = AreaActionTypes1){
   };
   return {
     getProvinces: function (){
-      return GET(Url.provinces.toString(), ActionTypes.GOT_PROVINCES);
+      return GET(Url.provinces.toString(), null, ActionTypes.GOT_PROVINCES);
       // return {
       //   type: ActionTypes.GOT_PROVINCES,
       //   data: {1: '广东省', 2: '湖北省', 3: '湖南省'}

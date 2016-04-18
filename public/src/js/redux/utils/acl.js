@@ -47,7 +47,7 @@ export default function validate ( role ){
       return false; //未知错误，权限全部为禁止
     }
   }
-  return PERMISSIONS.some( n => n === role );
+  return PERMISSIONS.some( n => n === role ) || undefined;
 }
 
 /**

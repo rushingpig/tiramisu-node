@@ -51,6 +51,22 @@ export default [
       "icon": "",
       "link": "/dm/review",
   }]
+},{
+  "key": "station_management",
+  "name": "配送管理",
+  "short_name": "配送",
+  "icon": "",
+  "link": [{
+     "key": "StationManageAccess",
+     "name": "配送站管理",
+     "icon": "",
+     "link": "/sm/station"
+  },{
+     "key": "StationScopeManageAccess",
+     "name": "配送区域管理",
+     "icon": "",
+     "link": "/sm/scope"
+  }]
 }, {
   "key": "central_management",
   "name": "集合管理",

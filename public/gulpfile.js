@@ -104,13 +104,12 @@ gulp.task('lib', function(){
 });
 
 gulp.task('template:dev', function(){
-  var wds_server = "http://localhost:3000/";
-  var webpack_assets = JSON.parse(fs.readFileSync('./build/webpack.assets.js').toString());
+  var webpack_server = "http://localhost:3000/";
   return gulp.src(s('index.html'))
     .pipe(template({
       'root': config.root,
-      'commons': webpack_assets.commons.js,
-      'index': webpack_assets.index.js,
+      'commons': webpack_server + 'commons.bundle.js',
+      'index': webpack_server + 'index.bundle.js',
      }))
     .pipe(gulp.dest('./'))
     .pipe(rename({extname: '.hbs'}))

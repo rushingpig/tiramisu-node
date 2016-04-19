@@ -141,7 +141,8 @@ RoleService.prototype.getRoleDetail = (req, res, next) => {
             name: role.name,
             description: role.description,
             org_id : role.org_id,
-            data_scope_id : role.data_scope
+            data_scope_id : role.data_scope,
+            src_id : role.src_id
         };
         res.api(data);
     });

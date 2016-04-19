@@ -107,9 +107,11 @@ function RoleManage(state = initial_role_state,action){
         })[0];
         return {...state,role_info:role_info}
       })();*/
-        return {...state,role_info:action.data,handle_role_id:action.id};
+        var data = action.data;
+        data.src_id = data.src_id == 0 ? undefined :data.src_id;
+        return {...state,role_info:data,handle_role_id:action.id};
     case Actions.RESET_ROLE:
-        return {...state,role_info:{name:'',description:'',org_id:-1,data_scope_id:-1}};
+        return {...state,role_info:{data_scope_id:-1,name:'',description:'',org_id:-1,src_id:undefined}};
     default:
         return state;
   }

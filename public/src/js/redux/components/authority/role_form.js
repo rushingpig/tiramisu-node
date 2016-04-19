@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { bindActionCreators } from 'redux';
 import {reset} from 'redux-form';
-import {  SELECT_DEFAULT_VALUE } from 'config/app.config';
+import {  SELECT_DEFAULT_VALUE ,ORG_ID_HAS_CHANNELS} from 'config/app.config';
 import LazyLoad from 'utils/lazy_load';
 import {Noty} from 'utils/index';
 
@@ -50,14 +50,24 @@ class OrderSrcsSelects extends Component {
   }
   render(){
     var { all_order_srcs, src_id} = this.props;
-    var {selected_order_src_level1_id =src_id.value} = this.state;
+    var tmp  = all_order_srcs.length > 1
+      ? all_order_srcs[1].filter(n => n.id == src_id.value)
+      : SELECT_DEFAULT_VALUE;
+    var tmp_src_id;
+    if (typeof tmp[0] != undefined  && tmp != -1 && tmp.length != 0){
+      tmp_src_id = tmp[0].parent_id;
+    }else{
+      tmp_src_id = src_id.value;
+    }
+     
+    var {selected_order_src_level1_id =tmp_src_id} = this.state;
 
     var order_srcs_level2 = all_order_srcs.length > 1
       ? all_order_srcs[1].filter(n => n.parent_id == selected_order_src_level1_id)
       : [];
 
     //if ()
-    return (        
+    return (       
           <div className="inline-block">
           {
             order_srcs_level2.length 
@@ -86,7 +96,7 @@ class OrderSrcsSelects extends Component {
                   default-text="渠道来源"
                   className="form-select space-right" />
           }
-          </div>   
+          </div>  
     )
   }
   orderSrcsLevel1Change(e){
@@ -133,9 +143,11 @@ class RoleForm extends Component{
           <Select ref='org_id' {...org_id} values={org_id} options={depts} className={`form-control input-xs ${org_id.error}`}/>
            {
 
-              org_id.value == 5 ?
+              (org_id.value == ORG_ID_HAS_CHANNELS)?
             <OrderSrcsSelects ref='src_id' {...{all_order_srcs, src_id}} actions={{triggerFormUpdate}} reduxFormName="role_form" default-text="--请选择渠道来源--"/>
-            :null
+            :
+            null
+            /*<OrderSrcsSelects ref='src_id' {...{all_order_srcs, src_id}} actions={{triggerFormUpdate}} reduxFormName="role_form" default-text="--请选择渠道来源--"/>*/
             }
         </div>
         <div className='form-group form-inline'>
@@ -155,8 +167,8 @@ class RoleForm extends Component{
 
 
   componentDidMount(){
-    setTimeout(()=>{   
-      this.props.getOrderSrcs();
+    setTimeout(()=>{
+      this.props.getOrderSrcs();   
       LazyLoad('noty');   
     },0)
 
@@ -208,6 +220,13 @@ class RoleForm extends Component{
         Noty('error', msg || '保存异常');
         this.refs.submit_btn.disabled = false;
       });
+  }
+  onDeptChange(callback,e){
+/*    var {value} = e.target.value;
+    if(value == ORG_ID_HAS_CHANNELS){
+       this.props.getOrderSrcs(); 
+    }
+    callback(e);*/
   }
 
 }

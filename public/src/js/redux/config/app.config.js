@@ -106,4 +106,6 @@ export default {
 
   CHECKBOXGROUP_DEFAULT_VALUE:[],
 
+  ORG_ID_HAS_CHANNELS:5,
+
 }

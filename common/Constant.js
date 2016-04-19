@@ -123,7 +123,7 @@ Constant.DS = {
     },
     OFFICEANDCHILD : {
         id : 2,
-        name : '部门及子公司全部用户'
+        name : '所属部门全部用户'
     },
     OFFICE : {
         id : 3,
@@ -131,15 +131,19 @@ Constant.DS = {
     },             
     STATION : {
         id : 4,
-        name : '本配送站订单及配送员列表'
+        name : '所属配送站所有订单'
     },
     CITY : {
         id : 5,
-        name : '本城市下的所有配送站订单及配送员'
+        name : '所属城市所有订单'
     },
     SELF_DELIVERY : {
         id : 6,
-        name : '分给自己(配送员)的订单'
+        name : '单个配送员的全部订单'
+    },
+    SELF_CHANNEL : {
+        id : 7,
+        name : '所属渠道的全部订单'
     }
 };
 

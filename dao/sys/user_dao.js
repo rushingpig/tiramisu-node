@@ -38,6 +38,7 @@ UserDao.prototype.findByUsername = (username,password)=>{
         'sr.id as role_id',
         'sr.name as role_name',
         'sr.org_id',
+        'sr.src_id',
 
         'sm.parent_id',
         'sm.parent_ids',

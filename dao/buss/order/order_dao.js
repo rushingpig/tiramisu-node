@@ -595,6 +595,8 @@ OrderDao.prototype.findOrderList = function (query_data) {
                 params.push(query_data.user.id);
             }else if(curr == constant.DS.ALLCOMPANY.id){
                 temp_sql += " or 1 = 1";
+            }else if(curr == constant.DS.SELF_CHANNEL.id){
+                temp_sql += " or bo.src_id in " + dbHelper.genInSql(query_data.user.src_ids);
             }else{
                 temp_sql += " 1!=1";// 未分配权限的不予显示数据
             }

@@ -35,7 +35,8 @@ UserService.prototype.getUserInfo = (username, password)=> {
                 roles : [],
                 data_scopes : [],
                 org_ids : [],
-                role_ids : []
+                role_ids : [],
+                src_ids : []
             };
             //  ###     tips : 当给user属性赋值set类型时,存入session再取出来,属性值为空     ###
             let roles_set = new Set(),data_scopes_set = new Set(),org_ids_set = new Set();
@@ -63,6 +64,9 @@ UserService.prototype.getUserInfo = (username, password)=> {
                     user.role_ids.push(curr.role_id);
                     roles_set.add(curr.role_id);
                     org_ids_set.add(curr.org_id);
+                    if(curr.src_id){
+                        user.src_ids.push(curr.src_id);
+                    }
                 }
                 if(curr.data_scope)  data_scopes_set.add(curr.data_scope);
             }

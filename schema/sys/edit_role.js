@@ -15,5 +15,9 @@ module.exports = {
     },
     description : {
         notEmpty : true
+    },
+    src_id : {
+        optional : true,
+        isInt : true
     }
 };

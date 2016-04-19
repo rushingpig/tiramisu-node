@@ -36,7 +36,8 @@ RoleService.prototype.addRole = (req, res, next) => {
         description: req.body.description,
         name: req.body.name,
         data_scope: req.body.data_scope_id,
-        org_id: req.body.org_id
+        org_id: req.body.org_id,
+        src_id : req.body.src_id || 0
     };
     let promise = roleDao.insertRole(systemUtils.assembleInsertObj(req,role_obj)).then(insertId => {
         if (!(toolUtils.isInt(insertId) && parseInt(insertId) > 0)) {
@@ -164,7 +165,8 @@ RoleService.prototype.editRole = (req, res, next) => {
     let role_obj = {
         org_id: b.org_id,
         name: b.name,
-        description: b.description
+        description: b.description,
+        src_id : b.src_id || 0
     };
     let promise = roleDao.updateRoleById(role_id, systemUtils.assembleUpdateObj(req, role_obj)).then(affectRows => {
         if (!toolUtils.isInt(affectRows)) {

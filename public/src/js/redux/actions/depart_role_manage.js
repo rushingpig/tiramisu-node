@@ -4,6 +4,12 @@ import Utils from 'utils/index';
 
 import {Noty} from 'utils/index';
 
+import * as OrderSupport from 'actions/order_support';
+
+
+export const GOT_ORDER_SRCS = OrderSupport.GOT_ORDER_SRCS;
+export const getOrderSrcs = OrderSupport.getOrderSrcs;
+
 export const TOGGLE_DEPT = 'TOGGLE_DEPT';
 export function toggleDept( org_id ){
   return GET(Url.role_list_info.toString(),{org_id:org_id},TOGGLE_DEPT);
@@ -46,7 +52,9 @@ export function getRoleDetail(roleId){
             data: data,
           })
         })
-  } 
+  }
+
+
 /*  return {
     type:GET_ROLE_DETAIL,
     data:{description:'xxx',id:1,name:'文员',org_id:1,data_scope_id:2},
@@ -55,6 +63,13 @@ export function getRoleDetail(roleId){
 =======
   }*/
 }
+
+export const RESET_ROLE = 'RESET_ROLE';
+export function resetRole(){
+  return{
+    type:RESET_ROLE
+  }
+} 
 
 export const ADD_DEPT='ADD_DEPT';
 export function addDept(name,description){
@@ -69,8 +84,16 @@ export const ADD_ROLE='ADD_ROLE';
 export function addRole(form_data){
   var description = form_data.description;
   var name = form_data.name;
-  form_data.description = (!description)?name:description;
-  return POST(Url.role_add.toString(),form_data,ADD_ROLE);
+  description = (!description)?name:description;
+  var data;
+  if(!form_data.src_id){
+    data = {description:description,name:name,org_id:form_data.org_id,
+            data_scope_id:form_data.data_scope_id}
+  }else{
+    data = {description:description,name:name,org_id:form_data.org_id,
+            data_scope_id:form_data.data_scope_id,src_id:form_data.src_id}
+  }  
+  return POST(Url.role_add.toString(),data,ADD_ROLE);
 /*  return {
     type:ADD_ROLE
   }*/
@@ -80,8 +103,16 @@ export const CHANGE_ROLE = 'CHANGE_ROLE';
 export function changeRole(form_data,roleId){
  var description = form_data.description;
  var name = form_data.name;
- form_data.description = (!description)?name:description; 
-  return PUT(Url.role_edit.toString(roleId),form_data,CHANGE_ROLE)
+ description = (!description)?name:description;
+ var data;
+ if(!form_data.src_id){
+   data = {description:description,name:name,org_id:form_data.org_id,
+           data_scope_id:form_data.data_scope_id}
+ }else{
+   data = {description:description,name:name,org_id:form_data.org_id,
+           data_scope_id:form_data.data_scope_id,src_id:form_data.src_id}
+ }
+  return PUT(Url.role_edit.toString(roleId),data,CHANGE_ROLE)
 /*  return {
     type:CHANGE_ROLE
   }*/

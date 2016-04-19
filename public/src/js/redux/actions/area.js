@@ -38,6 +38,7 @@ export default function Area(ActionTypes = AreaActionTypes1){
         type: ActionTypes.RESET_CITIES,
       }
     },
+
     getAllCities:function(signal){
       return GET(Url.all_cities.toString(),{signal:signal}, ActionTypes.GOT_ALL_CITIES);
 /*      return {

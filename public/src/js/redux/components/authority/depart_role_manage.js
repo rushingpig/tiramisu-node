@@ -12,6 +12,8 @@ import V from 'utils/acl';
 import * as DeptRoleManageActions from 'actions/depart_role_manage';
 import DeptRoleActions from 'actions/dept_role';
 
+import {triggerFormUpdate} from 'actions/form';
+
 import StdModal from 'common/std_modal';
 import TreeNav from 'common/tree_nav';
 
@@ -119,11 +121,12 @@ class DeptManagePanel extends Component{
     this.viewDeleteRoleModal = this.viewDeleteRoleModal.bind(this);
   }
   render(){
-    var {dept_role}=this.props;
+    var {dept_role,filter}=this.props;
+    var {all_order_srcs} = filter;
     var {depts,dataaccess} = dept_role;
     const { list } = this.props.RoleInfoListManage;
     var {handle_role_id} = this.props.RoleManage;
-    const {addDept,addRole,changeRole,deleteRole,reset,getRoleDetail} = this.props.actions;
+    const {addDept,addRole,changeRole,deleteRole,reset,getRoleDetail,getOrderSrcs,resetRole} = this.props.actions;
     let content = list.map((n,id) => {
       return <RoleInfoRow key={id} {...n}
       getRoleDetail = {this.props.actions.getRoleDetail}
@@ -160,8 +163,12 @@ class DeptManagePanel extends Component{
             </div>
           </div>
           <AddDeptModal ref='addDept' addDept={addDept} reset={reset} getDepts={this.props.actions.getDepts}/>
-          <AddRoleModal ref='addRole' depts={depts} dataaccess={dataaccess} getRoleInfoList={this.props.actions.getRoleInfoList} reset = {reset} addRole={addRole} />
-          <EditRoleModal handle_role_id={handle_role_id} ref='editRole' depts={depts} dataaccess={dataaccess} reset={reset} changeRole = {changeRole} getRoleDetail={getRoleDetail}/>
+          <AddRoleModal {...{filter}} ref='addRole' depts={depts} dataaccess={dataaccess} 
+            getRoleInfoList={this.props.actions.getRoleInfoList} reset = {reset} addRole={addRole}
+            getOrderSrcs={getOrderSrcs} triggerFormUpdate={triggerFormUpdate}  resetRole={resetRole}/>
+          <EditRoleModal {...{filter}} handle_role_id={handle_role_id} ref='editRole' depts={depts} dataaccess={dataaccess} 
+            reset={reset} changeRole = {changeRole} getRoleDetail={getRoleDetail}
+            getOrderSrcs={getOrderSrcs} triggerFormUpdate={triggerFormUpdate} />
           <DeleteRoleModal ref='deleteRole' deleteRole = {deleteRole} />
         </div>
       )
@@ -292,15 +299,18 @@ class AddRoleModal extends Component{
   }
 
   render(){
-    const {addRole,depts,dataaccess} = this.props;
+    const {addRole,depts,dataaccess,filter,getOrderSrcs} = this.props;
+    var {all_order_srcs} = filter;
 
     return (
       <StdModal footer={false} title='添加角色' ref='viewRoleAdd' onConfirm={this.onConfirm} onCancel={this.onCancel}>
-        <RoleFormAdd ref='roleFormAdd' hide={this.hide} depts={depts} dataaccess={dataaccess} addRole={addRole} />
+        <RoleFormAdd {...{all_order_srcs}} ref='roleFormAdd' hide={this.hide} depts={depts} dataaccess={dataaccess} addRole={addRole} 
+        getOrderSrcs={getOrderSrcs} triggerFormUpdate={triggerFormUpdate}/>
       </StdModal>
       )
   }
   show(){
+    this.props.resetRole();
     this.refs.viewRoleAdd.show();
   }
   hide(){
@@ -325,11 +335,14 @@ class EditRoleModal extends Component{
 
   }
   render(){
-    const {changeRole,depts,dataaccess,handle_role_id} = this.props;
+    const {changeRole,depts,dataaccess,handle_role_id,filter,getOrderSrcs} = this.props;
+    var {all_order_srcs} = filter;
 
     return (
       <StdModal footer={false} title='编辑角色' ref = 'viewRoleEdit' onConfirm={this.onConfirm} >
-        <RoleFormEdit handle_role_id={handle_role_id} hide={this.hide} editable={true} ref='roleFormEdit' depts={depts} dataaccess={dataaccess} changeRole={changeRole}/>
+        <RoleFormEdit {...{all_order_srcs}} handle_role_id={handle_role_id} hide={this.hide} editable={true} 
+          ref='roleFormEdit' depts={depts} dataaccess={dataaccess} changeRole={changeRole} 
+          getOrderSrcs={getOrderSrcs} triggerFormUpdate={triggerFormUpdate}/>
       </StdModal>
       )
   }
@@ -383,13 +396,15 @@ function mapStateToProps(state){
 }
 
 function mapDispatchToProps(dispatch){
-  return {
+ return {
     actions:bindActionCreators({
       ...DeptRoleActions(),
       ...DeptRoleManageActions,
-      reset
+      reset,
+      dispatch
     },dispatch)
   }
+
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(DeptManagePanel);

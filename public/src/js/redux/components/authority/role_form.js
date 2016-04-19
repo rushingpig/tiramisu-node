@@ -3,12 +3,12 @@ import Select from 'common/select';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { bindActionCreators } from 'redux';
-
+import {reset} from 'redux-form';
 import {  SELECT_DEFAULT_VALUE } from 'config/app.config';
 import LazyLoad from 'utils/lazy_load';
 import {Noty} from 'utils/index';
 
-export const fields=['name','org_id','description','data_scope_id'];
+export const fields=['name','org_id','description','data_scope_id','src_id'];
 
 const validate = (values,props) => {
   const errors = {};
@@ -31,6 +31,76 @@ const validate = (values,props) => {
   return errors;
 }
 
+class OrderSrcsSelects extends Component {
+  constructor(props){
+    super(props);
+/*    var { all_order_srcs, src_id} = props;
+    var selected_order_src_level1_id;
+    var tmp  = all_order_srcs.length > 1
+      ? all_order_srcs[1].filter(n => n.id == src_id.value)
+      : SELECT_DEFAULT_VALUE;
+    if (typeof tmp[0] != undefined ){
+      selected_order_src_level1_id = tmp[0].parent_id;
+    }else{
+      selected_order_src_level1_id = src_id.value;
+    }*/
+    this.state = {
+      selected_order_src_level1_id: undefined,
+    }
+  }
+  render(){
+    var { all_order_srcs, src_id} = this.props;
+    var {selected_order_src_level1_id = src_id.value} = this.state;
+
+    var order_srcs_level2 = all_order_srcs.length > 1
+      ? all_order_srcs[1].filter(n => n.parent_id == selected_order_src_level1_id)
+      : [];
+
+    //if ()
+    return (        
+          <div className="inline-block">
+          {
+            order_srcs_level2.length 
+              ? [
+                <Select 
+                    value={selected_order_src_level1_id} 
+                    options={all_order_srcs[0]} 
+                    onChange={this.orderSrcsLevel1Change.bind(this)} 
+                    key="order_srcs_level1" 
+                    default-text="渠道来源"
+                    className="form-select space-right" />, ' ',
+                <Select 
+                    {...src_id} 
+                    options={order_srcs_level2} 
+                    key="order_srcs_level2" 
+                    default-text="渠道来源"
+                    className="form-select space-right" />
+                ]
+              : <Select 
+                  //value={typeof selected_order_src_level1_id != 'undefined' ? src_id.value : SELECT_DEFAULT_VALUE} 
+                  value={selected_order_src_level1_id}
+                  options={all_order_srcs[0]} 
+                  onChange={this.orderSrcsLevel1Change.bind(this)} 
+                  key="order_srcs_level1" 
+                  default-text="渠道来源"
+                  className="form-select space-right" />
+          }
+          </div>   
+    )
+  }
+  orderSrcsLevel1Change(e){
+    var { value } = e.target;
+    var { all_order_srcs } = this.props;
+    //如果没有二级订单来源，则表明只是一个一级来源
+    // if(all_order_srcs[1] && !all_order_srcs[1].filter(n => n.parent_id == value).length){
+      this.props.actions.triggerFormUpdate(this.props.reduxFormName, 'src_id', value); //此时只能模拟form表单更新
+    // }else{
+    //   this.props.actions.resetFormUpdate(this.props.reduxFormName, 'src_id');
+    // }
+    this.setState({selected_order_src_level1_id: value});
+  }
+}
+
 class RoleForm extends Component{
   constructor(props){
     super(props);
@@ -42,14 +112,16 @@ class RoleForm extends Component{
   render(){
     const {
       handleSubmit,
-      fields:{name,org_id,description,data_scope_id},
+      fields:{name,org_id,description,data_scope_id,src_id},
+      all_order_srcs,
+      triggerFormUpdate,
     } = this.props;
     const { depts,dataaccess}=this.props;
     return (
       <div>
         <div className='form-group form-inline'>
           <label>{'　　角色名称：'}</label>
-          <input {...name} type="text" className={`form-control input-xs ${name.error}`}/>
+          <input ref='name' {...name} type="text" className={`form-control input-xs ${name.error}`}/>
         </div>
         <div className='form-group form-inline'>
           <label>{'角色职能描述：'}</label>
@@ -57,8 +129,14 @@ class RoleForm extends Component{
         </div>
         <div className='form-group form-inline'>
           <label>{'　　所属部门：'}</label>
-          <Select {...org_id} values={org_id} options={depts} className={`form-control input-xs ${org_id.error}`}/>
-        </div> 
+          <Select ref='org_id' {...org_id} values={org_id} options={depts} className={`form-control input-xs ${org_id.error}`}/>
+           {
+
+              org_id.value == 5 ?
+            <OrderSrcsSelects ref='src_id' {...{all_order_srcs, src_id}} actions={{triggerFormUpdate}} reduxFormName="role_form" default-text="--请选择渠道来源--"/>
+            :null
+            }
+        </div>
         <div className='form-group form-inline'>
           <label>{'角色数据权限：'}</label>
           <Select {...data_scope_id} values={data_scope_id} options={dataaccess} className={`form-control input-xs ${data_scope_id.error}`}/>
@@ -76,7 +154,11 @@ class RoleForm extends Component{
 
 
   componentDidMount(){
-    LazyLoad('noty');
+    setTimeout(()=>{   
+      this.props.getOrderSrcs();
+      LazyLoad('noty');   
+    },0)
+
   }
   _check(callback, form_data){
     setTimeout(() => {
@@ -91,6 +173,9 @@ class RoleForm extends Component{
 
   hide(){
     this.props.resetForm();
+/*    this.props.destroyForm("role_form");
+    reset("role_form","org_id",-1)
+    this.refs.org_id.value = -1;*/
     this.props.hide();
   }
   saveRole(form_data){
@@ -132,6 +217,7 @@ export default function initRoleForm(initFunc){
     fields,
     validate,
     touchOnBlur:true,
+    /*destroyOnUnmount: false,*/
   },initFunc)(RoleForm);
 }
 

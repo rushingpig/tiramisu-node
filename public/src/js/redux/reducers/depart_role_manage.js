@@ -4,6 +4,7 @@ import * as Actions from 'actions/depart_role_manage';
 import clone from 'clone';
 
 import {dept_role} from './dept_role';
+import { core } from 'utils/index';
 
 var initial_state = {
   data: [{
@@ -71,6 +72,31 @@ function RoleInfoListManage(state=initial_roleinfo_state,action){
   }
 }*/
 
+var filter_state = {
+  search_ing: false,
+  all_order_srcs: [],
+}
+
+function filter(state = filter_state, action){
+  switch (action.type) {
+    case Actions.GOT_ORDER_SRCS:
+      let l1 = [], l2 = [];
+      var data = core.isArray(action.data) ? action.data : [];
+      //level最多为2级
+      data.forEach(n => {
+        n.text = n.name;  //转换
+        if(n.level == 1){
+          l1.push(n);
+        }else{
+          l2.push(n);
+        }
+      })
+      return {...state, all_order_srcs: !l2.length ? [l1] : [l1, l2] }
+    default:
+      return state
+  }
+}
+
 function RoleManage(state = initial_role_state,action){
   switch(action.type){
     case Actions.GET_ROLE_DETAIL:
@@ -82,7 +108,9 @@ function RoleManage(state = initial_role_state,action){
         return {...state,role_info:role_info}
       })();*/
         return {...state,role_info:action.data,handle_role_id:action.id};
-      default:
+    case Actions.RESET_ROLE:
+        return {...state,role_info:{name:'',description:'',org_id:-1,data_scope_id:-1}};
+    default:
         return state;
   }
 }
@@ -98,6 +126,7 @@ function RoleManage(state = initial_role_state,action){
 
 export default combineReducers({
   /*accessManage,*/
+  filter,
   RoleInfoListManage,
   RoleManage,
   dept_role:dept_role(),

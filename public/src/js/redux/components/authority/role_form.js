@@ -50,7 +50,7 @@ class OrderSrcsSelects extends Component {
   }
   render(){
     var { all_order_srcs, src_id} = this.props;
-    var {selected_order_src_level1_id = src_id.value} = this.state;
+    var {selected_order_src_level1_id =src_id.value} = this.state;
 
     var order_srcs_level2 = all_order_srcs.length > 1
       ? all_order_srcs[1].filter(n => n.parent_id == selected_order_src_level1_id)
@@ -76,9 +76,10 @@ class OrderSrcsSelects extends Component {
                     default-text="渠道来源"
                     className="form-select space-right" />
                 ]
-              : <Select 
-                  //value={typeof selected_order_src_level1_id != 'undefined' ? src_id.value : SELECT_DEFAULT_VALUE} 
-                  value={selected_order_src_level1_id}
+              : <Select
+                  {...src_id} 
+                  value={typeof selected_order_src_level1_id != 'undefined' ? src_id.value : SELECT_DEFAULT_VALUE} 
+                  //value={selected_order_src_level1_id}
                   options={all_order_srcs[0]} 
                   onChange={this.orderSrcsLevel1Change.bind(this)} 
                   key="order_srcs_level1" 

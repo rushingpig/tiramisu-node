@@ -77,42 +77,37 @@ const URL = (function(){
     shops: '/district/:districtId/shops', //门店
     auto_loc: '/delivery/autoAllocate', //自动分配配送站
 
-   //权限
-   dept_list_info: '/orgs',   //所有部门信息
-   user_list_info: '/users',  //用户列表信息
-   user_usable_alter:'/user/:userId/usable',  //改变用户状态
-   
-   user_delete:'/user/:userId', //删除用户
-   user_detail: '/user/:userId',  //
-   submit_user:'/user/:userId',  // 用户编辑
-   user_add:'/user',   //添加用户
+    //权限
+    dept_list_info: '/orgs',   //所有部门信息
+    user_list_info: '/users',  //用户列表信息
+    user_usable_alter:'/user/:userId/usable',  //改变用户状态
+    
+    user_delete:'/user/:userId', //删除用户
+    user_detail: '/user/:userId',  //
+    submit_user:'/user/:userId',  // 用户编辑
+    user_add:'/user',   //添加用户
 
-   role_detail:'/role/:roleId',   //角色详情
-   role_list_info: '/roles',  //角色信息
-   role_add:'/role',     //角色添加
-   role_del:'/role/:roleId',  //删除角色
-   role_edit:'/role/:roleId', //角色编辑
-   station_merge_list:'/stations',  //获取多个城市下配送站
-   all_cities:'/cities',  //获取所有城市
-   
+    role_detail:'/role/:roleId',   //角色详情
+    role_list_info: '/roles',  //角色信息
+    role_add:'/role',     //角色添加
+    role_del:'/role/:roleId',  //删除角色
+    role_edit:'/role/:roleId', //角色编辑
+    station_merge_list:'/stations',  //获取多个城市下配送站
+    all_cities:'/cities',  //获取所有城市
+    
+    role_data_access:'/role/dataScopes',       //角色数据权限
+    dept_add:'/org',      //添加部门
 
-
-
-   role_data_access:'/role/dataScopes',       //角色数据权限
-   dept_add:'/org',      //添加部门
-
-   
-
-   role_list: '/roles',//角色列表
-   authority_list: '/privileges',//权限列表
-   authority_role_distribute: '/role/:roleId/privileges',//角色权限分配
-   authority_role: '/role/dataScopes',//角色权限获取
-   authority_delete: '/privilege/:privilegeId',//删除权限
-   authority_add: '/privilege',//添加权限
-   authority_change: '/privilege/:privilegeId',//修改权限
-   authority_detail:'/privilege/:privilegeId',//获取权限详情
-   module_add: '/module',//添加模块
-   module_list:'/privileges/modules'
+    role_list: '/roles',//角色列表
+    authority_list: '/privileges',//权限列表
+    authority_role_distribute: '/role/:roleId/privileges',//角色权限分配
+    authority_role: '/role/dataScopes',//角色权限获取
+    authority_delete: '/privilege/:privilegeId',//删除权限
+    authority_add: '/privilege',//添加权限
+    authority_change: '/privilege/:privilegeId',//修改权限
+    authority_detail:'/privilege/:privilegeId',//获取权限详情
+    module_add: '/module',//添加模块
+    module_list:'/privileges/modules'
   };
 
   for(var a in url){

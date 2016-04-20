@@ -3,7 +3,6 @@
 const path         = require('path');
 const webpack      = require('webpack');
 const AssetsPlugin = require('assets-webpack-plugin');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const config = {
   entry: {

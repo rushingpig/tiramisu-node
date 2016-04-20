@@ -630,7 +630,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
     }
     let promise = null,countSql = "",result = 0;
     //  刚进入订单列表页面,不带筛选条件,用explain来优化获取记录总数
-    if(/^.*(where 1=1 and)\s+\w+/.test(sql)){
+    if(/^.*(where 1=1 and)[\s\w\W]+/.test(sql)){
         countSql = dbHelper.countSql(sql);
         promise = baseDao.select(countSql,params).then(results => {
             if(!toolUtils.isEmptyArray(results)){

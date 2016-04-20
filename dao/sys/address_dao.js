@@ -9,7 +9,9 @@
 var util = require('util');
 var async = require('async');
 var tables = require('../../config').tables;
-var dbHelper = require('../../common/DBHelper');
+var dbHelper = require('../../common/DBHelper'),
+    toolUtils = require('../../common/ToolUtils'),
+    constant = require('../../common/Constant');
 var baseDao = require('../base_dao'),
     del_flag = baseDao.del_flag;
 function AddressDao(table){
@@ -21,11 +23,43 @@ function AddressDao(table){
     this.baseColumns = ['id','name'];
 }
 // if you want to use 'this'(object) in the statement ,don not use '=>'
-AddressDao.prototype.findAllProvinces = function(){
-    return baseDao.select(this.baseSql,[this.baseColumns,1,del_flag.SHOW]);
+AddressDao.prototype.findAllProvinces = function(query_data){
+
+    if(query_data && query_data.signal && query_data.user && !query_data.user.is_headquarters){
+        let ds = query_data.user.data_scopes;
+        let sql = "select id,name from ?? where id in (select parent_id from ?? where 1=1 and level_type = 2 and del_flag = ?";
+        // data filter start
+        if(!toolUtils.isEmptyArray(ds)){
+            if(!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1){
+                ds.forEach(curr => {
+                    if(curr == constant.DS.OFFICEANDCHILD.id && query_data.user.role_ids){
+                        sql += " and id in "+dbHelper.genInSql(query_data.user.city_ids);
+                    }
+                });
+            }
+        }
+        // data filter end
+        sql += ") and level_type = 1 and del_flag = ?";
+        let params = [this.table,this.table,del_flag.SHOW,del_flag.SHOW];
+        return baseDao.select(sql,params);
+    }else{
+        return baseDao.select(this.baseSql,[this.baseColumns,1,del_flag.SHOW]);
+    }
 };
-AddressDao.prototype.findCitiesByProvinceId = function(provinceId){
+AddressDao.prototype.findCitiesByProvinceId = function(provinceId,query_data){
     let sql = this.baseSql + ' and parent_id = ?';
+    let ds = query_data.user.data_scopes;
+    // data filter start
+    if(!toolUtils.isEmptyArray(ds)){
+        if(!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1){
+            ds.forEach(curr => {
+                if(curr == constant.DS.OFFICEANDCHILD.id && query_data.user.role_ids){
+                    sql += " and id in "+dbHelper.genInSql(query_data.user.city_ids);
+                }
+            });
+        }
+    }
+    // data filter end
     return baseDao.select(sql,[this.baseColumns,2,del_flag.SHOW,provinceId]);
 };
 AddressDao.prototype.findDistrictsByCityId = function(cityId){
@@ -151,5 +185,26 @@ AddressDao.prototype.modifyStationCoordsInTransaction = function(arr){
             });
     });
 };
-
+AddressDao.prototype.findCitiesByIds = function(city_ids){
+    let sql = "select * from ?? where id in " + dbHelper.genInSql(city_ids) + " and level_type = 2 and del_flag = ?";
+    let params = [tables.dict_regionalism,del_flag.SHOW];
+    return baseDao.select(sql,params);
+};
+AddressDao.prototype.findAllCities = function(query_data){
+    let ds = query_data.user.data_scopes;
+    let sql = "select * from ?? where level_type = 2 and del_flag = ?";
+    let params = [tables.dict_regionalism,del_flag.SHOW];
+    // data filter start
+    if(!toolUtils.isEmptyArray(ds)){
+        if(!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1){
+            ds.forEach(curr => {
+                if(curr == constant.DS.OFFICEANDCHILD.id && query_data.user.role_ids){
+                    sql += " and id in "+dbHelper.genInSql(query_data.user.city_ids);
+                }
+            });
+        }
+    }
+    // data filter end
+    return baseDao.select(sql,params);
+};
 module.exports = AddressDao;

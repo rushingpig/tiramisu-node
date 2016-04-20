@@ -54,7 +54,7 @@ function main(state = main_state, action){
       }else if(action.key == REQUEST.SUCCESS || action.key == REQUEST.FAIL){
         return {...state, submitting: false }
       }else{
-        console.error('nali?')
+        console.error('error')
       }
 
     case Actions.PREPARE_DELIVERY_DATA_OK:

@@ -5,8 +5,6 @@
  * @email  : rushingpig@163.com
  * @version: v1.0
  */
-
-//TODO:根据不同的文件名加载不同的模块
 "use strict";
 var path = require('path');
 var fs = require('fs');
@@ -17,7 +15,7 @@ FileUtils.autoRequireModules = function(){
 
 };
 
-FileUtils.prototype.getAvailModuleNames = (function getAvailModuleNames(filePath){
+FileUtils.getAvailModuleNames = (function getAvailModuleNames(filePath){
     var fileStats = fs.lstatSync(filePath);
     if(fileStats.isDirectory()){
         var filess = fs.readdirSync(filePath);
@@ -51,6 +49,18 @@ liner._flush = function (done) {
 
 module.exports = liner
  */
+
+FileUtils.autoRequireRouter =  (function f(filePath,router) {
+    let stat = fs.statSync(filePath);
+    if(stat.isDirectory()){
+        let files = fs.readdirSync(filePath);
+        files.forEach((curr)=>{
+            f(filePath+path.sep+curr,router);
+        });
+    }else if(stat.isFile()){
+        require(filePath)(router);
+    }
+});
 module.exports = FileUtils;
 
 

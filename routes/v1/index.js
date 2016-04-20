@@ -5,6 +5,7 @@
  * @email  : rushingpig@163.com
  * @version: v1.0
  */
+// TODO classify the router
 "use strict";
 var express = require('express');
 var config = require('../../config');
@@ -17,7 +18,9 @@ var service = require('../../service'),
     orderService = service.order,
     productService = service.product,
     Constant = require('../../common/Constant');
-
+var fileUtils = require('../../common/FileUtils');
+var fs = require('fs');
+var path = require('path');
 var v = express.Router(config.exp_router_options);
 var a = express.Router(config.exp_router_options);
 var routerI = express.Router(config.exp_router_options);
@@ -42,30 +45,16 @@ a.get('/provinces',addressService.getProvinces);    // 获取所有省份信息
 a.get('/province/:provinceId/cities',addressService.getCities); // 获取指定省份下的所有城市信息
 //a.get(/^\/city\/(\d+)\/districts$/,addressService.getDistricts);
 a.get('/city/:cityId/districts',addressService.getDistricts);   // 获取指定城市下的所有行政区域信息
+a.get('/cities',addressService.getAllCities);
 a.get('/stations/getStationsByDistrictId',addressService.getStationsByDistrictId);   // 获取区域(包括省市区)下的所有配送站信息
 a.get('/stations/getStationsByName',addressService.getStationsByName);   // 根据配送站名称查询配送站信息
 a.get('/stations',deliveryService.getDeliveryStationList);  // 获取所有配送站信息
 a.get('/station',deliveryService.getStationInfo);   // 获取指定配送站信息
-a.get('/order/srcs',orderService.getOrderSrcList);  // 获取所有订单来源信息
 a.get('/pay/modes',orderService.getPayModeList);    // 获取所有支付方式信息
 a.get('/district/:districtId/shops',orderService.getShopList);  // 获取指定行政区域下的门店信息
 a.get('/product/categories',productService.getCategories);  // 获取所有产品分类
 a.get('/products',productService.listProducts); // 获取产品列表
-a.get('/order/:orderId',orderService.getOrderDetail);   // 获取指定订单号的订单详情
-a.get('/orders',orderService.listOrders(Constant.OSR.LIST));    // 获取订单列表
-a.get('/order/:orderId/products',productService.listOrderProducts); // 获取指定订单下的产品列表
-a.get('/order/:orderId/history',orderService.history);  // 获取指定订单的历史记录
 
-a.get('/orders/export',orderService.exportExcel);    //导出 订单 && 配送单 到excel文件
-
-a.get('/orders/exchange',orderService.listOrders(Constant.OSR.DELIVERY_EXCHANGE));  // 订单转送单列表
-a.get('/orders/delivery',orderService.listOrders(Constant.OSR.DELIVER_LIST));   // 送货单管理列表
-a.get('/orders/signin',orderService.listOrders(Constant.OSR.RECEIVE_LIST));     // 配送单管理列表
-a.get('/order/reprint/applies',deliveryService.listReprintApplies); // 获取申请重新打印列表
-a.get('/delivery/deliverymans',deliveryService.listDeliverymans);   // 获取配送员列表
-
-a.get('/orders/print',deliveryService.print);   // 打印订单
-a.get('/order/:orderId/reprint',deliveryService.reprint);   // 重新打印订单
 //**********************
 //******** POST ********
 //**********************
@@ -84,26 +73,18 @@ a.post('/order/src', orderService.addOrderSrc);  // 添加来源渠道
 a.post('/coupon',orderService.validateCoupon);
 
 a.post('/station', addressService.addStation);  //新增配送站
+
 //*********************
 //******** PUT ********
 //*********************
-a.put('/order/:orderId/station',orderService.allocateStation);    // 分配配送站
-a.put('/order/:orderId/delivery',orderService.changeDelivery);  // 修改配送站
-a.put('/order/:orderId/validate',deliveryService.validate); // 检验重新打印的验证码
-a.put('/order/:orderId',orderService.editOrder(false));     // 保存
-a.put('/order/:orderId/submit',orderService.editOrder(true)); // 提交
-a.put('/orders/exchange',deliveryService.exchageOrders);    // 转换订单
-a.put('/order/reprint/apply/:apply_id',deliveryService.auditReprintApply);  // 审核指定订单的重新打印
-a.put('/order/:orderId/signin',deliveryService.signinOrder);    // 签收订单
-a.put('/order/:orderId/unsignin',deliveryService.unsigninOrder);    // 未签收订单
-a.put('/delivery/deliveryman',deliveryService.allocateDeliveryman); // 分配配送员
-a.put('/order/:orderId/cancel',orderService.cancelOrder);   // 取消订单
-a.put('/order/:orderId/exception',orderService.exceptionOrder);     // 将订单置为异常状态(以是否投入生产作为节点)
+
+a.put('/order/src/:srcId', orderService.editOrderSrc);  // 修改来源渠道信息
 
 a.put('/order/src/:srcId', orderService.editOrderSrc);  // 修改来源渠道信息
 
 a.put('/station/:stationId', addressService.modifyStation);   //修改配送站信息
 a.put('/stations/scope', addressService.batchModifyStationCoords);   //批量修改配送站范围
+
 //************************
 //******** DELETE ********
 //************************
@@ -114,15 +95,22 @@ a.delete('/station/:stationId', addressService.deleteStation);
 
 //=====================router for business end======================
 
-
+//======================将路由分模块管理,不同的路由放在不同的文件夹下按需传入不同的路由即可====================
+/**
+fs.readdirSync(__dirname).forEach((curr)=>{
+    let absolutePath = __dirname+path.sep+curr;
+    if(fs.statSync(absolutePath).isDirectory()){
+        fileUtils.autoRequireRouter(absolutePath,a);
+    }
+});
+*/
+fileUtils.autoRequireRouter(path.resolve(__dirname,'ajax'),a);
+//=====================================================================================================
 
 
 router.get('/', function (req, res) {
     res.sendHtml('welcome to v1 api');
 });
 router.use('/payment', paymentRouter);
-
-
-
 
 module.exports = router;

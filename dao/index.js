@@ -13,4 +13,6 @@ module.exports = {
     delivery : require('./buss/delivery/delivery_dao'),
     order : require('./buss/order/order_dao'),
     product : require('./buss/product/product_dao'),
+    org : require('./sys/org_dao'),
+    role : require('./sys/role_dao'),
 };

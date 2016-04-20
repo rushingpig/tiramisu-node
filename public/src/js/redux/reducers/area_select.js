@@ -23,9 +23,15 @@ export function area(Actions = AreaActionTypes1){
 
       case Actions.GOT_PROVINCES:
         return {...state, provinces: _t(action.data) };
+      case Actions.GOT_PROVINCES_SIGNAL:
+        return {...state, provinces: _t(action.data) };
       case Actions.RESET_CITIES:
         return {...state, cities: [], districts: [], delivery_shops: [] };
+      case Actions.GOT_ALL_CITIES:
+        return {...state,cities:_t(action.data)};
       case Actions.GOT_CITIES:
+        return {...state, cities: _t(action.data) };
+      case Actions.GOT_CITIES_SIGNAL:
         return {...state, cities: _t(action.data) };
       case Actions.RESET_DISTRICTS:
         return {...state, districts: [], delivery_shops: []}

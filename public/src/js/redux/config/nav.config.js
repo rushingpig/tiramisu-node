@@ -78,4 +78,30 @@ export default [
       "icon": "",
       "link": "/cm/src"
   }]
+},{
+  "key":"authority_manage",
+  "name":"权限管理",
+  "short_name":"权限",
+  "icon":"",
+  "link": [{
+      "key":"UserManageAccess",
+      "name":"用户管理",
+      "icon":"",
+      "link":"/am/user"
+      },{
+        "key":"DeptRoleManageAccess",
+        "name":"部门角色管理",
+        "icon":"",
+        "link":"/am/deptrole"
+      },{
+        "key":"role_authority_management",
+        "name":"角色权限管理",
+        "icon":"",
+        "link":"/am/roleauthority"        
+      },{
+        "key":"system_authority_management",
+        "name":"系统权限管理",
+        "icon":"",
+        "link":"/am/systemauthority"        
+      }]
 }];

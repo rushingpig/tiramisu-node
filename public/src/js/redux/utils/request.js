@@ -170,3 +170,30 @@ export function TEST(data, signal = '没指定信号吧..', time = 200, _resolve
     })
   }
 }
+
+
+export function DEL(url, send_data, action_type){
+  return (dispatch, getState) => {
+    //key: 0->正在处理，1->成功，2->失败 (减少信号量)
+    dispatch({
+      type: action_type,
+      key: REQUEST.ING,
+    });
+    return del(url, send_data)
+      .done(function(data){
+        dispatch({
+          type: action_type,
+          key: REQUEST.SUCCESS,
+          data
+        })
+      })
+      .fail(function(msg, code){
+        dispatch({
+          type: action_type,
+          key: REQUEST.FAIL,
+          msg,
+          code
+        })
+      })
+  }
+}

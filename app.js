@@ -19,6 +19,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var validator = require('express-validator');
 var res_obj = require('./util/res_obj');
 var systemUtils = require('./common/SystemUtils');
+var toolUtils = require('./common/ToolUtils');
 
 var app = express();
 var v1Router = require('./routes/v1');

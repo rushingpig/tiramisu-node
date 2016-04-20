@@ -22,11 +22,15 @@ export default function Area(ActionTypes = AreaActionTypes1){
   };
   return {
     getProvinces: function (){
-      return _resolve(Url.provinces.toString(), ActionTypes.GOT_PROVINCES);
+      return GET(Url.provinces.toString(), null, ActionTypes.GOT_PROVINCES);
       // return {
       //   type: ActionTypes.GOT_PROVINCES,
       //   data: {1: '广东省', 2: '湖北省', 3: '湖南省'}
       // }
+    },
+    // 根据来源索取省份
+    getProvincesSignal:function(signal){
+      return GET(Url.provinces.toString(),{signal:signal}, ActionTypes.GOT_PROVINCES_SIGNAL);
     },
 
     resetCities: function (){
@@ -35,12 +39,24 @@ export default function Area(ActionTypes = AreaActionTypes1){
       }
     },
 
+    getAllCities:function(signal){
+      return GET(Url.all_cities.toString(),{signal:signal}, ActionTypes.GOT_ALL_CITIES);
+/*      return {
+        type:ActionTypes.GOT_ALL_CITIES,
+        data:{1:'xxxx',2:'xxx'}
+      }*/
+    },
     getCities: function (province_id){
       return _resolve(Url.cities.toString(province_id), ActionTypes.GOT_CITIES);
       // return {
       //   type: ActionTypes.GOT_CITIES,
       //   data: {1: '深圳市', 2: '武汉市', 3: '长沙市'}
       // }
+    },
+
+    //添加标志获取城市
+    getCitiesSignal:function(province_id,signal){
+      return GET(Url.cities.toString(province_id),{signal:signal},ActionTypes.GOT_CITIES_SIGNAL);
     },
 
     resetDistricts: function (){

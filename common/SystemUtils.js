@@ -16,7 +16,7 @@ module.exports = {
    * @param next
    * @param promise
    */
-  wrapService: (res, next, promise) => {
+  wrapService: (res, next, promise,cb) => {
     promise.catch((err) => {
       if (err instanceof TiramisuError) {
         if (err.getResObj() === res_obj.FAIL) {
@@ -25,6 +25,9 @@ module.exports = {
         res.api(err.getResObj(), err.getMsg());
       } else {
         next(err);
+      }
+      if(cb && typeof cb === 'function'){
+        cb(err);
       }
     });
   },
@@ -160,8 +163,8 @@ module.exports = {
   isToFilterDeliverymans : (user) => {
     return !user.is_admin &&
         (
-          user.data_scopes.indexOf(constant.DS.STATION) !== -1 ||
-          user.data_scopes.indexOf(constant.DS.CITY) !== -1
+          user.data_scopes.indexOf(constant.DS.STATION.id) !== -1
+          || user.data_scopes.indexOf(constant.DS.CITY.id) !== -1
         );
   }
 

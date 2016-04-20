@@ -17,5 +17,13 @@ module.exports = {
   signinOrder: require('./buss/delivery/signin_order'),
   unsigninOrder: require('./buss/delivery/unsignin_order'),
   deliveryman: require('./buss/delivery/deliveryman'),
-  allocateStation: require('./buss/order/allocate_station')
+  allocateStation: require('./buss/order/allocate_station'),
+  addUser : require('./sys/add_user'),
+  editUser : require('./sys/edit_user'),
+  listUsers : require('./sys/list_users'),
+  addRole : require('./sys/add_role'),
+  listRoles : require('./sys/list_roles'),
+  editRole : require('./sys/edit_role'),
+  addMenu : require('./sys/add_menu'),
+  editMenu : require('./sys/edit_menu'),
 };

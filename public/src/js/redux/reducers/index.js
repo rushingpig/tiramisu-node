@@ -11,6 +11,11 @@ import deliveryPrintReview from './delivery_print_review';
 import srcChannelManage from './central_src_channel_manage';
 import stationManage from './station_manage';
 import stationManageForm from './station_manage_form';
+import UserManage from './user_manage';
+import UserManageForm from './user_manage_form';
+import SystemAuthorityManage from './authority_system_manage';
+import RoleAuthorityManage from './authority_role_manage';
+import DeptRoleManage from './depart_role_manage';
 
 const rootReducer = combineReducers({
   form,
@@ -23,10 +28,13 @@ const rootReducer = combineReducers({
   distributeManage,
   deliveryPrintReview,
   srcChannelManage,
-  form,
-  routing: routeReducer,
   stationManage,
   stationManageForm,
+  RoleAuthorityManage,
+  UserManage,
+  UserManageForm,
+  SystemAuthorityManage,
+  DeptRoleManage,
 })
 
 export default rootReducer

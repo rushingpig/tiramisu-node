@@ -10,7 +10,10 @@ var dao = require('../../dao'),
     AddressDao = dao.address,
     addressDao = new AddressDao(),
     systemUtils = require('../../common/SystemUtils'),
+    toolUtils = require('../../common/ToolUtils'),
+    TiramisuError = require('../../error/tiramisu_error'),
     res_obj = require('../../util/res_obj');
+
 function AddressService() {
 
 }
@@ -21,7 +24,12 @@ function AddressService() {
  * @param next
  */
 AddressService.prototype.getProvinces = (req, res, next)=> {
-    systemUtils.wrapService(res,next, addressDao.findAllProvinces().then((results)=> {
+    let signal = req.query.signal;
+    let query_data = {
+        signal : signal,
+        user : req.session.user
+    };
+    systemUtils.wrapService(res,next, addressDao.findAllProvinces(query_data).then((results)=> {
         let data = {};
         if (!results || results.length === 0) {
             res.api(res_obj.NO_MORE_RESULTS, null);
@@ -41,7 +49,12 @@ AddressService.prototype.getProvinces = (req, res, next)=> {
  */
 AddressService.prototype.getCities = (req, res, next)=> {
     let provinceId = req.params.provinceId;
-    systemUtils.wrapService(res,next, addressDao.findCitiesByProvinceId(provinceId).then((results)=> {
+    let signal = req.query.signal;
+    let query_data = {
+        signal : signal,
+        user : req.session.user
+    };
+    systemUtils.wrapService(res,next, addressDao.findCitiesByProvinceId(provinceId,query_data).then((results)=> {
             let data = {};
             if (!results || results.length == 0) {
                 res.api(res_obj.NO_MORE_RESULTS, null);
@@ -64,7 +77,7 @@ AddressService.prototype.getDistricts = (req, res, next)=> {
     req.checkParams('cityId').notEmpty().isInt();
     let errors = req.validationErrors();
     if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
+        res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
     let cityId = req.params.cityId;
@@ -125,7 +138,7 @@ AddressService.prototype.modifyStation = (req,res,next)=>{
     req.checkParams('stationId').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
+        res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
     let stationId = req.params.stationId;
@@ -144,7 +157,7 @@ AddressService.prototype.getStationsByName = (req,res,next)=>{
     req.checkQuery('station_name','请填写有效的配送站名称...').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
+        res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
     let station_name = req.query['station_name'];
@@ -167,7 +180,7 @@ AddressService.prototype.deleteStation = (req,res,next)=>{
     req.checkParams('stationId').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
+        res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
     let stationId = req.params['stationId'];
@@ -198,7 +211,7 @@ AddressService.prototype.batchModifyStationCoords = (req,res,next)=>{
     req.checkBody('data', 'data为空').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
-        res.api(res_obj.INVALID_PARAMS,null);
+        res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
     let promise = addressDao.modifyStationCoordsInTransaction(req.body.data).then(() => {
@@ -206,7 +219,24 @@ AddressService.prototype.batchModifyStationCoords = (req,res,next)=>{
     });
     systemUtils.wrapService(res, next, promise);
 };
-
+AddressService.prototype.getAllCities = (req,res,next) => {
+    let signal = req.query.signal;
+    let query_data = {
+        signal : signal,
+        user : req.session.user
+    };
+    let promise = addressDao.findAllCities(query_data).then(result => {
+        if(toolUtils.isEmptyArray(result)){
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        let data = {};
+        result.forEach(curr => {
+            data[curr.id] = curr.name;
+        });
+        res.api(data);
+    });
+    systemUtils.wrapService(res,next,promise);
+};
 
 module.exports = new AddressService();
 

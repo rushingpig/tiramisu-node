@@ -532,7 +532,7 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
         deliveryman_id: req.query.deliveryman_id,
         print_status: req.query.print_status,
         is_greeting_card: req.query.is_greeting_card,
-        user : req.session.user,
+        user : req.session.user
       };
     }
 
@@ -564,14 +564,14 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
     }
 
     let promise = orderDao.findOrderList(systemUtils.assemblePaginationObj(req, query_data)).then((resObj) => {
-      if (!(resObj.result && resObj._result)) {
+      if (!resObj._result) {
         throw new TiramisuError(res_obj.FAIL);
       } else if (toolUtils.isEmptyArray(resObj._result)) {
         throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);
       }
       let data = {
         list: [],
-        total: resObj.result[0].total,
+        total: resObj.result,
         page_no: req.query.page_no
       };
       for (let curr of resObj._result) {
@@ -846,7 +846,7 @@ OrderService.prototype.validateCoupon = (req,res,next)=>{
 OrderService.prototype.exceptionOrder = (req,res,next)=>{
   req.checkParams('orderId').isOrderId();
   req.checkBody('cancel_reason').notEmpty();
-  req.checkBody('updated_time','请带上订单的最后更新时间').isDate();
+  req.checkBody('updated_time','请带上订单的最后更新时间...').isDate();
   let errors = req.validationErrors();
   if (errors) {
     res.api(res_obj.INVALID_PARAMS, errors);

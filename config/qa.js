@@ -68,7 +68,7 @@ var mysql_options = {
     port            : 3306,
     user            : 'xfxb_qa',
     password        : 'Xfxbqa2016',
-    database        : 'tiramisu',
+    database        : 'tiramisu_dev',
     charset         : 'utf8mb4',
     timezone        : 'local',
     supportBigNumbers : true,

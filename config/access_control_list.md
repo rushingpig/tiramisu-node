@@ -66,3 +66,19 @@
 
 ### 5.1 渠道管理
 * +页面访问: SrcChannelManageAccess
+
+
+###8.角色权限管理
+* +页面访问：RoleAuthorityManageAccess
+* +模块筛选：RoleAuthorityManageModuleFilter
+* +角色权限编辑：RoleAuthorityManageAuthEdit
+
+
+###9.系统权限管理
+* +页面访问：SystemAuthorityManageAccess
+* +模块筛选：SystemAuthorityManageModuleFilter
+* +添加对话框：SystemAuthorityManageAddDialog
+* +添加模块：SystemAuthorityManageAddModule
+* +添加权限：SystemAuthorityManageAddAuth
+* +编辑权限：SystemAuthorityManageAuthEdit
+* +删除权限：SystemAuthorityManageAuthRemove

@@ -6,34 +6,44 @@ import { acl } from 'config/app.config';
 var  PERMISSIONS = undefined;
 //测试数据
 /*const PERMISSIONS = [
-  'OrderManage',
-    'OrderManageView',
-    'OrderManageEdit',
-    'OrderManageAddressFilter',
-  'DeliveryChange',
-    'DeliveryManageChangeStationFilter',
-    'DeliveryManageChangeAddressFilter',
-  'DeliveryManage',
-    'DeliveryManageDeliveryAddressFilter',
-  'DistributeManage',
-    'DeliveryManageDistributeStationFilter',
-    'DeliveryManageDistributeAddressFilter',
-  'PrintReview',
-];*/
+ 'OrderManage',
+ 'OrderManageView',
+ 'OrderManageEdit',
+ 'OrderManageAddressFilter',
+ 'DeliveryChange',
+ 'DeliveryManageChangeStationFilter',
+ 'DeliveryManageChangeAddressFilter',
+ 'DeliveryManage',
+ 'DeliveryManageDeliveryAddressFilter',
+ 'DistributeManage',
+ 'DeliveryManageDistributeStationFilter',
+ 'DeliveryManageDistributeAddressFilter',
+ 'PrintReview',
+ ];*/
 
 /*const PERMISSIONS = [
-  'UserManageAccess',
-    'UserManageUnameOrNameFilter',
-    'UserManageAddUser',
-    'UserManageUserEdit',
-    'UserManageUserStatusModify',
-    'UserManageUserRemove',
-  'DeptRoleAccess',
-    'DeptRoleManageAddDept',
-    'DeptRoleManageAddRole',
-    'DeptRoleManageRoleEdit',
-    'DeptRoleManageRoleRemove',
-]*/
+ 'UserManageAccess',
+ 'UserManageUnameOrNameFilter',
+ 'UserManageAddUser',
+ 'UserManageUserEdit',
+ 'UserManageUserStatusModify',
+ 'UserManageUserRemove',
+ 'DeptRoleManageAccess',
+ 'DeptRoleManageAddDept',
+ 'DeptRoleManageAddRole',
+ 'DeptRoleManageRoleEdit',
+ 'DeptRoleManageRoleRemove',
+ 'RoleAuthorityManageAccess',
+ 'RoleAuthorityManageModuleFilter',
+ 'RoleAuthorityManageAuthEdit',
+ 'SystemAuthorityManageAccess',
+ 'SystemAuthorityManageModuleFilter',
+ 'SystemAuthorityManageAddDialog',
+ 'SystemAuthorityManageAuthEdit',
+ 'SystemAuthorityManageAuthRemove',
+ 'SystemAuthorityManageAddAuth',
+ 'SystemAuthorityManageAddModule',
+ ]*/
 
 /**
  * 有无该权限
@@ -61,7 +71,7 @@ export default function validate ( role ){
       return false; //未知错误，权限全部为禁止
     }
   }
-  return PERMISSIONS.some( n => n === role ) || undefined;
+  return PERMISSIONS.some( n => n === role );
 }
 
 /**

@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import LinkedStateMixin from 'react-addons-linked-state-mixin';
 
 import { Noty } from 'utils/index';
+import V from 'utils/acl';
 
 import StdModal from 'common/std_modal';
 import LineRouter from 'common/line_router';
@@ -12,17 +13,17 @@ import Select from 'common/select';
 
 import AuthorityFormEdit from './authority_form_edit';
 
-import * as AuthManageActions from 'actions/authority_role_manage'; 
-import * as AuthSystemActions from 'actions/authority_system_manage'; 
+import * as AuthManageActions from 'actions/authority_role_manage';
+import * as AuthSystemActions from 'actions/authority_system_manage';
 
 
 class TopHeader extends Component {
   render(){
     return (
-      <div className="clearfix top-header">
-        <LineRouter 
-          routes={[{name: '权限管理', link: '/am/user'}, {name: '系统权限管理', link: '/am/roleauthority'}]} />
-      </div>
+        <div className="clearfix top-header">
+          <LineRouter
+              routes={[{name: '权限管理', link: '/am/user'}, {name: '系统权限管理', link: '/am/roleauthority'}]} />
+        </div>
     )
   }
 }
@@ -31,16 +32,29 @@ class TableRow extends Component{
   render(){
     const { props } = this;
     return (
-      <tr className={props.module_name}>
-        <td>{props.type == 'LIST' ? `　　`+ props.name: props.name}</td>
-        <td>{props.module_name}</td>
-        <td>{props.description}</td>
-        <td>{props.code}</td>
-        <td>
-          <a onClick={this.viewEditAuthorityModal.bind(this)} href="javascript:;">[ 编辑 ] </a>
-          <a onClick={this.viewDeleteAuthorityModal.bind(this)} href="javascript:;"> [ 删除 ]</a>
-        </td>
-      </tr>
+        <tr className={props.module_name}>
+          <td>{props.type == 'LIST' ? `　　`+ props.name: props.name}</td>
+          <td>{props.module_name}</td>
+          <td>{props.description}</td>
+          <td>{props.code}</td>
+          <td>
+            {
+              V('SystemAuthorityManageAuthEdit')
+                  ?
+                  <a onClick={this.viewEditAuthorityModal.bind(this)} href="javascript:;">[ 编辑 ] </a>
+                  :
+                  null
+            }
+            {
+              V('SystemAuthorityManageAuthRemove')
+                  ?
+                  <a onClick={this.viewDeleteAuthorityModal.bind(this)} href="javascript:;"> [ 删除 ]</a>
+                  :
+                  null
+            }
+
+          </td>
+        </tr>
     )
   }
   viewEditAuthorityModal(){
@@ -61,12 +75,25 @@ class FilterHeader extends Component{
   }
   render(){
     return (
-      <div className="panel search">
-        <div className="panel-body form-inline">
-          <Select ref="modules" options={this.props.options} onChange={this.onSelectModule} default-text="--请选择所属模块--" className="space-right"/>
-          <button onClick={this.viewAdd.bind(this)} className="btn btn-theme btn-xs pull-right">添加</button>
+        <div className="panel search">
+          <div className="panel-body form-inline">
+            {
+              V('SystemAuthorityManageModuleFilter')
+                  ?
+                  <Select ref="modules" options={this.props.options} onChange={this.onSelectModule} default-text="--请选择所属模块--" className="space-right"/>
+                  :
+                  null
+            }
+            {
+              V('SystemAuthorityManageAddDialog')
+                  ?
+                  <button onClick={this.viewAdd.bind(this)} className="btn btn-theme btn-xs pull-right">添加</button>
+                  :
+                  null
+            }
+
+          </div>
         </div>
-      </div>
     )
   }
   viewAdd(){
@@ -94,25 +121,25 @@ class SystemAuthorityPannel extends Component{
     const { data, list, module_list } = this.props.roleAccessManage;
     const { active_authority_id } = this.props.systemAccessManage;
     const { addAuthority, changeAuthority, deleteAuthority, addModule, gotAuthorityList, gotModuleList, resetAuthorityForm,
-      getAuthorityDetail, authorityYesNo, activeAtuthority } = this.props;
+        getAuthorityDetail, authorityYesNo, activeAtuthority } = this.props;
     let content = list.map((n, id) => {
-      return <TableRow key={id} {...n} 
-      activeAtuthority = {activeAtuthority}
-      authorityYesNo={authorityYesNo} 
-      viewDeleteAuthorityModal={this.viewDeleteAuthorityModal} 
-      viewEditAuthorityModal={this.viewEditAuthorityModal}/>;
+      return <TableRow key={id} {...n}
+                       activeAtuthority = {activeAtuthority}
+                       authorityYesNo={authorityYesNo}
+                       viewDeleteAuthorityModal={this.viewDeleteAuthorityModal}
+                       viewEditAuthorityModal={this.viewEditAuthorityModal}/>;
     })
     return (
-      <div className="authority-manage">
-        <TopHeader className="pull-right"/>
-        <FilterHeader list={list}  
-          scrollTop = {this.scrollTop.bind(this)}
-          options={module_list} ViewAddModal={this.ViewAddModal}/>
-        <div className="panel">
-          <div className="panel-body">
-            <div className="table-responsive authority-list" ref="authoritys_container">
-              <table className="table table-hover text-center">
-                <thead>
+        <div className="authority-manage">
+          <TopHeader className="pull-right"/>
+          <FilterHeader list={list}
+                        scrollTop = {this.scrollTop.bind(this)}
+                        options={module_list} ViewAddModal={this.ViewAddModal}/>
+          <div className="panel">
+            <div className="panel-body">
+              <div className="table-responsive authority-list" ref="authoritys_container">
+                <table className="table table-hover text-center">
+                  <thead>
                   <tr>
                     <th>动作名称</th>
                     <th>所属模块名称</th>
@@ -120,21 +147,21 @@ class SystemAuthorityPannel extends Component{
                     <th>code</th>
                     <th>管理操作</th>
                   </tr>
-                </thead>
-                <tbody className="authority_tbody" ref="authoritys">
+                  </thead>
+                  <tbody className="authority_tbody" ref="authoritys">
                   { content }
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
 
-        <AddModal ref="viewAdd" viewAddAuthority={this.viewAddAuthority} viewAddModule={this.viewAddModule}/>
-        <AddAuthorityModal ref="viewAddAuthority" options={module_list} addAuthority={addAuthority} gotAuthorityList={gotAuthorityList} resetAuthorityForm={resetAuthorityForm}/>
-        <EditAuthorityModal ref="editAuthority" active_authority_id={active_authority_id} gotAuthorityList={gotAuthorityList} options={module_list} getAuthorityDetail={getAuthorityDetail} changeAuthority={changeAuthority}/>
-        <AddModuleModal ref="viewAddModule" options={module_list} addModule={addModule} gotModuleList={gotModuleList}/>
-        <DeleteAuthorityModal ref="deleteAuthority" deleteAuthority={deleteAuthority}/>
-      </div>
+          <AddModal ref="viewAdd" viewAddAuthority={this.viewAddAuthority} viewAddModule={this.viewAddModule}/>
+          <AddAuthorityModal ref="viewAddAuthority" options={module_list} addAuthority={addAuthority} gotAuthorityList={gotAuthorityList} resetAuthorityForm={resetAuthorityForm}/>
+          <EditAuthorityModal ref="editAuthority" active_authority_id={active_authority_id} gotAuthorityList={gotAuthorityList} options={module_list} getAuthorityDetail={getAuthorityDetail} changeAuthority={changeAuthority}/>
+          <AddModuleModal ref="viewAddModule" options={module_list} addModule={addModule} gotModuleList={gotModuleList}/>
+          <DeleteAuthorityModal ref="deleteAuthority" deleteAuthority={deleteAuthority}/>
+        </div>
     )
   }
   componentWillMount() {
@@ -173,12 +200,23 @@ class AddModal extends Component{
   }
   render(){
     return (
-      <StdModal footer={false} title="添加内容" ref="viewAdd">
-        <div style={{'padding': '30px 50px 60px'}} className="clearfix">
-          <button onClick={this.openAddAuthority} className="btn btn-theme btn-md pull-left">添加权限</button>
-          <button onClick={this.openAddModule} className="btn btn-theme btn-md pull-right">添加模块</button>
-        </div>
-      </StdModal>
+        <StdModal footer={false} title="添加内容" ref="viewAdd">
+          <div style={{'padding': '30px 50px 60px'}} className="clearfix">
+            {
+              V('SystemAuthorityManageAddAuth')
+                  ?
+                  <button onClick={this.openAddAuthority} className="btn btn-theme btn-md pull-left">添加权限</button>
+                  :null
+            }
+            {
+              V('SystemAuthorityManageAddModule')
+                  ?
+                  <button onClick={this.openAddModule} className="btn btn-theme btn-md pull-right">添加模块</button>
+                  :null
+            }
+
+          </div>
+        </StdModal>
     )
   }
   show(){
@@ -200,9 +238,9 @@ class AddAuthorityModal extends Component{
   render(){
     const { options, addAuthority, gotAuthorityList } = this.props;
     return (
-      <StdModal footer={false} title="添加权限" ref="viewAuthorityAdd" >
-        <AuthorityFormEdit editable={false} ref="authorityFormAdd" options={options} gotAuthorityList={gotAuthorityList} addAuthority={addAuthority} hide={this.hide}/>
-      </StdModal>
+        <StdModal footer={false} title="添加权限" ref="viewAuthorityAdd" >
+          <AuthorityFormEdit editable={false} ref="authorityFormAdd" options={options} gotAuthorityList={gotAuthorityList} addAuthority={addAuthority} hide={this.hide}/>
+        </StdModal>
     )
   }
   show(){
@@ -222,9 +260,9 @@ class EditAuthorityModal extends Component{
   render(){
     const { options,changeAuthority, gotAuthorityList } = this.props;
     return (
-      <StdModal footer={false} title="修改权限" ref="viewAuthorityEdit">
-        <AuthorityFormEdit editable={true} ref="authorityFormEdit" gotAuthorityList={gotAuthorityList} active_authority_id={this.props.active_authority_id} options={options} changeAuthority={changeAuthority} hide={this.hide}/>
-      </StdModal>
+        <StdModal footer={false} title="修改权限" ref="viewAuthorityEdit">
+          <AuthorityFormEdit editable={true} ref="authorityFormEdit" gotAuthorityList={gotAuthorityList} active_authority_id={this.props.active_authority_id} options={options} changeAuthority={changeAuthority} hide={this.hide}/>
+        </StdModal>
     )
   }
   show(id){
@@ -249,20 +287,20 @@ class AddModuleModal extends Component{
       return <li key={n.id} className="list-group-item" style={{padding: '5px'}}>{n.text}</li>;
     })
     return (
-      <StdModal title="添加模块" ref="viewModuleAdd" onConfirm={this.onConfirm.bind(this)}>
-        <form>
-          <div className="form-group form-inline">
-            <label>{'模块名称：'}</label>
-            <input value={this.state.module_name} onChange={this.onChange} className={`form-control input-xs ${this.state.error? 'error': ''}`} type="text" placeholder="必填"/>
-          </div>
-          <div className="form-group form-inline">
-            <label className="pull-left">{'已有模块：'}</label>
-            <ul style={{marginLeft: '65px', width: '200px',height: '150px', overflow: 'auto'}} className="list-group">
-              { content }
-            </ul>
-          </div>
-        </form>
-      </StdModal>
+        <StdModal title="添加模块" ref="viewModuleAdd" onConfirm={this.onConfirm.bind(this)}>
+          <form>
+            <div className="form-group form-inline">
+              <label>{'模块名称：'}</label>
+              <input value={this.state.module_name} onChange={this.onChange} className={`form-control input-xs ${this.state.error? 'error': ''}`} type="text" placeholder="必填"/>
+            </div>
+            <div className="form-group form-inline">
+              <label className="pull-left">{'已有模块：'}</label>
+              <ul style={{marginLeft: '65px', width: '200px',height: '150px', overflow: 'auto'}} className="list-group">
+                { content }
+              </ul>
+            </div>
+          </form>
+        </StdModal>
     )
   }
   show(){
@@ -279,14 +317,14 @@ class AddModuleModal extends Component{
     let module_name = this.state.module_name;
     if(module_name){
       this.props.addModule(module_name)
-        .done(function(){
-          Noty('success', '保存成功');
-          this.refs.viewModuleAdd.hide();
-          this.setState({module_name: ''});
-        }.bind(this))
-        .fail(function(msg, code){
-          Noty('error', msg || '保存异常');
-        });
+          .done(function(){
+            Noty('success', '保存成功');
+            this.refs.viewModuleAdd.hide();
+            this.setState({module_name: ''});
+          }.bind(this))
+          .fail(function(msg, code){
+            Noty('error', msg || '保存异常');
+          });
     }else{
       this.setState({
         error: true
@@ -303,11 +341,11 @@ class DeleteAuthorityModal extends Component{
   }
   render(){
     return (
-      <StdModal title="删除" ref="ViewDeleteAuthority" onConfirm={this.onConfirm.bind(this)}>
-        <div style={{textIndent: 'center'}}>
-           请确认删除
-        </div>
-      </StdModal>
+        <StdModal title="删除" ref="ViewDeleteAuthority" onConfirm={this.onConfirm.bind(this)}>
+          <div style={{textIndent: 'center'}}>
+            请确认删除
+          </div>
+        </StdModal>
     )
   }
   show(authorize_id){

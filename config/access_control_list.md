@@ -63,3 +63,6 @@
 * +添加角色：DeptRoleManageAddRole
 * +角色编辑：DeptRoleManageRoleEdit
 * +角色删除：DeptRoleManageRoleRemove
+
+### 5.1 渠道管理
+* +页面访问: SrcChannelManageAccess

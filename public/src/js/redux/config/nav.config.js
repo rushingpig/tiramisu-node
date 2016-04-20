@@ -73,7 +73,7 @@ export default [
   "short_name": "集合",
   "icon": "",
   "link": [{
-      "key": "SrcChannelManage",
+      "key": "SrcChannelManageAccess",
       "name": "订单来源渠道",
       "icon": "",
       "link": "/cm/src"

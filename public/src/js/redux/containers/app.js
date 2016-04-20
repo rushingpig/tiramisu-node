@@ -96,7 +96,7 @@ const App = () => (
       </Route>
 
       <Route path="cm" onEnter={getComponents('cm')}>
-        <Route path="src"  getComponent={get('SrcChannelPannel')}   />
+        <Route path="src" onEnter={onEnter('SrcChannelManageAccess')}  getComponent={get('SrcChannelPannel')}   />
       </Route>
 
       <Route path="am" onEnter={getComponents('am')}>

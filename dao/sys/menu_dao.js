@@ -44,10 +44,19 @@ MenuDao.prototype.findMenus = function(query_data){
     ].join(',');
     let sql = "select " + columns + " from ?? sm";
     let params = [this.table];
-    sql += " inner join ?? srm on srm.menu_id = sm.id";
+    if(query_data.user.is_admin){
+        sql += " left join ?? srm on srm.menu_id = sm.id";
+    }else{
+        sql += " inner join ?? srm on srm.menu_id = sm.id";
+    }
     params.push(tables.sys_role_menu);
 
-    sql += " inner join ?? sm2 on sm.module_id = sm2.id";
+    if(query_data.user.is_admin){
+        sql += " left join ?? sm2 on sm.module_id = sm2.id";
+    }else{
+        sql += " inner join ?? sm2 on sm.module_id = sm2.id";
+    }
+
     params.push(this.table);
     sql += " where sm.del_flag = ? and sm.type != 'MODULE'";
     params.push(del_flag.SHOW);

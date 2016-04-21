@@ -108,7 +108,7 @@ class AuthorityForm extends Component{
     this.props.changeAuthority(form_data, id)
       .done(function(){
         Noty('success', '保存成功');
-        this.props.hide();
+        this.hide();
         gotAuthorityList();
       }.bind(this))
       .fail(function(msg, code){
@@ -120,7 +120,7 @@ class AuthorityForm extends Component{
     this.props.addAuthority(form_data)
       .done(function(){
         Noty('success', '保存成功');
-        this.props.hide();
+        this.hide();
          gotAuthorityList();
       }.bind(this))
       .fail(function(msg, code){

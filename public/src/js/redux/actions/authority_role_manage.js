@@ -21,6 +21,14 @@ export function gotRoletList(org_id){
   } 
 }
 
+export const GOT_ROLE_LIST_BY_MODULENAME = 'GOT_ROLE_LIST_BY_MODULENAME';
+export function gotRoleListByModuleName(module_name){
+  return{
+    type:GOT_ROLE_LIST_BY_MODULENAME,
+    module_name:module_name,
+  }
+}
+
 export const GOT_AUTHORITY_LIST = 'GOT_AUTHORITY_LIST';
 export function gotAuthorityList(){
   /*return GET(Url.authority_list.toString(), null, GOT_AUTHORITY_LIST);*/

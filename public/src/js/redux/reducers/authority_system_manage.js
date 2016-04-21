@@ -20,7 +20,7 @@ export function systemAccessManage(state = initial_state, action){
     case Actions.GET_AUTHORITY_DETAIL:
       return {...state, active_authority_info: action.data}
     case Actions.RESET_AUTHORITY_FORM:
-      return {...state, active_authority_info: {module_id: -1,type: -1 }};
+      return {...state, active_authority_info: {module_id: -1,type: -1,description:'',code:'',name:'' }};
     default:
       return state;
   }

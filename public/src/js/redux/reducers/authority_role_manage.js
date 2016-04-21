@@ -53,6 +53,8 @@ export function roleAccessManage( state = initial_state, action){
         }
       });
       return {...state, department_list: clone(state.department_list)};
+    case Actions.GOT_ROLE_LIST_BY_MODULENAME:
+      return {...state, module_name : action.module_name }
     case Actions.TOGGLE_DEPARTMENT:
       state.department_list.forEach( n => {
         if( n.id == action.id ){

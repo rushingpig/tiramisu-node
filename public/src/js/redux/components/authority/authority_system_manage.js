@@ -33,11 +33,11 @@ class TableRow extends Component{
     const { props } = this;
     return (
         <tr className={props.module_name}>
-          <td>{props.type == 'LIST' ? `　　`+ props.name: props.name}</td>
-          <td>{props.module_name}</td>
-          <td>{props.description}</td>
-          <td>{props.code}</td>
-          <td>
+          <td style={{textAlign:'left',color:props.type == 'LIST'?'#4f9fcf':''}}>{props.type == 'LIST' ?  props.name: `　　`+props.name}</td>
+          <td style={{color:props.type == 'LIST'?'#4f9fcf':''}}>{props.module_name}</td>
+          <td style={{color:props.type == 'LIST'?'#4f9fcf':''}}>{props.description}</td>
+          <td style={{color:props.type == 'LIST'?'#4f9fcf':''}}>{props.code}</td>
+          <td style={{color:props.type == 'LIST'?'#4f9fcf':''}}>
             {
               V('SystemAuthorityManageAuthEdit')
                   ?

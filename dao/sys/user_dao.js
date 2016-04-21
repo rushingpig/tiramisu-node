@@ -102,7 +102,8 @@ UserDao.prototype.findUserById = function(user_id){
 };
 UserDao.prototype.findUsers = function(query_data){
     let prefix_sql = "select t.*,sr2.name as role_name from (",suffix_sql = "";
-    let ds = query_data.user.data_scopes,org_ids = query_data.user.org_ids;
+    let ds = query_data.user.data_scopes,org_ids = query_data.user.org_ids,station_ids = query_data.user.station_ids,
+        is_national = query_data.user.is_national;
     let columns = [
         'su.username',
         'su.id',
@@ -120,15 +121,25 @@ UserDao.prototype.findUsers = function(query_data){
     sql += " inner join ?? sr on sr.id = sur.role_id";
     params.push(tables.sys_role);
     // data filter begin
+    let ds_sql = "",temp_sql = "";
     if(!toolUtils.isEmptyArray(ds)){
+        ds_sql += " and (";
         if(!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1){
             ds.forEach(curr => {
                 if(curr == constant.DS.OFFICEANDCHILD.id){
-                    sql += " and sr.org_id in" + dbHelper.genInSql(org_ids);
+                    ds_sql += " or sr.org_id in" + dbHelper.genInSql(org_ids);
+                }else if(curr == constant.DS.STATION_ALL_USERS.id && is_national != 1){
+                    ds_sql += " or su.station_ids in" + dbHelper.genInSql(station_ids);
+                }else {
+                    ds_sql += "1 != 1";
                 }
             });
+
+            ds_sql += temp_sql.replace(/^ or/,'');
+            ds_sql += ")";
         }
     }
+    sql += ds_sql;
     if(!query_data.user.is_admin){
         sql += " and su.id != 1";
     }

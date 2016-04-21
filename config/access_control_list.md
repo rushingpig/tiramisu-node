@@ -22,6 +22,7 @@
 ###2.2 送货单管理
 * 页面访问：DeliveryManageAccess
 * 按地区筛选：DeliveryManageDeliveryAddressFilter
+* +按配送中心筛选：DeliveryManageDeliveryStationFilter
 * 编辑配送员：DeliveryManageDeliveryAllocateDeliveryman
 * 批量编辑配送员：DeliveryManageDeliveryBatchAllocateDeliveryman
 * 打印：DeliveryManageDeliveryPrint

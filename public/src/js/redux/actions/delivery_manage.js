@@ -2,6 +2,9 @@ import { put, PUT, POST, TEST, test } from 'utils/request'; //Promise
 import Url from 'config/url';
 import Promise from 'utils/promise';
 import { triggerFormUpdate } from 'actions/form';
+import { getDeliveryStations as _getDeliveryStations } from 'actions/order_manage_form';
+
+export const getDeliveryStations = _getDeliveryStations;
 
 export const APPLY_DELIVERYMAN = 'APPLY_DELIVERYMAN'; //key: 0->正在处理，1->成功，2->失败
 export function applyDeliveryman(data) {

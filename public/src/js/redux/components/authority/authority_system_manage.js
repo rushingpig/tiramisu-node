@@ -103,7 +103,10 @@ class FilterHeader extends Component{
     let {value} = e.target;
     if(value != this.refs.modules.props['default-value']){
       let selected = $(findDOMNode(this.refs.modules)).find(':selected').text();
+      this.props.gotAuthorityListByModuleName(selected);
       this.props.scrollTop(selected);
+    }else{
+      this.props.gotAuthorityListByModuleName('');
     }
   }
 }
@@ -118,11 +121,18 @@ class SystemAuthorityPannel extends Component{
     this.viewDeleteAuthorityModal = this.viewDeleteAuthorityModal.bind(this);
   }
   render(){
-    const { data, list, module_list } = this.props.roleAccessManage;
+    const { data, list, module_list ,module_name} = this.props.roleAccessManage;
     const { active_authority_id } = this.props.systemAccessManage;
     const { addAuthority, changeAuthority, deleteAuthority, addModule, gotAuthorityList, gotModuleList, resetAuthorityForm,
-        getAuthorityDetail, authorityYesNo, activeAtuthority } = this.props;
-    let content = list.map((n, id) => {
+        getAuthorityDetail, authorityYesNo, activeAtuthority ,gotAuthorityListByModuleName} = this.props;
+    let fliterList = list;   
+    if(module_name != ''){
+      fliterList = list.filter(function(e){
+        return e.module_name == module_name;
+      })
+    }
+
+    let content = fliterList.map((n, id) => {
       return <TableRow key={id} {...n}
                        activeAtuthority = {activeAtuthority}
                        authorityYesNo={authorityYesNo}
@@ -134,7 +144,8 @@ class SystemAuthorityPannel extends Component{
           <TopHeader className="pull-right"/>
           <FilterHeader list={list}
                         scrollTop = {this.scrollTop.bind(this)}
-                        options={module_list} ViewAddModal={this.ViewAddModal}/>
+                        options={module_list} ViewAddModal={this.ViewAddModal}
+                        gotAuthorityListByModuleName = {gotAuthorityListByModuleName}/>
           <div className="panel">
             <div className="panel-body">
               <div className="table-responsive authority-list" ref="authoritys_container">

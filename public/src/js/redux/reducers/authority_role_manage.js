@@ -61,7 +61,9 @@ export function roleAccessManage( state = initial_state, action){
       });
       return {...state, department_list: clone(state.department_list)};
     case Actions.GOT_AUTHORITY_LIST:
-        return {...state, list: action.data.list};
+        return {...state, list: action.data.list,module_name:action.module_name};
+    case Actions.GOT_AUTHORITY_LIST_BY_MODULENAME:
+        return {...state, module_name:action.module_name};
     case Actions.GOT_ROLE_AUTHORITIES:
       return (function(){
         var list = action.data.list;

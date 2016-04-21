@@ -174,7 +174,7 @@ class StationRow extends Component{
         <td>
           {
             this.ACL(
-              <a onClick={this.editScope.bind(this)} key="StationManageEditScope" href="javascript:;">[ 编辑配送区域 ] </a>,
+              <a onClick={this.editScope.bind(this)} key="StationManageEditScope" href="javascript:;">[ 查看配送区域 ] </a>,
               <a onClick={this.viewStationDetail.bind(this)} key="StationManageViewRemark" href="javascript:;" className="no-wrap"> [ 查看备注 ] </a>,
               <a onClick={this.editStation.bind(this)} key="StationManageEdit" href="javascript:;" className="no-wrap"> [ 编辑 ] </a>,
               <a onClick={this.viewDeleteStation.bind(this)} key="StationManageDelete" href="javascript:;" className="no-wrap"> [ 删除 ] </a>

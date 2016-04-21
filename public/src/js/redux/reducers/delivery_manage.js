@@ -5,15 +5,20 @@ import { deliveryman } from 'reducers/deliveryman';
 import * as Actions from 'actions/delivery_manage';
 import * as OrderSupportReducers from 'reducers/order_support';
 import { GET_ORDER_LIST, CHECK_ALL_ORDERS } from 'actions/orders';
+import { GOT_DELIVERY_STATIONS } from 'actions/order_manage_form';
 import { REQUEST } from 'config/app.config';
 import { UPDATE_PATH } from 'redux-simple-router';
+import { map } from 'utils/index';
 
 var filter_state = {
   search_ing: false,
+  delivery_stations: [],
 }
 
 function filter(state = filter_state, action){
   switch (action.type) {
+    case GOT_DELIVERY_STATIONS:
+      return {...state, delivery_stations: map(action.data, (text, id) => ({id, text}))}
     default:
       return state
   }

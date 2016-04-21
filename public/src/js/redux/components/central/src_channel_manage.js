@@ -15,6 +15,7 @@ import { tableLoader, get_table_loading, get_table_empty } from 'common/loading'
 import { Noty } from 'utils/index';
 import { SELECT_DEFAULT_VALUE } from 'config/app.config';
 import LazyLoad from 'utils/lazy_load';
+import V from 'utils/acl';
 
 import * as OrderSupportActions from 'actions/order_support';
 import * as Actions from 'actions/central_src_channel_manage';
@@ -47,13 +48,25 @@ var FilterHeader = React.createClass({
               </button>
             </div>
             <div className="col-md-6 text-right">
-              <button onClick={this.props.actions.showAddSrcChannel.bind(this, 1)} className="btn btn-theme btn-xs">
-                <i className="fa fa-plus"></i>{' 添加一级渠道'}
-              </button>
+              {
+                V( 'SrcChannelManagePriChannelAdd' )
+                  ?
+                  <button onClick={this.props.actions.showAddSrcChannel.bind(this, 1)} className="btn btn-theme btn-xs">
+                    <i className="fa fa-plus"></i>{' 添加一级渠道'}
+                  </button>
+                  :null
+              }
+
               {'　'}
-              <button onClick={this.props.actions.showAddSrcChannel.bind(this, 2)} className="btn btn-theme btn-xs">
-                <i className="fa fa-plus"></i>{' 添加二级渠道'}
-              </button>
+              {
+                V('SrcChannelManageSecChannelAdd')
+                  ?
+                  <button onClick={this.props.actions.showAddSrcChannel.bind(this, 2)} className="btn btn-theme btn-xs">
+                    <i className="fa fa-plus"></i>{' 添加二级渠道'}
+                  </button>
+                  :null                  
+              }
+
             </div>
           </div>
         </div>
@@ -75,8 +88,19 @@ var FilterHeader = React.createClass({
 const EditGroup = function({ editHandler, deleteHandler }){
   return (
     <td>
-      <a onClick={editHandler} href="javascript:;">[编辑]</a>{' '}
-      <a onClick={deleteHandler} href="javascript:;">[删除]</a>
+      {
+        V('SrcChannelManageEdit')
+          ?
+            [<a onClick={editHandler} href="javascript:;">[编辑]</a>,' ']
+          :null
+      }
+      {
+        V('SrcChannelManageRemove')
+          ?
+            <a onClick={deleteHandler} href="javascript:;">[删除]</a>
+          :null
+
+      }
     </td>
   )
 }

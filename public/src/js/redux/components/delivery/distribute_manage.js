@@ -39,9 +39,16 @@ class TopHeader extends Component {
   render(){
     return (
       <div className="clearfix top-header">
-        <button onClick={this.props.exportExcel} className="btn btn-theme btn-xs pull-right" style={{marginLeft: 20}}>
-          <i className="fa fa-download"></i> 导出
-        </button>
+        {
+          V('DeliveryManageDistributeExportExcel')
+            ?
+            <button onClick={this.props.exportExcel} className="btn btn-theme btn-xs pull-right" style={{marginLeft: 20}}>
+              <i className="fa fa-download"></i> 导出
+            </button>
+            :
+            null
+        }
+
         <LineRouter 
           routes={[{name: '送货单管理', link: ''}, {name: '完成列表', link: ''}]} />
       </div>

@@ -16,6 +16,7 @@ import { Noty, dateFormat } from 'utils/index';
 import { DELIVERY_MAP, PRINT_REVIEW_STATUS } from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
+import V from 'utils/acl';
 
 import * as OrderActions from 'actions/orders';
 import * as DeliverPrintReviewActions from 'actions/delivery_print_review';
@@ -106,9 +107,12 @@ class ReviewRow extends Component {
         <td>{props.reprint_time}</td>
         <td>
           {
-            props.status != 'AUDITED'
+            V('DeliveryManagePrintReviewReview')
+            ?
+            (props.status != 'AUDITED'
               ? [<a key="review" onClick={this.reviewHandler.bind(this)} href="javascript:;" className="nowrap">[审核]</a>, <br key="br"/>]
-              : null
+              : null)
+            :null
           }
         </td>
       </tr>

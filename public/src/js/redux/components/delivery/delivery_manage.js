@@ -198,10 +198,19 @@ class OrderRow extends Component {
                     {
                       props.print_status == 'PRINTABLE'
                         ? <span key="printable">[打印]</span>
-                        : ( props.print_status == 'UNPRINTABLE'
-                              ? <span key="unprintable">[申请打印]</span>
-                              : <span key="reprintable">[重新打印]</span>
+                        : 
+
+                          ( props.print_status == 'UNPRINTABLE'
+                                ? 
+                                  V( 'DeliveryManageUnprintable' )
+                                    ?<span key="unprintable">[申请打印]</span>
+                                    :null
+                                : 
+                                  V('DeliveryManageReprintable')
+                                    ?<span key="reprintable">[重新打印]</span>
+                                    :null
                           )
+                        
                     }
                   </a>
             )

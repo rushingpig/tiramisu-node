@@ -44,9 +44,14 @@ class TopHeader extends Component {
             ? <button onClick={this.addOrder.bind(this)} className="btn btn-sm btn-theme pull-left">添加订单</button>
             : null
         }
-        <button onClick={this.props.exportExcel} className="btn btn-theme btn-xs pull-right" style={{marginLeft: 20}}>
-          <i className="fa fa-download"></i> 导出
-        </button>
+        {
+          V( 'OrderManageExportExcel' )
+            ?
+            <button onClick={this.props.exportExcel} className="btn btn-theme btn-xs pull-right" style={{marginLeft: 20}}>
+              <i className="fa fa-download"></i> 导出
+            </button>
+            :null            
+        }
         <Linkers
           data={['总订单页面', '处理页面']}
           active="总订单页面"
@@ -113,7 +118,12 @@ class FilterHeader extends Component {
           <DatePicker editable redux-form={end_time} className="short-input space-right" />
           <Select {...is_submit} options={this.state.submit_opts} default-text="是否提交" className="space-right"/>
           <Select {...is_deal} options={this.state.deal_opts} default-text="是否处理" className="space-right"/>
-          <OrderSrcsSelects {...{all_order_srcs, src_id}} actions={this.props.actions} reduxFormName="order_manage_filter" />
+          {
+            V( 'OrderManageChannelFilter' )
+              ?<OrderSrcsSelects {...{all_order_srcs, src_id}} actions={this.props.actions} reduxFormName="order_manage_filter" />
+              :null
+          }
+          
           {
             V( 'OrderManageAddressFilter' )
               ? [

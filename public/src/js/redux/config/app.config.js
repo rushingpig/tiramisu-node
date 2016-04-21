@@ -1,7 +1,7 @@
 export default {
   root: '/',
   ajax: '/v1/a',
-  acl: true,  //是否开启权限控制 true 开始，false 禁用
+  acl: false,  //是否开启权限控制 true 开始，false 禁用
 
   REQUEST: {
     ING: 0,

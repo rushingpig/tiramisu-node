@@ -3,7 +3,6 @@
  */
 import { acl } from 'config/app.config';
 
-
 var  PERMISSIONS = undefined;
 //测试数据
 /*const PERMISSIONS = [
@@ -57,31 +56,6 @@ var  PERMISSIONS = undefined;
   'SystemAuthorityManageAddAuth',
   'SystemAuthorityManageAddModule',
  ];*/
-
-/*const PERMISSIONS = [
- 'UserManageAccess',
- 'UserManageUnameOrNameFilter',
- 'UserManageAddUser',
- 'UserManageUserEdit',
- 'UserManageUserStatusModify',
- 'UserManageUserRemove',
- 'DeptRoleManageAccess',
- 'DeptRoleManageAddDept',
- 'DeptRoleManageAddRole',
- 'DeptRoleManageRoleEdit',
- 'DeptRoleManageRoleRemove',
- 'RoleAuthorityManageAccess',
- 'RoleAuthorityManageModuleFilter',
- 'RoleAuthorityManageAuthEdit',
- 'SystemAuthorityManageAccess',
- 'SystemAuthorityManageModuleFilter',
- 'SystemAuthorityManageAddDialog',
- 'SystemAuthorityManageAuthEdit',
- 'SystemAuthorityManageAuthRemove',
- 'SystemAuthorityManageAddAuth',
- 'SystemAuthorityManageAddModule',
- ]*/
-
 
 /**
  * 有无该权限

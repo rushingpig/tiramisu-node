@@ -55,43 +55,43 @@ const validate = (values, props) => {
 };
 
 class FilterHeader extends Component {
-	constructor(props){
-		super(props);
+  constructor(props){
+    super(props);
     this.search = this.search.bind(this);
-		this.state = {
-			search_ing :false
-		}
-	}
-	render(){
-		var {
+    this.state = {
+      search_ing :false
+    }
+  }
+  render(){
+    var {
       handleSubmit,
-			fields: {
-				name,
-				province_id,
-				city_id,
-				district_id,
-			},
-			area: {
-				provinces,
-				cities,
-				districts,
-			},
-			stations: {
-				name_list,
-			},
-		} = this.props;
+      fields: {
+        name,
+        province_id,
+        city_id,
+        district_id,
+      },
+      area: {
+        provinces,
+        cities,
+        districts,
+      },
+      stations: {
+        name_list,
+      },
+    } = this.props;
 
-		return (
-			<div className="panel search">
-				<div className="panel-body form-inline">
-					<Autocomplete ref="autocomplete" placeholder={'请输入配送站名称'} searchHandler={this.props.getStationByName}  list={name_list} className="pull-left"/>
-					<Select {...province_id} className={`space-left space-right ${province_id.error}`} options={provinces} default-text="选择省份" onChange={this.onProvinceChange.bind(this, province_id.onChange)} ref="province"/>
-					<Select {...city_id} className={`space-right ${city_id.error}`} options={cities} default-text="选择城市" onChange={this.onCityChange.bind(this, city_id.onChange)} ref="city"/>
-					<Select {...district_id} className={`space-right ${district_id.error}`} options={districts} default-text="选择区域" ref="district"/>
-					<button disabled={this.state.search_ing} onClick={handleSubmit(this.search)} className="btn btn-theme btn-xs">
-						<i className="fa fa-search" style={{'padding': '0 5px'}}></i>
-						查询
-					</button>
+    return (
+      <div className="panel search">
+        <div className="panel-body form-inline">
+          <Autocomplete ref="autocomplete" placeholder={'请输入配送站名称'} searchHandler={this.props.getStationByName}  list={name_list} className="pull-left"/>
+          <Select {...province_id} className={`space-left space-right ${province_id.error}`} options={provinces} default-text="选择省份" onChange={this.onProvinceChange.bind(this, province_id.onChange)} ref="province"/>
+          <Select {...city_id} className={`space-right ${city_id.error}`} options={cities} default-text="选择城市" onChange={this.onCityChange.bind(this, city_id.onChange)} ref="city"/>
+          <Select {...district_id} className={`space-right ${district_id.error}`} options={districts} default-text="选择区域" ref="district"/>
+          <button disabled={this.state.search_ing} onClick={handleSubmit(this.search)} className="btn btn-theme btn-xs">
+            <i className="fa fa-search" style={{'padding': '0 5px'}}></i>
+            查询
+          </button>
           {
             V('StationManageAdd')
               ? <a href="javascript:;"onClick={this.addStation.bind(this)} className="pull-right btn btn-theme btn-xs">
@@ -99,11 +99,11 @@ class FilterHeader extends Component {
                 </a>
               : null
           }
-				</div>
-			</div>
-		)
-	}
-	componentDidMount(){
+        </div>
+      </div>
+    )
+  }
+  componentDidMount(){
     var { getProvinces, getAllStationsName, getStationList} = this.props;
     getProvinces();
     getStationList({page_no: 0, page_size: 10})
@@ -163,8 +163,8 @@ FilterHeader = reduxForm({
 class StationRow extends Component{
   render(){
     var { props } = this;
-		return (
-			<tr ref="station_row">
+    return (
+      <tr ref="station_row">
         <td><input type="checkbox" checked={props.checked} onChange={this.checkStationHandler.bind(this)}/></td>
         <td>{props.province_name}</td>
         <td>{props.city_name}</td>
@@ -182,8 +182,8 @@ class StationRow extends Component{
           }
         </td>
       </tr>
-		)
-	}
+    )
+  }
   ACL(){
     var results = [];
     for(var i=0,len=arguments.length; i<len; i++){
@@ -229,19 +229,19 @@ class StationManagePannel extends Component {
     this.checkAllStationsHandler = this.checkAllStationsHandler.bind(this);
   }
   render(){
-    var { list, total, page_no, total,checked_station_ids, } = this.props.stations;
+    var { loading, list, total, page_no, total,checked_station_ids } = this.props.stations;
     var { viewStationDetail, viewDeleteStation, checkStationHandler } = this;
     var content = list.map((n, i) => {
       return <StationRow ref="station_row" key={n.station_id}
         {...{...n, ...this.props, viewStationDetail, viewDeleteStation, checkStationHandler }} />
     });
-		return (
-			<div className="station-manage">
-				<TopHeader/>
-				<FilterHeader {...this.props}/>
+    return (
+      <div className="station-manage">
+        <TopHeader/>
+        <FilterHeader {...this.props}/>
 
-				<div className="panel">
-          <header className="panel-heading">送货列表</header>
+        <div className="panel">
+          <header className="panel-heading">配送站列表</header>
           <div className="panel-body">
             <div className="table-responsive">
               <table ref="station_table" className="table table-hover text-center">
@@ -257,7 +257,7 @@ class StationManagePannel extends Component {
                 </tr>
                 </thead>
                 <tbody>
-                  {content}
+                  { tableLoader(loading, content) }
                 </tbody>
               </table>
             </div>
@@ -274,9 +274,9 @@ class StationManagePannel extends Component {
         <DeleteMultiStationModal {...this.props} ref="del_multi_station"/>
         <StationDetailModal ref="detail_station"/>
 
-			</div>
-		)
-	}
+      </div>
+    )
+  }
   onPageChange(page){
     this.setState({
       page_no: page

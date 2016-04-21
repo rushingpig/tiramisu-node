@@ -125,10 +125,10 @@ Constant.DS = {
         id : 2,
         name : '所属部门全部用户'
     },
-    OFFICE : {
-        id : 3,
-        name : '本部门'
-    },             
+    // OFFICE : {
+    //     id : 3,
+    //     name : '本部门'
+    // },             
     STATION : {
         id : 4,
         name : '所属配送站所有订单'
@@ -144,6 +144,10 @@ Constant.DS = {
     SELF_CHANNEL : {
         id : 7,
         name : '所属渠道的全部订单'
+    },
+    STATION_ALL_USERS : {
+        id : 8,
+        name : '所属配送站全部用户'
     }
 };
 

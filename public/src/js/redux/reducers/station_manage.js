@@ -1,14 +1,16 @@
 import { combineReducers } from 'redux';
-import { map } from 'utils/index';
+import { map, core } from 'utils/index';
 import { area } from 'reducers/area_select';
 import * as STATIONACTION from 'actions/station_manage';
 import * as FormActions from 'actions/order_manage_form';
+import { UPDATE_PATH } from 'redux-simple-router';
 
 function _t(data) {
   return map(data, (text,id) => ({id, text}))
 }
 
 var get_state = {
+  loading: true,
   total: 0,
   name_list: [],
   list: [],
@@ -19,14 +21,16 @@ var get_state = {
 
 export function stations(state = get_state, action){
   switch (action.type) {
+    case UPDATE_PATH:
+      return get_state;
     case STATIONACTION.GET_ALL_STATIONS_NAME:
       return {...state, name_list: _t(action.data)};
     case STATIONACTION.GET_STATION_LIST:
-      return {...state, total:action.data.count_result[0].total, list: action.data.pagination_result}
+      return {...state, total:action.data.count_result[0].total, loading: false, list: action.data.pagination_result}
     case STATIONACTION.GET_STATION_LIST_BY_ID:
-      return {...state, list: [...action.data],total: 1};
+      return {...state, list: [...action.data],total: action.data.length || 0};
     case STATIONACTION.GET_STATIONS_BY_NAME:
-      return {...state, list: action.data, total: 1};
+      return {...state, list: core.isArray(action.data) ? action.data : [] , total: action.data.length || 0};
     case STATIONACTION.ADD_STATION:
       return {...state, list: action.data};
     case STATIONACTION.DELETE_STATION:

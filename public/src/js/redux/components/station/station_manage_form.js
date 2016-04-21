@@ -156,7 +156,6 @@ class StationManageForm extends Component {
     )
   }
   _check(callback,form_data){
-    LazyLoad('noty');
     setTimeout(() => {
       var { errors } = this.props;
       var station_info = this.props['form-data'].data;
@@ -171,10 +170,8 @@ class StationManageForm extends Component {
     var { getProvinces } = this.props.actions;
     getProvinces();
     var city = this.findSelectedOptionText('city');
-    this.setState({
-      city: city
-    });
-    console.log(this.state.city)
+    this.setState({ city });
+    LazyLoad('noty');
   }
   onProvinceChange(callback, e){
     var {value} = e.target;
@@ -199,7 +196,7 @@ class StationManageForm extends Component {
         Noty('success', '保存成功');
         setTimeout(() => {
           go('/sm/station');
-        }, 2000)
+        }, 200)
       })
       .fail(function(msg, code){
         Noty('error', msg || '保存异常');
@@ -214,7 +211,7 @@ class StationManageForm extends Component {
         Noty('success', '保存成功');
         setTimeout(() => {
           go('/sm/station');
-        }, 2000)
+        }, 200)
       })
       .fail(function(msg, code){
         Noty('error', msg || '保存异常');

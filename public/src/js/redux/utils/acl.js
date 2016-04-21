@@ -3,6 +3,7 @@
  */
 import { acl } from 'config/app.config';
 
+
 var  PERMISSIONS = undefined;
 //测试数据
 /*const PERMISSIONS = [
@@ -81,33 +82,19 @@ var  PERMISSIONS = undefined;
  'SystemAuthorityManageAddModule',
  ]*/
 
+
 /**
  * 有无该权限
  * @param  {String} role 权限名
  */
 export default function validate ( role ){
-  //禁用权限控制
-  if( !acl ){ return true; }
-  //初始化PERMISSIONS：分两种情况
-  //1. 第一次登录后；2. 已登陆后刷新；
-  if( !PERMISSIONS ){
-    var { user } = window.xfxb;
-    if( user ){
-      if( typeof user === 'string' ){
-        try {
-          PERMISSIONS = JSON.parse( user ).permissions || [];
-        }catch(e){
-          console.error(e);
-          PERMISSIONS = [];
-        }
-      }else{
-        PERMISSIONS = user.permissions || [];
-      }
-    }else{
-      return false; //未知错误，权限全部为禁止
-    }
+  var { user } = window.xfxb;
+  //特殊情况
+  if( !acl || ( user && user.is_admin ) ){
+    return true;
   }
-  return PERMISSIONS.some( n => n === role );
+  var permissions = user.permissions || [];
+  return permissions.some( n => n === role );
 }
 
 /**

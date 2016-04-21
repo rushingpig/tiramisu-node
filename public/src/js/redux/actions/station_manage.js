@@ -21,6 +21,7 @@ export const PUT_MULTIPLE_SCOPE_FAILURE = 'PUT_MULTIPLE_SCOPE_FAILURE';
 export function getStationList(data){
   return (dispatch, getState) => {
     if(!data.province_id || !data.city_id){
+      //TODO
       data.province_id = 440000;
       data.city_id = 440300;
     }

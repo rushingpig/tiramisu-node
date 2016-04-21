@@ -29,6 +29,7 @@ function localStrategy(req,username, password, done) {
             se.emit('fill',req,userInfo);
             let user = {
                 name : userInfo.name,
+                is_admin : userInfo.is_admin,
                 permissions : userInfo.permissions
             };
             return done(null,user);

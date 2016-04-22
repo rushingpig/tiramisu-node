@@ -197,3 +197,17 @@ export function DEL(url, send_data, action_type){
       })
   }
 }
+
+export default {
+  get,
+  post,
+  put,
+  del,
+  GET,
+  POST,
+  PUT,
+  DEL,
+  test,
+  TEST,
+  DEL
+}

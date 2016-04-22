@@ -15,3 +15,4 @@ public/index.html
 public/node_modules
 public/build
 views/index.hbs
+.vscode

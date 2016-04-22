@@ -240,6 +240,50 @@ OrderDao.prototype.editOrderError = function (orderErrorObj, merchant_id, src_id
     .update(updateSQL, [tables.buss_order_error, orderErrorObj, merchant_id, src_id]);
 };
 
+OrderDao.prototype.findOrderErrors = function(query_data){
+    let sql = "select boe.*,bos.merge_name as src_name from ?? boe";
+    let params = [tables.buss_order_error];
+    sql += " inner join ?? bos on boe.src_id = bos.id";
+    params.push(tables.buss_order_src);
+    sql += " where 1=1 ";
+    if(query_data.src_id){
+        sql += " and (bos.id = ? or bos.parent_id = ?)";
+        params.push(query_data.src_id);
+        params.push(query_data.src_id);
+    }
+
+    if(query_data.begin_time){
+        sql += " and boe.created_time >= ?";
+        params.push(query_data.begin_time + ' 00:00:00');
+    }
+    if(query_data.end_time){
+        sql += " and boe.created_time <= ?";
+        params.push(query_data.end_time + ' 23:59:59');
+    }
+    if(parseInt(query_data.is_deal) === 1){
+        sql += " and boe.status = ?";
+        params.push('CLOSE');
+    }else if(parseInt(query_data.is_deal) === 0){
+        sql += " and boe.status = ?";
+        params.push('OPEN');
+    }
+    if(query_data.merchant_id){
+        sql += " and boe.merchant_id like ?";
+        params.push(query_data.merchant_id + '%');
+    }
+    if(query_data.type){
+        sql += " and boe.type = ?";
+        params.push(query_data.type);
+    }
+    sql += " order by boe.created_time desc";
+    let count_sql = dbHelper.countSql(sql);
+    return baseDao.select(count_sql,params).then(result => {
+        return baseDao.select(dbHelper.paginate(sql,query_data.page_no,query_data.page_size),params).then(_result => {
+            return {result,_result};
+        });
+    });
+
+};
 /**
  * new recipient record
  */

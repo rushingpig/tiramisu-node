@@ -330,6 +330,11 @@
         this.viewMode = Math.max(this.minViewMode, Math.min(2, this.viewMode + dir));
       }
       this.picker.find('>div').hide().filter('.datepicker-'+DPGlobal.modes[this.viewMode].clsName).show();
+    },
+
+    destroy: function() {
+        this.element.removeData("datepicker").off(".Datepicker");
+        this.picker.remove()
     }
   };
   

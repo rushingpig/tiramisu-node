@@ -32,8 +32,17 @@ var DatePicker = React.createClass({
         });
       }.bind(this))
 
-    }else if(nextProps.value != this.props.value){
+    } else if (nextProps.value != this.props.value){
       this.setState({ date: nextProps.value })
+    }
+  },
+  componentDidUpdate: function(prevProps) {
+    if (
+      'upperLimit' in prevProps && this.props.upperLimit !== prevProps.upperLimit
+      || 'lowerLimit' in prevProps && this.props.lowerLimit !== prevProps.lowerLimit
+    ) {
+      $(this.refs.date).data('datepicker').destroy();
+      this.initDatePicker();
     }
   },
   componentDidMount: function() {
@@ -90,6 +99,11 @@ var DatePicker = React.createClass({
            className={`form-control input-xs ${this.props.className}`} />
       </div>
     );
+  },
+  componentWillUnmount() {
+    var $dom_date = $(this.refs.date);
+    var $date = $dom_date.data('datepicker');
+    $date.destroy();
   }
 });
 

@@ -4,6 +4,7 @@ import form from './form';
 import login from './login';
 import orderManage from './order_manage';
 import orderManageForm from './order_manage_form';
+import orderAbnormal from './order_abnormal';
 import deliveryChange from './delivery_change';
 import deliveryManage from './delivery_manage';
 import distributeManage from './distribute_manage';
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   login,
   orderManage,
   orderManageForm,
+  orderAbnormal,
   deliveryChange,
   deliveryManage,
   distributeManage,

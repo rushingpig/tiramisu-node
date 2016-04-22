@@ -47,6 +47,8 @@ const URL = (function(){
     alter_station: '/order/:orderId/station',
     check_groupbuy_psd: '/coupon', //验券
     orders_export: '/orders/export', //导出的唯一接口（根据参数转化）
+    abnormal_order: '/error/orders',
+    change_error_deal_status: '/error/order/:merchantId/:srcId',
 
     order_srcs: '/order/srcs',
     add_order_src: '/order/src',

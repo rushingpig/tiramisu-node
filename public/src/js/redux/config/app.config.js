@@ -108,4 +108,10 @@ export default {
 
   ORG_ID_HAS_CHANNELS:5,
 
+  ABNORMAL_TYPE: {
+    GENERAL: '一般',
+    SYSTEM_ERROR: '系统错误',
+    NOTIFY_MANAGER: '通知经理'
+  }
+
 }

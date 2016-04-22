@@ -130,13 +130,13 @@ UserDao.prototype.findUsers = function(query_data){
                     ds_sql += " or sr.org_id in" + dbHelper.genInSql(org_ids);
                 }else if(curr == constant.DS.STATION_ALL_USERS.id && is_national != 1){
                     ds_sql += " or su.station_ids in" + dbHelper.genInSql(station_ids);
-                }else {
-                    ds_sql += "1 != 1";
                 }
             });
 
             ds_sql += temp_sql.replace(/^ or/,'');
             ds_sql += ")";
+        }else {
+            ds_sql = "";
         }
     }
     sql += ds_sql;

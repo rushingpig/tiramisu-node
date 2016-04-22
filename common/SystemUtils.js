@@ -155,7 +155,8 @@ module.exports = {
     if (userInfo) {
       user = {
         name: userInfo.name,
-        permissions: userInfo.permissions
+        permissions: userInfo.permissions,
+        is_admin : userInfo.is_admin
       };
     }
     res.render('index', {isLogin: userInfo ? true : false, user: JSON.stringify(user),version : version});

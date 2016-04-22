@@ -128,9 +128,9 @@ UserDao.prototype.findUsers = function(query_data){
         if(!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1){
             ds.forEach(curr => {
                 if(curr == constant.DS.OFFICEANDCHILD.id){
-                    ds_sql += " or sr.org_id in" + dbHelper.genInSql(org_ids);
+                    temp_sql += " or sr.org_id in" + dbHelper.genInSql(org_ids);
                 }else if(curr == constant.DS.STATION_ALL_USERS.id && is_national != 1){
-                    ds_sql += " or su.station_ids in" + dbHelper.genInSql(station_ids);
+                    temp_sql += " or su.station_ids in" + dbHelper.genInSql(station_ids);
                 }
             });
 
@@ -161,7 +161,7 @@ UserDao.prototype.findUsers = function(query_data){
     params.push(tables.sys_user_role);
     suffix_sql += " inner join ?? sr2 on sr2.id = sur2.role_id";
     params.push(tables.sys_role);
-
+    console.log(sql);
     let count_sql = dbHelper.countSql(sql);
     return baseDao.select(count_sql,params).then(result=>{
         let pagination_sql = prefix_sql + dbHelper.paginate(sql,query_data.page_no,query_data.page_size) + suffix_sql;

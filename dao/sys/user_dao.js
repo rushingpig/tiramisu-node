@@ -120,6 +120,7 @@ UserDao.prototype.findUsers = function(query_data){
     params.push(tables.sys_user_role);
     sql += " inner join ?? sr on sr.id = sur.role_id";
     params.push(tables.sys_role);
+    sql += " where 1=1";
     // data filter begin
     let ds_sql = "",temp_sql = "";
     if(!toolUtils.isEmptyArray(ds)){
@@ -148,7 +149,7 @@ UserDao.prototype.findUsers = function(query_data){
         sql += " and sr.org_id = ?";
         params.push(query_data.org_id);
     }
-    sql += " where 1=1";
+
     if(query_data.uname_or_name){
         sql += " and (su.username like ? or su.name like ?)";
         params.push('%'+query_data.uname_or_name+'%');

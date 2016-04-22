@@ -589,7 +589,11 @@ OrderDao.prototype.findOrderList = function (query_data) {
             if(curr == constant.DS.STATION.id){
                 temp_sql += " or bo.delivery_id in "+dbHelper.genInSql(query_data.user.station_ids);
             }else if(curr == constant.DS.CITY.id){
-                temp_sql += " or dr3.parent_id in "+dbHelper.genInSql(query_data.user.city_ids);
+                if(query_data.user.is_headquarters){
+                    temp_sql += "";
+                }else {
+                    temp_sql += " or dr3.parent_id in "+dbHelper.genInSql(query_data.user.city_ids);
+                }
             }else if(curr == constant.DS.SELF_DELIVERY.id){
                 temp_sql += " or bo.deliveryman_id = ?";
                 params.push(query_data.user.id);
@@ -597,14 +601,13 @@ OrderDao.prototype.findOrderList = function (query_data) {
                 temp_sql += " or 1 = 1";
             }else if(curr == constant.DS.SELF_CHANNEL.id){
                 temp_sql += " or bo.src_id in " + dbHelper.genInSql(query_data.user.src_ids);
-            }else{
-                temp_sql += " 1!=1";// 未分配权限的不予显示数据
             }
         });
         ds_sql += temp_sql.replace(/^ or/,'');
         ds_sql += ")";
+
     }
-    if(query_data.user && (query_data.user.is_admin)){
+    if(temp_sql.trim() === "" || query_data.user && (query_data.user.is_admin)){
         ds_sql = "";
     }
     // data filter end
@@ -628,6 +631,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
         default:
         // do nothing && order by with the db self
     }
+    console.log(sql);
     let promise = null,countSql = "",result = 0;
     //  刚进入订单列表页面,不带筛选条件,用explain来优化获取记录总数
     if(/^.*(where 1=1 and)[\s\w\W]+/.test(sql)){

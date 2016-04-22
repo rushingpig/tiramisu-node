@@ -195,7 +195,7 @@ AddressDao.prototype.findAllCities = function(query_data){
     let sql = "select * from ?? where level_type = 2 and del_flag = ?";
     let params = [tables.dict_regionalism,del_flag.SHOW];
     // data filter start
-    if(!toolUtils.isEmptyArray(ds)){
+    if(!toolUtils.isEmptyArray(ds) && !query_data.user.is_headquarters){
         if(!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1){
             ds.forEach(curr => {
                 if(curr == constant.DS.OFFICEANDCHILD.id && query_data.user.role_ids){

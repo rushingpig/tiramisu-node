@@ -33,6 +33,8 @@ UserDao.prototype.findByUsername = (username,password)=>{
         'su.user_type',
         'su.no',
         'su.is_usable',
+        'su.is_headquarters',
+        'su.is_national',
 
         'sr.data_scope',
         'sr.id as role_id',

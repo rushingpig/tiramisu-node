@@ -3,6 +3,15 @@ import { outputPonits, changePonits, addInfoWindow, addMarkerToMap } from 'utils
 
 const oldPolygonStyle = {strokeWeight: '2',strokeColor: '#1215A0',fillColor: ''};
 const newPolygonStyle = {strokeWeight: '3',strokeColor: '#FF0000',fillColor: ''};
+const getLabelStyle = index => ({
+  width: '17',
+  textAlign: 'center',
+  margin: `2px ${ 4 - parseInt(index / 10) * 2 }px`,
+  backgroundColor: 'transparent',
+  color: '#fff',
+  fontSize: '12px',
+  border: 'none'
+});
 
 var MyMap = function(list){
   this.map = null;
@@ -35,6 +44,9 @@ MyMap.prototype.drawNewScope = function(){
     self.markers.push(marker);
     marker.id = index++;
     marker.enableDragging();
+    var label = new BMap.Label(marker.id + 1);
+    label.setStyle(getLabelStyle(marker.id + 1));
+    marker.setLabel(label);
     self.polygons[self.onEditIndex].setPath(points);
 
     marker.addEventListener('dragging', function(event) {
@@ -97,6 +109,9 @@ MyMap.prototype.enableEdit = function(station_id){
       marker.enableDragging();
       marker.id = index++;
       map.addOverlay(marker);
+      var label = new BMap.Label(marker.id + 1);
+      label.setStyle(getLabelStyle(marker.id + 1));
+      marker.setLabel(label);
       if(!self.polygons[self.onEditIndex]){
         self.polygons[self.onEditIndex] = new BMap.Polygon(points, newPolygonStyle);
       }

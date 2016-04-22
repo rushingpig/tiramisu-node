@@ -364,8 +364,9 @@ class StationGroupMap extends Component {
     putMultipleStationScope(data)
     .done(function(){
         Noty('success', '保存成功');
+        this.stopEditScope();
         MyMap.initialScope();
-      })
+      }.bind(this))
     .fail(function(msg, code){
       Noty('error', msg || '保存异常');
     });

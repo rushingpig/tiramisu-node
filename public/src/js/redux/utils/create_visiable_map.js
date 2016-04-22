@@ -1,5 +1,4 @@
-import autoMatch from 'mixins/map';
-import Noty from 'utils/_noty'
+import { Noty } from 'utils/index';
 
 function MyMap(){
   this.map = null;
@@ -8,16 +7,22 @@ function MyMap(){
   this.markers = [];
   this.oldPolygon = null;
   this.polygon = null;
+  this.geocoder = null; //可以获取指定地址的准确坐标
+
+  this.d = $.Deferred();
 }
 
 const oldPolygonStyle = {strokeWeight: '2',strokeColor: '#1215A0',fillColor: ''};
 const newPolygonStyle = {strokeWeight: '3',strokeColor: '#FF0000',fillColor: ''};
-
-function addMarkerToMap(map,point){
-  var marker = new BMap.Marker(point);
-  map.addOverlay(marker);
-  return marker;
-}
+const getLabelStyle = index => ({
+  width: '17',
+  textAlign: 'center',
+  margin: `2px ${ 4 - parseInt(index / 10) * 2 }px`,
+  backgroundColor: 'transparent',
+  color: '#fff',
+  fontSize: '12px',
+  border: 'none'
+});
 
 export function changeToPoint(coord) {
   var lng = coord.lng;
@@ -49,26 +54,40 @@ export function addInfoWindow(map,point,station_info){
   })
 }
 
+MyMap.prototype.addMarker = function(point){
+  var self = this;
+  var marker = new BMap.Marker( point );
+  marker.id = this.markers.length;
+  marker.enableDragging();
+
+  var label = new BMap.Label(marker.id + 1);
+  label.setStyle(getLabelStyle(marker.id + 1));
+  marker.setLabel(label);
+
+  marker.addEventListener('dragging', function(event){
+    self.points[this.id] = event.point;
+    self.polygon.setPath(self.points);
+  });
+
+  this.markers.push(marker);
+  this.map.addOverlay(marker);
+}
+
 MyMap.prototype.createNewScope = function(){
   var self = this;
-  var index = 0;
-  this.points = [];
-  this.markers = [];
-  var polygon = new BMap.Polygon(self.points, newPolygonStyle);
+  this.points = this.points || [];
+
+  //已有多边形
+  this.points.forEach( n => this.addMarker(n) );
+  var polygon = new BMap.Polygon(this.points, newPolygonStyle);
   this.map.addOverlay(polygon);
+  this.polygon = polygon;
 
+  //新添加多边形点
   this.map.addEventListener('click',function(event){
-    self.points.push(event.point);
-    var marker = addMarkerToMap(self.map,event.point);
-    self.markers.push(marker);
-    marker.id = index++;
-    marker.enableDragging();
-    polygon.setPath(self.points);
-
-    marker.addEventListener('dragging', function(event) {
-      self.points[this.id] = event.point;
-      polygon.setPath(self.points);
-    });
+    self.points.push( event.point );
+    polygon.setPath( self.points );
+    self.addMarker.call(self, event.point );
   });
 }
 
@@ -79,31 +98,23 @@ MyMap.prototype.saveStationScope = function(){
 
 MyMap.prototype.locationCenter = function(city, address, station_info){
   var self = this;
-  if(!city || !address){
-    Noty('error', '地址数据有误');
-  }
   if(BMap){
-    let map = self.map;
-    map.centerAndZoom(city);
-    let localSearch = new BMap.LocalSearch(map);
-    localSearch.setSearchCompleteCallback( function(searchResult){
-      var poi = searchResult && searchResult.getPoi(0);
+    let map = this.map;
+    this.geocoder = new BMap.Geocoder();
+    this.geocoder.getPoint(city && address, function(poi){
+      console.log('poi: ', poi);
       if(poi){
-        map.panTo(poi.point);
-        addInfoWindow(map, poi.point, station_info)
-        console.log(poi.point.lng + "," + poi.point.lat);
+        // map.centerAndZoom( poi, 14);
+        map.panTo(poi);
+        map.setZoom(14);
+        addInfoWindow(map, poi, station_info);
       }else{
-        console.log('error');
+        map.centerAndZoom( city, 12 );
       }
-    });
-    localSearch.search(address);
+    })
   }else{
     console.log('error');
   }
-}
-
-MyMap.prototype.insertPoints = function(points){
-  this.points = changePonits(points);
 }
 
 MyMap.prototype.clearMap = function(){
@@ -112,42 +123,17 @@ MyMap.prototype.clearMap = function(){
   this.map.clearOverlays();
 }
 
-MyMap.prototype.editScope = function(){
-  var self = this;
-  if(this.points.length === 0){
-    this.createNewScope();
-  }else{
-    this.points.forEach((n, index) => {
-      var marker = new BMap.Marker(n);
-
-      self.markers.push(marker);
-      marker.enableDragging();
-      marker.id = index++;
-      self.map.addOverlay(marker);
-      if(!self.polygon){
-        self.polygon = new BMap.Polygon(self.points, oldPolygonStyle);
-      }
-      self.map.addOverlay(self.polygon);
-
-      marker.addEventListener('dragging', function(event) {
-        self.points[this.id] = event.point;
-        self.polygon.setStrokeColor('red');
-        self.polygon.setPath(self.points);
-      });
-    })
-  }
-}
-
 MyMap.prototype.stopEditScope = function(){
-  var map = this.map;
-  this.markers.forEach(n => {
-    map.removeOverlay(n);
-  });
+  this.markers.forEach(n => n.hide());
+}
+MyMap.prototype.continueEditScope = function(){
+  this.markers.forEach(n => n.show());
 }
 
 MyMap.prototype.drawScope = function(points){
   var map = this.map;
   this.points = [];
+  this.markers = [];
   if(points != undefined){
     this.points = changePonits(points);
     this.oldPolygon = new BMap.Polygon(this.points, oldPolygonStyle);
@@ -172,18 +158,20 @@ MyMap.prototype._initialize = function() {
   this.map.centerAndZoom(point, 12);
   this.map.enableScrollWheelZoom(true);
   this.map.enableDragging();
+  this.d.resolve();
 }
 
 MyMap.prototype.create = function(callback) {
-  if(!this.init_flag){
-    this.init_flag = 1;
+  if(!window.BMap){
     var script = document.createElement("script");
     window._bmap_callback = this._initialize.bind(this);
     script.src = "http://api.map.baidu.com/api?v=2.0&ak=dxF5GZW6CHlR4GCQ9kKynOcc&callback=_bmap_callback";//此为v2.0版本的引用方式  
     // http://api.map.baidu.com/api?v=1.4&ak=您的密钥&callback=initialize"; //此为v1.4版本及以前版本的引用方式  
     document.body.appendChild(script);
+    this.d.done(callback);
   }else{
-    this._initialize();
+    this._initialize.call(this);
+    callback();
   } 
 }
 

@@ -124,8 +124,12 @@ class DeptManagePanel extends Component{
     var {dept_role,filter}=this.props;
     var {all_order_srcs} = filter;
     var {depts,dataaccess} = dept_role;
-    const { list } = this.props.RoleInfoListManage;
+    const { list,active_org_id } = this.props.RoleInfoListManage;
     var {handle_role_id} = this.props.RoleManage;
+    var depts_active = depts.map(e => {
+      e.id == active_org_id ? e.chosen = true :e.chosen = false;
+      return e;
+    });
     const {addDept,addRole,changeRole,deleteRole,reset,getRoleDetail,getOrderSrcs,resetRole} = this.props.actions;
     let content = list.map((n,id) => {
       return <RoleInfoRow key={id} {...n}
@@ -141,7 +145,7 @@ class DeptManagePanel extends Component{
             <div className="container-fluid" style={{paddingTop:'20',minHeight:'600'}}>
               <div className="panel pull-left navbar" style={{paddingTop:'15px',paddingLeft:'15px',paddingBottom:'15px'}}>
                 <span className="font-lg bold">{'请选择部门'}</span>
-                <TreeNav data={depts} onToggle={this.onToggleDept.bind(this )} />
+                <TreeNav data={depts_active} onToggle={this.onToggleDept.bind(this )} />
                 {/*<TreeNav data={this.props.accessManage.data} onToggle={this.onToggleDept.bind(this)} />*/}
               </div>
                 <div className="panel panel-body" style={{marginLeft: '225px'}}>

@@ -169,6 +169,14 @@ class RoleAuthorityPannel extends Component{
         return e.module_name == module_name;
       })
     }
+    var department_list_active = department_list.map(e => {
+      /*var children = e.children;*/
+      e.children.map(m => {
+        m.id == on_role_id ? m.chosen = true:m.chosen = false;
+        return m;
+      });
+      return e;
+    });
     let content = fliterList.map((n, id) => {
       return <TableRow key={id} {...n}
                        submitting={submitting}
@@ -190,7 +198,7 @@ class RoleAuthorityPannel extends Component{
                         putRoleAuthority={putRoleAuthority}
                         gotRoleListByModuleName = {gotRoleListByModuleName}/>
           <NavBar
-              department_list={department_list}
+              department_list={department_list_active}
               gotRoletList={gotRoletList}
               toggleDept={toggleDept}
               onChooseRole={gotRoleAuthorities}/>

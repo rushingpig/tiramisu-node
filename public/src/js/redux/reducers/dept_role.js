@@ -7,6 +7,7 @@ import { DeptRoleActionTypes } from 'actions/action_types';
 var  initail_state={
 	depts:[],
 	roles:[],
+	active_org_id:-1,
 	dataaccess:[],
 	stations:[],
 }

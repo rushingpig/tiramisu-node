@@ -46,7 +46,7 @@ function RoleInfoListManage(state=initial_roleinfo_state,action){
     case Actions.GET_ROLEINFO_LIST:
       return {...state,total:clone(action.data.total),list:clone(action.data.list)};
     case Actions.TOGGLE_DEPT:
-      return {...state,total:clone(action.data.total),list:clone(action.data.list)};
+      return {...state,total:clone(action.data.total),list:clone(action.data.list),active_org_id:clone(action.active_org_id)};
     case Actions.DELETE_ROLE:
       var list = state.list.filter((n)=>{
         return n.id !== action.roleId;

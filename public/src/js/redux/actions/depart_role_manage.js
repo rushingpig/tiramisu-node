@@ -12,7 +12,17 @@ export const getOrderSrcs = OrderSupport.getOrderSrcs;
 
 export const TOGGLE_DEPT = 'TOGGLE_DEPT';
 export function toggleDept( org_id ){
-  return GET(Url.role_list_info.toString(),{org_id:org_id},TOGGLE_DEPT);
+  return (dispatch) => {
+      return get(Url.role_list_info.toString(), {org_id:org_id})
+        .done((data) => {
+          dispatch({
+            type: TOGGLE_DEPT,
+            active_org_id  : org_id,
+            data: data,
+          })
+        })
+  }
+  /*return GET(Url.role_list_info.toString(),{org_id:org_id},TOGGLE_DEPT);*/
 /*  return {
     type: TOGGLE_DEPT,
     id: dept_id

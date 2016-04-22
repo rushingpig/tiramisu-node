@@ -1091,7 +1091,8 @@ OrderDao.prototype.insertExternalOrderInTransaction = function (req) {
         greeting_card = req.body.greeting_card,
         // TODO: notice we assume all the coupon are numbers only
         coupon = req.body.coupon? toolUtils.extractNumbers(req.body.coupon): null,
-        merchant_id = req.body.merchant_id;
+        merchant_id = req.body.merchant_id,
+        shop_id = req.body.shop_id;
     let recipientObj = {
         regionalism_id: regionalism_id,
         name: recipient_name,

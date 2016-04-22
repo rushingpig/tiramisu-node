@@ -21,6 +21,7 @@ var res_obj = require('../../../util/res_obj'),
   exchangeOrder = schema.exchangeOrder,
   printApply = schema.printApply,
   allocateStation = schema.allocateStation,
+  listOrderError = schema.listOrderError,
   del_flag = require('../../../dao/base_dao').del_flag,
   baseDao = require('../../../dao/base_dao'),
   dao = require('../../../dao'),
@@ -136,9 +137,9 @@ OrderService.prototype.addOrderError = (req, res, next) => {
   if (errors) {
     return res.api(res_obj.INVALID_PARAMS, errors);
   }
-  const params = req.body;
+  let params = req.body;
   const promise = orderDao
-    .addOrderError(params)
+    .addOrderError(systemUtils.assembleInsertObj(req,params))
     .then(result => {
       res.api({});
     });
@@ -162,6 +163,56 @@ OrderService.prototype.editOrderError = (req, res, next) => {
       }
     });
   systemUtils.wrapService(res, next, promise);
+};
+OrderService.prototype.listOrderError = (req,res,next) => {
+  req.checkQuery(listOrderError);
+  let errors = req.validationErrors();
+  if (errors) {
+    return res.api(res_obj.INVALID_PARAMS, errors);
+  }
+  let promise = orderDao.findOrderErrors(req.query).then(_res => {
+    if(toolUtils.isEmptyArray(_res.result) || toolUtils.isEmptyArray(_res._result)){
+      throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);
+    }
+    let data = {
+        total : _res.result[0].total,
+        page_no : req.page_no,
+        list : []
+    };
+    _res._result.forEach((curr) => {
+      let obj = {
+        created_time : curr.created_time,
+        detail : curr.detail,
+        is_deal : curr.status === 'CLOSE' ? 1 : 0,
+        merchant_id : curr.merchant_id,
+        src_name : curr.src_name,
+        src_id : curr.src_id,
+        type : curr.type,
+        updated_by : curr.updated_by,
+        updated_time : curr.updated_time
+      };
+      data.list.push(obj);
+    });
+    res.api(data);
+  });
+  systemUtils.wrapService(res,next,promise);
+};
+
+OrderService.prototype.dealOrderError = (req,res,next) => {
+  req.checkParams('merchantId').notEmpty();
+  req.checkParams('srcId').isInt();
+  req.checkBody('is_deal').isInt();
+  let errors = req.validationErrors();
+  if (errors) {
+    return res.api(res_obj.INVALID_PARAMS, errors);
+  }
+  const merchant_id = req.params.merchantId;
+  const src_id = req.params.srcId;
+  let order_error_obj = {
+    status : parseInt(req.body.is_deal) ? 'CLOSE' : 'OPEN'
+  };
+  let promise = orderDao.editOrderError(systemUtils.assembleUpdateObj(req,order_error_obj),merchant_id,src_id).then(()=>{res.api()});
+  systemUtils.wrapService(res,next,promise);
 };
 /**
  * get the order detail info

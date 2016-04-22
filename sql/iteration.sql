@@ -124,3 +124,6 @@ REPLACE INTO `buss_shop` VALUES
   ('29',440305,'武陵大道锦都豪苑门面（永利KTV斜对面）','锦都店','9:00-23:00','0736-7191117','111.698363','29.039872','1','2016-04-22 15:36:19', 1),
   ('30',440305,'武陵大道与西园路交汇处(宏大宾馆斜对面往火车站方向走2OO米男科医院1楼门面)','宏大店','9:00-23:00','0736-7151117','111.698903','29.050039','1','2016-04-22 15:36:19', 1);
 COMMIT;
+
+ALTER TABLE `tiramisu`.`buss_order_error` DROP COLUMN `created_by`, DROP COLUMN `created_time`, DROP COLUMN `updated_by`, DROP COLUMN `updated_time`, ADD COLUMN `created_by` int UNSIGNED NOT NULL DEFAULT 1 AFTER `status`, ADD COLUMN `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_by`, ADD COLUMN `updated_by` int UNSIGNED NOT NULL DEFAULT 0 AFTER `created_time`, ADD COLUMN `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `updated_by`;
+ALTER TABLE `tiramisu`.`buss_order_error` ADD INDEX `IDX_MERCHANT_ID` (`merchant_id`) comment '', ADD INDEX `IDX_CREATED_TIME` (`created_time`) comment '', ADD INDEX `IDX_TYPE` (`type`) comment '';

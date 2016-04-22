@@ -24,6 +24,11 @@ export default [
             "name": "中奖管理",
             "icon": "",
             "link": "/om/winning",
+        }, {
+            "key": "AbnormalOrder",
+            "name": "错误订单管理",
+            "icon": "",
+            "link": "/om/ao",
         }]
     }, {
         "key": "delivery_management",

@@ -26,4 +26,5 @@ module.exports = {
   editRole : require('./sys/edit_role'),
   addMenu : require('./sys/add_menu'),
   editMenu : require('./sys/edit_menu'),
+  listOrderError : require('./buss/order/list_order_error')
 };

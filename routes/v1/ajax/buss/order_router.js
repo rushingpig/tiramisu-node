@@ -19,6 +19,8 @@ module.exports = function (router) {
     router.get('/order/:orderId/products',productService.listOrderProducts); // 获取指定订单下的产品列表
     router.get('/order/:orderId/history',orderService.history);  // 获取指定订单的历史记录
     router.get('/orders/export',orderService.exportExcel);    //导出 订单 && 配送单 到excel文件
+
+    router.get('/error/orders',orderService.listOrderError);    // 错误订单列表
 //**********************
 //******** POST ********
 //**********************
@@ -34,6 +36,8 @@ module.exports = function (router) {
     router.put('/order/:orderId/exception',orderService.exceptionOrder);     // 将订单置为异常状态(以是否投入生产作为节点)
     router.put('/order/:orderId/station',orderService.allocateStation);    // 分配配送站
     router.put('/order/:orderId/delivery',orderService.changeDelivery);  // 修改配送站
+
+    router.put('/error/order/:merchantId/:srcId',orderService.dealOrderError);  // 编辑错误订单
 
 //************************
 //******** DELETE ********

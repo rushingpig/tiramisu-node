@@ -18,11 +18,19 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
       require.ensure([], require => {
         components = {...components,
           OrderPannel:       require('../components/order/manage'),
-          OrderDetailPannel: require('../components/order/manage_order_detail_pannel'),
+          OrderDetailPannel: require('../components/order/manage_order_detail_pannel')
         };
         callback();
       });
       break;
+    case 'om':
+      require.ensure([], require => {
+        components = {
+          ...components,
+          AbnormalOrder: require('../components/order/search_abnormal_order')
+        };
+        callback();
+      });
     case 'dm':
       require.ensure([], require => {
         components = {...components,
@@ -77,7 +85,7 @@ const get = componentName => (location, callback) => {
 const App = () => (
   <Router history={history}>
     <Route path="/" component={Entry}>
-      <Route path="om">
+      <Route path="om" onEnter={getComponents('om')}>
         <Route path="index" onEnter={getComponents('om/index', onEnter('OrderManageAccess'))}>
           <IndexRoute getComponent={get('OrderPannel')} />
           <Route path="add" onEnter={onEnter('OrderManageAddOrder')} getComponent={get('OrderDetailPannel')} />
@@ -86,6 +94,7 @@ const App = () => (
         <Route path="refund"  component={ComingSoon} />
         <Route path="invoice" component={ComingSoon} />
         <Route path="winning" component={ComingSoon} />
+        <Route path="ao" getComponent={get('AbnormalOrder')} />
       </Route>
 
       <Route path="dm" onEnter={getComponents('dm')}>

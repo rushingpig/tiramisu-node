@@ -148,6 +148,10 @@ Constant.DS = {
     STATION_ALL_USERS : {
         id : 8,
         name : '所属配送站全部用户'
+    },
+    OTHERS : {
+        id : 9,
+        name : '其他'
     }
 };
 

@@ -141,7 +141,7 @@ class FilterHeader extends Component {
         return;
       }
       this.setState({search_ing: true});
-      this.props.getStationList({page_no: 0, page_size: 10})
+      this.props.search({page_no: 0})
         .always(()=>{
           this.setState({search_ing: false});
         });
@@ -238,7 +238,7 @@ class StationManagePannel extends Component {
     return (
       <div className="station-manage">
         <TopHeader/>
-        <FilterHeader {...this.props}/>
+        <FilterHeader {...this.props} search={this.search} />
 
         <div className="panel">
           <header className="panel-heading">配送站列表</header>
@@ -278,14 +278,14 @@ class StationManagePannel extends Component {
     )
   }
   onPageChange(page){
-    this.setState({
-      page_no: page
-    });
-    this.search(page);
+    this.search({ page_no: page });
   }
-  search(page){
+  search(opts){
     var { getStationList, stations } = this.props;
-    getStationList({page_no: page, page_size: this.state.page_size});
+    var { page_no, page_size } = this.state;
+    //还有省市区数据实在redux-form中
+    opts && typeof opts.page_no != undefined && this.setState({ page_no: opts.page_no });
+    return getStationList({page_no, page_size, ...opts});
   }
   viewStationDetail(station){
     this.refs.detail_station.show(station);

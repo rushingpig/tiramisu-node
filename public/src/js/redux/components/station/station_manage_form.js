@@ -83,63 +83,68 @@ class StationManageForm extends Component {
 
     var { save_ing, save_success, submit_ing } = this.props['form-data'];
     return (
-      <div>
-        <div className="form-group form-inline">
-          <label>{'　配送中心名称：'}</label>
-          <input ref="name" {...name} className={`form-control input-xs ${name.error}`} placeholder="请填写名称" type="text" />
-        </div>
-        <div className="form-group form-inline">
-          <label>{'　配送中心地址：'}</label>
-          <Select ref="province" className={`${province_id.error}`} default-text="请输入省份" options={provinces} {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} className="form-select" />{' '}
-          <Select ref="city" className={`${city_id.error}`} default-text="请输入城市" options={cities} {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} />{' '}
-          <Select ref="district" className={`${regionalism_id.error}`} default-text="请输入地区" options={districts} {...regionalism_id} className={`${regionalism_id.error}`} />{' '}
-        </div>
-        <div className="form-group form-inline">
-          <label>{'　　　　　　　　'}</label>
-          <input ref="address" {...address} className={`form-control input-xs ${address.error}`}  placeholder="请填写详细地址"/>
-        </div>
-        <div className="form-group form-inline">
-          <label>{'　　　联系方式：'}</label>
-          <input {...phone} className={`form-control input-xs ${phone.error}`} placeholder="请填写联系方式"/>
-        </div>
-        <div className="form-group form-inline">
-          <label>{'　生产产能数量：'}</label>
-          <input {...capacity} className={`form-control input-xs ${capacity.error}`} placeholder="请填写生产产能数量"/>
-        </div>
-        <div className="form-group form-inline">
-          <label>{'是否适用于全国：'}</label>
-          <div className="radio space-right">
-            <label><input type="radio" {...is_national} value="1" checked={is_national.value == '1'}/> 是</label>
-            {'　'}
-            <label><input type="radio" {...is_national} value="0" checked={is_national.value == '0'}/> 否</label>
+      <div className="row">
+        <div className="col-md-5">
+          <div className="form-group form-inline">
+            <label>{'　配送中心名称：'}</label>
+            <input ref="name" {...name} className={`form-control input-xs ${name.error}`} placeholder="请填写名称" type="text" />
+          </div>
+          <div className="form-group form-inline">
+            <label>{'　配送中心地址：'}</label>
+            <Select ref="province" className={`${province_id.error}`} default-text="请输入省份" options={provinces} {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} className="form-select" />{' '}
+            <Select ref="city" className={`${city_id.error}`} default-text="请输入城市" options={cities} {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} />{' '}
+            <Select ref="district" className={`${regionalism_id.error}`} default-text="请输入地区" options={districts} {...regionalism_id} className={`${regionalism_id.error}`} />{' '}
+          </div>
+          <div className="form-group form-inline">
+            <label>{'　　　　　　　　'}</label>
+            <input ref="address" {...address} className={`form-control input-xs ${address.error}`}  placeholder="请填写详细地址"/>
+          </div>
+          <div className="form-group form-inline">
+            <label>{'　　　联系方式：'}</label>
+            <input {...phone} className={`form-control input-xs ${phone.error}`} placeholder="请填写联系方式"/>
+          </div>
+          <div className="form-group form-inline">
+            <label>{'　生产产能数量：'}</label>
+            <input {...capacity} className={`form-control input-xs ${capacity.error}`} placeholder="请填写生产产能数量"/>
+          </div>
+          <div className="form-group form-inline">
+            <label>{'是否适用于全国：'}</label>
+            <div className="radio space-right">
+              <label><input type="radio" {...is_national} value="1" checked={is_national.value == '1'}/> 是</label>
+              {'　'}
+              <label><input type="radio" {...is_national} value="0" checked={is_national.value == '0'}/> 否</label>
+            </div>
+          </div>
+          <div className="form-group form-inline">
+            <label>{'　　　　　备注：'}</label>
+            <textarea {...remarks} className="form-control input-xs" rows="2" cols="40"></textarea>
+          </div>
+          <div className="form-group form-inline">
+            {'　　　　　　　　'}
+            <button
+              key="saveBtn" 
+              disabled={save_ing}
+              data-submitting={save_ing}
+              onClick={handleSubmit(this._check.bind(this, editable ? this.handleUpdateStationInfo : this.handleCreateStationInfo))} 
+              className="btn btn-theme">
+              保存
+            </button>
           </div>
         </div>
-        <div className="form-group form-inline">
-          <label>{'　　　　　备注：'}</label>
-          <textarea {...remarks} className="form-control input-xs" rows="2" cols="40"></textarea>
+        <div className="col-md-7">
+          <div className="form-group form-inline">
+            <button key="editBtn" disabled={this.state.working} onClick={this.createNewScope.bind(this)} className="btn btn-theme btn-xs">
+              {`${editable ? '修改' : '添加'}配送区域`}
+            </button>
+            {'　　'}
+            {
+              this.state.stoped
+              ? <button key="continueBtn" onClick={this.continueEditScope.bind(this)} className="pull-right btn btn-theme btn-xs">继续修改</button>
+              : <button key="stopBtn" disabled={!this.state.working} onClick={this.stopEditScope.bind(this)} className="pull-right btn btn-theme btn-xs">停止修改</button>
+            }
+          </div>
+          <StationMap editable={editable} ref="stationMap" {...this.props.fields} />
         </div>
-        <div className="form-group form-inline">
-          <button key="editBtn" disabled={this.state.working} onClick={this.createNewScope.bind(this)} className="btn btn-theme btn-xs">
-            {`${editable ? '修改' : '添加'}配送区域`}
-          </button>
-          {'　　'}
-          {
-            this.state.stoped
-            ? <button key="continueBtn" onClick={this.continueEditScope.bind(this)} className="pull-right btn btn-theme btn-xs">继续修改</button>
-            : <button key="stopBtn" disabled={!this.state.working} onClick={this.stopEditScope.bind(this)} className="pull-right btn btn-theme btn-xs">停止修改</button>
-          }
-          {'　　'}
-          <button
-            key="saveBtn" 
-            disabled={save_ing}
-            data-submitting={save_ing}
-            onClick={handleSubmit(this._check.bind(this, editable ? this.handleUpdateStationInfo : this.handleCreateStationInfo))} 
-            className="btn btn-theme btn-xs">
-            保存
-          </button>
-        </div>
-
-        <StationMap editable={editable} ref="stationMap" {...this.props.fields} />
       </div>
     )
   }

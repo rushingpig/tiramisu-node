@@ -79,6 +79,18 @@ const URL = (function(){
     shops: '/district/:districtId/shops', //门店
     auto_loc: '/delivery/autoAllocate', //自动分配配送站
 
+    //配送站管理
+    station_single: '/stations/getStationsByName', //单个配送站
+    station_list: '/stations/getStationsByDistrictId', //配送站列表
+    station_get: '/station/',//获取配送站
+    station_add: '/station/',//添加配送站
+    station_change:'/station/:stationId',//修改配送站
+    station_delete: '/station/:station_id',
+    //配送区域管理
+    station_scope: '/station/scope/:stationId', //配送范围
+    station_multiple_scope_change: '/stations/scope', //批量修改配送站范围
+    station_scope_change:'station/:stationId/coords',//修改配送范围
+
     //权限
     dept_list_info: '/orgs',   //所有部门信息
     user_list_info: '/users',  //用户列表信息

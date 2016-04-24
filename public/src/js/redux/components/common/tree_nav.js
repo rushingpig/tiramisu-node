@@ -6,7 +6,8 @@ function TreeLeaf( props ) {
   return (
     <div 
       className={"tree-item" + (data.active ? ' active' : '')}
-      onClick={ () => onChoose(data.id) }>
+      onClick={ () => onChoose(data.id) }
+      style={{backgroundColor:data.chosen?'#FBDCBD':''}}>
       <i className="tree-dot"></i>
       <div className="tree-item-name">
         {data.text}
@@ -19,8 +20,8 @@ function TreeNode( props ) {
   var { data, children, onToggle, className } = props;
   return (
     <div className={`tree-folder ${className}`}>
-      <div className="tree-folder-header" onClick={ () => onToggle(data.id) }>
-        <i className={`fa fa-${data.active ? 'minus' : 'plus'}-square-o`}></i>
+      <div className="tree-folder-header" onClick={ () => onToggle(data.id) } style={{backgroundColor:data.chosen?'#FBDCBD':''}}>
+        <i className={`fa fa-${data.active ? 'minus' : 'plus' }-square-o `}></i>
         <div className="tree-folder-name">
             {data.text? data.text: data.name}
           </div>

@@ -167,7 +167,8 @@ RoleService.prototype.editRole = (req, res, next) => {
         org_id: b.org_id,
         name: b.name,
         description: b.description,
-        src_id : b.src_id || 0
+        src_id : b.src_id || 0,
+        data_scope: req.body.data_scope_id
     };
     let promise = roleDao.updateRoleById(role_id, systemUtils.assembleUpdateObj(req, role_obj)).then(affectRows => {
         if (!toolUtils.isInt(affectRows)) {

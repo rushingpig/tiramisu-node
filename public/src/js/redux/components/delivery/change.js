@@ -1,3 +1,6 @@
+/**
+ * 订单转送货单
+ */
 import React, {Component, PropTypes} from 'react';
 import { render, findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
@@ -61,17 +64,17 @@ class FilterHeader extends Component {
           <DatePicker editable redux-form={begin_time} className="short-input" />
           {' 结束时间'}
           <DatePicker editable redux-form={end_time} className="short-input space-right" />
-          { 
-            V( 'DeliveryManageChangeStationFilter' )
-              ? <Select {...delivery_id} options={delivery_stations} default-text="选择配送中心" className="space-right"/>
-              : null
-          }
           {
             V( 'DeliveryManageChangeAddressFilter' )
               ? [
                   <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" key="province" className="space-right"/>,
                   <Select {...city_id} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>
                 ]
+              : null
+          }
+          { 
+            V( 'DeliveryManageChangeStationFilter' )
+              ? <Select {...delivery_id} options={delivery_stations} default-text="选择配送中心" className="space-right"/>
               : null
           }
           <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">

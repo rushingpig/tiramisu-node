@@ -169,6 +169,11 @@ class UserManagePannel extends Component{
     var {userDelete,usableAlter} = this.props.actions;
     var {depts} = dept_role;
 
+    var depts_active = depts.map(e => {
+      e.id == dept_id ? e.chosen = true:e.chosen = false;
+      return e;
+    })
+
     var content = list.map((n,i)=>{
       return <UserRow key= {n.id} {...n}
                       viewDeleteUserModal={this.viewDeleteUserModal}
@@ -181,7 +186,7 @@ class UserManagePannel extends Component{
           <div className="authority-manage">
             <div className="panel pull-left navbar" style={{paddingTop:'15px',paddingLeft:'15px',paddingBottom:'15px'}}>
               <span className="font-lg bold">{ '请选择部门' }</span>
-              <TreeNav data={depts} onToggle={this.onToggleDept.bind(this)} />
+              <TreeNav data={depts_active} onToggle={this.onToggleDept.bind(this)} />
             </div>
             <div className="panel panel-body" style={{marginLeft: '225px'}}>
               <div className="table-responsive authority-list">

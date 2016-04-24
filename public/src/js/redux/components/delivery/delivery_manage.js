@@ -1,3 +1,6 @@
+/**
+ * 送货单管理
+ */
 import React, {Component, PropTypes} from 'react';
 import { render, findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
@@ -59,6 +62,7 @@ class FilterHeader extends Component {
         is_greeting_card,
         province_id,
         city_id,
+        delivery_id
       },
       provinces,
       cities,
@@ -86,6 +90,11 @@ class FilterHeader extends Component {
                 ]
               : null
             }
+            {
+              V( 'DeliveryManageDeliveryStationFilter' )
+                ? <Select {...delivery_id} options={delivery_stations} default-text="选择配送中心" className="space-right"/>
+                : null
+            }
             <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
               <i className="fa fa-search"></i>{' 搜索'}
             </button>
@@ -110,8 +119,9 @@ class FilterHeader extends Component {
   }
   componentDidMount(){
     setTimeout(function(){
-      var { getProvinces } = this.props;
+      var { getProvinces, getDeliveryStations } = this.props;
       getProvinces();
+      getDeliveryStations();
       LazyLoad('noty');
     }.bind(this),0)
   }
@@ -160,6 +170,7 @@ FilterHeader = reduxForm({
     'is_greeting_card',
     'province_id',
     'city_id',
+    'delivery_id',
 
     'order_ids' //扫描结果
   ]
@@ -198,10 +209,19 @@ class OrderRow extends Component {
                     {
                       props.print_status == 'PRINTABLE'
                         ? <span key="printable">[打印]</span>
-                        : ( props.print_status == 'UNPRINTABLE'
-                              ? <span key="unprintable">[申请打印]</span>
-                              : <span key="reprintable">[重新打印]</span>
+                        : 
+
+                          ( props.print_status == 'UNPRINTABLE'
+                                ? 
+                                  V( 'DeliveryManageUnprintable' )
+                                    ?<span key="unprintable">[申请打印]</span>
+                                    :null
+                                : 
+                                  V('DeliveryManageReprintable')
+                                    ?<span key="reprintable">[重新打印]</span>
+                                    :null
                           )
+                        
                     }
                   </a>
             )

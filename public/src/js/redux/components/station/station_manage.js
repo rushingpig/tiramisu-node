@@ -47,7 +47,7 @@ const validate = (values, props) => {
     if(form[key] && form[key].touched && (!values[key] || values[key] == SELECT_DEFAULT_VALUE))
       errors[key] = msg;
   }
-  _v_selsect('province_id');
+  // _v_selsect('province_id');
 
   console.log(errors);
   // //errors为空对象才表明验证正确
@@ -55,43 +55,43 @@ const validate = (values, props) => {
 };
 
 class FilterHeader extends Component {
-	constructor(props){
-		super(props);
+  constructor(props){
+    super(props);
     this.search = this.search.bind(this);
-		this.state = {
-			search_ing :false
-		}
-	}
-	render(){
-		var {
+    this.state = {
+      search_ing :false
+    }
+  }
+  render(){
+    var {
       handleSubmit,
-			fields: {
-				name,
-				province_id,
-				city_id,
-				district_id,
-			},
-			area: {
-				provinces,
-				cities,
-				districts,
-			},
-			stations: {
-				name_list,
-			},
-		} = this.props;
+      fields: {
+        name,
+        province_id,
+        city_id,
+        regionalism_id,
+      },
+      area: {
+        provinces,
+        cities,
+        districts,
+      },
+      stations: {
+        name_list,
+      },
+    } = this.props;
 
-		return (
-			<div className="panel search">
-				<div className="panel-body form-inline">
-					<Autocomplete ref="autocomplete" placeholder={'请输入配送站名称'} searchHandler={this.props.getStationByName}  list={name_list} className="pull-left"/>
-					<Select {...province_id} className={`space-left space-right ${province_id.error}`} options={provinces} default-text="选择省份" onChange={this.onProvinceChange.bind(this, province_id.onChange)} ref="province"/>
-					<Select {...city_id} className={`space-right ${city_id.error}`} options={cities} default-text="选择城市" onChange={this.onCityChange.bind(this, city_id.onChange)} ref="city"/>
-					<Select {...district_id} className={`space-right ${district_id.error}`} options={districts} default-text="选择区域" ref="district"/>
-					<button disabled={this.state.search_ing} onClick={handleSubmit(this.search)} className="btn btn-theme btn-xs">
-						<i className="fa fa-search" style={{'padding': '0 5px'}}></i>
-						查询
-					</button>
+    return (
+      <div className="panel search">
+        <div className="panel-body form-inline">
+          <Autocomplete ref="autocomplete" placeholder={'请输入配送站名称'} searchHandler={this.props.getStationByName}  list={name_list} className="pull-left"/>
+          <Select {...province_id} className={`space-left space-right ${province_id.error}`} options={provinces} default-text="选择省份" onChange={this.onProvinceChange.bind(this, province_id.onChange)} ref="province"/>
+          <Select {...city_id} className={`space-right ${city_id.error}`} options={cities} default-text="选择城市" onChange={this.onCityChange.bind(this, city_id.onChange)} ref="city"/>
+          <Select {...regionalism_id} className={`space-right ${regionalism_id.error}`} options={districts} default-text="选择区域" ref="district"/>
+          <button disabled={this.state.search_ing} onClick={handleSubmit(this.search)} className="btn btn-theme btn-xs">
+            <i className="fa fa-search" style={{'padding': '0 5px'}}></i>
+            查询
+          </button>
           {
             V('StationManageAdd')
               ? <a href="javascript:;"onClick={this.addStation.bind(this)} className="pull-right btn btn-theme btn-xs">
@@ -99,11 +99,11 @@ class FilterHeader extends Component {
                 </a>
               : null
           }
-				</div>
-			</div>
-		)
-	}
-	componentDidMount(){
+        </div>
+      </div>
+    )
+  }
+  componentDidMount(){
     var { getProvinces, getAllStationsName, getStationList} = this.props;
     getProvinces();
     getStationList({page_no: 0, page_size: 10})
@@ -141,7 +141,7 @@ class FilterHeader extends Component {
         return;
       }
       this.setState({search_ing: true});
-      this.props.getStationList({page_no: 0, page_size: 10})
+      this.props.search({page_no: 0})
         .always(()=>{
           this.setState({search_ing: false});
         });
@@ -155,7 +155,7 @@ FilterHeader = reduxForm({
     'name',
     'province_id',
     'city_id',
-    'district_id',
+    'regionalism_id',
   ],
   validate,
 })( FilterHeader );
@@ -163,8 +163,8 @@ FilterHeader = reduxForm({
 class StationRow extends Component{
   render(){
     var { props } = this;
-		return (
-			<tr ref="station_row">
+    return (
+      <tr ref="station_row">
         <td><input type="checkbox" checked={props.checked} onChange={this.checkStationHandler.bind(this)}/></td>
         <td>{props.province_name}</td>
         <td>{props.city_name}</td>
@@ -174,7 +174,7 @@ class StationRow extends Component{
         <td>
           {
             this.ACL(
-              <a onClick={this.editScope.bind(this)} key="StationManageEditScope" href="javascript:;">[ 编辑配送区域 ] </a>,
+              <a onClick={this.editScope.bind(this)} key="StationManageEditScope" href="javascript:;">[ 查看配送区域 ] </a>,
               <a onClick={this.viewStationDetail.bind(this)} key="StationManageViewRemark" href="javascript:;" className="no-wrap"> [ 查看备注 ] </a>,
               <a onClick={this.editStation.bind(this)} key="StationManageEdit" href="javascript:;" className="no-wrap"> [ 编辑 ] </a>,
               <a onClick={this.viewDeleteStation.bind(this)} key="StationManageDelete" href="javascript:;" className="no-wrap"> [ 删除 ] </a>
@@ -182,8 +182,8 @@ class StationRow extends Component{
           }
         </td>
       </tr>
-		)
-	}
+    )
+  }
   ACL(){
     var results = [];
     for(var i=0,len=arguments.length; i<len; i++){
@@ -229,19 +229,19 @@ class StationManagePannel extends Component {
     this.checkAllStationsHandler = this.checkAllStationsHandler.bind(this);
   }
   render(){
-    var { list, total, page_no, total,checked_station_ids, } = this.props.stations;
+    var { loading, list, total, page_no, total,checked_station_ids } = this.props.stations;
     var { viewStationDetail, viewDeleteStation, checkStationHandler } = this;
     var content = list.map((n, i) => {
       return <StationRow ref="station_row" key={n.station_id}
         {...{...n, ...this.props, viewStationDetail, viewDeleteStation, checkStationHandler }} />
     });
-		return (
-			<div className="station-manage">
-				<TopHeader/>
-				<FilterHeader {...this.props}/>
+    return (
+      <div className="station-manage">
+        <TopHeader/>
+        <FilterHeader {...this.props} search={this.search} />
 
-				<div className="panel">
-          <header className="panel-heading">送货列表</header>
+        <div className="panel">
+          <header className="panel-heading">配送站列表</header>
           <div className="panel-body">
             <div className="table-responsive">
               <table ref="station_table" className="table table-hover text-center">
@@ -257,7 +257,7 @@ class StationManagePannel extends Component {
                 </tr>
                 </thead>
                 <tbody>
-                  {content}
+                  { tableLoader(loading, content) }
                 </tbody>
               </table>
             </div>
@@ -274,18 +274,18 @@ class StationManagePannel extends Component {
         <DeleteMultiStationModal {...this.props} ref="del_multi_station"/>
         <StationDetailModal ref="detail_station"/>
 
-			</div>
-		)
-	}
-  onPageChange(page){
-    this.setState({
-      page_no: page
-    });
-    this.search(page);
+      </div>
+    )
   }
-  search(page){
+  onPageChange(page){
+    this.search({ page_no: page });
+  }
+  search(opts){
     var { getStationList, stations } = this.props;
-    getStationList({page_no: page, page_size: this.state.page_size});
+    var { page_no, page_size } = this.state;
+    //还有省市区数据实在redux-form中
+    opts && typeof opts.page_no != undefined && this.setState({ page_no: opts.page_no });
+    return getStationList({page_no, page_size, ...opts});
   }
   viewStationDetail(station){
     this.refs.detail_station.show(station);

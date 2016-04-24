@@ -225,7 +225,7 @@ class StationManagePannel extends Component {
         <div className="row">
           <div className="col-md-5">
             <div className="panel">
-              <header className="panel-heading">送货列表</header>
+              <header className="panel-heading">配送站列表</header>
               <div className="panel-body">
                 <div className="table-responsive">
                   <table ref="station_table" className="table table-hover text-center">
@@ -364,8 +364,9 @@ class StationGroupMap extends Component {
     putMultipleStationScope(data)
     .done(function(){
         Noty('success', '保存成功');
+        this.stopEditScope();
         MyMap.initialScope();
-      })
+      }.bind(this))
     .fail(function(msg, code){
       Noty('error', msg || '保存异常');
     });

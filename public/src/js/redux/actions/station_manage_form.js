@@ -25,7 +25,6 @@ export function addStation(form_data){
         dispatch({
           type: SAVE_STATION_INFO_SUCCESS,
         })
-        console.log('success');
       })
       .fail(function(){
         dispatch({
@@ -33,6 +32,10 @@ export function addStation(form_data){
         })
       })
   }
+  // return TEST(null, [
+  //   {type: SAVE_STATION_INFO_ING},  //立即派发
+  //   {type: SAVE_STATION_INFO_SUCCESS}   //2000毫秒后派发
+  // ], 2000);
 }
 
 export function updateStation(form_data,station_id){

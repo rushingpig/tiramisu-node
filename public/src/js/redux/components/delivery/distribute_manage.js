@@ -1,3 +1,6 @@
+/**
+ * 订单完成页面
+ */
 import React, {Component, PropTypes} from 'react';
 import { render, findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
@@ -39,9 +42,16 @@ class TopHeader extends Component {
   render(){
     return (
       <div className="clearfix top-header">
-        <button onClick={this.props.exportExcel} className="btn btn-theme btn-xs pull-right" style={{marginLeft: 20}}>
-          <i className="fa fa-download"></i> 导出
-        </button>
+        {
+          V('DeliveryManageDistributeExportExcel')
+            ?
+            <button onClick={this.props.exportExcel} className="btn btn-theme btn-xs pull-right" style={{marginLeft: 20}}>
+              <i className="fa fa-download"></i> 导出
+            </button>
+            :
+            null
+        }
+
         <LineRouter 
           routes={[{name: '送货单管理', link: ''}, {name: '完成列表', link: ''}]} />
       </div>
@@ -89,14 +99,6 @@ class FilterHeader extends Component {
             <DatePicker editable redux-form={end_time} className="short-input space-right" />
             <Select {...pay_modes_id} options={all_pay_modes} default-text="选择支付方式" className="space-right"/>
             <Select {...status} options={all_order_status} default-text="选择订单状态" className="space-right"/>
-            <Select {...deliveryman_id} options={all_deliveryman.map(n => ({id: n.deliveryman_id, text: n.deliveryman_name}))} default-text="选择配送员" className="space-right"/>
-            {
-              V( 'DeliveryManageDistributeStationFilter' )
-                ? <Select {...delivery_id} options={delivery_stations} default-text="选择配送中心" className="space-right"/>
-                : null
-            }
-          </div>
-          <div className="form-group form-inline">
             {
               V( 'DeliveryManageDistributeAddressFilter' )
               ? [
@@ -105,10 +107,17 @@ class FilterHeader extends Component {
                 ]
               : null
             }
+            {
+              V( 'DeliveryManageDistributeStationFilter' )
+                ? <Select {...delivery_id} options={delivery_stations} default-text="选择配送中心" className="space-right"/>
+                : null
+            }
+            <Select {...deliveryman_id} options={all_deliveryman.map(n => ({id: n.deliveryman_id, text: n.deliveryman_name}))} default-text="选择配送员" className="space-right"/>
+            {' '}
             <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs space-right">
               <i className="fa fa-search"></i>{' 搜索'}
             </button>
-            {'　'}
+            {' '}
             <button onClick={this.onScanHandler.bind(this)} className="btn btn-theme btn-xs space-right">扫描</button>
           </div>
         </div>

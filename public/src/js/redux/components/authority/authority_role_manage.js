@@ -64,9 +64,9 @@ class TableRow extends Component{
     return (
         <tr className={props.module_name}>
           <td><input disabled={props.editable ? '' : 'disabled'} checked={this.props.checked_authority_ids.indexOf(props.id) !== -1} onChange={this.clickHandler.bind(this)} type="checkbox"/></td>
-          <td>{props.type == 'LIST' ? `　　`+ props.name: props.name}</td>
-          <td>{props.module_name}</td>
-          <td>{props.description}</td>
+          <td style={{textAlign:'left',color:props.type == 'LIST'?'#4f9fcf':''}}>{props.type == 'LIST' ?  props.name:`　　`+ props.name}</td>
+          <td style={{color:props.type == 'LIST'?'#4f9fcf':''}}>{props.module_name}</td>
+          <td style={{color:props.type == 'LIST'?'#4f9fcf':''}}>{props.description}</td>
         </tr>
     )
   }
@@ -141,7 +141,10 @@ class FilterHeader extends Component{
     let {value} = e.target;
     if(value != this.refs.modules.props['default-value']){
       let selected = $(findDOMNode(this.refs.modules)).find(':selected').text();
+      this.props.gotRoleListByModuleName(selected);
       this.props.scrollTop(selected);
+    }else{
+      this.props.gotRoleListByModuleName('');
     }
   }
   toggleEditHandler(){
@@ -158,9 +161,23 @@ class FilterHeader extends Component{
 
 class RoleAuthorityPannel extends Component{
   render(){
-    const { department_list, list, module_list, editable, checked_authority_ids, submitting, on_role_id } = this.props.roleAccessManage;
-    const { toggleEdit, resetRoleAuthority, gotRoleAuthorities, putRoleAuthority, gotRoletList, toggleDept, authorityYesNo } = this.props;
-    let content = list.map((n, id) => {
+    const { department_list, list, module_list, editable, checked_authority_ids, submitting, on_role_id ,module_name} = this.props.roleAccessManage;
+    const { toggleEdit, resetRoleAuthority, gotRoleAuthorities, putRoleAuthority, gotRoletList, toggleDept, authorityYesNo , gotRoleListByModuleName} = this.props;
+    let fliterList = list;   
+    if(module_name != ''){
+      fliterList = list.filter(function(e){
+        return e.module_name == module_name;
+      })
+    }
+    var department_list_active = department_list.map(e => {
+      /*var children = e.children;*/
+      e.children.map(m => {
+        m.id == on_role_id ? m.chosen = true:m.chosen = false;
+        return m;
+      });
+      return e;
+    });
+    let content = fliterList.map((n, id) => {
       return <TableRow key={id} {...n}
                        submitting={submitting}
                        editable={editable}
@@ -178,9 +195,10 @@ class RoleAuthorityPannel extends Component{
                         toggleEdit={toggleEdit}
                         resetRoleAuthority={resetRoleAuthority}
                         gotRoleAuthorities={gotRoleAuthorities}
-                        putRoleAuthority={putRoleAuthority}/>
+                        putRoleAuthority={putRoleAuthority}
+                        gotRoleListByModuleName = {gotRoleListByModuleName}/>
           <NavBar
-              department_list={department_list}
+              department_list={department_list_active}
               gotRoletList={gotRoletList}
               toggleDept={toggleDept}
               onChooseRole={gotRoleAuthorities}/>

@@ -25,14 +25,6 @@ const validate = (values, props) => {
     if(form[key] && form[key].touched && (!values[key] || values[key] == SELECT_DEFAULT_VALUE))
       errors[key] = msg;
   }
-  function isContactNumber(input){
-    return /^\d{11,12}$/.test(input);
-  }
-  function _v_mobile(key){
-    if (form[key] && form[key].touched && !values[key] || (form[key] && !form[key].focus && values[key] && !isContactNumber(values[key]))){
-      errors[key] = msg;
-    }
-  }
   function _v_number(key){
     if(form[key] && form[key].touched && !values[key] || (form[key] && !form[key].focus && values[key] && !uForm.isNumber(values[key]))){
       errors[key] = msg;
@@ -44,7 +36,7 @@ const validate = (values, props) => {
   _v('city_name');
   _v('address');
   _v_number('capacity');
-  _v_mobile('phone');
+  _v('phone');
 
   _v_selsect('regionalism_id');
 
@@ -60,7 +52,10 @@ const FormGroup = props => (
 class StationManageForm extends Component {
   constructor(props){
     super(props);
-    this.state = {};
+    this.state = {
+      working: false, //是否已处于正在处理状态
+      stoped: false, //是否处于停止状态
+    };
   }
   render(){
     var {
@@ -88,75 +83,72 @@ class StationManageForm extends Component {
 
     var { save_ing, save_success, submit_ing } = this.props['form-data'];
     return (
-      <div>
-        <div className="form-group form-inline">
-          <label>{'　配送中心名称：'}</label>
-          <input ref="name" {...name} className={`form-control input-xs ${name.error}`} placeholder="请填写名称" type="text" />
-        </div>
-        <div className="form-group form-inline">
-          <label>{'　配送中心地址：'}</label>
-          <Select ref="province" className={`${province_id.error}`} default-text="请输入省份" options={provinces} {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} className="form-select" />{' '}
-          <Select ref="city" className={`${city_id.error}`} default-text="请输入城市" options={cities} {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} />{' '}
-          <Select ref="district" className={`${regionalism_id.error}`} default-text="请输入地区" options={districts} {...regionalism_id} className={`${regionalism_id.error}`} />{' '}
-        </div>
-        <div className="form-group form-inline">
-          <label>{'　　　　　　　　'}</label>
-          <input ref="address" {...address} className={`form-control input-xs ${address.error}`}  placeholder="请填写详细地址"/>
-        </div>
-        <div className="form-group form-inline">
-          <label>{'　　　联系方式：'}</label>
-          <input {...phone} className={`form-control input-xs ${phone.error}`} placeholder="请填写联系方式"/>
-        </div>
-        <div className="form-group form-inline">
-          <label>{'　生产产能数量：'}</label>
-          <input {...capacity} className={`form-control input-xs ${capacity.error}`} placeholder="请填写生产产能数量"/>
-        </div>
-        <div className="form-group form-inline">
-          <label>{'是否适用于全国：'}</label>
-          <div className="radio space-right">
-            <label><input type="radio" {...is_national} value="1" checked={is_national.value == '1'}/>是</label>
-            <label><input type="radio" {...is_national} value="0" checked={is_national.value == '0'}/>否</label>
+      <div className="row">
+        <div className="col-md-5">
+          <div className="form-group form-inline">
+            <label>{'　配送中心名称：'}</label>
+            <input ref="name" {...name} className={`form-control input-xs ${name.error}`} placeholder="请填写名称" type="text" />
+          </div>
+          <div className="form-group form-inline">
+            <label>{'　配送中心地址：'}</label>
+            <Select ref="province" className={`${province_id.error}`} default-text="请输入省份" options={provinces} {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} className="form-select" />{' '}
+            <Select ref="city" className={`${city_id.error}`} default-text="请输入城市" options={cities} {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} />{' '}
+            <Select ref="district" className={`${regionalism_id.error}`} default-text="请输入地区" options={districts} {...regionalism_id} className={`${regionalism_id.error}`} />{' '}
+          </div>
+          <div className="form-group form-inline">
+            <label>{'　　　　　　　　'}</label>
+            <input ref="address" {...address} className={`form-control input-xs ${address.error}`}  placeholder="请填写详细地址"/>
+          </div>
+          <div className="form-group form-inline">
+            <label>{'　　　联系方式：'}</label>
+            <input {...phone} className={`form-control input-xs ${phone.error}`} placeholder="请填写联系方式"/>
+          </div>
+          <div className="form-group form-inline">
+            <label>{'　生产产能数量：'}</label>
+            <input {...capacity} className={`form-control input-xs ${capacity.error}`} placeholder="请填写生产产能数量"/>
+          </div>
+          <div className="form-group form-inline">
+            <label>{'是否适用于全国：'}</label>
+            <div className="radio space-right">
+              <label><input type="radio" {...is_national} value="1" checked={is_national.value == '1'}/> 是</label>
+              {'　'}
+              <label><input type="radio" {...is_national} value="0" checked={is_national.value == '0'}/> 否</label>
+            </div>
+          </div>
+          <div className="form-group form-inline">
+            <label>{'　　　　　备注：'}</label>
+            <textarea {...remarks} className="form-control input-xs" rows="2" cols="40"></textarea>
+          </div>
+          <div className="form-group form-inline">
+            {'　　　　　　　　'}
+            <button
+              key="saveBtn" 
+              disabled={save_ing}
+              data-submitting={save_ing}
+              onClick={handleSubmit(this._check.bind(this, editable ? this.handleUpdateStationInfo : this.handleCreateStationInfo))} 
+              className="btn btn-theme">
+              保存
+            </button>
           </div>
         </div>
-        <div className="form-group form-inline">
-          <label>{'　　　　　备注：'}</label>
-          <textarea {...remarks} className="form-control input-xs" rows="2" cols="40"></textarea>
+        <div className="col-md-7">
+          <div className="form-group form-inline">
+            <button key="editBtn" disabled={this.state.working} onClick={this.createNewScope.bind(this)} className="btn btn-theme btn-xs">
+              {`${editable ? '修改' : '添加'}配送区域`}
+            </button>
+            {'　　'}
+            {
+              this.state.stoped
+              ? <button key="continueBtn" onClick={this.continueEditScope.bind(this)} className="pull-right btn btn-theme btn-xs">继续修改</button>
+              : <button key="stopBtn" disabled={!this.state.working} onClick={this.stopEditScope.bind(this)} className="pull-right btn btn-theme btn-xs">停止修改</button>
+            }
+          </div>
+          <StationMap editable={editable} ref="stationMap" {...this.props.fields} />
         </div>
-        <div className="form-group form-inline">
-          {
-            editable
-            ? [
-                <button key="editBtn" onClick={this.editScope.bind(this)} className="btn btn-theme btn-xs">修改配送区域</button>,
-                '　　',
-                <button key="stopBtn" onClick={this.stopEditScope.bind(this)} className="pull-right btn btn-theme btn-xs">停止修改</button>,
-                '　　',
-                <button
-                  key="saveBtn" 
-                  disabled={save_ing}
-                  data-submitting={save_ing}
-                  onClick={handleSubmit(this._check.bind(this, this.handleUpdateStationInfo))} 
-                  className="btn btn-theme btn-xs">保存</button>
-              ]
-            : [
-                <button key="editBtn" onClick={this.addScope.bind(this)} className="btn btn-theme btn-xs">添加配送区域</button>,
-                '　　',
-                <button key="stopBtn" onClick={this.stopEditScope.bind(this)} className="pull-right btn btn-theme btn-xs">停止修改</button>,
-                '　　',
-                <button
-                  key="saveBtn" 
-                  disabled={save_ing}
-                  data-submitting={save_ing}
-                  onClick={handleSubmit(this._check.bind(this, this.handleCreateStationInfo))} 
-                  className="btn btn-theme btn-xs">保存</button>
-              ]
-          }
-        </div>
-        <StationMap ref="stationMap" city={this.state.city} {...this.props.fields}/>
       </div>
     )
   }
   _check(callback,form_data){
-    LazyLoad('noty');
     setTimeout(() => {
       var { errors } = this.props;
       var station_info = this.props['form-data'].data;
@@ -171,10 +163,8 @@ class StationManageForm extends Component {
     var { getProvinces } = this.props.actions;
     getProvinces();
     var city = this.findSelectedOptionText('city');
-    this.setState({
-      city: city
-    });
-    console.log(this.state.city)
+    this.setState({ city });
+    LazyLoad('noty');
   }
   onProvinceChange(callback, e){
     var {value} = e.target;
@@ -199,7 +189,7 @@ class StationManageForm extends Component {
         Noty('success', '保存成功');
         setTimeout(() => {
           go('/sm/station');
-        }, 2000)
+        }, 200)
       })
       .fail(function(msg, code){
         Noty('error', msg || '保存异常');
@@ -214,7 +204,7 @@ class StationManageForm extends Component {
         Noty('success', '保存成功');
         setTimeout(() => {
           go('/sm/station');
-        }, 2000)
+        }, 200)
       })
       .fail(function(msg, code){
         Noty('error', msg || '保存异常');
@@ -225,17 +215,28 @@ class StationManageForm extends Component {
   }
   stopEditScope(){
     this.refs.stationMap.stopEditScope();
+    this.setState({ stoped: true });
   }
-  editScope(){
-    this.refs.stationMap.editScope();
+  continueEditScope(){
+    this.refs.stationMap.continueEditScope();
+    this.setState({ stoped: false });
   }
-  addScope(){
+  centerStation(){
     var city_name = this.findSelectedOptionText('city');
+    var district = this.findSelectedOptionText('district');
     var address = $(findDOMNode(this.refs.address)).val();
-    var name = $(findDOMNode(this.refs.name)).val();
-    this.refs.stationMap.addScope(city_name, address, name);
+    var name = this.props.fields.name.value;
+    if(name && this.props.fields.regionalism_id.value != SELECT_DEFAULT_VALUE){
+      this.refs.stationMap.locationCenter( city_name, district + address, {name, address});
+    }else{
+      Noty('warning', '请填写完整的配送中心地址');
+    }
   }
-
+  createNewScope(){
+    this.centerStation();
+    this.refs.stationMap.createNewScope();
+    this.setState({ working: true });
+  }
 }
 
 StationManageForm.propTypess = {

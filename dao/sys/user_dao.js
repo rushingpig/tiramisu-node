@@ -33,6 +33,8 @@ UserDao.prototype.findByUsername = (username,password)=>{
         'su.user_type',
         'su.no',
         'su.is_usable',
+        'su.is_headquarters',
+        'su.is_national',
 
         'sr.data_scope',
         'sr.id as role_id',
@@ -102,7 +104,8 @@ UserDao.prototype.findUserById = function(user_id){
 };
 UserDao.prototype.findUsers = function(query_data){
     let prefix_sql = "select t.*,sr2.name as role_name from (",suffix_sql = "";
-    let ds = query_data.user.data_scopes,org_ids = query_data.user.org_ids;
+    let ds = query_data.user.data_scopes,org_ids = query_data.user.org_ids,station_ids = query_data.user.station_ids,
+        is_national = query_data.user.is_national;
     let columns = [
         'su.username',
         'su.id',
@@ -119,16 +122,27 @@ UserDao.prototype.findUsers = function(query_data){
     params.push(tables.sys_user_role);
     sql += " inner join ?? sr on sr.id = sur.role_id";
     params.push(tables.sys_role);
+    sql += " where 1=1";
     // data filter begin
+    let ds_sql = "",temp_sql = "";
     if(!toolUtils.isEmptyArray(ds)){
+        ds_sql += " and (";
         if(!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1){
             ds.forEach(curr => {
                 if(curr == constant.DS.OFFICEANDCHILD.id){
-                    sql += " and sr.org_id in" + dbHelper.genInSql(org_ids);
+                    temp_sql += " or sr.org_id in" + dbHelper.genInSql(org_ids);
+                }else if(curr == constant.DS.STATION_ALL_USERS.id && is_national != 1){
+                    temp_sql += " or su.station_ids in" + dbHelper.genInSql(station_ids);
                 }
             });
+
+            ds_sql += temp_sql.replace(/^ or/,'');
+            ds_sql += ")";
+        }else {
+            ds_sql = "";
         }
     }
+    sql += ds_sql;
     if(!query_data.user.is_admin){
         sql += " and su.id != 1";
     }
@@ -137,7 +151,7 @@ UserDao.prototype.findUsers = function(query_data){
         sql += " and sr.org_id = ?";
         params.push(query_data.org_id);
     }
-    sql += " where 1=1";
+
     if(query_data.uname_or_name){
         sql += " and (su.username like ? or su.name like ?)";
         params.push('%'+query_data.uname_or_name+'%');
@@ -149,7 +163,7 @@ UserDao.prototype.findUsers = function(query_data){
     params.push(tables.sys_user_role);
     suffix_sql += " inner join ?? sr2 on sr2.id = sur2.role_id";
     params.push(tables.sys_role);
-
+    console.log(sql);
     let count_sql = dbHelper.countSql(sql);
     return baseDao.select(count_sql,params).then(result=>{
         let pagination_sql = prefix_sql + dbHelper.paginate(sql,query_data.page_no,query_data.page_size) + suffix_sql;

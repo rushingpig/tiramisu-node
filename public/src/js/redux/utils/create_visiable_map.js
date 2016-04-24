@@ -156,6 +156,11 @@ MyMap.prototype._initialize = function() {
   this.map = new BMap.Map('container');
   var point = new BMap.Point(113.949964, 22.587609);
   this.map.centerAndZoom(point, 12);
+  var top_right_navigation = new BMap.NavigationControl({
+    anchor: BMAP_ANCHOR_TOP_RIGHT,
+    type: BMAP_NAVIGATION_CONTROL_SMALL
+  }); //右上角，仅包含平移和缩放按钮
+  this.map.addControl( top_right_navigation );
   this.map.enableScrollWheelZoom(true);
   this.map.enableDragging();
   this.d.resolve();

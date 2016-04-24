@@ -26,7 +26,7 @@ var MyMap = function(list){
 MyMap.prototype.centerAndZoomStation = function(name, city_name, address){
   let map = this.map;
   this.searchStationAdress(city_name, address, name);
-  map.setZoom(12);
+  map.setZoom(14);
 }
 
 MyMap.prototype.drawNewScope = function(){
@@ -167,6 +167,11 @@ MyMap.prototype._initialize = function() {
   stationMap.appendChild(container);
   this.map = new BMap.Map('container');
   this.map.centerAndZoom('深圳', 11);
+  var top_right_navigation = new BMap.NavigationControl({
+    anchor: BMAP_ANCHOR_TOP_RIGHT,
+    type: BMAP_NAVIGATION_CONTROL_SMALL
+  }); //右上角，仅包含平移和缩放按钮
+  this.map.addControl( top_right_navigation );
   this.map.enableScrollWheelZoom(true);
   this.map.enableDragging();
 }

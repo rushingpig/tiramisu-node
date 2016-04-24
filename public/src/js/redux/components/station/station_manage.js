@@ -47,7 +47,7 @@ const validate = (values, props) => {
     if(form[key] && form[key].touched && (!values[key] || values[key] == SELECT_DEFAULT_VALUE))
       errors[key] = msg;
   }
-  _v_selsect('province_id');
+  // _v_selsect('province_id');
 
   console.log(errors);
   // //errors为空对象才表明验证正确
@@ -69,7 +69,7 @@ class FilterHeader extends Component {
         name,
         province_id,
         city_id,
-        district_id,
+        regionalism_id,
       },
       area: {
         provinces,
@@ -87,7 +87,7 @@ class FilterHeader extends Component {
           <Autocomplete ref="autocomplete" placeholder={'请输入配送站名称'} searchHandler={this.props.getStationByName}  list={name_list} className="pull-left"/>
           <Select {...province_id} className={`space-left space-right ${province_id.error}`} options={provinces} default-text="选择省份" onChange={this.onProvinceChange.bind(this, province_id.onChange)} ref="province"/>
           <Select {...city_id} className={`space-right ${city_id.error}`} options={cities} default-text="选择城市" onChange={this.onCityChange.bind(this, city_id.onChange)} ref="city"/>
-          <Select {...district_id} className={`space-right ${district_id.error}`} options={districts} default-text="选择区域" ref="district"/>
+          <Select {...regionalism_id} className={`space-right ${regionalism_id.error}`} options={districts} default-text="选择区域" ref="district"/>
           <button disabled={this.state.search_ing} onClick={handleSubmit(this.search)} className="btn btn-theme btn-xs">
             <i className="fa fa-search" style={{'padding': '0 5px'}}></i>
             查询
@@ -155,7 +155,7 @@ FilterHeader = reduxForm({
     'name',
     'province_id',
     'city_id',
-    'district_id',
+    'regionalism_id',
   ],
   validate,
 })( FilterHeader );

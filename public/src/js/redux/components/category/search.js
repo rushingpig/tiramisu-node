@@ -175,13 +175,13 @@ class Main extends Component {
             )
           }
           <span className="pull-right">
-            <Link className="btn btn-xs btn-theme" to="/cm/primary_category/add">
+            <Link className="btn btn-xs btn-theme" to="/cam/primary_category/add">
               <Icon icon="plus" />
               {' '}
               新建一级分类
             </Link>
             {'　'}
-            <Link className="btn btn-xs btn-theme" to="/cm/second_category/add">
+            <Link className="btn btn-xs btn-theme" to="/cam/second_category/add">
               <Icon icon="plus" />
               {' '}
               新建二级分类
@@ -284,7 +284,7 @@ class Main extends Component {
                                 {'｜'}
                                 <Anchor data-category-id={secondaryCategory.id} onClick={this.handleShowComment}>备注</Anchor>
                                 {'｜'}
-                                <Link to={"/cm/second_category/edit/" + secondaryCategory.id}>编辑</Link>
+                                <Link to={"/cam/second_category/edit/" + secondaryCategory.id}>编辑</Link>
                                 {'｜'}
                                 <Anchor data-second-category-id={secondaryCategory.id} onClick={this.handleClickDeleteBtn}>删除</Anchor>
                               </center>
@@ -311,7 +311,7 @@ class Main extends Component {
                               {'｜'}
                               <Anchor data-category-id={props.id} onClick={props.showCommentHandler}>备注</Anchor>
                               {'｜'}
-                              <Link to={"/cm/primary_category/edit/" + primaryCategory.id}>编辑</Link>
+                              <Link to={"/cam/primary_category/edit/" + primaryCategory.id}>编辑</Link>
                               {'｜'}
                               <Anchor disabled={true}>删除</Anchor>
                             </center>

@@ -88,22 +88,11 @@ export default [{
     "link": "/cm/src"
   }]
 }, {
-  "key": "central_management",
-  "name": "集合管理",
-  "short_name": "集合",
-  "icon": "",
-  "link": [{
-    "key": "SrcChannelManage",
-    "name": "订单来源渠道",
-    "icon": "",
-    "link": "/cm/src"
-  }]
-}, {
   "key": "category_manage",
   "name": "产品类型管理",
   "short_name": "类型",
   "icon": "",
-  "link": "/cm"
+  "link": "/cam"
 }, {
   "key": "authority_manage",
   "name": "权限管理",

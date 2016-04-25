@@ -48,6 +48,7 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
       break;
     case 'cam':
       require.ensure([], require => {
+        const categoryManage = level => require('../components/category/manage')(level);
         components = {
           ...components,
           CategoryManage:        require('../components/category/search'),
@@ -60,10 +61,10 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
     case 'sm':
       require.ensure([], require => {
         components = {...components,
-          StationManagePannel:        require('../components/station/station_manage'),
-          StationManageDetailPannel:  require('../components/station/station_manage_detail_pannel'),
-          StationScopeManagePannel:   require('../components/station/station_scope_manage'),
-          StationScopeSharePannel:    require('../components/station/station_scope_share'),
+          StationManagePannel:       require('../components/station/station_manage'),
+          StationManageDetailPannel: require('../components/station/station_manage_detail_pannel'),
+          StationScopeManagePannel:  require('../components/station/station_scope_manage'),
+          StationScopeSharePannel:   require('../components/station/station_scope_share'),
         };
         callback();
       });

@@ -51,13 +51,13 @@ const MainComponent = level => {
 
       if (window.location.pathname.indexOf('edit') > -1) {
         TopHeader = getTopHeader([{
-          name: '产品管理', link: '/cm'
+          name: '产品管理', link: '/cam'
         }, {
           name: '编辑' + (props.level === 'primary' ? '一' : '二') + '级分类', link: ''
         }]);
       } else {
         TopHeader = getTopHeader([{
-          name: '产品管理', link: '/cm'
+          name: '产品管理', link: '/cam'
         }, {
           name: '添加' + (props.level === 'primary' ? '一' : '二') + '级分类', link: ''
         }]);
@@ -229,7 +229,7 @@ const MainComponent = level => {
           icon: MessageBoxIcon.Success,
           text: '保存成功'
         }).then(() => {
-          history.push('/cm');
+          history.push('/cam');
         });
       }
     }

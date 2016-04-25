@@ -133,3 +133,9 @@ BEGIN;
 INSERT INTO `dict_regionalism` VALUES
    ('520124', '小河区', '520100', '小河', '3', '0851', '551400', '中国,贵州省,贵阳市,小河区', '106.70098', '26.496945', 'XiaoHe', '1', null, null);
 COMMIT;
+
+# 2016-04-25 Kaiming Zeng
+BEGIN;
+INSERT INTO `buss_pay_modes` VALUES
+  ('23', '有赞E卡通', '1', '2015-12-18 12:53:11', null, null, '1');
+COMMIT;

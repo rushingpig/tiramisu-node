@@ -46,8 +46,7 @@ a.get('/province/:provinceId/cities',addressService.getCities); // 获取指定�
 //a.get(/^\/city\/(\d+)\/districts$/,addressService.getDistricts);
 a.get('/city/:cityId/districts',addressService.getDistricts);   // 获取指定城市下的所有行政区域信息
 a.get('/cities',addressService.getAllCities);
-a.get('/stations/getStationsByDistrictId',addressService.getStationsByDistrictId);   // 获取区域(包括省市区)下的所有配送站信息
-a.get('/stations/getStationsByName',addressService.getStationsByName);   // 根据配送站名称查询配送站信息
+a.get('/stations/search',addressService.getStationsByMultipleCondition);   // 根据多个条件查询配送站
 a.get('/stations',deliveryService.getDeliveryStationList);  // 获取所有配送站信息
 a.get('/station',deliveryService.getStationInfo);   // 获取指定配送站信息
 a.get('/pay/modes',orderService.getPayModeList);    // 获取所有支付方式信息

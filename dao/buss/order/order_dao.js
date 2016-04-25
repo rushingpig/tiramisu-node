@@ -241,10 +241,12 @@ OrderDao.prototype.editOrderError = function (orderErrorObj, merchant_id, src_id
 };
 
 OrderDao.prototype.findOrderErrors = function(query_data){
-    let sql = "select boe.*,bos.merge_name as src_name from ?? boe";
+    let sql = "select boe.*,bos.merge_name as src_name,su.name from ?? boe";
     let params = [tables.buss_order_error];
     sql += " inner join ?? bos on boe.src_id = bos.id";
     params.push(tables.buss_order_src);
+    sql += " left join ?? su on boe.updated_by = su.id";
+    params.push(tables.sys_user);
     sql += " where 1=1 ";
     if(query_data.src_id){
         sql += " and (bos.id = ? or bos.parent_id = ?)";

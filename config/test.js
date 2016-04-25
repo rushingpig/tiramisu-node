@@ -10,18 +10,8 @@ var exp_static_options = {
     redirect:true,
     setHeaders:null
 };
-//  express session config options
-var exp_session_options = {
-    secret : 'tiramisu cake',
-    resave : false,
-    saveUninitialized : true,
-    cookie : {
-        secure : false,
-        //maxAge : 1000000,
-        //expires : new Date(Date.now() + 1000000)
-        expires : false
-    }
-};
+
+
 //  express router config options
 var exp_router_options = {
     caseSensitive:false,
@@ -62,8 +52,8 @@ var tables = {
 var mysql_options = {
     acquireTimeout  : 10000,
     waitForConnections : true,
-    queueLimit      : 1,
-    connectionLimit : 1,
+    queueLimit      : 3,
+    connectionLimit : 3,
     host            : '120.76.25.32',
     port            : 3307,
     user            : 'xfxb_qa',
@@ -77,7 +67,40 @@ var mysql_options = {
     debug           : false, //  when in production or test environment ,it should be set to false. it just be used in dev
 
 };
-
+//  express session config options
+var exp_session_options = function(store){
+    return {
+        secret : 'tiramisu cake',
+        resave : true,
+        saveUninitialized : true,
+        name : 'tiramisu.sid',
+        unset : 'keep',
+        store : new store({
+            host : mysql_options.host,
+            port : mysql_options.port,
+            user : mysql_options.user,
+            password : mysql_options.password,
+            database : mysql_options.database,
+            checkExpirationInterval : 60000,
+            expiration : 5000,
+            createDatabaseTable : true,
+            schema: {
+                tableName: 'sys_user_session',
+                columnNames: {
+                    session_id: 'session_id',
+                    expires: 'expires',
+                    data: 'data'
+                }
+            }
+        }),
+        cookie : {
+            secure : false,
+            // maxAge : 30000
+            //expires : new Date(Date.now() + 1000000)
+            expires : false
+        }
+    };
+};
 //  exclude path arrays of login filter
 var exclude_paths = ['/','/v1/a/login','/payment'];
 

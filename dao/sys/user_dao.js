@@ -163,7 +163,6 @@ UserDao.prototype.findUsers = function(query_data){
     params.push(tables.sys_user_role);
     suffix_sql += " inner join ?? sr2 on sr2.id = sur2.role_id";
     params.push(tables.sys_role);
-    console.log(sql);
     let count_sql = dbHelper.countSql(sql);
     return baseDao.select(count_sql,params).then(result=>{
         let pagination_sql = prefix_sql + dbHelper.paginate(sql,query_data.page_no,query_data.page_size) + suffix_sql;

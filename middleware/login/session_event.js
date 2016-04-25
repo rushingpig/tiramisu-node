@@ -21,7 +21,11 @@ se.on('fill',function(req,user){
     if(arguments.length < 2){
         throw new Error('illegal arguments...');
     }
-    req.session.user = user;
+    try {
+        req.session.user = user;
+    }catch (e){
+        console.log(e);
+    }
 });
 
 module.exports = se;

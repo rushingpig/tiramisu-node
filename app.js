@@ -1,8 +1,8 @@
 "use strict";
 var LogHelper = require('./common/LogHelper');
+
 //  init the log4js config
 new LogHelper(log4js).config();
-var toolUtils = require('./common/ToolUtils');
 var config = require('./config');
 var express = require('express');
 var path = require('path');
@@ -12,6 +12,7 @@ var bodyParser = require('body-parser');
 var log4js = require('log4js');
 var logger = log4js.getLogger('express');
 var session = require('express-session');
+var MySQLStore = require('express-mysql-session')(session);
 var exphbs = require('express-handlebars');
 var hbs = require('./common/HandlebarsUtils').instance(exphbs);
 var passport = require('passport');
@@ -46,7 +47,7 @@ app.use(cookieParser());
 app.use(middleware.system.wrapperResponse);
 app.use('/v1/[a,i]/*',middleware.system.debugReqAndResParams);
 app.use('/v1/i/*',middleware.whiteIPList.isInWhiteList);
-app.use(session(config.exp_session_options));
+app.use(session(config.exp_session_options(MySQLStore)));
 app.use(express.static(path.join(__dirname, 'public'),config.exp_static_options));
 if (config.login_required) {
     app.use(middleware.login.loginFilter);

@@ -19,6 +19,27 @@ const initialState = {
   }, {
     id: '1',
     name: '旧系统'
+  }, {
+    id: '11007',
+    name: '本站'
+  }, {
+    id: '11012',
+    name: '美团网'
+  }, {
+    id: '11013',
+    name: '拉手网'
+  }, {
+    id: '11014',
+    name: '大众点评网'
+  }, {
+    id: '11015',
+    name: '糯米网'
+  }, {
+    id: '12011',
+    name: '大众点评闪惠买单'
+  }, {
+    id: '12012',
+    name: '银行活动礼品'
   }],
   searchFilter: {
     merchantId: '',

@@ -127,3 +127,9 @@ COMMIT;
 
 ALTER TABLE `tiramisu`.`buss_order_error` DROP COLUMN `created_by`, DROP COLUMN `created_time`, DROP COLUMN `updated_by`, DROP COLUMN `updated_time`, ADD COLUMN `created_by` int UNSIGNED NOT NULL DEFAULT 1 AFTER `status`, ADD COLUMN `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_by`, ADD COLUMN `updated_by` int UNSIGNED NOT NULL DEFAULT 0 AFTER `created_time`, ADD COLUMN `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `updated_by`;
 ALTER TABLE `tiramisu`.`buss_order_error` ADD INDEX `IDX_MERCHANT_ID` (`merchant_id`) comment '', ADD INDEX `IDX_CREATED_TIME` (`created_time`) comment '', ADD INDEX `IDX_TYPE` (`type`) comment '';
+
+# 2016-04-25 Kaiming Zeng
+BEGIN;
+INSERT INTO `dict_regionalism` VALUES
+   ('520124', '小河区', '520100', '小河', '3', '0851', '551400', '中国,贵州省,贵阳市,小河区', '106.70098', '26.496945', 'XiaoHe', '1', null, null);
+COMMIT;

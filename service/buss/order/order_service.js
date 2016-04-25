@@ -188,7 +188,7 @@ OrderService.prototype.listOrderError = (req,res,next) => {
         src_name : curr.src_name,
         src_id : curr.src_id,
         type : curr.type,
-        updated_by : curr.updated_by,
+        updated_by : curr.name,
         updated_time : curr.updated_time
       };
       data.list.push(obj);

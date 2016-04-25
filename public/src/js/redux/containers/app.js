@@ -40,11 +40,22 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
     case 'cm':
       require.ensure([], require => {
         components = {...components,
-          SrcChannelPannel:         require('../components/central/src_channel_manage'),
-          AlterUserPasswordPannel:  require('../components/central/alter_user_password_pannel')
+          SrcChannelPannel:        require('../components/central/src_channel_manage'),
+          AlterUserPasswordPannel: require('../components/central/alter_user_password_pannel')
         };
         callback();
       })
+      break;
+    case 'cam':
+      require.ensure([], require => {
+        components = {
+          ...components,
+          CategoryManage:        require('../components/category/search'),
+          CategoryManagePrimary: categoryManage('primary'),
+          CategoryManageSecond:  categoryManage('secondary')
+        };
+        callback();
+      });
       break;
     case 'sm':
       require.ensure([], require => {
@@ -125,6 +136,18 @@ const App = () => (
         <Route path="scope" onEnter={onEnter('StationScopeManageAccess')} getComponent={get('StationScopeManagePannel')} />
         <Route path="scope/:id" onEnter={onEnter('StationScopeManageAccess')} getComponent={get('StationScopeManagePannel')} />
         <Route path="scope_s/:id" onEnter={onEnter('StationScopeShareAccess')} getComponent={get('StationScopeSharePannel')} />
+      </Route>
+
+      <Route path="cam" onEnter={getComponents('cam')}>
+        <IndexRoute getComponent={get('CategoryManage')} />
+        <Route path="primary_category">
+          <Route path="add" getComponent={get('CategoryManagePrimary')} />
+          <Route path="edit/:id" getComponent={get('CategoryManagePrimary')} />
+        </Route>
+        <Route path="second_category">
+          <Route path="add" getComponent={get('CategoryManageSecond')} />
+          <Route path="edit/:id" getComponent={get('CategoryManageSecond')} />
+        </Route>
       </Route>
 
       <Redirect from="logout" to="/" />

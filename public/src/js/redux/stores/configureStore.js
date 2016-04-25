@@ -3,16 +3,28 @@ import createLogger from 'redux-logger';
 import thunk from 'redux-thunk';
 import rootReducer from 'reducers/index';
 
-
 if (process.env.NODE_ENV === 'production') {
   //生产环境不需要logger
   var createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 } else {
   const logger = createLogger({
-    actionTransformer: action => ({
-      ...action,
-      type: String(action.type)
-    })
+    actionTransformer: action => {
+      let loggerAction = {};
+      Object.keys(action).forEach(key => {
+        loggerAction[key] = action[key].toJS ? action[key].toJS() : action[key]
+      });
+      return {
+        ...loggerAction,
+        type: String(action.type)
+      };
+    },
+    stateTransformer: state => {
+        let loggerState = {};
+        Object.keys(state).forEach(key => {
+            loggerState[key] = state[key].toJS ? state[key].toJS() : state[key]
+        });
+        return loggerState;
+    }
   });
   var createStoreWithMiddleware = compose(
     applyMiddleware(thunk, logger),

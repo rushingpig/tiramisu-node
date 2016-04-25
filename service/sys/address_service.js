@@ -208,4 +208,18 @@ AddressService.prototype.getAllCities = (req, res, next) => {
     systemUtils.wrapService(res, next, promise);
 };
 
+/**
+ * get all provinces and cities info
+ * @param req
+ * @param res
+ * @param next
+ */
+AddressService.prototype.getProvincesAndCites = (req,res,next)=>{
+    let promise = addressDao.getProvincesAndCites(req.body.data)
+        .then(results => {
+            res.api(results);
+        });
+    systemUtils.wrapService(res, next, promise);
+};
+
 module.exports = new AddressService();

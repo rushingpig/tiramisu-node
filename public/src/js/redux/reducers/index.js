@@ -18,6 +18,9 @@ import UserManageForm from './user_manage_form';
 import SystemAuthorityManage from './authority_system_manage';
 import RoleAuthorityManage from './authority_role_manage';
 import DeptRoleManage from './depart_role_manage';
+import categorySearch from './category_search';
+import categoryManage from './category_manage';
+import categoryCitiesSelector from './category_cities_selector';
 
 const rootReducer = combineReducers({
   form,
@@ -39,6 +42,9 @@ const rootReducer = combineReducers({
   UserManageForm,
   SystemAuthorityManage,
   DeptRoleManage,
-})
+  categorySearch,
+  categoryManage,
+  categoryCitiesSelector
+});
 
 export default rootReducer

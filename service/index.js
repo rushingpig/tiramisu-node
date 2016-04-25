@@ -13,6 +13,7 @@ const service = {
     delivery : require('./buss/delivery/delivery_service'),
     order : require('./buss/order/order_service'),
     product : require('./buss/product/product_service'),
+    category : require('./buss/product/category_service')
 };
 
 module.exports = service;

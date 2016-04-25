@@ -3,34 +3,34 @@ import Promise from './promise';
 import { SUCCESS_CODE, NO_MORE_CODE, REQUEST, EXPIRE_CODE } from 'config/app.config';
 import { core } from 'utils/index';
 
-function _end_callback(resolve, reject){
-  return function(err, res){
-    if(err){
+function _end_callback(resolve, reject) {
+  return function(err, res) {
+    if (err) {
       console.error(err);
       reject('请求失败！');
       return;
     }
-    if(res.ok){
-      var {code, msg, data} = res.body;
-      if(code === SUCCESS_CODE){
+    if (res.ok) {
+      var { code, msg, data } = res.body;
+      if (code === SUCCESS_CODE) {
         resolve(data, msg);
-      }else if(code === NO_MORE_CODE){
+      } else if (code === NO_MORE_CODE) {
         resolve(data);
-      }else if(code === EXPIRE_CODE){
+      } else if (code === EXPIRE_CODE) {
         location.href = location.href;
-      }else{
+      } else {
         console.error(msg || 'request error');
         reject(msg, code);
       }
-    }else{
+    } else {
       reject(res.text || 'error');
     }
   };
 }
 
 //基本封装
-export function get(url, data){
-  return new Promise(function(resolve, reject){
+export function get(url, data) {
+  return new Promise(function(resolve, reject) {
     req.get(url)
       .query(data)
       .set('X-Requested-With', 'XMLHttpRequest')
@@ -38,8 +38,8 @@ export function get(url, data){
   });
 }
 
-export function post(url, data){
-  return new Promise(function(resolve, reject){
+export function post(url, data) {
+  return new Promise(function(resolve, reject) {
     req.post(url)
       .send(data)
       .set('X-Requested-With', 'XMLHttpRequest')
@@ -47,8 +47,8 @@ export function post(url, data){
   });
 }
 
-export function put(url, data){
-  return new Promise(function(resolve, reject){
+export function put(url, data) {
+  return new Promise(function(resolve, reject) {
     req.put(url)
       .send(data)
       .set('X-Requested-With', 'XMLHttpRequest')
@@ -56,8 +56,8 @@ export function put(url, data){
   });
 }
 
-export function del(url, data){
-  return new Promise(function(resolve, reject){
+export function del(url, data) {
+  return new Promise(function(resolve, reject) {
     req.del(url)
       .send(data)
       .set('X-Requested-With', 'XMLHttpRequest')
@@ -66,10 +66,10 @@ export function del(url, data){
 }
 
 //最简封装
-export function GET(url, query_data, action_type){
+export function GET(url, query_data, action_type) {
   return (dispatch) => {
     return get(url, query_data)
-      .done(function(data){
+      .done(function(data) {
         dispatch({
           type: action_type,
           data
@@ -121,11 +121,13 @@ export function DEL(url, send_data, action_type){
  * @param  {Boolean} ajax_status true代表成功，false代表失败
  * @param  {[type]} ajax_time   ajax 持续时间
  */
-export function test(ajax_status = true, ajax_time = 2000, data){
+export function test(ajax_status = true, ajax_time = 2000, data) {
   return dispatch => {
-    return new Promise(function(resolve, reject){
-      setTimeout(function(){
-        dispatch({type: '__JUST_A_TEST_ACTION'});
+    return new Promise(function(resolve, reject) {
+      setTimeout(function() {
+        dispatch({
+          type: '__JUST_A_TEST_ACTION'
+        });
         ajax_status ? resolve(data) : reject(data);
       }, ajax_time);
     })
@@ -141,13 +143,13 @@ export function test(ajax_status = true, ajax_time = 2000, data){
  * @param {Number} time
  * @package {Boolean} _resolve : 模拟成功还是失败
  */
-export function TEST(data, signal = '没指定信号吧..', time = 200, _resolve = true){
+export function TEST(data, signal = '没指定信号吧..', time = 200, _resolve = true) {
   return (dispatch) => {
     //智能派发
-    var _dispatch = function(s){
-      if(core.isObject(s)){
+    var _dispatch = function(s) {
+      if (core.isObject(s)) {
         return dispatch(s);
-      }else if(core.isString(s)){
+      } else if (core.isString(s)) {
         return dispatch({
           type: s,
           data
@@ -155,22 +157,21 @@ export function TEST(data, signal = '没指定信号吧..', time = 200, _resolve
       }
     }
 
-    if(core.isArray(signal)){
-      if(signal.length == 2){
+    if (core.isArray(signal)) {
+      if (signal.length == 2) {
         _dispatch(signal[0]);
         signal = signal[1];
-      }else{
+      } else {
         throw Error('error params "signal" in request method : "TEST"');
       }
     }
-    return new Promise(function(resolve, reject){
-      setTimeout(function(){
+    return new Promise(function(resolve, reject) {
+      setTimeout(function() {
         _resolve ? resolve(_dispatch(signal)) : reject(_dispatch(signal));
       }, time);
     })
   }
 }
-
 
 export function DEL(url, send_data, action_type){
   return (dispatch, getState) => {
@@ -208,6 +209,5 @@ export default {
   PUT,
   DEL,
   test,
-  TEST,
-  DEL
+  TEST
 }

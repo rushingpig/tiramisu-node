@@ -183,4 +183,15 @@ AddressDao.prototype.findAllCities = function(query_data) {
     // data filter end
     return baseDao.select(sql, params);
 };
+AddressDao.prototype.getProvincesAndCites = function(){
+    let columns = [
+        'province.id as province_id',
+        'province.name as province_name',
+        'city.id as city_id',
+        'city.name as city_name'
+    ];
+    let sql = 'select ' + columns.join(',') + ' from ?? province join ?? city on province.id = city.parent_id where province.level_type = 1 and province.del_flag = ? and city.level_type = 2 and city.del_flag = ?';
+    let params = [this.table, this.table, del_flag.SHOW, del_flag.SHOW];
+    return baseDao.select(sql, params);
+};
 module.exports = AddressDao;

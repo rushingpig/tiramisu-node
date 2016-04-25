@@ -16,6 +16,7 @@ function ProductDao(){
     this.base_select_sql = 'select ?? from ?? where 1=1 and del_flag = ? ';
     this.base_update_sql = 'update ?? set ?';
 }
+//TODO: check sql after table confirmed
 /**
  * query for product category list
  */
@@ -25,6 +26,7 @@ ProductDao.prototype.findAllCatetories = function(){
     let params = [columns,tables.buss_product_category,del_flag.SHOW];
     return baseDao.select(this.base_select_sql,params);
 };
+//TODO: check sql after table confirmed
 /**
  * query for the product list
  */
@@ -59,6 +61,7 @@ ProductDao.prototype.findProductsCount = function(product_name,category_id,regio
             return data;
         });
 };
+//TODO: check sql after table confirmed
 /**
  * find the product list
  * @param preSql
@@ -71,6 +74,7 @@ ProductDao.prototype.findProducts = function(preSql,preParams,page_no,page_size)
     sql += " left join dict_regionalism dr on dr.id = bps2.regionalism_id order by bps2.sort asc";
     return baseDao.select(sql,preParams);
 };
+//TODO: check sql after table confirmed
 /**
  * find the products under the order id
  * @param orderId

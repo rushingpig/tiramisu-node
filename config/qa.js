@@ -19,35 +19,36 @@ var exp_router_options = {
 
 //  the table list in database  ->  tiramisu
 var tables = {
-  //================Sys=================
-  sys_user: 'sys_user',
-  sys_role: 'sys_role',
-  sys_menu: 'sys_menu',
-  sys_user_role: 'sys_user_role',
-  sys_role_menu: 'sys_role_menu',
-  sys_organization: 'sys_organization',
-  sys_role_org: 'sys_role_org',
-  //=================Buss=================
-  buss_city: 'buss_city',
-  buss_delivery_station: 'buss_delivery_station',
-  buss_order: 'buss_order',
-  buss_order_history: 'buss_order_history',
-  buss_order_sku: 'buss_order_sku',
-  buss_order_src: 'buss_order_src',
-  buss_pay_modes: 'buss_pay_modes',
-  buss_product: 'buss_product',
-  buss_product_category: 'buss_product_category',
-  buss_recipient: 'buss_recipient',
-  buss_shop: 'buss_shop',
-  buss_product_sku: 'buss_product_sku',
-  buss_order_fulltext: 'buss_order_fulltext',
-  buss_print_apply: 'buss_print_apply',
-  buss_order_error: 'buss_order_error',
-  buss_delivery_record: 'buss_delivery_record',
-  buss_delivery_picture: 'buss_delivery_picture',
-  //=================Dict===================
-  dict_regionalism: 'dict_regionalism',
-  delivery_pay_rule: 'delivery_pay_rule'
+//================Sys=================
+    sys_user : 'sys_user',
+    sys_role : 'sys_role',
+    sys_menu : 'sys_menu',
+    sys_user_role : 'sys_user_role',
+    sys_role_menu : 'sys_role_menu',
+    sys_organization : 'sys_organization',
+    sys_role_org : 'sys_role_org',
+//=================Buss=================
+    buss_city : 'buss_city',
+    buss_delivery_station : 'buss_delivery_station',
+    buss_order :'buss_order',
+    buss_order_history : 'buss_order_history',
+    buss_order_sku : 'buss_order_sku',
+    buss_order_src : 'buss_order_src',
+    buss_pay_modes : 'buss_pay_modes',
+    buss_product : 'buss_product',
+    buss_product_category : 'buss_product_category',
+    buss_product_category_regionalism : 'buss_product_category_regionalism',
+    buss_recipient : 'buss_recipient',
+    buss_shop : 'buss_shop',
+    buss_product_sku : 'buss_product_sku',
+    buss_order_fulltext : 'buss_order_fulltext',
+    buss_print_apply : 'buss_print_apply',
+    buss_order_error: 'buss_order_error',
+    buss_delivery_record: 'buss_delivery_record',
+    buss_delivery_picture: 'buss_delivery_picture',
+//=================Dict===================
+    dict_regionalism : 'dict_regionalism',
+    delivery_pay_rule: 'delivery_pay_rule'
 };
 //  mysql config options
 var mysql_options = {

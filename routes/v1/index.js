@@ -12,11 +12,12 @@ var config = require('../../config');
 var router = express.Router(config.exp_router_options);
 // service module
 var service = require('../../service'),
-  addressService = service.address,
-  deliveryService = service.delivery,
-  orderService = service.order,
-  productService = service.product,
-  Constant = require('../../common/Constant');
+    addressService = service.address,
+    deliveryService = service.delivery,
+    orderService = service.order,
+    productService = service.product,
+    categoryService = service.category,
+    Constant = require('../../common/Constant');
 var fileUtils = require('../../common/FileUtils');
 var fs = require('fs');
 var path = require('path');
@@ -40,8 +41,9 @@ routerI.put('/order/error', orderService.editOrderError);
 //*********************
 //******** GET ********
 //*********************
-a.get('/provinces', addressService.getProvinces); // 获取所有省份信息
-a.get('/province/:provinceId/cities', addressService.getCities); // 获取指定省份下的所有城市信息
+a.get('/provinces',addressService.getProvinces);    // 获取所有省份信息
+a.get('/province/:provinceId/cities',addressService.getCities); // 获取指定省份下的所有城市信息
+a.get('/provinces/cities', addressService.getProvincesAndCites); // 获取所有省份与城市信息
 //a.get(/^\/city\/(\d+)\/districts$/,addressService.getDistricts);
 a.get('/city/:cityId/districts', addressService.getDistricts); // 获取指定城市下的所有行政区域信息
 a.get('/cities', addressService.getAllCities);
@@ -54,6 +56,22 @@ a.get('/product/categories', productService.getCategories); // 获取所有产�
 a.get('/products', productService.listProducts); // 获取产品列表
 a.get('/product/accessory', productService.listAccessory);   // 获取配件列表
 a.get('/product/accessory/order/:orderId', productService.listAccessoryByOrder); // 获取指定订单下可选的配件列表
+
+a.get('/orders/exchange',orderService.listOrders(Constant.OSR.DELIVERY_EXCHANGE));  // 订单转送单列表
+a.get('/orders/delivery',orderService.listOrders(Constant.OSR.DELIVER_LIST));   // 送货单管理列表
+a.get('/orders/signin',orderService.listOrders(Constant.OSR.RECEIVE_LIST));     // 配送单管理列表
+a.get('/order/reprint/applies',deliveryService.listReprintApplies); // 获取申请重新打印列表
+a.get('/delivery/deliverymans',deliveryService.listDeliverymans);   // 获取配送员列表
+
+a.get('/orders/print',deliveryService.print);   // 打印订单
+a.get('/order/:orderId/reprint',deliveryService.reprint);   // 重新打印订单
+
+a.get('/product/categories/name', categoryService.listCategoriesByName); // 根据分类名称搜索
+a.get('/product/category/:id/remarks', categoryService.getCategoryRemark); // 获取分类备注
+a.get('/product/category/:id/regions/pc', categoryService.getCategoryRegionsForPC); // 获取分类PC上线城市
+a.get('/product/categories/search', categoryService.listCategoriesByMultipleCondition); // 根据条件查询分类
+a.get('/product/category/:id/secondary', categoryService.getSecondaryCategoriesByPrimaryCategoryId); // 查询一级分类下的二级分类
+a.get('/product/category/:id/details', categoryService.getCategoryDetailsById); // 查询分类详情
 
 //**********************
 //******** POST ********
@@ -74,6 +92,9 @@ a.post('/coupon', orderService.validateCoupon);
 
 a.post('/station', addressService.addStation); //新增配送站
 
+a.post('/product/categories/primary', categoryService.addPrimaryCategory);  // 新增一级分类
+a.post('/product/categories/secondary', categoryService.addSecondaryCategory);  // 新增二级分类
+
 //*********************
 //******** PUT ********
 //*********************
@@ -82,8 +103,12 @@ a.put('/order/src/:srcId', orderService.editOrderSrc); // 修改来源渠道信�
 
 a.put('/order/src/:srcId', orderService.editOrderSrc); // 修改来源渠道信息
 
-a.put('/station/:stationId', addressService.modifyStation); //修改配送站信息
-a.put('/stations/scope', addressService.batchModifyStationCoords); //批量修改配送站范围
+a.put('/station/:stationId', addressService.modifyStation);   // 修改配送站信息
+a.put('/stations/scope', addressService.batchModifyStationCoords);   // 批量修改配送站范围
+
+a.put('/product/category/primary', categoryService.modifyPrimaryCategory);  // 修改一级分类
+a.put('/product/category/secondary', categoryService.modifySecondaryCategory);  // 修改二级分类
+a.put('/product/categories/sort', categoryService.rankCategoris);  // 二级分类排序
 
 //************************
 //******** DELETE ********

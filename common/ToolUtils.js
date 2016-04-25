@@ -151,6 +151,9 @@ ToolUtils.exp_validator_custom = {
         }
       }
       return result;
+    },
+    notEmptyArray: function(value) {
+        return Array.isArray(value) && value.length > 0;
     }
   }
 };

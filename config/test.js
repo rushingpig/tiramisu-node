@@ -39,6 +39,7 @@ var tables = {
     buss_pay_modes : 'buss_pay_modes',
     buss_product : 'buss_product',
     buss_product_category : 'buss_product_category',
+    buss_product_category_regionalism : 'buss_product_category_regionalism',
     buss_recipient : 'buss_recipient',
     buss_shop : 'buss_shop',
     buss_product_sku : 'buss_product_sku',

@@ -28,5 +28,8 @@ module.exports = {
   addMenu : require('./sys/add_menu'),
   editMenu : require('./sys/edit_menu'),
   listOrderError : require('./buss/order/list_order_error'),
-  changePwd : require('./sys/change_pwd')
+  changePwd : require('./sys/change_pwd'),
+  addPrimaryCategory: require('./buss/product/add_primary_category'),
+  addSecondaryCategory: require('./buss/product/add_secondary_category'),
+  listCategory: require('./buss/product/list_category')
 };

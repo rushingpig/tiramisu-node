@@ -1,7 +1,6 @@
 # 2016-04-27 Zhanzhao Liang
 INSERT INTO `dict_regionalism` VALUES
    ('442027', '中山市', '442000', '中山', '3', '0760', '528400', '中国,广东省,中山市,中山市', '113.378835', '22.52522', 'Zhongshan', '1', null, null);
-INSERT INTO `buss_product_category` VALUES (15, 0, '配件', 0, 1, now(), null, null, 1);
 
 # 2016-04-28 Kaiming Zeng
 INSERT INTO `buss_order_src` (`id`,`parent_id`,`parent_ids`,`level`,`name`,`sort`,`created_by`,`created_time`,`updated_by`,`updated_time`,`del_flag`,`merge_name`,`remark`)
@@ -87,3 +86,5 @@ INSERT INTO `delivery_pay_rule` VALUES
     (12, 'CAKE', 1),
     (13, 'CAKE', 1),
     (14, 'CAKE', 1);
+
+INSERT INTO `buss_product_category` VALUES (15, 0, '配件', 0, 1, now(), null, null, 1);

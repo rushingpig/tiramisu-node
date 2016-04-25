@@ -58,7 +58,7 @@ CREATE TABLE `buss_order` (
   `recipient_id` int(11) NOT NULL COMMENT '收货人id',
   `delivery_id` int(11) DEFAULT NULL COMMENT '配送站id',
   `src_id` int(11) unsigned NOT NULL COMMENT '订单来源id',
-  `shop_id` int(10) unsigned DEFAULT NULL COMMENT '如果delivery_type为''TAKETHEIR'' 时为门店ID，否则为空',
+  `shop_id` int(10) unsigned DEFAULT NULL COMMENT '如果delivery_type为''COLLECT'' 时为门店ID，否则为空',
   `pay_modes_id` int(10) unsigned DEFAULT NULL,
   `owner_name` varchar(255) DEFAULT NULL COMMENT '下单人姓名',
   `owner_mobile` varchar(255) CHARACTER SET utf8 DEFAULT NULL COMMENT '下单人手机',

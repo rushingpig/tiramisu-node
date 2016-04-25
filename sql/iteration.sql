@@ -139,3 +139,9 @@ BEGIN;
 INSERT INTO `buss_pay_modes` VALUES
   ('23', '有赞E卡通', '1', '2015-12-18 12:53:11', null, null, '1');
 COMMIT;
+
+# 2016-04-25 Kaiming Zeng
+BEGIN;
+INSERT INTO `dict_regionalism` VALUES
+   ('440884', '经济技术开发区', '440800', '经济技术开发', '3', '0759', '524022', '中国,广东省,湛江市,经济技术开发区', '110.53594', '21.033145', 'JingJiJiShuKaiFa', '1', null, null);
+COMMIT;

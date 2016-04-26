@@ -19,7 +19,7 @@ export default function LazyLoad(name, callback){
     var plugin = config[name];
     if(plugin){
       if(!load_map[name]){
-        setTimeout(function(){
+        if( load_map[name] != 0 ){
           if(plugin.css){
             var link = document.createElement("link");
             link.rel = "stylesheet";
@@ -30,11 +30,16 @@ export default function LazyLoad(name, callback){
             var sc = document.createElement("script");
             sc.type = "text\/javascript";
             sc.src = plugin.js;
-            sc.onload = callback;
+            sc.onload = (function(cb){
+              return function(){
+                load_map[name] = 1; //加载成功
+                cb && cb();
+              }
+            })(callback);
             document.body.appendChild(sc);
           }
-          load_map[name] = 1; //已加载过
-        }, 0);
+        }
+        load_map[name] = 0; //还在加载中
       }else if(callback){
         callback();
       }

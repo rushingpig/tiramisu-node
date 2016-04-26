@@ -116,8 +116,11 @@ AddressDao.prototype.updateStationByStationId = function(stationId, update_obj) 
     return baseDao.update(sql, [tables.buss_delivery_station, update_obj, stationId]);
 };
 AddressDao.prototype.deleteStationById = function(stationId) {
-    let params = [tables.buss_delivery_station, stationId];
-    return baseDao.select(this.base_delete_sql, params);
+    let sql = this.base_update_sql + ' where id = ? ';
+    let delete_obj = {
+        del_flag: 0
+    };
+    return baseDao.select(sql, [tables.buss_delivery_station, delete_obj, stationId]);
 };
 AddressDao.prototype.addStation = function(insert_obj) {
     let params = [tables.buss_delivery_station, insert_obj];

@@ -2,6 +2,7 @@
 var validator = require('validate.js');
 var stringValidator = require('validator');
 var ToolUtils = {};
+var util = require('util');
 
 ToolUtils.SPECIAL_CHAR_REG = /((?=[\x21-\x7e]+)[^A-Za-z0-9])+/g;
 
@@ -35,6 +36,8 @@ ToolUtils.avg = function (arr) {
 ToolUtils.contains = validator.contains;
 
 ToolUtils.isArray = validator.isArray;
+
+ToolUtils.isMobilePhone = stringValidator.isMobilePhone;
 
 ToolUtils.length = function (arr) {
   return validator.isArray(arr)? arr.length: 0;

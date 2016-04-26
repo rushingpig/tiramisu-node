@@ -499,12 +499,15 @@ OrderDao.prototype.findOrderList = function (query_data) {
     }
     let columns = columns_arr.join(',');
     let params = [],data_scopes = query_data.user.data_scopes;
+    let doFt = doFullText(query_data);
     let sql = "select " + columns + " from ?? bo ";
+    // 当使用配送时间作为查询过滤条件时,强制使用相关索引
     if(query_data.begin_time || query_data.end_time){
         sql += "force index(IDX_DELIVERY_TIME)";
     }
     params.push(tables.buss_order);
-    if (query_data.keywords) {
+    // 订单转送货单模块  ->  当输入条件既不为手机号也不是完整订单号时,不进行全文检索,支持模糊匹配
+    if (query_data.keywords && doFt) {
         let match = '';
         sql += " inner join ?? bof on match(bof.owner_name,bof.owner_mobile,bof.recipient_name,bof.recipient_mobile,bof.recipient_address,bof.landmark,bof.show_order_id,bof.merchant_id) against(? IN BOOLEAN MODE) and bof.order_id = bo.id";
         params.push(tables.buss_order_fulltext);
@@ -626,6 +629,11 @@ OrderDao.prototype.findOrderList = function (query_data) {
     if (query_data.order_ids && Array.isArray(query_data.order_ids)) {
         sql += " and bo.id in " + dbHelper.genInSql(query_data.order_ids);
     }
+
+    if(!doFt){
+        sql += " and bo.id like ?";
+        params.push('%' + query_data.keywords + '%');
+    }
     // data filter begin
     let ds_sql = "",temp_sql = "";
     if(!toolUtils.isEmptyArray(data_scopes)){
@@ -677,7 +685,6 @@ OrderDao.prototype.findOrderList = function (query_data) {
         default:
         // do nothing && order by with the db self
     }
-    console.log(sql);
     let promise = null,countSql = "",result = 0;
     //  刚进入订单列表页面,不带筛选条件,用explain来优化获取记录总数
     if(/^.*(where 1=1 and)[\s\w\W]+/.test(sql)){
@@ -1229,5 +1236,17 @@ OrderDao.prototype.batchUpdateOrderFulltext = function(orderIds,updateObj){
     let params = [tables.buss_order_fulltext,updateObj];
     return baseDao.update(sql,params);
 };
+
+function doFullText(query_data){
+    let keywords = query_data.keywords;
+    let sorted_rules = query_data.order_sorted_rules;
+    if(keywords && sorted_rules === constant.OSR.DELIVER_LIST
+    && !toolUtils.isMobilePhone(keywords,'zh-CN')
+    && !toolUtils.exp_validator_custom.customValidators.isOrderId(keywords)){
+        return false;
+    }else {
+        return true;
+    }
+}
 
 module.exports = OrderDao;

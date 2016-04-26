@@ -5,10 +5,6 @@ import * as STATIONACTION from 'actions/station_manage';
 import * as FormActions from 'actions/order_manage_form';
 import { UPDATE_PATH } from 'redux-simple-router';
 
-function _t(data) {
-  return map(data, (text,id) => ({id, text}))
-}
-
 var get_state = {
   loading: true,
   total: 0,
@@ -24,9 +20,9 @@ export function stations(state = get_state, action){
     case UPDATE_PATH:
       return get_state;
     case STATIONACTION.GET_ALL_STATIONS_NAME:
-      return {...state, name_list: _t(action.data)};
+      return {...state, name_list: map(action.data, n => n)};
     case STATIONACTION.GET_STATION_LIST:
-      return {...state, total:action.data.count_result[0].total, loading: false, list: action.data.pagination_result}
+      return {...state, total:action.data.total, loading: false, list: action.data.list}
     case STATIONACTION.GET_STATION_LIST_BY_ID:
       return {...state, list: [...action.data],total: action.data.length || 0};
     case STATIONACTION.GET_STATIONS_BY_NAME:

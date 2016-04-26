@@ -62,14 +62,15 @@ class FilterHeader extends Component {
     super(props);
     this.search = this.search.bind(this);
     this.state = {
-      search_ing :false
+      search_ing :false,
+      station_name: '',
     }
   }
   render(){
     var {
       handleSubmit,
       fields: {
-        name,
+        // name,
         province_id,
         city_id,
       },
@@ -85,7 +86,7 @@ class FilterHeader extends Component {
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <Autocomplete ref="autocomplete" placeholder={'请输入配送站名称'} searchHandler={this.props.getStationByName}  list={name_list} className='pull-left'/>
+          <Autocomplete value={this.state.station_name} ref="autocomplete" placeholder={'请输入配送站名称'} onChange={this.stationInputHandler.bind(this)} list={name_list} className='pull-left'/>
           <Select {...province_id} options={provinces} default-text="选择省份" onChange={this.onProvinceChange.bind(this, province_id.onChange)} ref="province" className={`space-left space-right ${city_id.error}`}/>
           <Select {...city_id} options={cities} default-text="选择城市" ref="city" className={`space-right ${city_id.error}`}/>
           <button disabled={this.state.search_ing} onClick={handleSubmit(this.search)} className="btn btn-theme btn-xs">
@@ -103,10 +104,13 @@ class FilterHeader extends Component {
     if(params && params.id){
       getStationListById(params.id)
     }else{
-      getStationList({page_no: 0, page_size: 10})
+      getStationList({isPage: false})
     }
     getAllStationsName();
     LazyLoad('noty');
+  }
+  stationInputHandler(station_name){
+    this.setState({ station_name })
   }
   onProvinceChange(callback, e){
     var {value} = e.target;
@@ -126,7 +130,7 @@ class FilterHeader extends Component {
         return;
       }
       this.setState({search_ing: true});
-      this.props.getStationList({page_no: 0, page_size: 10})
+      this.props.getStationList({isPage: false, station_name: this.state.station_name || undefined})
         .always(()=>{
           this.setState({search_ing: false});
         });
@@ -141,7 +145,7 @@ FilterHeader = reduxForm({
     'province_id',
     'city_id',
   ],
-  validate,
+  // validate,
 })( FilterHeader );
 
 class StationRow extends Component{
@@ -203,7 +207,6 @@ class StationManagePannel extends Component {
   constructor(props){
     super(props);
     this.state = {page_size: 10,page_no:0};
-    this.search = this.search.bind(this);
     this.closeActive = this.closeActive.bind(this);
     this.onPageChange = this.onPageChange.bind(this);
     this.checkStationHandler = this.checkStationHandler.bind(this);
@@ -213,8 +216,9 @@ class StationManagePannel extends Component {
   render(){
     var { list, total, page_no, total,checked_station_ids, editable } = this.props.stations;
     var { openEdit, closeEdit, putMultipleStationScope } = this.props;
-    var { viewStationDetail, viewDeleteStation, checkStationHandler, editStationScope, closeActive } = this;
-    var content = list.map((n, i) => {
+    var { viewStationDetail, viewDeleteStation, checkStationHandler, editStationScope, closeActive,
+      state: { page_no, page_size } } = this;
+    var content = list.slice(page_no * page_size, (page_no + 1) * page_size).map((n, i) => {
       return <StationRow ref="station_row" key={n.station_id}
         {...{...n, ...this.props, editable, openEdit, closeEdit, viewStationDetail, viewDeleteStation, checkStationHandler, editStationScope }} />
     });    
@@ -269,11 +273,6 @@ class StationManagePannel extends Component {
     this.setState({
       page_no: page
     });
-    this.search(page);
-  }
-  search(page){
-    var { getStationList, stations } = this.props;
-    getStationList({page_no: page, page_size: this.state.page_size});
   }
   checkStationHandler(station_id, checked){
     this.props.checkStation(station_id, checked);
@@ -352,6 +351,7 @@ class StationGroupMap extends Component {
     closeActive();
     MyMap.getPath();
     MyMap.onEditIndex = -1;
+    MyMap.stopEditScope();
   }
   saveNewScope(){
     var self = this;

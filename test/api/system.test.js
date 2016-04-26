@@ -53,14 +53,6 @@ module.exports = function () {
         });
         //================== hooks end ==================
 
-        it('GET /v1/a/stations/getStationsByDistrictId correct request', function (done) {
-            agent
-                .get('/v1/a/stations/getStationsByDistrictId?province_id=110000')
-                .expect('Content-Type', /json/)
-                .expect(200)
-                .end(err(done));
-        });
-
         it('PUT /v1/a/station/:stationId correct request', function (done) {
             const req_body = {
                 regionalism_id: 110101,
@@ -76,17 +68,6 @@ module.exports = function () {
                 .set('Content-Type', 'application/json')
                 .send(req_body)
                 .expect(200, res_body, err(done));
-        });
-
-        it('GET /v1/a/stations/getStationsByName correct request', function (done) {
-            agent
-                .get('/v1/a/stations/getStationsByName')
-                .query({station_name: '沙井配送站'})
-                .query({page_no: 0})
-                .query({page_size: 20})
-                .expect('Content-Type', /json/)
-                .expect(200)
-                .end(err(done));
         });
 
         it('POST /v1/a/station correct request', function (done) {

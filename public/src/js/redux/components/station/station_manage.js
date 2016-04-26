@@ -106,7 +106,7 @@ class FilterHeader extends Component {
   componentDidMount(){
     var { getProvinces, getAllStationsName, getStationList} = this.props;
     getProvinces();
-    getStationList({page_no: 0, page_size: 10})
+    getStationList({isPage: true, page_no: 0, page_size: 10})
     getAllStationsName();
     LazyLoad('noty');
   }
@@ -285,7 +285,7 @@ class StationManagePannel extends Component {
     var { page_no, page_size } = this.state;
     //还有省市区数据实在redux-form中
     opts && typeof opts.page_no != undefined && this.setState({ page_no: opts.page_no });
-    return getStationList({page_no, page_size, ...opts});
+    return getStationList({isPage: true, page_no, page_size, ...opts});
   }
   viewStationDetail(station){
     this.refs.detail_station.show(station);

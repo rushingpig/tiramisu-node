@@ -1240,7 +1240,7 @@ OrderDao.prototype.batchUpdateOrderFulltext = function(orderIds,updateObj){
 function doFullText(query_data){
     let keywords = query_data.keywords;
     let sorted_rules = query_data.order_sorted_rules;
-    if(keywords && sorted_rules === constant.OSR.DELIVER_LIST
+    if(keywords && (sorted_rules === constant.OSR.DELIVER_LIST || sorted_rules === constant.OSR.RECEIVE_LIST)
     && !toolUtils.isMobilePhone(keywords,'zh-CN')
     && !toolUtils.exp_validator_custom.customValidators.isOrderId(keywords)){
         return false;

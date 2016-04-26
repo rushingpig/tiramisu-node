@@ -1,6 +1,6 @@
 import { getValues } from 'redux-form';
 import { clone } from 'clone';
-import {get, put, del, post, GET, POST} from 'utils/request';
+import {get, put, del, post, GET, POST, TEST} from 'utils/request';
 import Url from 'config/url';
 import { Noty, formCompile } from 'utils/index';
 
@@ -18,7 +18,7 @@ export const PUT_MULTIPLE_SCOPE_ING = 'PUT_MULTIPLE_SCOPE_ING';
 export const PUT_MULTIPLE_SCOPE_SUCCESS = 'PUT_MULTIPLE_SCOPE_SUCCESS';
 export const PUT_MULTIPLE_SCOPE_FAILURE = 'PUT_MULTIPLE_SCOPE_FAILURE';
 
-export function getStationList(data){
+export function getStationList(data = {}){
   return (dispatch, getState) => {
     if(!data.province_id || !data.city_id){
       //TODO
@@ -36,7 +36,12 @@ export function getStationListById(station_id){
 }
 
 export function getAllStationsName(){
-  return GET(Url.stations.toString(), null, GET_ALL_STATIONS_NAME);
+  // return GET(Url.stations.toString(), null, GET_ALL_STATIONS_NAME);
+  return TEST({
+    "1":"深圳车公庙配送中心","2":"深圳坂田配送中心","3":"深圳布心配送中心","4":"深圳宝华配送站","5":"总部(用于五福临门)","6":"深圳龙岗配送中心","7":"深圳沙井配送中心","8":"布心手信楼",
+    "9":"深圳观澜配送中心","10":"惠州配送中心","11":"深圳西丽配送中心","12":"工厂配送站","13":"待确定配送站","14":"广州海珠配送中心","15":"广州白云配送中心","16":"待确定配送站",
+    "17":"广州天河配送中心","18":"广州番禺配送中心","19":"深圳西乡配送中心","20":"深圳民治配送中心"
+  }, 'GET_ALL_STATIONS_NAME')
 }
 
 export function getStationByName(station_name){

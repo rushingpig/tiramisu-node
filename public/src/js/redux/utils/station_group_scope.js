@@ -29,6 +29,9 @@ MyMap.prototype.centerAndZoomStation = function(name, city_name, address){
   map.setZoom(14);
 }
 
+MyMap.prototype.addPointHandler = function( event ){
+
+}
 MyMap.prototype.drawNewScope = function(){
   let self = this;
   let map = this.map;
@@ -37,7 +40,7 @@ MyMap.prototype.drawNewScope = function(){
   this.polygons[self.onEditIndex] = new BMap.Polygon(points, newPolygonStyle);
   map.addOverlay(this.polygons[self.onEditIndex]);
 
-  map.addEventListener('click',function(event){
+  this._addPointHandler = function(event){
     points.push(event.point);
     var marker = new BMap.Marker(event.point);
     map.addOverlay(marker);
@@ -53,7 +56,11 @@ MyMap.prototype.drawNewScope = function(){
       points[this.id] = event.point;
       self.polygons[self.onEditIndex].setPath(points);
     });
-  });
+  };
+  map.addEventListener('click', this._addPointHandler);
+}
+MyMap.prototype.stopEditScope = function(){
+  this.map.removeEventListener('click', this._addPointHandler);
 }
 
 MyMap.prototype.searchStationAdress = function(city, address, name){

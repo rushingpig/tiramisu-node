@@ -72,7 +72,7 @@ var exp_session_options = function(store){
     return {
         secret : 'tiramisu cake',
         resave : true,
-        saveUninitialized : true,
+        saveUninitialized : false,
         name : 'tiramisu.sid',
         unset : 'keep',
         store : new store({

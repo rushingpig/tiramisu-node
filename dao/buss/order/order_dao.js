@@ -687,7 +687,7 @@ OrderDao.prototype.findOrderList = function (query_data) {
     }
     let promise = null,countSql = "",result = 0;
     //  刚进入订单列表页面,不带筛选条件,用explain来优化获取记录总数
-    if(/^.*(where 1=1 and)[\s\w\W]+/.test(sql)){
+    if(/^.*(where 1=1 and)[\s\w\W]+/.test(sql) || query_data.keywords){
         countSql = dbHelper.countSql(sql);
         promise = baseDao.select(countSql,params).then(results => {
             if(!toolUtils.isEmptyArray(results)){
@@ -1240,9 +1240,11 @@ OrderDao.prototype.batchUpdateOrderFulltext = function(orderIds,updateObj){
 function doFullText(query_data){
     let keywords = query_data.keywords;
     let sorted_rules = query_data.order_sorted_rules;
-    if(keywords && (sorted_rules === constant.OSR.DELIVER_LIST || sorted_rules === constant.OSR.RECEIVE_LIST)
-    && !toolUtils.isMobilePhone(keywords,'zh-CN')
-    && !toolUtils.exp_validator_custom.customValidators.isOrderId(keywords)){
+    if(keywords
+        && toolUtils.isInt(parseInt(keywords))
+        && sorted_rules === constant.OSR.DELIVER_LIST
+        && !toolUtils.isMobilePhone(keywords,'zh-CN')
+        && !toolUtils.exp_validator_custom.customValidators.isOrderId(keywords)){
         return false;
     }else {
         return true;

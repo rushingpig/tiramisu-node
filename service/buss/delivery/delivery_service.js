@@ -307,10 +307,10 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
     let order_history_obj = {
         order_id : order_id
     };
-    if(update_obj.payfor_amount == 0){
+    if(update_obj.payfor_amount == 0 && (!update_obj.payfor_type)){
         order_history_obj.option = '用户签收时间:{'+update_obj.signin_time+'}\n准点送达';
     }else if(update_obj.payfor_type === Constant.PFT.CASH){
-        order_history_obj.option = '用户签收时间:{'+update_obj.signin_time+'}\n{现金赔偿}:{'+update_obj.payfor_amount+'}\n{迟到时长}:{'+update_obj.late_minutes+'分钟}';
+        order_history_obj.option = '用户签收时间:{'+update_obj.signin_time+'}\n{现金赔偿}:{¥'+update_obj.payfor_amount/100+'}\n{迟到时长}:{'+update_obj.late_minutes+'分钟}';
     }else if(update_obj.payfor_type === Constant.PFT.FULL_REFUND){
         order_history_obj.option = '用户签收时间:{'+update_obj.signin_time+'}\n{全额退款--原因}:{'+update_obj.payfor_reason+'}';
     }

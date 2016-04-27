@@ -1,6 +1,5 @@
 import Noty from './_noty';
 import React from 'react';
-import npmClone from 'clone';
 
 function core_isFunction(arg) {
   return typeof arg === 'function';
@@ -27,7 +26,25 @@ function core_isNull(arg){
 }
 
 function clone(target) {
-  return npmClone(target);
+  if (target && typeof target === 'symbol') {
+    throw TypeError('Cannot clone "Symbol" object: ' + String(target));
+  }
+  if (target && typeof target === 'object') {
+    if (target && target instanceof Set) {
+      return new Set(clone([...target]));
+    }
+    if (target && target instanceof Map) {
+      return new Map(clone([...target]));
+    }
+    var newObj = target instanceof Array ? [] : {};
+    for (var key in target) {
+      var val = target[key];
+      newObj[key] = clone(val);
+    }
+    return newObj;
+  } else {
+    return target;
+  }
 }
 
 function form_isNumber(input) { /**** 方法form_isNaN, form_isPositiveNumber 均依赖于本方法，改动需谨慎 **/
@@ -314,6 +331,8 @@ export default {
   mapValues,
   each,
   map,
+
+  clone,
 
   toFixed,
   delay,

@@ -1,4 +1,19 @@
-import { Selector as ActionTypes } from './category_action_types';
+const ActionTypes = {
+    LOAD_DATA:          Symbol('CITIES_SELECTOR_LOAD_SELECTOR_DATA'),
+    SET_ENABLE_LIST:    Symbol('CITIES_SELECTOR_SET_ENABLE_LIST'),
+    REMOVE_ENABLE_LIST: Symbol('CITIES_SELECTOR_REMOVE_ENABLE_LIST'),
+    RESET_CHECKDATA:    Symbol('CITIES_SELECTOR_RESET_CHECKDATA'),
+    RESET_SELECTOR:     Symbol('CITIES_SELECTOR_RESET_SELECTOR'),
+
+    CHANGE_SELECTED_PROVINCE: Symbol('CITIES_SELECTOR_CHANGE_SELECTED_PROVINCE'),
+    CHECK_PROVINCE:           Symbol('CITIES_SELECTOR_CHECK_PROVINCE'),
+    UNCHECK_PROVINCE:         Symbol('CITIES_SELECTOR_UNCHECK_PROVINCE'),
+
+    CHECK_CITY:         Symbol('CITIES_SELECTOR_CHECK_CITY'),
+    UNCHECK_CITY:       Symbol('CITIES_SELECTOR_UNCHECK_CITY'),
+    CHECK_ALL_CITIES:   Symbol('CITIES_SELECTOR_CHECK_ALL_CITIES'),
+    UNCHECK_ALL_CITIES: Symbol('CITIES_SELECTOR_UNCHECK_ALL_CITIES'),
+};
 
 const changeSelectedProvince = provinceId => ({
     type: ActionTypes.CHANGE_SELECTED_PROVINCE,
@@ -8,7 +23,7 @@ const changeSelectedProvince = provinceId => ({
 const toggleProvinceCheckStatus = provinceId => (
     (dispatch, getState) => {
         const {
-            categoryCitiesSelector: {
+            citiesSelector: {
                 checkedProvinces
             }
         } = getState();
@@ -23,7 +38,7 @@ const toggleProvinceCheckStatus = provinceId => (
 const toggleCityCheckStatus = cityId => (
     (dispatch, getState) => {
         const {
-            categoryCitiesSelector: {
+            citiesSelector: {
                 checkedCities,
                 checkedProvinces,
                 citiesData
@@ -53,6 +68,8 @@ const checkedAllCities = () => ({
 const unCheckAllCities = () => ({
     type: ActionTypes.UNCHECK_ALL_CITIES
 });
+
+export { ActionTypes };
 
 export default {
     changeSelectedProvince,

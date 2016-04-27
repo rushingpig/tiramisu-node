@@ -2,11 +2,8 @@ import { debounce } from 'utils/optimization';
 import Req from 'utils/request';
 import Url from 'config/url';
 
-import {
-  Search as SearchActionTypes,
-  Selector as SelectorActionTypes,
-  Manage as ManageActionTypes
-} from 'actions/category_action_types';
+import { Search as SearchActionTypes, Manage as ManageActionTypes } from 'actions/category_action_types';
+import { ActionTypes as SelectorActionTypes } from './cities_selector';
 
 import manageActions from 'actions/category_manage';
 

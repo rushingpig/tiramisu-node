@@ -1,4 +1,3 @@
-import clone from 'clone';
 import { ActionTypes } from '../actions/order_abnormal';
 import Util from '../utils';
 import { ABNORMAL_TYPE } from 'config/app.config';
@@ -115,7 +114,7 @@ const switchType = {
 };
 
 const orderAbnormal = (state = initialState, action) => action.type in switchType
-? switchType[action.type](clone(state), action)
+? switchType[action.type](Util.clone(state), action)
 : state;
 
 export default orderAbnormal;

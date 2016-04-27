@@ -1,5 +1,5 @@
 import { Manage as ActionTypes } from 'actions/category_action_types';
-import clone from 'clone';
+import { clone } from 'utils/index';
 
 const initialState = {
     editId: 0,

@@ -4,14 +4,13 @@ import { bindActionCreators } from 'redux';
 import { connect }            from 'react-redux';
 import ReactDOM               from 'react-dom';
 
-import Modal    from 'common/modal';
+import Modal          from 'common/modal';
+import CitiesSelector from 'common/cities_selector';
 import MessageBox, { MessageBoxIcon, MessageBoxType } from 'common/message_box';
+import getTopHeader   from '../top_header';
 
 import actions         from 'actions/category_search';
-import selectorActions from 'actions/category_cities_selector';
-
-import getTopHeader   from '../top_header';
-import CitiesSelector from './cities_selector';
+import selectorActions from 'actions/cities_selector';
 
 const TopHeader = getTopHeader([{name: '产品管理', link: ''}]);
 
@@ -498,6 +497,6 @@ class Main extends Component {
 }
 
 export default connect(
-  ({ categorySearch, categoryCitiesSelector }) => ({ state: categorySearch, categoryCitiesSelector }),
+  ({ categorySearch, citiesSelector }) => ({ state: categorySearch, citiesSelector }),
   dispatch => bindActionCreators({...actions, ...selectorActions} ,dispatch)
 )(Main);

@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 
 import Tooltip from 'common/tooltip2';
 
-import actions from 'actions/category_cities_selector';
+import actions from 'actions/cities_selector';
 
 const IconCheckBox = props => (
   <i className={"fa fa-fw " + (props.checked ? "fa-check-square-o" : "fa-square-o")} {...props}/>
@@ -27,7 +27,7 @@ class Selector extends Component {
   render() {
 
     const { props } = this;
-    const state = props.categoryCitiesSelector;
+    const state = props.citiesSelector;
 
     return (
       <div>

@@ -1,5 +1,5 @@
-import { Selector as ActionTypes } from 'actions/category_action_types';
-import clone from 'clone';
+import { ActionTypes } from 'actions/cities_selector';
+import { clone } from 'utils/index';
 
 const initialState = {
     provincesData:       new Map(),
@@ -290,7 +290,6 @@ const switchType = {
     [ActionTypes.UNCHECK_ALL_CITIES]: state => {
         return {
             ...state,
-            type: ActionTypes.UNCHECK_ALL_CITIES,
             checkedCities: new Set(),
             checkedProvinces: new Set()
         };

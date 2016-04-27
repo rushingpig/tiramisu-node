@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import MessageBox, { MessageBoxIcon } from 'common/message_box';
-import actions from 'actions/category_manage';
-import selectorActions from 'actions/category_cities_selector';
-
+import CitiesSelector from 'common/cities_selector';
 import getTopHeader from '../top_header';
-import CitiesSelector from './cities_selector';
+
+import actions from 'actions/category_manage';
+import selectorActions from 'actions/cities_selector';
 
 let TopHeader;
 
@@ -283,7 +283,7 @@ const MainComponent = level => {
 
 const getComponent = level => {
   return connect(
-    ({ categoryManage, categoryCitiesSelector }) => ({ categoryManage, categoryCitiesSelector }),
+    ({ categoryManage, citiesSelector }) => ({ categoryManage, citiesSelector }),
     dispatch => bindActionCreators({...actions, ...selectorActions}, dispatch)
   )(MainComponent(level));
 };

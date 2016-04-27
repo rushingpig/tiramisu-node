@@ -20,7 +20,8 @@ import RoleAuthorityManage from './authority_role_manage';
 import DeptRoleManage from './depart_role_manage';
 import categorySearch from './category_search';
 import categoryManage from './category_manage';
-import categoryCitiesSelector from './category_cities_selector';
+import citiesSelector from './cities_selector';
+import productSKUManagement from './product_sku_management';
 
 const rootReducer = combineReducers({
   form,
@@ -44,7 +45,8 @@ const rootReducer = combineReducers({
   DeptRoleManage,
   categorySearch,
   categoryManage,
-  categoryCitiesSelector
+  citiesSelector,
+  productSKUManagement
 });
 
 export default rootReducer

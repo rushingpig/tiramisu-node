@@ -1,10 +1,8 @@
 import Req from 'utils/request';
 import Url from 'config/url';
 
-import {
-    Manage as ManageActionTypes,
-    Selector as SelectorActionTypes
-} from './category_action_types';
+import { Manage as ManageActionTypes } from './category_action_types';
+import { ActionTypes as SelectorActionTypes } from './cities_selector';
 
 const es6promisify = function(func) {
     return function(...args) {

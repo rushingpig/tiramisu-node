@@ -46,6 +46,15 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
         callback();
       })
       break;
+    case 'pm':
+      require.ensure([], require => {
+        components = {
+          ...components,
+          SkuManage: require('../components/production/sku_manage')
+        }
+        callback();
+      });
+      break;
     case 'cam':
       require.ensure([], require => {
         const categoryManage = level => require('../components/category/manage')(level);
@@ -137,6 +146,12 @@ const App = () => (
         <Route path="scope" onEnter={onEnter('StationScopeManageAccess')} getComponent={get('StationScopeManagePannel')} />
         <Route path="scope/:id" onEnter={onEnter('StationScopeManageAccess')} getComponent={get('StationScopeManagePannel')} />
         <Route path="scope_s/:id" onEnter={onEnter('StationScopeShareAccess')} getComponent={get('StationScopeSharePannel')} />
+      </Route>
+
+      <Route path="pm" onEnter={getComponents('pm')}>
+        <Route path="sku_manage">
+          <Route path="add" getComponent={get('SkuManage')} />
+        </Route>
       </Route>
 
       <Route path="cam" onEnter={getComponents('cam')}>

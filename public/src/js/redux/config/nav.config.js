@@ -88,6 +88,17 @@ export default [{
     "link": "/cm/src"
   }]
 }, {
+  "key": "production_manage",
+  "name": "产品管理",
+  "short_name": "产品",
+  "icon": "",
+  "link": [{
+    "key": "sku_manage",
+    "name": "商品管理",
+    "icon": "",
+    "link": "/pm/sku_manage/add"
+  }]
+}, {
   "key": "category_manage",
   "name": "产品类型管理",
   "short_name": "类型",

@@ -1,4 +1,5 @@
 import { Selector as ActionTypes } from 'actions/category_action_types';
+import clone from 'clone';
 
 const initialState = {
     provincesData:       new Map(),
@@ -297,7 +298,7 @@ const switchType = {
 };
 
 const citiesSelector = (state = initialState, action) => action.type in switchType
-? switchType[action.type](state, action)
+? switchType[action.type](clone(state), action)
 : state;
 
 export default citiesSelector;

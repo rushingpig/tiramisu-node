@@ -1,4 +1,5 @@
 import { Manage as ActionTypes } from 'actions/category_action_types';
+import clone from 'clone';
 
 const initialState = {
     editId: 0,
@@ -143,7 +144,7 @@ const switchType = {
 }
 
 const categoryManage = (state = initialState, action) => action.type in switchType
-? switchType[action.type](state, action)
+? switchType[action.type](clone(state), action)
 : state;
 
 export default categoryManage;

@@ -1,5 +1,6 @@
 import Noty from './_noty';
 import React from 'react';
+import npmClone from 'clone';
 
 function core_isFunction(arg) {
   return typeof arg === 'function';
@@ -25,17 +26,8 @@ function core_isNull(arg){
   return typeof arg === 'object' && arg == null;
 }
 
-function clone(target){
-  if(target && typeof target === 'object'){
-    var newObj = target instanceof Array ? [] : {};
-    for(var key in target){
-      var val = target[key];
-      newObj[key] = arguments.callee(val);
-    }
-    return newObj;
-  }else{
-    return target;
-  }
+function clone(target) {
+  return npmClone(target);
 }
 
 function form_isNumber(input) { /**** 方法form_isNaN, form_isPositiveNumber 均依赖于本方法，改动需谨慎 **/

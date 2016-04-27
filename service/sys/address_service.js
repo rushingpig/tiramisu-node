@@ -135,7 +135,7 @@ AddressService.prototype.modifyStation = (req, res, next) => {
         return;
     }
     let stationId = req.params.stationId;
-    let promise = addressDao.updateStationByStationId(stationId, systemUtils.assembleUpdateObj(req, req.body)).then(() => {
+    let promise = addressDao.updateStationByStationId(req, stationId, systemUtils.assembleUpdateObj(req, req.body)).then(() => {
         res.api();
     });
     systemUtils.wrapService(res, next, promise);
@@ -166,7 +166,7 @@ AddressService.prototype.deleteStation = (req, res, next) => {
  * @param next
  */
 AddressService.prototype.addStation = (req, res, next) => {
-    let promise = addressDao.addStation(req.body).then(() => {
+    let promise = addressDao.addStation(req, req.body).then(() => {
         res.api();
     });
     systemUtils.wrapService(res, next, promise);
@@ -184,7 +184,7 @@ AddressService.prototype.batchModifyStationCoords = (req, res, next) => {
         res.api(res_obj.INVALID_PARAMS, errors);
         return;
     }
-    let promise = addressDao.modifyStationCoordsInTransaction(req.body.data).then(() => {
+    let promise = addressDao.modifyStationCoordsInTransaction(req, req.body.data).then(() => {
         res.api();
     });
     systemUtils.wrapService(res, next, promise);

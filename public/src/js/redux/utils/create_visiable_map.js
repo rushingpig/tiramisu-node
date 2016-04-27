@@ -1,4 +1,4 @@
-import { Noty } from 'utils/index';
+import { Noty, core } from 'utils/index';
 
 function MyMap(){
   this.map = null;
@@ -12,9 +12,9 @@ function MyMap(){
   this.d = $.Deferred();
 }
 
-const oldPolygonStyle = {strokeWeight: '2',strokeColor: '#1215A0',fillColor: ''};
-const newPolygonStyle = {strokeWeight: '3',strokeColor: '#FF0000',fillColor: ''};
-const getLabelStyle = index => ({
+export const oldPolygonStyle = {strokeWeight: '2',strokeColor: '#1215A0',fillColor: ''};
+export const newPolygonStyle = {strokeWeight: '3',strokeColor: '#FF0000',fillColor: ''};
+export const getLabelStyle = index => ({
   width: '17',
   textAlign: 'center',
   margin: `2px ${ 4 - parseInt(index / 10) * 2 }px`,
@@ -35,7 +35,11 @@ export function outputPonits(points){
 }
 
 export function changePonits(points){
-  return JSON.parse(points.replace(/latitude/g,'lat').replace(/longitude/g,'lng'));
+  if(core.isString(points)){
+    return JSON.parse(points.replace(/latitude/g,'lat').replace(/longitude/g,'lng'));
+  }else{
+    return null;
+  }
 }
 
 export function addInfoWindow(map,point,station_info){
@@ -51,10 +55,11 @@ export function addInfoWindow(map,point,station_info){
   center.openInfoWindow(infoWindow)
   center.addEventListener('mouseover', function(){
     center.openInfoWindow(infoWindow);
-  })
+  });
+  return center;
 }
 
-MyMap.prototype.addMarker = function(point){
+export function addMarker(point){
   var self = this;
   var marker = new BMap.Marker( point );
   marker.id = this.markers.length;
@@ -72,6 +77,7 @@ MyMap.prototype.addMarker = function(point){
   this.markers.push(marker);
   this.map.addOverlay(marker);
 }
+MyMap.prototype.addMarker = addMarker;
 
 MyMap.prototype.createNewScope = function(){
   var self = this;
@@ -84,11 +90,12 @@ MyMap.prototype.createNewScope = function(){
   this.polygon = polygon;
 
   //新添加多边形点
-  this.map.addEventListener('click',function(event){
+  this._clickHandler = function( event ){
     self.points.push( event.point );
     polygon.setPath( self.points );
     self.addMarker.call(self, event.point );
-  });
+  }
+  this.map.addEventListener('click', this._clickHandler);
 }
 
 MyMap.prototype.saveStationScope = function(){
@@ -101,10 +108,9 @@ MyMap.prototype.locationCenter = function(city, address, station_info){
   if(BMap){
     let map = this.map;
     this.geocoder = new BMap.Geocoder();
-    this.geocoder.getPoint(city && address, function(poi){
+    this.geocoder.getPoint(address || city, function(poi){
       console.log('poi: ', poi);
       if(poi){
-        // map.centerAndZoom( poi, 14);
         map.panTo(poi);
         map.setZoom(14);
         addInfoWindow(map, poi, station_info);
@@ -125,9 +131,16 @@ MyMap.prototype.clearMap = function(){
 
 MyMap.prototype.stopEditScope = function(){
   this.markers.forEach(n => n.hide());
+  this.map.removeEventListener('click', this._clickHandler);
 }
 MyMap.prototype.continueEditScope = function(){
   this.markers.forEach(n => n.show());
+}
+MyMap.prototype.resetScope = function(){
+  this.polygon.setPath([]);
+  this.points = [];
+  this.markers.forEach( n => this.map.removeOverlay(n) );
+  this.markers = [];
 }
 
 MyMap.prototype.drawScope = function(points){
@@ -137,12 +150,12 @@ MyMap.prototype.drawScope = function(points){
   if(points != undefined){
     this.points = changePonits(points);
     this.oldPolygon = new BMap.Polygon(this.points, oldPolygonStyle);
-    this.oldPolygon.setFillColor('');
+    // this.oldPolygon.setFillColor('');
     this.map.addOverlay(this.oldPolygon);
   }
 }
 
-MyMap.prototype._initialize = function() {
+export function _initialize() {
   var self = this;
   var index = 0;
   var stationMap = document.getElementById('stationMap');
@@ -165,8 +178,9 @@ MyMap.prototype._initialize = function() {
   this.map.enableDragging();
   this.d.resolve();
 }
+MyMap.prototype._initialize = _initialize;
 
-MyMap.prototype.create = function(callback) {
+export function create(callback) {
   if(!window.BMap){
     var script = document.createElement("script");
     window._bmap_callback = this._initialize.bind(this);
@@ -176,9 +190,11 @@ MyMap.prototype.create = function(callback) {
     this.d.done(callback);
   }else{
     this._initialize.call(this);
-    callback();
+    callback && callback();
   } 
 }
+
+MyMap.prototype.create = create;
 
 export default new MyMap;
 

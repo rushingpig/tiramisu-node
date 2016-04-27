@@ -24,7 +24,7 @@ export function stations(state = get_state, action){
     case STATIONACTION.GET_STATION_LIST:
       return {...state, total:action.data.total, loading: false, list: action.data.list}
     case STATIONACTION.GET_STATION_LIST_BY_ID:
-      return {...state, list: [...action.data],total: action.data.length || 0};
+      return {...state, total:action.data.length, loading: false, list: action.data}
     case STATIONACTION.GET_STATIONS_BY_NAME:
       return {...state, list: core.isArray(action.data) ? action.data : [] , total: action.data.length || 0};
     case STATIONACTION.ADD_STATION:

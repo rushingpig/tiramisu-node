@@ -14,9 +14,10 @@ export default class StationMap extends Component {
   render(){
     return (
       <div className="panel">
-        <div className="panel-body" ref="map" id="stationMap">
+        <div className="panel-body">
+          <div ref="map" id="stationMap"></div>
+          <div className="font-sm mgt-4" style={{marginTop: '3px'}}>( * 编辑状态时，您可以点击新地点来增加标记 )</div>
         </div>
-        <hr/>
       </div>
     );
   }
@@ -46,6 +47,9 @@ export default class StationMap extends Component {
   }
   stopEditScope(){
     MyMap.stopEditScope();
+  }
+  resetEditScope(){
+    MyMap.resetScope();
   }
   continueEditScope(){
     MyMap.continueEditScope();

@@ -18,10 +18,11 @@ import Autocomplete from './autocomplete';
 import AreaActions from 'actions/area';
 import * as StationsAction from 'actions/station_manage';
 import * as StationFormActions from 'actions/station_manage_form';
+import { triggerFormUpdate, resetFormUpdate } from 'actions/form';
 
 import { SELECT_DEFAULT_VALUE } from 'config/app.config';
 import LazyLoad from 'utils/lazy_load';
-import Noty from 'utils/_noty';
+import {Noty, url} from 'utils/index';
 import MyMap from 'utils/station_group_scope';
 import V from 'utils/acl';
 
@@ -98,13 +99,14 @@ class FilterHeader extends Component {
     )
   }
   componentDidMount(){
-    var { getProvinces, getAllStationsName, getStationList} = this.props;
+    var { getProvinces, getCities, getAllStationsName, getStationList} = this.props;
     getProvinces();
     var {params ,getStationListById} = this.props;
     if(params && params.id){
-      getStationListById(params.id)
+      getStationListById(params.id);
+      getCities(this.props.fields.province_id.initialValue);
     }else{
-      getStationList({isPage: false})
+      getStationList({isPage: false});
     }
     getAllStationsName();
     LazyLoad('noty');
@@ -155,12 +157,11 @@ class StationRow extends Component{
     this.editScope = this.editScope.bind(this);
     this.closeActive = this.closeActive.bind(this);
     this.checkStationHandler = this.checkStationHandler.bind(this);
-    this.doubleClickHandler = this.doubleClickHandler.bind(this);
   }
   render(){
     var { props } = this;
     return (
-      <tr ref="station_row" className={this.state.actived ? 'active':''} >
+      <tr className={this.state.actived ? 'active':''} >
         <td><input type="checkbox" checked={props.checked}  onChange={this.checkStationHandler}/></td>
         <td>{props.regionalism_name}</td>
         <td>{props.name}</td>
@@ -189,17 +190,13 @@ class StationRow extends Component{
   }
   editScope(e){
     const { station_id, editable, openEdit, closeEdit,editStationScope } = this.props;
-    this.setState({actived: !editable});
+    this.setState({actived: true});
     openEdit(editable);
     editStationScope(station_id);
     e.stopPropagation();
   }
   closeActive(){
     this.setState({actived: false});
-  }
-  doubleClickHandler(){
-    const { station_id, name, address, city_name } = this.props;
-    MyMap.centerAndZoomStation(name, city_name, address);
   }
 }
 
@@ -214,18 +211,19 @@ class StationManagePannel extends Component {
     this.editStationScope = this.editStationScope.bind(this);
   }
   render(){
-    var { list, total, page_no, total,checked_station_ids, editable } = this.props.stations;
+    var { loading, list, total, page_no, total,checked_station_ids, editable } = this.props.stations;
     var { openEdit, closeEdit, putMultipleStationScope } = this.props;
     var { viewStationDetail, viewDeleteStation, checkStationHandler, editStationScope, closeActive,
       state: { page_no, page_size } } = this;
     var content = list.slice(page_no * page_size, (page_no + 1) * page_size).map((n, i) => {
-      return <StationRow ref="station_row" key={n.station_id}
+      return <StationRow ref={`station_row_${n.station_id}`} key={n.station_id}
         {...{...n, ...this.props, editable, openEdit, closeEdit, viewStationDetail, viewDeleteStation, checkStationHandler, editStationScope }} />
-    });    
+    });
+    var loc = url.parse( location.search || '');
     return (
       <div className="station-manage">
         <TopHeader/>
-        <FilterHeader {...this.props}/>
+        <FilterHeader {...this.props} initialValues={{province_id: loc.province_id || undefined, city_id: loc.city_id || undefined }}/>
         <div className="row">
           <div className="col-md-5">
             <div className="panel">
@@ -243,7 +241,7 @@ class StationManagePannel extends Component {
                     </tr>
                     </thead>
                     <tbody>
-                      {content}
+                      {tableLoader(loading, content)}
                     </tbody>
                   </table>
                 </div>
@@ -281,10 +279,11 @@ class StationManagePannel extends Component {
     this.props.checkAllStations(e.target.checked);
   }
   editStationScope(station_id){
+    //编辑时，传入station_id到stationGroupMap
     this.refs.stationGroupMap.editStationScope(station_id);
   }
-  closeActive(){
-    this.refs.station_row.closeActive();
+  closeActive(station_id){
+    this.refs['station_row_'+station_id].closeActive();
   }
 } 
 
@@ -292,11 +291,9 @@ class StationGroupMap extends Component {
   constructor(props){
     super(props);
     this.state = {
-      list: [],
-
+      mapPrepared: false, //地图是否已加载好
+      edit_station_id: undefined
     };
-    this.stopEditScope = this.stopEditScope.bind(this);
-    this.saveNewScope = this.saveNewScope.bind(this);
   }
   render(){
     return (
@@ -304,59 +301,69 @@ class StationGroupMap extends Component {
         {
           V('StationScopeManageEdit') && 
           <div className="panel-heading">
-            <button disabled={this.props.editable?'':'disabled'} onClick={this.stopEditScope} className="btn btn-theme btn-xs" style={{"marginRight": "35px"}}>停止当前修改</button>
-            <button onClick={this.saveNewScope} className="btn btn-theme btn-xs">保存并提交</button>
+            <button disabled={!this.props.editable} onClick={this.stopEditScope.bind(this)} className="btn btn-theme btn-xs" style={{"marginRight": "35px"}}>停止当前修改</button>
+            <button onClick={this.saveNewScope.bind(this)} className="btn btn-theme btn-xs">保存并提交</button>
+            <button disabled={!this.props.editable} onClick={this.resetEditScope.bind(this)} className="btn btn-xs btn-theme pull-right">重置当前区域</button>
           </div>
         }
         <div className="panel-body">
           <div ref="map" id="stationMap"/>
+          <div className="font-sm mgt-4" style={{marginTop: '3px'}}>( * 编辑状态时，您可以点击新地点来增加标记 )</div>
         </div>
       </div>
     );
   }
  
   componentDidMount(){
-    MyMap.create();
+    MyMap.create(function(){
+      this.setState({ mapPrepared: true })
+    }.bind(this));
   }
   componentWillUnmount() {
     MyMap.reset();
   }
   componentWillReceiveProps(nextProps) {
-    if(nextProps.list !== this.state.list){
-      this.setState({
-        list: nextProps.list 
-      });
-    }
-  }
-  componentDidUpdate (prevProps) {
-    if(prevProps.list !== this.state.list){
-      MyMap.reset();
-      MyMap.list = this.state.list;
-      setTimeout(() => {
-        MyMap.initialScope();
-      },1000)
+    if(nextProps.list !== this.props.list){
+      this._mapInitTimer = setInterval( () => {
+        if(this.state.mapPrepared){
+          MyMap.reset();
+          //服务器传来的数据coords是字符串形式的，需要转换
+          MyMap.list = nextProps.list.map( n => {
+            return {...n, coords: MyMap.changePonits(n.coords)};
+          });
+          MyMap.initialScope();
+          clearInterval(this._mapInitTimer);
+        }
+      }, 100);
     }
   }
   editStationScope(station_id){
-    if(MyMap.onEditIndex == -1){
+    if(!MyMap.editting){
+      this.setState({ edit_station_id: station_id });
       MyMap.enableEdit(station_id);
     }else{
       Noty('warning','请确定已停止当前修改操作或已提交');
     }
   }
   stopEditScope(){
-    if(MyMap.onEditIndex === -1){return;}
+    if(!MyMap.editting){return;}
     const { editable, closeEdit, closeActive } = this.props;
     closeEdit();
-    closeActive();
-    MyMap.getPath();
-    MyMap.onEditIndex = -1;
+    closeActive(this.state.edit_station_id);
     MyMap.stopEditScope();
+  }
+  resetEditScope(){
+    MyMap.resetScope();
   }
   saveNewScope(){
     var self = this;
     var { putMultipleStationScope } = this.props;
-    var data = this.state.list.map(n => {
+    // var data = this.state.list.map(n => {
+    //   let id = n.station_id;
+    //   let coords = n.coords;
+    //   return {id: id, coords: coords};
+    // });
+    var data = MyMap.getCoords().map(n => {
       let id = n.station_id;
       let coords = n.coords;
       return {id: id, coords: coords};

@@ -11,6 +11,7 @@ var async = require('async');
 var tables = require('../../config').tables;
 var dbHelper = require('../../common/DBHelper'),
     toolUtils = require('../../common/ToolUtils'),
+    SystemUtils = require('../../common/SystemUtils'),
     constant = require('../../common/Constant');
 var baseDao = require('../base_dao'),
     del_flag = baseDao.del_flag;
@@ -111,26 +112,29 @@ AddressDao.prototype.findStationsByMultipleCondition = function(query_obj) {
         return baseDao.select(sql, params);
     }
 };
-AddressDao.prototype.updateStationByStationId = function(stationId, update_obj) {
+AddressDao.prototype.updateStationByStationId = function(req, stationId, update_obj) {
     let sql = this.base_update_sql + ' where id = ? ';
-    return baseDao.update(sql, [tables.buss_delivery_station, update_obj, stationId]);
+    return baseDao.update(sql, [tables.buss_delivery_station, SystemUtils.assembleUpdateObj(req, update_obj), stationId]);
 };
 AddressDao.prototype.deleteStationById = function(stationId) {
-    let params = [tables.buss_delivery_station, stationId];
-    return baseDao.select(this.base_delete_sql, params);
+    let sql = this.base_update_sql + ' where id = ? ';
+    let delete_obj = {
+        del_flag: 0
+    };
+    return baseDao.select(sql, [tables.buss_delivery_station, delete_obj, stationId]);
 };
-AddressDao.prototype.addStation = function(insert_obj) {
-    let params = [tables.buss_delivery_station, insert_obj];
+AddressDao.prototype.addStation = function(req, insert_obj) {
+    let params = [tables.buss_delivery_station, SystemUtils.assembleInsertObj(req, insert_obj)];
     return baseDao.insert(this.base_insert_sql, params);
 };
-AddressDao.prototype.modifyStationCoordsInTransaction = function(arr) {
+AddressDao.prototype.modifyStationCoordsInTransaction = function(req, arr) {
     return baseDao.trans().then(transaction => {
         return new Promise((resolve, reject) => {
             let sql = this.base_update_sql + ' where id = ? ';
             async.each(arr, (item, cb) => {
-                transaction.query(sql, [tables.buss_delivery_station, {
+                transaction.query(sql, [tables.buss_delivery_station, SystemUtils.assembleUpdateObj(req, {
                     coords: item.coords
-                }, item.id], cb);
+                }), item.id], cb);
             }, err => {
                 if (err) {
                     return reject(err);

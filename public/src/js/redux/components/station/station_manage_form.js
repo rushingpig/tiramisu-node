@@ -139,9 +139,10 @@ class StationManageForm extends Component {
             {'　　'}
             {
               this.state.stoped
-              ? <button key="continueBtn" onClick={this.continueEditScope.bind(this)} className="pull-right btn btn-theme btn-xs">继续修改</button>
-              : <button key="stopBtn" disabled={!this.state.working} onClick={this.stopEditScope.bind(this)} className="pull-right btn btn-theme btn-xs">停止修改</button>
+              ? <button key="continueBtn" onClick={this.continueEditScope.bind(this)} className="btn btn-theme btn-xs">继续修改</button>
+              : <button key="stopBtn" disabled={!this.state.working} onClick={this.stopEditScope.bind(this)} className="btn btn-theme btn-xs">停止修改</button>
             }
+            <button disabled={this.state.stoped || !this.state.working} onClick={this.resetEditScope.bind(this)} className="btn btn-xs btn-theme pull-right">重置当前区域</button>
           </div>
           <StationMap editable={editable} ref="stationMap" {...this.props.fields} />
         </div>
@@ -220,6 +221,9 @@ class StationManageForm extends Component {
   continueEditScope(){
     this.refs.stationMap.continueEditScope();
     this.setState({ stoped: false });
+  }
+  resetEditScope(){
+    this.refs.stationMap.resetEditScope();
   }
   centerStation(){
     var city_name = this.findSelectedOptionText('city');

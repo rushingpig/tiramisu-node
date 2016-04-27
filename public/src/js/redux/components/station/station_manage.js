@@ -199,7 +199,8 @@ class StationRow extends Component{
     checkStationHandler(station_id, e.target.checked);
   }
   editScope(e){
-    history.push('/sm/scope/' + this.props.station_id);
+    var { station_id, province_id, city_id } = this.props;
+    history.push(`/sm/scope/${station_id}?province_id=${province_id || ''}&city_id=${city_id || ''}`);
     e.stopPropagation();
   }
   viewStationDetail(e){

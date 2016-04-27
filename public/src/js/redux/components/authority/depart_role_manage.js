@@ -22,12 +22,6 @@ import RoleFormEdit from './role_form_edit';
 import RoleFormAdd from './role_form_add';
 
 
-
-import DeptModal from './manage_add_dept_modal';
-import RoleModal from './manage_add_role_modal';
-
-
-
 class DeptHeader extends Component{
   render(){
     return(
@@ -54,8 +48,6 @@ class DeptHeader extends Component{
 
 
         </div>
-        <DeptModal ref="deptModal" {...this.props} />
-        <RoleModal ref="roleModal" {...this.props} />
       </div>
       )
   }

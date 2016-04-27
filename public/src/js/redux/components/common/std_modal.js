@@ -9,8 +9,8 @@ export default class StdModal extends Component {
   render(){
     var { size, title, submitting, loading, disabled, onConfirm, footer } = this.props;
     return (
-    <div ref="__modal" aria-hidden="false" aria-labelledby="myModalLabel" role="dialog" className="modal fade" >
-      <div className="modal-backdrop fade"></div>
+    <div ref="__modal" className="modal" >
+      <div onClick={this.smartHide.bind(this)} className="modal-backdrop"></div>
       <div className={`modal-dialog modal-${size}`}>
         <div className="modal-content">
           <div className="modal-header">
@@ -38,17 +38,26 @@ export default class StdModal extends Component {
     )
   }
   show(callback){
-    $(this.refs.__modal).modal('show').on('shown.bs.modal', callback);
+    //去掉了modal显示动画
+    // $(this.refs.__modal).modal('show').on('shown.bs.modal', callback);
+    $(this.refs.__modal).show();
+    callback && callback();
   }
   hide(){
     if(this.props.submitting){
       return;
     }
     this.props.onCancel();
-    $(this.refs.__modal).modal('hide');
+    // $(this.refs.__modal).modal('hide');
+    $(this.refs.__modal).hide();
+  }
+  smartHide(){
+    if( this.props.smartHide ){
+      this.hide();
+    }
   }
   componentWillUnmount(){
-    $(this.refs.__modal).off('shown.bs.modal');
+    // $(this.refs.__modal).off('shown.bs.modal');
   }
 }
 
@@ -63,4 +72,5 @@ StdModal.defaultProps = {
   onConfirm: function(){},
   onCancel: function(){},  //modal关闭前需执行的callback
   footer: true, //是否需要 modal-footer
+  smartHide: false, //是否点击遮罩层，也能够自动隐藏模态框
 }

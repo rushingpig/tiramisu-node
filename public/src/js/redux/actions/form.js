@@ -11,7 +11,7 @@ export function triggerFormUpdate(form_name, field_name, field_value){
   return change(form_name, field_name, field_value);
 }
 
-export function resetFormUpdate(form_name, field_name, field_value){
+export function resetFormUpdate(form_name, field_name){
   return reset(form_name, field_name, -1);
 }
 

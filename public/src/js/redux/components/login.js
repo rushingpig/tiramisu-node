@@ -41,25 +41,6 @@ var Login = React.createClass({
               </span>
             </label>
           </div>
-
-          <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabIndex="-1" id="myModal" className="modal fade">
-            <div className="modal-dialog">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <button type="button" className="close" data-dismiss="modal" aria-hidden="true">×</button>
-                  <h4 className="modal-title">忘记密码 ?</h4>
-                </div>
-                <div className="modal-body">
-                  <p>在下面输入你的邮箱地址以重置密码.</p>
-                  <input type="text" name="邮箱" placeholder="Email" autoComplete="off" className="form-control placeholder-no-fix"/>
-                </div>
-                <div className="modal-footer">
-                  <button data-dismiss="modal" className="btn btn-default" type="button">取消</button>
-                  <button className="btn btn-primary" type="button">确定</button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

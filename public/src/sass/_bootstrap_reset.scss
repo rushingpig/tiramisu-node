@@ -180,7 +180,9 @@ button, .btn:focus, .btn.focus, .btn:active:focus, .btn:active.focus, .btn.activ
 .modal-header .close:hover {
   opacity: 1;
 }
-
+.modal-backdrop {
+  opacity: 0.5
+}
 /*popover*/
 
 .popover {

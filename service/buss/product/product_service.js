@@ -7,6 +7,7 @@
  */
 "use strict";
 var res_obj = require('../../../util/res_obj'),
+    Constant = require('../../../common/Constant'),
     systemUtils = require('../../../common/SystemUtils'),
     toolUtils = require('../../../common/ToolUtils'),
     TiramisuError = require('../../../error/tiramisu_error'),
@@ -119,6 +120,18 @@ ProductService.prototype.listOrderProducts = (req,res,next)=>{
         res.api(results);
     });
     systemUtils.wrapService(res,next,promise);
+};
+/**
+ * get the accessory list
+ * @param req
+ * @param res
+ * @param next
+ */
+ProductService.prototype.listAccessory = (req, res, next)=> {
+    req.query.category_id = Constant.PRODUCT.ACCESSORY_ID;
+    req.query.page_no = 0;
+    // req.query.page_size = 10;
+    return this.listProducts(req, res, next);
 };
 
 module.exports = new ProductService();

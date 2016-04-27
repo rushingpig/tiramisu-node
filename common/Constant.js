@@ -172,6 +172,8 @@ Constant.BUSS_ORDER_ERROR = {
  */
 Constant.DELIVERYMAN_ID = 4;
 
-
+Constant.PRODUCT = {
+    ACCESSORY_ID: 15
+};
 
 module.exports = Constant;

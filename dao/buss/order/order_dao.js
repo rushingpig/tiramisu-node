@@ -737,7 +737,7 @@ OrderDao.prototype.findOrderList = function(query_data) {
         _result: _result
       };
     });
-  })
+  });
 };
 /**
  * update the order by order id with transaction
@@ -1164,7 +1164,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
           owner_name: owner_name,
           owner_mobile: owner_mobile,
           is_submit: 0,
-          is_deal: 1,
+          is_deal: 0,
           status: Constant.OS.UNTREATED,
           remarks: remarks,
           invoice: invoice,

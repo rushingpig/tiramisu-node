@@ -82,7 +82,7 @@ var exp_session_options = function(store){
             password : mysql_options.password,
             database : mysql_options.database,
             checkExpirationInterval : 60000,
-            expiration : 5000,
+            expiration : 72000000,
             createDatabaseTable : true,
             schema: {
                 tableName: 'sys_user_session',
@@ -97,7 +97,7 @@ var exp_session_options = function(store){
             secure : false,
             // maxAge : 30000
             //expires : new Date(Date.now() + 1000000)
-            expires : false
+            // expires : false
         }
     };
 };

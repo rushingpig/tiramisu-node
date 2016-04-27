@@ -457,6 +457,33 @@ DeliveryService.prototype.listDeliverymans = (req,res,next)=>{
     systemUtils.wrapService(res,next,promise);
 };
 /**
+ * get the deliverymans of the order
+ * @param req
+ * @param res
+ * @param next
+ */
+DeliveryService.prototype.listDeliverymansByOrder = (req,res,next)=>{
+    req.checkParams('orderId').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let currentUser = req.session.user;
+    if(!currentUser){
+        res.api(res_obj.SESSION_TIME_OUT,null);
+        return;
+    }
+    let order_id = req.params.orderId;
+    let promise = deliveryDao.findDeliverymansByOrder(order_id).then((results)=>{
+        if(toolUtils.isEmptyArray(results)){
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS_ARR,'该条件下没有可选的配送员...');
+        }
+        res.api(results);
+    });
+    systemUtils.wrapService(res,next,promise);
+};
+/**
  * reprint the order
  * @param req
  * @param res

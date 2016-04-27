@@ -66,4 +66,12 @@ module.exports = function () {
                   .end(err(done));
           });
       });
+
+      it('GET /v1/a/order/:orderId/deliverymans', function (done) {
+          agent.get('/v1/a/order/10000001/deliverymans')
+              .expect('Content-Type', /json/)
+              .expect(200)
+              .end(err(done));
+      })
+
   });};

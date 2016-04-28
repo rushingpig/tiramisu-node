@@ -50,7 +50,7 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
       require.ensure([], require => {
         components = {
           ...components,
-          SkuManage: require('../components/production/sku_manage')
+          SkuManage: require('../components/product/sku_management')
         }
         callback();
       });

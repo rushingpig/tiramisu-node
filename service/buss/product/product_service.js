@@ -87,6 +87,7 @@ ProductService.prototype.listProducts = (req, res, next) => {
                 is_delivery: curr.is_delivery,
                 is_local_site: curr.is_local_site,
                 sku_id: curr.id,
+                img_url: '',  // TODO: 未确定产品图片来源
                 website: curr.website,
                 regionalism_name : curr.regionalism_name
             };

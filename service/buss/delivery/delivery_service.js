@@ -22,6 +22,7 @@ var dao = require('../../../dao'),
     request = require('request'),
     config = require('../../../config'),
     logger = require('../../../common/LogHelper').systemLog(),
+    co = require('co'),
     async = require('async');
 function DeliveryService(){
 
@@ -290,54 +291,143 @@ DeliveryService.prototype.auditReprintApply = (req,res,next)=>{
  * @param next
  */
 DeliveryService.prototype.signinOrder = (req,res,next)=>{
-    req.checkParams('orderId').isOrderId();
+    req.checkParams('orderId').notEmpty().isOrderId();
     req.checkBody(schema.signinOrder);
     let errors = req.validationErrors();
     if (errors) {
-        res.api(res_obj.INVALID_PARAMS,errors);
+        res.api(res_obj.INVALID_PARAMS, errors);
         return;
     }
-    let update_obj = {
+    let orderId = systemUtils.getDBOrderId(req.params.orderId);
+    let updated_time = req.body.updated_time;
+    let order = req.body.order;
+    let deliveryman = req.body.deliveryman;
+    let products, refund_amount;
+
+    let order_obj = {
         late_minutes : req.body.late_minutes,
         payfor_amount : req.body.payfor_amount * 100,
         payfor_reason : req.body.payfor_reason,
         payfor_type : req.body.payfor_type,
-        signin_time : req.body.signin_time,
+        signin_time : req.body.signin_time || new Date(),
         status : Constant.OS.COMPLETED
     };
-    let order_id = systemUtils.getDBOrderId(req.params.orderId);
-    let order_history_obj = {
-        order_id : order_id
+    let order_sign_history_obj = {
+        order_id: orderId
     };
-    if(update_obj.payfor_amount == 0 && (!update_obj.payfor_type)){
-        order_history_obj.option = '用户签收时间:{'+update_obj.signin_time+'}\n准点送达';
-    }else if(update_obj.payfor_type === Constant.PFT.CASH){
-        order_history_obj.option = '用户签收时间:{'+update_obj.signin_time+'}\n{现金赔偿}:{¥'+update_obj.payfor_amount/100+'}\n{迟到时长}:{'+update_obj.late_minutes+'分钟}';
-    }else if(update_obj.payfor_type === Constant.PFT.FULL_REFUND){
-        order_history_obj.option = '用户签收时间:{'+update_obj.signin_time+'}\n{全额退款--原因}:{'+update_obj.payfor_reason+'}';
+    if(order_obj.payfor_amount == 0){
+        order_sign_history_obj.option = '用户签收时间:{'+order_obj.signin_time+'}\n准点送达';
+    }else if(order_obj.payfor_type === Constant.PFT.CASH){
+        order_sign_history_obj.option = '用户签收时间:{'+order_obj.signin_time+'}\n{现金赔偿}:{'+order_obj.payfor_amount+'}\n{迟到时长}:{'+order_obj.late_minutes+'分钟}';
+    }else if(order_obj.payfor_type === Constant.PFT.FULL_REFUND){
+        order_sign_history_obj.option = '用户签收时间:{'+order_obj.signin_time+'}\n{全额退款--原因}:{'+order_obj.payfor_reason+'}';
     }
 
-    let promise = orderDao.findOrderById(order_id).then((_res)=> {
+    if(order){
+        products = order.products || [];
+        refund_amount = order.refund_amount * 100;
+        if(order.total_amount !== undefined) order_obj.total_amount = order.total_amount;
+        if(order.total_original_price !== undefined) order_obj.total_original_price = order.total_original_price;
+        if(order.total_discount_price !== undefined) order_obj.total_discount_price = order.total_discount_price;
+    }
+
+    let promise = orderDao.findOrderById(orderId).then((_res) => {
         if (toolUtils.isEmptyArray(_res)) {
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
+        } else if (updated_time !== _res[0].updated_time) {
+            throw new TiramisuError(res_obj.OPTION_EXPIRED);
         } else if (_res[0].status === Constant.OS.COMPLETED) {
             throw new TiramisuError(res_obj.ORDER_COMPLETED);
         } else if (_res[0].status === Constant.OS.EXCEPTION) {
             throw new TiramisuError(res_obj.ORDER_EXCEPTION);
         }
-        return orderDao.updateOrder(systemUtils.assembleUpdateObj(req, update_obj), systemUtils.getDBOrderId(req.params.orderId));
-    }).then((result)=>{
-        if(parseInt(result) <= 0){
-            throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
+        //===========for history begin=============
+        let current_order = _res[0],
+            order_history_obj = {
+                order_id: orderId
+            },
+            add_skus = [], delete_skuIds = [], update_skus = [];
+        let option = '';
+        if(deliveryman && deliveryman.id && deliveryman.id != current_order.deliveryman_id){
+            order_obj.deliveryman_id = deliveryman.id;
+            order_obj.last_opt_cs = req.session.user.id;
+            option += '修改{配送员}为{' + deliveryman.name + '('+deliveryman.mobile+')}\n';
         }
-        return orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
-    }).then((insertResult)=>{
-        if(parseInt(insertResult) <= 0){
-            throw new TiramisuError(res_obj.FAIL,'新增订单签收历史记录时异常');
+        if(order) {
+            order_obj.last_opt_cs = req.session.user.id;
+            for (let i = 0; i < products.length; i++) {
+                let isAdd = true;
+                for (let j = 0; j < _res.length; j++) {
+                    if (products[i].sku_id == _res[j].sku_id) {
+                        isAdd = false;
+                        let curr = products[i];
+                        let order_sku_obj = {
+                            order_id: orderId,
+                            sku_id: curr.sku_id,
+                            num: curr.num,
+                            choco_board: curr.choco_board,
+                            greeting_card: curr.greeting_card,
+                            atlas: curr.atlas,
+                            custom_name: curr.custom_name,
+                            custom_desc: curr.custom_desc,
+                            discount_price: curr.discount_price,
+                            amount: curr.amount
+                        };
+                        update_skus.push(systemUtils.assembleUpdateObj(req, order_sku_obj));
+                    }
+                }
+                if (isAdd) {
+                    let curr = products[i];
+                    option += '增加{' + curr.product_name + '}\n';
+                    let order_sku_obj = {
+                        order_id: orderId,
+                        sku_id: curr.sku_id,
+                        num: curr.num,
+                        choco_board: curr.choco_board,
+                        greeting_card: curr.greeting_card,
+                        atlas: curr.atlas,
+                        custom_name: curr.custom_name,
+                        custom_desc: curr.custom_desc,
+                        discount_price: curr.discount_price,
+                        amount: curr.amount
+                    };
+                    add_skus.push(systemUtils.assembleInsertObj(req, order_sku_obj));
+                }
+            }
+            for (let i = 0; i < _res.length; i++) {
+                let isDelete = true;
+                for (let j = 0; j < products.length; j++) {
+                    if (_res[i].sku_id == products[j].sku_id) {
+                        isDelete = false;
+                    }
+                }
+                if (isDelete && _res[i].sku_id) {
+                    let curr = _res[i];
+                    option += '删除{' + curr.product_name + '}\n';
+                    delete_skuIds.push(curr.sku_id);
+                }
+            }
         }
+        order_history_obj.option = option;
+        //===========for history end=============
+
+        return co(function*() {
+            let recipient_id = current_order.regionalism_id;
+            let recipient_obj = {};
+            yield orderDao.editOrder(systemUtils.assembleUpdateObj(req, order_obj), orderId, systemUtils.assembleUpdateObj(req, recipient_obj), recipient_id, products, add_skus, delete_skuIds, update_skus);
+            if(refund_amount > 0){
+                // TODO: Refund
+            }
+
+            if(order_history_obj != ''){
+                yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
+            }
+            yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_sign_history_obj, true));
+        });
+    }).then(() => {
         res.api();
     });
-    systemUtils.wrapService(res,next,promise);
+    systemUtils.wrapService(res, next, promise);
 };
 /**
  * unsign in the order
@@ -475,11 +565,25 @@ DeliveryService.prototype.listDeliverymansByOrder = (req,res,next)=>{
         return;
     }
     let order_id = req.params.orderId;
-    let promise = deliveryDao.findDeliverymansByOrder(order_id).then((results)=>{
-        if(toolUtils.isEmptyArray(results)){
+
+    let promise = co(function*() {
+        let orders = yield orderDao.findOrderById(order_id);
+        if (toolUtils.isEmptyArray(orders)) {
+            throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
+        }
+        let current_order = orders[0];
+
+        let deliverymans = deliveryDao.findDeliverymansByOrder(order_id);
+        if(toolUtils.isEmptyArray(deliverymans)){
             throw new TiramisuError(res_obj.NO_MORE_RESULTS_ARR,'该条件下没有可选的配送员...');
         }
-        res.api(results);
+
+        return {
+            current_id: current_order.delivery_id,
+            list: deliverymans
+        }
+    }).then(result=> {
+        res.api(result);
     });
     systemUtils.wrapService(res,next,promise);
 };

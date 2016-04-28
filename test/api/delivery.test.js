@@ -72,6 +72,15 @@ module.exports = function () {
               .expect('Content-Type', /json/)
               .expect(200)
               .end(err(done));
-      })
+      });
+
+      it.skip('PUT /v1/a/order/:orderId/signin', function (done) {
+          let body = {};
+          agent.put('/v1/a/order/10000001/signin')
+              .send(body)
+              .expect('Content-Type', /json/)
+              .expect(200)
+              .end(err(done));
+      });
 
   });};

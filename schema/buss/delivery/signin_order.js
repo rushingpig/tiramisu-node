@@ -22,5 +22,18 @@ module.exports = {
     },
     'signin_time' : {
         notEmpty : true
+    },
+    'updated_time': {
+        notEmpty: true,
+        isDate: true
+    },
+    'deliveryman': {
+        optional: true
+    },
+    'deliveryman.id':{
+        isInt: true
+    },
+    'order': {
+        optional: true
     }
 };

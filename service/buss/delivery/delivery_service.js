@@ -43,23 +43,25 @@ DeliveryService.prototype.getDeliveryStationList = (req,res,next)=>{
     }
     let query_data = {
         city_id : req.query.city_id,
-        city_ids : req.query.city_ids ? req.query.city_ids.split(',') : null
+        city_ids : req.query.city_ids ? req.query.city_ids.split(',') : null,
+        signal : req.query.signal,
+        user : req.session.user
     };
     async.series([
-        function(cb){
-            if(parseInt(req.query.is_national) === 1){
-                let city_ids = [];
-                addressDao.findAllCities().then(cities => {
-                    cities.forEach(curr => {
-                        city_ids.push(curr.id);
-                    });
-                });
-                query_data.city_ids = city_ids;
-                cb(null);
-            }else{
-                cb(null);
-            }
-        },
+        // function(cb){
+        //     if(parseInt(req.query.is_national) === 1){
+        //         let city_ids = [];
+        //         addressDao.findAllCities().then(cities => {
+        //             cities.forEach(curr => {
+        //                 city_ids.push(curr.id);
+        //             });
+        //         });
+        //         query_data.city_ids = city_ids;
+        //         cb(null);
+        //     }else{
+        //         cb(null);
+        //     }
+        // },
         function(cb){
             let promise = deliveryDao.findAllStations(query_data).then(results=>{
                 if(toolUtils.isEmptyArray(results)){
@@ -701,7 +703,7 @@ DeliveryService.prototype.print = (req,res,next)=>{
                         size: curr.size,
                         amount : curr.amount/100
                     };
-                    map.get(curr.id).products.push(product_obj);
+                    map.get(curr.id).products.push(product_obj); 
                 }
             }
         });

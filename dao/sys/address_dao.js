@@ -52,7 +52,7 @@ AddressDao.prototype.findCitiesByProvinceId = function(provinceId, query_data) {
     let sql = this.baseSql + ' and parent_id = ?';
     let ds = query_data.user.data_scopes;
     // data filter start
-    if (!toolUtils.isEmptyArray(ds)) {
+    if (query_data.signal && !toolUtils.isEmptyArray(ds)) {
         if (!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1 && !query_data.user.is_headquarters) {
             ds.forEach(curr => {
                 if (curr == constant.DS.OFFICEANDCHILD.id && query_data.user.role_ids) {

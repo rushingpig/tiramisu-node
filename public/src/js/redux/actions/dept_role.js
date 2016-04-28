@@ -110,6 +110,9 @@ export default function dept_role(ActionTypes=DeptRoleActionTypes){
         data:{1:'xxx',2:'xxx'}
       }*/
     },
+    getStationsByCityIdsSignal:function(city_ids,signal){
+      return GET(Url.station_merge_list.toString(),{city_ids:city_ids,signal:signal},ActionTypes.GOT_STATIONS_BY_CITYIDS_SIGNAL);
+    },
 
   }
 }

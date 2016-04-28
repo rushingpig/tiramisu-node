@@ -276,7 +276,7 @@ class ManageAddForm extends Component{
         });
         city_id_str=city_id_str.substring(0,city_id_str.length-1);
         console.warn(city_id_str);
-        this.props.actions.getStationsByCityIds(city_id_str);
+        this.props.actions.getStationsByCityIdsSignal(city_id_str,'authority');
       }
     callback(e);
     //var {value} = e.target;

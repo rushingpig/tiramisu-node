@@ -80,7 +80,6 @@ MenuDao.prototype.findMenus = function(query_data){
         params.push('%'+query_data.module_name+'%');
     }
     sql += " group by sm.module_id,sm.type,sm.id";
-    console.log(sql);
     return baseDao.select(sql,params);
 };
 MenuDao.prototype.findMenuById = function(menu_id){

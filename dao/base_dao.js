@@ -128,8 +128,6 @@ BaseDao.trans = function(){
 
 BaseDao.transWrapPromise = function (transaction) {
     transaction.queryPromise = function (sql, params) {
-        console.log(sql);
-        console.log(params);
         return new Promise((resolve, reject)=> {
             transaction.query(sql, params, function (err) {
                 if (err) reject(err);

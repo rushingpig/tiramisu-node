@@ -11,13 +11,12 @@ var express = require('express');
 var config = require('../../config');
 var router = express.Router(config.exp_router_options);
 // service module
-var paymentRouter = require('./payment');
 var service = require('../../service'),
-    addressService = service.address,
-    deliveryService = service.delivery,
-    orderService = service.order,
-    productService = service.product,
-    Constant = require('../../common/Constant');
+  addressService = service.address,
+  deliveryService = service.delivery,
+  orderService = service.order,
+  productService = service.product,
+  Constant = require('../../common/Constant');
 var fileUtils = require('../../common/FileUtils');
 var fs = require('fs');
 var path = require('path');
@@ -26,9 +25,9 @@ var a = express.Router(config.exp_router_options);
 var routerI = express.Router(config.exp_router_options);
 
 // router for normal http request
-router.use('/v',v);
+router.use('/v', v);
 // router for xhr ajax request
-router.use('/a',a);
+router.use('/a', a);
 // router for internal(whitelisted) http requests
 router.use('/i', routerI);
 
@@ -41,54 +40,54 @@ routerI.put('/order/error', orderService.editOrderError);
 //*********************
 //******** GET ********
 //*********************
-a.get('/provinces',addressService.getProvinces);    // 获取所有省份信息
-a.get('/province/:provinceId/cities',addressService.getCities); // 获取指定省份下的所有城市信息
+a.get('/provinces', addressService.getProvinces); // 获取所有省份信息
+a.get('/province/:provinceId/cities', addressService.getCities); // 获取指定省份下的所有城市信息
 //a.get(/^\/city\/(\d+)\/districts$/,addressService.getDistricts);
-a.get('/city/:cityId/districts',addressService.getDistricts);   // 获取指定城市下的所有行政区域信息
-a.get('/cities',addressService.getAllCities);
-a.get('/stations/search',addressService.getStationsByMultipleCondition);   // 根据多个条件查询配送站
-a.get('/stations',deliveryService.getDeliveryStationList);  // 获取所有配送站信息
-a.get('/station',deliveryService.getStationInfo);   // 获取指定配送站信息
-a.get('/pay/modes',orderService.getPayModeList);    // 获取所有支付方式信息
-a.get('/district/:districtId/shops',orderService.getShopList);  // 获取指定行政区域下的门店信息
-a.get('/product/categories',productService.getCategories);  // 获取所有产品分类
-a.get('/products',productService.listProducts); // 获取产品列表
+a.get('/city/:cityId/districts', addressService.getDistricts); // 获取指定城市下的所有行政区域信息
+a.get('/cities', addressService.getAllCities);
+a.get('/stations/search', addressService.getStationsByMultipleCondition); // 根据多个条件查询配送站
+a.get('/stations', deliveryService.getDeliveryStationList); // 获取所有配送站信息
+a.get('/station', deliveryService.getStationInfo); // 获取指定配送站信息
+a.get('/pay/modes', orderService.getPayModeList); // 获取所有支付方式信息
+a.get('/district/:districtId/shops', orderService.getShopList); // 获取指定行政区域下的门店信息
+a.get('/product/categories', productService.getCategories); // 获取所有产品分类
+a.get('/products', productService.listProducts); // 获取产品列表
 
 //**********************
 //******** POST ********
 //**********************
 
-a.post('/delivery/autoAllocate',deliveryService.autoAllocateStation);   // 自动分配配送站
+a.post('/delivery/autoAllocate', deliveryService.autoAllocateStation); // 自动分配配送站
 
-a.post('/orders/delivery',orderService.listOrders(Constant.OSR.DELIVER_LIST,true)); // 批量扫描获取送货单列表
-a.post('/orders/signin',orderService.listOrders(Constant.OSR.RECEIVE_LIST,true));   // 批量扫面获取配送单列表
+a.post('/orders/delivery', orderService.listOrders(Constant.OSR.DELIVER_LIST, true)); // 批量扫描获取送货单列表
+a.post('/orders/signin', orderService.listOrders(Constant.OSR.RECEIVE_LIST, true)); // 批量扫面获取配送单列表
 
-a.post('/order',orderService.addOrder); // 添加订单
+a.post('/order', orderService.addOrder); // 添加订单
 
-a.post('/order/reprint/apply',deliveryService.applyForRePrint); // 申请重新打印
+a.post('/order/reprint/apply', deliveryService.applyForRePrint); // 申请重新打印
 
-a.post('/order/src', orderService.addOrderSrc);  // 添加来源渠道
+a.post('/order/src', orderService.addOrderSrc); // 添加来源渠道
 
-a.post('/coupon',orderService.validateCoupon);
+a.post('/coupon', orderService.validateCoupon);
 
-a.post('/station', addressService.addStation);  //新增配送站
+a.post('/station', addressService.addStation); //新增配送站
 
 //*********************
 //******** PUT ********
 //*********************
 
-a.put('/order/src/:srcId', orderService.editOrderSrc);  // 修改来源渠道信息
+a.put('/order/src/:srcId', orderService.editOrderSrc); // 修改来源渠道信息
 
-a.put('/order/src/:srcId', orderService.editOrderSrc);  // 修改来源渠道信息
+a.put('/order/src/:srcId', orderService.editOrderSrc); // 修改来源渠道信息
 
-a.put('/station/:stationId', addressService.modifyStation);   //修改配送站信息
-a.put('/stations/scope', addressService.batchModifyStationCoords);   //批量修改配送站范围
+a.put('/station/:stationId', addressService.modifyStation); //修改配送站信息
+a.put('/stations/scope', addressService.batchModifyStationCoords); //批量修改配送站范围
 
 //************************
 //******** DELETE ********
 //************************
 
-a.delete('/order/src/:srcId', orderService.delOrderSrc);  // 删除来源渠道
+a.delete('/order/src/:srcId', orderService.delOrderSrc); // 删除来源渠道
 
 a.delete('/station/:stationId', addressService.deleteStation);
 
@@ -103,13 +102,12 @@ fs.readdirSync(__dirname).forEach((curr)=>{
     }
 });
 */
-fileUtils.autoRequireRouter(path.resolve(__dirname,'ajax'),a);
+fileUtils.autoRequireRouter(path.resolve(__dirname, 'ajax'), a);
 //=====================================================================================================
 
 
-router.get('/', function (req, res) {
-    res.sendHtml('welcome to v1 api');
+router.get('/', function(req, res) {
+  res.sendHtml('welcome to v1 api');
 });
-router.use('/payment', paymentRouter);
 
 module.exports = router;

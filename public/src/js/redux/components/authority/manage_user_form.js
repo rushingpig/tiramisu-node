@@ -247,10 +247,11 @@ class ManageAddForm extends Component{
 /*    var {getDepts} = this.props.actions;
     getDepts();*/
     LazyLoad('noty');
-    var {getProvincesSignal,getDepts} = this.props.actions;
+    var {getProvincesSignal,getDeptsSignal, resetRoles } = this.props.actions;
     var {params} = this.props;
+    resetRoles();
     getProvincesSignal("authority");
-    getDepts();
+    getDeptsSignal("authority");
   }
 
   onProvinceChange(callback,e){
@@ -260,7 +261,7 @@ class ManageAddForm extends Component{
       this.props.actions.getAllCities("authority");
     else
       if(value != this.refs.province.props['default-value'])
-        this.props.actions.getCities(value,"authority");
+        this.props.actions.getCitiesSignal(value,"authority");
     callback(e);
   }
 
@@ -276,7 +277,7 @@ class ManageAddForm extends Component{
         });
         city_id_str=city_id_str.substring(0,city_id_str.length-1);
         console.warn(city_id_str);
-        this.props.actions.getStationsByCityIds(city_id_str);
+        this.props.actions.getStationsByCityIdsSignal(city_id_str,'authority');
       }
     callback(e);
     //var {value} = e.target;
@@ -287,10 +288,10 @@ class ManageAddForm extends Component{
     var {value} = e.target;
     this.props.actions.resetRoles();
     if(value == 999 )
-      this.props.actions.getAllRoles(value);
+      this.props.actions.getAllRolesSignal(value, "authority");
     else
       if(value != this.refs.department.props['default-value'])
-          this.props.actions.getRoles(value);
+          this.props.actions.getRolesSignal(value, "authority");
     callback(e);
   }
 
@@ -322,7 +323,7 @@ ManageAddForm.propTypes = {
     provinces:PropTypes.array.isRequired,
   }),
   actions:PropTypes.shape({
-    getDepts:PropTypes.func.isRequired
+    getDeptsSignal:PropTypes.func.isRequired
   }).isRequired,
 
    editable: PropTypes.bool.isRequired,

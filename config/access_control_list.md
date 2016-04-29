@@ -54,14 +54,9 @@
 
 ###3.2 配送区域管理
 * +页面访问：StationScopeManageAccess
+* +查看配送区域：StationScopeManageView
 * +添加配送区域：StationScopeManageAdd
-
-### 5.1 渠道管理
-* +页面访问: SrcChannelManageAccess
-* +编辑：SrcChannelManageEdit
-* +删除：SrcChannelManageRemove
-* +添加一级渠道：SrcChannelManagePriChannelAdd
-* +添加二级渠道：SrcChannelManageSecChannelAdd
+* +编辑配送区域：StationScopeManageEdit
 
 ###4.1 用户管理
 * +页面访问：UserManageAccess
@@ -92,6 +87,12 @@
 * +编辑权限：SystemAuthorityManageAuthEdit
 * +删除权限：SystemAuthorityManageAuthRemove
 
+### 5.1 渠道管理
+* +页面访问: SrcChannelManageAccess
+* +编辑：SrcChannelManageEdit
+* +删除：SrcChannelManageRemove
+* +添加一级渠道：SrcChannelManagePriChannelAdd
+* +添加二级渠道：SrcChannelManageSecChannelAdd
 
 
 

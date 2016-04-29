@@ -27,8 +27,9 @@
   }
 
   .remark-in-table {
-    min-width: 120px;
-    @extend .text-overflow;
+    max-width: 126px;
+    min-width: 112px;
+    text-align: left;
   }
   .bordered {
     @include border-radius(3px);

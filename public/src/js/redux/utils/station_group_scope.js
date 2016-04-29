@@ -20,12 +20,13 @@ MyMap.prototype.changePonits = changePonits;
 MyMap.prototype.centerAndZoomStation = function(name, city, address){
   if(BMap){
     let map = this.map;
+    this.infoCenter && this.map.removeOverlay(this.infoCenter);
     this.geocoder = new BMap.Geocoder();
     this.geocoder.getPoint(address || city, (poi) => {
       console.log('poi: ', poi);
       if(poi){
         map.panTo(poi);
-        map.setZoom(14);
+        map.setZoom(13);
         this.infoCenter = addInfoWindow(map, poi, {name, address});
       }else{
         map.centerAndZoom( city, 12 );

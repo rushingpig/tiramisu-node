@@ -12,7 +12,8 @@ var get_state = {
   list: [],
   checked_station_ids: [],
   checked_stations: [],
-  editable: false,
+  // editable: false,
+  active_station_id: '',
 }
 
 export function stations(state = get_state, action){
@@ -65,10 +66,10 @@ export function stations(state = get_state, action){
         })
         return {...state, checked_station_ids, checked_stations};
       })();
-    case STATIONACTION.OPEN_EDIT:
-      return {...state, editable: true};
-    case STATIONACTION.CLOSE_EDIT:
-      return {...state, editable: false}; 
+    case STATIONACTION.ACTIVE_STATION:
+      return {...state, active_station_id: action.station_id};
+    case STATIONACTION.UNACTIVE_STATION:
+      return {...state, active_station_id: ''}; 
     default :
       return state;
   }

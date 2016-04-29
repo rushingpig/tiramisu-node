@@ -43,14 +43,18 @@ export function changePonits(points){
 }
 
 export function addInfoWindow(map,point,station_info){
-  var opts = {title: station_info.name, width: 0, height:0, offset: new BMap.Size(15,-20)}
+  // var opts = {title: station_info.name, width: 0, height:0, offset: new BMap.Size(15,-20)}
+  var opts = {title: station_info.name, width: 0, height:0}
   var sContent =
       "<p> 配送站地址：" + station_info.address + "</p>" 
   var infoWindow = new BMap.InfoWindow(sContent, opts);
   var center = new BMap.Marker(point);
-  var icon = new BMap.Icon('/images/point.png', new BMap.Size(24, 40));
+  var icon = new BMap.Icon('/images/point_blue.png', new BMap.Size(24, 35), {
+    anchor: new BMap.Size(12, 22),
+    infoWindowAnchor: new BMap.Size(20, 3)
+  });
   center.setIcon(icon);
-  center.setAnimation(BMAP_ANIMATION_BOUNCE);
+  center.setAnimation(BMAP_ANIMATION_DROP);
   map.addOverlay(center);
   center.openInfoWindow(infoWindow)
   center.addEventListener('mouseover', function(){
@@ -112,7 +116,7 @@ MyMap.prototype.locationCenter = function(city, address, station_info){
       console.log('poi: ', poi);
       if(poi){
         map.panTo(poi);
-        map.setZoom(14);
+        map.setZoom(13);
         addInfoWindow(map, poi, station_info);
       }else{
         map.centerAndZoom( city, 12 );

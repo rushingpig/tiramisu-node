@@ -60,11 +60,34 @@ function main(state = main_state, action){
   }
 }
 
+var D_state = {
+  deliverymanAtSameStation : [],
+  spareparts: [],
+  orderSpareparts: [],
+  select_deliveryman: -1,
+}
+
+function D_(state = D_state, action) {
+  switch (action.type) {
+    case Actions.GET_SPARE_PARTS:
+      return {...state, spareparts:action.data}
+    case Actions.GET_ORDER_SPARE_PARTS:
+      return {...state, orderSpareparts: action.data}
+    case Actions.GET_DELIVERYMAN_AT_SAME_STATION:
+      var {list} = action.data;
+      var  deliverymanData = list.map( m => ({id: m.deliveryman_id, text: m.deliveryman_name + '' + m.deliveryman_mobile}));
+      return {...state,deliverymanAtSameStation: deliverymanData ,select_deliveryman: action.data.current_id }
+    default:
+      return state;
+  }
+}
+
 export default combineReducers({
   filter,
   orders: orders(),
   operationRecord,
   main,
+  D_,
   area: area(),
   deliveryman,
   ...OrderSupportReducers

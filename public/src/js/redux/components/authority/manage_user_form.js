@@ -247,10 +247,11 @@ class ManageAddForm extends Component{
 /*    var {getDepts} = this.props.actions;
     getDepts();*/
     LazyLoad('noty');
-    var {getProvincesSignal,getDeptsSignal} = this.props.actions;
+    var {getProvincesSignal,getDeptsSignal, resetRoles } = this.props.actions;
     var {params} = this.props;
+    resetRoles();
     getProvincesSignal("authority");
-    getDeptsSignal('authority');
+    getDeptsSignal("authority");
   }
 
   onProvinceChange(callback,e){
@@ -287,7 +288,7 @@ class ManageAddForm extends Component{
     var {value} = e.target;
     this.props.actions.resetRoles();
     if(value == 999 )
-      this.props.actions.getAllRolesSignal(value, 'authority');
+      this.props.actions.getAllRolesSignal(value, "authority");
     else
       if(value != this.refs.department.props['default-value'])
           this.props.actions.getRolesSignal(value, "authority");

@@ -52,7 +52,13 @@
             width: 847px;
             /*border:1px solid red;*/
             margin-left: 0px;
-            margin-top: 20px;
+            height: 477px;
+            display: table;
+            /*margin-top: 20px;*/
+        }
+        .inner {
+            display: table-cell;
+            vertical-align: middle;
         }
 
         tr {
@@ -96,213 +102,215 @@
 {{#if list}}
 {{#list}}
 <div class="Content page-block">
-    <div class="tb page-block">
-        <div class="clearfix page-block">
-            <div style="float: left; height: 40px; width: 170px;">
-                <div style="font-size: 23px; margin-left:15px; font-weight: bold; line-height: 23px; height: 23px; font-family: '幼圆'">幸福西饼</div>
-                <div style="font-size: 17px; margin-left:15px; font-weight: bold; line-height: 17px; height: 17px; font-family: '幼圆'; ">BLISS CAKE</div>
-            </div>
-            <div style="float: left; width: 419px;">
-                <span style="font-size: 30px; font-weight: bold; line-height: 40px; height: 40px; font-family: '华文中宋'">幸福西饼网络商城配送签收单</span>
-            </div>
-            </div>
-        </div>
-
-        <div style="width: 100%" class="clearfix page-block">
-            <table id="tablemoney" style="width: 730px; border-collapse: collapse; border: 1px solid #000000; height: 300px; float: left; " border="1">
-                <tbody>
-                <tr>
-                    <td style="width: 65px; text-align: center;">订单号</td>
-                    <td style="width: 120px; text-align: center;">{{order_id}}</td>
-                    <td style="width: 70px; text-align: center;">下单时间</td>
-                    <td style="width: 112px; text-align: center;" colspan="2">{{created_time}}</td>
-                    <td style="width: 90px; text-align: center;">订单来源</td>
-                    <td style="text-align: center;" colspan="3">
-                        {{merge_name}}
-                    </td>
-                </tr>
-
-                <tr>
-                    <td style="text-align: center;">订货人</td>
-                    <td style="text-align: center;">
-                        {{owner_name}}
-                    </td>
-
-                    <td style="text-align: center;">订货电话</td>
-                    <td style="text-align: center;" colspan="2">{{owner_mobile}}</td>
-                    <td style="text-align: center;">收货人</td>
-                    <td style="text-align: center;">{{recipient_name}}</td>
-                    <td>收货人电话</td>
-                    <td>{{recipient_mobile}}</td>
-                </tr>
-
-                <tr>
-                    <td style="text-align: center;">送货地址</td>
-
-                    <td style="text-align: center;" colspan="8">
-                        {{province_name}}  {{city_name}}  {{regionalism_name}}  {{recipient_address}}                           </td>
-                </tr>
-                <tr>
-                    <td style="text-align: center;">支付方式</td>
-                    <td colspan="4" style="text-align: center;">
-                        {{pay_name}}
-                    </td>
-                    <td style="text-align: center;">送达时间</td>
-                    <td style="text-align: center;" colspan="3">{{delivery_time}}</td>
-                </tr>
-
-
-                <tr>
-                    <td style="text-align: center;">NO.</td>
-                    <td style="text-align: center;">商品名称</td>
-                    <td style="text-align: center;">商品规格</td>
-                    <td style="text-align: center;">单价</td>
-                    <td style="text-align: center;">数量</td>
-                    <td style="text-align: center; width: 80px;">实际售价</td>
-                    <td style="text-align: center; width: 65px;">应收金额</td>
-
-                    <td style="text-align: center;" colspan="2">巧克力牌内容</td>
-                </tr>
-                {{#if products}}
-                    {{#products}}
-                <tr class="trprint">
-                    <td style="text-align: center;">{{add @index 1}}</td>
-                    <td style="text-align: center;">{{product_name}}</td>
-                    <td style="text-align: center;">
-                        {{size}}                                        </td>
-                    <td style="text-align: center;">{{original_price}}</td>
-                    <td style="text-align: center;">{{num}}</td>
-                    <td style="text-align: center;">{{discount_price}}</td>
-                    <td style="text-align: center;" class="mm">{{amount}}</td>
-                    <td style="text-align: center;" colspan="2">{{choco_board}}</td>
-                </tr>
-
-                        {{/products}}
-                {{/if}}
-
-                <tr>
-                    <td style="text-align: center;" colspan="6">合计</td>
-                    <td style="text-align: center;">&#165;{{total_amount}}</td>
-                    <td style="text-align: center;" colspan="2"></td>
-                </tr>
-                <tr>
-                    <td style="text-align: center;">1</td>
-                    <td style="text-align: center;">免费产品</td>
-                    <td colspan="7">
-
-                                            <span style="float: left;">
-                                                {{#if atlas}}√蛋糕册{{else}} {{/if}}
-                                            </span>
-                    </td>
-
-                </tr>
-                <tr>
-                    <td style="text-align: center;">1</td>
-                    <td style="text-align: center;">祝福贺卡</td>
-                    <td style="text-align: left;" colspan="7">{{greeting_card}}</td>
-                </tr>
-                <tr>
-                    <td style="text-align: center;">1</td>
-                    <td style="text-align: center;">商品名称</td>
-                    <td style="text-align: left;" colspan="7">
-
-                    </td>
-                </tr>
-
-
-
-                <tr>
-                    <td style="text-align: center;">备注</td>
-                    <td style="text-align: left;" colspan="5">{{remarks}}</td>
-                    <td style="text-align: center;">验证码</td>
-                    <td style="text-align: left;" colspan="2"></td>
-                </tr>
-                <tr>
-                    <td style="text-align: center;">接单人</td>
-                    <td style="text-align: center;">{{created_by}}</td>
-                    <td style="text-align: center;" colspan="2">蛋糕师傅</td>
-                    <td style="text-align: center;" colspan="2"></td>
-                    <td style="text-align: center;">配送员</td>
-                    <td style="text-align: center;" colspan="2">{{deliveryman_name}}</td>
-                </tr>
-
-                <tr></tr>
-                <tr>
-                    <td style="text-align: center;">顾客签字</td>
-                    <td style="text-align: center;"></td>
-                    <td style="text-align: center;" colspan="2">签收时间</td>
-                    <td style="text-align: center;" colspan="2"></td>
-                    <td style="text-align: center;">配送费用</td>
-                    <td style="text-align: center;" colspan="2"></td>
-
-                </tr>
-                <tr>
-                    <td colspan="8" style="border-right:none; font-size:14px;">
-                        <span style="margin:2px;">&nbsp;温馨提示：</span><br />
-                        <span style="margin:2px;">&nbsp;1.烘培产品对环境温度敏感度不同，容易影响各种口感，建议收货时间与食用时间间隔30分钟；</span><br />
-                        <span style="margin:2px;">&nbsp;2.保存条件：0-4℃冷藏保存一天，4小时内5℃食用最佳；</span><br />
-                        <span style="margin:2px;">&nbsp;3.就敢退：实物不对版，退款不退货！</span><br />
-                        <span style="margin:2px;">&nbsp;4.就敢减：约定时间，迟到一分钟减一元！</span><br />
-                        <span style="margin:2px;">&nbsp;5.就敢送：迟到30分钟免费赠送！</span>
-                    </td>
-                    <td style="border-left:none;">
-                        <img src="{{../baseHref}}/src/images/qrcode.png" style="width: 89px; height: 89px;vertical-align: middle;">
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="9">
-                        &nbsp;幸福热线：400-999-6666&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        官网订购：www.xfxb.net&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        微信订购：xfxbsz
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <div style="float: left; padding: 0; margin: 0; width: 10px;">
-                <ul style="list-style: none; padding: 8px 0 0 3px; margin: 0; width: 10px; font-size: 13px;">
-                    <li>生</li>
-                    <li>产</li>
-                    <li>︵</li>
-                    <li>白</li>
-                    <li>︶</li>
-                    <li></li>
-                    <li>客</li>
-                    <li>户</li>
-                    <li>︵</li>
-                    <li>红</li>
-                    <li>︶</li>
-                    <li></li>
-                    <li>财</li>
-                    <li>务</li>
-                    <li>︵</li>
-                    <li>蓝</li>
-                    <li>︶</li>
-                    <li></li>
-                    <li>物</li>
-                    <li>流</li>
-                    <li>︵</li>
-                    <li>黄</li>
-                    <li>︶</li>
-                </ul>
-            </div>
-            <div style="float: right;width: 96px;height: 369px;position: relative;">
-                <div style="position:absolute; top: 43%;left: -120px;transform: rotate(90deg)">
-                    <image id="barcode{{@index}}" />
+    <div class="inner">
+        <div class="tb">
+            <div class="clearfix">
+                <div style="float: left; height: 40px; width: 170px;">
+                    <div style="font-size: 23px; margin-left:15px; font-weight: bold; line-height: 23px; height: 23px; font-family: '幼圆'">幸福西饼</div>
+                    <div style="font-size: 17px; margin-left:15px; font-weight: bold; line-height: 17px; height: 17px; font-family: '幼圆'; ">BLISS CAKE</div>
+                </div>
+                <div style="float: left; width: 419px;">
+                    <span style="font-size: 30px; font-weight: bold; line-height: 40px; height: 40px; font-family: '华文中宋'">幸福西饼网络商城配送签收单</span>
+                </div>
                 </div>
             </div>
-            <script type="text/javascript">
-                $(function(){
-                    var canvas = document.createElement("canvas");
-                    JsBarcode(canvas, '{{order_id}}', {
-                      format: "CODE128C",
-                      width:2,
-                      height:40,
-                      quite: 20,
-                      displayValue: false,
-                    });
-                    $('#barcode{{@index}}').get(0).src = canvas.toDataURL("image/png");
-                })
-            </script>
+
+            <div style="width: 100%" class="clearfix">
+                <table id="tablemoney" style="width: 730px; border-collapse: collapse; border: 1px solid #000000; height: 300px; float: left; " border="1">
+                    <tbody>
+                    <tr>
+                        <td style="width: 65px; text-align: center;">订单号</td>
+                        <td style="width: 120px; text-align: center;">{{order_id}}</td>
+                        <td style="width: 70px; text-align: center;">下单时间</td>
+                        <td style="width: 112px; text-align: center;" colspan="2">{{created_time}}</td>
+                        <td style="width: 90px; text-align: center;">订单来源</td>
+                        <td style="text-align: center;" colspan="3">
+                            {{merge_name}}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="text-align: center;">订货人</td>
+                        <td style="text-align: center;">
+                            {{owner_name}}
+                        </td>
+
+                        <td style="text-align: center;">订货电话</td>
+                        <td style="text-align: center;" colspan="2">{{owner_mobile}}</td>
+                        <td style="text-align: center;">收货人</td>
+                        <td style="text-align: center;">{{recipient_name}}</td>
+                        <td>收货人电话</td>
+                        <td>{{recipient_mobile}}</td>
+                    </tr>
+
+                    <tr>
+                        <td style="text-align: center;">送货地址</td>
+
+                        <td style="text-align: center;" colspan="8">
+                            {{province_name}}  {{city_name}}  {{regionalism_name}}  {{recipient_address}}                           </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">支付方式</td>
+                        <td colspan="4" style="text-align: center;">
+                            {{pay_name}}
+                        </td>
+                        <td style="text-align: center;">送达时间</td>
+                        <td style="text-align: center;" colspan="3">{{delivery_time}}</td>
+                    </tr>
+
+
+                    <tr>
+                        <td style="text-align: center;">NO.</td>
+                        <td style="text-align: center;">商品名称</td>
+                        <td style="text-align: center;">商品规格</td>
+                        <td style="text-align: center;">单价</td>
+                        <td style="text-align: center;">数量</td>
+                        <td style="text-align: center; width: 80px;">实际售价</td>
+                        <td style="text-align: center; width: 65px;">应收金额</td>
+
+                        <td style="text-align: center;" colspan="2">巧克力牌内容</td>
+                    </tr>
+                    {{#if products}}
+                        {{#products}}
+                    <tr class="trprint">
+                        <td style="text-align: center;">{{add @index 1}}</td>
+                        <td style="text-align: center;">{{product_name}}</td>
+                        <td style="text-align: center;">
+                            {{size}}                                        </td>
+                        <td style="text-align: center;">{{original_price}}</td>
+                        <td style="text-align: center;">{{num}}</td>
+                        <td style="text-align: center;">{{discount_price}}</td>
+                        <td style="text-align: center;" class="mm">{{amount}}</td>
+                        <td style="text-align: center;" colspan="2">{{choco_board}}</td>
+                    </tr>
+
+                            {{/products}}
+                    {{/if}}
+
+                    <tr>
+                        <td style="text-align: center;" colspan="6">合计</td>
+                        <td style="text-align: center;">&#165;{{total_amount}}</td>
+                        <td style="text-align: center;" colspan="2"></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">1</td>
+                        <td style="text-align: center;">免费产品</td>
+                        <td colspan="7">
+
+                                                <span style="float: left;">
+                                                    {{#if atlas}}√蛋糕册{{else}} {{/if}}
+                                                </span>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">1</td>
+                        <td style="text-align: center;">祝福贺卡</td>
+                        <td style="text-align: left;" colspan="7">{{greeting_card}}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">1</td>
+                        <td style="text-align: center;">商品名称</td>
+                        <td style="text-align: left;" colspan="7">
+
+                        </td>
+                    </tr>
+
+
+
+                    <tr>
+                        <td style="text-align: center;">备注</td>
+                        <td style="text-align: left;" colspan="5">{{remarks}}</td>
+                        <td style="text-align: center;">验证码</td>
+                        <td style="text-align: left;" colspan="2"></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">接单人</td>
+                        <td style="text-align: center;">{{created_by}}</td>
+                        <td style="text-align: center;" colspan="2">蛋糕师傅</td>
+                        <td style="text-align: center;" colspan="2"></td>
+                        <td style="text-align: center;">配送员</td>
+                        <td style="text-align: center;" colspan="2">{{deliveryman_name}}</td>
+                    </tr>
+
+                    <tr></tr>
+                    <tr>
+                        <td style="text-align: center;">顾客签字</td>
+                        <td style="text-align: center;"></td>
+                        <td style="text-align: center;" colspan="2">签收时间</td>
+                        <td style="text-align: center;" colspan="2"></td>
+                        <td style="text-align: center;">配送费用</td>
+                        <td style="text-align: center;" colspan="2"></td>
+
+                    </tr>
+                    <tr>
+                        <td colspan="8" style="border-right:none; font-size:14px;">
+                            <span style="margin:2px;">&nbsp;温馨提示：</span><br />
+                            <span style="margin:2px;">&nbsp;1.烘培产品对环境温度敏感度不同，容易影响各种口感，建议收货时间与食用时间间隔30分钟；</span><br />
+                            <span style="margin:2px;">&nbsp;2.保存条件：0-4℃冷藏保存一天，4小时内5℃食用最佳；</span><br />
+                            <span style="margin:2px;">&nbsp;3.就敢退：实物不对版，退款不退货！</span><br />
+                            <span style="margin:2px;">&nbsp;4.就敢减：约定时间，迟到一分钟减一元！</span><br />
+                            <span style="margin:2px;">&nbsp;5.就敢送：迟到30分钟免费赠送！</span>
+                        </td>
+                        <td style="border-left:none;">
+                            <img src="{{../baseHref}}/src/images/qrcode.png" style="width: 89px; height: 89px;vertical-align: middle;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="9">
+                            &nbsp;幸福热线：400-999-6666&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            官网订购：www.xfxb.net&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            微信订购：xfxbsz
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div style="float: left; padding: 0; margin: 0; width: 10px;">
+                    <ul style="list-style: none; padding: 8px 0 0 3px; margin: 0; width: 10px; font-size: 13px;">
+                        <li>生</li>
+                        <li>产</li>
+                        <li>︵</li>
+                        <li>白</li>
+                        <li>︶</li>
+                        <li></li>
+                        <li>客</li>
+                        <li>户</li>
+                        <li>︵</li>
+                        <li>红</li>
+                        <li>︶</li>
+                        <li></li>
+                        <li>财</li>
+                        <li>务</li>
+                        <li>︵</li>
+                        <li>蓝</li>
+                        <li>︶</li>
+                        <li></li>
+                        <li>物</li>
+                        <li>流</li>
+                        <li>︵</li>
+                        <li>黄</li>
+                        <li>︶</li>
+                    </ul>
+                </div>
+                <div style="float: right;width: 94px;height: 369px;position: relative;">
+                    <div style="position:absolute; top: 43%;left: -120px;transform: rotate(90deg)">
+                        <image id="barcode{{@index}}" />
+                    </div>
+                </div>
+                <script type="text/javascript">
+                    $(function(){
+                        var canvas = document.createElement("canvas");
+                        JsBarcode(canvas, '{{order_id}}', {
+                          format: "CODE128C",
+                          width:2,
+                          height:40,
+                          quite: 20,
+                          displayValue: false,
+                        });
+                        $('#barcode{{@index}}').get(0).src = canvas.toDataURL("image/png");
+                    })
+                </script>
+            </div>
         </div>
     </div>
 </div>
@@ -311,24 +319,3 @@
 <!--<object style="position: absolute; left: -9000px; top: -9000px;" type="application/x-bang5taoplugin" id="b5tplugin" height="0" width="0"></object>-->
 </body>
 </html>
-<!--
-<script type="text/javascript">
-    $(function () {
-        var cityName="";
-        $("#tablemoney tbody tr").each(function () {
-            if ($(this).hasClass("trprint")) {
-                $("td[class='mm']").each(function () {
-                    $(this).html("&#165;178.00");
-                });
-                //$(this).each(function() {
-                //    if ($(this).hasClass("mm")) {
-                //      $()
-                //    }
-                //});
-            }
-        });
-
-    });
-
-</script>
--->

@@ -1,61 +1,13 @@
 /**
  * access_control_list : 权限列表
  */
-import { acl } from 'config/app.config';
+import { test_acl } from 'config/app.config';
 
-var  PERMISSIONS = undefined;
 //测试数据
-/*const PERMISSIONS = [
- 'OrderManageAccess',
-   'OrderManageView',
-   'OrderManageEdit',
-   'OrderManageAddressFilter',
-   'OrderManageChannelFilter',
-   'DeliveryChange',
-   'DeliveryManageChangeStationFilter',
-   'DeliveryManageChangeAddressFilter',
-   'DeliveryManage',
-   'DeliveryManageDeliveryAddressFilter',
-   'DistributeManage',
-   'DeliveryManageDistributeStationFilter',
-   'DeliveryManageDistributeAddressFilter',
-   'PrintReview',
-  'DeliveryManageAccess',
-  'DeliveryManageReprintable',
-  'DeliveryManageUnprintable',
-
-  'DistributeManageAccess',
-    'DeliveryManageDistributeExportExcel',
-  'PrintReviewAccess',
-    'DeliveryManagePrintReviewReview',
-  'SrcChannelManageAccess',
-    'SrcChannelManageEdit',
-    'SrcChannelManageRemove',
-    'SrcChannelManagePriChannelAdd',
-    'SrcChannelManageSecChannelAdd',
-
-  'UserManageAccess',
-  'UserManageUnameOrNameFilter',
-  'UserManageAddUser',
-  'UserManageUserEdit',
-  'UserManageUserStatusModify',
-  'UserManageUserRemove',
-  'DeptRoleManageAccess',
-  'DeptRoleManageAddDept',
-  'DeptRoleManageAddRole',
-  'DeptRoleManageRoleEdit',
-  'DeptRoleManageRoleRemove',
-  'RoleAuthorityManageAccess',
-  'RoleAuthorityManageModuleFilter',
-  'RoleAuthorityManageAuthEdit',
-  'SystemAuthorityManageAccess',
-  'SystemAuthorityManageModuleFilter',
-  'SystemAuthorityManageAddDialog',
-  'SystemAuthorityManageAuthEdit',
-  'SystemAuthorityManageAuthRemove',
-  'SystemAuthorityManageAddAuth',
-  'SystemAuthorityManageAddModule',
- ];*/
+// var PERMISSIONS = [
+//   'StationScopeManageAccess',
+//   'StationScopeManageView'
+// ];
 
 /**
  * 有无该权限
@@ -64,10 +16,10 @@ var  PERMISSIONS = undefined;
 export default function validate ( role ){
   var { user } = window.xfxb;
   //特殊情况
-  if( !acl || ( user && user.is_admin ) ){
+  if( !test_acl && user && user.is_admin ){
     return true;
   }
-  var permissions = user.permissions || [];
+  var permissions = test_acl ? PERMISSIONS : (user.permissions || []);
   return permissions.some( n => n === role );
 }
 

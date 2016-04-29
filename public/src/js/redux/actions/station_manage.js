@@ -97,16 +97,17 @@ export function checkAllStations(checked){
   }
 }
 
-export const OPEN_EDIT = 'OPEN_EDIT';
-export function openEdit(){
+export const ACTIVE_STATION = 'ACTIVE_STATION';
+export function activeStation(station_id){
   return {
-    type: OPEN_EDIT,
+    type: ACTIVE_STATION,
+    station_id
   }
 }
 
-export const CLOSE_EDIT = 'CLOSE_EDIT';
-export function closeEdit(){
+export const UNACTIVE_STATION = 'UNACTIVE_STATION';
+export function unactiveStation(){
   return {
-    type: CLOSE_EDIT,
+    type: UNACTIVE_STATION,
   }
 }

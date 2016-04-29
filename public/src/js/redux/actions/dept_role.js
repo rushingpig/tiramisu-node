@@ -58,8 +58,8 @@ export default function dept_role(ActionTypes=DeptRoleActionTypes){
       
     },
 
-    getRoles:function(org_id){
-    	return GET(Url.role_list_info.toString(),{org_id:org_id},ActionTypes.GOT_ROLES);
+    getRolesSignal:function(org_id, signal){
+    	return GET(Url.role_list_info.toString(),{org_id:org_id, signal: signal},ActionTypes.GOT_ROLES_SIGNAL);
 /*    	return TEST({
     		total:5,
     		list:[{
@@ -84,8 +84,8 @@ export default function dept_role(ActionTypes=DeptRoleActionTypes){
     	  data:{1:'话务专员',2:'订单专员',3:'售后客服',4:'客服部主管',5:'客服部经理'}
     	}*/
     },
-    getAllRoles:function(){
-      return GET(Url.role_list_info.toString(),null,ActionTypes.GOT_ALL_ROLES);
+    getAllRolesSignal:function(signal){
+      return GET(Url.role_list_info.toString(),{signal:signal},ActionTypes.GOT_ALL_ROLES_SIGNAL);
 /*      return {
         type:ActionTypes.GOT_ALL_ROLES,
         data:{1:'话务专员',2:'订单专员',3:'售后客服',4:'客服部主管',5:'客服部经理',6:'xxxx',7:'xxxx'}

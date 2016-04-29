@@ -287,10 +287,10 @@ class ManageAddForm extends Component{
     var {value} = e.target;
     this.props.actions.resetRoles();
     if(value == 999 )
-      this.props.actions.getAllRoles(value);
+      this.props.actions.getAllRolesSignal(value, 'authority');
     else
       if(value != this.refs.department.props['default-value'])
-          this.props.actions.getRoles(value);
+          this.props.actions.getRolesSignal(value, "authority");
     callback(e);
   }
 

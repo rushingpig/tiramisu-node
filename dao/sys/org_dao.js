@@ -12,7 +12,8 @@ var baseDao = require('../base_dao'),
     tables = require('../../config').tables,
     constant = require('../../common/Constant'),
     dbHelper = require('../../common/DBHelper'),
-    toolUtils = require('../../common/ToolUtils');
+    toolUtils = require('../../common/ToolUtils'),
+    systemUtils = require('../../common/SystemUtils');
 function OrgDao(table){
     this.table = table || tables.sys_organization;
     this.base_insert_sql = "insert into ?? set ?";
@@ -43,6 +44,9 @@ OrgDao.prototype.findAllOrgs = function(query_data){
     sql += ds_sql;
     // data filter end
     sql += " where so.del_flag = ? and so.is_usable = ?";
+    if(query_data.signal && systemUtils.isDoDataFilter(query_data)){
+        sql += " and so.id in" + dbHelper.genInSql(query_data.user.org_ids);
+    }
     params.push(del_flag.SHOW);
     params.push(is_usable.enable);
     return baseDao.select(sql,params);

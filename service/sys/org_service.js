@@ -26,7 +26,8 @@ function OrgService() {
  */
 OrgService.prototype.listAllOrgs = (req,res,next) => {
     let query_data = {
-        user : req.session.user
+        user : req.session.user,
+        signal : req.query.signal
     };
     let promise = orgDao.findAllOrgs(query_data).then(results => {
         if(toolUtils.isEmptyArray(results)){

@@ -167,6 +167,9 @@ module.exports = {
           user.data_scopes.indexOf(constant.DS.STATION.id) !== -1
           || user.data_scopes.indexOf(constant.DS.CITY.id) !== -1
         );
+  },
+  isDoDataFilter : (query_data) => {
+    return query_data && !(query_data.user.is_admin || query_data.user.data_scopes.indexOf(Constant.DS.ALLCOMPANY.id) != -1);
   }
 
 };

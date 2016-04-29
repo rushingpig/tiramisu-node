@@ -83,7 +83,8 @@ RoleService.prototype.listRoles = (req, res, next) => {
         role_name: q.role_name,
         page_no: q.page_no || '',
         page_size: q.page_size || '',
-        user : req.session.user
+        user : req.session.user,
+        signal : req.query.signal
     };
     let promise = roleDao.findRoles(query_data).then(_res => {
         if (toolUtils.isEmptyArray(_res.result) || toolUtils.isEmptyArray(_res._result)) {

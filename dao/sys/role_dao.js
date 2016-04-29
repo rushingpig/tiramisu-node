@@ -12,6 +12,7 @@ var baseDao = require('../base_dao'),
     tables = require('../../config').tables,
     dbHelper = require('../../common/DBHelper'),
     toolUtils = require('../../common/ToolUtils'),
+    systemUtils = require('../../common/SystemUtils'),
     constant = require('../../common/Constant');
 
 function RoleDao(table){
@@ -47,6 +48,9 @@ RoleDao.prototype.findRoles = function(query_data){
         }
     }
     // data filter end
+    if(query_data.signal && systemUtils.isDoDataFilter(query_data)){
+        sql += " and id in" + dbHelper.genInSql(query_data.user.role_ids);
+    }
     let count_sql = dbHelper.countSql(sql);
     return baseDao.select(count_sql,params).then(result => {
         let pagination_sql = '';

@@ -29,9 +29,15 @@ export function dept_role(Actions=DeptRoleActionTypes){
 		switch(action.type){
 			case Actions.GOT_DEPTS:
 				return {...state, depts:_c(action.data.list) };
+			case Actions.GOT_DEPTS_SIGNAL:
+				return {...state, depts:_c(action.data.list) };
 			case Actions.RESET_ROLES:
 				return {...state,roles:[]};
+			case Actions.GOT_ROLES:
+				return {...state,roles:_c(action.data.list)};
 			case Actions.GOT_ROLES_SIGNAL:
+				return {...state,roles:_c(action.data.list)};
+			case Actions.GOT_ALL_ROLES:
 				return {...state,roles:_c(action.data.list)};
 			case Actions.GOT_ALL_ROLES_SIGNAL:
 				return {...state,roles:_c(action.data.list)};

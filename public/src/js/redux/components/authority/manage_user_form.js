@@ -247,10 +247,10 @@ class ManageAddForm extends Component{
 /*    var {getDepts} = this.props.actions;
     getDepts();*/
     LazyLoad('noty');
-    var {getProvincesSignal,getDepts} = this.props.actions;
+    var {getProvincesSignal,getDeptsSignal} = this.props.actions;
     var {params} = this.props;
     getProvincesSignal("authority");
-    getDepts();
+    getDeptsSignal('authority');
   }
 
   onProvinceChange(callback,e){
@@ -322,7 +322,7 @@ ManageAddForm.propTypes = {
     provinces:PropTypes.array.isRequired,
   }),
   actions:PropTypes.shape({
-    getDepts:PropTypes.func.isRequired
+    getDeptsSignal:PropTypes.func.isRequired
   }).isRequired,
 
    editable: PropTypes.bool.isRequired,

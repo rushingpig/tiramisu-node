@@ -8,9 +8,7 @@
 "use strict";
 var uuid = require('uuid');
 
-function UUIDUtils(){
-
-}
+ const UUIDUtils = module.exports;
 /**
  * get an uuid with 32 length based on time
  * @param options
@@ -32,7 +30,7 @@ UUIDUtils.uuidv4 = function(options){
         return uuid.v4(options).replace(/-/g,'');
     }
     return uuid.v4().replace(/-/g,'');
-}
+};
 /**
  *  parse UUIDs
  * @param id    (String) UUID(-like) string
@@ -40,7 +38,7 @@ UUIDUtils.uuidv4 = function(options){
  * @param offset    (Number) Starting index in buffer at which to begin writing. Default: 0
  */
 UUIDUtils.parse = function(id,buffer,offset){
-    return uuid.parse(id,buffer,offse);
+    return uuid.parse(id,buffer,offset);
 };
 /**
  * unparse UUIDs
@@ -51,5 +49,4 @@ UUIDUtils.parse = function(id,buffer,offset){
 UUIDUtils.unparse = function(buffer,offset){
     return uuid.unparse(buffer,offset);
 };
-module.exports = UUIDUtils;
 

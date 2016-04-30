@@ -108,16 +108,12 @@ var exp_session_options = function(store){
 };
 
 //  exclude path arrays of login filter
-var exclude_paths = ['/','/v1/a/login','/payment'];
+var exclude_paths = ['/','/v1/a/login'];
 
 var white_ips = ['1','127.0.0.1'];
 var log4js_options = {
     reloadSecs: 3000 ,   // the interval to reload the log4js config file
     cwd : './log/'
-};
-
-var ping_xx = {
-    apiKey: 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
 };
 
 var sms_host = "http://127.0.0.1:3000/sms/internal";
@@ -131,7 +127,6 @@ module .exports = {
     exp_session_options : exp_session_options,
     exp_router_options : exp_router_options,
     tables : tables,
-    ping_xx: ping_xx,
     login_required: login_required,
     mysql_options : mysql_options,
     log4js_options : log4js_options,

@@ -11,5 +11,6 @@ after(function () {
 });
 
 require('./api/order.test')();
+require('./api/orderInternal.test')();
 require('./api/delivery.test')();
 require('./api/system.test')();

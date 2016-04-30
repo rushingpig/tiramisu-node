@@ -1175,7 +1175,8 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
           greeting_card: greeting_card,
           coupon: coupon,
           merchant_id: merchant_id,
-          created_by: req.session.user.id
+          // Force using system id
+          created_by: 20
         };
         // order
         transaction.query(this.base_insert_sql, [tables.buss_order, systemUtils.assembleInsertObj(req, orderObj)], (order_err, result) => {
@@ -1219,7 +1220,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
           let order_history_obj = {
             order_id: orderId,
             option: '添加订单',
-            created_by: req.session.user.id
+            created_by: 20
           };
           let skus_sql = "insert into " + tables.buss_order_sku + "(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price,amount) values ?";
           transaction.query(skus_sql, [params], err => {

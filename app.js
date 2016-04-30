@@ -74,7 +74,7 @@ app.use(cookieParser());
 app.use(middleware.system.wrapperResponse);
 app.use('/v1/[a,i]/*',middleware.system.debugReqAndResParams);
 app.use('/v1/i/*',middleware.whiteIPList.isInWhiteList);
-app.use(session(config.exp_session_options(MySQLStore)));
+app.use(/^((?!\/v1\/i\/).)*$/, session(config.exp_session_options(MySQLStore)));
 app.use(express.static(path.join(__dirname, 'public'),config.exp_static_options));
 if (config.login_required) {
     app.use(middleware.login.loginFilter);

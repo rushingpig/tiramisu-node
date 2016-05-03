@@ -170,7 +170,7 @@ Constant.BUSS_ORDER_ERROR = {
  * the role of deliveryman id in the db
  * @type {number}
  */
-Constant.DELIVERYMAN_ID = 4;
+Constant.DELIVERYMAN_ID = 34;
 
 Constant.PRODUCT = {
     ACCESSORY_ID: 15

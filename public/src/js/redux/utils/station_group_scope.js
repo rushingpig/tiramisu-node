@@ -1,6 +1,6 @@
 import Noty from 'utils/_noty';
-import { outputPonits, changePonits, addInfoWindow, addMarkerToMap, _initialize, create, addMarker,
-  oldPolygonStyle, newPolygonStyle, getLabelStyle } from 'utils/create_visiable_map';
+import { outputPonits, changeToPonits, addInfoWindow, addMarkerToMap, _initialize, create, addMarker,
+  locationCenter, oldPolygonStyle, newPolygonStyle, getLabelStyle } from 'utils/create_visiable_map';
 import clone from 'clone';
 
 var MyMap = function(list){
@@ -15,27 +15,9 @@ var MyMap = function(list){
 
   this.d = $.Deferred();
 }
-MyMap.prototype.changePonits = changePonits;
+MyMap.prototype.changeToPonits = changeToPonits;
 
-MyMap.prototype.centerAndZoomStation = function(name, city, address){
-  if(BMap){
-    let map = this.map;
-    this.infoCenter && this.map.removeOverlay(this.infoCenter);
-    this.geocoder = new BMap.Geocoder();
-    this.geocoder.getPoint(address || city, (poi) => {
-      console.log('poi: ', poi);
-      if(poi){
-        map.panTo(poi);
-        map.setZoom(13);
-        this.infoCenter = addInfoWindow(map, poi, {name, address});
-      }else{
-        map.centerAndZoom( city, 12 );
-      }
-    })
-  }else{
-    console.log('error');
-  }
-}
+MyMap.prototype.locationCenter = locationCenter;
 
 MyMap.prototype.addMarker = function( point ){
   var self = this;
@@ -78,35 +60,7 @@ MyMap.prototype.createNewScope = function( points ){
   }.bind(this);
   this.map.addEventListener('click', this._clickHandler);
 }
-/*
-MyMap.prototype.drawNewScope = function(){
-  let self = this;
-  let map = this.map;
-  let index = 0;
-  let points = [];
-  this.polygons[self.onEditIndex] = new BMap.Polygon(points, newPolygonStyle);
-  map.addOverlay(this.polygons[self.onEditIndex]);
 
-  this._addPointHandler = function(event){
-    points.push(event.point);
-    var marker = new BMap.Marker(event.point);
-    map.addOverlay(marker);
-    self.markers.push(marker);
-    marker.id = index++;
-    marker.enableDragging();
-    var label = new BMap.Label(marker.id + 1);
-    label.setStyle(getLabelStyle(marker.id + 1));
-    marker.setLabel(label);
-    self.polygons[self.onEditIndex].setPath(points);
-
-    marker.addEventListener('dragging', function(event) {
-      points[this.id] = event.point;
-      self.polygons[self.onEditIndex].setPath(points);
-    });
-  };
-  map.addEventListener('click', this._addPointHandler);
-}
-*/
 MyMap.prototype.initialScope = function(){
   let self = this;
   let map = this.map;
@@ -132,33 +86,11 @@ MyMap.prototype.enableEdit = function(station_id){
   })[0];
 
   this.createNewScope( _on.coords );
-  // if(_on.coords){
-  //   let points = changePonits(_on.coords);
-  //   points.forEach(function(n, index){
-  //     let marker = new BMap.Marker(n);
-  //     self.markers.push(marker);
-  //     marker.enableDragging();
-  //     marker.id = index++;
-  //     map.addOverlay(marker);
-  //     var label = new BMap.Label(marker.id + 1);
-  //     label.setStyle(getLabelStyle(marker.id + 1));
-  //     marker.setLabel(label);
-  //     if(!self.polygons[self.onEditIndex]){
-  //       self.polygons[self.onEditIndex] = new BMap.Polygon(points, newPolygonStyle);
-  //     }
-  //     map.addOverlay(self.polygons[self.onEditIndex]);
-  //     marker.addEventListener('dragging', function(event) {
-  //       points[this.id] = event.point;
-  //       self.polygons[self.onEditIndex].setPath(points);
-  //     });
-  //   })
-  // }else{
-  //   self.createNewScope();
-  // }
+
   this.editting = true;
   this.map.removeOverlay(this.infoCenter);
-  var { name, city_name, regionalism_name, address } = _on;
-  self.centerAndZoomStation( name, city_name, (regionalism_name || '') + (address || '') );
+  var { name, province_name, city_name, regionalism_name, address } = _on;
+  self.locationCenter( province_name, city_name, regionalism_name, address, { name, address});
 }
 
 MyMap.prototype.stopEditScope = function(){
@@ -176,7 +108,6 @@ MyMap.prototype.resetScope = function(){
 }
 
 MyMap.prototype.getCoords = function(){
-  // this.list[this.onEditIndex].coords = outputPonits(this.polygons[this.onEditIndex].getPath());
   var all_coords = clone(this.list);
   all_coords.forEach( n => {
     n.coords = n.coords && outputPonits( n.coords );

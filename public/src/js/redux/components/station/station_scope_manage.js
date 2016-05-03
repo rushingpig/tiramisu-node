@@ -153,6 +153,9 @@ FilterHeader = reduxForm({
 class StationRow extends Component{
   constructor(props){
     super(props);
+    this.state = {
+      added: false, //是否已点击添加配送区域
+    }
     this.editScope = this.editScope.bind(this);
     this.viewScope = this.viewScope.bind(this);
     this.checkStationHandler = this.checkStationHandler.bind(this);
@@ -171,7 +174,7 @@ class StationRow extends Component{
             <a onClick={this.viewScope} href="javascript:;" className="nowrap">[ 查看 ] </a>
           }
           <a onClick={this.editScope} href="javascript:;" className="nowrap">
-            { props.coords 
+            { props.coords || this.state.added
                 ? V('StationScopeManageEdit') && '[ 编辑配送区域 ]'
                 : V('StationScopeManageAdd') && '[ 添加配送区域 ]'
             }
@@ -187,6 +190,7 @@ class StationRow extends Component{
   editScope(){
     var { station_id, editStationScope } = this.props;
     editStationScope(station_id);
+    this.setState({ added: true }); //主要考虑到添加之后，这个按钮的功能应该转换为编辑，
   }
   viewScope(){
     this.props.viewStationScope( this.props );
@@ -293,10 +297,11 @@ class StationGroupMap extends Component {
       edit_station_id: undefined,
       editable: false,
       submitable: false,
+      fullScreen: false,
     };
   }
   render(){
-    var { editable, submitable } = this.state;
+    var { editable, submitable, fullScreen } = this.state;
     return (
       <div className="panel">
         {
@@ -308,8 +313,11 @@ class StationGroupMap extends Component {
           </div>
         }
         <div className="panel-body">
-          <div ref="map" id="stationMap"/>
-          <div className="font-sm mgt-4" style={{marginTop: '3px'}}>( * 编辑状态时，您可以点击新地点来增加标记 )</div>
+          <div ref="map" className={`station-map ${fullScreen ? 'full-screen' : ''}`}>
+            <a onClick={this.fullScreen.bind(this)} className="full-screen-btn" href="javascript:;"></a>
+            <div id="map_container" className="map-container"></div>
+          </div>
+          <div className="font-sm gray" style={{marginTop: '3px'}}>( * 编辑状态时，您可以点击新地点来增加标记 )</div>
         </div>
       </div>
     );
@@ -330,7 +338,7 @@ class StationGroupMap extends Component {
           MyMap.reset();
           //服务器传来的数据coords是字符串形式的，需要转换
           MyMap.list = nextProps.list.map( n => {
-            return {...n, coords: MyMap.changePonits(n.coords)};
+            return {...n, coords: MyMap.changeToPonits(n.coords)};
           });
           MyMap.initialScope();
           clearInterval(this._mapInitTimer);
@@ -338,13 +346,16 @@ class StationGroupMap extends Component {
       }, 100);
     }
   }
-  viewStationScope({name, city_name, regionalism_name, address}){
-    MyMap.centerAndZoomStation(name, city_name, ( regionalism_name || '') + ( address || ''));
+  fullScreen(){
+    this.setState({ fullScreen: !this.state.fullScreen });
+  }
+  viewStationScope({name, province_name, city_name, regionalism_name, address}){
+    MyMap.locationCenter(province_name, city_name, regionalism_name, address, {name, address});
   }
   editStationScope(station_id){
     if(!MyMap.editting){
       this.setState({ editable: true, edit_station_id: station_id, submitable: true });
-      MyMap.centerAndZoomStation(station_id);
+      MyMap.enableEdit(station_id);
     }else{
       Noty('warning','请确定已停止当前修改操作或已提交');
     }
@@ -352,7 +363,6 @@ class StationGroupMap extends Component {
   stopEditScope(){
     if(!MyMap.editting){return;}
     this.setState({ editable: false });
-    this.props.closeActive(this.state.edit_station_id);
     MyMap.stopEditScope();
   }
   resetEditScope(){
@@ -360,7 +370,7 @@ class StationGroupMap extends Component {
   }
   saveNewScope(){
     var self = this;
-    var { putMultipleStationScope } = this.props;
+    var { putMultipleStationScope, closeActive } = this.props;
     var data = MyMap.getCoords().map(n => {
       let id = n.station_id;
       let coords = n.coords;
@@ -368,10 +378,11 @@ class StationGroupMap extends Component {
     });
     putMultipleStationScope(data)
     .done(function(){
-        Noty('success', '保存成功');
-        this.stopEditScope();
-        MyMap.initialScope();
-      }.bind(this))
+      Noty('success', '保存成功');
+      this.stopEditScope();
+      MyMap.initialScope();
+      closeActive(this.state.edit_station_id);
+    }.bind(this))
     .fail(function(msg, code){
       Noty('error', msg || '保存异常');
     })

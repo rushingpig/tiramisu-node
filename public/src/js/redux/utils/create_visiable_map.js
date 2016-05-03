@@ -34,19 +34,21 @@ export function outputPonits(points){
   return JSON.stringify(points).replace(/lat/g,'latitude').replace(/lng/g,'longitude');
 }
 
-export function changePonits(points){
+export function changeToPonits(points){
   if(core.isString(points)){
-    return JSON.parse(points.replace(/latitude/g,'lat').replace(/longitude/g,'lng'));
-  }else{
-    return null;
+    var p = JSON.parse(points.replace(/latitude/g,'lat').replace(/longitude/g,'lng'));
+    if(core.isArray(p)){
+      return p.map( changeToPoint ); //转化为标准Point对象
+    }
   }
+  return null;
 }
 
 export function addInfoWindow(map,point,station_info){
   // var opts = {title: station_info.name, width: 0, height:0, offset: new BMap.Size(15,-20)}
-  var opts = {title: station_info.name, width: 0, height:0}
+  var opts = {title: station_info.name || '-', width: 0, height:0}
   var sContent =
-      "<p> 配送站地址：" + station_info.address + "</p>" 
+      "<p> 配送站地址：" + (station_info.address || '-') + "</p>" 
   var infoWindow = new BMap.InfoWindow(sContent, opts);
   var center = new BMap.Marker(point);
   var icon = new BMap.Icon('/images/point_blue.png', new BMap.Size(24, 35), {
@@ -107,25 +109,31 @@ MyMap.prototype.saveStationScope = function(){
   return points;
 }
 
-MyMap.prototype.locationCenter = function(city, address, station_info){
+export const locationCenter = function(province, city, district, address, station_info){
   var self = this;
   if(BMap){
     let map = this.map;
-    this.geocoder = new BMap.Geocoder();
-    this.geocoder.getPoint(address || city, function(poi){
-      console.log('poi: ', poi);
-      if(poi){
-        map.panTo(poi);
-        map.setZoom(13);
-        addInfoWindow(map, poi, station_info);
-      }else{
-        map.centerAndZoom( city, 12 );
-      }
+    var geocoder = new BMap.Geocoder();
+    var fnCenter = function(poi){
+      map.panTo(poi);
+      map.setZoom(13);
+      addInfoWindow(map, poi, station_info);
+    }
+    geocoder.getPoint(province + city + district + address, function(poi){
+      if(!poi)
+        geocoder.getPoint(province + city + district, function(poi){
+          poi ? fnCenter(poi) : map.centerAndZoom( city, 12 );
+        })
+      else
+        fnCenter(poi);
     })
+    this.geocoder = geocoder;
   }else{
     console.log('error');
   }
 }
+
+MyMap.prototype.locationCenter = locationCenter;
 
 MyMap.prototype.clearMap = function(){
   this.points = [];
@@ -149,12 +157,12 @@ MyMap.prototype.resetScope = function(){
 
 MyMap.prototype.drawScope = function(points){
   var map = this.map;
+  var self = this;
   this.points = [];
   this.markers = [];
   if(points != undefined){
-    this.points = changePonits(points);
+    this.points = changeToPonits(points);
     this.oldPolygon = new BMap.Polygon(this.points, oldPolygonStyle);
-    // this.oldPolygon.setFillColor('');
     this.map.addOverlay(this.oldPolygon);
   }
 }
@@ -162,23 +170,16 @@ MyMap.prototype.drawScope = function(points){
 export function _initialize() {
   var self = this;
   var index = 0;
-  var stationMap = document.getElementById('stationMap');
-  var container = document.createElement('div');
-  container.setAttribute('id','container');
-  $(container).css({
-    width: '100%',
-    height: '500px'
-  });
-  stationMap.appendChild(container);
-  this.map = new BMap.Map('container');
+  this.map = new BMap.Map('map_container');
   var point = new BMap.Point(113.949964, 22.587609);
+  this.map.enableAutoResize();
   this.map.centerAndZoom(point, 12);
   var top_right_navigation = new BMap.NavigationControl({
     anchor: BMAP_ANCHOR_TOP_RIGHT,
     type: BMAP_NAVIGATION_CONTROL_SMALL
   }); //右上角，仅包含平移和缩放按钮
   this.map.addControl( top_right_navigation );
-  this.map.enableScrollWheelZoom(true);
+  this.map.enableScrollWheelZoom();
   this.map.enableDragging();
   this.d.resolve();
 }

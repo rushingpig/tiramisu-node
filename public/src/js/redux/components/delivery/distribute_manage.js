@@ -583,7 +583,7 @@ var SignedModal = React.createClass({
       signin_date.setMinutes(signin_time[1]);
       let late_minutes = ( signin_date - delivery_date ) / (1000*60);
 
-      this.onLateTimeChange({target: {value: late_minutes}}); //模拟
+      this.onLateTimeChange({target: {value: late_minutes > 0 ? late_minutes : 0}}); //模拟
     }catch(e){
       console.log(e);
     }

@@ -226,12 +226,13 @@ class StationManageForm extends Component {
     this.refs.stationMap.resetEditScope();
   }
   centerStation(){
+    var province_name = this.findSelectedOptionText('province');
     var city_name = this.findSelectedOptionText('city');
     var district = this.findSelectedOptionText('district');
     var address = $(findDOMNode(this.refs.address)).val();
     var name = this.props.fields.name.value;
     if(name && this.props.fields.regionalism_id.value != SELECT_DEFAULT_VALUE){
-      this.refs.stationMap.locationCenter( city_name, district + address, {name, address});
+      this.refs.stationMap.locationCenter( province_name, city_name, district, address, {name, address});
     }else{
       Noty('warning', '请填写完整的配送中心地址');
     }

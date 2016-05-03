@@ -352,6 +352,16 @@ class ManageAddForm extends Component {
       }
     }, 0);
   }
+  componentWillReceiveProps(nextProps){
+    //编辑订单时，对于已支付订单，需更改应收金额为0
+    if(
+      nextProps.editable && 
+      Object.keys(nextProps['form-data'].data) && 
+      nextProps['form-data'].data != this.props['form-data'].data
+    ){
+      this.props.actions.triggerFormUpdate('add_order', 'pay_status', nextProps['form-data'].data.pay_status);
+    }
+  }
   findSelectedOptionText(_refs){
     return $(findDOMNode(this.refs[_refs])).find('option:selected').html();
   }

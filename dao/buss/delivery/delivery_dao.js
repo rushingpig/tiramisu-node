@@ -38,7 +38,7 @@ DeliveryDao.prototype.findAllStations = function(query_data){
     sql += " where bds.del_flag = ?";
     // data filter begin
     // 添加用户时只展示该用户所属的配送站供选择
-    if(query_data.signal && query_data.user.is_national == 0){
+    if(query_data && query_data.signal && query_data.user.is_national == 0){
         sql += " and bds.id in " + dbHelper.genInSql(query_data.user.station_ids);
     }
     // data filter end

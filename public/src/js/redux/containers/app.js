@@ -18,9 +18,9 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
       require.ensure([], require => {
         components = {
           ...components,
-          OrderPannel:        require('../components/order/manage'),
-          OrderDetailPannel:  require('../components/order/manage_order_detail_pannel'),
-          AbnormalOrder:      require('../components/order/search_abnormal_order')
+          OrderPannel:       require('../components/order/manage'),
+          OrderDetailPannel: require('../components/order/manage_order_detail_pannel'),
+          AbnormalOrder:     require('../components/order/search_abnormal_order')
         };
         callback();
       });
@@ -39,7 +39,7 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
     case 'cm':
       require.ensure([], require => {
         components = {...components,
-          SrcChannelPannel:        require('../components/central/src_channel_manage'),
+          SrcChannelPannel: require('../components/central/src_channel_manage'),
         };
         callback();
       })
@@ -47,9 +47,9 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
     case 'sm':
       require.ensure([], require => {
         components = {...components,
-          StationManagePannel:         require('../components/station/station_manage'),
-          StationManageDetailPannel:   require('../components/station/station_manage_detail_pannel'),
-          StationScopeManagePannel:    require('../components/station/station_scope_manage'),
+          StationManagePannel:       require('../components/station/station_manage'),
+          StationManageDetailPannel: require('../components/station/station_manage_detail_pannel'),
+          StationScopeManagePannel:  require('../components/station/station_scope_manage'),
         };
         callback();
       });
@@ -88,7 +88,7 @@ const App = () => (
         <Route path="refund"  component={ComingSoon} />
         <Route path="invoice" component={ComingSoon} />
         <Route path="winning" component={ComingSoon} />
-        <Route path="ao" getComponent={get('AbnormalOrder')} />
+        <Route path="ao" onEnter={onEnter('OrderAbnormalManageAccess')} getComponent={get('AbnormalOrder')} />
       </Route>
 
       <Route path="dm" onEnter={getComponents('dm')}>

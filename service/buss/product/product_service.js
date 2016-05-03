@@ -7,6 +7,7 @@
  */
 "use strict";
 var res_obj = require('../../../util/res_obj'),
+    Constant = require('../../../common/Constant'),
     systemUtils = require('../../../common/SystemUtils'),
     toolUtils = require('../../../common/ToolUtils'),
     TiramisuError = require('../../../error/tiramisu_error'),
@@ -86,6 +87,7 @@ ProductService.prototype.listProducts = (req, res, next) => {
                 is_delivery: curr.is_delivery,
                 is_local_site: curr.is_local_site,
                 sku_id: curr.id,
+                img_url: '',  // TODO: 未确定产品图片来源
                 website: curr.website,
                 regionalism_name : curr.regionalism_name
             };
@@ -119,6 +121,18 @@ ProductService.prototype.listOrderProducts = (req,res,next)=>{
         res.api(results);
     });
     systemUtils.wrapService(res,next,promise);
+};
+/**
+ * get the accessory list
+ * @param req
+ * @param res
+ * @param next
+ */
+ProductService.prototype.listAccessory = (req, res, next)=> {
+    req.query.category_id = Constant.PRODUCT.ACCESSORY_ID;
+    req.query.page_no = 0;
+    // req.query.page_size = 10;
+    return this.listProducts(req, res, next);
 };
 
 module.exports = new ProductService();

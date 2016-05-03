@@ -18,6 +18,7 @@ module.exports = function (router) {
     router.get('/orders/signin',orderService.listOrders(Constant.OSR.RECEIVE_LIST));     // 配送单管理列表
     router.get('/order/reprint/applies',deliveryService.listReprintApplies); // 获取申请重新打印列表
     router.get('/delivery/deliverymans',deliveryService.listDeliverymans);   // 获取配送员列表
+    router.get('/order/:orderId/deliverymans',deliveryService.listDeliverymansByOrder);   // 获取订单所在配送站的配送员列表
     router.get('/orders/print',deliveryService.print);   // 打印订单
     router.get('/order/:orderId/reprint',deliveryService.reprint);   // 重新打印订单
 //**********************

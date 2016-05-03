@@ -196,6 +196,27 @@ DeliveryDao.prototype.findDeliverymansByStation = function(city_id,currentUser){
 
 };
 /**
+ * find the deliverymans list by order
+ * @param order_id
+ * @returns {Promise}
+ */
+DeliveryDao.prototype.findDeliverymansByOrder = function(order_id){
+    let columns = [
+        'su.id as deliveryman_id',
+        'su.name as deliveryman_name',
+        'su.mobile as deliveryman_mobile'
+    ].join(','),params = [];
+    let sql = "select "+columns+" from ?? su";
+    params.push(tables.sys_user);
+    sql += " inner join ?? sur on sur.user_id = su.id and sur.role_id = ?";
+    params.push(tables.sys_user_role);
+    params.push(constant.DELIVERYMAN_ID);
+    sql += " inner join ?? bo on bo.id = ? and FIND_IN_SET(bo.delivery_id, su.station_ids)";
+    params.push(tables.buss_order);
+    params.push(order_id);
+    return baseDao.select(sql,params);
+};
+/**
  * find the station info by the id
  * @param station_id
  * @returns {Promise}

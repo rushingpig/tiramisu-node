@@ -78,6 +78,7 @@ ProductDao.prototype.findProducts = function(preSql,preParams,page_no,page_size)
 ProductDao.prototype.findProductsByOrderId = function(orderId){
     let columns = [
         'bp.name',
+        'bp.category_id',
         'bps.size',
         'bos.num',
         'bos.discount_price',

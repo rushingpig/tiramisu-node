@@ -130,6 +130,8 @@ var login_required = true;
 
 var coupon_host = "http://120.76.101.107:3000";
 
+var tartetatin_host = 'http://127.0.0.1:3007';
+
 module .exports = {
     exp_static_options : exp_static_options,
     exp_session_options : exp_session_options,
@@ -142,6 +144,7 @@ module .exports = {
     exclude_paths : exclude_paths,
     white_ips : white_ips,
     sms_host : sms_host,
-    coupon_host : coupon_host
+    coupon_host : coupon_host,
+    tartetatin_host: tartetatin_host
 };
 

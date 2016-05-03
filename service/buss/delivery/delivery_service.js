@@ -23,6 +23,7 @@ var dao = require('../../../dao'),
     config = require('../../../config'),
     logger = require('../../../common/LogHelper').systemLog(),
     co = require('co'),
+    tartetatin = require('../../../api/tartetatin'),
     async = require('async');
 function DeliveryService(){
 
@@ -415,16 +416,21 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
             let recipient_id = current_order.regionalism_id;
             let recipient_obj = {};
             yield orderDao.editOrder(systemUtils.assembleUpdateObj(req, order_obj), orderId, systemUtils.assembleUpdateObj(req, recipient_obj), recipient_id, products, add_skus, delete_skuIds, update_skus);
-            if(refund_amount > 0){
-                // TODO: Refund
-            }
 
-            if(order_history_obj != ''){
+            if (order_history_obj != '') {
                 yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
             }
             yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_sign_history_obj, true));
+
+            if (refund_amount > 0) {
+                return yield tartetatin.refund(refund_amount, current_order.id, current_order.id)
+                    .catch(err=> {
+                        return Promise.resolve(err);
+                    });
+            }
         });
-    }).then(() => {
+    }).then(refund_result => {
+        if (refund_result) return res.api({refund_result: refund_result});
         res.api();
     });
     systemUtils.wrapService(res, next, promise);
@@ -834,7 +840,7 @@ DeliveryService.prototype.print = (req,res,next)=>{
                         size: curr.size,
                         amount : curr.amount/100
                     };
-                    map.get(curr.id).products.push(product_obj); 
+                    map.get(curr.id).products.push(product_obj);
                 }
             }
         });

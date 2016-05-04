@@ -132,7 +132,7 @@ ProductService.prototype.listAccessory = (req, res, next)=> {
     req.query.category_id = Constant.PRODUCT.ACCESSORY_ID;
     req.query.page_no = 0;
     // req.query.page_size = 10;
-    return this.listProducts(req, res, next);
+    return ProductService.prototype.listProducts(req, res, next);
 };
 
 module.exports = new ProductService();

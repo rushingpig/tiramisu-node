@@ -1,4 +1,4 @@
-import { put, PUT, TEST, POST } from 'utils/request'; //Promise
+import { put, PUT, TEST, POST, GET} from 'utils/request'; //Promise
 import Url from 'config/url';
 import { getDeliveryStations as _getDeliveryStations } from 'actions/order_manage_form';
 import { getValues } from 'redux-form';
@@ -96,6 +96,11 @@ export function getDeliverymanAtSameStation(orderId){
         deliveryman_mobile:'13600177900',
       }],
   },GET_DELIVERYMAN_AT_SAME_STATION);
+}
+
+export const GET_ORDER_DETAIL = 'GET_ORDER_DETAIL';
+export function getOrderDetail(orderId) {
+  return GET( Url.order_detail.toString(orderId), null ,GET_ORDER_DETAIL );
 }
 
 

@@ -413,9 +413,11 @@ class DeliveryDistributePannel extends Component {
     this.refs.OperationRecordModal.show(order);
   }
   showSignedModal(n){
-    this.props.getSpareparts();
-    this.props.getOrderSpareparts(n.order_id);
     this.props.getDeliverymanAtSameStation(n.order_id);
+    this.props.getOrderSpareparts(n.order_id);    
+    this.props.getOrderDetail('2016050410239620');
+    
+    this.props.getSpareparts();
     this.refs.SignedModal.show(n);
   }
   showUnSignedModal(n){
@@ -590,15 +592,16 @@ var SignedModal = React.createClass({
       refund_money: 0,
       refund_reson: '',
       orderSpareparts:[],
-      select_deliveryman: -1,
+      current_id: -1,
+      deliverymanAtSameStation: [],
     };
   },
   mixins: [ LinkedStateMixin ],
   render: function(){
-    var { signin_date, late_minutes, refund_method, refund_money, refund_reson,select_deliveryman} = this.state;
+    var { signin_date, late_minutes, refund_method, refund_money, refund_reson,current_id, deliverymanAtSameStation } = this.state;
     var { D_ ,loading, refresh } = this.props;
-    var { spareparts } = { D_ };
-    var { deliverymanAtSameStation } = { D_ };
+    var { spareparts } =  D_ ;
+    /*var { deliverymanAtSameStation } =  D_ ;*/
     var content = this.state.orderSpareparts.map(n => {
       return <PartRow key = {n.id} 
                 {...n} 
@@ -618,7 +621,7 @@ var SignedModal = React.createClass({
             </div>
             <div className="col-xs-6">
               <label>配送员：</label>
-              <Select options = { D_.deliverymanAtSameStation } value = { select_deliveryman } onChange= {this.onDeliverymanChange}/>
+              <Select name = 'deliveryman_id' options = { deliverymanAtSameStation } value = { current_id } onChange= {this.onDeliverymanChange}/>
             </div>
           </div>
 
@@ -696,15 +699,20 @@ var SignedModal = React.createClass({
         <div className="form-group mg-15" >
           <label>可选配件：</label>
           <div>
-            <SparePartsGroup list = {D_.spareparts} onChange={this.onSparePartChange}/>
+            <SparePartsGroup list = { spareparts || []} onChange={this.onSparePartChange}/>
           </div>
         </div>
       </StdModal>
     )
   },
   submitHandler(){
-    var { order, CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date } = this.state;
+    var { order, CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date, current_id, deliverymanAtSameStation } = this.state;
     var signin_hour = this.refs.timeinput.val();
+    var deliveryman_tmp = deliverymanAtSameStation.filter( m => m.id == current_id);
+    var arr = deliveryman_tmp.text.split(':');
+    var name = arr.length > 0 ? arr[0]:'';
+    var mobile = arr.length > 1 ? arr[1]: '';
+    var deliveryman = { current_id , mobile , name };
     if(!form.isNumber(late_minutes) || late_minutes < 0){
       Noty('warning', '迟到时间输入有误');return;
     }
@@ -801,8 +809,8 @@ var SignedModal = React.createClass({
      this.setState({orderSpareparts:old_orderSpareparts});   
   },
   onDeliverymanChange: function(e){
-    var select_deliveryman = e.target.value;
-    this.setState({select_deliveryman});
+    var current_id = e.target.value;
+    this.setState({current_id});
   },
   checkMethod: function(e){
     this.setState({ refund_method: e.target.value });
@@ -855,10 +863,17 @@ var SignedModal = React.createClass({
       this.setState({orderSpareparts:old_orderSpareparts});
     }
   },
-  componentWillReceiveProps(){
+/*  componentDidMount() {
     var orderSpareparts = this.props.D_.orderSpareparts;
-    var {select_deliveryman} = this.props.D_
-    this.setState({orderSpareparts,select_deliveryman});
+    var {current_id} = this.props.D_;
+    this.setState({orderSpareparts ,current_id });    
+  },*/
+  componentWillReceiveProps(nextProps){
+    var { D_ } = nextProps;
+    var orderSpareparts = D_.orderSpareparts;
+    var current_id = D_.current_id;
+    var deliverymanAtSameStation = D_.deliverymanAtSameStation;
+    this.setState({orderSpareparts ,current_id ,deliverymanAtSameStation});
   },
 });
 

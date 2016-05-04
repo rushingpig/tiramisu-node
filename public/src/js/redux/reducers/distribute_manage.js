@@ -1,6 +1,6 @@
 import { dateFormat, map } from 'utils/index';
 import { combineReducers } from 'redux';
-import { REQUEST, order_status } from 'config/app.config';
+import { REQUEST, order_status, ACCESSORY_CATE_ID } from 'config/app.config';
 import { orders, operationRecord } from 'reducers/orders';
 import { deliveryman } from 'reducers/deliveryman';
 import { area } from 'reducers/area_select';
@@ -64,19 +64,24 @@ var D_state = {
   deliverymanAtSameStation : [],
   spareparts: [],
   orderSpareparts: [],
-  select_deliveryman: -1,
+  current_id: -1,
 }
 
 function D_(state = D_state, action) {
   switch (action.type) {
     case Actions.GET_SPARE_PARTS:
-      return {...state, spareparts:action.data}
+      return {...state, spareparts:action.data.list}
     case Actions.GET_ORDER_SPARE_PARTS:
-      return { ...state, orderSpareparts: action.data.list }
+      return { ...state, orderSpareparts: action.data || [] }
     case Actions.GET_DELIVERYMAN_AT_SAME_STATION:
       var {list} = action.data;
-      var  deliverymanData = list.map( m => ({id: m.deliveryman_id, text: m.deliveryman_name + '' + m.deliveryman_mobile}));
-      return {...state,deliverymanAtSameStation: deliverymanData ,select_deliveryman: action.data.current_id }
+      var {current_id} = action.data;
+      var  deliverymanAtSameStation = list.map( m => ({id: m.deliveryman_id, text: m.deliveryman_name + ':' + m.deliveryman_mobile}));
+      return {...state,deliverymanAtSameStation: deliverymanAtSameStation ,current_id: current_id }
+    case Actions.GET_ORDER_DETAIL:
+      var orderSpareparts = action.data.products;
+      orderSpareparts = orderSpareparts.filter( m => m.category_id == ACCESSORY_CATE_ID);
+      return { ...state, orderSpareparts: orderSpareparts || [] }
     default:
       return state;
   }

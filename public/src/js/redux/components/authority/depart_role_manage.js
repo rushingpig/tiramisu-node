@@ -48,11 +48,6 @@ class DeptHeader extends Component{
 
 
         </div>
-<<<<<<< Updated upstream
-=======
-{/*        <DeptModal ref="deptModal" {...this.props} />
-        <RoleModal ref="roleModal" {...this.props} />*/}
->>>>>>> Stashed changes
       </div>
       )
   }

@@ -3,6 +3,7 @@ import Url from 'config/url';
 import { getDeliveryStations as _getDeliveryStations } from 'actions/order_manage_form';
 import { getValues } from 'redux-form';
 import Utils from 'utils/index';
+import { ACCESSORY_CATE_ID } from 'config/app.config';
 import { triggerFormUpdate } from 'actions/form';
 
 export const SIGN_ORDER = 'SIGN_ORDER'; //key: 0->正在处理，1->成功，2->失败
@@ -47,7 +48,8 @@ export function exportExcel(){
 
 export const GET_SPARE_PARTS = 'GET_SPARE_PARTS';  //获取蛋糕配件
 export function getSpareparts(){
-    return GET( Url.accessory_list.toString(), null , GET_SPARE_PARTS );
+    /*return GET( Url.accessory_list.toString(), null , GET_SPARE_PARTS );*/   
+    return GET( Url.products.toString(), {category_id: ACCESSORY_CATE_ID}, GET_SPARE_PARTS);
 /*    return TEST([
     {id: 1, name: '餐具套餐', icon: '', children:[],price:'4' },
     {id: 2, name: '蛋糕帽', icon: '', children:[],price:'5' },
@@ -98,9 +100,9 @@ export function getDeliverymanAtSameStation(orderId){
   },GET_DELIVERYMAN_AT_SAME_STATION);*/
 }
 
-export const GET_ORDER_DETAIL = 'GET_ORDER_DETAIL';
+export const GET_ORDER_DETAIL = 'GET_ORDER_SPARE_PARTS';
 export function getOrderDetail(orderId) {
-  return GET( Url.order_detail.toString(orderId), null ,GET_ORDER_DETAIL );
+  return GET( Url.order_detail.toString(orderId), null ,GET_ORDER_SPARE_PARTS );
 }
 
 

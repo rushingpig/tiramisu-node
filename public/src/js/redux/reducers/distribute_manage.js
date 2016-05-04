@@ -70,7 +70,17 @@ var D_state = {
 function D_(state = D_state, action) {
   switch (action.type) {
     case Actions.GET_SPARE_PARTS:
-      return {...state, spareparts:action.data.list}
+      var spareparts = action.data.list;
+      spareparts = spareparts.map( m => {
+        if(m.skus){
+          m.img_url = m.skus.length > 0 ? m.skus[0].img_url : '';
+          m.price = m.skus.length > 0 ? m.skus[0].img_url : 0;        
+        }
+        m.id = m.product_id;
+        return m;        
+      });
+    
+      return {...state, spareparts:spareparts}
     case Actions.GET_ORDER_SPARE_PARTS:
       return { ...state, orderSpareparts: action.data || [] }
     case Actions.GET_DELIVERYMAN_AT_SAME_STATION:
@@ -81,6 +91,7 @@ function D_(state = D_state, action) {
     case Actions.GET_ORDER_DETAIL:
       var orderSpareparts = action.data.products;
       orderSpareparts = orderSpareparts.filter( m => m.category_id == ACCESSORY_CATE_ID);
+
       return { ...state, orderSpareparts: orderSpareparts || [] }
     default:
       return state;

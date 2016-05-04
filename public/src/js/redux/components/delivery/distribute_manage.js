@@ -415,7 +415,7 @@ class DeliveryDistributePannel extends Component {
   showSignedModal(n){
     this.props.getDeliverymanAtSameStation(n.order_id);
     this.props.getOrderSpareparts(n.order_id);    
-    this.props.getOrderDetail('2016050410239620');
+    /*this.props.getOrderDetail(n.order_id);*/
     
     this.props.getSpareparts();
     this.refs.SignedModal.show(n);

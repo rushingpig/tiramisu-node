@@ -25,7 +25,7 @@ export default [
             "icon": "",
             "link": "/om/winning",
         }, {
-            "key": "AbnormalOrder",
+            "key": "OrderAbnormalManageAccess",
             "name": "错误订单管理",
             "icon": "",
             "link": "/om/ao",

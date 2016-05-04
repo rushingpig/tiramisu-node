@@ -277,7 +277,8 @@ OrderService.prototype.getOrderDetail = (req, res, next) => {
           name: curr.product_name,
           atlas: curr.atlas,
           size: curr.size,
-          amount: curr.amount
+          amount: curr.amount,
+          category_id: curr.category_id
         };
         data.products.push(product_obj);
       }

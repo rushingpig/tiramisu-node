@@ -570,7 +570,7 @@ DeliveryService.prototype.listDeliverymansByOrder = (req,res,next)=>{
         res.api(res_obj.SESSION_TIME_OUT,null);
         return;
     }
-    let order_id = req.params.orderId;
+    let order_id = systemUtils.getDBOrderId(req.params.orderId);
 
     let promise = co(function*() {
         let orders = yield orderDao.findOrderById(order_id);

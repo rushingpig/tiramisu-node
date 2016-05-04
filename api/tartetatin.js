@@ -13,7 +13,7 @@ const TARTETATIN_HOST = config.tartetatin_host;
  * @param charge_id
  */
 module.exports.refund = function (amount, order_no, charge_id) {
-    let opt = {
+    const opt = {
         method: 'POST',
         url: `${TARTETATIN_HOST}/v1/refund/other/create`,
         json: true

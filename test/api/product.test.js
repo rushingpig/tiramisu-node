@@ -45,9 +45,6 @@ module.exports = function () {
                 });
         });
 
-        beforeEach(function (done) {
-            done();
-        });
         /**
          * logout to delete session
          */
@@ -61,7 +58,11 @@ module.exports = function () {
             agent.get('/v1/a/product/accessory')
                 .expect('Content-Type', /json/)
                 .expect(200)
-                .end(err(done));
+                .end((err, res)=> {
+                    assert.strictEqual(res.body.code, '0000');
+                    assert.strictEqual(res.statusCode, 200);
+                    done();
+                });
         })
 
     });

@@ -118,7 +118,12 @@ class FilterHeader extends Component {
               <i className="fa fa-search"></i>{' 搜索'}
             </button>
             {' '}
-            <button onClick={this.onScanHandler.bind(this)} className="btn btn-theme btn-xs space-right">扫描</button>
+            {
+              V( 'DeliveryManageDistributeScan' )
+                ?<button onClick={this.onScanHandler.bind(this)} className="btn btn-theme btn-xs space-right">扫描</button>
+                :null
+            }
+            
           </div>
         </div>
       </div>
@@ -287,19 +292,18 @@ class DeliveryDistributePannel extends Component {
   }
   render(){
     var { filter, area, deliveryman, orders, main, all_order_srcs, all_pay_modes, signOrder, unsignOrder, 
-      searchByScan, exportExcel, getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
+      searchByScan, exportExcel, getOrderOptRecord, resetOrderOptRecord, operationRecord, D_  } = this.props;
     var { submitting } = main;
     var { loading, refresh, page_no, checkall, total, list, check_order_info, active_order_id, get_products_detail_ing } = orders;
     var { search, showSignedModal, showUnSignedModal, showScanModal, checkOrderHandler, 
       viewOrderDetail, activeOrderHandler, viewOrderOperationRecord, refreshDataList } = this;
 
     var {scan} = main; //扫描
-
     var content = list.map((n, i) => {
       return <OrderRow 
         key={n.order_id} 
         {...{...n, active_order_id, showSignedModal, showUnSignedModal, 
-          viewOrderDetail, checkOrderHandler, activeOrderHandler, viewOrderOperationRecord}}
+          viewOrderDetail, checkOrderHandler, activeOrderHandler, viewOrderOperationRecord, D_}}
       />;
     })
     return (
@@ -362,7 +366,7 @@ class DeliveryDistributePannel extends Component {
           : null }
 
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} all_order_srcs={all_order_srcs.map} all_pay_modes={all_pay_modes} />
-        <SignedModal ref="SignedModal" {...{submitting, signOrder, callback: refreshDataList}} />
+        <SignedModal ref="SignedModal" {...{submitting, signOrder,loading,refresh, D_, callback: refreshDataList}} />
         <UnSignedModal ref="UnSignedModal" {...{submitting, unsignOrder, callback: refreshDataList}} />
         <ScanModal ref="ScanModal" submitting={submitting} search={searchByScan}  />
         <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
@@ -409,6 +413,9 @@ class DeliveryDistributePannel extends Component {
     this.refs.OperationRecordModal.show(order);
   }
   showSignedModal(n){
+    this.props.getSpareparts();
+    this.props.getOrderSpareparts(n.order_id);
+    this.props.getDeliverymanAtSameStation(n.order_id);
     this.refs.SignedModal.show(n);
   }
   showUnSignedModal(n){
@@ -443,6 +450,131 @@ export default connect(mapStateToProps, mapDispatchToProps)(DeliveryDistributePa
 /***************   子模态框   *****************/
 /***************   *******   *****************/
 
+var PartRow = React.createClass({
+  render(){
+    var { props } = this;
+    return (
+      <tr>
+        <td>{ props.name }</td>
+        <td>{ '￥ ' + props.price.toString() }</td>
+        <td>{ props.sub }</td>
+        <td>
+        <button 
+          className='btn btn-sm btn-default' 
+          style={{borderRadius:'10px 10px',width:'20px',height:'20px',lineHeight:'0.5',padding:'5px 5px'}}
+          onClick = { this.onDecrement }><i>-</i></button>
+        {' ' + props.num + ' '}
+        <button 
+          className='btn btn-sm btn-default' 
+          style={{borderRadius:'10px 10px',width:'20px',height:'20px',lineHeight:'0.5',padding:'5px 5px'}}
+          onClick = { this.onIncrement}><i>+</i></button>
+        </td>
+        <td>
+          <input type = "text" value = {props.remarks} onChange= { this.onRemarksChange}/>
+        </td>
+      </tr>
+      )
+  },
+
+  onRemarksChange(e){
+    this.props.onRemarksChange(this.props.id,e);
+  },
+  onIncrement(){
+    this.props.onIncrement(this.props.id);
+  },
+  onDecrement(){
+    this.props.onDecrement(this.props.id);
+  }
+})
+
+class PartNode extends Component{  
+  render(){
+    var { data } = this.props ;
+    return (
+      <div style={{float:'left',height:'30px',margin:'0px 5px',}} onClick= {this.onChoose.bind(this)}>
+        <img src={data.icon} style={{height:'30px',width:'30px'}}/>
+        <span className='partBtn'>{ data.name }</span>      
+      </div>
+      )
+  }
+  onChoose(e){
+     this.props.onChange(this.props.data);
+  }
+}
+
+class PartNodeSub extends Component{
+  render(){
+    var { data } = this.props ;
+    return (
+      <div style={{float:'left',height:'30px',margin:'0px 5px',}} onClick= {this.onChoose.bind(this)}>
+        <img src={data.icon} style={{height:'30px',width:'30px'}}/>
+        <span className='partBtn'>{ data.name }</span>      
+      </div>
+      )
+  }
+  onChoose(e){
+     this.props.onChange(this.props.data);
+  }
+}
+
+
+class SparePartsGroup extends Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      chosen_id : -1,
+    }
+  }
+
+  render(){
+    /*var {list } = this.props;*/
+    var tmp = this.props.list.filter (n => n.id == this.state.chosen_id);
+    var children = tmp.length > 0 ? tmp[0].children : [];
+    var parent_id = tmp.length > 0 ? tmp[0].id : -1;
+    var parent_name = tmp.length > 0 ? tmp[0].name : '';
+    return(
+      <div>
+        {
+          children.length > 0
+          ?
+            [
+              <div style={{paddingBottom:'10px'}}>
+                {
+                  this.props.list.map( n => 
+                  {
+                    return (<PartNode data = {n} onChange= {this.onPartChange.bind(this)}/> )             
+                  })
+                }
+              </div>,
+              <div style={{clear:'both',paddingTop:'10px',paddingBottom:'10px'}}>
+                {
+                  children.map( m =>
+                  {
+                    return (<PartNodeSub data = { {...m, parent_id, parent_name}} onChange= {this.onPartChange.bind(this)}/> )
+                  })
+                }
+              </div>
+          ]:
+          <div style={{paddingBottom:'10px'}}>
+            {
+              this.props.list.map( n => 
+                {
+                  return (<PartNode data = {n} onChange= {this.onPartChange.bind(this)}/> )             
+                }
+              )
+            }
+          </div>
+        }
+      </div>
+    )
+  }
+
+  onPartChange(e){
+    this.setState({chosen_id:e.id});
+    this.props.onChange(e);
+  }
+}
+
 var SignedModal = React.createClass({
   getInitialState: function() {
     return {
@@ -457,18 +589,39 @@ var SignedModal = React.createClass({
       refund_method: '',
       refund_money: 0,
       refund_reson: '',
+      orderSpareparts:[],
+      select_deliveryman: -1,
     };
   },
   mixins: [ LinkedStateMixin ],
   render: function(){
-    var { signin_date, late_minutes, refund_method, refund_money, refund_reson} = this.state;
+    var { signin_date, late_minutes, refund_method, refund_money, refund_reson,select_deliveryman} = this.state;
+    var { D_ ,loading, refresh } = this.props;
+    var { spareparts } = { D_ };
+    var { deliverymanAtSameStation } = { D_ };
+    var content = this.state.orderSpareparts.map(n => {
+      return <PartRow key = {n.id} 
+                {...n} 
+                onRemarksChange = { this.onRemarksChange }
+                onIncrement = {this.onIncrement}
+                onDecrement = {this.onDecrement}/>
+    })
     return (
       <StdModal submitting={this.props.submitting} onConfirm={this.submitHandler} onCancel={this.hideCallback} title="订单完成页面" ref="modal">
         <div className="form-group mg-15 form-inline">
-          <label>签收时间：</label>
-          <DatePicker value={signin_date} onChange={this.onSignInDateChange} className="short-input" />
-          {'　'}
-          <TimeInput onChange={this.onTimeChange} onOK={this.onTimeOK} ref="timeinput" />
+          <div className = "row">
+            <div className="col-xs-6">
+              <label>签收时间：</label>
+              <DatePicker value={signin_date} onChange={this.onSignInDateChange} className="short-input" />
+              {'　'}
+              <TimeInput onChange={this.onTimeChange} onOK={this.onTimeOK} ref="timeinput" />
+            </div>
+            <div className="col-xs-6">
+              <label>配送员：</label>
+              <Select options = { D_.deliverymanAtSameStation } value = { select_deliveryman } onChange= {this.onDeliverymanChange}/>
+            </div>
+          </div>
+
         </div>
         <div className="form-group form-inline mg-15">
           <div className="row">
@@ -522,6 +675,29 @@ var SignedModal = React.createClass({
               </div>
             : null
           }
+        </div>
+        <div className="form-group mg-15">
+          <label>已购配件：</label>
+          <table className="table table-hove text-center table-bordered">
+            <thead>
+              <tr>
+                <th>配件名称</th>
+                <th>价格</th>
+                <th>规格</th>
+                <th>数量</th>
+                <th>备注</th>
+              </tr>
+            </thead>
+            <tbody>
+            { tableLoader( loading || refresh ,  content ) }
+            </tbody>
+          </table>
+        </div>
+        <div className="form-group mg-15" >
+          <label>可选配件：</label>
+          <div>
+            <SparePartsGroup list = {D_.spareparts} onChange={this.onSparePartChange}/>
+          </div>
         </div>
       </StdModal>
     )
@@ -592,6 +768,42 @@ var SignedModal = React.createClass({
     var { value } = e.target;
     this.setState({ late_minutes: value, refund_money: value <=30 ? value : ''})
   },
+  onRemarksChange: function(id,e){
+    var old_orderSpareparts = this.state.orderSpareparts;
+    old_orderSpareparts.map( m => {
+      if( m.id == id){
+        m.remarks = e.target.value;
+      }
+      return m;
+    });
+    this.setState({orderSpareparts:old_orderSpareparts});
+  },
+  onDecrement: function(id){
+     var old_orderSpareparts = this.state.orderSpareparts;
+     old_orderSpareparts.map( m => {
+       if( m.id == id){
+        if(m.num>0){
+         m.num --;
+        }
+       }
+       return m;
+     });
+     this.setState({orderSpareparts:old_orderSpareparts});   
+  },
+  onIncrement: function(id){
+     var old_orderSpareparts = this.state.orderSpareparts;
+     old_orderSpareparts.map( m => {
+       if( m.id == id){
+         m.num ++;
+       }
+       return m;
+     });
+     this.setState({orderSpareparts:old_orderSpareparts});   
+  },
+  onDeliverymanChange: function(e){
+    var select_deliveryman = e.target.value;
+    this.setState({select_deliveryman});
+  },
   checkMethod: function(e){
     this.setState({ refund_method: e.target.value });
   },
@@ -600,11 +812,53 @@ var SignedModal = React.createClass({
   },
   show: function(order){
     this.refs.modal.show();
+    //console.warn(this.props.D_.orderSpareparts);
     this.setState({order});
   },
   hideCallback: function(){
     this.refs.timeinput.reset();
     this.setState(this.getInitialState());
+  },
+  onSparePartChange(e){
+
+    var old_orderSpareparts = this.state.orderSpareparts;
+    if( !e.children ||   e.children.length == 0){
+      var newvalue = {};
+      if('parent_id' in e){
+        if(old_orderSpareparts.some( m => m.id == e.parent_id && m.sub == e.name)){
+          old_orderSpareparts.map( m => {
+            if( m.id == e.parent_id && m.sub == e.name){
+              m.num ++ ;
+            }
+            return m;
+          })
+        }else{
+          var newvalue = { id: e.parent_id, name: e.parent_name ,price: e.price ,sub: e.name, remarks:'xx',num:1}           
+        }       
+      }else{
+        if(old_orderSpareparts.some( m => m.id == e.id )){
+          old_orderSpareparts.map( m => {
+            if(m.id == e.id){
+              m.num ++;
+            }
+            return m;
+          })
+        }else{
+          var newvalue = { id: e.id, name: e.name, price: e.price, sub: '', remarks: 'xx',num:1} 
+        }
+
+        
+      }
+      if( 'id' in newvalue){
+        old_orderSpareparts.push(newvalue);
+      }     
+      this.setState({orderSpareparts:old_orderSpareparts});
+    }
+  },
+  componentWillReceiveProps(){
+    var orderSpareparts = this.props.D_.orderSpareparts;
+    var {select_deliveryman} = this.props.D_
+    this.setState({orderSpareparts,select_deliveryman});
   },
 });
 

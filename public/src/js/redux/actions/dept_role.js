@@ -52,7 +52,7 @@ export default function dept_role(ActionTypes=DeptRoleActionTypes){
       },ActionTypes.GOT_DEPTS);*/ 
     },
     getDeptsSignal:function(signal){
-      return GET(Url.dept_list_info.toString(),{ signal: signal },ActionTypes.GOT_DEPTS_SIGNAL);
+      return GET(Url.dept_list_info.toString(),{ signal:signal },ActionTypes.GOT_DEPTS_SIGNAL);
     },
     resetRoles:function() {
       return {
@@ -62,55 +62,9 @@ export default function dept_role(ActionTypes=DeptRoleActionTypes){
     },
     getRoles:function(org_id){
       return GET(Url.role_list_info.toString(),{org_id:org_id},ActionTypes.GOT_ROLES);
-/*      return TEST({
-        total:5,
-        list:[{
-          'id':1,
-          'name':'话务专员',
-        },{
-          'id':2,
-          'name':'订单专员',
-        },{
-          'id':3,
-          'name':'售后客服',
-        },{
-          'id':4,
-          'name':'客服部主管',
-        },{
-          'id':5,
-          'name':'客服部经理',
-        }]
-      },ActionTypes.GOT_ROLES);*/
-/*      return {
-        type:ActionTypes.GOT_ROLES,
-        data:{1:'话务专员',2:'订单专员',3:'售后客服',4:'客服部主管',5:'客服部经理'}
-      }*/
     },
     getRolesSignal:function(org_id, signal){
     	return GET(Url.role_list_info.toString(),{org_id:org_id, signal: signal},ActionTypes.GOT_ROLES_SIGNAL);
-/*    	return TEST({
-    		total:5,
-    		list:[{
-    			'id':1,
-    			'name':'话务专员',
-    		},{
-    			'id':2,
-    			'name':'订单专员',
-    		},{
-    			'id':3,
-    			'name':'售后客服',
-    		},{
-    			'id':4,
-    			'name':'客服部主管',
-    		},{
-    			'id':5,
-    			'name':'客服部经理',
-    		}]
-    	},ActionTypes.GOT_ROLES);*/
-/*    	return {
-    	  type:ActionTypes.GOT_ROLES,
-    	  data:{1:'话务专员',2:'订单专员',3:'售后客服',4:'客服部主管',5:'客服部经理'}
-    	}*/
     },
     getAllRoles:function(){
       return GET(Url.role_list_info.toString(), null, ActionTypes.GOT_ALL_ROLES);
@@ -121,6 +75,13 @@ export default function dept_role(ActionTypes=DeptRoleActionTypes){
     },   
     getAllRolesSignal:function(signal){
       return GET(Url.role_list_info.toString(),{signal:signal},ActionTypes.GOT_ALL_ROLES_SIGNAL);
+/*      return {
+        type:ActionTypes.GOT_ALL_ROLES,
+        data:{1:'话务专员',2:'订单专员',3:'售后客服',4:'客服部主管',5:'客服部经理',6:'xxxx',7:'xxxx'}
+      }*/
+    },
+    getAllRolesSignal:function(signal){
+      return GET(Url.role_list_info.toString(),{ signal:signal },ActionTypes.GOT_ALL_ROLES_SIGNAL);
 /*      return {
         type:ActionTypes.GOT_ALL_ROLES,
         data:{1:'话务专员',2:'订单专员',3:'售后客服',4:'客服部主管',5:'客服部经理',6:'xxxx',7:'xxxx'}
@@ -147,7 +108,11 @@ export default function dept_role(ActionTypes=DeptRoleActionTypes){
     },
     getStationsByCityIdsSignal:function(city_ids,signal){
       return GET(Url.station_merge_list.toString(),{city_ids:city_ids,signal:signal},ActionTypes.GOT_STATIONS_BY_CITYIDS_SIGNAL);
+<<<<<<< Updated upstream
     },
+=======
+    },   
+>>>>>>> Stashed changes
 
   }
 }

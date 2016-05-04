@@ -579,7 +579,7 @@ DeliveryService.prototype.listDeliverymansByOrder = (req,res,next)=>{
         }
         let current_order = orders[0];
 
-        let deliverymans = deliveryDao.findDeliverymansByOrder(order_id);
+        let deliverymans = yield deliveryDao.findDeliverymansByOrder(order_id);
         if(toolUtils.isEmptyArray(deliverymans)){
             throw new TiramisuError(res_obj.NO_MORE_RESULTS_ARR,'该条件下没有可选的配送员...');
         }

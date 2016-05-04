@@ -8,6 +8,7 @@ function MyMap(){
   this.oldPolygon = null;
   this.polygon = null;
   this.geocoder = null; //可以获取指定地址的准确坐标
+  this.LocalSearch = null;
 
   this.d = $.Deferred();
 }
@@ -200,6 +201,17 @@ export function create(callback) {
 }
 
 MyMap.prototype.create = create;
+
+export function search( place ){
+  if(!this.LocalSearch){
+    var map = this.map;
+    this.LocalSearch = new BMap.LocalSearch(map, {
+      renderOptions: {map}
+    });
+  }
+  return this.LocalSearch.search( place );
+}
+MyMap.prototype.search = search;
 
 export default new MyMap;
 

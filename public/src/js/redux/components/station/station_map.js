@@ -1,5 +1,6 @@
 import React , { Component, PropTypes } from 'react';
 import { render, findDOMNode } from 'react-dom';
+import SearchInput from 'common/search_input';
 import MyMap from 'utils/create_visiable_map';
 import { once } from 'utils/index';
 
@@ -18,7 +19,10 @@ export default class StationMap extends Component {
       <div className="panel station-manage">
         <div className="panel-body">
           <div ref="map" className={`station-map ${fullScreen ? 'full-screen' : ''}`}>
-            <a onClick={this.fullScreen.bind(this)} className="full-screen-btn" href="javascript:;">{fullScreen && '退出'}全屏</a>
+            <div className="map-toolbar">
+              <a onClick={this.fullScreen.bind(this)} className="full-screen-btn space-right" href="javascript:;"></a>
+              { fullScreen ? <SearchInput searchHandler={this.searchHandler.bind(this)} type="text" className="inline-block" /> : null }
+            </div>
             <div id="map_container" className="map-container"></div>
           </div>
           <div className="font-sm mgt-4" style={{marginTop: '3px'}}>( * 编辑状态时，您可以点击新地点来增加标记 )</div>
@@ -67,5 +71,8 @@ export default class StationMap extends Component {
   }
   locationCenter(province, city, district, address, station_info){
     MyMap.locationCenter(province, city, district, address, station_info);
+  }
+  searchHandler( place ){
+    MyMap.search( place );
   }
 }

@@ -93,7 +93,7 @@ var AlterDeliveryModal = React.createClass({
             <Select ref="district" value={this.state.regionalism_id} onChange={this.onDistrictChange} options={districts} className="mg-8" />{' '}
             {
               delivery_type == DELIVERY_TO_HOME
-                ? <input ref="recipient_address" valueLink={this.linkState('recipient_address')} onBlur={this.startMatchStation} className="form-control input-xs mg-8" type="text" />
+                ? <input ref="recipient_address" valueLink={this.linkState('recipient_address')} className="form-control input-xs mg-8" type="text" />
                 : <Select ref="shop" valueLink={this.linkState('recipient_address')} options={delivery_shops} className="mg-8" />
             }
           </div>

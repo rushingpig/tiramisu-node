@@ -21,7 +21,15 @@ function delivery_stations(state = initial_state, action){
       return (function(){
         var d = action.data;
         if(action.key == REQUEST.SUCCESS){
-          return {...state, delivery_stations: [{id: d.delivery_id, text: d.delivery_name}] }
+          let unionMap = {};
+          let new_delivery_stations = [];
+          [{id: d.delivery_id, text: d.delivery_name}].concat(state.delivery_stations_backup).forEach(obj => {
+            if( !unionMap[obj.id] ){
+              unionMap[obj.id] = 1;
+              new_delivery_stations.push(obj);
+            }
+          });
+          return {...state, delivery_stations: new_delivery_stations }
         }else if(action.key == REQUEST.FAIL){
           return {...state, delivery_stations: state.delivery_stations_backup }
         }else{

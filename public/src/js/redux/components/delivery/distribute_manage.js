@@ -554,7 +554,10 @@ var SignedModal = React.createClass({
       payfor_type: refund_method,
       payfor_amount: refund_money,
       payfor_reason: refund_reson,
-      signin_time: signin_date + ' ' + signin_hour
+      signin_time: signin_date + ' ' + signin_hour,
+
+      updated_time: order.updated_time,
+      
     }).done(function(){
       this.refs.modal.hide();
       this.props.callback();

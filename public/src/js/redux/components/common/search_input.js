@@ -18,32 +18,6 @@ export default class SearchInput extends React.Component {
       </div>
     )
   }
-  componentDidMount() {
-    setTimeout(function(){
-      var { list } = this.props; 
-      var $inp = $(findDOMNode(this.refs.input));
-      LazyLoad('autocomplete', function(){
-        var stations = [];
-        list.forEach(function(n){
-          if(n.text){
-            stations.push(n.text);
-          }
-        });
-        $inp.autocomplete({
-          source: stations
-        });
-      });
-    }.bind(this), 0)
-
-  }
-  componentWillUnmount() {
-    var inp = $(findDOMNode(this.refs.input));
-    try{
-      inp.autocomplete('destroy');
-    }catch(e){
-      console.log(e);
-    }
-  }
   keyDownHandler(e){
     //enter键
     if(!this.props.searching && e.which == 13){
@@ -52,7 +26,6 @@ export default class SearchInput extends React.Component {
   }
   searchHandler(){
     if(!this.props.searching){
-      console.log('search: ' + this.refs.input.value);
       this.props.searchHandler(this.refs.input.value);
     }
   }

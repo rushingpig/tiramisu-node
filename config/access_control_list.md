@@ -58,6 +58,9 @@
 * +添加配送区域：StationScopeManageAdd
 * +编辑配送区域：StationScopeManageEdit
 
+###3.3 对外查看配送区域页面（隐藏页面）
+* +页面访问：StationScopeShareAccess
+
 ###4.1 用户管理
 * +页面访问：UserManageAccess
 * +按用户名/姓名筛选：UserManageUnameOrNameFilter

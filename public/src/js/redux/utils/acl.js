@@ -5,8 +5,6 @@ import { test_acl } from 'config/app.config';
 
 //测试数据
 // var PERMISSIONS = [
-//   'StationScopeManageAccess',
-//   'StationScopeManageView'
 // ];
 
 /**

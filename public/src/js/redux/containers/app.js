@@ -50,6 +50,7 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
           StationManagePannel:       require('../components/station/station_manage'),
           StationManageDetailPannel: require('../components/station/station_manage_detail_pannel'),
           StationScopeManagePannel:  require('../components/station/station_scope_manage'),
+          StationScopeSharePannel:   require('../components/station/station_scope_share'),
         };
         callback();
       });
@@ -119,6 +120,7 @@ const App = () => (
         <Route path="station/:id" onEnter={onEnter('StationManageEdit')} getComponent={get('StationManageDetailPannel')} />
         <Route path="scope" onEnter={onEnter('StationScopeManageAccess')} getComponent={get('StationScopeManagePannel')} />
         <Route path="scope/:id" onEnter={onEnter('StationScopeManageAccess')} getComponent={get('StationScopeManagePannel')} />
+        <Route path="scope_s/:id" onEnter={onEnter('StationScopeShareAccess')} getComponent={get('StationScopeSharePannel')} />
       </Route>
 
       <Redirect from="logout" to="/" />

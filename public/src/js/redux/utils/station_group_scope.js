@@ -1,6 +1,6 @@
 import Noty from 'utils/_noty';
 import { outputPonits, changeToPonits, addInfoWindow, addMarkerToMap, _initialize, create, addMarker,
-  locationCenter, oldPolygonStyle, newPolygonStyle, getLabelStyle } from 'utils/create_visiable_map';
+  locationCenter, oldPolygonStyle, newPolygonStyle, getLabelStyle, search } from 'utils/create_visiable_map';
 import clone from 'clone';
 
 var MyMap = function(list){
@@ -12,6 +12,7 @@ var MyMap = function(list){
   this.editting = false;
   this.polygon = null; //正在编辑中的polygon
   this.geocoder = null; //可以获取指定地址的准确坐标
+  this.LocalSearch = null;
 
   this.d = $.Deferred();
 }
@@ -123,7 +124,7 @@ MyMap.prototype.reset = function(){
 }
 
 MyMap.prototype._initialize = _initialize;
-
 MyMap.prototype.create = create;
+MyMap.prototype.search = search;
 
 export default new MyMap;

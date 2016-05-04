@@ -42,19 +42,25 @@
       height: 100%
     }
     .full-screen-btn{
-      background: url(/images/min.png) center center no-repeat;
-      background-size: contain;
+      background: #fff url(/images/min.jpg) center center no-repeat;
+      background-size: 80% 80%;
     }
+  }
+  .map-toolbar{
+    position: absolute;
+    display: flex;
+    top: 10px;
+    left: 5px;
+    z-index: 10;
   }
 
   .full-screen-btn{
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    z-index: 10;
-    width: 20px;
-    height: 20px;
-    background: url(/images/max.png) center center no-repeat;
-    background-size: contain;
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    border-radius: 3px;
+    border: 1px solid #C5C5C5;
+    background: #fff url(/images/max.jpg) center center no-repeat;
+    background-size: 80% 80%;
   }
 }

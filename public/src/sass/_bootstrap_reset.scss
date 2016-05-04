@@ -203,6 +203,9 @@ button, .btn:focus, .btn.focus, .btn:active:focus, .btn:active.focus, .btn.activ
 .form-control {
   box-shadow: none;
 }
+input {
+  outline: 0
+}
 
 .form-control:focus, #focusedInput {
   border: 1px solid #424F63;

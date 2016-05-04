@@ -13,6 +13,8 @@ var res_obj = require('../../../util/res_obj'),
     TiramisuError = require('../../../error/tiramisu_error'),
     schema = require('../../../schema'),
     dao = require('../../../dao'),
+    OrderDao = dao.order,
+    orderDao = new OrderDao(),
     ProductDao = dao.product,
     productDao = new ProductDao();
 
@@ -133,6 +135,23 @@ ProductService.prototype.listAccessory = (req, res, next)=> {
     req.query.page_no = 0;
     // req.query.page_size = 10;
     return ProductService.prototype.listProducts(req, res, next);
+};
+
+ProductService.prototype.listAccessoryByOrder = (req, res, next)=> {
+    let orderId = systemUtils.getDBOrderId(req.params.orderId);
+
+    let promise = orderDao.findOrderById(orderId).then(orders=> {
+        if(toolUtils.isEmptyArray(orders)){
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        let curr = orders[0];
+        req.query.category_id = Constant.PRODUCT.ACCESSORY_ID;
+        req.query.page_no = 0;
+        req.query.city_id = curr.city_id;
+        // req.query.page_size = 10;
+        ProductService.prototype.listProducts(req, res, next);
+    });
+    systemUtils.wrapService(res,next,promise);
 };
 
 module.exports = new ProductService();

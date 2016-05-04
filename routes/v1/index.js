@@ -53,6 +53,7 @@ a.get('/district/:districtId/shops', orderService.getShopList); // 获取指定�
 a.get('/product/categories', productService.getCategories); // 获取所有产品分类
 a.get('/products', productService.listProducts); // 获取产品列表
 a.get('/product/accessory', productService.listAccessory);   // 获取配件列表
+a.get('/product/accessory/order/:orderId', productService.listAccessoryByOrder); // 获取指定订单下可选的配件列表
 
 //**********************
 //******** POST ********

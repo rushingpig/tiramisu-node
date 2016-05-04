@@ -81,8 +81,8 @@ export function getOrderSpareparts(orderId){
 
 export const GET_DELIVERYMAN_AT_SAME_STATION = 'GET_DELIVERYMAN_AT_SAME_STATION';
 export function getDeliverymanAtSameStation(orderId){
-  /*return GET(Url.order_deliverymans.toString(orderId),null,GET_DELIVERYMAN_AT_SAME_STATION);*/
-  return TEST({
+  return GET(Url.order_deliverymans.toString(orderId),null,GET_DELIVERYMAN_AT_SAME_STATION);
+/*  return TEST({
     current_id:2,
     list:[
       {
@@ -95,7 +95,7 @@ export function getDeliverymanAtSameStation(orderId){
         deliveryman_name:'郭林',
         deliveryman_mobile:'13600177900',
       }],
-  },GET_DELIVERYMAN_AT_SAME_STATION);
+  },GET_DELIVERYMAN_AT_SAME_STATION);*/
 }
 
 export const GET_ORDER_DETAIL = 'GET_ORDER_DETAIL';

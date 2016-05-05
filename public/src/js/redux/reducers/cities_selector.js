@@ -81,7 +81,7 @@ const transformEnableList = (originProvincesData, originCitiesData, enableList) 
 
 const switchType = {
 
-    [ActionTypes.LOAD_DATA]: (state, { geographiesData, chekcedData, enableList = false }) => {
+    [ActionTypes.LOAD_DATA]: (state, { geographiesData, chekcedData = [], enableList = false }) => {
 
         let { provincesData, citiesData } = transformGeographiesData(geographiesData);
 
@@ -177,13 +177,11 @@ const switchType = {
         const { provincesData } = state;
         const province          = provincesData.get(provinceId);
 
-        let newProvincesData    = provincesData;
         let newCheckedProvinces = new Set([provinceId, ...state.checkedProvinces]);
-        let newCitiesData       = [];
         let citiesDataKeys;
 
         citiesDataKeys = [...state.citiesData].filter(
-            ([key, obj]) => obj.province === provinceId
+            ([key, obj]) => obj.enable && (obj.province === provinceId)
         ).map(
             ([key, obj]) => obj.id
         );
@@ -192,13 +190,8 @@ const switchType = {
 
         return {
             ...state,
-            provincesData:    newProvincesData,
             checkedProvinces: newCheckedProvinces,
-            checkedCities:    newCheckedCities,
-            citiesData: new Map([
-                ...state.citiesData,
-                ...newCitiesData
-            ])
+            checkedCities:    newCheckedCities
         };
     },
 

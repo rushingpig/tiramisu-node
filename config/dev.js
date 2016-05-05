@@ -66,7 +66,7 @@ var mysql_options = {
     host            : 'localhost',
     port            : 3306,
     user            : 'root',
-    password        : 'pigo2016',
+    password        : '',
     database        : 'tiramisu',
     charset         : 'utf8mb4',
     timezone        : 'local',

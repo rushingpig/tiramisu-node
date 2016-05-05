@@ -13,7 +13,11 @@ const IconCheckBox = props => (
 const Panel = props => (<div className="panel" {...props} />);
 
 const Button = props => (
-  <button className={"btn btn-xs btn-" + (props.active ? 'warning' : 'default')} style={{margin:'0 3px 3px 0'}} {...props}>{props.children}</button>
+  <button
+    className={"btn btn-xs btn-" + (props.active ? 'warning' : 'default')}
+    style={{margin:'0 3px 3px 0', ...props.disabled ? {color:'#ccc', cursor: 'not-allowed'} : {}}}
+    {...props}
+  />
 );
 
 const disableProps = {style:{color:'#ccc', cursor: 'not-allowed'}, onClick: undefined};
@@ -74,9 +78,8 @@ class Selector extends Component {
                       <Button
                         key={id}
                         disabled={!city.enable}
-                        active={state.checkedCities.has(id) || state.checkedProvinces.has(city.province)}
+                        active={(state.checkedCities.has(id) || state.checkedProvinces.has(city.province)) && city.enable}
                         onClick={props.toggleCityCheckStatus.bind(undefined, id)}
-                        {...city.enable ? {} : disableProps}
                       >
                         {city.name}
                       </Button>

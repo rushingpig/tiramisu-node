@@ -116,7 +116,7 @@ CategoryService.prototype.getCategoryRegionsForPC = (req,res,next)=>{
     };
     let promise = categoryDao.getCategoryRegionsById(data).then((results)=>{
         if(toolUtils.isEmptyArray(results)){
-            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS_ARR);
         }
         res.api(results);
     });

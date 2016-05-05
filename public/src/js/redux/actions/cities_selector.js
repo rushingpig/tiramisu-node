@@ -1,3 +1,5 @@
+import { clone } from 'utils/index';
+
 const ActionTypes = {
     LOAD_DATA:          Symbol('CITIES_SELECTOR_LOAD_SELECTOR_DATA'),
     SET_ENABLE_LIST:    Symbol('CITIES_SELECTOR_SET_ENABLE_LIST'),
@@ -13,6 +15,8 @@ const ActionTypes = {
     UNCHECK_CITY:       Symbol('CITIES_SELECTOR_UNCHECK_CITY'),
     CHECK_ALL_CITIES:   Symbol('CITIES_SELECTOR_CHECK_ALL_CITIES'),
     UNCHECK_ALL_CITIES: Symbol('CITIES_SELECTOR_UNCHECK_ALL_CITIES'),
+
+    CHANGED_CHECK_CITIES: Symbol('CHANGED_CHECK_CITIES')
 };
 
 const changeSelectedProvince = provinceId => ({
@@ -32,6 +36,8 @@ const toggleProvinceCheckStatus = provinceId => (
             type: checkedProvinces.has(provinceId) ? ActionTypes.UNCHECK_PROVINCE : ActionTypes.CHECK_PROVINCE,
             provinceId
         });
+
+        dispatch({ type: ActionTypes.CHANGED_CHECK_CITIES, citiesSelectorState: clone(getState().citiesSelector) });
     }
 );
 
@@ -58,16 +64,24 @@ const toggleCityCheckStatus = cityId => (
                 cityId
             });
         }
+
+        dispatch({ type: ActionTypes.CHANGED_CHECK_CITIES, citiesSelectorState: clone(getState().citiesSelector) });
     }
 );
 
-const checkedAllCities = () => ({
-    type: ActionTypes.CHECK_ALL_CITIES
-});
+const checkedAllCities = () => (
+    (dispatch, getState) => {
+        dispatch({ type: ActionTypes.CHECK_ALL_CITIES });
+        dispatch({ type: ActionTypes.CHANGED_CHECK_CITIES, citiesSelectorState: clone(getState().citiesSelector) });
+    }
+);
 
-const unCheckAllCities = () => ({
-    type: ActionTypes.UNCHECK_ALL_CITIES
-});
+const unCheckAllCities = () => (
+    (dispatch, getState) => {
+        dispatch({ type: ActionTypes.UNCHECK_ALL_CITIES });
+        dispatch({ type: ActionTypes.CHANGED_CHECK_CITIES, citiesSelectorState: clone(getState().citiesSelector) });
+    }
+);
 
 export { ActionTypes };
 

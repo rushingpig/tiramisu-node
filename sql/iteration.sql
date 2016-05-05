@@ -89,6 +89,21 @@ INSERT INTO `delivery_pay_rule` VALUES
 
 INSERT INTO `buss_product_category` VALUES (15, 0, '配件', 0, 1, now(), null, null, 1);
 
+DROP TABLE IF EXISTS `buss_product_category_regionalism`;
+CREATE TABLE `buss_product_category_regionalism` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `category_id` int(10) unsigned NOT NULL COMMENT '分类id',
+  `regionalism_id` int(10) unsigned NOT NULL COMMENT '区域id',
+  `sort` int(10) unsigned NOT NULL DEFAULT '4294967295' COMMENT '排序权重',
+  `channel` enum('PC') DEFAULT 'PC' COMMENT 'PC端',
+  `created_by` int(10) unsigned NOT NULL COMMENT '创建人',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
+  `updated_by` int(10) unsigned DEFAULT NULL COMMENT '更新者',
+  `updated_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '删除标志',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=594 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='分类-区域';
+
 ALTER TABLE `tiramisu`.`buss_product_category` DROP COLUMN `sort`;
 ALTER TABLE `tiramisu`.`buss_product_category`
 ADD COLUMN `remarks` varchar(255) DEFAULT NULL COMMENT '备注信息' AFTER `name`;

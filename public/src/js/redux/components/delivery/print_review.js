@@ -35,7 +35,7 @@ class FilterHeader extends Component {
   render(){
     var { 
       fields: {
-        order_id,
+        keywords,
         begin_time,
         end_time,
         is_reprint,
@@ -46,7 +46,7 @@ class FilterHeader extends Component {
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <input {...order_id} className="form-control input-xs v-mg" placeholder="订单号" />
+          <input {...keywords} className="form-control input-xs v-mg" placeholder="订单号" />
           {' 开始时间'}
           <DatePicker redux-form={begin_time} editable className="short-input" />
           {' 结束时间'}
@@ -72,7 +72,7 @@ class FilterHeader extends Component {
 FilterHeader = reduxForm({
   form: 'print_review',
   fields: [
-    'order_id',
+    'keywords',
     'begin_time',
     'end_time',
     'is_reprint',

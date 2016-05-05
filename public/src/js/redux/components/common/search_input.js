@@ -6,11 +6,12 @@ export default class SearchInput extends React.Component {
     this.searchHandler = this.searchHandler.bind(this);
   }
   render(){
-    var { className, searching, size, placeholder, searchHandler } = this.props;
+    var { id, className, searching, size, placeholder, searchHandler, style} = this.props;
     var i_className = searching ? 'fa fa-spinner fa-spin disabled' : 'fa fa-search';
     return (
       <div className={`search-input ${className}`}>
         <input ref="input" 
+          {...this.props}
           className={`form-control ${size}`} 
           placeholder={placeholder} 
           onKeyDown={this.keyDownHandler.bind(this)} />

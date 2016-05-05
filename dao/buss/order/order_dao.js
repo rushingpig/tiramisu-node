@@ -530,7 +530,7 @@ OrderDao.prototype.findOrderList = function(query_data) {
   // 订单转送货单模块  ->  当输入条件既不为手机号也不是完整订单号时,不进行全文检索,支持模糊匹配
   if (query_data.keywords && doFt) {
     let match = '';
-    sql += " inner join ?? bof on match(bof.owner_name,bof.owner_mobile,bof.recipient_name,bof.recipient_mobile,bof.recipient_address,bof.landmark,bof.show_order_id,bof.merchant_id) against(? IN BOOLEAN MODE) and bof.order_id = bo.id";
+    sql += " inner join ?? bof on match(bof.owner_name,bof.owner_mobile,bof.recipient_name,bof.recipient_mobile,bof.recipient_address,bof.landmark,bof.show_order_id,bof.merchant_id,bof.coupon,bof.recipient_mobile_suffix,bof.owner_mobile_suffix) against(? IN BOOLEAN MODE) and bof.order_id = bo.id";
     params.push(tables.buss_order_fulltext);
     query_data.keywords.split(' ').forEach((curr) => {
       if (curr) {
@@ -1015,7 +1015,10 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
             recipient_name: systemUtils.encodeForFulltext(recipient_name),
             recipient_mobile: recipient_mobile,
             recipient_address: systemUtils.encodeForFulltext(prefix_address + recipient_address),
-            landmark: systemUtils.encodeForFulltext(recipient_landmark)
+            landmark: systemUtils.encodeForFulltext(recipient_landmark),
+            coupon : coupon,
+            owner_mobile_suffix : owner_mobile.substring(owner_mobile.length - 5),
+            recipient_mobile_suffix : recipient_mobile.substring(recipient_mobile.length - 5)
           };
           let order_history_obj = {
             order_id: orderId,
@@ -1268,9 +1271,20 @@ OrderDao.prototype.batchUpdateOrderFulltext = function(orderIds, updateObj) {
 };
 
 function doFullText(query_data) {
+
+  let fuzzy_handler = function(sorted_rules){
+    return sorted_rules === constant.OSR.DELIVER_LIST
+            || sorted_rules === constant.OSR.DELIVERY_EXCHANGE
+            || sorted_rules === constant.OSR.RECEIVE_LIST;
+  };
+
   let keywords = query_data.keywords;
   let sorted_rules = query_data.order_sorted_rules;
-  if (keywords && toolUtils.isInt(parseInt(keywords)) && sorted_rules === constant.OSR.DELIVER_LIST && !toolUtils.isMobilePhone(keywords, 'zh-CN') && !toolUtils.exp_validator_custom.customValidators.isOrderId(keywords)) {
+  if (keywords && toolUtils.isInt(parseInt(keywords))
+      && keywords.toString().length !== 5
+      && fuzzy_handler(sorted_rules)
+      && !toolUtils.isMobilePhone(keywords, 'zh-CN')
+      && !toolUtils.exp_validator_custom.customValidators.isOrderId(keywords)) {
     return false;
   } else {
     return true;

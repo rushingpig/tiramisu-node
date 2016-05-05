@@ -326,6 +326,7 @@ OrderService.prototype.editOrder = function (is_submit) {
       products = req.body.products,
       delivery_name = req.body.delivery_name,
       greeting_card = req.body.greeting_card,
+      coupon = req.body.coupon,
       prefix_address = req.body.prefix_address;
 
     let recipient_obj = {
@@ -453,7 +454,10 @@ OrderService.prototype.editOrder = function (is_submit) {
         recipient_name: systemUtils.encodeForFulltext(recipient_name),
         recipient_mobile: recipient_mobile,
         recipient_address: systemUtils.encodeForFulltext(prefix_address + recipient_address),
-        landmark: systemUtils.encodeForFulltext(recipient_landmark)
+        landmark: systemUtils.encodeForFulltext(recipient_landmark),
+        coupon : coupon,
+        owner_mobile_suffix : owner_mobile.substring(owner_mobile.length - 5),
+        recipient_mobile_suffix : recipient_mobile.substring(recipient_mobile.length - 5)
       };
       let orderPromise = orderDao.editOrder(systemUtils.assembleUpdateObj(req, order_obj), orderId, systemUtils.assembleUpdateObj(req, recipient_obj), recipient_id, products, add_skus, delete_skuIds, update_skus);
       let orderHistoryPromise = orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));

@@ -203,8 +203,10 @@ DeliveryService.prototype.listReprintApplies = (req,res,next)=>{
         begin_time : req.query.begin_time,
         end_time : req.query.end_time,
         is_reprint : req.query.is_reprint,
-        order_id : req.query.order_id ? systemUtils.getDBOrderId(req.query.order_id) : null,
-        status : req.query.status
+        // @Deprecated
+        // order_id : req.query.order_id ? systemUtils.getDBOrderId(req.query.order_id) : null,
+        status : req.query.status,
+        keywords : req.query.keywords
     };
     if(req.session.user){
         query_obj.city_id = req.session.user.city_id;

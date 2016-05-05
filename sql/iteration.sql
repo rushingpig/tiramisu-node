@@ -21,3 +21,6 @@ ADD COLUMN `recipient_mobile_suffix` varchar(5) NOT NULL DEFAULT '00000' COMMENT
 ADD COLUMN `owner_mobile_suffix` varchar(5) NOT NULL DEFAULT '00000' COMMENT '下单人手机号后5位' AFTER `recipient_mobile_suffix`,
 DROP INDEX `IDX_FL`,
 ADD FULLTEXT `IDX_FL` (`owner_name`, `owner_mobile`, `recipient_name`, `recipient_mobile`, `recipient_address`, `landmark`, `show_order_id`, `merchant_id`, `coupon`, `recipient_mobile_suffix`, `owner_mobile_suffix`) comment '';
+
+# 审核重新打印列表建立索引
+ALTER TABLE `tiramisu`.`buss_print_apply` ADD INDEX `IDX_SHOW_ORDER_ID` (`show_order_id`) comment '在页面上展示的订单号建立索引，便于查询';

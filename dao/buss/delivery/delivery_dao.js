@@ -109,9 +109,11 @@ DeliveryDao.prototype.findReprintApplies = function(query_obj){
         params.push(query_obj.is_reprint);
 
     }
-    if(query_obj.order_id){
-        sql += " and bpa.order_id = ?";
-        params.push(query_obj.order_id);
+    if(query_obj.keywords){
+        const keywords = query_obj.keywords;
+        sql += " and (bpa.show_order_id like ? or su1.name like ?)";
+        params.push('%' + keywords + '%');
+        params.push('%' + keywords + '%');
     }
     if(query_obj.status){
         sql += " and bpa.status = ?";

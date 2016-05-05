@@ -326,7 +326,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
 
     if(order){
         products = order.products || [];
-        refund_amount = order.refund_amount * 100;
+        if(order.refund_amount !== undefined) refund_amount = order.refund_amount * 100;
         if(order.total_amount !== undefined) order_obj.total_amount = order.total_amount;
         if(order.total_original_price !== undefined) order_obj.total_original_price = order.total_original_price;
         if(order.total_discount_price !== undefined) order_obj.total_discount_price = order.total_discount_price;
@@ -414,8 +414,8 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
 
         return co(function*() {
             let recipient_id = current_order.regionalism_id;
-            let recipient_obj = {};
-            yield orderDao.editOrder(systemUtils.assembleUpdateObj(req, order_obj), orderId, systemUtils.assembleUpdateObj(req, recipient_obj), recipient_id, products, add_skus, delete_skuIds, update_skus);
+            let recipient_obj = {regionalism_id: recipient_id};
+            yield orderDao.editOrder(systemUtils.assembleUpdateObj(req, order_obj), orderId, null, null, products, add_skus, delete_skuIds, update_skus);
 
             if (order_history_obj != '') {
                 yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
@@ -585,7 +585,7 @@ DeliveryService.prototype.listDeliverymansByOrder = (req,res,next)=>{
         }
 
         return {
-            current_id: current_order.delivery_id,
+            current_id: current_order.deliveryman_id,
             list: deliverymans
         }
     }).then(result=> {

@@ -88,3 +88,56 @@ INSERT INTO `delivery_pay_rule` VALUES
     (14, 'CAKE', 1);
 
 INSERT INTO `buss_product_category` VALUES (15, 0, '配件', 0, 1, now(), null, null, 1);
+
+ALTER TABLE `tiramisu`.`buss_product_category` DROP COLUMN `sort`;
+ALTER TABLE `tiramisu`.`buss_product_category`
+ADD COLUMN `remarks` varchar(255) DEFAULT NULL COMMENT '备注信息' AFTER `name`;
+ALTER TABLE `tiramisu`.`buss_product_category`
+ADD COLUMN `isAddition` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '是否为附加商品，1表示是，0表示否' AFTER `remarks`;
+
+ALTER TABLE `tiramisu`.`buss_product` 
+DROP COLUMN `original_price`,
+ADD COLUMN `created_by` INT(255) NULL DEFAULT NULL COMMENT '创建人' AFTER `category_id`,
+ADD COLUMN `created_time` DATETIME NULL DEFAULT NULL AFTER `created_by`,
+ADD COLUMN `updated_by` INT(255) NULL DEFAULT NULL COMMENT '更新人' AFTER `created_time`,
+ADD COLUMN `updated_time` DATETIME NULL DEFAULT NULL AFTER `updated_by`,
+ADD COLUMN `del_flag` TINYINT(1) NULL DEFAULT 1 AFTER `updated_time`;
+
+ALTER TABLE `tiramisu`.`buss_product_sku` 
+DROP INDEX `IDX_PRODUCT_SIZE_WEBSITE`,
+DROP COLUMN `is_local_site`,
+DROP COLUMN `is_delivery`,
+DROP COLUMN `sort`,
+ADD COLUMN `original_price` INT(8) NOT NULL DEFAULT '0' COMMENT '产品原价（单位：分）' AFTER `price`,
+ADD COLUMN `book_time` INT(4) NOT NULL DEFAULT '0' COMMENT '预约时间' AFTER `original_price`,
+ADD COLUMN `presell_start` DATETIME NULL DEFAULT NULL COMMENT '预售上架开始时间' AFTER `book_time`,
+ADD COLUMN `presell_end` DATETIME NULL DEFAULT NULL COMMENT '预售上架结束时间' AFTER `presell_start`,
+ADD COLUMN `send_start` DATETIME NULL DEFAULT NULL COMMENT '预售发货开始时间' AFTER `presell_end`,
+ADD COLUMN `send_end` DATETIME NULL DEFAULT NULL COMMENT '预售发货结束时间' AFTER `send_start`,
+ADD COLUMN `activity_price` INT(8) NULL DEFAULT NULL COMMENT '活动价格' AFTER `send_end`,
+ADD COLUMN `ref` INT(10) NULL DEFAULT NULL COMMENT '活动前原skuid' AFTER `activity_price`,
+ADD COLUMN `activity_start` DATETIME NULL DEFAULT NULL COMMENT '活动开始时间' AFTER `ref`,
+ADD COLUMN `activity_end` DATETIME NULL DEFAULT NULL COMMENT '活动结束时间' AFTER `activity_start`;
+
+DROP EVENT IF EXISTS Expire_Activity_Time;
+SET GLOBAL event_scheduler = ON;
+CREATE EVENT Expire_Activity_Time
+On SCHEDULE EVERY 1 MINUTE
+COMMENT '定时结束活动sku，开启原有sku'
+DO
+BEGIN
+  DECLARE done INT DEFAULT FALSE;
+  DECLARE sku_id,ref_id INT;
+  DECLARE cur CURSOR FOR SELECT id,ref FROM buss_product_sku where activity_end < now() and del_flag = 1;
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+  OPEN cur;
+  read_loop: LOOP
+    FETCH cur into sku_id,ref_id;
+    IF done THEN
+      LEAVE read_loop;
+    END IF;
+    update buss_product_sku set del_flag = 0 where id = sku_id;
+    update buss_product_sku set del_flag = 1 where id = ref_id;
+  END LOOP;
+  CLOSE cur;
+END;

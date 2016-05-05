@@ -70,7 +70,7 @@ const URL = (function(){
     reprint_validate: '/order/:orderId/validate',
     reprint: '/order/:orderId/reprint', //重新打印
     order_deliverymans: '/order/:orderId/deliverymans',  //该订单的配送员所属配送站的全部配送员
-    accessory_list: '/product/accessory',  //配件列表
+    accessory_list: '/product/accessory/order/:orderId',  //配件列表
     order_accessory_list: '/order/:orderId/products', //订单的配件列表
 
     //配送员

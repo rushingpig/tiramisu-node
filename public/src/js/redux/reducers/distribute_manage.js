@@ -65,19 +65,35 @@ var D_state = {
   spareparts: [],
   orderSpareparts: [],
   current_id: -1,
+  orderDetail:{},
 }
 
 function D_(state = D_state, action) {
   switch (action.type) {
     case Actions.GET_SPARE_PARTS:
-      var spareparts = action.data.list;
-      spareparts = spareparts.map( m => {
+      var spareparts_tmp = action.data.list;
+      var spareparts;
+      spareparts = spareparts_tmp.map( m => {
         if(m.skus){
-          m.img_url = m.skus.length > 0 ? m.skus[0].img_url : '';
-          m.price = m.skus.length > 0 ? m.skus[0].img_url : 0;        
-        }
-        m.id = m.product_id;
-        return m;        
+          var n = {} ;
+          n.amount = 0;
+          n.atlas = null;
+          n.category_id = ACCESSORY_CATE_ID;
+          n.choco_board = '';
+          n.custom_desc = '';
+          n.custom_name = '';
+          n.discount_price = m.skus[0].discount_price;
+          n.greeting_card = '';
+          n.name = m.name;
+          n.num = 1;
+          n.original_price = m.skus[0].original_price;
+          n.size = m.size;
+          n.sku_id = m.skus[0].sku_id;
+          return n;
+/*          m.img_url = m.skus.length > 0 ? m.skus[0].img_url : '';
+          m.price = m.skus.length > 0 ? m.skus[0].discount_price : 0;  
+          m.id = m.skus.length > 0 ? m.skus[0].sku_id : 0 ; */     
+        }        
       });
     
       return {...state, spareparts:spareparts}
@@ -91,8 +107,13 @@ function D_(state = D_state, action) {
     case Actions.GET_ORDER_DETAIL:
       var orderSpareparts = action.data.products;
       orderSpareparts = orderSpareparts.filter( m => m.category_id == ACCESSORY_CATE_ID);
-
-      return { ...state, orderSpareparts: orderSpareparts || [] }
+/*      orderSpareparts = [{
+        amount:0;
+        atlas:null;
+        category_id: 15;
+        choco_board: '',
+      }]*/
+      return { ...state, orderSpareparts: orderSpareparts || [], orderDetail: action.data };
     default:
       return state;
   }

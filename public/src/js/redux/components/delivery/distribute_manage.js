@@ -19,7 +19,7 @@ import RadioGroup from 'common/radio_group';
 import RecipientInfo from 'common/recipient_info';
 import ToolTip from 'common/tooltip';
 
-import { order_status, DELIVERY_MAP, YES_OR_NO } from 'config/app.config';
+import { order_status, DELIVERY_MAP, YES_OR_NO ,ACCESSORY_CATE_ID} from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
 import { form, Noty, dateFormat, parseTime, dom } from 'utils/index';
@@ -414,10 +414,10 @@ class DeliveryDistributePannel extends Component {
   }
   showSignedModal(n){
     this.props.getDeliverymanAtSameStation(n.order_id);
-    this.props.getOrderSpareparts(n.order_id);    
-    /*this.props.getOrderDetail(n.order_id);*/
+    /*this.props.getOrderSpareparts(n.order_id);   */ 
+    this.props.getOrderDetail(n.order_id);
     
-    this.props.getSpareparts();
+    this.props.getSpareparts(n.order_id);
     this.refs.SignedModal.show(n);
   }
   showUnSignedModal(n){
@@ -458,7 +458,7 @@ var PartRow = React.createClass({
     return (
       <tr>
         <td>{ props.name }</td>
-        <td>{ '￥ ' + props.price.toString() }</td>
+        <td>{ '￥ ' + (props.discount_price/100).toString() }</td>
         <td>{ props.sub }</td>
         <td>
         <button 
@@ -472,20 +472,20 @@ var PartRow = React.createClass({
           onClick = { this.onIncrement}><i>+</i></button>
         </td>
         <td>
-          <input type = "text" value = {props.remarks} onChange= { this.onRemarksChange}/>
+          <input type = "text" value = { props.greeting_card } onChange= { this.onRemarksChange}/>
         </td>
       </tr>
       )
   },
 
   onRemarksChange(e){
-    this.props.onRemarksChange(this.props.id,e);
+    this.props.onRemarksChange(this.props.sku_id,e);
   },
   onIncrement(){
-    this.props.onIncrement(this.props.id);
+    this.props.onIncrement(this.props.sku_id);
   },
   onDecrement(){
-    this.props.onDecrement(this.props.id);
+    this.props.onDecrement(this.props.sku_id);
   }
 })
 
@@ -493,8 +493,8 @@ class PartNode extends Component{
   render(){
     var { data } = this.props ;
     return (
-      <div style={{float:'left',height:'30px',margin:'0px 5px',}} onClick= {this.onChoose.bind(this)}>
-        <img src={data.icon} style={{height:'30px',width:'30px'}}/>
+      <div style={{float:'left',height:'30px',margin:'5px 5px',}} onClick= {this.onChoose.bind(this)}>
+        <img src={data.img_url || ''} style={{height:'30px',width:'30px'}}/>
         <span className='partBtn'>{ data.name }</span>      
       </div>
       )
@@ -508,7 +508,7 @@ class PartNodeSub extends Component{
   render(){
     var { data } = this.props ;
     return (
-      <div style={{float:'left',height:'30px',margin:'0px 5px',}} onClick= {this.onChoose.bind(this)}>
+      <div style={{float:'left',height:'30px',margin:'5px 5px',}} onClick= {this.onChoose.bind(this)}>
         <img src={data.icon} style={{height:'30px',width:'30px'}}/>
         <span className='partBtn'>{ data.name }</span>      
       </div>
@@ -530,14 +530,15 @@ class SparePartsGroup extends Component{
 
   render(){
     /*var {list } = this.props;*/
-    var tmp = this.props.list.filter (n => n.id == this.state.chosen_id);
-    var children = tmp.length > 0 ? tmp[0].children : [];
+    var tmp = this.props.list.filter (n => n.sku_id == this.state.chosen_id);
+    tmp = tmp.map( m => m.children = m.children || []);
+/*    var children = tmp.length > 0 ? tmp[0].children : [];
     var parent_id = tmp.length > 0 ? tmp[0].id : -1;
-    var parent_name = tmp.length > 0 ? tmp[0].name : '';
+    var parent_name = tmp.length > 0 ? tmp[0].name : '';*/
     return(
       <div>
         {
-          children.length > 0
+/*          children.length > 0
           ?
             [
               <div style={{paddingBottom:'10px'}}>
@@ -556,7 +557,7 @@ class SparePartsGroup extends Component{
                   })
                 }
               </div>
-          ]:
+          ]:*/
           <div style={{paddingBottom:'10px'}}>
             {
               this.props.list.map( n => 
@@ -572,7 +573,7 @@ class SparePartsGroup extends Component{
   }
 
   onPartChange(e){
-    this.setState({chosen_id:e.id});
+    this.setState({chosen_id:e.sku_id});
     this.props.onChange(e);
   }
 }
@@ -600,10 +601,11 @@ var SignedModal = React.createClass({
   render: function(){
     var { signin_date, late_minutes, refund_method, refund_money, refund_reson,current_id, deliverymanAtSameStation } = this.state;
     var { D_ ,loading, refresh } = this.props;
+    
     var { spareparts } =  D_ ;
     /*var { deliverymanAtSameStation } =  D_ ;*/
     var content = this.state.orderSpareparts.map(n => {
-      return <PartRow key = {n.id} 
+      return <PartRow key = {n.sku_id} 
                 {...n} 
                 onRemarksChange = { this.onRemarksChange }
                 onIncrement = {this.onIncrement}
@@ -696,10 +698,10 @@ var SignedModal = React.createClass({
             </tbody>
           </table>
         </div>
-        <div className="form-group mg-15" >
+        <div className="form-group mg-15" style = {{marginBottom:50,}}>
           <label>可选配件：</label>
           <div>
-            <SparePartsGroup list = { spareparts || []} onChange={this.onSparePartChange}/>
+            <SparePartsGroup list = { spareparts } onChange={this.onSparePartChange}/>
           </div>
         </div>
       </StdModal>
@@ -707,12 +709,19 @@ var SignedModal = React.createClass({
   },
   submitHandler(){
     var { order, CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date, current_id, deliverymanAtSameStation } = this.state;
+    var { orderDetail } = this.props.D_;
+    var { updated_time } = orderDetail;
     var signin_hour = this.refs.timeinput.val();
     var deliveryman_tmp = deliverymanAtSameStation.filter( m => m.id == current_id);
-    var arr = deliveryman_tmp.text.split(':');
-    var name = arr.length > 0 ? arr[0]:'';
-    var mobile = arr.length > 1 ? arr[1]: '';
-    var deliveryman = { current_id , mobile , name };
+    var deliveryman;
+    if( deliveryman_tmp.length > 0 ){
+      var arr = deliveryman_tmp[0].text.split(':');
+      var name = arr.length > 0 ? arr[0]:'';
+      var mobile = arr.length > 1 ? arr[1]: '';
+      deliveryman = { id:current_id , mobile , name };      
+    }
+    deliveryman ={ id: 1, mobile :'18118776535' ,name :'hong'}
+
     if(!form.isNumber(late_minutes) || late_minutes < 0){
       Noty('warning', '迟到时间输入有误');return;
     }
@@ -733,12 +742,31 @@ var SignedModal = React.createClass({
         }
       }
     }
+    var { orderSpareparts } = this.props.D_;
+    var currentOrderSpareparts = this.state.orderSpareparts;
+    var orderSparepartsAmount = 0 ;
+    var currentOrderSparepartsAmount = 0;
+    orderSpareparts.forEach(function(m){
+      orderSparepartsAmount += parseInt( m.discount_price ) * m.num;
+    });
+    currentOrderSpareparts.forEach(m => {
+      currentOrderSparepartsAmount += parseInt( m.discount_price ) * m.num;
+    });
+    var rest = currentOrderSparepartsAmount - orderSparepartsAmount;
+    var refund_amount = rest < 0 ? rest : 0;
+    var total_amount = this.props.D_.orderDetail.total_amount;
+    total_amount = rest > 0 ? total_amount + rest :total_amount ;
+    var products = currentOrderSpareparts;
+    products = [...products, ...this.props.D_.orderDetail.products];
     this.props.signOrder(order.order_id, {
       late_minutes: late_minutes,
       payfor_type: refund_method,
       payfor_amount: refund_money,
       payfor_reason: refund_reson,
-      signin_time: signin_date + ' ' + signin_hour
+      signin_time: signin_date + ' ' + signin_hour,
+      updated_time: updated_time, 
+      order: { products ,refund_amount, total_amount},
+      deliveryman: deliveryman,
     }).done(function(){
       this.refs.modal.hide();
       this.props.callback();
@@ -778,9 +806,9 @@ var SignedModal = React.createClass({
   },
   onRemarksChange: function(id,e){
     var old_orderSpareparts = this.state.orderSpareparts;
-    old_orderSpareparts.map( m => {
-      if( m.id == id){
-        m.remarks = e.target.value;
+    old_orderSpareparts = old_orderSpareparts.map( m => {
+      if( m.sku_id == id){
+        m.greeting_card = e.target.value;
       }
       return m;
     });
@@ -789,7 +817,7 @@ var SignedModal = React.createClass({
   onDecrement: function(id){
      var old_orderSpareparts = this.state.orderSpareparts;
      old_orderSpareparts.map( m => {
-       if( m.id == id){
+       if( m.sku_id == id){
         if(m.num>0){
          m.num --;
         }
@@ -801,7 +829,7 @@ var SignedModal = React.createClass({
   onIncrement: function(id){
      var old_orderSpareparts = this.state.orderSpareparts;
      old_orderSpareparts.map( m => {
-       if( m.id == id){
+       if( m.sku_id == id){
          m.num ++;
        }
        return m;
@@ -841,25 +869,27 @@ var SignedModal = React.createClass({
             return m;
           })
         }else{
-          var newvalue = { id: e.parent_id, name: e.parent_name ,price: e.price ,sub: e.name, remarks:'xx',num:1}           
+          var newvalue = { id: e.parent_id, name: e.parent_name ,price: e.price ,sub: e.name, remarks:'',num:1, skus: e.skus }           
         }       
       }else{
-        if(old_orderSpareparts.some( m => m.id == e.id )){
+        if(old_orderSpareparts.some( m => m.sku_id == e.sku_id )){
           old_orderSpareparts.map( m => {
-            if(m.id == e.id){
+            if(m.sku_id == e.sku_id){
               m.num ++;
             }
             return m;
           })
         }else{
-          var newvalue = { id: e.id, name: e.name, price: e.price, sub: '', remarks: 'xx',num:1} 
+          var newvalue = e;
+          e.num = 1;
+          old_orderSpareparts.push(newvalue);
         }
 
         
       }
-      if( 'id' in newvalue){
+      /*if( 'id' in newvalue){
         old_orderSpareparts.push(newvalue);
-      }     
+      }*/     
       this.setState({orderSpareparts:old_orderSpareparts});
     }
   },
@@ -870,7 +900,9 @@ var SignedModal = React.createClass({
   },*/
   componentWillReceiveProps(nextProps){
     var { D_ } = nextProps;
-    var orderSpareparts = D_.orderSpareparts;
+    var  products  = D_.orderDetail.products || [];
+    products = products.filter( m => m.category_id == ACCESSORY_CATE_ID)
+    var orderSpareparts = products;
     var current_id = D_.current_id;
     var deliverymanAtSameStation = D_.deliverymanAtSameStation;
     this.setState({orderSpareparts ,current_id ,deliverymanAtSameStation});

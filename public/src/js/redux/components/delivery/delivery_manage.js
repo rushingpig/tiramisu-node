@@ -638,15 +638,15 @@ var EditModal = React.createClass({
     if(value === ''){
       results = all_deliveryman;
     }else if(/^\d+$/i.test(value)){ //电话号码
-      results = all_deliveryman.filter(n => n.phone.indexOf(value) == 0)
+      results = all_deliveryman.filter(n => n.deliveryman_mobile.indexOf(value) != -1)
     }else if(/^\w+$/i.test(value)){ //首字母
       results = all_deliveryman.filter(n => {
-        return n.py.some(m => m.indexOf(value) == 0)
+        return n.py.some(m => m.toUpperCase().indexOf(value) == 0)
       })
     }else{ //中文全称
-      results = all_deliveryman.filter(n => n.text.indexOf(value) != -1)
+      results = all_deliveryman.filter(n => n.deliveryman_name.indexOf(value) != -1)
     }
-    this.setState({ filter_results: results, search_txt: value, selected_deliveryman_id: results.length && results[0].deliveryman_id });
+    this.setState({ filter_results: results, search_txt: e.target.value, selected_deliveryman_id: results.length && results[0].deliveryman_id });
   },
   onSelectDeliveryman: function(e){
     this.setState({ selected_deliveryman_id: e.target.value});

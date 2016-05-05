@@ -413,8 +413,6 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
         //===========for history end=============
 
         return co(function*() {
-            let recipient_id = current_order.regionalism_id;
-            let recipient_obj = {regionalism_id: recipient_id};
             yield orderDao.editOrder(systemUtils.assembleUpdateObj(req, order_obj), orderId, null, null, products, add_skus, delete_skuIds, update_skus);
 
             if (order_history_obj != '') {

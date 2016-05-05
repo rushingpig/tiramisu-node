@@ -50,8 +50,8 @@ var tables = {
 var mysql_options = {
   acquireTimeout: 10000,
   waitForConnections: true,
-  queueLimit: 2000,
-  connectionLimit: 20,
+  queueLimit: 500,
+  connectionLimit: 10,
   host: 'rdsp4y4r841mswksag22.mysql.rds.aliyuncs.com',
   port: 3306,
   user: 'xfxb_qa',

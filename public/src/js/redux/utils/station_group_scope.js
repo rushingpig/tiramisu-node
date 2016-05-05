@@ -1,10 +1,11 @@
 import Noty from 'utils/_noty';
 import { outputPonits, changeToPonits, addInfoWindow, addMarkerToMap, _initialize, create, addMarker,
-  locationCenter, oldPolygonStyle, newPolygonStyle, getLabelStyle, search } from 'utils/create_visiable_map';
+  locationCenter, oldPolygonStyle, newPolygonStyle, getLabelStyle, search, createAutocomplete } from 'utils/create_visiable_map';
 import clone from 'clone';
 
 var MyMap = function(list){
   this.map = null;
+  this.centerPoint = null;
   this.list = list;
   this.markers = [];
   this.infoCenter = null;
@@ -15,6 +16,7 @@ var MyMap = function(list){
   this.LocalSearch = null;
 
   this.d = $.Deferred();
+  this.searchMarker = null;
 }
 MyMap.prototype.changeToPonits = changeToPonits;
 
@@ -126,5 +128,6 @@ MyMap.prototype.reset = function(){
 MyMap.prototype._initialize = _initialize;
 MyMap.prototype.create = create;
 MyMap.prototype.search = search;
+MyMap.prototype.createAutocomplete = createAutocomplete;
 
 export default new MyMap;

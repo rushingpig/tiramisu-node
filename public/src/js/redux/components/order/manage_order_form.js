@@ -171,7 +171,8 @@ class ManageAddForm extends Component {
         <label>{'下单人手机：'}</label>
         <input {...owner_mobile} ref="owner_mobile" className={`form-control input-xs ${ owner_mobile.error }`} type="text" />{' '}
         <button onClick={this.showHistoryModal.bind(this)} className="btn btn-default btn-xs">查询历史订单</button>{' '}
-        <button className="btn btn-default btn-xs" disabled>拨号</button>
+        <button className="btn btn-default btn-xs space-right" disabled>拨号</button>
+        <span className="gray">座机号码以0开头10-12位数字</span>
       </div>
       <div className="form-group form-inline">
         <label>{'收货人姓名：'}</label>

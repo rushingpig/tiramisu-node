@@ -34,7 +34,7 @@ export default class StationGroupMap extends Component {
           <div ref="map" className={`station-map ${fullScreen ? 'full-screen' : ''}`}>
             <div className="map-toolbar">
               <a onClick={this.fullScreen.bind(this)} className={`full-screen-btn ${share ? 'hidden' : ''} space-right`} href="javascript:;"></a>
-              { fullScreen ? <SearchInput searchHandler={this.searchHandler.bind(this)} type="text" className="inline-block" /> : null }
+              <SearchInput id="searchInput" searchHandler={this.searchHandler.bind(this)} type="text" className={fullScreen ? 'inline-block' : 'hidden' } style={{width: 188}} />
             </div>
             <div id="map_container" className="map-container"></div>
           </div>
@@ -45,12 +45,15 @@ export default class StationGroupMap extends Component {
   }
  
   componentDidMount(){
-    MyMap.create(function(){
-      this.setState({ mapPrepared: true })
+    MyMap.create(function(map){
+      this.setState({ mapPrepared: true });
+      
+      this.autocomplete = MyMap.createAutocomplete('searchInput');
     }.bind(this));
   }
   componentWillUnmount() {
     MyMap.reset();
+    this.autocomplete.dispose();
   }
   componentWillReceiveProps(nextProps) {
     if(nextProps.list !== this.props.list){

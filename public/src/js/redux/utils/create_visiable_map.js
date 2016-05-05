@@ -2,6 +2,7 @@ import { Noty, core } from 'utils/index';
 
 function MyMap(){
   this.map = null;
+  this.centerPoint = null;
   this.init_flag = 0;
   this.points = [];
   this.markers = [];
@@ -11,6 +12,7 @@ function MyMap(){
   this.LocalSearch = null;
 
   this.d = $.Deferred();
+  this.searchMarker = null;
 }
 
 export const oldPolygonStyle = {strokeWeight: '2',strokeColor: '#1215A0',fillColor: ''};
@@ -173,6 +175,7 @@ export function _initialize() {
   var index = 0;
   this.map = new BMap.Map('map_container');
   var point = new BMap.Point(113.949964, 22.587609);
+  this.centerPoint = point; //记录local中心点
   this.map.enableAutoResize();
   this.map.centerAndZoom(point, 12);
   var top_right_navigation = new BMap.NavigationControl({
@@ -182,7 +185,7 @@ export function _initialize() {
   this.map.addControl( top_right_navigation );
   this.map.enableScrollWheelZoom();
   this.map.enableDragging();
-  this.d.resolve();
+  this.d.resolve(this.map);
 }
 MyMap.prototype._initialize = _initialize;
 
@@ -196,22 +199,57 @@ export function create(callback) {
     this.d.done(callback);
   }else{
     this._initialize.call(this);
-    callback && callback();
+    callback && callback(this.map);
   } 
 }
 
 MyMap.prototype.create = create;
 
 export function search( place ){
+  var self = this;
+  self.map.removeOverlay(self.searchMarker);
   if(!this.LocalSearch){
     var map = this.map;
-    this.LocalSearch = new BMap.LocalSearch(map, {
-      renderOptions: {map}
+    this.LocalSearch = new BMap.LocalSearch(this.centerPoint, {
+      onSearchComplete: function(){
+        var pp = self.LocalSearch.getResults().getPoi(0).point;
+        self.map.centerAndZoom(pp, 16);
+        self.searchMarker = new BMap.Marker(pp);
+        map.addOverlay(self.searchMarker);
+      }
     });
   }
-  return this.LocalSearch.search( place );
+  return this.LocalSearch.search( place , { forceLocal: false });
 }
 MyMap.prototype.search = search;
+
+export function createAutocomplete( container ){
+  var self = this;
+  var autocomplete = new BMap.Autocomplete({
+    input: container,
+    location: this.centerPoint
+  });
+  autocomplete.addEventListener('onconfirm', function(e){
+    var { value } = e.item;
+    self.search( value.province + value.city + value.district + value.street + value.streetNumber + value.business );
+  });
+  //TODO(保证下拉建议框可见)
+  $('#searchInput').on('keydown', function(e){
+    $('.tangram-suggestion-main').css({zIndex: 100001});
+    //autocomplete组件貌似导致searchInput -》searchHandler失效，所以只能放这儿
+    if(e.which == 13){
+      self.search( e.target.value );
+    }
+  });
+
+  var _dispose = autocomplete.dispose;
+  autocomplete.dispose = function(){
+    _dispose && _dispose(); //此方法貌似有问题
+    $('#searchInput').off('keydown');
+  }
+  return autocomplete;
+}
+MyMap.prototype.createAutocomplete = createAutocomplete;
 
 export default new MyMap;
 

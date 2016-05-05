@@ -1,6 +1,7 @@
 var gulp                  = require('gulp');
 var path                  = require('path');
 var fs                    = require('fs');
+var ip                    = require('ip');
 var sass                  = require('gulp-sass');
 var browserSync           = require('browser-sync');
 var prefix                = require('gulp-autoprefixer');
@@ -27,7 +28,8 @@ var config = {
   root: '/',  //资源路径
   src: 'src/',
   dest: './',
-  views: '../views/'
+  views: '../views/',
+  IPv4: ip.address() //加入本机ip地址，是为了dev状态下，该网段下其他客户端也可访问本地测试服时，也能够正确获取到相关静态文件
 };
 var s = function(file_path){
   return path.join(config.src, file_path);
@@ -104,7 +106,7 @@ gulp.task('lib', function(){
 });
 
 gulp.task('template:dev', function(){
-  var webpack_server = "http://localhost:3000/";
+  var webpack_server = "http://" + config.IPv4 + ":3000/";
   return gulp.src(s('index.html'))
     .pipe(template({
       'root': config.root,
@@ -165,13 +167,14 @@ gulp.task("webpack:react", function(callback) {
 //@1: 第一步操作
 gulp.task("webpack-dev-server", function(callback) {
   var port = config.webpack_port;
-  webpack_dev_config.entry.index.unshift("webpack-dev-server/client?http://localhost:3000/", "webpack/hot/dev-server");
+  //去除hot-loader功能
+  //webpack_dev_config.entry.index.unshift("webpack-dev-server/client?http://" + config.IPv4 + ":3000/", "webpack/hot/dev-server");
   new WebpackDevServer(webpack(webpack_dev_config), {
-    hot: true,
+    hot: false,
     stats: { colors: true },
-  }).listen(port, "localhost", function(err) {
+  }).listen(port, config.IPv4, function(err) {
     if(err) throw new gutil.PluginError("webpack-dev-server", err);
-    gutil.log("[webpack-dev-server]", "http://localhost:"+ port);
+    gutil.log("[webpack-dev-server]", "http://" + config.IPv4 + ":"+ port);
   });
 });
 gulp.task("wds", ['webpack-dev-server']);

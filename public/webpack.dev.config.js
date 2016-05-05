@@ -1,21 +1,23 @@
 'use strict';
 
-const webpack           = require('webpack');
-const baseConfig        = require('./webpack.config.js');
-const path              = require('path');
-const assign            = require('object-assign');
+const webpack    = require('webpack');
+const baseConfig = require('./webpack.config.js');
+const path       = require('path');
+const assign     = require('object-assign');
+const ip         = require('ip');
 
 const config = {
   output: {
     path: path.join(__dirname, 'build'),
-    publicPath: 'http://localhost:3000/',
+    publicPath: 'http://' + ip.address() + ':3000/',
     filename: '[name].bundle.js'
   },
   devtool: 'source-map',
   module: {
     loaders: [{
       test: /\.jsx?$/,
-      loaders: ['react-hot', 'babel'], // 位置不能颠倒
+      // loaders: ['react-hot', 'babel'], // 位置不能颠倒
+      loaders: ['babel'], // 暂时觉得hot-loader效果有限
       exclude: /node_modules/,
       include: path.join(__dirname, 'src/js/redux')
     }]

@@ -309,7 +309,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
 
     let order_obj = {
         late_minutes : req.body.late_minutes,
-        payfor_amount : req.body.payfor_amount * 100,
+        payfor_amount : req.body.payfor_amount,
         payfor_reason : req.body.payfor_reason,
         payfor_type : req.body.payfor_type,
         signin_time : req.body.signin_time || new Date(),
@@ -328,7 +328,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
 
     if(order){
         products = order.products || [];
-        refund_amount = order.refund_amount * 100;
+        if(order.refund_amount !== undefined) refund_amount = order.refund_amount;
         if(order.total_amount !== undefined) order_obj.total_amount = order.total_amount;
         if(order.total_original_price !== undefined) order_obj.total_original_price = order.total_original_price;
         if(order.total_discount_price !== undefined) order_obj.total_discount_price = order.total_discount_price;
@@ -415,9 +415,8 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
         //===========for history end=============
 
         return co(function*() {
-            let recipient_id = current_order.regionalism_id;
-            let recipient_obj = {};
-            yield orderDao.editOrder(systemUtils.assembleUpdateObj(req, order_obj), orderId, systemUtils.assembleUpdateObj(req, recipient_obj), recipient_id, products, add_skus, delete_skuIds, update_skus);
+            console.log(products);
+            yield orderDao.editOrder(systemUtils.assembleUpdateObj(req, order_obj), orderId, null, null, products, add_skus, delete_skuIds, update_skus);
 
             if (order_history_obj != '') {
                 yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
@@ -572,7 +571,7 @@ DeliveryService.prototype.listDeliverymansByOrder = (req,res,next)=>{
         res.api(res_obj.SESSION_TIME_OUT,null);
         return;
     }
-    let order_id = req.params.orderId;
+    let order_id = systemUtils.getDBOrderId(req.params.orderId);
 
     let promise = co(function*() {
         let orders = yield orderDao.findOrderById(order_id);
@@ -581,13 +580,13 @@ DeliveryService.prototype.listDeliverymansByOrder = (req,res,next)=>{
         }
         let current_order = orders[0];
 
-        let deliverymans = deliveryDao.findDeliverymansByOrder(order_id);
+        let deliverymans = yield deliveryDao.findDeliverymansByOrder(order_id);
         if(toolUtils.isEmptyArray(deliverymans)){
             throw new TiramisuError(res_obj.NO_MORE_RESULTS_ARR,'该条件下没有可选的配送员...');
         }
 
         return {
-            current_id: current_order.delivery_id,
+            current_id: current_order.deliveryman_id,
             list: deliverymans
         }
     }).then(result=> {

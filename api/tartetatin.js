@@ -13,7 +13,7 @@ const TARTETATIN_HOST = config.tartetatin_host;
  * @param charge_id
  */
 module.exports.refund = function (amount, order_no, charge_id) {
-    let opt = {
+    const opt = {
         method: 'POST',
         url: `${TARTETATIN_HOST}/v1/refund/other/create`,
         json: true
@@ -24,11 +24,13 @@ module.exports.refund = function (amount, order_no, charge_id) {
         charge_id: charge_id,
         order_no: order_no
     };
-    request(opt, (err, res, body)=> {
-        if (err || res.statusCode != 200) {
-            logger.error(`订单${order_no}退款失败  应退金额:${amount}  原收款单号:${charge_id}`);
-            return Promise.reject(`订单${order_no}退款失败  应退金额:${amount}  原收款单号:${charge_id}`);
-        }
-        Promise.resolve(body);
+    return new Promise((resolve, reject)=> {
+        request(opt, (err, res, body)=> {
+            if (err || res.statusCode != 200) {
+                logger.error(`订单${order_no}退款失败  应退金额:${amount}  原收款单号:${charge_id}`);
+                return reject(`订单${order_no}退款失败  应退金额:${amount}  原收款单号:${charge_id}`);
+            }
+            resolve(body);
+        });
     });
 };

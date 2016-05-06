@@ -379,6 +379,7 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
     'bpm.name as pay_name',
     'bo.pay_status',
     'bo.delivery_time',
+    'bo.deliveryman_id',
     'bo.src_id',
     'bo.remarks',
     'bo.status',
@@ -759,53 +760,58 @@ OrderDao.prototype.editOrder = function(order_obj, order_id, recipient_obj, reci
   if (toolUtils.isEmptyArray(update_skus)) update_skus = [];
   return baseDao.trans().then(transaction => {
     return new Promise((resolve, reject) => {
+      if(recipient_obj === null || recipient_id === null) return resolve();
       transaction.query(recipent_sql, recipient_params, (err_recipient) => {
         if (err_recipient) {
           logger.error('when update recipient with recipient_id:[' + recipient_id + "] exception ==========>", err_recipient);
           return reject(err_recipient);
         }
+        resolve();
+      });
+    }).then(()=>{
+      return new Promise((resolve, reject) => {
         transaction.query(order_sql, order_params, (err_order) => {
           if (err_order) {
             logger.error('when update order with order_id:[' + order_id + "] exception ============>", err_order);
             return reject(err_order);
           }
           async.each(
-            add_skus,
-            (curr, cb) => {
-              transaction.query(this.base_insert_sql, [tables.buss_order_sku, curr], cb);
-            },
-            err => {
-              if (err) return reject(err);
-              async.each(
-                update_skus,
-                (curr, cb) => {
-                  const order_sku_update_sql = this.base_update_sql + " where order_id = ? and sku_id = ? and del_flag = ?";
-                  const order_sku_update_params = [tables.buss_order_sku, curr, order_id, curr.sku_id, del_flag.SHOW];
-                  transaction.query(order_sku_update_sql, order_sku_update_params, cb);
-                },
-                err => {
-                  if (err) return reject(err);
-                  if (!toolUtils.isEmptyArray(delete_skuIds)) {
-                    const order_sku_batch_update_sql = this.base_update_sql + " where order_id = ? and sku_id in " + dbHelper.genInSql(delete_skuIds);
-                    transaction.query(
-                      order_sku_batch_update_sql, [
-                        tables.buss_order_sku, {
-                          del_flag: del_flag.HIDE,
-                          updated_by: userId
-                        },
-                        order_id
-                      ],
-                      err => {
-                        if (err) return reject(err);
+              add_skus,
+              (curr, cb) => {
+                transaction.query(this.base_insert_sql, [tables.buss_order_sku, curr], cb);
+              },
+              err => {
+                if (err) return reject(err);
+                async.each(
+                    update_skus,
+                    (curr, cb) => {
+                      const order_sku_update_sql = this.base_update_sql + " where order_id = ? and sku_id = ? and del_flag = ?";
+                      const order_sku_update_params = [tables.buss_order_sku, curr, order_id, curr.sku_id, del_flag.SHOW];
+                      transaction.query(order_sku_update_sql, order_sku_update_params, cb);
+                    },
+                    err => {
+                      if (err) return reject(err);
+                      if (!toolUtils.isEmptyArray(delete_skuIds)) {
+                        const order_sku_batch_update_sql = this.base_update_sql + " where order_id = ? and sku_id in " + dbHelper.genInSql(delete_skuIds);
+                        transaction.query(
+                            order_sku_batch_update_sql, [
+                              tables.buss_order_sku, {
+                                del_flag: del_flag.HIDE,
+                                updated_by: userId
+                              },
+                              order_id
+                            ],
+                            err => {
+                              if (err) return reject(err);
+                              resolve();
+                            }
+                        );
+                      } else {
                         resolve();
                       }
-                    );
-                  } else {
-                    resolve();
-                  }
-                }
-              );
-            }
+                    }
+                );
+              }
           );
         });
       });

@@ -1,6 +1,6 @@
 import { dateFormat, map } from 'utils/index';
 import { combineReducers } from 'redux';
-import { REQUEST, order_status } from 'config/app.config';
+import { REQUEST, order_status, ACCESSORY_CATE_ID } from 'config/app.config';
 import { orders, operationRecord } from 'reducers/orders';
 import { deliveryman } from 'reducers/deliveryman';
 import { area } from 'reducers/area_select';
@@ -64,19 +64,51 @@ var D_state = {
   deliverymanAtSameStation : [],
   spareparts: [],
   orderSpareparts: [],
-  select_deliveryman: -1,
+  current_id: -1,
+  orderDetail:{},
 }
 
 function D_(state = D_state, action) {
   switch (action.type) {
     case Actions.GET_SPARE_PARTS:
-      return {...state, spareparts:action.data}
+      var spareparts_tmp = action.data.list;
+      var spareparts;
+      spareparts = spareparts_tmp.map( m => {
+        if(m.skus){
+          var n = {} ;
+          n.amount = 0;
+          n.atlas = null;
+          n.category_id = ACCESSORY_CATE_ID;
+          n.choco_board = '';
+          n.custom_desc = '';
+          n.custom_name = '';
+          n.discount_price = m.skus[0].discount_price;
+          n.greeting_card = '';
+          n.name = m.name;
+          n.num = 1;
+          n.original_price = m.skus[0].original_price;
+          n.size = m.size;
+          n.sku_id = m.skus[0].sku_id;
+          return n;
+/*          m.img_url = m.skus.length > 0 ? m.skus[0].img_url : '';
+          m.price = m.skus.length > 0 ? m.skus[0].discount_price : 0;  
+          m.id = m.skus.length > 0 ? m.skus[0].sku_id : 0 ; */     
+        }        
+      });
+    
+      return {...state, spareparts:spareparts}
     case Actions.GET_ORDER_SPARE_PARTS:
-      return {...state, orderSpareparts: action.data}
+      return { ...state, orderSpareparts: action.data || [] }
     case Actions.GET_DELIVERYMAN_AT_SAME_STATION:
-      var {list} = action.data;
-      var  deliverymanData = list.map( m => ({id: m.deliveryman_id, text: m.deliveryman_name + '' + m.deliveryman_mobile}));
-      return {...state,deliverymanAtSameStation: deliverymanData ,select_deliveryman: action.data.current_id }
+      var list = action.data;
+      /*var {current_id} = action.data;*/
+      var  deliverymanAtSameStation = list.map( m => ({id: m.deliveryman_id, text: m.deliveryman_name + ':' + m.deliveryman_mobile}));
+      return {...state,deliverymanAtSameStation: deliverymanAtSameStation }
+    case Actions.GET_ORDER_DETAIL:
+      var orderSpareparts = action.data.products;
+      orderSpareparts = orderSpareparts.filter( m => m.category_id == ACCESSORY_CATE_ID);
+      var current_id = action.data.deliveryman_id;
+      return { ...state, orderSpareparts: orderSpareparts || [], orderDetail: action.data, current_id };
     default:
       return state;
   }

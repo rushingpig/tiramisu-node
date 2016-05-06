@@ -8,6 +8,8 @@ import { bindActionCreators } from 'redux';
 import LinkedStateMixin from 'react-addons-linked-state-mixin';
 import { reduxForm } from 'redux-form';
 
+import clone from 'clone';
+
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import TimeInput from 'common/time_input';
@@ -19,7 +21,7 @@ import RadioGroup from 'common/radio_group';
 import RecipientInfo from 'common/recipient_info';
 import ToolTip from 'common/tooltip';
 
-import { order_status, DELIVERY_MAP, YES_OR_NO } from 'config/app.config';
+import { order_status, DELIVERY_MAP, YES_OR_NO ,ACCESSORY_CATE_ID, pay_status} from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
 import { form, Noty, dateFormat, parseTime, dom } from 'utils/index';
@@ -118,7 +120,12 @@ class FilterHeader extends Component {
               <i className="fa fa-search"></i>{' 搜索'}
             </button>
             {' '}
-            <button onClick={this.onScanHandler.bind(this)} className="btn btn-theme btn-xs space-right">扫描</button>
+            {
+              V( 'DeliveryManageDistributeScan' )
+                ?<button onClick={this.onScanHandler.bind(this)} className="btn btn-theme btn-xs space-right">扫描</button>
+                :null
+            }
+            
           </div>
         </div>
       </div>
@@ -287,19 +294,18 @@ class DeliveryDistributePannel extends Component {
   }
   render(){
     var { filter, area, deliveryman, orders, main, all_order_srcs, all_pay_modes, signOrder, unsignOrder, 
-      searchByScan, exportExcel, getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
+      searchByScan, exportExcel, getOrderOptRecord, resetOrderOptRecord, operationRecord, D_  } = this.props;
     var { submitting } = main;
     var { loading, refresh, page_no, checkall, total, list, check_order_info, active_order_id, get_products_detail_ing } = orders;
     var { search, showSignedModal, showUnSignedModal, showScanModal, checkOrderHandler, 
       viewOrderDetail, activeOrderHandler, viewOrderOperationRecord, refreshDataList } = this;
 
     var {scan} = main; //扫描
-
     var content = list.map((n, i) => {
       return <OrderRow 
         key={n.order_id} 
         {...{...n, active_order_id, showSignedModal, showUnSignedModal, 
-          viewOrderDetail, checkOrderHandler, activeOrderHandler, viewOrderOperationRecord}}
+          viewOrderDetail, checkOrderHandler, activeOrderHandler, viewOrderOperationRecord, D_}}
       />;
     })
     return (
@@ -362,7 +368,7 @@ class DeliveryDistributePannel extends Component {
           : null }
 
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} all_order_srcs={all_order_srcs.map} all_pay_modes={all_pay_modes} />
-        <SignedModal ref="SignedModal" {...{submitting, signOrder, callback: refreshDataList}} />
+        <SignedModal ref="SignedModal" {...{submitting, signOrder,loading,refresh, D_, callback: refreshDataList}} />
         <UnSignedModal ref="UnSignedModal" {...{submitting, unsignOrder, callback: refreshDataList}} />
         <ScanModal ref="ScanModal" submitting={submitting} search={searchByScan}  />
         <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
@@ -409,6 +415,11 @@ class DeliveryDistributePannel extends Component {
     this.refs.OperationRecordModal.show(order);
   }
   showSignedModal(n){
+    this.props.getDeliverymanAtSameStation(n.order_id);
+    /*this.props.getOrderSpareparts(n.order_id);   */ 
+    this.props.getOrderDetail(n.order_id);
+    
+    this.props.getSpareparts(n.order_id);
     this.refs.SignedModal.show(n);
   }
   showUnSignedModal(n){
@@ -443,6 +454,132 @@ export default connect(mapStateToProps, mapDispatchToProps)(DeliveryDistributePa
 /***************   子模态框   *****************/
 /***************   *******   *****************/
 
+var PartRow = React.createClass({
+  render(){
+    var { props } = this;
+    return (
+      <tr>
+        <td>{ props.name }</td>
+        <td>{ '￥ ' + (props.discount_price/100).toString() }</td>
+        <td>{ props.sub }</td>
+        <td>
+        <button 
+          className='btn btn-sm btn-default' 
+          style={{borderRadius:'10px 10px',width:'20px',height:'20px',lineHeight:'0.5',padding:'5px 5px'}}
+          onClick = { this.onDecrement }><i>-</i></button>
+        {' ' + props.num + ' '}
+        <button 
+          className='btn btn-sm btn-default' 
+          style={{borderRadius:'10px 10px',width:'20px',height:'20px',lineHeight:'0.5',padding:'5px 5px'}}
+          onClick = { this.onIncrement}><i>+</i></button>
+        </td>
+        <td>
+          <input type = "text" value = { props.greeting_card } onChange= { this.onRemarksChange}/>
+        </td>
+      </tr>
+      )
+  },
+
+  onRemarksChange(e){
+    this.props.onRemarksChange(this.props.sku_id,e);
+  },
+  onIncrement(){
+    this.props.onIncrement(this.props.sku_id);
+  },
+  onDecrement(){
+    this.props.onDecrement(this.props.sku_id);
+  }
+})
+
+class PartNode extends Component{  
+  render(){
+    var { data } = this.props ;
+    return (
+      <div style={{float:'left',height:'30px',margin:'5px 5px',}} onClick= {this.onChoose.bind(this)}>
+        <img src={data.img_url || ''} style={{height:'30px',width:'30px'}}/>
+        <span className='partBtn'>{ data.name }</span>      
+      </div>
+      )
+  }
+  onChoose(e){
+     this.props.onChange(this.props.data);
+  }
+}
+
+class PartNodeSub extends Component{
+  render(){
+    var { data } = this.props ;
+    return (
+      <div style={{float:'left',height:'30px',margin:'5px 5px',}} onClick= {this.onChoose.bind(this)}>
+        <img src={data.icon} style={{height:'30px',width:'30px'}}/>
+        <span className='partBtn'>{ data.name }</span>      
+      </div>
+      )
+  }
+  onChoose(e){
+     this.props.onChange(this.props.data);
+  }
+}
+
+
+class SparePartsGroup extends Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      chosen_id : -1,
+    }
+  }
+
+  render(){
+    /*var {list } = this.props;*/
+    var tmp = this.props.list.filter (n => n.sku_id == this.state.chosen_id);
+    tmp = tmp.map( m => m.children = m.children || []);
+/*    var children = tmp.length > 0 ? tmp[0].children : [];
+    var parent_id = tmp.length > 0 ? tmp[0].id : -1;
+    var parent_name = tmp.length > 0 ? tmp[0].name : '';*/
+    return(
+      <div>
+        {
+/*          children.length > 0
+          ?
+            [
+              <div style={{paddingBottom:'10px'}}>
+                {
+                  this.props.list.map( n => 
+                  {
+                    return (<PartNode data = {n} onChange= {this.onPartChange.bind(this)}/> )             
+                  })
+                }
+              </div>,
+              <div style={{clear:'both',paddingTop:'10px',paddingBottom:'10px'}}>
+                {
+                  children.map( m =>
+                  {
+                    return (<PartNodeSub data = { {...m, parent_id, parent_name}} onChange= {this.onPartChange.bind(this)}/> )
+                  })
+                }
+              </div>
+          ]:*/
+          <div style={{paddingBottom:'10px'}}>
+            {
+              this.props.list.map( n => 
+                {
+                  return (<PartNode data = {n} onChange= {this.onPartChange.bind(this)}/> )             
+                }
+              )
+            }
+          </div>
+        }
+      </div>
+    )
+  }
+
+  onPartChange(e){
+    this.setState({chosen_id:e.sku_id});
+    this.props.onChange(e);
+  }
+}
+
 var SignedModal = React.createClass({
   getInitialState: function() {
     return {
@@ -457,18 +594,41 @@ var SignedModal = React.createClass({
       refund_method: '',
       refund_money: 0,
       refund_reson: '',
+      orderSpareparts:[],
+      current_id: -1,
+      deliverymanAtSameStation: [],
     };
   },
   mixins: [ LinkedStateMixin ],
   render: function(){
-    var { signin_date, late_minutes, refund_method, refund_money, refund_reson} = this.state;
+    var { signin_date, late_minutes, refund_method, refund_money, refund_reson,current_id, deliverymanAtSameStation } = this.state;
+    var { D_ ,loading, refresh } = this.props;
+    
+    var { spareparts } =  D_ ;
+    /*var { deliverymanAtSameStation } =  D_ ;*/
+    var content = this.state.orderSpareparts.map(n => {
+      return <PartRow key = {n.sku_id} 
+                {...n} 
+                onRemarksChange = { this.onRemarksChange }
+                onIncrement = {this.onIncrement}
+                onDecrement = {this.onDecrement}/>
+    })
     return (
       <StdModal submitting={this.props.submitting} onConfirm={this.submitHandler} onCancel={this.hideCallback} title="订单完成页面" ref="modal">
         <div className="form-group mg-15 form-inline">
-          <label>签收时间：</label>
-          <DatePicker value={signin_date} onChange={this.onSignInDateChange} className="short-input" />
-          {'　'}
-          <TimeInput onChange={this.onTimeChange} onOK={this.onTimeOK} ref="timeinput" />
+          <div className = "row">
+            <div className="col-xs-6">
+              <label>签收时间：</label>
+              <DatePicker value={signin_date} onChange={this.onSignInDateChange} className="short-input" />
+              {'　'}
+              <TimeInput onChange={this.onTimeChange} onOK={this.onTimeOK} ref="timeinput" />
+            </div>
+            <div className="col-xs-6">
+              <label>配送员：</label>
+              <Select name = 'deliveryman_id' options = { deliverymanAtSameStation } value = { current_id } ref = 'deliveryman_id' onChange= {this.onDeliverymanChange}/>
+            </div>
+          </div>
+
         </div>
         <div className="form-group form-inline mg-15">
           <div className="row">
@@ -523,12 +683,52 @@ var SignedModal = React.createClass({
             : null
           }
         </div>
+        <div className="form-group mg-15">
+          <label>已购配件：</label>
+          <table className="table table-hove text-center table-bordered">
+            <thead>
+              <tr>
+                <th>配件名称</th>
+                <th>价格</th>
+                <th>规格</th>
+                <th>数量</th>
+                <th>备注</th>
+              </tr>
+            </thead>
+            <tbody>
+            { tableLoader( loading || refresh ,  content ) }
+            </tbody>
+          </table>
+        </div>
+        <div className="form-group mg-15" style = {{marginBottom:50,}}>
+          <label>可选配件：</label>
+          <div>
+            <SparePartsGroup list = { spareparts } onChange={this.onSparePartChange}/>
+          </div>
+        </div>
       </StdModal>
     )
   },
   submitHandler(){
-    var { order, CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date } = this.state;
+    var { order, CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date, current_id, deliverymanAtSameStation } = this.state;
+    var { orderDetail } = this.props.D_;
+    var currentOrderSpareparts = this.state.orderSpareparts;
+    var { updated_time } = orderDetail;
     var signin_hour = this.refs.timeinput.val();
+    var deliveryman_tmp = deliverymanAtSameStation.filter( m => m.id == current_id);
+    var deliveryman;
+    if( deliveryman_tmp.length > 0 ){
+      var arr = deliveryman_tmp[0].text.split(':');
+      var name = arr.length > 0 ? arr[0]:'';
+      var mobile = arr.length > 1 ? arr[1]: '';
+      deliveryman = { id:current_id , mobile , name };      
+    }else{
+      if (current_id == 0){
+        Noty('warning', '请选择配送员'); return;        
+      }
+    }
+    /*deliveryman ={ id: 1, mobile :'18118776535' ,name :'hong'}*/
+
     if(!form.isNumber(late_minutes) || late_minutes < 0){
       Noty('warning', '迟到时间输入有误');return;
     }
@@ -549,16 +749,27 @@ var SignedModal = React.createClass({
         }
       }
     }
-    this.props.signOrder(order.order_id, {
+    var { orderSpareparts } = this.props.D_;
+    var products = currentOrderSpareparts;
+    var orderProducts = this.props.D_.orderDetail.products.filter( m =>  m.category_id != ACCESSORY_CATE_ID );
+    products = products.filter( m =>  m.num != 0 );
+    products = [...products, ...orderProducts];
+    var signData = {
       late_minutes: late_minutes,
       payfor_type: refund_method,
       payfor_amount: refund_money,
       payfor_reason: refund_reson,
       signin_time: signin_date + ' ' + signin_hour,
-
-      updated_time: order.updated_time,
-      
-    }).done(function(){
+      updated_time: updated_time,
+      order: { products ,...this.state.order },
+      /* deliveryman: deliveryman,*/
+    }
+    if( orderDetail.deliveryman_id != current_id ){
+      signData.deliveryman = deliveryman;
+    }
+    delete signData.D_;
+    delete signData.order.D_;
+    this.props.signOrder(order.order_id, signData).done(function(){
       this.refs.modal.hide();
       this.props.callback();
       Noty('success', '签收成功！');
@@ -595,6 +806,45 @@ var SignedModal = React.createClass({
     var { value } = e.target;
     this.setState({ late_minutes: value, refund_money: value <=30 ? value : ''})
   },
+  onRemarksChange: function(id,e){
+    var old_orderSpareparts = this.state.orderSpareparts;
+    old_orderSpareparts = old_orderSpareparts.map( m => {
+      if( m.sku_id == id){
+        m.greeting_card = e.target.value;
+      }
+      return m;
+    });
+    this.setState({orderSpareparts:old_orderSpareparts});
+  },
+  onDecrement: function(id){
+     var old_orderSpareparts = this.state.orderSpareparts ;
+     old_orderSpareparts = old_orderSpareparts.map( m => {
+       if( m.sku_id == id){
+        if(m.num>0){
+         m.num --;
+        }
+       }
+       return m;
+     });
+     old_orderSpareparts = old_orderSpareparts.filter( m => { m.num != 0 });
+     this.setState({orderSpareparts:old_orderSpareparts}); 
+     this.getCurrentAmount();  
+  },
+  onIncrement: function(id){
+     var old_orderSpareparts = this.state.orderSpareparts;
+      old_orderSpareparts = old_orderSpareparts.map( m => {
+       if( m.sku_id == id){
+         m.num ++;
+       }
+       return m;
+     });
+     this.setState({orderSpareparts:old_orderSpareparts});  
+     this.getCurrentAmount(); 
+  },
+  onDeliverymanChange: function(e){
+    var current_id = e.target.value;
+    this.setState({current_id});
+  },
   checkMethod: function(e){
     this.setState({ refund_method: e.target.value });
   },
@@ -603,11 +853,97 @@ var SignedModal = React.createClass({
   },
   show: function(order){
     this.refs.modal.show();
+    //console.warn(this.props.D_.orderSpareparts);
     this.setState({order});
   },
   hideCallback: function(){
     this.refs.timeinput.reset();
     this.setState(this.getInitialState());
+  },
+  onSparePartChange(e){
+
+    var old_orderSpareparts = this.state.orderSpareparts;
+    if( !e.children ||   e.children.length == 0){
+      var newvalue = {};
+      if('parent_id' in e){
+        if(old_orderSpareparts.some( m => m.id == e.parent_id && m.sub == e.name)){
+          old_orderSpareparts.map( m => {
+            if( m.id == e.parent_id && m.sub == e.name){
+              m.num ++ ;
+            }
+            return m;
+          })
+        }else{
+          var newvalue = { id: e.parent_id, name: e.parent_name ,price: e.price ,sub: e.name, remarks:'',num:1, skus: e.skus }           
+        }       
+      }else{
+        if(old_orderSpareparts.some( m => m.sku_id == e.sku_id )){
+          old_orderSpareparts.map( m => {
+            if(m.sku_id == e.sku_id){
+              m.num ++;
+            }
+            return m;
+          })
+        }else{
+          var newvalue = e;
+          e.num = 1;
+          old_orderSpareparts.push(newvalue);
+        }
+
+        
+      }
+      /*if( 'id' in newvalue){
+        old_orderSpareparts.push(newvalue);
+      }*/
+      this.setState({orderSpareparts:old_orderSpareparts});
+      this.getCurrentAmount();
+    }
+  },
+  getCurrentAmount(){
+    var { orderSpareparts } = this.props.D_;
+    var currentOrderSpareparts = this.state.orderSpareparts;
+    var total_amount = this.props.D_.orderDetail.total_amount;
+    var orderSparepartsAmount = 0 ;
+    var currentOrderSparepartsAmount = 0;
+    var refund_amount = 0;
+
+    orderSpareparts.forEach(function(m){
+      orderSparepartsAmount += parseInt( m.discount_price ) * m.num;
+    });
+    currentOrderSpareparts.forEach(m => {
+      currentOrderSparepartsAmount += parseInt( m.discount_price ) * m.num;
+    });
+    var rest = currentOrderSparepartsAmount - orderSparepartsAmount;
+    if(this.state.order.pay_status == pay_status.PAYED && rest < 0){
+      refund_amount = -rest;
+    }else{
+      total_amount = total_amount + rest;
+    }
+    var order = clone( this.state.order ) ;
+    order.total_amount = total_amount;
+    if(refund_amount != 0) order.refund_amount = refund_amount;
+    this.setState( {order} );
+  },
+/*  componentDidMount() {
+    var orderSpareparts = this.props.D_.orderSpareparts;
+    var {current_id} = this.props.D_;
+    this.setState({orderSpareparts ,current_id });    
+  },*/
+  componentWillReceiveProps(nextProps){
+    var { D_ } = nextProps;
+    var  products  = D_.orderDetail.products || [];
+    products = products.filter( m => m.category_id == ACCESSORY_CATE_ID)
+    var orderSpareparts = clone(products);
+    var current_id = D_.current_id;
+    var deliverymanAtSameStation = D_.deliverymanAtSameStation;
+/*    var order = clone(this.state.order);
+    var selectText = order.deliveryman_name + ':' + order.deliveryman_mobile;
+    if( order.deliveryman_name != null )
+      {
+        $(findDOMNode(this.refs.deliveryman_id)).find(':selected').text(selectText);
+        current_id = 0;
+      }*/
+    this.setState({orderSpareparts ,current_id ,deliverymanAtSameStation});
   },
 });
 

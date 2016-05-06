@@ -59,14 +59,15 @@ class FilterHeader extends Component {
     super(props);
     this.search = this.search.bind(this);
     this.state = {
-      search_ing :false
+      search_ing :false,
+      station_name: ''
     }
   }
   render(){
     var {
       handleSubmit,
       fields: {
-        name,
+        // name,
         province_id,
         city_id,
         regionalism_id,
@@ -84,7 +85,7 @@ class FilterHeader extends Component {
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <Autocomplete ref="autocomplete" placeholder={'请输入配送站名称'} searchHandler={this.props.getStationByName}  list={name_list} className="pull-left"/>
+          <Autocomplete ref="autocomplete" value={this.state.station_name} placeholder={'请输入配送站名称'} onChange={this.stationInputHandler.bind(this)} list={name_list} className="pull-left"/>
           <Select {...province_id} className={`space-left space-right ${province_id.error}`} options={provinces} default-text="选择省份" onChange={this.onProvinceChange.bind(this, province_id.onChange)} ref="province"/>
           <Select {...city_id} className={`space-right ${city_id.error}`} options={cities} default-text="选择城市" onChange={this.onCityChange.bind(this, city_id.onChange)} ref="city"/>
           <Select {...regionalism_id} className={`space-right ${regionalism_id.error}`} options={districts} default-text="选择区域" ref="district"/>
@@ -109,6 +110,9 @@ class FilterHeader extends Component {
     getStationList({isPage: true, page_no: 0, page_size: 10})
     getAllStationsName();
     LazyLoad('noty');
+  }
+  stationInputHandler(station_name){
+    this.setState({ station_name })
   }
   onProvinceChange(callback, e){
     var {value} = e.target;
@@ -141,7 +145,7 @@ class FilterHeader extends Component {
         return;
       }
       this.setState({search_ing: true});
-      this.props.search({page_no: 0})
+      this.props.search({isPage: true, page_no: 0, station_name: this.state.station_name || undefined})
         .always(()=>{
           this.setState({search_ing: false});
         });

@@ -15,8 +15,8 @@ function MyMap(){
   this.searchMarker = null;
 }
 
-export const oldPolygonStyle = {strokeWeight: '2',strokeColor: '#1215A0',fillColor: ''};
-export const newPolygonStyle = {strokeWeight: '3',strokeColor: '#FF0000',fillColor: ''};
+export const oldPolygonStyle = {strokeWeight: '2',strokeColor: '#2A5CFF', strokeOpacity: 1, fillColor: ''};
+export const newPolygonStyle = {strokeWeight: '3',strokeColor: '#FF0000', strokeOpacity: 1, fillColor: ''};
 export const getLabelStyle = index => ({
   width: '17',
   textAlign: 'center',
@@ -242,12 +242,10 @@ export function createAutocomplete( container ){
     }
   });
 
-  var _dispose = autocomplete.dispose;
-  autocomplete.dispose = function(){
-    _dispose && _dispose(); //此方法貌似有问题
+  return function(){
+    autocomplete.dispose();
     $('#searchInput').off('keydown');
-  }
-  return autocomplete;
+  };
 }
 MyMap.prototype.createAutocomplete = createAutocomplete;
 

@@ -30,7 +30,7 @@ export default class Autocomplete extends Component {
         $(this.refs.input).autocomplete({
           source: nextProps.list,
           change: function( event, ui ) {
-            self.props.onChange(event.target.value);
+            self.props.searchHandler(event.target.value);
           }
         });
       })

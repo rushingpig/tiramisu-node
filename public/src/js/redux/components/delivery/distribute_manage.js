@@ -785,12 +785,17 @@ var SignedModal = React.createClass({
     this.setState({signin_hour: value})
   },
   onTimeOK(signin_time){
-    var { delivery_time } = this.state.order;
+    var { order: {delivery_time}, signin_date } = this.state;
     try{
+      let delivery_date = new Date(delivery_time.split(' ')[0] + ' 00:00:00');
+      //当delivery_date
+      if(!delivery_date.valueOf()){
+        delivery_date = new Date();
+      }
       delivery_time = (delivery_time.match(/\d{2}:\d{2}$/)[0]).split(':');
+      signin_date = new Date(signin_date + ' 00:00:00');
       signin_time = signin_time.split(':');
-      let delivery_date = new Date(0);
-      let signin_date = new Date(0);
+
       delivery_date.setHours(delivery_time[0]);
       delivery_date.setMinutes(delivery_time[1]);
       signin_date.setHours(signin_time[0]);
@@ -799,7 +804,7 @@ var SignedModal = React.createClass({
 
       this.onLateTimeChange({target: {value: late_minutes > 0 ? late_minutes : 0}}); //模拟
     }catch(e){
-      console.log(e);
+      Noty('error', '数据有误')
     }
   },
   onLateTimeChange: function(e){
@@ -853,8 +858,7 @@ var SignedModal = React.createClass({
   },
   show: function(order){
     this.refs.modal.show();
-    //console.warn(this.props.D_.orderSpareparts);
-    this.setState({order});
+    this.setState({order, signin_date: order.delivery_time.split(' ')[0] });
   },
   hideCallback: function(){
     this.refs.timeinput.reset();

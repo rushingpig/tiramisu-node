@@ -41,11 +41,11 @@ export default class StationMap extends Component {
     MyMap.create((map) => {
       this.setState({ mapPrepared: true });
       MyMap.drawScope(this.props.coords.defaultValue);
-      this.autocomplete = MyMap.createAutocomplete('searchInput');
+      this.disposeAutocomplete = MyMap.createAutocomplete('searchInput');
     });
   }
   componentWillUnmount(){
-    this.autocomplete.dispose();
+    this.disposeAutocomplete();
   }
   initScope(){
     this._map_load_timer = setInterval(() => {

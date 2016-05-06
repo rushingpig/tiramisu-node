@@ -236,6 +236,7 @@ OrderService.prototype.getOrderDetail = (req, res, next) => {
         data.delivery_name = curr.delivery_name;
         data.delivery_time = curr.delivery_time;
         data.delivery_type = curr.delivery_type;
+        data.deliveryman_id = curr.deliveryman_id;
         data.owner_mobile = curr.owner_mobile;
         data.owner_name = curr.owner_name;
         data.pay_modes_id = curr.pay_modes_id;

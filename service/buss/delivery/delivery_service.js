@@ -307,7 +307,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
 
     let order_obj = {
         late_minutes : req.body.late_minutes,
-        payfor_amount : req.body.payfor_amount * 100,
+        payfor_amount : req.body.payfor_amount,
         payfor_reason : req.body.payfor_reason,
         payfor_type : req.body.payfor_type,
         signin_time : req.body.signin_time || new Date(),
@@ -326,7 +326,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
 
     if(order){
         products = order.products || [];
-        if(order.refund_amount !== undefined) refund_amount = order.refund_amount * 100;
+        if(order.refund_amount !== undefined) refund_amount = order.refund_amount;
         if(order.total_amount !== undefined) order_obj.total_amount = order.total_amount;
         if(order.total_original_price !== undefined) order_obj.total_original_price = order.total_original_price;
         if(order.total_discount_price !== undefined) order_obj.total_discount_price = order.total_discount_price;

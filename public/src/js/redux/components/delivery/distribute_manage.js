@@ -8,6 +8,8 @@ import { bindActionCreators } from 'redux';
 import LinkedStateMixin from 'react-addons-linked-state-mixin';
 import { reduxForm } from 'redux-form';
 
+import clone from 'clone';
+
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import TimeInput from 'common/time_input';
@@ -19,7 +21,7 @@ import RadioGroup from 'common/radio_group';
 import RecipientInfo from 'common/recipient_info';
 import ToolTip from 'common/tooltip';
 
-import { order_status, DELIVERY_MAP, YES_OR_NO ,ACCESSORY_CATE_ID} from 'config/app.config';
+import { order_status, DELIVERY_MAP, YES_OR_NO ,ACCESSORY_CATE_ID, pay_status} from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
 import { form, Noty, dateFormat, parseTime, dom } from 'utils/index';
@@ -623,7 +625,7 @@ var SignedModal = React.createClass({
             </div>
             <div className="col-xs-6">
               <label>配送员：</label>
-              <Select name = 'deliveryman_id' options = { deliverymanAtSameStation } value = { current_id } onChange= {this.onDeliverymanChange}/>
+              <Select name = 'deliveryman_id' options = { deliverymanAtSameStation } ref = 'deliveryman_id' onChange= {this.onDeliverymanChange}/>
             </div>
           </div>
 
@@ -710,6 +712,7 @@ var SignedModal = React.createClass({
   submitHandler(){
     var { order, CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date, current_id, deliverymanAtSameStation } = this.state;
     var { orderDetail } = this.props.D_;
+    var currentOrderSpareparts = this.state.orderSpareparts;
     var { updated_time } = orderDetail;
     var signin_hour = this.refs.timeinput.val();
     var deliveryman_tmp = deliverymanAtSameStation.filter( m => m.id == current_id);
@@ -719,8 +722,12 @@ var SignedModal = React.createClass({
       var name = arr.length > 0 ? arr[0]:'';
       var mobile = arr.length > 1 ? arr[1]: '';
       deliveryman = { id:current_id , mobile , name };      
+    }else{
+      if (current_id == 0){
+        Noty('warning', '请选择配送员'); return;        
+      }
     }
-    deliveryman ={ id: 1, mobile :'18118776535' ,name :'hong'}
+    /*deliveryman ={ id: 1, mobile :'18118776535' ,name :'hong'}*/
 
     if(!form.isNumber(late_minutes) || late_minutes < 0){
       Noty('warning', '迟到时间输入有误');return;
@@ -743,21 +750,10 @@ var SignedModal = React.createClass({
       }
     }
     var { orderSpareparts } = this.props.D_;
-    var currentOrderSpareparts = this.state.orderSpareparts;
-    var orderSparepartsAmount = 0 ;
-    var currentOrderSparepartsAmount = 0;
-    orderSpareparts.forEach(function(m){
-      orderSparepartsAmount += parseInt( m.discount_price ) * m.num;
-    });
-    currentOrderSpareparts.forEach(m => {
-      currentOrderSparepartsAmount += parseInt( m.discount_price ) * m.num;
-    });
-    var rest = currentOrderSparepartsAmount - orderSparepartsAmount;
-    var refund_amount = rest < 0 ? rest : 0;
-    var total_amount = this.props.D_.orderDetail.total_amount;
-    total_amount = rest > 0 ? total_amount + rest :total_amount ;
     var products = currentOrderSpareparts;
-    products = [...products, ...this.props.D_.orderDetail.products];
+    var orderProducts = this.props.D_.orderDetail.products.filter( m => { m.category_id != ACCESSORY_CATE_ID });
+    products = products.filter( m => { m.num != 0 });
+    products = [...products, ...orderProducts];
     this.props.signOrder(order.order_id, {
       late_minutes: late_minutes,
       payfor_type: refund_method,
@@ -765,7 +761,7 @@ var SignedModal = React.createClass({
       payfor_reason: refund_reson,
       signin_time: signin_date + ' ' + signin_hour,
       updated_time: updated_time, 
-      order: { products ,refund_amount, total_amount},
+      order: { products ,...this.state.order },
       deliveryman: deliveryman,
     }).done(function(){
       this.refs.modal.hide();
@@ -815,8 +811,8 @@ var SignedModal = React.createClass({
     this.setState({orderSpareparts:old_orderSpareparts});
   },
   onDecrement: function(id){
-     var old_orderSpareparts = this.state.orderSpareparts;
-     old_orderSpareparts.map( m => {
+     var old_orderSpareparts = this.state.orderSpareparts ;
+     old_orderSpareparts = old_orderSpareparts.map( m => {
        if( m.sku_id == id){
         if(m.num>0){
          m.num --;
@@ -824,17 +820,20 @@ var SignedModal = React.createClass({
        }
        return m;
      });
-     this.setState({orderSpareparts:old_orderSpareparts});   
+     old_orderSpareparts = old_orderSpareparts.filter( m => { m.num != 0 });
+     this.setState({orderSpareparts:old_orderSpareparts}); 
+     this.getCurrentAmount();  
   },
   onIncrement: function(id){
      var old_orderSpareparts = this.state.orderSpareparts;
-     old_orderSpareparts.map( m => {
+      old_orderSpareparts = old_orderSpareparts.map( m => {
        if( m.sku_id == id){
          m.num ++;
        }
        return m;
      });
-     this.setState({orderSpareparts:old_orderSpareparts});   
+     this.setState({orderSpareparts:old_orderSpareparts});  
+     this.getCurrentAmount(); 
   },
   onDeliverymanChange: function(e){
     var current_id = e.target.value;
@@ -889,9 +888,35 @@ var SignedModal = React.createClass({
       }
       /*if( 'id' in newvalue){
         old_orderSpareparts.push(newvalue);
-      }*/     
+      }*/
       this.setState({orderSpareparts:old_orderSpareparts});
+      this.getCurrentAmount();
     }
+  },
+  getCurrentAmount(){
+    var { orderSpareparts } = this.props.D_;
+    var currentOrderSpareparts = this.state.orderSpareparts;
+    var total_amount = this.props.D_.orderDetail.total_amount;
+    var orderSparepartsAmount = 0 ;
+    var currentOrderSparepartsAmount = 0;
+    var refund_amount = 0;
+
+    orderSpareparts.forEach(function(m){
+      orderSparepartsAmount += parseInt( m.discount_price ) * m.num;
+    });
+    currentOrderSpareparts.forEach(m => {
+      currentOrderSparepartsAmount += parseInt( m.discount_price ) * m.num;
+    });
+    var rest = currentOrderSparepartsAmount - orderSparepartsAmount;
+    if(this.state.order.pay_status == pay_status.PAYED && rest < 0){
+      refund_amount = -rest;
+    }else{
+      total_amount = total_amount + rest;
+    }
+    var order = clone( this.state.order ) ;
+    order.total_amount = total_amount;
+    if(refund_amount != 0) order.refund_amount = refund_amount;
+    this.setState( {order} );
   },
 /*  componentDidMount() {
     var orderSpareparts = this.props.D_.orderSpareparts;
@@ -902,9 +927,17 @@ var SignedModal = React.createClass({
     var { D_ } = nextProps;
     var  products  = D_.orderDetail.products || [];
     products = products.filter( m => m.category_id == ACCESSORY_CATE_ID)
-    var orderSpareparts = products;
+    var orderSpareparts = clone(products);
     var current_id = D_.current_id;
     var deliverymanAtSameStation = D_.deliverymanAtSameStation;
+    var order = clone(this.state.order);
+    var selectText = order.deliveryman_name + ':' + order.deliveryman_mobile;
+    //var selectText = orderDetail
+    if( order.deliveryman_name != null )
+      {
+        $(findDOMNode(this.refs.deliveryman_id)).find(':selected').text(selectText);
+        current_id = 0;
+      }
     this.setState({orderSpareparts ,current_id ,deliverymanAtSameStation});
   },
 });

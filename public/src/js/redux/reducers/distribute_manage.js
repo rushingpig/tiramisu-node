@@ -100,10 +100,10 @@ function D_(state = D_state, action) {
     case Actions.GET_ORDER_SPARE_PARTS:
       return { ...state, orderSpareparts: action.data || [] }
     case Actions.GET_DELIVERYMAN_AT_SAME_STATION:
-      var {list} = action.data;
-      var {current_id} = action.data;
+      var list = action.data;
+      /*var {current_id} = action.data;*/
       var  deliverymanAtSameStation = list.map( m => ({id: m.deliveryman_id, text: m.deliveryman_name + ':' + m.deliveryman_mobile}));
-      return {...state,deliverymanAtSameStation: deliverymanAtSameStation ,current_id: current_id }
+      return {...state,deliverymanAtSameStation: deliverymanAtSameStation ,current_id: -1 }
     case Actions.GET_ORDER_DETAIL:
       var orderSpareparts = action.data.products;
       orderSpareparts = orderSpareparts.filter( m => m.category_id == ACCESSORY_CATE_ID);

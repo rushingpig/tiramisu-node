@@ -413,6 +413,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
         //===========for history end=============
 
         return co(function*() {
+            console.log(products);
             yield orderDao.editOrder(systemUtils.assembleUpdateObj(req, order_obj), orderId, null, null, products, add_skus, delete_skuIds, update_skus);
 
             if (order_history_obj != '') {

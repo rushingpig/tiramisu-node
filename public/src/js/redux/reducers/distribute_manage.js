@@ -103,17 +103,12 @@ function D_(state = D_state, action) {
       var list = action.data;
       /*var {current_id} = action.data;*/
       var  deliverymanAtSameStation = list.map( m => ({id: m.deliveryman_id, text: m.deliveryman_name + ':' + m.deliveryman_mobile}));
-      return {...state,deliverymanAtSameStation: deliverymanAtSameStation ,current_id: -1 }
+      return {...state,deliverymanAtSameStation: deliverymanAtSameStation }
     case Actions.GET_ORDER_DETAIL:
       var orderSpareparts = action.data.products;
       orderSpareparts = orderSpareparts.filter( m => m.category_id == ACCESSORY_CATE_ID);
-/*      orderSpareparts = [{
-        amount:0;
-        atlas:null;
-        category_id: 15;
-        choco_board: '',
-      }]*/
-      return { ...state, orderSpareparts: orderSpareparts || [], orderDetail: action.data };
+      var current_id = action.data.deliveryman_id;
+      return { ...state, orderSpareparts: orderSpareparts || [], orderDetail: action.data, current_id };
     default:
       return state;
   }

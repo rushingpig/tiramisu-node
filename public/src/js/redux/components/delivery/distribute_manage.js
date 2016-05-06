@@ -625,7 +625,7 @@ var SignedModal = React.createClass({
             </div>
             <div className="col-xs-6">
               <label>配送员：</label>
-              <Select name = 'deliveryman_id' options = { deliverymanAtSameStation } ref = 'deliveryman_id' onChange= {this.onDeliverymanChange}/>
+              <Select name = 'deliveryman_id' options = { deliverymanAtSameStation } value = { current_id } ref = 'deliveryman_id' onChange= {this.onDeliverymanChange}/>
             </div>
           </div>
 
@@ -751,10 +751,10 @@ var SignedModal = React.createClass({
     }
     var { orderSpareparts } = this.props.D_;
     var products = currentOrderSpareparts;
-    var orderProducts = this.props.D_.orderDetail.products.filter( m => { m.category_id != ACCESSORY_CATE_ID });
-    products = products.filter( m => { m.num != 0 });
+    var orderProducts = this.props.D_.orderDetail.products.filter( m =>  m.category_id != ACCESSORY_CATE_ID );
+    products = products.filter( m =>  m.num != 0 );
     products = [...products, ...orderProducts];
-    this.props.signOrder(order.order_id, {
+    var signData = {
       late_minutes: late_minutes,
       payfor_type: refund_method,
       payfor_amount: refund_money,
@@ -762,8 +762,14 @@ var SignedModal = React.createClass({
       signin_time: signin_date + ' ' + signin_hour,
       updated_time: updated_time, 
       order: { products ,...this.state.order },
-      deliveryman: deliveryman,
-    }).done(function(){
+      /* deliveryman: deliveryman,*/
+    }
+    if( orderDetail.deliveryman_id != current_id ){
+      signData.deliveryman = deliveryman;
+    }
+    delete signData.D_;
+    delete signData.order.D_;
+    this.props.signOrder(order.order_id, signData).done(function(){
       this.refs.modal.hide();
       this.props.callback();
       Noty('success', '签收成功！');
@@ -930,14 +936,13 @@ var SignedModal = React.createClass({
     var orderSpareparts = clone(products);
     var current_id = D_.current_id;
     var deliverymanAtSameStation = D_.deliverymanAtSameStation;
-    var order = clone(this.state.order);
+/*    var order = clone(this.state.order);
     var selectText = order.deliveryman_name + ':' + order.deliveryman_mobile;
-    //var selectText = orderDetail
     if( order.deliveryman_name != null )
       {
         $(findDOMNode(this.refs.deliveryman_id)).find(':selected').text(selectText);
         current_id = 0;
-      }
+      }*/
     this.setState({orderSpareparts ,current_id ,deliverymanAtSameStation});
   },
 });

@@ -31,6 +31,7 @@ module.exports = {
         optional: true
     },
     'deliveryman.id':{
+        optional : true,
         isInt: true
     },
     'order': {

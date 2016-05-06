@@ -48,12 +48,12 @@ export default class StationGroupMap extends Component {
     MyMap.create(function(map){
       this.setState({ mapPrepared: true });
       
-      this.autocomplete = MyMap.createAutocomplete('searchInput');
+      this.disposeAutocomplete = MyMap.createAutocomplete('searchInput');
     }.bind(this));
   }
   componentWillUnmount() {
     MyMap.reset();
-    this.autocomplete.dispose();
+    this.disposeAutocomplete();
   }
   componentWillReceiveProps(nextProps) {
     if(nextProps.list !== this.props.list){

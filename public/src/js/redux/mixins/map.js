@@ -29,14 +29,19 @@ export function startMatchDeliveryStations(success_cb, fail_cb){
 }
 function start(success_cb, fail_cb){
   var detail = $(this.refs.recipient_address).val();
-  if(detail){
-    let province = this.findSelectedOptionText('province');
-    let city = this.findSelectedOptionText('city');
-    let district = this.findSelectedOptionText('district');
-    let default_text = this.refs.province.props['default-text'];
-    if(province != default_text && city != default_text && district != default_text){
-      autoMatch.call(this, city, district + detail).done(success_cb.bind(this)).fail(fail_cb.bind(this));
+  var province = this.findSelectedOptionText('province');
+  var city = this.findSelectedOptionText('city');
+  var district = this.findSelectedOptionText('district');
+  var default_text = this.refs.province.props['default-text'];
+  if(detail && province != default_text && city != default_text && district != default_text){
+    if( detail.indexOf(district) == -1 ){
+      detail = district + detail;
     }
+    if( detail.indexOf(city) == -1 ){
+      detail = city + detail;
+    }
+    //保证精准度，detail = city + district + address
+    autoMatch.call(this, city, detail).done(success_cb.bind(this)).fail(fail_cb.bind(this));
   }else{
     Noty('warning', '地址无效')
   }

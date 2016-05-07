@@ -134,6 +134,7 @@ var ping_xx = {
 };
 
 var sms_host = "http://127.0.0.1:3000/sms/internal";
+var use_sms = true;
 
 var coupon_host = "http://120.76.101.107:3000";
 
@@ -154,6 +155,7 @@ module .exports = {
     white_ips : white_ips,
     sms_host : sms_host,
     coupon_host : coupon_host,
-    tartetatin_host: tartetatin_host
+    tartetatin_host: tartetatin_host,
+    use_sms: use_sms
 };
 

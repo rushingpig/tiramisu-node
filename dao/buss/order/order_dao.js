@@ -9,12 +9,16 @@ var baseDao = require('../../base_dao'),
   logger = require('../../../common/LogHelper').systemLog(),
   constant = require('../../../common/Constant'),
   del_flag = baseDao.del_flag,
-  tables = require('../../../config').tables,
   errorMessage = require('../../../util/res_obj'),
   TiramisuError = require('../../../error/tiramisu_error'),
   res_obj = require('../../../util/res_obj');
+var config = require('../../../config');
+const tables = config.tables;
+// TODO: should just check sms or add setting for every single sms type
+const SMS_HOST = config.use_sms ? config.sms_host: null;
 var async = require('async');
-var async = require('async');
+var request = require('request');
+var moment = require('moment');
 
 // TODO: 后面要考虑移动到其它地方   在跑多例的情况下，需要将根据name存到数据库中。
 // 锁构造方法
@@ -1064,6 +1068,7 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
   });
 };
 
+// TODO: remove after shutting down old system
 const srcIdMapping = new Map(
   [
     [10000, 1],
@@ -1114,6 +1119,21 @@ const srcIdMapping = new Map(
     [12012, 65],
   ]
 );
+
+// TODO: move to order submit when tiramisu is online
+const sendRedwineMessage = new Set([
+  440300,
+  440303,
+  440304,
+  440305,
+  440306,
+  440307,
+  440308,
+  440309,
+  440310,
+  440311,
+  440312
+]);
 
 OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
   let delivery_type = req.body.delivery_type,
@@ -1250,6 +1270,20 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
         transaction.commit(err => {
           transaction.release();
           if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
+          // TODO: move to submit when tiramisu is online
+          if (SMS_HOST && sendRedwineMessage.has(regionalism_id)) {
+            request.post(
+              {
+                uri: SMS_HOST,
+                json: true,
+                body: {
+                  timestamp: moment().unix(),
+                  phone: recipient_mobile,
+                  method: 'redwine',
+                  params: {}
+                }
+              });
+          }
           resolve();
         });
       });

@@ -11,7 +11,7 @@ pm2=`which pm2`
 npm=`which npm`
 
 function init(){
-export LD_LIBRARY_PATH=/opt/glibc-2.14/lib:$LD_LIBRARY_PATH
+#export LD_LIBRARY_PATH=/opt/glibc-2.14/lib:$LD_LIBRARY_PATH
   ${git} checkout -- . && \
   ${git} pull && \
   cd public && \

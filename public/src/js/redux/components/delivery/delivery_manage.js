@@ -233,7 +233,11 @@ class OrderRow extends Component {
             )
           }
         </td>
-        <td className={PRINT_STATUS[props.print_status] == '是' ? 'text-success' : 'text-danger'}>{PRINT_STATUS[props.print_status]}</td>
+        <td>
+          <div className={'round inline-block ' + (PRINT_STATUS[props.print_status] == '是' ? 'alert-success' : 'alert-danger') + ' white'} style={{width: 20}}>
+            { PRINT_STATUS[props.print_status] }
+          </div>
+        </td>
         <td>{props.deliveryman_name}<br />{props.deliveryman_mobile}</td>
         <td>{delivery_time ? <div className="time">{delivery_time[0]}<br/>{delivery_time[1]}</div> : null}</td>
         <td>{props.owner_name}<br />{props.owner_mobile}</td>

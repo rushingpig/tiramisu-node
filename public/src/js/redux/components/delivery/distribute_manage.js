@@ -495,9 +495,9 @@ class PartNode extends Component{
   render(){
     var { data } = this.props ;
     return (
-      <div style={{float:'left',height:'30px',margin:'5px 5px',}} onClick= {this.onChoose.bind(this)}>
-        <img src={data.img_url || ''} style={{height:'30px',width:'30px'}}/>
-        <span className='partBtn'>{ data.name }</span>      
+      <div style={{float:'left',height:'30px',margin:'5px 15px 5px 5px',}} onClick= {this.onChoose.bind(this)}>
+        {/* 暂时去除，将来有图片了，再补上 <img src={data.icon} style={{height:'30px',width:'30px'}}/>*/}
+        <span className='partBtn'><i className="fa fa-star-o"></i> { data.name }</span>    
       </div>
       )
   }
@@ -510,9 +510,9 @@ class PartNodeSub extends Component{
   render(){
     var { data } = this.props ;
     return (
-      <div style={{float:'left',height:'30px',margin:'5px 5px',}} onClick= {this.onChoose.bind(this)}>
-        <img src={data.icon} style={{height:'30px',width:'30px'}}/>
-        <span className='partBtn'>{ data.name }</span>      
+      <div style={{float:'left',height:'30px',margin:'5px 15px 5px 5px',}} onClick= {this.onChoose.bind(this)}>
+        {/* 暂时去除，将来有图片了，再补上 <img src={data.icon} style={{height:'30px',width:'30px'}}/>*/}
+        <span className='partBtn'><i className="fa fa-star"></i> { data.name }</span>
       </div>
       )
   }

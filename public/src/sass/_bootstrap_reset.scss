@@ -69,7 +69,13 @@
 .alert-success, .alert-danger, .alert-info, .alert-warning {
   border: none;
 }
+.alert-success{
+  background: #57A238
+}
 
+.alert-danger{
+  background: #CE4646
+}
 /*table*/
 .table, table{
   margin-bottom: 0;

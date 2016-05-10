@@ -173,6 +173,25 @@ ProductService.prototype.listAccessoryByOrder = (req, res, next)=> {
     });
     systemUtils.wrapService(res,next,promise);
 };
+/**
+ * add a product and sku for it
+ * @param req
+ * @param res
+ * @param next
+ */
+ProductService.prototype.addProductWithSku = (req, res, next)=> {
+    req.checkBody(schema.addProduct);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let promise = productDao.insertProductWithSku(req, req.body)
+        .then(() => {
+            res.api();
+        });
+    systemUtils.wrapService(res, next, promise);
+};
 
 module.exports = new ProductService();
 

@@ -95,6 +95,8 @@ a.post('/station', addressService.addStation); //新增配送站
 a.post('/product/categories/primary', categoryService.addPrimaryCategory);  // 新增一级分类
 a.post('/product/categories/secondary', categoryService.addSecondaryCategory);  // 新增二级分类
 
+a.post('/product/sku', productService.addProductWithSku);  // 新增产品
+
 //*********************
 //******** PUT ********
 //*********************

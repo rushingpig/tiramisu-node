@@ -9,8 +9,11 @@
 var baseDao = require('../../base_dao'),
     del_flag = baseDao.del_flag,
     tables = require('../../../config').tables,
-    dbHelper = require('../../../common/DBHelper');
+    dbHelper = require('../../../common/DBHelper'),
+    systemUtils = require('../../../common/SystemUtils'),
+    config = require('../../../config');
 function ProductDao(){
+    this.base_table = config.tables.buss_product;
     this.baseColumns = ['id','name'];
     this.base_insert_sql = 'insert into ?? set ?';
     this.base_select_sql = 'select ?? from ?? where 1=1 and del_flag = ? ';
@@ -107,5 +110,79 @@ ProductDao.prototype.findDeliveryPayRule = function () {
     let params = [];
     return baseDao.select(sql, params);
 };
+
+ProductDao.prototype.insertProduct = function(req, data, connection){
+    if(connection){
+        return baseDao.insertWithConnection(connection, this.base_insert_sql, [this.base_table, systemUtils.assembleInsertObj(req, data)]);
+    } else {
+        return baseDao.insert(this.base_insert_sql, [this.base_table, systemUtils.assembleInsertObj(req, data)]);
+    }
+};
+ProductDao.prototype.insertSku = function (req, data, connection) {
+    if(connection){
+        return baseDao.insertWithConnection(connection, this.base_insert_sql, [config.tables.buss_product_sku, systemUtils.assembleInsertObj(req, data)]);
+    } else {
+        return baseDao.insert(this.base_insert_sql, [config.buss_product_sku, systemUtils.assembleInsertObj(req, data)]);
+    }
+}
+ProductDao.prototype.insertProductWithSku = function (req, data) {
+    let self = this;
+    return baseDao.trans().then(connection => {
+        let product_data = {
+            category_id: data.category_id,
+            name: data.name,
+            del_flag: del_flag.SHOW
+        };
+        return self.insertProduct(req, product_data, connection)
+            .then(productId => {
+                let promises = data.sku.map(sku => {
+                    let sku_data = {
+                        product_id: productId,
+                        size: sku.size,
+                        website: sku.website,
+                        original_price: sku.original_price,
+                        price: sku.price,
+                        regionalism_id: sku.regionalism_id,
+                        book_time: sku.book_time,
+                        presell_start: sku.presell_start,
+                        presell_end: sku.presell_end,
+                        send_start: sku.send_start,
+                        send_end: sku.send_end,
+                        del_flag: del_flag.SHOW
+                    };
+                    let promise = self.insertSku(req, sku_data, connection);
+                    // 如果是活动sku，需要同时存储关联的非活动sku
+                    if(sku.activity_price){
+                        promise.then(skuId => {
+                            sku_data.ref = skuId;
+                            sku_data.activity_price = sku.activity_price;
+                            sku_data.activity_start = sku.activity_start;
+                            sku_data.activity_end = sku.activity_end;
+                            sku_data.del_flag = del_flag.HIDE;
+                            return self.insertSku(req, sku_data, connection);
+                        });
+                    }
+                    return promise;
+                });
+                return Promise.all(promises);
+            }).then(() => {
+                return new Promise((resolve, reject) => {
+                    connection.commit(err => {
+                        connection.release();
+                        if (err) return reject(err);
+                        resolve();
+                    });
+                });
+            }).catch(err => {
+                return new Promise((resolve, reject) => {
+                    connection.rollback(rollbackErr => {
+                        connection.release();
+                        if (rollbackErr) return reject(rollbackErr);
+                        reject(err);
+                    });
+                });
+            });
+    });
+}
 
 module.exports = ProductDao;

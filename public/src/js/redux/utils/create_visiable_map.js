@@ -18,9 +18,10 @@ function MyMap(){
 export const oldPolygonStyle = {strokeWeight: '2',strokeColor: '#2A5CFF', strokeOpacity: 1, fillColor: ''};
 export const newPolygonStyle = {strokeWeight: '3',strokeColor: '#FF0000', strokeOpacity: 1, fillColor: ''};
 export const getLabelStyle = index => ({
-  width: '17',
-  textAlign: 'center',
-  margin: `2px ${ 4 - parseInt(index / 10) * 2 }px`,
+  // width: '17',
+  // textAlign: 'center',
+  marginLeft: (5 - parseInt(Math.log10(index)) * 2.5) + 'px',
+  transform: 'scale(0.8, 0.8)',
   backgroundColor: 'transparent',
   color: '#fff',
   fontSize: '12px',

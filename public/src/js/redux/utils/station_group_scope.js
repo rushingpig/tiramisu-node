@@ -123,6 +123,7 @@ MyMap.prototype.reset = function(){
   this.markers = [];
   this.onEditIndex = -1;
   this.polygons = [];
+  this.stopEditScope();
 }
 
 MyMap.prototype._initialize = _initialize;

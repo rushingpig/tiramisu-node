@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import SearchInput from 'common/search_input';
 import MyMap from 'utils/station_group_scope';
 import V from 'utils/acl';
+import LazyLoad from 'utils/lazy_load';
+import { Noty } from 'utils/index';
 
 export default class StationGroupMap extends Component {
   constructor(props){
@@ -50,6 +52,8 @@ export default class StationGroupMap extends Component {
       
       this.disposeAutocomplete = MyMap.createAutocomplete('searchInput');
     }.bind(this));
+
+    LazyLoad('noty');
   }
   componentWillUnmount() {
     MyMap.reset();

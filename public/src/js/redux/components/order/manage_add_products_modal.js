@@ -42,7 +42,7 @@ export default class ProductsModal extends Component {
     return (
     <StdModal ref="modal" title="选择产品" onConfirm={this.onConfirm} onCancel={this.onCancel} size="lg" >
       <div className="form-group form-inline">
-        <input value={s.sku_name} onChange={this.handleSkuName.bind(this)} className="form-control input-xs" placeholder="输入产品名称" />
+        <input value={s.sku_name} onChange={this.handleSkuName.bind(this)} onKeyDown={this.handleEnterSearch.bind(this)} className="form-control input-xs" placeholder="输入产品名称" />
         {' '}
         <SelectGroup value={s.category_id} onChange={this.onCategoryChange.bind(this)} options={all_categories} default-text="选择产品分类" />
         {' '}
@@ -53,7 +53,7 @@ export default class ProductsModal extends Component {
         <button onClick={this.search.bind(this, 0)} className="btn btn-xs btn-default"><i className="fa fa-search"></i>{' 查询'}</button>
       </div>
       <div ref="tableWrapper" className="table-responsive table-modal modal-list">
-        <table className="table table-hover table-click text-center">
+        <table className="table table-hover table-bordered table-click text-center">
           <thead>
           <tr>
             <th></th>
@@ -122,6 +122,11 @@ export default class ProductsModal extends Component {
   onCityChange(e){
     var {value} = e.target;
     this.setState({city_id: value})
+  }
+  handleEnterSearch(e){
+    if(e.target.value && e.which == 13){
+      this.search(0);
+    }
   }
   search(page){
     var { sku_name, category_id, city_id, page_size } = this.state;

@@ -22,7 +22,7 @@ import * as StationsAction from 'actions/station_manage';
 import * as StationFormActions from 'actions/station_manage_form';
 import { triggerFormUpdate, resetFormUpdate } from 'actions/form';
 
-import { SELECT_DEFAULT_VALUE } from 'config/app.config';
+import { SELECT_DEFAULT_VALUE, ADDRESS } from 'config/app.config';
 import LazyLoad from 'utils/lazy_load';
 import {Noty, url} from 'utils/index';
 import MyMap from 'utils/station_group_scope';
@@ -101,14 +101,17 @@ class FilterHeader extends Component {
     )
   }
   componentDidMount(){
-    var { getProvinces, getCities, getAllStationsName, getStationList} = this.props;
+    var { getProvinces, getCities, getDistricts, getAllStationsName, getStationList} = this.props;
     getProvinces();
     var {params ,getStationListById} = this.props;
     if(params && params.id){
       getStationListById(params.id);
       getCities(this.props.fields.province_id.initialValue);
+      getDistricts(this.props.fields.city_id.initialValue);
     }else{
       getStationList({isPage: false});
+      getCities(ADDRESS.GUANG_ZHOU);
+      getDistricts(ADDRESS.SHEN_ZHENG);
     }
     getAllStationsName();
     LazyLoad('noty');
@@ -149,6 +152,11 @@ FilterHeader = reduxForm({
     'province_id',
     'city_id',
   ],
+  //注意这里的初始化，移到了 FilterHeader 的props上
+  // initialValues: {
+  //   province_id: ADDRESS.GUANG_ZHOU,
+  //   city_id: ADDRESS.SHEN_ZHENG
+  // },
   // validate,
 })( FilterHeader );
 
@@ -236,10 +244,14 @@ class StationManagePannel extends Component {
         {...{...n, ...this.props, active_station_id, viewStationScope, checkStationHandler, editStationScope }} />
     });
     var loc = url.parse( location.search || '');
+    var initialValues = {province_id: ADDRESS.GUANG_ZHOU, city_id: ADDRESS.SHEN_ZHENG };
+    if(this.props.params && this.props.params.id){
+      initialValues = {province_id: loc.province_id || undefined, city_id: loc.city_id || undefined };
+    }
     return (
       <div className="station-manage">
         <TopHeader/>
-        <FilterHeader {...this.props} initialValues={{province_id: loc.province_id || undefined, city_id: loc.city_id || undefined }}/>
+        <FilterHeader {...this.props} initialValues={initialValues} />
         <div className="row">
           <div className="col-md-5">
             <div className="panel">

@@ -71,6 +71,11 @@ export default [
             "name": "配送区域管理",
             "icon": "",
             "link": "/sm/scope"
+        },{
+            "key": "DeliveryManSalaryManageAccess",
+            "name": "配送员工资管理",
+            "icon": "",
+            "link": "/sm/salary"
         }]
     },{
         "key": "central_management",

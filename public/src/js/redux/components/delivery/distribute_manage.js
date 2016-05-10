@@ -496,8 +496,8 @@ class PartNode extends Component{
     var { data } = this.props ;
     return (
       <div style={{float:'left',height:'30px',margin:'5px 5px',}} onClick= {this.onChoose.bind(this)}>
-        <img src={data.img_url || ''} style={{height:'30px',width:'30px'}}/>
-        <span className='partBtn'>{ data.name }</span>      
+        <img src={data.img_url || ''} style={{height:'30px',width:'30px', display: 'none'}}/>
+        <span className='partBtn'><i className='fa fa-star-o'></i>{ data.name }</span>      
       </div>
       )
   }
@@ -511,7 +511,7 @@ class PartNodeSub extends Component{
     var { data } = this.props ;
     return (
       <div style={{float:'left',height:'30px',margin:'5px 5px',}} onClick= {this.onChoose.bind(this)}>
-        <img src={data.icon} style={{height:'30px',width:'30px'}}/>
+        <img src={data.icon} style={{height:'30px',width:'30px',display:'none'}}/>
         <span className='partBtn'>{ data.name }</span>      
       </div>
       )
@@ -632,16 +632,29 @@ var SignedModal = React.createClass({
         </div>
         <div className="form-group form-inline mg-15">
           <div className="row">
-            <div className="col-xs-6">
+            <div className="col-xs-4">
               <label>迟到时长：</label>
               <div className="inline-block input-group input-group-xs">
                 <input value={late_minutes} onChange={this.onLateTimeChange} type="text" className="form-control" style={{'width': 50}} />
                 <span className="input-group-addon">Min</span>
               </div>
             </div>
-            <div className="col-xs-6">
+            <div className="col-xs-8">
               <label>货到付款金额：￥</label>
               <input value={this.state.order.total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+              {
+                this.state.order.total_amount != 0 ?
+                <select ref='pay_way' name='pay_way' className='form-control input-xs'>
+                  <option value='1'>现金</option>
+                  <option value='2'>POS机</option>
+                </select>
+                :null
+              }
+              {
+                this.state.order.total_amount != 0 ?
+                <input className='form-control input-xs v-mg' placeholder='POS机终端号' />
+                :null
+              }            
             </div>
           </div>
         </div>

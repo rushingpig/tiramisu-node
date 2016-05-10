@@ -72,6 +72,7 @@ a.get('/product/category/:id/regions/pc', categoryService.getCategoryRegionsForP
 a.get('/product/categories/search', categoryService.listCategoriesByMultipleCondition); // 根据条件查询分类
 a.get('/product/category/:id/secondary', categoryService.getSecondaryCategoriesByPrimaryCategoryId); // 查询一级分类下的二级分类
 a.get('/product/category/:id/details', categoryService.getCategoryDetailsById); // 查询分类详情
+a.get('/product/sku/size', productService.getAllSize); // 规格提示
 
 //**********************
 //******** POST ********

@@ -192,6 +192,22 @@ ProductService.prototype.addProductWithSku = (req, res, next)=> {
         });
     systemUtils.wrapService(res, next, promise);
 };
+/**
+ * get sku size list
+ * @param req
+ * @param res
+ * @param next
+ */
+ProductService.prototype.getAllSize = (req, res, next)=> {
+    let promise = productDao.getAllSkuByParams(['distinct(size) as size'])
+        .then((results) => {
+            if(toolUtils.isEmptyArray(results)){
+                throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+            }
+            res.api(results);
+        });
+    systemUtils.wrapService(res, next, promise);
+};
 
 module.exports = new ProductService();
 

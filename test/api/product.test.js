@@ -60,6 +60,13 @@ module.exports = function() {
                     done();
                 });
         })
+        
+        it('GET /v1/a/product/sku/size', function(done) {
+            agent.get('/v1/a/product/sku/size')
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end(err(done));
+        })
 
         it('POST /v1/a/product/sku', function(done) {
             let sku_1 = {

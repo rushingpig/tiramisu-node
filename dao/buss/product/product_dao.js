@@ -184,5 +184,9 @@ ProductDao.prototype.insertProductWithSku = function (req, data) {
             });
     });
 }
+ProductDao.prototype.getAllSkuByParams = function(params){
+    let sql = 'select ' + params.join(',') + ' from ?? where 1=1';
+    return baseDao.select(sql, [config.tables.buss_product_sku]);
+};
 
 module.exports = ProductDao;

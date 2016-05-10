@@ -1026,10 +1026,11 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
             recipient_mobile: recipient_mobile,
             recipient_address: systemUtils.encodeForFulltext(prefix_address + recipient_address),
             landmark: systemUtils.encodeForFulltext(recipient_landmark),
-            coupon : coupon,
+            // coupon : coupon,
             owner_mobile_suffix : owner_mobile.substring(owner_mobile.length - 5),
             recipient_mobile_suffix : recipient_mobile.substring(recipient_mobile.length - 5)
           };
+          if(coupon) order_fulltext_obj.coupon = coupon;
           let order_history_obj = {
             order_id: orderId,
             option: '添加订单'

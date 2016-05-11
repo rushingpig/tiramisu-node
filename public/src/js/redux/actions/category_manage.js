@@ -172,7 +172,7 @@ const saveData = level => (
         });
 
         const state = getState().categoryManage;
-        const selectorState = getState().categoryCitiesSelector;
+        const selectorState = getState().citiesSelector;
 
         let params = {
             isAddition: state.isAttachProduct ? 1 : 0,

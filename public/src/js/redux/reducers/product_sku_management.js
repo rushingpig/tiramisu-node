@@ -1,12 +1,11 @@
 import { ActionTypes } from 'actions/product_sku_management';
 import { ActionTypes as CitiesSelectorActionTypes } from 'actions/cities_selector';
-import { clone } from 'utils/index';
+import { clone, dateFormat, getDate } from 'utils/index';
 
 const initialState = {
     basicDataLoadStatus: 'pending',
 
     productName: '',
-    originalPrice: 1,
     buyEntry: 0, // 0:商城可购买 1:外部渠道可购买
 
     primaryCategories:   new Map(),
@@ -23,7 +22,7 @@ const initialState = {
     citiesOptionApplyRange: 0, // 0:All 1:Independence
     citiesOptions: new Map(),
 
-    orderSource:   new Map(),
+    orderSource:   new Map([[0, 'PC商城'], [1, '手机APP'], [2, '美团外卖']]),
     provincesData: new Map(),
     citiesData:    new Map(),
 
@@ -40,6 +39,7 @@ const initialState = {
         applyDistrict: new Set(),
         shopSpecifications: [],
         sourceSpecifications: new Map(),
+        selectedSource: ""
     }
 };
 
@@ -114,13 +114,6 @@ const switchType = {
         };
     },
 
-    [ActionTypes.CHANGE_ORIGINAL_PRICE]: (state, { price }) => {
-        return {
-            ...state,
-            originalPrice: price
-        };
-    },
-
     [ActionTypes.CHANGE_ACTIVE_CITIES]: (state, { option }) => {
         return {
             ...state,
@@ -184,7 +177,11 @@ const switchType = {
     [ActionTypes.CHANGE_SELECTED_CITY]: (state, { id }) => {
         return {
             ...state,
-            selectedCity: id
+            selectedCity: id,
+            tempOptions: {
+                ...state.tempOptions,
+                applyDistrict: new Set()
+            }
         };
     },
 
@@ -196,6 +193,190 @@ const switchType = {
                 isPreSale: !state.tempOptions.isPreSale
             }
         };
+    },
+
+    [ActionTypes.CHANGE_PRESALE_TIME]: (state, { beginTime, endTime }) => {
+        return {
+            ...state,
+            tempOptions: {
+                ...state.tempOptions,
+                onSaleTime: [ beginTime, endTime ]
+            }
+        }
+    },
+
+    [ActionTypes.CHANGE_DELIVERY_TIME]: (state, { beginTime, endTime }) => {
+        return {
+            ...state,
+            tempOptions: {
+                ...state.tempOptions,
+                delivery: [ beginTime, endTime ]
+            }
+        }
+    },
+
+    [ActionTypes.CHANGE_BOOKING_TIME]: (state, { hour }) => {
+        return {
+            ...state,
+            tempOptions: {
+                ...state.tempOptions,
+                bookingTime: hour <= 0 ? 0.1 : hour
+            }
+        }
+    },
+
+    [ActionTypes.CHANGE_SECONDARY_BOOKINGTIME_STATUS]: state => {
+        return {
+            ...state,
+            tempOptions: {
+                ...state.tempOptions,
+                hasSecondaryBookingTime: !state.tempOptions.hasSecondaryBookingTime
+            }
+        }
+    },
+
+    [ActionTypes.CHANGE_SECONDARY_BOOKINGTIME]: (state, { hour }) => {
+        return {
+            ...state,
+            tempOptions: {
+                ...state.tempOptions,
+                secondaryBookingTime: hour <= 0 ? 0.1 : hour
+            }
+        }
+    },
+
+    [ActionTypes.CHANGE_SECONDARY_BOOKINGTIME_RANGE]: (state, { districtCode }) => {
+        let { applyDistrict } = state.tempOptions;
+
+        applyDistrict[applyDistrict.has(districtCode) ? 'delete' : 'add'](districtCode);
+
+        return {
+            ...state,
+            tempOptions: {
+                ...state.tempOptions,
+                applyDistrict
+            }
+        }
+    },
+
+    [ActionTypes.CREATE_SHOP_SPECIFICATIONS]: (state, { index }) => {
+        let { shopSpecifications } = state.tempOptions;
+
+        const now = new Date();
+
+        let newShopSpecifications = {
+            spec: "",
+            originalCost: 0.01,
+            cost: 0.01,
+            hasEvent: false,
+            eventCost: 0.01,
+            eventTime: [now, new Date(getDate(now, 7))]
+        }
+
+        shopSpecifications.push(newShopSpecifications);
+
+        return state;
+    },
+
+    [ActionTypes.CHANGE_SHOP_SPECIFICATIONS]: (state, { index, spec }) => {
+        let { shopSpecifications } = state.tempOptions;
+
+        shopSpecifications[index].spec = spec;
+
+        return state;
+    },
+
+    [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_ORIGINAL_COST]: (state, { index, money }) => {
+        let { shopSpecifications } = state.tempOptions;
+
+        shopSpecifications[index].originalCost = Number(money) || 0.01;
+
+        return state;
+    },
+
+    [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_COST]: (state, { index, money }) => {
+        let { shopSpecifications } = state.tempOptions;
+
+        shopSpecifications[index].cost = Number(money) || 0.01;
+
+        return state;
+    },
+
+    [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_EVENT_STATUS]: (state, { index }) => {
+        let { shopSpecifications } = state.tempOptions;
+
+        shopSpecifications[index].hasEvent = !shopSpecifications[index].hasEvent;
+
+        return state;
+    },
+
+    [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_EVENT_COST]: (state, { index, money }) => {
+        let { shopSpecifications } = state.tempOptions;
+
+        shopSpecifications[index].eventCost = Number(money) || 0.01;
+
+        return state;
+    },
+
+    [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_EVENT_TIME]: (state, { index, beginTime, endTime }) => {
+        let { shopSpecifications } = state.tempOptions;
+
+        shopSpecifications[index].eventTime = [beginTime, endTime];
+
+        return state;
+    },
+
+    [ActionTypes.REMOVE_SHOP_SPECIFICATIONS]: (state, { index }) => {
+        let { shopSpecifications } = state.tempOptions;
+
+        shopSpecifications = shopSpecifications.filter((x, i) => i !== index);
+
+        return state;
+    },
+
+    [ActionTypes.ADD_SOURCE]: (state, { sourceId }) => {
+        if (!state.tempOptions.sourceSpecifications.has(sourceId)) {
+            let sourceSpec = [];
+
+            if (state.buyEntry === 0) {
+                sourceSpec = state.tempOptions.shopSpecifications.map(
+                    ({ spec, cost }) => ({ spec, cost })
+                );
+            }
+
+            state.tempOptions.sourceSpecifications.set(sourceId, sourceSpec);
+        }
+
+        state.tempOptions.selectedSource = sourceId;
+
+        return state;
+    },
+
+    [ActionTypes.CHANGE_SELECTED_SOURCE]: (state, { sourceId }) => {
+        state.tempOptions.selectedSource = sourceId;
+
+        return state;
+    },
+
+    [ActionTypes.ADD_SOURCE_SPEC]: state => {
+        state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource).push({
+            spec: '',
+            cost: 0
+        });
+
+        return state;
+    },
+
+    [ActionTypes.CHANGE_SOURCE_SPEC]: (state, { index, spec }) => {
+        state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource)[index].spec = spec;
+
+        return state;
+    },
+
+    [ActionTypes.CHANGE_SOURCE_SPEC_COST]: (state, { index, money }) => {
+        state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource)[index].cost = money;
+
+        return state;
     }
 };
 

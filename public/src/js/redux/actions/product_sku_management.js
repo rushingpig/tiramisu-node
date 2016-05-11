@@ -5,19 +5,40 @@ import { clone } from 'utils/index';
 import { ActionTypes as CitiesSelectorActionTypes } from './cities_selector';
 
 const ActionTypes = {
-    LOADED_BASIC_DATA: Symbol('LOADED_BASIC_DATA'),
-    CHANGE_PRODUCT_NAME: Symbol('CHANGE_PRODUCT_NAME'),
-    CHANGE_BUY_ENTRY: Symbol('CHANGE_BUY_ENTRY'),
-    CHANGE_SELECTED_PRIMARY_CATEGORY: Symbol('CHANGE_SELECTED_PRIMARY_CATEGORY'),
+    LOADED_BASIC_DATA:                  Symbol('LOADED_BASIC_DATA'),
+    CHANGE_PRODUCT_NAME:                Symbol('CHANGE_PRODUCT_NAME'),
+    CHANGE_BUY_ENTRY:                   Symbol('CHANGE_BUY_ENTRY'),
+    CHANGE_SELECTED_PRIMARY_CATEGORY:   Symbol('CHANGE_SELECTED_PRIMARY_CATEGORY'),
     CHANGE_SELECTED_SECONDARY_CATEGORY: Symbol('CHANGE_SELECTED_SECONDARY_CATEGORY'),
-    CHANGE_ORIGINAL_PRICE: Symbol('CHANGE_ORIGINAL_PRICE'),
-    CHANGE_ACTIVE_CITIES: Symbol('CHANGE_ACTIVE_CITIES'),
-    CHANGE_APPLY_RANGE: Symbol('CHANGE_APPLY_RANGE'),
+    CHANGE_ORIGINAL_PRICE:              Symbol('CHANGE_ORIGINAL_PRICE'),
+    CHANGE_ACTIVE_CITIES:               Symbol('CHANGE_ACTIVE_CITIES'),
+    CHANGE_APPLY_RANGE:                 Symbol('CHANGE_APPLY_RANGE'),
 
     CHANGE_SELECTED_PROVINCE: Symbol('CHANGE_SELECTED_PROVINCE'),
-    CHANGE_SELECTED_CITY: Symbol('CHANGE_SELECTED_CITY'),
+    CHANGE_SELECTED_CITY:     Symbol('CHANGE_SELECTED_CITY'),
 
-    CHANGE_PRESALE_STATUS: Symbol('CHANGE_PRESALE_STATUS')
+    CHANGE_PRESALE_STATUS: Symbol('CHANGE_PRESALE_STATUS'),
+    CHANGE_PRESALE_TIME:   Symbol('CHANGE_PRESALE_TIME'),
+    CHANGE_BOOKING_TIME:   Symbol('CHANGE_BOOKING_TIME'),
+
+    CHANGE_SECONDARY_BOOKINGTIME_STATUS: Symbol('CHANGE_SECONDARY_BOOKINGTIME_STATUS'),
+    CHANGE_SECONDARY_BOOKINGTIME:        Symbol('CHANGE_SECONDARY_BOOKINGTIME'),
+    CHANGE_SECONDARY_BOOKINGTIME_RANGE:  Symbol('CHANGE_SECONDARY_BOOKINGTIME_RANGE'),
+
+    CREATE_SHOP_SPECIFICATIONS:               Symbol('CREATE_SHOP_SPECIFICATIONS'),
+    CHANGE_SHOP_SPECIFICATIONS:               Symbol('CHANGE_SHOP_SPECIFICATIONS'),
+    CHANGE_SHOP_SPECIFICATIONS_ORIGINAL_COST: Symbol('CHANGE_SHOP_SPECIFICATIONS_ORIGINAL_COST'),
+    CHANGE_SHOP_SPECIFICATIONS_COST:          Symbol('CHANGE_SHOP_SPECIFICATIONS_COST'),
+    CHANGE_SHOP_SPECIFICATIONS_EVENT_STATUS:  Symbol('CHANGE_SHOP_SPECIFICATIONS_EVENT_STATUS'),
+    CHANGE_SHOP_SPECIFICATIONS_EVENT_COST:    Symbol('CHANGE_SHOP_SPECIFICATIONS_EVENT_COST'),
+    CHANGE_SHOP_SPECIFICATIONS_EVENT_TIME:    Symbol('CHANGE_SHOP_SPECIFICATIONS_EVENT_TIME'),
+    REMOVE_SHOP_SPECIFICATIONS:               Symbol('REMOVE_SHOP_SPECIFICATIONS'),
+
+    ADD_SOURCE:              Symbol('ADD_SOURCE'),
+    CHANGE_SELECTED_SOURCE:  Symbol('CHANGE_SELECTED_SOURCE'),
+    ADD_SOURCE_SPEC:         Symbol('ADD_SOURCE_SPEC'),
+    CHANGE_SOURCE_SPEC:      Symbol('CHANGE_SOURCE_SPEC'),
+    CHANGE_SOURCE_SPEC_COST: Symbol('CHANGE_SOURCE_SPEC_COST'),
 };
 
 const es6promisify = function(func) {
@@ -130,15 +151,6 @@ const changeSelectedSecondaryCategory = id => (
     }
 );
 
-const changeOriginalPrice = num => {
-    const price = transformPrice(Number(num));
-
-    return {
-        type: ActionTypes.CHANGE_ORIGINAL_PRICE,
-        price
-    };
-}
-
 const changeActiveCitiesOption = option => (
     (dispatch, getState) => {
         dispatch({
@@ -188,6 +200,146 @@ const changePreSaleStatus = () => {
     };
 }
 
+const changePreSaleTime = (beginTime, endTime) => {
+    return {
+        type: ActionTypes.CHANGE_PRESALE_TIME,
+        beginTime,
+        endTime
+    };
+}
+
+const changeDeliveryTime = (beginTime, endTime) => {
+    return {
+        type: ActionTypes.CHANGE_DELIVERY_TIME,
+        beginTime,
+        endTime
+    }
+}
+
+const changeBookingTime = hour => {
+    return {
+        type: ActionTypes.CHANGE_BOOKING_TIME,
+        hour
+    };
+}
+
+const changeSecondaryBookingTimeStatus = () => {
+    return {
+        type: ActionTypes.CHANGE_SECONDARY_BOOKINGTIME_STATUS
+    };
+}
+
+const changeSecondaryBookingTime = hour => {
+    return {
+        type: ActionTypes.CHANGE_SECONDARY_BOOKINGTIME,
+        hour
+    };
+}
+
+const changeSecondaryBookingTimeRange = districtCode => {
+    return {
+        type: ActionTypes.CHANGE_SECONDARY_BOOKINGTIME_RANGE,
+        districtCode
+    };
+}
+
+const createShopSpecifications = () => {
+    return {
+        type: ActionTypes.CREATE_SHOP_SPECIFICATIONS
+    }
+}
+
+const changeShopSpecifications = (index, spec) => {
+    return {
+        type: ActionTypes.CHANGE_SHOP_SPECIFICATIONS,
+        index,
+        spec
+    }
+}
+
+const changeShopSpecificationsOriginalCost = (index, money) => {
+    return {
+        type: ActionTypes.CHANGE_SHOP_SPECIFICATIONS_ORIGINAL_COST,
+        index,
+        money
+    }
+}
+
+const changeShopSpecificationsCost = (index, money) => {
+    return {
+        type: ActionTypes.CHANGE_SHOP_SPECIFICATIONS_COST,
+        index,
+        money
+    }
+}
+
+const changeShopSpecificationsEventStatus = index => {
+    return {
+        type: ActionTypes.CHANGE_SHOP_SPECIFICATIONS_EVENT_STATUS,
+        index
+    }
+}
+
+const changeShopSpecificationsEventCost = (index, money) => {
+    return {
+        type: ActionTypes.CHANGE_SHOP_SPECIFICATIONS_EVENT_COST,
+        index,
+        money
+    }
+}
+
+const changeShopSpecificationsEventTime = (index, beginTime, endTime) => {
+    return {
+        type: ActionTypes.CHANGE_SHOP_SPECIFICATIONS_EVENT_TIME,
+        index,
+        beginTime,
+        endTime
+    }
+}
+
+const removeShopSpecifications = index => {
+    return {
+        type: ActionTypes.REMOVE_SHOP_SPECIFICATIONS,
+        index
+    }
+}
+
+const addSource = sourceId => {
+    return {
+        type: ActionTypes.ADD_SOURCE,
+        sourceId: Number(sourceId),
+    }
+}
+
+const changeSelectedSource = sourceId => {
+    return {
+        type: ActionTypes.CHANGE_SELECTED_SOURCE,
+        sourceId: Number(sourceId),
+    }
+}
+
+const addSourceSpec = () => {
+    return {
+        type: ActionTypes.ADD_SOURCE_SPEC
+    }
+}
+
+const changeSourceSpec = (index, spec) => {
+    return {
+        type: ActionTypes.CHANGE_SOURCE_SPEC,
+        index,
+        spec
+    }
+}
+
+const changeSourceSpecCost = (index, money) => {
+    return {
+        type: ActionTypes.CHANGE_SOURCE_SPEC_COST,
+        index,
+        money
+    }
+}
+
 export { ActionTypes }
 
 export default {
@@ -196,11 +348,31 @@ export default {
     changeBuyEntry,
     changeSelectedPrimaryCategory,
     changeSelectedSecondaryCategory,
-    changeOriginalPrice,
     changeActiveCitiesOption,
     changeCitiesOptionApplyRange,
     changeSelectedProvince,
     changeSelectedCity,
 
-    changePreSaleStatus
+    changePreSaleStatus,
+    changePreSaleTime,
+    changeDeliveryTime,
+    changeBookingTime,
+    changeSecondaryBookingTimeStatus,
+    changeSecondaryBookingTime,
+    changeSecondaryBookingTimeRange,
+
+    createShopSpecifications,
+    changeShopSpecifications,
+    changeShopSpecificationsOriginalCost,
+    changeShopSpecificationsCost,
+    changeShopSpecificationsEventStatus,
+    changeShopSpecificationsEventCost,
+    changeShopSpecificationsEventTime,
+    removeShopSpecifications,
+
+    addSource,
+    changeSelectedSource,
+    addSourceSpec,
+    changeSourceSpec,
+    changeSourceSpecCost,
 }

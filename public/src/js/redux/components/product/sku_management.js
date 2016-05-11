@@ -2,19 +2,23 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+import DateTimeRangePicker from 'react-bootstrap-datetimerange-picker';
 import MessageBox, { MessageBoxIcon } from 'common/message_box';
 import CitiesSelector from 'common/cities_selector';
 import DropDownMenu from 'common/dropdown';
 import getTopHeader from '../top_header';
+import LazyLoad from 'utils/lazy_load';
 
 import SkuAction from 'actions/product_sku_management';
 import CitiesSelectorAction from 'actions/cities_selector';
 
 const TopHeader = getTopHeader([{name: '产品管理', link: ''}, {name: '添加商品', link: '/pm/sku_manage/add'}]);
 
+LazyLoad('datetimerangepicker');
+
 const FormHorizontal = props => (<div className="form-horizontal" {...props} />)
 const FormGroup = props => (<div className="form-group" {...props} />);
-const Input = props => (<input type="text" className="form-control input-xs" {...props} />);
+const Input = props => (<input type="number" className="form-control input-xs" {...props} />);
 const Row = props => (<div className="row" {...props} />);
 
 const Col = props => {
@@ -42,9 +46,13 @@ const tabContentBoxStyle = {
     border: 'solid 1px #ddd',
     borderTop: 'none',
     boxShadow: 'none'
-};
+}
+const pickerStyle = { width: 260, textAlign: 'center' }
+const inputStyle = { width: 70 }
+
 
 const getDOMValue = func => (event, ...args) => func.apply(undefined, [event.currentTarget.value, ...args]);
+const getSpecInputValue = (i, func) => (event, ...args) => func.apply(undefined, [i, event.currentTarget.value, ...args]);
 
 class BasicOptions extends Component {
     constructor(props) {
@@ -59,14 +67,14 @@ class BasicOptions extends Component {
 
     render() {
 
-        const { state, Action } = this.props;
+        const { state, Action, citiesSelectorState } = this.props;
 
         return (
             <FormHorizontal>
                 <FormGroup>
                     <label className="col-xs-2 control-label">商品名称：</label>
                     <Col xs="4">
-                        <Input autoFocus={true} onChange={getDOMValue(Action.changeProductName)} value={state.productName} />
+                        <Input type="text" autoFocus={true} onChange={getDOMValue(Action.changeProductName)} value={state.productName} />
                     </Col>
                 </FormGroup>
                 <FormGroup>
@@ -128,12 +136,6 @@ class BasicOptions extends Component {
                     </Col>
                 </FormGroup>
                 <FormGroup>
-                    <label className="col-xs-2 control-label">商品原价：</label>
-                    <Col xs="4">
-                        <Input onChange={getDOMValue(Action.changeOriginalPrice)} defaultValue='1' type="number" />
-                    </Col>
-                </FormGroup>
-                <FormGroup>
                     <label className="col-xs-2 control-label">上线城市：</label>
                     <Col xs="10">
                         <p>
@@ -173,7 +175,7 @@ class BasicOptions extends Component {
                     (state.activeCitiesOption === 1 && this.state.showCitiesSelector) ? (
                         <FormGroup>
                             <Col xs="8" offset='2'>
-                                <CitiesSelector state={state} Action={Action} />
+                                <CitiesSelector citiesSelector={citiesSelectorState} {...Action} />
                             </Col>
                         </FormGroup>
                     ) : undefined
@@ -202,7 +204,12 @@ class PreSaleOptions extends Component {
                 <Row>
                     <Col xs="10" offset="2">
                         <div className="form-inline">
-                            预售上架时间：<Input />{'　至　'}<Input />
+                            预售上架时间：
+                            <DateTimeRangePicker
+                                className="form-control input-xs"
+                                style={pickerStyle}
+                                onChange={Action.changePreSaleTime}
+                            />
                         </div>
                     </Col>
                 </Row>
@@ -210,7 +217,12 @@ class PreSaleOptions extends Component {
                 <Row>
                     <Col xs="10" offset="2">
                         <div className="form-inline">
-                            预售发货时间：<Input />{'　至　'}<Input />
+                            预售发货时间：
+                            <DateTimeRangePicker
+                                className="form-control input-xs"
+                                style={pickerStyle}
+                                onChange={Action.changeDeliveryTime}
+                            />
                         </div>
                     </Col>
                 </Row>
@@ -218,7 +230,7 @@ class PreSaleOptions extends Component {
                 <Row>
                     <Col xs="10" offset="2">
                         <div className="form-inline">
-                            {'　　'}预约时间：<Input />
+                            {'　　'}预约时间：<Input onChange={getDOMValue(Action.changeBookingTime)} />
                         </div>
                     </Col>
                 </Row>
@@ -275,6 +287,7 @@ class ShopSpecificationsOptions extends Component {
                         <thead>
                             <tr>
                                 <th>规格</th>
+                                <th>原价</th>
                                 <th>价格</th>
                                 <th>促销</th>
                                 <th>活动价格</th>
@@ -283,38 +296,90 @@ class ShopSpecificationsOptions extends Component {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td><center><Input style={{width:70}} defaultValue="2磅" /></center></td>
-                                <td><center><Input style={{width:70}} defaultValue="99.00" /></center></td>
-                                <td><input type="checkbox"/></td>
-                                <td><center><Input style={{width:70}} defaultValue="99.00" /></center></td>
-                                <td>
-                                    <div className="form-inline">
-                                        <Input style={{width:130,textAlign:'center'}} defaultValue="2016-04-03 00:00:00" />
-                                        {' 至 '}
-                                        <Input style={{width:130,textAlign:'center'}} defaultValue="2016-04-03 00:00:00" />
-                                    </div>
-                                </td>
-                                <td><button className="btn btn-xs btn-danger">{'×'}</button></td>
-                            </tr>
-                            <tr>
-                                <td><center><Input style={{width:70}} defaultValue="2磅" /></center></td>
-                                <td><center><Input style={{width:70}} defaultValue="99.00" /></center></td>
-                                <td><input type="checkbox"/></td>
-                                <td><center><Input style={{width:70}} defaultValue="99.00" /></center></td>
-                                <td>
-                                    <div className="form-inline">
-                                        <Input style={{width:130,textAlign:'center'}} defaultValue="2016-04-03 00:00:00" />
-                                        {' 至 '}
-                                        <Input style={{width:130,textAlign:'center'}} defaultValue="2016-04-03 00:00:00" />
-                                    </div>
-                                </td>
-                                <td><button className="btn btn-xs btn-danger">{'×'}</button></td>
-                            </tr>
+                            {
+                                state.tempOptions.shopSpecifications.length === 0 ? (
+                                    <tr><td colSpan='7'>没有规格</td></tr>
+                                ) : (
+                                    state.tempOptions.shopSpecifications.map((detail, index) => (
+                                        <tr key={index}>
+                                            <td>
+                                                <center>
+                                                    <Input
+                                                        type="text"
+                                                        style={inputStyle}
+                                                        defautlValue={detail.spec}
+                                                        onChange={getSpecInputValue(index, Action.changeShopSpecifications)}
+                                                    />
+                                                </center>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    <Input
+                                                        style={inputStyle}
+                                                        defautlValue={detail.originalCost}
+                                                        onChange={getSpecInputValue(index, Action.changeShopSpecificationsOriginalCost)}
+                                                    />
+                                                </center>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    <Input
+                                                        style={inputStyle}
+                                                        defautlValue={detail.cost}
+                                                        onChange={getSpecInputValue(index, Action.changeShopSpecificationsCost)}
+                                                    />
+                                                </center>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={detail.hasEvent}
+                                                        onChange={e => Action.changeShopSpecificationsEventStatus(index, e.checked)}
+                                                    />
+                                                </center>
+                                            </td>
+                                            {
+                                                detail.hasEvent ? [(
+                                                    <td key='1'>
+                                                        <center>
+                                                            <Input
+                                                                style={inputStyle}
+                                                                defautlValue={detail.eventCost}
+                                                                onChange={getSpecInputValue(index, Action.changeShopSpecificationsEventCost)}
+                                                            />
+                                                        </center>
+                                                    </td>
+                                                ), (
+                                                    <td key='2'>
+                                                        <center>
+                                                            <DateTimeRangePicker
+                                                                style={pickerStyle}
+                                                                className="form-control input-xs"
+                                                                onChange={(b, e) => Action.changeShopSpecificationsEventTime(index, b, e)}
+                                                            />
+                                                        </center>
+                                                    </td>
+                                                )] : (<td colSpan='2'>-</td>)
+                                            }
+                                            <td>
+                                                <center>
+                                                    <button
+                                                        className="btn btn-danger btn-xs"
+                                                        onClick={e => Action.removeShopSpecifications(index)}
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </center>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )
+                            }
                         </tbody>
                     </table>
                     <p />
-                    <button className="btn btn-xs btn-default">新增规格</button>
+                    <button className="btn btn-xs btn-default" onClick={Action.createShopSpecifications}>新增规格</button>
                 </Col>
             </FormGroup>
         );
@@ -389,7 +454,10 @@ class CitiesOptions extends Component {
                     <Col xs="6">
                         <div className="form-inline">
                             <div className="checkbox">
-                                <label>{'　　预售商品：'}<input type="checkbox" checked={state.tempOptions.isPreSale} onChange={Action.changePreSaleStatus} /></label>
+                                <label>
+                                    {'　　预售商品：'}
+                                    <input type="checkbox" checked={state.tempOptions.isPreSale} onChange={Action.changePreSaleStatus} />
+                                </label>
                             </div>
                         </div>
                     </Col>
@@ -400,51 +468,14 @@ class CitiesOptions extends Component {
                     : null
                 }
                 {
-                    state.buyEntry === 0
-                    ? [( <Col key="hr" xs='10' offset='1'><hr/></Col> ), ( <ShopSpecificationsOptions key="ShopSpecificationsOptions" /> )]
-                    : null
+                    state.buyEntry === 0 ? [(
+                        <Col key="hr" xs='10' offset='1'><hr/></Col>
+                    ), (
+                        <ShopSpecificationsOptions key="ShopSpecificationsOptions" Action={Action} state={state} />
+                    )] : null
                 }
                 <Col xs='10' offset='1'><hr/></Col>
-                <FormGroup>
-                    <label className="col-xs-2 control-label">渠道设置：</label>
-                    <Col xs="2">
-                        <div className="list-group">
-                            <Anchor className="list-group-item">美团外卖</Anchor>
-                            <Anchor className="list-group-item">美团外卖</Anchor>
-                            <Anchor className="list-group-item">美团外卖</Anchor>
-                            <Anchor className="list-group-item">美团外卖</Anchor>
-                            <Anchor className="list-group-item">美团外卖</Anchor>
-                            <div className="list-group-item"><input type="text" className="form-control input-xs"/></div>
-                        </div>
-                    </Col>
-                    <Col xs="5">
-                        <div className="panel">
-                            <div className="panel-heading">
-                                <div className="panel-title">
-                                    渠道规格
-                                    <small>
-                                        <span className="pull-right">
-                                            <button className="btn btn-xs btn-default">新增规格</button>
-                                        </span>
-                                    </small>
-                                </div>
-                            </div>
-                            <table className="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>规格</th>
-                                        <th>价格</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td><Input></Input></td><td><Input></Input></td></tr>
-                                    <tr><td><Input></Input></td><td><Input></Input></td></tr>
-                                    <tr><td><Input></Input></td><td><Input></Input></td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </Col>
-                </FormGroup>
+                <SourceOptions Action={Action} state={state} />
                 <Col xs="8" offset="2">
                     <button className="btn btn-default btn-xs">保存城市设置</button>
                 </Col>
@@ -462,10 +493,137 @@ class CitiesOptions extends Component {
     }
 }
 
+class SourceOptions extends Component {
+    constructor(props) {
+        super(props);
+
+        this.handleAddSource = this.handleAddSource.bind(this);
+    }
+
+    render() {
+        const { state, Action } = this.props;
+        const { tempOptions } = state;
+
+        const sourceSpecification = tempOptions.sourceSpecifications.get(tempOptions.selectedSource);
+
+        let emptySpecList = (
+            <tr>
+                <td colSpan="3">没有规格</td>
+            </tr>
+        );
+
+        return (
+            <FormGroup>
+                <label className="col-xs-2 control-label">渠道设置：</label>
+                <Col xs="2">
+                    <div className="list-group">
+                        {
+                            [...tempOptions.sourceSpecifications].map(
+                                ([sid, detail]) => {
+                                    return (
+                                        <Anchor
+                                            key={sid}
+                                            className={"list-group-item" + (tempOptions.selectedSource === sid ? ' active' : '')}
+                                            onClick={e => Action.changeSelectedSource(sid)}
+                                        >
+                                            {state.orderSource.get(sid)}
+                                        </Anchor>
+                                    );
+                                }
+                            )
+                        }
+                        <div className="list-group-item" style={{display:'flex'}}>
+                            <select className="form-control input-xs" style={{flex:1, marginRight:10}} ref='sourceList'>
+                                {
+                                    [...state.orderSource].map(([id, name]) => (
+                                        <option key={id} value={id}>{name}</option>
+                                    ))
+                                }
+                            </select>
+                            <button className="btn btn-default btn-xs" onClick={this.handleAddSource}>
+                                ＋
+                            </button>
+                        </div>
+                    </div>
+                </Col>
+                <Col xs="5">
+                    <div className="panel">
+                        <div className="panel-heading">
+                            <div className="panel-title">
+                                渠道规格
+                                <small>
+                                    <span className="pull-right">
+                                        <button
+                                            className="btn btn-xs btn-default"
+                                            onClick={Action.addSourceSpec}
+                                            disabled={!sourceSpecification}
+                                        >
+                                            新增规格
+                                        </button>
+                                    </span>
+                                </small>
+                            </div>
+                        </div>
+                        <table className="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>规格</th>
+                                    <th>价格</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    (!sourceSpecification || sourceSpecification.length === 0) ? (
+                                        <tr>
+                                            <td colSpan="2">没有规格</td>
+                                        </tr>
+                                    ) : (
+                                        sourceSpecification.map((detail, index) => (
+                                            <tr key={index}>
+                                                <td>
+                                                    <Input
+                                                        type='text'
+                                                        value={detail.spec}
+                                                        onChange={this.handleChangeSourceSpec.bind(this, index)}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <Input
+                                                        value={detail.cost}
+                                                        onChange={this.handleChangeSourceSpecCost.bind(this, index)}
+                                                    />
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </Col>
+            </FormGroup>
+        );
+    }
+
+    handleAddSource() {
+        const selectedSource = this.refs.sourceList.value;
+        this.props.Action.addSource(selectedSource);
+    }
+
+    handleChangeSourceSpec(index, event) {
+        this.props.Action.changeSourceSpec(index, event.currentTarget.value);
+    }
+
+    handleChangeSourceSpecCost(index, event) {
+        this.props.Action.changeSourceSpecCost(index, event.currentTarget.value);
+    }
+
+}
+
 class Main extends Component {
     render() {
 
-        const { state, Action } = this.props;
+        const { state, Action, citiesSelector } = this.props;
 
         if (state.basicDataLoadStatus === 'pending') {
             return (
@@ -485,7 +643,7 @@ class Main extends Component {
                     <div className="panel-body">
                         <h3>{'　'}基本信息</h3>
                         <hr/>
-                        <BasicOptions state={state} Action={Action} />
+                        <BasicOptions state={state} citiesSelectorState={citiesSelector} Action={Action} />
                         <p />
                         <h3>{'　'}城市配置</h3>
                         <hr/>

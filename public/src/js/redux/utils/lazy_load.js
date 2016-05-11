@@ -13,6 +13,8 @@ var config = {
   },
   GeoUtils: {
     js: root + 'lib/GeoUtils.min.js',
+  datetimerangepicker: {
+    css: '/node_modules/react-bootstrap-datetimerange-picker/dist/react-bootstrap-datetime-range-picker.css'
   }
 };
 var load_map = {};

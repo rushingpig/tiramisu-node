@@ -24,3 +24,43 @@ ADD FULLTEXT `IDX_FL` (`owner_name`, `owner_mobile`, `recipient_name`, `recipien
 
 # 审核重新打印列表建立索引
 ALTER TABLE `tiramisu`.`buss_print_apply` ADD INDEX `IDX_SHOW_ORDER_ID` (`show_order_id`) comment '在页面上展示的订单号建立索引，便于查询';
+
+# 2016-05-09 Wei Zhao
+# 订单配送记录表
+CREATE TABLE `buss_delivery_record` (
+    `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '记录编号',
+    `order_id` int(11) NOT NULL COMMENT '订单id',
+    `deliveryman_id` int(11) NOT NULL COMMENT '配送员id',
+    `delivery_pay` int(11) NOT NULL COMMENT '配送工资',
+    `delivery_count` int(11) NOT NULL COMMENT '配送次数',
+    `is_review` tinyint(1) DEFAULT '0' COMMENT '审核标志（0：未审核；1：已审核）',
+    `updated_by` int(11) NOT NULL COMMENT '记录更新操作者id',
+    `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+    `remark` varchar(255) DEFAULT NULL COMMENT '备注',
+    PRIMARY KEY (`id`),
+    KEY `IDX_ORDER_ID` (`order_id`),
+    KEY `IDX_DM_ID` (`deliveryman_id`)
+    KEY `IDX_CREATED_TIME` (`created_time`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单配转移送员记录';
+
+# 2016-05-09 Wei Zhao
+# 配送成功图片凭证
+CREATE TABLE `buss_delivery_picture` (
+    `order_id` int(11) NOT NULL COMMENT '订单id',
+    `deliveryman_id` int(11) NOT NULL COMMENT '配送员id',
+    `delivery_count` int(11) NOT NULL COMMENT '第几次配送',
+    `picture_type` enum  ('RECEIPT','DOOR','CALL','SMS') NOT NULL COMMENT '单据，门牌，通话记录，短信记录',
+    `picture_url` varchar(255) NOT NULL COMMENT '图片url',
+    KEY `IDX_ORDER_ID` (`order_id`),
+    KEY `IDX_DM_ID` (`deliveryman_id`),
+    KEY `IDX_DC` (`delivery_count`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单配转移送员记录';
+INSERT INTO `buss_delivery_picture` VALUES
+    (10000001, 1, 1, 'RECEIPT', 'http://picture.xfxb.net/receipt_1.jpg'),
+    (10000001, 1, 1, 'DOOR', 'http://picture.xfxb.net/door_1.jpg'),
+    (10000001, 1, 1, 'CALL', 'http://picture.xfxb.net/call_1.jpg'),
+    (10000001, 1, 1, 'SMS', 'http://picture.xfxb.net/sms_1.jpg');
+
+# 2016-05-10 Wei Zhao
+# 增加pos终端号字段
+ALTER TABLE `tiramisu`.`buss_order` ADD COLUMN `pos_id` varchar(32) DEFAULT NULL COMMENT 'pos终端号';

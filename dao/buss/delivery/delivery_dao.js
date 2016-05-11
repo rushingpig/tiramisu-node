@@ -236,4 +236,78 @@ DeliveryDao.prototype.findStationById = function(station_id){
     let params = [3, del_flag.SHOW, station_id];
     return baseDao.select(sql,params);
 };
+DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, deliveryman_id, is_COD) {
+    let columns = [
+        'bo.id AS order_id',
+        'bo.delivery_time',
+        'bpm.name AS pay_modes',
+        'bo.pay_status',
+        'bo.total_original_price',
+        'bo.total_discount_price',
+        'bo.total_amount',
+        'bo.COD_amount',
+        'bo.late_minutes',
+        'bo.payfor_amount',
+        'bo.payfor_reason',
+        'bo.payfor_type',
+        'bo.signin_time',
+
+        'br.delivery_type',
+        'br.name AS recipient_name',
+        'br.mobile AS recipient_mobile',
+        'br.address',
+        'br.landmark',
+
+        'bdr.delivery_pay',
+        'bdr.delivery_count',
+        'bdr.is_review',
+        'bdr.remark'
+    ];
+    let sql = `SELECT ${columns.join(',')} FROM ${tables.buss_order} bo `;
+    let params = [];
+    if(begin_time || end_time)
+    sql += `force index(IDX_DELIVERY_TIME) `;
+    sql += `LEFT JOIN ${tables.buss_recipient} br ON bo.recipient_id = br.id `;
+    sql += `LEFT JOIN ${tables.buss_delivery_record} bdr ON bo.id = bdr.order_id `;
+    sql += `WHERE bo.status IN ('${constant.OS.COMPLETED}', '${constant.OS.EXCEPTION}') `;
+    if(begin_time){
+        sql += `AND bpa.created_time >= ? `;
+        params.push(begin_time + ' 00:00:00');
+    }
+    if(end_time){
+        sql += `AND bpa.created_time <= ? `;
+        params.push(end_time + ' 23:59:59');
+    }
+    if(deliveryman_id){
+        sql += `AND bdr.deliveryman_id = ? `;
+        params.push(deliveryman_id);
+    }
+    if(is_COD){
+        sql += `AND bo.total_amount > 0 `;
+    }
+
+    return baseDao.select(sql, params);
+};
+DeliveryDao.prototype.findDeliveryProof = function (order_id, deliveryman_id, delivery_count) {
+    let columns = [
+        'bdp.picture_type',
+        'bdp.picture_url'
+    ];
+    let sql = `SELECT ${columns.join(',')} FROM ${tables.buss_delivery_picture} bdp `;
+    sql += `WHERE 1 = 1 `;
+    let params = [];
+    if(order_id){
+        sql += `AND bdp.order_id = ? `;
+        params.push(order_id);
+    }
+    if(delivery_count){
+        sql += `AND bdp.delivery_count = ? `;
+        params.push(delivery_count);
+    }
+    if(deliveryman_id){
+        sql += `AND bdp.deliveryman_id = ? `;
+        params.push(deliveryman_id);
+    }
+    return baseDao.select(sql, params);
+};
 module.exports = DeliveryDao;

@@ -67,6 +67,30 @@ module.exports = function () {
           });
       });
 
+      it('GET /v1/a/order/:orderId/proof', function (done) {
+          agent.get('/v1/a/delivery/order/2016031410000001/proof')
+              .query({deliveryman_id: 1})
+              .expect('Content-Type', /json/)
+              .expect(200)
+              .end((err, res) => {
+                  assert.strictEqual(res.body.code, '0000');
+                  assert.strictEqual(res.statusCode, 200);
+                  done();
+              });
+      });
+
+      it('GET /v1/a/order/:orderId/proof', function (done) {
+          agent.get('/v1/a/delivery/order/2016031410000001/proof')
+              .query({deliveryman_id: 2})
+              .expect('Content-Type', /json/)
+              .expect(200)
+              .end((err, res) => {
+                  assert.strictEqual(res.body.code, '9998');
+                  assert.strictEqual(res.statusCode, 200);
+                  done();
+              });
+      });
+
       it('GET /v1/a/order/:orderId/deliverymans', function (done) {
           agent.get('/v1/a/order/2016031410000022/deliverymans')
               .expect('Content-Type', /json/)

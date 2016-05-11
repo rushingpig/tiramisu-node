@@ -23,6 +23,7 @@ var dao = require('../../../dao'),
     config = require('../../../config'),
     logger = require('../../../common/LogHelper').systemLog(),
     co = require('co'),
+    _ = require('lodash'),
     tartetatin = require('../../../api/tartetatin'),
     async = require('async');
 function DeliveryService(){
@@ -315,6 +316,10 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
         signin_time : req.body.signin_time || new Date(),
         status : Constant.OS.COMPLETED
     };
+    if(req.body.POS_terminal_id !== undefined){
+        order_obj.pos_id = req.body.POS_terminal_id;
+        order_obj.pay_modes_id = Constant.OPM.POS;
+    }
     let order_sign_history_obj = {
         order_id: orderId
     };
@@ -939,5 +944,69 @@ DeliveryService.prototype.getStationInfo = (req,res,next) => {
         res.api(result);
     });
     systemUtils.wrapService(res,next,promise);
+};
+/**
+ * get delivery record
+ * @param req
+ * @param res
+ * @param next
+ */
+DeliveryService.prototype.getRecord = (req, res, next)=>{
+    req.checkParams(schema.getDeliveryRecord);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let curr_user_id = req.session.user.id;
+    let begin_time = req.query.begin_time;
+    let end_time = req.query.end_time;
+    let city_id = req.query.city_id;
+    let deliveryman_id = req.query.deliveryman_id;
+    let is_COD = req.query.is_COD;
+    let promise = deliveryDao.findDeliveryRecord(begin_time, end_time, city_id, deliveryman_id, is_COD, curr_user_id).then((result)=> {
+        if (toolUtils.isEmptyArray(result)) {
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        result.sort((a, b)=> {
+            return (a.delivery_time <= b.delivery_time) ? -1 : 1;
+        });
+
+        res.api(result);
+    });
+    systemUtils.wrapService(res, next, promise);
+};
+
+DeliveryService.prototype.getProof = (req, res, next)=> {
+    req.checkParams('orderId').isOrderId();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let order_id = systemUtils.getDBOrderId(req.params.orderId);
+    let deliveryman_id = req.query.deliveryman_id;
+    let delivery_count = 1;
+
+    let promise = deliveryDao.findDeliveryProof(order_id, deliveryman_id, delivery_count).then(result=> {
+        if (toolUtils.isEmptyArray(result)) {
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        let data = {};
+        result.forEach(r=> {
+            if(r.picture_type == Constant.BDPT.RECEIPT) data.receipt_picture_url = r.picture_url;
+            if(r.picture_type == Constant.BDPT.DOOR) data.door_picture_url = r.picture_url;
+            if(r.picture_type == Constant.BDPT.CALL) data.call_picture_url = r.picture_url;
+            if(r.picture_type == Constant.BDPT.SMS) data.sms_picture_url = r.picture_url;
+        });
+        if (_.isEqual(data, {})) {
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        res.api(data);
+    });
+    systemUtils.wrapService(res, next, promise);
+};
+
+DeliveryService.prototype.exportRecordExcel = (req, res, next)=> {
 };
 module.exports = new DeliveryService();

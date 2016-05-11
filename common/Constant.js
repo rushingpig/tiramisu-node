@@ -176,4 +176,15 @@ Constant.PRODUCT = {
     ACCESSORY_ID: 15
 };
 
+Constant.OPM = {
+    POS: 19
+};
+
+Constant.BDPT = {
+    RECEIPT: 'RECEIPT',
+    DOOR: 'DOOR',
+    CALL: 'CALL',
+    SMS: 'SMS'
+};
+
 module.exports = Constant;

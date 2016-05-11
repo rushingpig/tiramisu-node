@@ -559,6 +559,22 @@ DeliveryService.prototype.listDeliverymans = (req,res,next)=>{
     systemUtils.wrapService(res,next,promise);
 };
 /**
+ * get the deliverymans of the city
+ * @param req
+ * @param res
+ * @param next
+ */
+DeliveryService.prototype.listDeliverymansByCity = (req,res,next)=>{
+    let city_id = req.params.cityId;
+    let promise = deliveryDao.findDeliverymansByCity(city_id).then((results)=>{
+        if(toolUtils.isEmptyArray(results)){
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS_ARR,'该条件下没有可选的配送员...');
+        }
+        res.api(results);
+    });
+    systemUtils.wrapService(res,next,promise);
+};
+/**
  * get the deliverymans of the order
  * @param req
  * @param res
@@ -964,15 +980,48 @@ DeliveryService.prototype.getRecord = (req, res, next)=>{
     let city_id = req.query.city_id;
     let deliveryman_id = req.query.deliveryman_id;
     let is_COD = req.query.is_COD;
-    let promise = deliveryDao.findDeliveryRecord(begin_time, end_time, city_id, deliveryman_id, is_COD, curr_user_id).then((result)=> {
+    let promise = deliveryDao.findDeliveryRecord(begin_time, end_time, deliveryman_id, is_COD).then((result)=> {
         if (toolUtils.isEmptyArray(result)) {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
         result.sort((a, b)=> {
             return (a.delivery_time <= b.delivery_time) ? -1 : 1;
         });
+        result.map(r=> {
+            if(r.COD_amount === null) r.COD_amount = r.total_amount;
+            if(r.delivery_count === null) r.delivery_count = 1;
+        });
 
         res.api(result);
+    });
+    systemUtils.wrapService(res, next, promise);
+};
+
+DeliveryService.prototype.editRecord = (req, res, next)=> {
+    req.checkParams('orderId').isOrderId();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let order_id = systemUtils.getDBOrderId(req.params.orderId);
+    let order_obj = {};
+    let record_obj = {};
+    let updated_time = req.body.updated_time;
+    if (req.body.COD_amount !== undefined) order_obj.COD_amount = req.body.COD_amount;
+    if (req.body.delivery_pay  !== undefined) record_obj.delivery_pay = req.body.delivery_pay;
+    if (req.body.remark  !== undefined) record_obj.remark = req.body.remark;
+
+    let promise = co(function *() {
+        let _res = yield orderDao.findOrderById(order_id);
+        if (toolUtils.isEmptyArray(_res)) {
+            return Promise.reject(TiramisuError(res_obj.INVALID_UPDATE_ID));
+        } else if (updated_time !== _res[0].updated_time) {
+            return Promise.reject(TiramisuError(res_obj.OPTION_EXPIRED));
+        }
+        yield deliveryDao.updateDeliveryRecord(order_id, systemUtils.assembleUpdateObj(order_obj), systemUtils.assembleUpdateObj(record_obj));
+    }).then(result=> {
+        res.api();
     });
     systemUtils.wrapService(res, next, promise);
 };

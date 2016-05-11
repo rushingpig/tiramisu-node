@@ -19,6 +19,7 @@ module.exports = function (router) {
     router.get('/order/reprint/applies',deliveryService.listReprintApplies); // 获取申请重新打印列表
     router.get('/delivery/deliverymans',deliveryService.listDeliverymans);   // 获取配送员列表
     router.get('/order/:orderId/deliverymans',deliveryService.listDeliverymansByOrder);   // 获取订单所在配送站的配送员列表
+    router.get('/city/:cityId/deliverymans',deliveryService.listDeliverymansByCity);   // 获取指定城市的配送员列表
     router.get('/orders/print',deliveryService.print);   // 打印订单
     router.get('/order/:orderId/reprint',deliveryService.reprint);   // 重新打印订单
     router.get('/delivery/record', deliveryService.getRecord);   // 获取配送记录
@@ -40,6 +41,7 @@ module.exports = function (router) {
     router.put('/order/:orderId/signin',deliveryService.signinOrder);    // 签收订单
     router.put('/order/:orderId/unsignin',deliveryService.unsigninOrder);    // 未签收订单
     router.put('/delivery/deliveryman',deliveryService.allocateDeliveryman); // 分配配送员
+    router.put('/delivery/order/:orderId/record', deliveryService.editRecord);   // 修改配送记录
 
 //************************
 //******** DELETE ********

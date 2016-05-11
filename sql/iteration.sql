@@ -40,7 +40,6 @@ CREATE TABLE `buss_delivery_record` (
     PRIMARY KEY (`id`),
     KEY `IDX_ORDER_ID` (`order_id`),
     KEY `IDX_DM_ID` (`deliveryman_id`)
-    KEY `IDX_CREATED_TIME` (`created_time`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单配转移送员记录';
 
 # 2016-05-09 Wei Zhao
@@ -48,7 +47,7 @@ CREATE TABLE `buss_delivery_record` (
 CREATE TABLE `buss_delivery_picture` (
     `order_id` int(11) NOT NULL COMMENT '订单id',
     `deliveryman_id` int(11) NOT NULL COMMENT '配送员id',
-    `delivery_count` int(11) NOT NULL COMMENT '第几次配送',
+    `delivery_count` int(11) NOT NULL DEFAULT 1 COMMENT '第几次配送',
     `picture_type` enum  ('RECEIPT','DOOR','CALL','SMS') NOT NULL COMMENT '单据，门牌，通话记录，短信记录',
     `picture_url` varchar(255) NOT NULL COMMENT '图片url',
     KEY `IDX_ORDER_ID` (`order_id`),
@@ -59,7 +58,7 @@ INSERT INTO `buss_delivery_picture` VALUES
     (10000001, 1, 1, 'RECEIPT', 'http://picture.xfxb.net/receipt_1.jpg'),
     (10000001, 1, 1, 'DOOR', 'http://picture.xfxb.net/door_1.jpg'),
     (10000001, 1, 1, 'CALL', 'http://picture.xfxb.net/call_1.jpg'),
-    (10000001, 1, 1, 'SMS', 'http://picture.xfxb.net/sms_1.jpg');
+    (10000001, 1, NULL, 'SMS', 'http://picture.xfxb.net/sms_1.jpg');
 
 # 2016-05-10 Wei Zhao
 # 增加pos终端号字段

@@ -13,6 +13,7 @@ var baseDao = require('../../base_dao'),
     dbHelper = require('../../../common/DBHelper'),
     constant = require('../../../common/Constant'),
     systemUtils = require('../../../common/SystemUtils'),
+    co = require('co'),
     util = require('util');
 function DeliveryDao(){
     this.baseColumns = ['id','name'];
@@ -198,6 +199,29 @@ DeliveryDao.prototype.findDeliverymansByStation = function(city_id,currentUser){
 
 };
 /**
+ * find the deliverymans list by city
+ * @param city_id
+ */
+DeliveryDao.prototype.findDeliverymansByCity = function(city_id){
+    let columns = [
+        'su.id as deliveryman_id',
+        'su.name as deliveryman_name',
+        'su.mobile as deliveryman_mobile'
+    ].join(','),params = [];
+    let sql = "select "+columns+" from ?? su";
+    params.push(tables.sys_user);
+    sql += " inner join ?? sur on sur.user_id = su.id and sur.role_id = ?";
+    params.push(tables.sys_user_role);
+    params.push(constant.DELIVERYMAN_ID);
+    if(city_id){
+        sql += " inner join ?? dr on FIND_IN_SET(dr.id, su.city_ids) and dr.id = ?";
+        params.push(tables.dict_regionalism);
+        params.push(city_id);
+    }
+    return baseDao.select(sql,params);
+
+};
+/**
  * find the deliverymans list by order
  * @param order_id
  * @returns {Promise}
@@ -251,6 +275,7 @@ DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, deliv
         'bo.payfor_reason',
         'bo.payfor_type',
         'bo.signin_time',
+        'bo.updated_time',
 
         'br.delivery_type',
         'br.name AS recipient_name',
@@ -263,23 +288,28 @@ DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, deliv
         'bdr.is_review',
         'bdr.remark'
     ];
-    let sql = `SELECT ${columns.join(',')} FROM ${tables.buss_order} bo `;
+    let sql = `SELECT ${columns.join(',')} FROM ?? bo `;
     let params = [];
+    params.push(tables.buss_order);
     if(begin_time || end_time)
     sql += `force index(IDX_DELIVERY_TIME) `;
-    sql += `LEFT JOIN ${tables.buss_recipient} br ON bo.recipient_id = br.id `;
-    sql += `LEFT JOIN ${tables.buss_delivery_record} bdr ON bo.id = bdr.order_id `;
+    sql += `LEFT JOIN ?? br ON bo.recipient_id = br.id `;
+    params.push(tables.buss_recipient);
+    sql += `LEFT JOIN ?? bdr ON bo.id = bdr.order_id `;
+    params.push(tables.buss_delivery_record);
+    sql += `LEFT JOIN ?? bpm ON bo.pay_modes_id = bpm.id `;
+    params.push(tables.buss_pay_modes);
     sql += `WHERE bo.status IN ('${constant.OS.COMPLETED}', '${constant.OS.EXCEPTION}') `;
     if(begin_time){
-        sql += `AND bpa.created_time >= ? `;
-        params.push(begin_time + ' 00:00:00');
+        sql += `AND bo.delivery_time >= ? `;
+        params.push(begin_time + ' 00:00~00:00');
     }
     if(end_time){
-        sql += `AND bpa.created_time <= ? `;
-        params.push(end_time + ' 23:59:59');
+        sql += `AND bo.delivery_time <= ? `;
+        params.push(end_time + ' 24:00~24:00');
     }
     if(deliveryman_id){
-        sql += `AND bdr.deliveryman_id = ? `;
+        sql += `AND bo.deliveryman_id = ? `;
         params.push(deliveryman_id);
     }
     if(is_COD){
@@ -288,14 +318,38 @@ DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, deliv
 
     return baseDao.select(sql, params);
 };
+DeliveryDao.prototype.updateDeliveryRecord = function (order_id, order_obj, record_obj) {
+    let trans;
+    return co(function *() {
+        trans = yield baseDao.trans();
+        baseDao.transWrapPromise(trans);
+
+        if(order_obj){
+            let sql = `UPDATE ?? SET ? WHERE id = ? `;
+            let params = [tables.buss_order, order_obj, order_id];
+            yield trans.queryPromise(sql, params);
+        }
+        if(record_obj){
+            let sql = `UPDATE ?? SET ? WHERE order_id = ? `;
+            let params = [tables.buss_delivery_record, record_obj, order_id];
+            yield trans.queryPromise(sql, params);
+        }
+
+        yield trans.commitPromise();
+    }).catch(err=> {
+        if(trans && typeof trans.rollbackPromise == 'function') trans.rollbackPromise();
+        return Promise.reject(err);
+    });
+};
 DeliveryDao.prototype.findDeliveryProof = function (order_id, deliveryman_id, delivery_count) {
     let columns = [
         'bdp.picture_type',
         'bdp.picture_url'
     ];
-    let sql = `SELECT ${columns.join(',')} FROM ${tables.buss_delivery_picture} bdp `;
-    sql += `WHERE 1 = 1 `;
+    let sql = `SELECT ${columns.join(',')} FROM ?? bdp `;
     let params = [];
+    params.push(tables.buss_delivery_picture);
+    sql += `WHERE 1 = 1 `;
     if(order_id){
         sql += `AND bdp.order_id = ? `;
         params.push(order_id);

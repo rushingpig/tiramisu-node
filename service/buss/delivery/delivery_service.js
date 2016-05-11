@@ -24,6 +24,7 @@ var dao = require('../../../dao'),
     logger = require('../../../common/LogHelper').systemLog(),
     co = require('co'),
     _ = require('lodash'),
+    xlsx = require('node-xlsx'),
     tartetatin = require('../../../api/tartetatin'),
     async = require('async');
 function DeliveryService(){
@@ -996,7 +997,12 @@ DeliveryService.prototype.getRecord = (req, res, next)=>{
     });
     systemUtils.wrapService(res, next, promise);
 };
-
+/**
+ * update delivery record
+ * @param req
+ * @param res
+ * @param next
+ */
 DeliveryService.prototype.editRecord = (req, res, next)=> {
     req.checkParams('orderId').isOrderId();
     let errors = req.validationErrors();
@@ -1025,7 +1031,12 @@ DeliveryService.prototype.editRecord = (req, res, next)=> {
     });
     systemUtils.wrapService(res, next, promise);
 };
-
+/**
+ * get delivery proof
+ * @param req
+ * @param res
+ * @param next
+ */
 DeliveryService.prototype.getProof = (req, res, next)=> {
     req.checkParams('orderId').isOrderId();
     let errors = req.validationErrors();
@@ -1055,7 +1066,41 @@ DeliveryService.prototype.getProof = (req, res, next)=> {
     });
     systemUtils.wrapService(res, next, promise);
 };
+/**
+ * export delivery record
+ * @param req
+ * @param res
+ * @param next
+ */
+DeliveryService.prototype.exportRecordExcel = (req, res)=> {
+    req.checkParams(schema.getDeliveryRecord);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let begin_time = req.query.begin_time;
+    let end_time = req.query.end_time;
+    let city_id = req.query.city_id;
+    let deliveryman_id = req.query.deliveryman_id;
+    let is_COD = req.query.is_COD;
 
-DeliveryService.prototype.exportRecordExcel = (req, res, next)=> {
+    let fileName = '配送记录列表_' + dateUtils.format(new Date()) + '.xlsx';
+    let data = [];
+    co(function *() {
+
+    }).then(()=>{
+        let buffer = xlsx.build([{name: "配送记录列表", data: data}]);
+        res.set({
+            'Content-Type': 'application/vnd.ms-excel',
+            'Content-Disposition':  "attachment;filename="+encodeURIComponent(fileName) ,
+            'Pragma':'no-cache',
+            'Expires': 0
+        });
+        res.send(buffer);
+    }).catch((err)=>{
+        console.error(err);
+        res.render('error',{err:'该条件下没有可选配送记录,请重新筛选...'});
+    });
 };
 module.exports = new DeliveryService();

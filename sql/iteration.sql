@@ -156,3 +156,13 @@ BEGIN
   END LOOP;
   CLOSE cur;
 END;
+
+DROP EVENT IF EXISTS Expire_Presell_Time;
+SET GLOBAL event_scheduler = ON;
+CREATE EVENT Expire_Presell_Time
+On SCHEDULE EVERY 1 MINUTE
+COMMENT '定时结束预售sku'
+DO
+BEGIN
+  update buss_product_sku set del_flag = 0 where presell_end < now() and del_flag = 1;
+END;

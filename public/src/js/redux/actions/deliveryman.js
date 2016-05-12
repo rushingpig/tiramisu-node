@@ -15,6 +15,7 @@ export function getAllDeliveryman(){
 
 export  const GET_CITY_DELIVERYMAN = 'GET_CITY_DELIVERYMAN';
 export function getCityDeliveryman(cityid){
+  /*return GET(Url.deliveryman_city.toString(cityid), null, GET_CITY_DELIVERYMAN);*/
   return TEST([{
     'deliveryman_id': 1,
     'deliveryman_mobile': '181888888888',

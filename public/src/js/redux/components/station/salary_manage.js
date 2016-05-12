@@ -21,6 +21,8 @@ import * as DeliverymanActions from 'actions/deliveryman';
 import LazyLoad from 'utils/lazy_load';
 import { Noty, dateFormat, parseTime,getDate } from 'utils/index';
 import {post ,GET,POST,PUT,TEST,del,get} from 'utils/request';
+import V from 'utils/acl';
+
 import { DELIVERY_MAP ,pay_status, MODES} from 'config/app.config';
 
 
@@ -52,7 +54,8 @@ class FilterHeader extends Component{
 			city_id:-1,
 			deliveryman_id:-1,
 			COD:1,
-			search_txt:'',			
+			search_txt:'',
+			search_ing:false,			
 		}
 	}
 	componentWillReceiveProps(nextProps){
@@ -93,7 +96,7 @@ class FilterHeader extends Component{
 			area
 		} = this.props;
 		var {provinces , cities} = area ;
-		var { filter_deliveryman_results } = this.state;
+		var { filter_deliveryman_results, search_ing } = this.state;
 		var content = filter_deliveryman_results.map( n => {
       		return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name }</option>
 		})
@@ -102,9 +105,14 @@ class FilterHeader extends Component{
 		return(
 			<div>
 			<div className='clearfix top-header'>
-				<button  onClick={this.onExportExcel.bind(this)} className="btn btn-theme btn-xs pull-right" style={{marginLeft: 20}}>
-				  <i className="fa fa-download"></i> 导出
-				</button>
+				{
+					V('DeliveryManSalaryManageExport')
+					?<button  onClick={this.onExportExcel.bind(this)} className="btn btn-theme btn-xs pull-right" style={{marginLeft: 20}}>
+					  <i className="fa fa-download"></i> 导出
+					</button>
+					:null
+				}
+				
 			</div>
 			<div className='panel search' >
 
@@ -122,12 +130,18 @@ class FilterHeader extends Component{
 						value = {this.state.end_time}
 						onChange = {this.onEndtimeChange.bind(this)}
 					  className="short-input space-right" />
-					<Select ref='province' name='province' options = {provinces} 
-						onChange = {this.onProvinceChange.bind(this)}
-						default-text = '请选择省份'/>
-					<Select name='city' options = { cities} 
-						onChange= {this.onCityChange.bind(this)}
-						default-text = '请选择城市'/>
+					 {
+					 	V('DeliveryManSalaryManageCityFilter')
+					 	?[
+					 		<Select ref='province' name='province' options = {provinces} 
+					 			onChange = {this.onProvinceChange.bind(this)}
+					 			default-text = '请选择省份'/>,
+					 		<Select name='city' options = { cities} 
+					 			onChange= {this.onCityChange.bind(this)}
+					 			default-text = '请选择城市'/>
+					 	]:null
+					 }
+					
 					<div className="input-group input-group-sm" style={{height:'27px'}}>
 						<span  style={{height:'27px',lineHeight:1}} className="input-group-addon"><i className="fa fa-search"></i></span>
 						<input type="text"  style={{height:'27px', width:'120px'}} 
@@ -146,7 +160,7 @@ class FilterHeader extends Component{
 						<option value='1'>是</option>
 						<option value='2'>否</option>
 					</select>
-					<button className="btn btn-theme btn-xs" onClick={this.FilterDeliveyRecord.bind(this)}>
+					<button disabled={search_ing} data-submitting = {search_ing} className="btn btn-theme btn-xs" onClick={this.FilterDeliveyRecord.bind(this)}>
 					  <i className="fa fa-search"></i>{' 搜索'}
 					</button>
 				</div>
@@ -213,11 +227,13 @@ class FilterHeader extends Component{
 		callback(e);
 	}
 	FilterDeliveyRecord(){
+		this.setState({search_ing:true});
 		var filterdata =  {};
 		filterdata.begin_time = this.state.begin_time;
 		filterdata.end_time = this.state.end_time;
 		var deliveryman_id = this.refs.deliveryman.value;
 		if(deliveryman_id == -1){
+			this.setState({search_ing:false});
 			Noty('warning', '请选择配送员'); return; 
 		}
 		filterdata.deliveryman_id = deliveryman_id;
@@ -227,7 +243,10 @@ class FilterHeader extends Component{
 		}else if(cod == 2){
 			filterdata.isCOD = false;
 		}
-		this.props.actions.getDeliveryRecord(filterdata);
+		this.props.actions.getDeliveryRecord(filterdata)
+			.always(() => {
+				this.setState({search_ing:false});
+			});
 	}
 	componentDidMount(){
 		setTimeout(() => {
@@ -309,9 +328,10 @@ var SalaryRow = React.createClass({
 				<td>{'原价:￥'+ props.total_original_price }<br/>
 					{ '实际售价:￥'+ props.total_discount_price }<br/>
 					{'应收金额:￥' + props.total_amount}</td>
-				<td><input type='text' readOnly value={props.delivery_pay}
+				<td><input type='text' readOnly value={this.state.delivery_pay}
 						ref = 'delivery_pay'
-						className='form-control input-xs short-input' 
+						className='form-control input-xs short-input'
+						onChange = {this.onDeliverypayChange} 
 						style={{width:50, marginLeft:'auto', marginRight:'auto',
 						backgroundColor: this.state.is_review? '#dac7a7':''}}/></td>
 				<td>
@@ -329,12 +349,19 @@ var SalaryRow = React.createClass({
 						value = {this.state.remark}
 						onChange = {this.onRemarkChange}/></td>
 				<td>
-					{ this.state.Edit_ing
-						?[<a href='javascript:;' onClick = {this.onCancel}>[取消]</a>,<br/>]
-						:[<a href='javascript:;' onClick = {this.onEdit}>[编辑]</a>,<br/>]
-						}
+					{
+						V('DeliveryManSalaryManageEdit')
+							?this.state.Edit_ing
+								?[<a href='javascript:;' onClick = {this.onCancel}>[取消]</a>,<br/>]
+								:[<a href='javascript:;' onClick = {this.onEdit}>[编辑]</a>,<br/>]
+							:null
+					}
 					
-					<a href='javascript:;' onClick={this.onChangeDeliveryRecord}>[审核完成]</a>
+					{
+						V('DeliveryManSalaryManageEdit')
+							?<a href='javascript:;' onClick={this.onChangeDeliveryRecord}>[审核完成]</a>
+							:null
+					}
 				</td>
 				<td>
 					<a href='javascript:;' onClick={this.showOperationRecord}>{props.update_time}</a>
@@ -362,6 +389,10 @@ var SalaryRow = React.createClass({
 			delivery_pay: this.props.delivery_pay,
 			is_review: this.props.is_review,})
 	},
+	onDeliverypayChange:function(e){
+		var {value} = e.target;
+		this.setState({delivery_pay:value});
+	},
 	onReceiveAmountChange:function(e){
 		var {value} = e.target;
 		this.setState({COD_amount:value});
@@ -386,6 +417,9 @@ var SalaryRow = React.createClass({
 		data.remark = this.state.remark;
 		data.delivery_pay = this.state.delivery_pay;
 		var {order_id} = this.props;
+		if(!isNumber(this.state.COD_amount) || !isNumber(this.state.delivery_pay)){
+			Noty('warning','金额格式不正确');return;
+		}
 		if(this.state.COD_amount != this.props.total_amount && data.remark == ''){
 			Noty('warning', '实收金额与应收金额数目不一致，请在备注原因'); return; 			
 		}

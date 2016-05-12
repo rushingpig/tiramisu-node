@@ -61,6 +61,12 @@
 ###3.3 对外查看配送区域页面（隐藏页面）
 * +页面访问：StationScopeShareAccess
 
+###3.4 配送员工资管理
+* +页面访问：DeliveryManSalaryManageAccess
+* +省市筛选：DeliveryManSalaryManageCityFilter
+* +导出：DeliveryManSalaryManageExport
+* +管理操作：DeliveryManSalaryManageEdit
+
 ###4.1 用户管理
 * +页面访问：UserManageAccess
 * +按用户名/姓名筛选：UserManageUnameOrNameFilter

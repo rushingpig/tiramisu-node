@@ -76,6 +76,7 @@ const URL = (function(){
     //配送员
     deliveryman: '/delivery/deliverymans',
     deliveryman_apply: '/delivery/deliveryman', //分配配送员
+    deliveryman_city: '/city/:cityId/deliverymans', //获取指定城市的配送员
 
     //地址
     stations: '/stations', //配送站

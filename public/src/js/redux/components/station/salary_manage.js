@@ -21,7 +21,7 @@ import * as DeliverymanActions from 'actions/deliveryman';
 import LazyLoad from 'utils/lazy_load';
 import { Noty, dateFormat, parseTime,getDate } from 'utils/index';
 import {post ,GET,POST,PUT,TEST,del,get} from 'utils/request';
-import { DELIVERY_MAP ,pay_status} from 'config/app.config';
+import { DELIVERY_MAP ,pay_status, MODES} from 'config/app.config';
 
 
 class TopHeader extends Component{
@@ -269,6 +269,7 @@ var SalaryRow = React.createClass({
     	delivery_pay:0,
     	COD_amount:0,
     	remark:'',
+    	is_review:false,
     	Edit_ing:false,
     };
   },
@@ -302,21 +303,27 @@ var SalaryRow = React.createClass({
 				<td>{props.delivery_count >= 2
 					? '是'
 					:'否'}</td>
-				<td>{pay_status[props.pay_status]}</td>
+				<td>{pay_status[props.pay_status]}<br />
+					{props.pay_modes_name}
+				</td>
 				<td>{'原价:￥'+ props.total_original_price }<br/>
 					{ '实际售价:￥'+ props.total_discount_price }<br/>
 					{'应收金额:￥' + props.total_amount}</td>
 				<td><input type='text' readOnly value={props.delivery_pay}
 						ref = 'delivery_pay'
 						className='form-control input-xs short-input' 
-						style={{width:50, marginLeft:'auto', marginRight:'auto'}}/></td>
-				<td><input type='text' readOnly className="form-control short-input" 
+						style={{width:50, marginLeft:'auto', marginRight:'auto',
+						backgroundColor: this.state.is_review? '#dac7a7':''}}/></td>
+				<td>
+					<input type='text' readOnly className="form-control short-input" 
 						ref = 'COD_amount'
 						value ={this.state.COD_amount}
 						className='form-control input-xs short-input' 
 						onChange = {this.onReceiveAmountChange}
-						style={{height:27,width:50, marginLeft:'auto', marginRight:'auto'}}/></td>
-				<td><input type='text' readOnly className='form-control' style={{height:27}}
+						style={{height:27,width:50, marginLeft:'auto', marginRight:'auto', 
+								backgroundColor: this.state.is_review? '#dac7a7':''}}/></td>
+				<td><input type='text' readOnly className='form-control' style={{height:27,
+						backgroundColor: this.state.is_review? '#dac7a7':''}}
 						ref = 'remark' 
 						className='form-control input-xs short-input'
 						value = {this.state.remark}
@@ -349,7 +356,11 @@ var SalaryRow = React.createClass({
 		this.props.viewOperationRecordModal(data);
 	},
 	componentDidMount:function(){
-		this.setState({COD_amount:this.props.COD_amount, remark:this.props.remark, delivery_pay: this.props.delivery_pay})
+		this.setState({
+			COD_amount:this.props.COD_amount,
+			remark:this.props.remark, 
+			delivery_pay: this.props.delivery_pay,
+			is_review: this.props.is_review,})
 	},
 	onReceiveAmountChange:function(e){
 		var {value} = e.target;
@@ -369,6 +380,7 @@ var SalaryRow = React.createClass({
 		delivery_pay.removeAttribute('readOnly');
 	},
 	onChangeDeliveryRecord:function(){
+		this.setState({Edit_ing:false});
 		var data = {};
 		data.COD_amount = this.state.COD_amount;
 		data.remark = this.state.remark;
@@ -383,7 +395,8 @@ var SalaryRow = React.createClass({
 		this.props.actions.UpdateDeliverymanSalary(order_id,data);
 		COD_amount.setAttribute('readOnly','true');
 		remark.setAttribute('readOnly','true');
-		delivery_pay.setAttribute('readOnly','true');			
+		delivery_pay.setAttribute('readOnly','true');
+		this.setState({is_review:true});			
 	},
 	onCancel:function(){
 		var COD_amount = this.refs.COD_amount;
@@ -412,10 +425,15 @@ class DeliveryManSalaryManagePannel extends Component{
 		var amount_total = 0;
 		var receive_total = 0;
 		var salary_total = 0;
+		var cash = 0, pos = 0;
 		var content = deliveryRecord.map((n,i) => {
 			amount_total += n.total_amount;
 			receive_total += n.COD_amount;
 			salary_total += n.delivery_pay;
+			if( n.pay_modes_id == MODES['cash'])
+				cash += n.COD_amount;
+			else if( n.pay_modes_id == MODES['card'])
+				pos += n.COD_amount;
 			return <SalaryRow key={n.order_id}
 						{...{...n, ...this.props, viewCredentialModal, viewOperationRecordModal}} />;
 		});
@@ -454,6 +472,10 @@ class DeliveryManSalaryManagePannel extends Component{
 							      </tbody>
 							    </table>
 						    </div>
+						    <div className='form-inline' style={{marginTop:20,float:'left'}}>
+						    	<span style={{marginRight:10}}><i style={{color:'#eee',}} className='fa fa-square'></i><span style={{fontSize:10}}>待审核</span></span>
+						    	<span ><i style={{color:'#dac7a7'}} className='fa fa-square'></i><span style={{fontSize:10}}>审核完成</span></span>
+						    </div>
 						    <div className='form-inline' style={{marginTop:20,float:'right'}}>
 						    	<span style={{fontWeight:'bold'}}>{'应收金额总计：'}</span>
 						    	<input readOnly type='text' style={{width:50}} 
@@ -467,7 +489,7 @@ class DeliveryManSalaryManagePannel extends Component{
 						    	<input readOnly type='text' style={{width:50}} 
 						    		value = {receive_total}
 						    		className="form-control input-xs short-input"/>
-						    	{'　(现金xxx,POS机xxx)　'}
+						    	{'　(现金:￥' + cash }{',POS机:￥' + pos}{')　'}
 						    </div>
 						  </div>
 						</div>

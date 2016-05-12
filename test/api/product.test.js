@@ -85,7 +85,7 @@ module.exports = function() {
                 "book_time": 3,
                 "regionalism_id": 441300,
                 "presell_start": "2016-05-09 12:01:00",
-                "presell_end": "2016-06-09 12:01:00",
+                "presell_end": "2016-05-09 13:01:00",
                 "send_start": "2016-07-09 12:01:00",
                 "send_end": "2016-08-09 12:01:00"
             };

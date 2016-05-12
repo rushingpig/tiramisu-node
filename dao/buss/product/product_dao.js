@@ -12,6 +12,12 @@ var baseDao = require('../../base_dao'),
     dbHelper = require('../../../common/DBHelper'),
     systemUtils = require('../../../common/SystemUtils'),
     config = require('../../../config');
+    
+const EXPIRE = {
+    valid: 1,
+    invalid: 0
+};
+
 function ProductDao(){
     this.base_table = config.tables.buss_product;
     this.baseColumns = ['id','name'];
@@ -148,6 +154,7 @@ ProductDao.prototype.insertProductWithSku = function (req, data) {
                         presell_end: sku.presell_end,
                         send_start: sku.send_start,
                         send_end: sku.send_end,
+                        expire_flag: EXPIRE.valid,
                         del_flag: del_flag.SHOW
                     };
                     let promise = self.insertSku(req, sku_data, connection);
@@ -158,7 +165,8 @@ ProductDao.prototype.insertProductWithSku = function (req, data) {
                             sku_data.activity_price = sku.activity_price;
                             sku_data.activity_start = sku.activity_start;
                             sku_data.activity_end = sku.activity_end;
-                            sku_data.del_flag = del_flag.HIDE;
+                            sku_data.expire_flag = EXPIRE.invalid;
+                            sku_data.del_flag = del_flag.SHOW;
                             return self.insertSku(req, sku_data, connection);
                         });
                     }

@@ -123,6 +123,7 @@ DROP INDEX `IDX_PRODUCT_SIZE_WEBSITE`,
 DROP COLUMN `is_local_site`,
 DROP COLUMN `is_delivery`,
 DROP COLUMN `sort`,
+CHANGE COLUMN `del_flag` `del_flag` TINYINT(1) NULL DEFAULT 1,
 ADD COLUMN `original_price` INT(8) NOT NULL DEFAULT '0' COMMENT '产品原价（单位：分）' AFTER `price`,
 ADD COLUMN `book_time` INT(4) NOT NULL DEFAULT '0' COMMENT '预约时间' AFTER `original_price`,
 ADD COLUMN `presell_start` DATETIME NULL DEFAULT NULL COMMENT '预售上架开始时间' AFTER `book_time`,
@@ -132,7 +133,8 @@ ADD COLUMN `send_end` DATETIME NULL DEFAULT NULL COMMENT '预售发货结束时�
 ADD COLUMN `activity_price` INT(8) NULL DEFAULT NULL COMMENT '活动价格' AFTER `send_end`,
 ADD COLUMN `ref` INT(10) NULL DEFAULT NULL COMMENT '活动前原skuid' AFTER `activity_price`,
 ADD COLUMN `activity_start` DATETIME NULL DEFAULT NULL COMMENT '活动开始时间' AFTER `ref`,
-ADD COLUMN `activity_end` DATETIME NULL DEFAULT NULL COMMENT '活动结束时间' AFTER `activity_start`;
+ADD COLUMN `activity_end` DATETIME NULL DEFAULT NULL COMMENT '活动结束时间' AFTER `activity_start`,
+ADD COLUMN `expire_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '过期标记，1为当前有效，0为过期失效' AFTER `activity_end`;
 
 DROP EVENT IF EXISTS Expire_Activity_Time;
 SET GLOBAL event_scheduler = ON;
@@ -143,7 +145,7 @@ DO
 BEGIN
   DECLARE done INT DEFAULT FALSE;
   DECLARE sku_id,ref_id INT;
-  DECLARE cur CURSOR FOR SELECT id,ref FROM buss_product_sku where activity_end < now() and del_flag = 1;
+  DECLARE cur CURSOR FOR SELECT id,ref FROM buss_product_sku where activity_end < now() and expire_flag = 1 and del_flag = 1;
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
   OPEN cur;
   read_loop: LOOP
@@ -151,8 +153,8 @@ BEGIN
     IF done THEN
       LEAVE read_loop;
     END IF;
-    update buss_product_sku set del_flag = 0 where id = sku_id;
-    update buss_product_sku set del_flag = 1 where id = ref_id;
+    update buss_product_sku set expire_flag = 0 where id = sku_id;
+    update buss_product_sku set expire_flag = 1 where id = ref_id;
   END LOOP;
   CLOSE cur;
 END;
@@ -164,5 +166,5 @@ On SCHEDULE EVERY 1 MINUTE
 COMMENT '定时结束预售sku'
 DO
 BEGIN
-  update buss_product_sku set del_flag = 0 where presell_end < now() and del_flag = 1;
+  update buss_product_sku set expire_flag = 0 where presell_end < now() and expire_flag = 1 and del_flag = 1;
 END;

@@ -4,6 +4,7 @@ var middleware = require('../middleware');
 before(function (done) {
   this.timeout(10000);
   middleware.db.initdb(done);
+  done();
 });
 
 after(function () {

@@ -23,7 +23,7 @@ import { Noty, dateFormat, parseTime,getDate } from 'utils/index';
 import {post ,GET,POST,PUT,TEST,del,get} from 'utils/request';
 import V from 'utils/acl';
 
-import { DELIVERY_MAP ,pay_status, MODES} from 'config/app.config';
+import { DELIVERY_MAP ,pay_status, MODES, SELECT_DEFAULT_VALUE} from 'config/app.config';
 
 
 class TopHeader extends Component{
@@ -206,7 +206,7 @@ class FilterHeader extends Component{
 	onEndtimeChange(time){
 		this.setState({end_time:time});
 	}
-	onProvinceChange(callback, e){
+	onProvinceChange(e){
 	  var {value} = e.target;
 	  this.props.actions.resetCities();
 	  if(value != this.refs.province.props['default-value'])
@@ -215,16 +215,21 @@ class FilterHeader extends Component{
 	    this.props.actions.getCities(value).done(() => {
 	      $city.trigger('focus'); //聚焦已使city_id的值更新
 	    });
-	  callback(e);
 	}
-	onCityChange(callback, e){
+	onCityChange(e){
+		this.setState({ _hasInitial: false});
 		var {value} = e.target;
 		var $deliveryman = $(findDOMNode(this.refs.deliveryman));
-		this.props.actions.getCityDeliveryman(value).done(() => {
-			this.setState({ _hasInitial: false});
-			$deliveryman.trigger('focus');
-		});
-		callback(e);
+		if(value == SELECT_DEFAULT_VALUE){
+			this.props.actions.getAllDeliveryman().done(() => {
+				$deliveryman.trigger('focus');
+			});
+		}else{
+			this.props.actions.getCityDeliveryman(value).done(() => {
+				$deliveryman.trigger('focus');
+			});			
+		}
+
 	}
 	FilterDeliveyRecord(){
 		this.setState({search_ing:true});
@@ -608,26 +613,28 @@ class CredentialsModal extends Component{
 		return(
 			<StdModal title = '未签收照片凭证' ref='viewCredential'>
 				<table>
+				<tbody>
 					<tr>
 						<td>
-							<img src = 'receipt_picture_url' /><br/>
+							<img src = {receipt_picture_url} /><br/>
 							<span>单据</span>
 						</td>
 						<td>
-							<img src = 'door_picture_url' /><br />
+							<img src = {door_picture_url} /><br />
 							<span>门牌</span>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<img src='call_picture_url' /><br/>
+							<img src={call_picture_url} /><br/>
 							<span>通话记录</span>
 						</td>
 						<td>
-							<img src='sms_picture_url' /><br />
+							<img src={sms_picture_url} /><br />
 							<span>短信截屏</span>
 						</td>
 					</tr>
+				</tbody>
 				</table>
 			</StdModal>
 			)

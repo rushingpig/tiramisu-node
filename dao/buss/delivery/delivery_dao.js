@@ -13,6 +13,7 @@ var baseDao = require('../../base_dao'),
     dbHelper = require('../../../common/DBHelper'),
     constant = require('../../../common/Constant'),
     systemUtils = require('../../../common/SystemUtils'),
+    co = require('co'),
     util = require('util');
 function DeliveryDao(){
     this.baseColumns = ['id','name'];
@@ -198,6 +199,29 @@ DeliveryDao.prototype.findDeliverymansByStation = function(city_id,currentUser){
 
 };
 /**
+ * find the deliverymans list by city
+ * @param city_id
+ */
+DeliveryDao.prototype.findDeliverymansByCity = function(city_id){
+    let columns = [
+        'su.id as deliveryman_id',
+        'su.name as deliveryman_name',
+        'su.mobile as deliveryman_mobile'
+    ].join(','),params = [];
+    let sql = "select "+columns+" from ?? su";
+    params.push(tables.sys_user);
+    sql += " inner join ?? sur on sur.user_id = su.id and sur.role_id = ?";
+    params.push(tables.sys_user_role);
+    params.push(constant.DELIVERYMAN_ID);
+    if(city_id){
+        sql += " inner join ?? dr on FIND_IN_SET(dr.id, su.city_ids) and dr.id = ?";
+        params.push(tables.dict_regionalism);
+        params.push(city_id);
+    }
+    return baseDao.select(sql,params);
+
+};
+/**
  * find the deliverymans list by order
  * @param order_id
  * @returns {Promise}
@@ -235,5 +259,136 @@ DeliveryDao.prototype.findStationById = function(station_id){
         "where a.level_type = ? and b.del_flag = ? and b.id = ?", tables.dict_regionalism, tables.dict_regionalism, tables.dict_regionalism, tables.buss_delivery_station);
     let params = [3, del_flag.SHOW, station_id];
     return baseDao.select(sql,params);
+};
+DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, deliveryman_id, is_COD) {
+    let columns = [
+        'bo.id AS order_id',
+        'bo.delivery_time',
+        'bo.pay_modes_id',
+        'bpm.name AS pay_modes_name',
+        'bo.pay_status',
+        'bo.total_original_price',
+        'bo.total_discount_price',
+        'bo.total_amount',
+        'bo.COD_amount',
+        'bo.late_minutes',
+        'bo.payfor_amount',
+        'bo.payfor_reason',
+        'bo.payfor_type',
+        'bo.signin_time',
+        'bo.updated_time',
+
+        'br.delivery_type',
+        'br.name AS recipient_name',
+        'br.mobile AS recipient_mobile',
+        'br.address',
+        'br.landmark',
+
+        'bdr.delivery_pay',
+        'bdr.delivery_count',
+        'bdr.is_review',
+        'bdr.remark'
+    ];
+    let sql = `SELECT ${columns.join(',')} FROM ?? bo `;
+    let params = [];
+    params.push(tables.buss_order);
+    if(begin_time || end_time)
+    sql += `force index(IDX_DELIVERY_TIME) `;
+    sql += `LEFT JOIN ?? br ON bo.recipient_id = br.id `;
+    params.push(tables.buss_recipient);
+    sql += `LEFT JOIN ?? bdr ON bo.id = bdr.order_id `;
+    params.push(tables.buss_delivery_record);
+    sql += `LEFT JOIN ?? bpm ON bo.pay_modes_id = bpm.id `;
+    params.push(tables.buss_pay_modes);
+    sql += `WHERE bo.status IN ('${constant.OS.COMPLETED}', '${constant.OS.EXCEPTION}') `;
+    if(begin_time){
+        sql += `AND bo.delivery_time >= ? `;
+        params.push(begin_time + ' 00:00~00:00');
+    }
+    if(end_time){
+        sql += `AND bo.delivery_time <= ? `;
+        params.push(end_time + ' 24:00~24:00');
+    }
+    if(deliveryman_id){
+        sql += `AND bo.deliveryman_id = ? `;
+        params.push(deliveryman_id);
+    }
+    if(is_COD){
+        sql += `AND bo.total_amount > 0 `;
+    }
+
+    return baseDao.select(sql, params);
+};
+DeliveryDao.prototype.findHistoryRecord = function (order_id) {
+    let columns = [
+        'boh.order_id',
+        'boh.`option`',
+        'boh.created_time',
+        'su.`name` as created_by'
+    ];
+    let sql = `SELECT ${columns.join(',')} FROM ?? boh `;
+    let params = [];
+    params.push(tables.buss_order_history);
+    sql += `LEFT JOIN ?? su on su.id = boh.created_by `;
+    params.push(tables.sys_user);
+    sql += `WHERE boh.del_flag = ? `;
+    params.push(del_flag.SHOW);
+    if (order_id) {
+        sql += `AND boh.order_id = ? `;
+        params.push(order_id);
+    }
+    let keys = ['实收金额', '配送工资', '配送工资审核备注'];
+    // sql += 'AND boh.`option` LIKE ? OR boh.`option` LIKE ? OR boh.`option` LIKE ?';
+    // params.push('%{实收金额}%');
+    // params.push('%{配送工资}%');
+    // params.push('%{配送工资审核备注}%');
+    sql += `AND boh.\`option\` REGEXP '.*\{(${keys.join('|')})\}.*' `;
+    return baseDao.select(sql, params);
+};
+DeliveryDao.prototype.updateDeliveryRecord = function (order_id, order_obj, record_obj) {
+    let trans;
+    return co(function *() {
+        trans = yield baseDao.trans();
+        baseDao.transWrapPromise(trans);
+
+        if(order_obj){
+            let sql = `UPDATE ?? SET ? WHERE id = ? `;
+            let params = [tables.buss_order, order_obj, order_id];
+            yield trans.queryPromise(sql, params);
+        }
+        if(record_obj){
+            let sql = `UPDATE ?? SET ? WHERE order_id = ? `;
+            let params = [tables.buss_delivery_record, record_obj, order_id];
+            yield trans.queryPromise(sql, params);
+        }
+
+        yield trans.commitPromise();
+    }).catch(err=> {
+        if(trans && typeof trans.rollbackPromise == 'function') trans.rollbackPromise();
+        return Promise.reject(err);
+    });
+};
+DeliveryDao.prototype.findDeliveryProof = function (order_id, deliveryman_id, delivery_count) {
+    let columns = [
+        'bdp.picture_type',
+        'bdp.picture_url'
+    ];
+    let sql = `SELECT ${columns.join(',')} FROM ?? bdp `;
+    let params = [];
+    params.push(tables.buss_delivery_picture);
+    sql += `WHERE 1 = 1 `;
+    if(order_id){
+        sql += `AND bdp.order_id = ? `;
+        params.push(order_id);
+    }
+    if(delivery_count){
+        sql += `AND bdp.delivery_count = ? `;
+        params.push(delivery_count);
+    }
+    if(deliveryman_id){
+        sql += `AND bdp.deliveryman_id = ? `;
+        params.push(deliveryman_id);
+    }
+    return baseDao.select(sql, params);
 };
 module.exports = DeliveryDao;

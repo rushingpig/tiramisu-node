@@ -17,7 +17,7 @@ import Autocomplete from './autocomplete';
 import AreaActions from 'actions/area';
 import * as StationsAction from 'actions/station_manage';
 
-import { SELECT_DEFAULT_VALUE } from 'config/app.config';
+import { SELECT_DEFAULT_VALUE, ADDRESS } from 'config/app.config';
 import LazyLoad from 'utils/lazy_load';
 import V from 'utils/acl';
 import history from 'history_instance';
@@ -105,8 +105,10 @@ class FilterHeader extends Component {
     )
   }
   componentDidMount(){
-    var { getProvinces, getAllStationsName, getStationList} = this.props;
+    var { getProvinces, getCities, getDistricts, getAllStationsName, getStationList} = this.props;
     getProvinces();
+    getCities(ADDRESS.GUANG_ZHOU);
+    getDistricts(ADDRESS.SHEN_ZHENG);
     getStationList({isPage: true, page_no: 0, page_size: 10})
     getAllStationsName();
     LazyLoad('noty');
@@ -159,8 +161,12 @@ FilterHeader = reduxForm({
     'name',
     'province_id',
     'city_id',
-    'regionalism_id',
+    'regionalism_id'
   ],
+  initialValues: {
+    province_id: ADDRESS.GUANG_ZHOU,
+    city_id: ADDRESS.SHEN_ZHENG
+  },
   validate,
 })( FilterHeader );
 

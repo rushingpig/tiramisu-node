@@ -113,6 +113,11 @@ export default {
     GENERAL: '一般',
     SYSTEM_ERROR: '系统错误',
     NOTIFY_MANAGER: '通知经理'
+  },
+
+  ADDRESS: {
+    GUANG_ZHOU: '440000',
+    SHEN_ZHENG: '440300'
   }
 
 }

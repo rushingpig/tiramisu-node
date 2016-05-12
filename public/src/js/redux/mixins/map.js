@@ -41,28 +41,51 @@ function start(success_cb, fail_cb){
       detail = city + detail;
     }
     //保证精准度，detail = city + district + address
-    autoMatch.call(this, city, detail).done(success_cb.bind(this)).fail(fail_cb.bind(this));
+    autoMatch.call(this, city, district, detail).done(success_cb.bind(this)).fail(fail_cb.bind(this));
   }else{
     Noty('warning', '地址无效')
   }
 }
 //step: 3
-export function autoMatch(city, address){
+export function autoMatch(city, district, address){
   var self = this;
   var { autoGetDeliveryStations } = this.props.actions;
   if(!city || !address){
     Noty('error', '地址数据有误');
   }
   
+  // 1. geocoder 适用于解析详细地址（带街道，道路，门牌号的）
+  // 2. localsearch 适用于一些关键字搜索（宽泛的场所，如xx银行，xx酒店）
   return new Promise((resolve, reject) => {
     if(BMap){
       let map = self._bmap;
       map.getPoint(address, function(poi){
         if(poi){
-          autoGetDeliveryStations({
-            lng: poi.lng,
-            lat: poi.lat
-          })
+          map.getPoint(district, function(poi_district){
+            //当详细地址搜索失败时，则会显示区的中心坐标
+            //(当两者相等时，意味着搜索失败, 然后启用localsearch)
+            if(poi_district.lng == poi.lng && poi_district.lat == poi.lat){
+              let LS = new BMap.LocalSearch(city, {
+                onSearchComplete: function( result ){
+                  if(result.getPoi(0)){
+                    getStation(result.getPoi(0).point);
+                  }else{
+                    reject();
+                  }
+                }
+              });
+              LS.search(address);
+            }else{
+              getStation(poi);
+            }
+          }, city);
+        }else{
+          reject();
+        }
+      }, city);
+
+      function getStation( poi ){
+        autoGetDeliveryStations( poi )
           .done(function(data){
             setTimeout(function(){
               if(data && data.delivery_id){
@@ -81,10 +104,7 @@ export function autoMatch(city, address){
               }
             }, 0);
           })
-        }else{
-          reject();
-        }
-      }, city);
+      }
     }else{
       reject('地图服务加载失败，请稍后再试');
     }

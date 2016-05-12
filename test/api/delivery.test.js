@@ -90,6 +90,17 @@ module.exports = function () {
               });
       });
 
+      it('GET /v1/a/delivery/order/:orderId/history/record', function (done) {
+          agent.get('/v1/a/delivery/order/2016031410000001/history/record')
+              .expect('Content-Type', /json/)
+              .expect(200)
+              .end((err, res) => {
+                  assert.strictEqual(res.body.code, '9998');
+                  assert.strictEqual(res.statusCode, 200);
+                  done();
+              });
+      });
+
       it('GET /v1/a/delivery/order/:orderId/proof', function (done) {
           agent.get('/v1/a/delivery/order/2016031410000001/proof')
               .query({deliveryman_id: 2})

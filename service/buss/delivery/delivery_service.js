@@ -997,6 +997,22 @@ DeliveryService.prototype.getRecord = (req, res, next)=>{
     });
     systemUtils.wrapService(res, next, promise);
 };
+DeliveryService.prototype.getHistoryRecord = (req, res, next)=> {
+    req.checkParams('orderId').isOrderId();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let order_id = systemUtils.getDBOrderId(req.params.orderId);
+    let promise = deliveryDao.findHistoryRecord(order_id).then((result)=> {
+        if (toolUtils.isEmptyArray(result)) {
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        res.api(result);
+    });
+    systemUtils.wrapService(res, next, promise);
+};
 /**
  * update delivery record
  * @param req
@@ -1014,9 +1030,22 @@ DeliveryService.prototype.editRecord = (req, res, next)=> {
     let order_obj = {};
     let record_obj = {};
     let updated_time = req.body.updated_time;
-    if (req.body.COD_amount !== undefined) order_obj.COD_amount = req.body.COD_amount;
-    if (req.body.delivery_pay  !== undefined) record_obj.delivery_pay = req.body.delivery_pay;
-    if (req.body.remark  !== undefined) record_obj.remark = req.body.remark;
+    let order_history_obj = {
+        order_id: order_id,
+        option: ''
+    };
+    if (req.body.COD_amount !== undefined) {
+        order_obj.COD_amount = req.body.COD_amount;
+        order_history_obj.option += '修改{实收金额}为{' + (order_obj.COD_amount / 100) + '}元\n';
+    }
+    if (req.body.delivery_pay  !== undefined) {
+        record_obj.delivery_pay = req.body.delivery_pay;
+        order_history_obj.option += '修改{配送工资}为{' + (order_obj.delivery_pay / 100) + '}元\n';
+    }
+    if (req.body.remark  !== undefined) {
+        record_obj.remark = req.body.remark;
+        order_history_obj.option += '修改{配送工资审核备注}为{' + order_obj.remark + '}\n';
+    }
 
     let promise = co(function *() {
         let _res = yield orderDao.findOrderById(order_id);
@@ -1026,6 +1055,7 @@ DeliveryService.prototype.editRecord = (req, res, next)=> {
             return Promise.reject(TiramisuError(res_obj.OPTION_EXPIRED));
         }
         yield deliveryDao.updateDeliveryRecord(order_id, systemUtils.assembleUpdateObj(order_obj), systemUtils.assembleUpdateObj(record_obj));
+        yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
     }).then(result=> {
         res.api();
     });

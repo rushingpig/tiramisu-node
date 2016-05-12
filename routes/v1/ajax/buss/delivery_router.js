@@ -23,6 +23,7 @@ module.exports = function (router) {
     router.get('/orders/print',deliveryService.print);   // 打印订单
     router.get('/order/:orderId/reprint',deliveryService.reprint);   // 重新打印订单
     router.get('/delivery/record', deliveryService.getRecord);   // 获取配送记录
+    router.get('/delivery/order/:orderId/history/record', deliveryService.getHistoryRecord);   // 获取配送记录修改历史
     router.get('/delivery/order/:orderId/proof', deliveryService.getProof);   // 获取送货凭证
     router.get('/delivery/record/export', deliveryService.exportRecordExcel);    //  导出配送记录 到excel文件
 //**********************

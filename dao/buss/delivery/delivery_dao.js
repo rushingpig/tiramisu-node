@@ -264,7 +264,8 @@ DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, deliv
     let columns = [
         'bo.id AS order_id',
         'bo.delivery_time',
-        'bpm.name AS pay_modes',
+        'bo.pay_modes_id',
+        'bpm.name AS pay_modes_name',
         'bo.pay_status',
         'bo.total_original_price',
         'bo.total_discount_price',
@@ -316,6 +317,30 @@ DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, deliv
         sql += `AND bo.total_amount > 0 `;
     }
 
+    return baseDao.select(sql, params);
+};
+DeliveryDao.prototype.findHistoryRecord = function (order_id) {
+    let columns = [
+        'boh.order_id',
+        'boh.`option`',
+        'boh.created_time',
+        'su.`name` as created_by'
+    ];
+    let sql = `SELECT ${columns.join(',')} FROM ?? boh `;
+    let params = [];
+    params.push(tables.buss_order_history);
+    sql += `LEFT JOIN ?? su on su.id = boh.created_by `;
+    params.push(tables.sys_user);
+    sql += `WHERE boh.del_flag = ? `;
+    params.push(del_flag.SHOW);
+    if (order_id) {
+        sql += `AND boh.order_id = ? `;
+        params.push(order_id);
+    }
+    sql += 'AND boh.`option` LIKE ? OR boh.`option` LIKE ? OR boh.`option` LIKE ?';
+    params.push('%{实收金额}%');
+    params.push('%{配送工资}%');
+    params.push('%{配送工资审核备注}%');
     return baseDao.select(sql, params);
 };
 DeliveryDao.prototype.updateDeliveryRecord = function (order_id, order_obj, record_obj) {

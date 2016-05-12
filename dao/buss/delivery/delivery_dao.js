@@ -338,10 +338,6 @@ DeliveryDao.prototype.findHistoryRecord = function (order_id) {
         params.push(order_id);
     }
     let keys = ['实收金额', '配送工资', '配送工资审核备注'];
-    // sql += 'AND boh.`option` LIKE ? OR boh.`option` LIKE ? OR boh.`option` LIKE ?';
-    // params.push('%{实收金额}%');
-    // params.push('%{配送工资}%');
-    // params.push('%{配送工资审核备注}%');
     sql += `AND boh.\`option\` REGEXP '.*\{(${keys.join('|')})\}.*' `;
     return baseDao.select(sql, params);
 };

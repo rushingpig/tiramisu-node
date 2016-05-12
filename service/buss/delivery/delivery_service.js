@@ -975,10 +975,8 @@ DeliveryService.prototype.getRecord = (req, res, next)=>{
         res.api(res_obj.INVALID_PARAMS, errors);
         return;
     }
-    let curr_user_id = req.session.user.id;
     let begin_time = req.query.begin_time;
     let end_time = req.query.end_time;
-    let city_id = req.query.city_id;
     let deliveryman_id = req.query.deliveryman_id;
     let is_COD = req.query.is_COD;
     let promise = deliveryDao.findDeliveryRecord(begin_time, end_time, deliveryman_id, is_COD).then((result)=> {

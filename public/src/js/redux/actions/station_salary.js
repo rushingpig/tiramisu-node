@@ -44,8 +44,8 @@ export function activeOrder(id){
 
 export const GET_DELIVERY_RECORD = 'GET_DELIVERY_RECORD';
 export function getDeliveryRecord(data){
-  /*return GET(Url.delivery_record.toString(),data, GET_DELIVERY_RECORD);*/
-  return TEST([{
+  return GET(Url.delivery_record.toString(),data, GET_DELIVERY_RECORD);
+/*  return TEST([{
     'delivery_pay':20,
     'delivery_time':'2015-05-03 15:30~16:30',
     'delivery_type':'DELIVERY',
@@ -92,7 +92,7 @@ export function getDeliveryRecord(data){
     'is_review':false,
     'pay_modes_id':19,
     'pay_modes_name':'POS',
-  }], GET_DELIVERY_RECORD)
+  }], GET_DELIVERY_RECORD)*/
 }
 
 export const UPDATE_DELIVERY_RECORD = 'UPDATE_DELIVERY_RECORD';
@@ -134,8 +134,8 @@ export function getOrderOptRecord(order_id, data){
         })
       })
   }*/
-   /*return GET(Url.delivery_opt_record.toString(order_id), data, GET_ORDER_OPT_RECORD);*/
-  return {
+   return GET(Url.delivery_opt_record.toString(order_id), data, GET_ORDER_OPT_RECORD);
+/*  return {
     type: GET_ORDER_OPT_RECORD,
     data: {
       "total": 12,
@@ -183,7 +183,7 @@ export function getOrderOptRecord(order_id, data){
       "page_no": "0",
       "page_size": "8"
     }
-  }
+  }*/
 }
 
 export const RESET_ORDER_OPT_RECORD = 'RESET_ORDER_OPT_RECORD'; //先重置历史数据

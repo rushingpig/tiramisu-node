@@ -11,10 +11,6 @@ module.exports = {
         isDate: true,
         errorMessage: 'Invalid end_time'
     },
-    'city_id': {
-        optional: true,
-        isInt: true
-    },
     'deliveryman_id': {
         optional: true,
         isInt: true

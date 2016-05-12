@@ -495,9 +495,9 @@ class PartNode extends Component{
   render(){
     var { data } = this.props ;
     return (
-      <div style={{float:'left',height:'30px',margin:'5px 15px 5px 5px',}} onClick= {this.onChoose.bind(this)}>
-        {/* 暂时去除，将来有图片了，再补上 <img src={data.icon} style={{height:'30px',width:'30px'}}/>*/}
-        <span className='partBtn'><i className="fa fa-star-o"></i> { data.name }</span>    
+      <div style={{float:'left',height:'30px',margin:'5px 5px',}} onClick= {this.onChoose.bind(this)}>
+        <img src={data.img_url || ''} style={{height:'30px',width:'30px', display: 'none'}}/>
+        <span className='partBtn'><i className='fa fa-star-o'></i>{ data.name }</span>      
       </div>
       )
   }
@@ -510,9 +510,9 @@ class PartNodeSub extends Component{
   render(){
     var { data } = this.props ;
     return (
-      <div style={{float:'left',height:'30px',margin:'5px 15px 5px 5px',}} onClick= {this.onChoose.bind(this)}>
-        {/* 暂时去除，将来有图片了，再补上 <img src={data.icon} style={{height:'30px',width:'30px'}}/>*/}
-        <span className='partBtn'><i className="fa fa-star"></i> { data.name }</span>
+      <div style={{float:'left',height:'30px',margin:'5px 5px',}} onClick= {this.onChoose.bind(this)}>
+        <img src={data.icon} style={{height:'30px',width:'30px',display:'none'}}/>
+        <span className='partBtn'>{ data.name }</span>      
       </div>
       )
   }
@@ -597,11 +597,13 @@ var SignedModal = React.createClass({
       orderSpareparts:[],
       current_id: -1,
       deliverymanAtSameStation: [],
+      pay_way:1,
+      POS_terminal_id:'',
     };
   },
   mixins: [ LinkedStateMixin ],
   render: function(){
-    var { signin_date, late_minutes, refund_method, refund_money, refund_reson,current_id, deliverymanAtSameStation } = this.state;
+    var { signin_date, late_minutes, refund_method, refund_money, refund_reson,current_id, deliverymanAtSameStation , POS_terminal_id} = this.state;
     var { D_ ,loading, refresh } = this.props;
     
     var { spareparts } =  D_ ;
@@ -632,16 +634,29 @@ var SignedModal = React.createClass({
         </div>
         <div className="form-group form-inline mg-15">
           <div className="row">
-            <div className="col-xs-6">
+            <div className="col-xs-4">
               <label>迟到时长：</label>
               <div className="inline-block input-group input-group-xs">
                 <input value={late_minutes} onChange={this.onLateTimeChange} type="text" className="form-control" style={{'width': 50}} />
                 <span className="input-group-addon">Min</span>
               </div>
             </div>
-            <div className="col-xs-6">
+            <div className="col-xs-8">
               <label>货到付款金额：￥</label>
               <input value={this.state.order.total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+              {
+                this.state.order.total_amount != 0 ?
+                <select ref='pay_way' name='pay_way' value={this.state.pay_way} className='form-control input-xs' onChange={this.onPayWayChange}>
+                  <option value='1'>现金</option>
+                  <option value='2'>POS机</option>
+                </select>
+                :null
+              }
+              {
+                this.state.pay_way == 2 ?
+                <input value= { POS_terminal_id } className='form-control input-xs v-mg' placeholder='POS机终端号' onChange = {this.onPOSChange} />
+                :null
+              }            
             </div>
           </div>
         </div>
@@ -710,7 +725,7 @@ var SignedModal = React.createClass({
     )
   },
   submitHandler(){
-    var { order, CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date, current_id, deliverymanAtSameStation } = this.state;
+    var { order, CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date, current_id, deliverymanAtSameStation, pay_way, POS_terminal_id } = this.state;
     var { orderDetail } = this.props.D_;
     var currentOrderSpareparts = this.state.orderSpareparts;
     var { updated_time } = orderDetail;
@@ -767,6 +782,9 @@ var SignedModal = React.createClass({
     if( orderDetail.deliveryman_id != current_id ){
       signData.deliveryman = deliveryman;
     }
+    if( pay_way == 2){
+      signData.POS_terminal_id = POS_terminal_id;
+    }
     delete signData.D_;
     delete signData.order.D_;
     this.props.signOrder(order.order_id, signData).done(function(){
@@ -806,6 +824,13 @@ var SignedModal = React.createClass({
     }catch(e){
       Noty('error', '数据有误')
     }
+  },
+  onPayWayChange: function(e){
+    var pay_way = e.target.value;
+    this.setState({pay_way})
+  },
+  onPOSChange: function(e){
+    this.setState({POS_terminal_id: e.target.value});
   },
   onLateTimeChange: function(e){
     var { value } = e.target;
@@ -947,7 +972,10 @@ var SignedModal = React.createClass({
         $(findDOMNode(this.refs.deliveryman_id)).find(':selected').text(selectText);
         current_id = 0;
       }*/
-    this.setState({orderSpareparts ,current_id ,deliverymanAtSameStation});
+    var pay_way = 1;
+    if('POS_terminal_id' in D_.orderDetail) 
+      pay_way =2;
+    this.setState({orderSpareparts ,current_id ,deliverymanAtSameStation, pay_way});
   },
 });
 

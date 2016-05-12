@@ -93,6 +93,10 @@ const URL = (function(){
     station_scope: '/station/scope/:stationId', //配送范围
     station_multiple_scope_change: '/stations/scope', //批量修改配送站范围
     station_scope_change:'station/:stationId/coords',//修改配送范围
+    delivery_export: '/delivery/record/export', //导出配送记录
+    delivery_proof: '/delivery/order/:orderId/proof', //获取配送凭证
+    delivery_record: '/delivery/record', //获取配送记录
+    delivery_opt_record: '/delivery/order/:orderId/history/record', //获取配送操作记录
 
     //权限
     dept_list_info: '/orgs',   //所有部门信息

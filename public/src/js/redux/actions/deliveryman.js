@@ -12,3 +12,16 @@ export function getAllDeliveryman(){
   //   { deliveryman_id: '5', deliveryman_name: '刘小明', deliveryman_mobile: '18944445555' }
   // ], GET_ALL_DELIVERYMAN);
 }
+
+export  const GET_CITY_DELIVERYMAN = 'GET_CITY_DELIVERYMAN';
+export function getCityDeliveryman(cityid){
+  return TEST([{
+    'deliveryman_id': 1,
+    'deliveryman_mobile': '181888888888',
+    'deliveryman_name': 'xxxx'
+  },{
+    'deliveryman_id': 2,
+    'deliveryman_mobile': '181888888888',
+    'deliveryman_name': 'xxxx'
+  }],GET_CITY_DELIVERYMAN);
+}

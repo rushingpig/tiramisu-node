@@ -1053,7 +1053,7 @@ DeliveryService.prototype.editRecord = (req, res, next)=> {
         } else if (updated_time !== _res[0].updated_time) {
             return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
         }
-        yield deliveryDao.updateDeliveryRecord(order_id, systemUtils.assembleUpdateObj(order_obj), systemUtils.assembleUpdateObj(record_obj));
+        yield deliveryDao.updateDeliveryRecord(order_id, systemUtils.assembleUpdateObj(req, order_obj), systemUtils.assembleUpdateObj(req, record_obj));
         yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
     }).then(result=> {
         res.api();

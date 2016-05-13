@@ -50,6 +50,8 @@ var tables = {
     buss_order_fulltext : 'buss_order_fulltext',
     buss_print_apply : 'buss_print_apply',
     buss_order_error: 'buss_order_error',
+    buss_delivery_record: 'buss_delivery_record',
+    buss_delivery_picture: 'buss_delivery_picture',
 //=================Dict===================
     dict_regionalism : 'dict_regionalism',
 };

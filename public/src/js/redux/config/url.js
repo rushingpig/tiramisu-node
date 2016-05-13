@@ -76,6 +76,7 @@ const URL = (function(){
     //配送员
     deliveryman: '/delivery/deliverymans',
     deliveryman_apply: '/delivery/deliveryman', //分配配送员
+    deliveryman_city: '/city/:cityId/deliverymans', //获取指定城市的配送员
 
     //地址
     stations: '/stations', //配送站
@@ -93,6 +94,11 @@ const URL = (function(){
     station_scope: '/station/scope/:stationId', //配送范围
     station_multiple_scope_change: '/stations/scope', //批量修改配送站范围
     station_scope_change:'station/:stationId/coords',//修改配送范围
+    delivery_export: '/delivery/record/export', //导出配送记录
+    delivery_proof: '/delivery/order/:orderId/proof', //获取配送凭证
+    delivery_record: '/delivery/record', //获取配送记录
+    delivery_opt_record: '/delivery/order/:orderId/history/record', //获取配送操作记录
+    update_delivery_record: '/delivery/order/:orderId/record', //修改配送记录
 
     //权限
     dept_list_info: '/orgs',   //所有部门信息

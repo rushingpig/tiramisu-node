@@ -67,6 +67,69 @@ module.exports = function () {
           });
       });
 
+      it('GET /v1/a/city/:cityId/deliverymans', function (done) {
+          agent.get('/v1/a/city/440300/deliverymans')
+              .expect('Content-Type', /json/)
+              .expect(200)
+              .end((err, res) => {
+                  assert.strictEqual(res.body.code, '0000');
+                  assert.strictEqual(res.statusCode, 200);
+                  done();
+              });
+      });
+
+      it('GET /v1/a/delivery/order/:orderId/proof', function (done) {
+          agent.get('/v1/a/delivery/order/2016031410000001/proof')
+              .query({deliveryman_id: 1})
+              .expect('Content-Type', /json/)
+              .expect(200)
+              .end((err, res) => {
+                  assert.strictEqual(res.body.code, '0000');
+                  assert.strictEqual(res.statusCode, 200);
+                  done();
+              });
+      });
+
+      it('GET /v1/a/delivery/order/:orderId/history/record', function (done) {
+          agent.get('/v1/a/delivery/order/2016031410000001/history/record')
+              .expect('Content-Type', /json/)
+              .expect(200)
+              .end((err, res) => {
+                  assert.strictEqual(res.body.code, '9998');
+                  assert.strictEqual(res.statusCode, 200);
+                  done();
+              });
+      });
+
+      it('GET /v1/a/delivery/order/:orderId/proof', function (done) {
+          agent.get('/v1/a/delivery/order/2016031410000001/proof')
+              .query({deliveryman_id: 2})
+              .expect('Content-Type', /json/)
+              .expect(200)
+              .end((err, res) => {
+                  assert.strictEqual(res.body.code, '9998');
+                  assert.strictEqual(res.statusCode, 200);
+                  done();
+              });
+      });
+
+      it('GET /v1/a/delivery/record', function (done) {
+          agent.get('/v1/a/delivery/record')
+              .query({
+                  begin_time: '2016-04-19',
+                  end_time: '2016-04-19',
+                  city_id: 440300,
+                  deliveryman_id: 8
+              })
+              .expect('Content-Type', /json/)
+              .expect(200)
+              .end((err, res) => {
+                  assert.strictEqual(res.body.code, '0000');
+                  assert.strictEqual(res.statusCode, 200);
+                  done();
+              });
+      });
+
       it('GET /v1/a/order/:orderId/deliverymans', function (done) {
           agent.get('/v1/a/order/2016031410000022/deliverymans')
               .expect('Content-Type', /json/)

@@ -23,6 +23,8 @@ var dao = require('../../../dao'),
     config = require('../../../config'),
     logger = require('../../../common/LogHelper').systemLog(),
     co = require('co'),
+    _ = require('lodash'),
+    xlsx = require('node-xlsx'),
     tartetatin = require('../../../api/tartetatin'),
     async = require('async');
 function DeliveryService(){
@@ -315,6 +317,10 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
         signin_time : req.body.signin_time || new Date(),
         status : Constant.OS.COMPLETED
     };
+    if(req.body.POS_terminal_id !== undefined){
+        order_obj.pos_id = req.body.POS_terminal_id;
+        order_obj.pay_modes_id = Constant.OPM.POS;
+    }
     let order_sign_history_obj = {
         order_id: orderId
     };
@@ -418,7 +424,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
             console.log(products);
             yield orderDao.editOrder(systemUtils.assembleUpdateObj(req, order_obj), orderId, null, null, products, add_skus, delete_skuIds, update_skus);
 
-            if (order_history_obj != '') {
+            if (order_history_obj.option != '') {
                 yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
             }
             yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_sign_history_obj, true));
@@ -546,6 +552,22 @@ DeliveryService.prototype.listDeliverymans = (req,res,next)=>{
     }
     let city_id = currentUser.city_id;
     let promise = deliveryDao.findDeliverymansByStation(city_id,currentUser).then((results)=>{
+        if(toolUtils.isEmptyArray(results)){
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS_ARR,'该条件下没有可选的配送员...');
+        }
+        res.api(results);
+    });
+    systemUtils.wrapService(res,next,promise);
+};
+/**
+ * get the deliverymans of the city
+ * @param req
+ * @param res
+ * @param next
+ */
+DeliveryService.prototype.listDeliverymansByCity = (req,res,next)=>{
+    let city_id = req.params.cityId;
+    let promise = deliveryDao.findDeliverymansByCity(city_id).then((results)=>{
         if(toolUtils.isEmptyArray(results)){
             throw new TiramisuError(res_obj.NO_MORE_RESULTS_ARR,'该条件下没有可选的配送员...');
         }
@@ -939,5 +961,183 @@ DeliveryService.prototype.getStationInfo = (req,res,next) => {
         res.api(result);
     });
     systemUtils.wrapService(res,next,promise);
+};
+/**
+ * get delivery record
+ * @param req
+ * @param res
+ * @param next
+ */
+DeliveryService.prototype.getRecord = (req, res, next)=>{
+    req.checkParams(schema.getDeliveryRecord);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let begin_time = req.query.begin_time;
+    let end_time = req.query.end_time;
+    let deliveryman_id = req.query.deliveryman_id;
+    let isCOD = req.query.isCOD;
+    let promise = deliveryDao.findDeliveryRecord(begin_time, end_time, deliveryman_id, isCOD).then((result)=> {
+        if (!_.isArray(result)) {
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        result.sort((a, b)=> {
+            return (a.delivery_time <= b.delivery_time) ? -1 : 1;
+        });
+        result.map(r=> {
+            r.order_id = systemUtils.getShowOrderId(r.order_id, r.created_time);
+            if (r.COD_amount === null) r.COD_amount = r.total_amount;
+            if (r.delivery_count === null) r.delivery_count = 1;
+        });
+
+        res.api(result);
+    });
+    systemUtils.wrapService(res, next, promise);
+};
+DeliveryService.prototype.getHistoryRecord = (req, res, next)=> {
+    req.checkParams('orderId').isOrderId();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let order_id = systemUtils.getDBOrderId(req.params.orderId);
+    let promise = deliveryDao.findHistoryRecord(order_id).then((result)=> {
+        if (toolUtils.isEmptyArray(result)) {
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        if(req.query.sort_type == 'ASC' || req.query.sort_type == 'DESC'){
+            result.sort((a, b)=> {
+                return ((a.created_time <= b.created_time) && req.query.sort_type == 'ASC') ? -1 : 1;
+            });
+        }
+        let data = {
+            list: result,
+            total: result.length
+        };
+        res.api(data);
+    });
+    systemUtils.wrapService(res, next, promise);
+};
+/**
+ * update delivery record
+ * @param req
+ * @param res
+ * @param next
+ */
+DeliveryService.prototype.editRecord = (req, res, next)=> {
+    req.checkParams('orderId').isOrderId();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let order_id = systemUtils.getDBOrderId(req.params.orderId);
+    let order_obj = {};
+    let record_obj = {};
+    let updated_time = req.body.updated_time;
+    let order_history_obj = {
+        order_id: order_id,
+        option: ''
+    };
+    if (req.body.COD_amount !== undefined) {
+        order_obj.COD_amount = req.body.COD_amount;
+        order_history_obj.option += '修改{实收金额}为{' + (order_obj.COD_amount / 100) + '}元\n';
+    }
+    if (req.body.delivery_pay  !== undefined) {
+        record_obj.delivery_pay = req.body.delivery_pay;
+        order_history_obj.option += '修改{配送工资}为{' + (record_obj.delivery_pay / 100) + '}元\n';
+    }
+    if (req.body.remark) {
+        record_obj.remark = req.body.remark;
+        order_history_obj.option += '修改{配送工资审核备注}为{' + record_obj.remark + '}\n';
+    }
+    let promise = co(function *() {
+        let _res = yield orderDao.findOrderById(order_id);
+        if (toolUtils.isEmptyArray(_res)) {
+            return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID));
+        } else if (updated_time !== _res[0].updated_time) {
+            return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
+        }
+        yield deliveryDao.updateDeliveryRecord(order_id, systemUtils.assembleUpdateObj(req, order_obj), systemUtils.assembleUpdateObj(req, record_obj));
+        yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
+    }).then(result=> {
+        res.api();
+    });
+    systemUtils.wrapService(res, next, promise);
+};
+/**
+ * get delivery proof
+ * @param req
+ * @param res
+ * @param next
+ */
+DeliveryService.prototype.getProof = (req, res, next)=> {
+    req.checkParams('orderId').isOrderId();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let order_id = systemUtils.getDBOrderId(req.params.orderId);
+    let deliveryman_id = req.query.deliveryman_id;
+    let delivery_count = 1;
+
+    let promise = deliveryDao.findDeliveryProof(order_id, deliveryman_id, delivery_count).then(result=> {
+        if (toolUtils.isEmptyArray(result)) {
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        let data = {};
+        result.forEach(r=> {
+            if(r.picture_type == Constant.BDPT.RECEIPT) data.receipt_picture_url = r.picture_url;
+            if(r.picture_type == Constant.BDPT.DOOR) data.door_picture_url = r.picture_url;
+            if(r.picture_type == Constant.BDPT.CALL) data.call_picture_url = r.picture_url;
+            if(r.picture_type == Constant.BDPT.SMS) data.sms_picture_url = r.picture_url;
+        });
+        if (_.isEqual(data, {})) {
+            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+        }
+        res.api(data);
+    });
+    systemUtils.wrapService(res, next, promise);
+};
+/**
+ * export delivery record
+ * @param req
+ * @param res
+ * @param next
+ */
+DeliveryService.prototype.exportRecordExcel = (req, res)=> {
+    req.checkParams(schema.getDeliveryRecord);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let begin_time = req.query.begin_time;
+    let end_time = req.query.end_time;
+    let city_id = req.query.city_id;
+    let deliveryman_id = req.query.deliveryman_id;
+    let is_COD = req.query.is_COD;
+
+    let fileName = '配送记录列表_' + dateUtils.format(new Date()) + '.xlsx';
+    let data = [];
+    co(function *() {
+
+    }).then(()=>{
+        let buffer = xlsx.build([{name: "配送记录列表", data: data}]);
+        res.set({
+            'Content-Type': 'application/vnd.ms-excel',
+            'Content-Disposition':  "attachment;filename="+encodeURIComponent(fileName) ,
+            'Pragma':'no-cache',
+            'Expires': 0
+        });
+        res.send(buffer);
+    }).catch((err)=>{
+        console.error(err);
+        res.render('error',{err:'该条件下没有可选配送记录,请重新筛选...'});
+    });
 };
 module.exports = new DeliveryService();

@@ -17,6 +17,7 @@ module.exports = {
   signinOrder: require('./buss/delivery/signin_order'),
   unsigninOrder: require('./buss/delivery/unsignin_order'),
   deliveryman: require('./buss/delivery/deliveryman'),
+  getDeliveryRecord: require('./buss/delivery/get_delivery_record'),
   allocateStation: require('./buss/order/allocate_station'),
   addUser : require('./sys/add_user'),
   editUser : require('./sys/edit_user'),

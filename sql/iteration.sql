@@ -125,7 +125,7 @@ DROP COLUMN `is_delivery`,
 DROP COLUMN `sort`,
 CHANGE COLUMN `del_flag` `del_flag` TINYINT(1) NULL DEFAULT 1,
 ADD COLUMN `original_price` INT(8) NOT NULL DEFAULT '0' COMMENT '产品原价（单位：分）' AFTER `price`,
-ADD COLUMN `book_time` INT(4) NOT NULL DEFAULT '0' COMMENT '预约时间' AFTER `original_price`,
+ADD COLUMN `book_time` INT(4) NOT NULL DEFAULT '0' COMMENT '第一预约时间' AFTER `original_price`,
 ADD COLUMN `detail_page` varchar(255) NULL COMMENT '商品网站详情页' AFTER `book_time`,
 ADD COLUMN `presell_start` DATETIME NULL DEFAULT NULL COMMENT '预售上架开始时间' AFTER `detail_page`,
 ADD COLUMN `presell_end` DATETIME NULL DEFAULT NULL COMMENT '预售上架结束时间' AFTER `presell_start`,
@@ -136,6 +136,15 @@ ADD COLUMN `ref` INT(10) NULL DEFAULT NULL COMMENT '活动前原skuid' AFTER `ac
 ADD COLUMN `activity_start` DATETIME NULL DEFAULT NULL COMMENT '活动开始时间' AFTER `ref`,
 ADD COLUMN `activity_end` DATETIME NULL DEFAULT NULL COMMENT '活动结束时间' AFTER `activity_start`,
 ADD COLUMN `expire_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '过期标记，1为当前有效，0为过期失效' AFTER `activity_end`;
+
+DROP TABLE IF EXISTS `buss_product_sku_booktime`;
+CREATE TABLE `buss_product_sku_booktime` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sku_id` int(10) NOT NULL COMMENT 'skuid',
+  `book_time` int(4) NOT NULL COMMENT '预约时间',
+  `regionalism_id` int(10) NOT NULL COMMENT '区域id',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='sku第二预约时间';
 
 DROP EVENT IF EXISTS Expire_Activity_Time;
 SET GLOBAL event_scheduler = ON;

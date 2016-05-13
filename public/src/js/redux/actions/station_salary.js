@@ -97,8 +97,8 @@ export function getDeliveryRecord(data){
 
 export const UPDATE_DELIVERY_RECORD = 'UPDATE_DELIVERY_RECORD';
 export function UpdateDeliverymanSalary(order_id, data){
-  /*return POST(Url.)*/
-  return {type:UPDATE_DELIVERY_RECORD}
+  return PUT(Url.update_delivery_record.toString(order_id),data,UPDATE_DELIVERY_RECORD);
+  /*return {type:UPDATE_DELIVERY_RECORD}*/
 }
 
 export function exportExcel(data){

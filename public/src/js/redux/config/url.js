@@ -98,6 +98,7 @@ const URL = (function(){
     delivery_proof: '/delivery/order/:orderId/proof', //获取配送凭证
     delivery_record: '/delivery/record', //获取配送记录
     delivery_opt_record: '/delivery/order/:orderId/history/record', //获取配送操作记录
+    update_delivery_record: '/delivery/order/:orderId/record', //修改配送记录
 
     //权限
     dept_list_info: '/orgs',   //所有部门信息

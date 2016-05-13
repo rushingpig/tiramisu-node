@@ -242,11 +242,11 @@ class FilterHeader extends Component{
 			Noty('warning', '请选择配送员'); return; 
 		}
 		filterdata.deliveryman_id = deliveryman_id;
-		var cod = this.refs.COD;
+		var cod = this.refs.COD.value;
 		if(cod == 1){
-			filterdata.isCOD = true;
+			filterdata.isCOD = 1;
 		}else if(cod == 2){
-			filterdata.isCOD = false;
+			filterdata.isCOD = 0;
 		}
 		this.props.actions.getDeliveryRecord(filterdata)
 			.always(() => {
@@ -330,10 +330,10 @@ var SalaryRow = React.createClass({
 				<td>{pay_status[props.pay_status]}<br />
 					{props.pay_modes_name}
 				</td>
-				<td>{'原价:￥'+ props.total_original_price }<br/>
-					{ '实际售价:￥'+ props.total_discount_price }<br/>
-					{'应收金额:￥' + props.total_amount}</td>
-				<td><input type='text' readOnly value={this.state.delivery_pay / 100}
+				<td>{'原价:￥'+ props.total_original_price / 100 }<br/>
+					{ '实际售价:￥'+ props.total_discount_price /100 }<br/>
+					{'应收金额:￥' + props.total_amount /100}</td>
+				<td><input type='text' readOnly value={this.state.delivery_pay }
 						ref = 'delivery_pay'
 						className='form-control input-xs short-input'
 						onChange = {this.onDeliverypayChange} 
@@ -342,7 +342,7 @@ var SalaryRow = React.createClass({
 				<td>
 					<input type='text' readOnly className="form-control short-input" 
 						ref = 'COD_amount'
-						value ={this.state.COD_amount / 100}
+						value ={this.state.COD_amount }
 						className='form-control input-xs short-input' 
 						onChange = {this.onReceiveAmountChange}
 						style={{height:27,width:50, marginLeft:'auto', marginRight:'auto', 
@@ -389,9 +389,9 @@ var SalaryRow = React.createClass({
 	},
 	componentDidMount:function(){
 		this.setState({
-			COD_amount:this.props.COD_amount,
+			COD_amount:this.props.COD_amount / 100,
 			remark:this.props.remark, 
-			delivery_pay: this.props.delivery_pay,
+			delivery_pay: this.props.delivery_pay / 100,
 			is_review: this.props.is_review,})
 	},
 	onDeliverypayChange:function(e){
@@ -407,7 +407,7 @@ var SalaryRow = React.createClass({
 		this.setState({remark:value});
 	},
 	onEdit:function(){
-		this.setState({Edit_ing:true});
+		this.setState({Edit_ing:true, is_review: false});
 		var COD_amount = this.refs.COD_amount;
 		var remark = this.refs.remark;
 		var delivery_pay = this.refs.delivery_pay;
@@ -418,19 +418,20 @@ var SalaryRow = React.createClass({
 	onChangeDeliveryRecord:function(){
 		this.setState({Edit_ing:false});
 		var data = {};
-		data.COD_amount = this.state.COD_amount;
+		data.COD_amount = this.state.COD_amount * 100;
 		data.remark = this.state.remark;
-		data.delivery_pay = this.state.delivery_pay;
+		data.delivery_pay = this.state.delivery_pay * 100;
+		data.updated_time = this.props.updated_time;
 		var {order_id} = this.props;
-		if(!isNumber(this.state.COD_amount) || !isNumber(this.state.delivery_pay)){
+		if(!/^\d+(\.\d+)?$/.test(this.state.COD_amount) || !/^\d+(\.\d+)?$/.test(this.state.delivery_pay)){
 			Noty('warning','金额格式不正确');return;
 		}
 		if(this.state.COD_amount != this.props.total_amount && data.remark == ''){
 			Noty('warning', '实收金额与应收金额数目不一致，请在备注原因'); return; 			
 		}
-		var COD_amount = this.refs.COD_amount;
+		var COD_amount = this.refs.COD_amount ;
 		var remark = this.refs.remark;
-		var delivery_pay = this.refs.delivery_pay;		
+		var delivery_pay = this.refs.delivery_pay ;		
 		this.props.actions.UpdateDeliverymanSalary(order_id,data);
 		COD_amount.setAttribute('readOnly','true');
 		remark.setAttribute('readOnly','true');
@@ -505,8 +506,8 @@ class DeliveryManSalaryManagePannel extends Component{
 							      </tr>
 							      </thead>
 							      <tbody>
-							      	{ /*tableLoader( loading || refresh, content )*/ 
-							      		content
+							      	{ 
+							      		tableLoader( loading || refresh, content ) 
 							      	}
 							      </tbody>
 							    </table>
@@ -528,7 +529,7 @@ class DeliveryManSalaryManagePannel extends Component{
 						    	<input readOnly type='text' style={{width:50}} 
 						    		value = {receive_total / 100}
 						    		className="form-control input-xs short-input"/>
-						    	{'　(现金:￥' + cash }{',POS机:￥' + pos}{')　'}
+						    	{'　(现金:￥' + cash / 100 }{',POS机:￥' + pos / 100}{')　'}
 						    </div>
 						  </div>
 						</div>

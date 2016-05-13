@@ -114,13 +114,13 @@ export function exportExcel(data){
 
 export const GET_DELIVERY_PROOF = 'GET_DELIVERY_PROOF';
 export function getDeliveryProof(orderId){
-  /*return GET(Url.delivery_proof.toString(orderId), null ,GET_DELIVERY_PROOF);*/
-  return TEST({
+  return GET(Url.delivery_proof.toString(orderId), null ,GET_DELIVERY_PROOF);
+/*  return TEST({
     'call_picture_url':'',
     'door_picture_url':'',
     'receipt_picture_url':'',
     'sms_picture_url':'',
-  },GET_DELIVERY_PROOF);
+  },GET_DELIVERY_PROOF);*/
 }
 
 export const GET_ORDER_OPT_RECORD = 'GET_ORDER_OPT_RECORD';

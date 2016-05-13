@@ -306,7 +306,7 @@ var SalaryRow = React.createClass({
 		var {active_order_id} = main;
 		return(
 			<tr className={active_order_id == props.order_id ? 'active' : ''} onClick={this.ClickHandler}>
-				<td>{props.delivery_time}</td>
+				<td ><div style={{width:80}}>{props.delivery_time}</div></td>
 				<td>{props.signin_time}</td>
 				<td>{props.order_id}</td>
 				<td>
@@ -369,7 +369,7 @@ var SalaryRow = React.createClass({
 					}
 				</td>
 				<td>
-					<a href='javascript:;' onClick={this.showOperationRecord}>{props.update_time}</a>
+					<a href='javascript:;' onClick={this.showOperationRecord}>{props.updated_time}</a>
 				</td>
 			</tr>
 			)
@@ -486,13 +486,13 @@ class DeliveryManSalaryManagePannel extends Component{
 						<div className="panel-body">
 						  <div ref="table-container" className="table-responsive ">
 						  	<div ref='box' id='box'  style={{maxHeight:434, overflowY:'auto', position:'relative'}} onscroll = {this.onTbScroll.bind(this)}>
-							    <table id='tab' className="table table-hover text-center table-bordered" ref='tab' style={{width:1424}}>
+							    <table id='tab' className="table table-hover text-center table-bordered" ref='tab' style={{width:1524}}>
 							      <thead >
 							      <tr>
 							        <th><div style={{width:80}}>配送时间</div></th>
 							        <th><div style={{width:80}}>签收时间</div></th>
 							        <th><div style={{width:120}}>订单号</div></th>
-							        <th><div style={{width:80}}>收货人信息</div></th>
+							        <th><div style={{width:100}}>收货人信息</div></th>
 							        <th><div style={{width:80}}>配送方式</div></th>
 							        <th><div style={{width:80}}>签收状态</div></th>
 							        <th><div style={{width:100}}>是否第二次配送</div></th>

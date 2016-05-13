@@ -424,7 +424,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
             console.log(products);
             yield orderDao.editOrder(systemUtils.assembleUpdateObj(req, order_obj), orderId, null, null, products, add_skus, delete_skuIds, update_skus);
 
-            if (order_history_obj != '') {
+            if (order_history_obj.option != '') {
                 yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
             }
             yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_sign_history_obj, true));

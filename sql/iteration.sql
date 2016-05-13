@@ -38,7 +38,7 @@ CREATE TABLE `buss_delivery_record` (
     `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
     `remark` varchar(255) DEFAULT NULL COMMENT '备注',
     PRIMARY KEY (`id`),
-    KEY `IDX_ORDER_ID` (`order_id`),
+    UNIQUE KEY `IDX_ORDER_ID` (`order_id`),
     KEY `IDX_DM_ID` (`deliveryman_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单配转移送员记录';
 

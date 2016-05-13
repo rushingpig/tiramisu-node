@@ -118,6 +118,10 @@ export default {
   ADDRESS: {
     GUANG_ZHOU: '440000',
     SHEN_ZHENG: '440300'
-  }
+  },
+  SIGN_STATUS:{
+    EXCEPTION: '未签收'
+  },
+  SIGN_STATUS_EXCEPTION: 'EXCEPTION',
 
 }

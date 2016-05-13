@@ -134,7 +134,8 @@ export function getOrderOptRecord(order_id, data){
         })
       })
   }*/
-   return GET(Url.delivery_opt_record.toString(order_id), data, GET_ORDER_OPT_RECORD);
+  var sort_type = data.sort_type
+   return GET(Url.delivery_opt_record.toString(order_id), {sort_type}, GET_ORDER_OPT_RECORD);
 /*  return {
     type: GET_ORDER_OPT_RECORD,
     data: {

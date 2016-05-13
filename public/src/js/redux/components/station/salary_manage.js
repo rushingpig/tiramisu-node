@@ -23,7 +23,7 @@ import { Noty, dateFormat, parseTime,getDate } from 'utils/index';
 import {post ,GET,POST,PUT,TEST,del,get} from 'utils/request';
 import V from 'utils/acl';
 
-import { DELIVERY_MAP ,pay_status, MODES, SELECT_DEFAULT_VALUE} from 'config/app.config';
+import { DELIVERY_MAP ,pay_status, MODES, SELECT_DEFAULT_VALUE, SIGN_STATUS_EXCEPTION} from 'config/app.config';
 
 
 class TopHeader extends Component{
@@ -186,6 +186,7 @@ class FilterHeader extends Component{
 	}
 	onExportExcel(){
 		var data = {};
+		var {deliveryman_id} = this.state;
 		data.begin_time=this.state.begin_time;
 		data.end_time = this.state.end_time;
 		if(deliveryman_id == -1){
@@ -194,9 +195,9 @@ class FilterHeader extends Component{
 		data.deliveryman_id = deliveryman_id;
 		var cod = this.refs.COD;
 		if(cod == 1){
-			data.isCOD = true;
+			data.isCOD = 1;
 		}else if(cod == 2){
-			data.isCOD = false;
+			data.isCOD = 0;
 		}
 		this.props.actions.exportExcel(data);
 	}
@@ -307,7 +308,7 @@ var SalaryRow = React.createClass({
 		return(
 			<tr className={active_order_id == props.order_id ? 'active' : ''} onClick={this.ClickHandler}>
 				<td ><div style={{width:80}}>{props.delivery_time}</div></td>
-				<td>{props.signin_time}</td>
+				<td><div style={{width:80}}>{props.signin_time}</div></td>
 				<td>{props.order_id}</td>
 				<td>
 					<span>{props.recipient_name}</span>
@@ -319,7 +320,7 @@ var SalaryRow = React.createClass({
 					{ DELIVERY_MAP[props.delivery_type] }
 				</td>
 				<td>
-					{props.status == 'DELIVERY' ? 
+					{props.order_status == SIGN_STATUS_EXCEPTION ? 
 						[<span>未签收</span>,<br/>,<a href='javascript:;' onClick={this.showCredential}>[未签收凭证]</a>]
 						:<span>正常签收</span>
 					}
@@ -486,7 +487,7 @@ class DeliveryManSalaryManagePannel extends Component{
 						<div className="panel-body">
 						  <div ref="table-container" className="table-responsive ">
 						  	<div ref='box' id='box'  style={{maxHeight:434, overflowY:'auto', position:'relative'}} onscroll = {this.onTbScroll.bind(this)}>
-							    <table id='tab' className="table table-hover text-center table-bordered" ref='tab' style={{width:1524}}>
+							    <table id='tab' className="table table-hover text-center " ref='tab' style={{width:1524}}>
 							      <thead >
 							      <tr>
 							        <th><div style={{width:80}}>配送时间</div></th>

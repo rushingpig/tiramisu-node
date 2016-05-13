@@ -29,7 +29,7 @@ function main(state = main_state, action){
 		case Actions.GET_DELIVERY_PROOF:
 			return {...state, proof: action.data}
 		case Actions.RESET_ORDER_OPT_RECORD:
-		  	return {...main_state};
+		  	return {...state, operationRecord:{}};
 		case Actions.GET_ORDER_OPT_RECORD:
 		  	return {...state, operationRecord:action.data }
 		default:

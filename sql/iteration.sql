@@ -155,7 +155,7 @@ DO
 BEGIN
   DECLARE done INT DEFAULT FALSE;
   DECLARE sku_id,ref_id INT;
-  DECLARE cur CURSOR FOR SELECT id,ref FROM buss_product_sku where activity_end < now() and expire_flag = 1 and del_flag = 1;
+  DECLARE cur CURSOR FOR SELECT id,ref FROM buss_product_sku where activity_start > now() or activity_end < now() and expire_flag = 1 and del_flag = 1;
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
   OPEN cur;
   read_loop: LOOP
@@ -176,7 +176,7 @@ On SCHEDULE EVERY 1 MINUTE
 COMMENT '定时结束预售sku'
 DO
 BEGIN
-  update buss_product_sku set expire_flag = 0 where presell_end < now() and expire_flag = 1 and del_flag = 1;
+  update buss_product_sku set expire_flag = 0 where presell_start > now() or presell_end < now() and expire_flag = 1 and del_flag = 1;
 END;
 
 DROP TABLE IF EXISTS `buss_product_pic`;

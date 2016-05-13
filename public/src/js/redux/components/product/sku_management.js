@@ -19,6 +19,8 @@ LazyLoad('datetimerangepicker');
 const FormHorizontal = props => (<div className="form-horizontal" {...props} />)
 const FormGroup = props => (<div className="form-group" {...props} />);
 const Input = props => (<input type="number" className="form-control input-xs" {...props} />);
+const CheckBox = props => (<input type="checkbox" {...props} />);
+const Radio = props => (<input type="radio" {...props} />);
 const Row = props => (<div className="row" {...props} />);
 
 const Col = props => {
@@ -49,7 +51,7 @@ const tabContentBoxStyle = {
 }
 const pickerStyle = { width: 260, textAlign: 'center' }
 const inputStyle = { width: 70 }
-
+const pointCursor = { cursor: 'pointer' }
 
 const getDOMValue = func => (event, ...args) => func.apply(undefined, [event.currentTarget.value, ...args]);
 const getSpecInputValue = (i, func) => (event, ...args) => func.apply(undefined, [i, event.currentTarget.value, ...args]);
@@ -82,8 +84,7 @@ class BasicOptions extends Component {
                     <Col xs="6">
                         <p>
                             <label className="radio-inline">
-                            <input
-                                type="radio"
+                            <Radio
                                 name="inlineRadioOptions"
                                 value="0"
                                 onChange={getDOMValue(Action.changeBuyEntry)}
@@ -93,8 +94,7 @@ class BasicOptions extends Component {
                             </label>
                             {'　　'}
                             <label className="radio-inline">
-                            <input
-                                type="radio"
+                            <Radio
                                 name="inlineRadioOptions"
                                 value="1"
                                 onChange={getDOMValue(Action.changeBuyEntry)}
@@ -140,8 +140,7 @@ class BasicOptions extends Component {
                     <Col xs="10">
                         <p>
                             <label className="radio-inline">
-                              <input
-                                type="radio"
+                              <Radio
                                 name="aaa"
                                 value="0"
                                 onChange={getDOMValue(Action.changeActiveCitiesOption)}
@@ -151,8 +150,7 @@ class BasicOptions extends Component {
                             </label>
                             {'　　'}
                             <label className="radio-inline">
-                            <input
-                                type="radio"
+                            <Radio
                                 name="aaa"
                                 value="1"
                                 onChange={getDOMValue(Action.changeActiveCitiesOption)}
@@ -198,6 +196,7 @@ class PreSaleOptions extends Component {
 
     render() {
         const { state, Action } = this.props;
+        const { tempOptions } = state;
 
         return (
             <div>
@@ -208,6 +207,8 @@ class PreSaleOptions extends Component {
                             <DateTimeRangePicker
                                 className="form-control input-xs"
                                 style={pickerStyle}
+                                beginTime={tempOptions.onSaleTime[0]}
+                                endTime={tempOptions.onSaleTime[1]}
                                 onChange={Action.changePreSaleTime}
                             />
                         </div>
@@ -221,6 +222,8 @@ class PreSaleOptions extends Component {
                             <DateTimeRangePicker
                                 className="form-control input-xs"
                                 style={pickerStyle}
+                                beginTime={tempOptions.delivery[0]}
+                                endTime={tempOptions.delivery[1]}
                                 onChange={Action.changeDeliveryTime}
                             />
                         </div>
@@ -230,42 +233,64 @@ class PreSaleOptions extends Component {
                 <Row>
                     <Col xs="10" offset="2">
                         <div className="form-inline">
-                            {'　　'}预约时间：<Input onChange={getDOMValue(Action.changeBookingTime)} />
+                            {'　　'}预约时间：<Input value={tempOptions.bookingTime} onChange={getDOMValue(Action.changeBookingTime)} />
                         </div>
                     </Col>
                 </Row>
-                <p />
-                <Row><Col xs="8" offset="2"><hr/></Col>
-                </Row>
-                <Row>
-                    <Col xs="10" offset="2">
-                        <div className="form-inline">
-                            <div className="checkbox">
-                                <label>
-                                    {'第二预约时间：'}
-                                    <input type="checkbox" />
-                                </label>
-                            </div>
+                {
+                    state.citiesOptionApplyRange === 0 ? null : (
+                        <div>
+                            <p />
+                            <Row><Col xs="8" offset="2"><hr/></Col></Row>
+                            <Row>
+                                <Col xs="10" offset="2">
+                                    <div className="form-inline">
+                                        <div className="checkbox">
+                                            <label>
+                                                {'第二预约时间：'}
+                                                <CheckBox checked={tempOptions.hasSecondaryBookingTime} onChange={Action.changeSecondaryBookingTimeStatus} />
+                                            </label>
+                                        </div>
+                                    </div>
+                                </Col>
+                            </Row>
                         </div>
-                    </Col>
-                </Row>
-                <p />
-                <Row>
-                    <Col xs="10" offset="2">
-                        <div className="form-inline">{'　　　　'}时间：<Input /></div>
-                    </Col>
-                </Row>
-                <p />
-                <Row>
-                    <Col xs="10" offset="2">
-                        <div className="form-inline">
-                            {'　　　　'}
-                            区域：
-                            <label><input type="checkbox" />{' '}{'南山区'}{'　'}</label>
-                            <label><input type="checkbox" />{' '}{'南山区'}{'　'}</label>
+                    )
+                }
+                {
+                    tempOptions.hasSecondaryBookingTime ? (
+                        <div>
+                            <p />
+                            <Row>
+                                <Col xs="10" offset="2">
+                                    <div className="form-inline">{'　　　　'}时间：<Input /></div>
+                                </Col>
+                            </Row>
+                            <p />
+                            <Row>
+                                <Col xs="10" offset="2">
+                                    <div className="form-inline">
+                                        {'　　　　'}
+                                        区域：
+                                        {
+                                            [...state.districtsData.get(state.selectedCity)].map(
+                                                ({ id, name }) => (
+                                                    <label key={id}>
+                                                        <CheckBox
+                                                            checked={tempOptions.applyDistrict.has(id)}
+                                                            onChange={e => Action.changeSecondaryBookingTimeRange(id)}
+                                                        />
+                                                        {' ' + name + '　'}
+                                                    </label>
+                                                )
+                                            )
+                                        }
+                                    </div>
+                                </Col>
+                            </Row>
                         </div>
-                    </Col>
-                </Row>
+                    ) : null
+                }
             </div>
         );
     }
@@ -307,7 +332,7 @@ class ShopSpecificationsOptions extends Component {
                                                     <Input
                                                         type="text"
                                                         style={inputStyle}
-                                                        defautlValue={detail.spec}
+                                                        value={detail.spec}
                                                         onChange={getSpecInputValue(index, Action.changeShopSpecifications)}
                                                     />
                                                 </center>
@@ -316,7 +341,7 @@ class ShopSpecificationsOptions extends Component {
                                                 <center>
                                                     <Input
                                                         style={inputStyle}
-                                                        defautlValue={detail.originalCost}
+                                                        value={detail.originalCost}
                                                         onChange={getSpecInputValue(index, Action.changeShopSpecificationsOriginalCost)}
                                                     />
                                                 </center>
@@ -325,15 +350,14 @@ class ShopSpecificationsOptions extends Component {
                                                 <center>
                                                     <Input
                                                         style={inputStyle}
-                                                        defautlValue={detail.cost}
+                                                        value={detail.cost}
                                                         onChange={getSpecInputValue(index, Action.changeShopSpecificationsCost)}
                                                     />
                                                 </center>
                                             </td>
                                             <td>
                                                 <center>
-                                                    <input
-                                                        type="checkbox"
+                                                    <CheckBox
                                                         checked={detail.hasEvent}
                                                         onChange={e => Action.changeShopSpecificationsEventStatus(index, e.checked)}
                                                     />
@@ -345,7 +369,7 @@ class ShopSpecificationsOptions extends Component {
                                                         <center>
                                                             <Input
                                                                 style={inputStyle}
-                                                                defautlValue={detail.eventCost}
+                                                                value={detail.eventCost}
                                                                 onChange={getSpecInputValue(index, Action.changeShopSpecificationsEventCost)}
                                                             />
                                                         </center>
@@ -356,6 +380,8 @@ class ShopSpecificationsOptions extends Component {
                                                             <DateTimeRangePicker
                                                                 style={pickerStyle}
                                                                 className="form-control input-xs"
+                                                                beginTime={detail.eventTime[0]}
+                                                                endTime={detail.eventTime[1]}
                                                                 onChange={(b, e) => Action.changeShopSpecificationsEventTime(index, b, e)}
                                                             />
                                                         </center>
@@ -364,12 +390,11 @@ class ShopSpecificationsOptions extends Component {
                                             }
                                             <td>
                                                 <center>
-                                                    <button
-                                                        className="btn btn-danger btn-xs"
+                                                    <i
+                                                        className="fa fa-times text-danger"
                                                         onClick={e => Action.removeShopSpecifications(index)}
-                                                    >
-                                                        ×
-                                                    </button>
+                                                        style={pointCursor}
+                                                    />
                                                 </center>
                                             </td>
                                         </tr>
@@ -383,113 +408,6 @@ class ShopSpecificationsOptions extends Component {
                 </Col>
             </FormGroup>
         );
-    }
-}
-
-class CitiesOptions extends Component {
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        const { state, Action } = this.props;
-
-        return (
-            <FormHorizontal>
-                <FormGroup>
-                    <label className="col-xs-2 control-label">应用范围：</label>
-                    <Col xs='10'>
-                        <p>
-                            <label className="radio-inline">
-                            <input
-                                type="radio"
-                                name="citiesOptionApplyRange"
-                                value="0"
-                                onChange={getDOMValue(Action.changeCitiesOptionApplyRange)}
-                                checked={state.citiesOptionApplyRange === 0}
-                            />
-                                {' 全部一致'}
-                            </label>
-                            {'　　'}
-                            <label className="radio-inline">
-                            <input
-                                type="radio"
-                                name="citiesOptionApplyRange"
-                                value="1"
-                                onChange={getDOMValue(Action.changeCitiesOptionApplyRange)}
-                                checked={state.citiesOptionApplyRange === 1}
-                            />
-                                {' 独立配置'}
-                            </label>
-                        </p>
-                    </Col>
-                </FormGroup>
-                {
-                    state.citiesOptionApplyRange === 0 ? null : (
-                        <FormGroup>
-                            <label className="col-xs-2 control-label">配置城市：</label>
-                            <Col xs='10'>
-                                <DropDownMenu
-                                    list={ [...state.provincesData.values()].map(this.transformToDropDownList) }
-                                    value={state.selectedProvince}
-                                    onChange={Action.changeSelectedProvince}
-                                />
-                                {'　'}
-                                <DropDownMenu
-                                    list={
-                                        [...state.citiesData.values()].filter(
-                                            obj => obj.province === state.selectedProvince
-                                        ).map(this.transformToDropDownList)
-                                    }
-                                    value={state.selectedCity}
-                                    onChange={Action.changeSelectedCity}
-                                />
-                            </Col>
-                        </FormGroup>
-                    )
-                }
-                <Col xs='10' offset='1'><hr/></Col>
-                <FormGroup>
-                    <label className="col-xs-2 control-label">上架设置：</label>
-                    <Col xs="6">
-                        <div className="form-inline">
-                            <div className="checkbox">
-                                <label>
-                                    {'　　预售商品：'}
-                                    <input type="checkbox" checked={state.tempOptions.isPreSale} onChange={Action.changePreSaleStatus} />
-                                </label>
-                            </div>
-                        </div>
-                    </Col>
-                </FormGroup>
-                {
-                    state.tempOptions.isPreSale
-                    ? (<PreSaleOptions state={state} Action={Action} />)
-                    : null
-                }
-                {
-                    state.buyEntry === 0 ? [(
-                        <Col key="hr" xs='10' offset='1'><hr/></Col>
-                    ), (
-                        <ShopSpecificationsOptions key="ShopSpecificationsOptions" Action={Action} state={state} />
-                    )] : null
-                }
-                <Col xs='10' offset='1'><hr/></Col>
-                <SourceOptions Action={Action} state={state} />
-                <Col xs="8" offset="2">
-                    <button className="btn btn-default btn-xs">保存城市设置</button>
-                </Col>
-            </FormHorizontal>
-        );
-    }
-
-    transformToDropDownList(obj) {
-        return {
-            id: obj.id,
-            text: obj.name,
-            checked: obj.checked,
-            disabled: obj.disabled
-        };
     }
 }
 
@@ -521,13 +439,21 @@ class SourceOptions extends Component {
                             [...tempOptions.sourceSpecifications].map(
                                 ([sid, detail]) => {
                                     return (
-                                        <Anchor
-                                            key={sid}
-                                            className={"list-group-item" + (tempOptions.selectedSource === sid ? ' active' : '')}
-                                            onClick={e => Action.changeSelectedSource(sid)}
-                                        >
-                                            {state.orderSource.get(sid)}
-                                        </Anchor>
+                                        <li key={sid} className={"list-group-item" + (tempOptions.selectedSource === sid ? ' active' : '')}>
+                                            <span
+                                                style={pointCursor}
+                                                onClick={e => Action.changeSelectedSource(sid)}
+                                            >
+                                                {state.orderSource.get(sid)}
+                                            </span>
+                                            <span className="pull-right">
+                                                <i
+                                                    style={pointCursor}
+                                                    className="fa fa-times"
+                                                    onClick={Action.removeSource.bind(undefined, sid)}
+                                                />
+                                            </span>
+                                        </li>
                                     );
                                 }
                             )
@@ -569,13 +495,14 @@ class SourceOptions extends Component {
                                 <tr>
                                     <th>规格</th>
                                     <th>价格</th>
+                                    <th>操作</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {
                                     (!sourceSpecification || sourceSpecification.length === 0) ? (
                                         <tr>
-                                            <td colSpan="2">没有规格</td>
+                                            <td colSpan="3">没有规格</td>
                                         </tr>
                                     ) : (
                                         sourceSpecification.map((detail, index) => (
@@ -592,6 +519,11 @@ class SourceOptions extends Component {
                                                         value={detail.cost}
                                                         onChange={this.handleChangeSourceSpecCost.bind(this, index)}
                                                     />
+                                                </td>
+                                                <td>
+                                                    <Anchor onClick={Action.removeSourceSpec.bind(undefined, index)}>
+                                                        <i className="fa fa-times text-danger" />
+                                                    </Anchor>
                                                 </td>
                                             </tr>
                                         ))
@@ -617,7 +549,116 @@ class SourceOptions extends Component {
     handleChangeSourceSpecCost(index, event) {
         this.props.Action.changeSourceSpecCost(index, event.currentTarget.value);
     }
+}
 
+class CitiesOptions extends Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        const { state, Action } = this.props;
+
+        return (
+            <FormHorizontal>
+                <FormGroup>
+                    <label className="col-xs-2 control-label">应用范围：</label>
+                    <Col xs='10'>
+                        <p>
+                            <label className="radio-inline">
+                            <Radio
+                                name="citiesOptionApplyRange"
+                                value="0"
+                                onChange={getDOMValue(Action.changeCitiesOptionApplyRange)}
+                                checked={state.citiesOptionApplyRange === 0}
+                            />
+                                {' 全部一致'}
+                            </label>
+                            {'　　'}
+                            <label className="radio-inline">
+                            <Radio
+                                name="citiesOptionApplyRange"
+                                value="1"
+                                onChange={getDOMValue(Action.changeCitiesOptionApplyRange)}
+                                checked={state.citiesOptionApplyRange === 1}
+                            />
+                                {' 独立配置'}
+                            </label>
+                        </p>
+                    </Col>
+                </FormGroup>
+                {
+                    state.citiesOptionApplyRange === 0 ? null : (
+                        <FormGroup>
+                            <label className="col-xs-2 control-label">配置城市：</label>
+                            <Col xs='10'>
+                                <DropDownMenu
+                                    list={ [...state.provincesData.values()].map(this.transformToDropDownList) }
+                                    value={state.selectedProvince}
+                                    onChange={Action.changeSelectedProvince}
+                                />
+                                {'　'}
+                                <DropDownMenu
+                                    list={
+                                        [...state.citiesData.values()].filter(
+                                            obj => obj.province === state.selectedProvince
+                                        ).map(this.transformToDropDownList)
+                                    }
+                                    value={state.selectedCity}
+                                    onChange={Action.changeSelectedCity}
+                                />
+                                {'　'}
+                                {
+                                    state.cityOptionSaved ? (
+                                        <button className="btn btn-default btn-xs" disabled={true}>已保存</button>
+                                    ) : (
+                                        <button className="btn btn-theme btn-xs" onClick={Action.saveCityOption}>保存城市设置</button>
+                                    )
+                                }
+                            </Col>
+                        </FormGroup>
+                    )
+                }
+                <Row><Col xs='10' offset='1'><hr/></Col></Row>
+                <FormGroup>
+                    <label className="col-xs-2 control-label">上架设置：</label>
+                    <Col xs="6">
+                        <div className="form-inline">
+                            <div className="checkbox">
+                                <label>
+                                    {'　　预售商品：'}
+                                    <CheckBox checked={state.tempOptions.isPreSale} onChange={Action.changePreSaleStatus} />
+                                </label>
+                            </div>
+                        </div>
+                    </Col>
+                </FormGroup>
+                {
+                    state.tempOptions.isPreSale
+                    ? (<PreSaleOptions state={state} Action={Action} />)
+                    : null
+                }
+                {
+                    state.buyEntry === 0 ? [(
+                        <Col key="hr" xs='10' offset='1'><hr/></Col>
+                    ), (
+                        <ShopSpecificationsOptions key="ShopSpecificationsOptions" Action={Action} state={state} />
+                    )] : null
+                }
+                <Row><Col xs='10' offset='1'><hr/></Col></Row>
+                <SourceOptions Action={Action} state={state} />
+            </FormHorizontal>
+        );
+    }
+
+    transformToDropDownList(obj) {
+        return {
+            id: obj.id,
+            text: obj.name,
+            checked: obj.checked,
+            disabled: obj.disabled
+        };
+    }
 }
 
 class Main extends Component {
@@ -635,9 +676,9 @@ class Main extends Component {
             <div className="wrapper">
                 <TopHeader />
                 <ul className="nav nav-tabs">
-                    <li className="active"><a href="#">Home</a></li>
-                    <li><a href="#">Profile</a></li>
-                    <li><a href="#">Messages</a></li>
+                    <li className="active">
+                        <Anchor>新建商品</Anchor>
+                    </li>
                 </ul>
                 <div className="panel" style={tabContentBoxStyle}>
                     <div className="panel-body">
@@ -648,6 +689,12 @@ class Main extends Component {
                         <h3>{'　'}城市配置</h3>
                         <hr/>
                         <CitiesOptions state={state} Action={Action} />
+                        <hr/>
+                        <div className="row">
+                            <div className="col-xs-4 col-xs-offset-2">
+                                <button className="btn btn-theme">保存商品设置</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

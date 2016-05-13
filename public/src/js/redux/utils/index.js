@@ -36,6 +36,9 @@ function clone(target) {
     if (target && target instanceof Map) {
       return new Map(clone([...target]));
     }
+    if (target && target instanceof Date) {
+      return new Date(target.getTime());
+    }
     var newObj = target instanceof Array ? [] : {};
     for (var key in target) {
       var val = target[key];

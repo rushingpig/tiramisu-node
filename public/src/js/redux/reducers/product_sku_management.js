@@ -5,29 +5,29 @@ import { clone, dateFormat, getDate } from 'utils/index';
 const initialState = {
     basicDataLoadStatus: 'pending',
 
-    productName: '',
-    buyEntry: 0, // 0:商城可购买 1:外部渠道可购买
+    productName: '', // 商品名称
+    buyEntry: 0,     // 购买方式 0:商城可购买 1:外部渠道可购买
 
-    primaryCategories:   new Map(),
-    secondaryCategories: new Map(),
+    primaryCategories:   new Map(), // 一级分类
+    secondaryCategories: new Map(), // 二级分类
 
-    selectPrimaryCategory:   0,
-    selectSecondaryCategory: 0,
+    selectPrimaryCategory:   0, // 选中的一级分类
+    selectSecondaryCategory: 0, // 选中的二级分类
 
-    activeProvices: new Set(),
-    activeCities:   new Set(),
+    activeCitiesOption: 0, // 上线城市范围 0:所有已开通的二级分类 1:二级分类里选中的城市
 
-    activeCitiesOption: 0,
-
-    citiesOptionApplyRange: 0, // 0:All 1:Independence
-    citiesOptions: new Map(),
+    citiesOptionApplyRange: 0, // 城市配置应用范围
+    citiesOptions: new Map(),  // 城市配置缓存表
 
     orderSource:   new Map([[0, 'PC商城'], [1, '手机APP'], [2, '美团外卖']]),
     provincesData: new Map(),
     citiesData:    new Map(),
+    districtsData: new Map(),
 
     selectedProvince: 0,
     selectedCity: 0,
+
+    cityOptionSaved: true,
 
     tempOptions: {
         isPreSale: true,
@@ -122,6 +122,26 @@ const switchType = {
     },
 
     [ActionTypes.CHANGE_APPLY_RANGE]: (state, { option }) => {
+        if (state.citiesOptionApplyRange === 0) {
+            state.citiesOptions.set('all', clone(state.tempOptions));
+        }
+
+        if (option === 0) {
+            if (state.citiesOptions.has('all')) {
+                state.tempOptions = clone(state.citiesOptions.get('all'));
+            } else {
+                state.tempOptions = clone(initialState.tempOptions);
+            }
+        }
+
+        if (option === 1) {
+            if (state.citiesOptions.has(state.selectedCity)) {
+                state.tempOptions = clone(state.citiesOptions.get(state.selectedCity));
+            } else {
+                state.tempOptions = clone(initialState.tempOptions);
+            }
+        }
+
         return {
             ...state,
             citiesOptionApplyRange: option
@@ -131,7 +151,7 @@ const switchType = {
     [CitiesSelectorActionTypes.CHANGED_CHECK_CITIES]: (state, { citiesSelectorState }) => {
         const { checkedCities } = citiesSelectorState;
 
-        const transformToMap = obj => [
+        const transform = obj => [
             obj.id, {
                 ...obj,
                 checked: false,
@@ -142,21 +162,37 @@ const switchType = {
         const citiesData = new Map(
             [...citiesSelectorState.citiesData.values()].filter(
                 cityData => checkedCities.has(cityData.id)
-            ).map(transformToMap)
+            ).map(transform)
         );
 
         const provincesData = new Map(
             [...citiesData.values()].map(
                 cityData => citiesSelectorState.provincesData.get(cityData.province)
-            ).map(transformToMap)
+            ).map(transform)
         );
 
         let { selectedProvince, selectedCity } = state;
 
         if (!provincesData.has(selectedProvince))
             selectedProvince = [...provincesData.keys()][0];
+
         if (!citiesData.has(selectedCity))
             selectedCity = [...citiesData.keys()][0];
+
+        const citiesDataKeySet = new Set([...citiesData.keys()]);
+        const diff = [...state.citiesOptions.keys()].filter(x => !citiesDataKeySet.has(x) && x !== 'all');
+
+        diff.forEach(deleteId => {
+            state.citiesOptions.delete(deleteId);
+        });
+
+        if (state.citiesOptions.has(selectedCity)) {
+            state.tempOptions = clone(state.citiesOptions.get(selectedCity));
+            state.cityOptionSaved = true;
+        } else {
+            state.tempOptions = clone(initialState.tempOptions);
+            state.cityOptionSaved = false;
+        }
 
         return {
             ...state,
@@ -168,26 +204,49 @@ const switchType = {
     },
 
     [ActionTypes.CHANGE_SELECTED_PROVINCE]: (state, { id }) => {
+        let selectedCity;
+        let tempOptions;
+
+        for (let cid in state.provincesData.get(id).list) {
+            if (state.citiesData.has(cid)) {
+                selectedCity = cid;
+                break;
+            }
+        }
+
+        if (state.citiesOptions.has(selectedCity)) {
+            tempOptions = clone(state.citiesOptions.get(selectedCity));
+        } else {
+            tempOptions = clone(initialState.tempOptions);
+        }
+
         return {
             ...state,
-            selectedProvince: id
+            cityOptionSaved: state.citiesOptions.has(selectedCity),
+            selectedCity,
+            selectedProvince: id,
+            tempOptions
         };
     },
 
     [ActionTypes.CHANGE_SELECTED_CITY]: (state, { id }) => {
+        if (state.citiesOptions.has(id)) {
+            state.tempOptions = clone(state.citiesOptions.get(id));
+        } else {
+            state.tempOptions = clone(initialState.tempOptions);
+        }
+
         return {
             ...state,
-            selectedCity: id,
-            tempOptions: {
-                ...state.tempOptions,
-                applyDistrict: new Set()
-            }
+            cityOptionSaved: state.citiesOptions.has(id),
+            selectedCity: id
         };
     },
 
     [ActionTypes.CHANGE_PRESALE_STATUS]: state => {
         return {
             ...state,
+            cityOptionSaved: false,
             tempOptions: {
                 ...state.tempOptions,
                 isPreSale: !state.tempOptions.isPreSale
@@ -198,6 +257,7 @@ const switchType = {
     [ActionTypes.CHANGE_PRESALE_TIME]: (state, { beginTime, endTime }) => {
         return {
             ...state,
+            cityOptionSaved: false,
             tempOptions: {
                 ...state.tempOptions,
                 onSaleTime: [ beginTime, endTime ]
@@ -208,6 +268,7 @@ const switchType = {
     [ActionTypes.CHANGE_DELIVERY_TIME]: (state, { beginTime, endTime }) => {
         return {
             ...state,
+            cityOptionSaved: false,
             tempOptions: {
                 ...state.tempOptions,
                 delivery: [ beginTime, endTime ]
@@ -218,6 +279,7 @@ const switchType = {
     [ActionTypes.CHANGE_BOOKING_TIME]: (state, { hour }) => {
         return {
             ...state,
+            cityOptionSaved: false,
             tempOptions: {
                 ...state.tempOptions,
                 bookingTime: hour <= 0 ? 0.1 : hour
@@ -225,19 +287,28 @@ const switchType = {
         }
     },
 
-    [ActionTypes.CHANGE_SECONDARY_BOOKINGTIME_STATUS]: state => {
-        return {
-            ...state,
-            tempOptions: {
-                ...state.tempOptions,
-                hasSecondaryBookingTime: !state.tempOptions.hasSecondaryBookingTime
-            }
+    [ActionTypes.CHANGE_SECONDARY_BOOKINGTIME_STATUS]: (state, { districtsData }) => {
+        if (!state.districtsData.has(state.tempOptions.selectedCity)) {
+            const dd = Object.keys(districtsData).map(
+                id => ({
+                    id,
+                    name: districtsData[id]
+                })
+            );
+
+            state.districtsData.set(state.selectedCity, dd);
         }
+
+        state.tempOptions.hasSecondaryBookingTime = !state.tempOptions.hasSecondaryBookingTime;
+
+        state.cityOptionSaved = false;
+        return state;
     },
 
     [ActionTypes.CHANGE_SECONDARY_BOOKINGTIME]: (state, { hour }) => {
         return {
             ...state,
+            cityOptionSaved: false,
             tempOptions: {
                 ...state.tempOptions,
                 secondaryBookingTime: hour <= 0 ? 0.1 : hour
@@ -252,6 +323,7 @@ const switchType = {
 
         return {
             ...state,
+            cityOptionSaved: false,
             tempOptions: {
                 ...state.tempOptions,
                 applyDistrict
@@ -275,62 +347,58 @@ const switchType = {
 
         shopSpecifications.push(newShopSpecifications);
 
+        state.cityOptionSaved = false;
+
         return state;
     },
 
     [ActionTypes.CHANGE_SHOP_SPECIFICATIONS]: (state, { index, spec }) => {
-        let { shopSpecifications } = state.tempOptions;
+        state.tempOptions.shopSpecifications[index].spec = spec;
 
-        shopSpecifications[index].spec = spec;
-
+        state.cityOptionSaved = false;
         return state;
     },
 
     [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_ORIGINAL_COST]: (state, { index, money }) => {
-        let { shopSpecifications } = state.tempOptions;
+        state.tempOptions.shopSpecifications[index].originalCost = Number(money) || 0.01;
 
-        shopSpecifications[index].originalCost = Number(money) || 0.01;
-
+        state.cityOptionSaved = false;
         return state;
     },
 
     [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_COST]: (state, { index, money }) => {
-        let { shopSpecifications } = state.tempOptions;
+        state.tempOptions.shopSpecifications[index].cost = Number(money) || 0.01;
 
-        shopSpecifications[index].cost = Number(money) || 0.01;
-
+        state.cityOptionSaved = false;
         return state;
     },
 
     [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_EVENT_STATUS]: (state, { index }) => {
         let { shopSpecifications } = state.tempOptions;
-
         shopSpecifications[index].hasEvent = !shopSpecifications[index].hasEvent;
 
+        state.cityOptionSaved = false;
         return state;
     },
 
     [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_EVENT_COST]: (state, { index, money }) => {
-        let { shopSpecifications } = state.tempOptions;
+        state.tempOptions.shopSpecifications[index].eventCost = Number(money) || 0.01;
 
-        shopSpecifications[index].eventCost = Number(money) || 0.01;
-
+        state.cityOptionSaved = false;
         return state;
     },
 
     [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_EVENT_TIME]: (state, { index, beginTime, endTime }) => {
-        let { shopSpecifications } = state.tempOptions;
+        state.tempOptions.shopSpecifications[index].eventTime = [beginTime, endTime];
 
-        shopSpecifications[index].eventTime = [beginTime, endTime];
-
+        state.cityOptionSaved = false;
         return state;
     },
 
     [ActionTypes.REMOVE_SHOP_SPECIFICATIONS]: (state, { index }) => {
-        let { shopSpecifications } = state.tempOptions;
+        state.tempOptions.shopSpecifications = shopSpecifications.filter((x, i) => i !== index);
 
-        shopSpecifications = shopSpecifications.filter((x, i) => i !== index);
-
+        state.cityOptionSaved = false;
         return state;
     },
 
@@ -349,12 +417,21 @@ const switchType = {
 
         state.tempOptions.selectedSource = sourceId;
 
+        state.cityOptionSaved = false;
+        return state;
+    },
+
+    [ActionTypes.REMOVE_SOURCE]: (state, { sourceId }) => {
+        state.tempOptions.sourceSpecifications.delete(sourceId);
+
+        state.cityOptionSaved = false;
         return state;
     },
 
     [ActionTypes.CHANGE_SELECTED_SOURCE]: (state, { sourceId }) => {
         state.tempOptions.selectedSource = sourceId;
 
+        state.cityOptionSaved = false;
         return state;
     },
 
@@ -364,24 +441,48 @@ const switchType = {
             cost: 0
         });
 
+        state.cityOptionSaved = false;
+        return state;
+    },
+
+    [ActionTypes.REMOVE_SOURCE_SPEC]: (state, { index }) => {
+        let sourceSpecification = state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource);
+
+        sourceSpecification = sourceSpecification.filter((x, i) => i !== index);
+
+        state.tempOptions.sourceSpecifications.set(state.tempOptions.selectedSource, sourceSpecification);
+
+        state.cityOptionSaved = false;
         return state;
     },
 
     [ActionTypes.CHANGE_SOURCE_SPEC]: (state, { index, spec }) => {
         state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource)[index].spec = spec;
 
+        state.cityOptionSaved = false;
         return state;
     },
 
     [ActionTypes.CHANGE_SOURCE_SPEC_COST]: (state, { index, money }) => {
         state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource)[index].cost = money;
 
+        state.cityOptionSaved = false;
+        return state;
+    },
+
+    [ActionTypes.SAVE_CITIY_OPTION]: state => {
+        state.citiesOptions.set(state.selectedCity, clone(state.tempOptions));
+        state.cityOptionSaved = true;
+        state.citiesData.get(state.selectedCity).checked = true;
+
         return state;
     }
 };
 
-const productSKUManagement = (state = initialState, action) => action.type in switchType
-? switchType[action.type](clone(state), action)
-: state;
+const productSKUManagement = (state = initialState, action) => {
+    return action.type in switchType
+    ? switchType[action.type](clone(state), action)
+    : state;
+}
 
 export default productSKUManagement;

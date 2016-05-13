@@ -35,10 +35,14 @@ const ActionTypes = {
     REMOVE_SHOP_SPECIFICATIONS:               Symbol('REMOVE_SHOP_SPECIFICATIONS'),
 
     ADD_SOURCE:              Symbol('ADD_SOURCE'),
+    REMOVE_SOURCE:           Symbol('REMOVE_SOURCE'),
     CHANGE_SELECTED_SOURCE:  Symbol('CHANGE_SELECTED_SOURCE'),
     ADD_SOURCE_SPEC:         Symbol('ADD_SOURCE_SPEC'),
+    REMOVE_SOURCE_SPEC:      Symbol('REMOVE_SOURCE_SPEC'),
     CHANGE_SOURCE_SPEC:      Symbol('CHANGE_SOURCE_SPEC'),
     CHANGE_SOURCE_SPEC_COST: Symbol('CHANGE_SOURCE_SPEC_COST'),
+
+    SAVE_CITIY_OPTION:       Symbol('SAVE_CITIY_OPTION')
 };
 
 const es6promisify = function(func) {
@@ -55,6 +59,7 @@ const get = es6promisify(Req.get);
 const loadCategories         = () => get(Url.categories.toString());
 const loadAllGeographiesData = () => get(Url.allGeographies.toString());
 const loadEnableCities       = id => get(Url.activatedCity.toString(id));
+const loadDistricts          = id => get(Url.districts.toString(id));
 
 const transformPrice = num => (
     num <= 0 ? 0.01 : Number(num.toFixed(2))
@@ -223,11 +228,27 @@ const changeBookingTime = hour => {
     };
 }
 
-const changeSecondaryBookingTimeStatus = () => {
-    return {
-        type: ActionTypes.CHANGE_SECONDARY_BOOKINGTIME_STATUS
-    };
-}
+const changeSecondaryBookingTimeStatus = () => (
+    (dispatch, getState) => {
+        const state = getState().productSKUManagement;
+        const { tempOptions } = state;
+
+        if (state.districtsData.has(tempOptions.selectedCity)) {
+            return dispatch({
+                type: ActionTypes.CHANGE_SECONDARY_BOOKINGTIME_STATUS
+            });
+        }
+
+        return loadDistricts(state.selectedCity).then(
+            districtsData => {
+                dispatch({
+                    type: ActionTypes.CHANGE_SECONDARY_BOOKINGTIME_STATUS,
+                    districtsData
+                });
+            }
+        )
+    }
+);
 
 const changeSecondaryBookingTime = hour => {
     return {
@@ -311,6 +332,13 @@ const addSource = sourceId => {
     }
 }
 
+const removeSource = sourceId => {
+    return {
+        type: ActionTypes.REMOVE_SOURCE,
+        sourceId: Number(sourceId)
+    }
+}
+
 const changeSelectedSource = sourceId => {
     return {
         type: ActionTypes.CHANGE_SELECTED_SOURCE,
@@ -321,6 +349,13 @@ const changeSelectedSource = sourceId => {
 const addSourceSpec = () => {
     return {
         type: ActionTypes.ADD_SOURCE_SPEC
+    }
+}
+
+const removeSourceSpec = index => {
+    return {
+        type: ActionTypes.REMOVE_SOURCE_SPEC,
+        index
     }
 }
 
@@ -337,6 +372,12 @@ const changeSourceSpecCost = (index, money) => {
         type: ActionTypes.CHANGE_SOURCE_SPEC_COST,
         index,
         money
+    }
+}
+
+const saveCityOption = () => {
+    return {
+        type: ActionTypes.SAVE_CITIY_OPTION
     }
 }
 
@@ -371,8 +412,12 @@ export default {
     removeShopSpecifications,
 
     addSource,
+    removeSource,
     changeSelectedSource,
     addSourceSpec,
+    removeSourceSpec,
     changeSourceSpec,
     changeSourceSpecCost,
+
+    saveCityOption
 }

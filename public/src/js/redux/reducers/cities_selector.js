@@ -216,11 +216,15 @@ const switchType = {
         let { selectedProvince, checkedProvinces } = state;
         let newCheckedCities = new Set([cityId, ...state.checkedCities]);
 
-        const citiesList = state.provincesData.get(selectedProvince).list;
+        const citiesList = new Set([...state.citiesData.values()].filter(
+            city => city.province === selectedProvince && city.enable
+        ).map(
+            city => city.id
+        ));
         const newSize    = newCheckedCities.size;
         const unionSize  = new Set([...citiesList, ...newCheckedCities]).size;
 
-        // 被选取的城市的所在省份的城市编号集合
+        // 被选取的城市的所在省份的可选城市编号集合
         // 与添加新城市后，所有被选取城市的集合
         // 如果它们的并集的数量没有改变，则说明被选取的城市的所在省份，旗下所有城市都已经被选中
         if (newSize === unionSize) {

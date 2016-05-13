@@ -98,6 +98,25 @@ ProductService.prototype.listProducts = (req, res, next) => {
         for (let o in temp_obj) {
             res_data.list.push(temp_obj[o]);
         }
+        // TODO: 在获取订单可选的产品列表时，每种产品sku只返回一个
+        if (req.query.__only_accessory__) {
+            let existProduct = [];
+            let selectStr = ['蛋糕帽', '蜡烛', '数字蜡烛', '餐具'];
+            let tmpList = [];
+            for (let i = 0; i < res_data.list.length; i++) {
+                let tmpP = res_data.list[i];
+                selectStr.forEach(str=> {
+                    if(tmpP.name == str && existProduct.indexOf(str) == -1){
+                        tmpP.skus = [tmpP.skus[0]];
+                        tmpList.push(tmpP);
+                        existProduct.push(str);
+                        return false;
+                    }
+                });
+            }
+            res_data.list = tmpList;
+            res_data.total = tmpList.length;
+        }
         res.api(res_data);
     });
     systemUtils.wrapService(res,next, promise);
@@ -148,6 +167,7 @@ ProductService.prototype.listAccessoryByOrder = (req, res, next)=> {
         req.query.category_id = Constant.PRODUCT.ACCESSORY_ID;
         req.query.page_no = 0;
         req.query.city_id = curr.city_id;
+        req.query.__only_accessory__ = true;
         // req.query.page_size = 10;
         ProductService.prototype.listProducts(req, res, next);
     });

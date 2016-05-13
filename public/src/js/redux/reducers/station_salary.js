@@ -31,7 +31,9 @@ function main(state = main_state, action){
 		case Actions.RESET_ORDER_OPT_RECORD:
 		  	return {...state, operationRecord:{}};
 		case Actions.GET_ORDER_OPT_RECORD:
-		  	return {...state, operationRecord:action.data }
+			var data = action.data;
+			data.page_size = data.total;
+		  	return {...state, operationRecord:data }
 		default:
 			return state;
 	}

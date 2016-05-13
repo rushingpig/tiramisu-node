@@ -417,27 +417,32 @@ var SalaryRow = React.createClass({
 		delivery_pay.removeAttribute('readOnly');
 	},
 	onChangeDeliveryRecord:function(){
-		this.setState({Edit_ing:false});
-		var data = {};
-		data.COD_amount = this.state.COD_amount * 100;
-		data.remark = this.state.remark;
-		data.delivery_pay = this.state.delivery_pay * 100;
-		data.updated_time = this.props.updated_time;
-		var {order_id} = this.props;
-		if(!/^\d+(\.\d+)?$/.test(this.state.COD_amount) || !/^\d+(\.\d+)?$/.test(this.state.delivery_pay)){
-			Noty('warning','金额格式不正确');return;
+		if(this.state.Edit_ing){
+			this.setState({Edit_ing:false});
+			var data = {};
+			data.COD_amount = this.state.COD_amount * 100;
+			data.remark = this.state.remark;
+			data.delivery_pay = this.state.delivery_pay * 100;
+			data.updated_time = this.props.updated_time;
+			var {order_id} = this.props;
+			if(!/^\d+(\.\d+)?$/.test(this.state.COD_amount) || !/^\d+(\.\d+)?$/.test(this.state.delivery_pay)){
+				this.setState({Edit_ing:true});
+				Noty('warning','金额格式不正确');return;
+			}
+			if(this.state.COD_amount != this.props.total_amount && !data.remark){
+				this.setState({Edit_ing:true});
+				Noty('warning', '实收金额与应收金额数目不一致，请在备注原因'); return; 			
+			}
+			var COD_amount = this.refs.COD_amount ;
+			var remark = this.refs.remark;
+			var delivery_pay = this.refs.delivery_pay ;		
+			this.props.actions.UpdateDeliverymanSalary(order_id,data);
+			COD_amount.setAttribute('readOnly','true');
+			remark.setAttribute('readOnly','true');
+			delivery_pay.setAttribute('readOnly','true');
+			this.setState({is_review:true});			
 		}
-		if(this.state.COD_amount != this.props.total_amount && data.remark == ''){
-			Noty('warning', '实收金额与应收金额数目不一致，请在备注原因'); return; 			
-		}
-		var COD_amount = this.refs.COD_amount ;
-		var remark = this.refs.remark;
-		var delivery_pay = this.refs.delivery_pay ;		
-		this.props.actions.UpdateDeliverymanSalary(order_id,data);
-		COD_amount.setAttribute('readOnly','true');
-		remark.setAttribute('readOnly','true');
-		delivery_pay.setAttribute('readOnly','true');
-		this.setState({is_review:true});			
+			
 	},
 	onCancel:function(){
 		var COD_amount = this.refs.COD_amount;

@@ -1049,9 +1049,9 @@ DeliveryService.prototype.editRecord = (req, res, next)=> {
     let promise = co(function *() {
         let _res = yield orderDao.findOrderById(order_id);
         if (toolUtils.isEmptyArray(_res)) {
-            return Promise.reject(TiramisuError(res_obj.INVALID_UPDATE_ID));
+            return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID));
         } else if (updated_time !== _res[0].updated_time) {
-            return Promise.reject(TiramisuError(res_obj.OPTION_EXPIRED));
+            return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
         }
         yield deliveryDao.updateDeliveryRecord(order_id, systemUtils.assembleUpdateObj(order_obj), systemUtils.assembleUpdateObj(record_obj));
         yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));

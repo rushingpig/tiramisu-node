@@ -1008,6 +1008,11 @@ DeliveryService.prototype.getHistoryRecord = (req, res, next)=> {
         if (toolUtils.isEmptyArray(result)) {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
+        if(req.query.sort_type == 'ASC' || req.query.sort_type == 'DESC'){
+            result.sort((a, b)=> {
+                return ((a.created_time <= b.created_time) && req.query.sort_type == 'ASC') ? -1 : 1;
+            });
+        }
         res.api(result);
     });
     systemUtils.wrapService(res, next, promise);
@@ -1039,13 +1044,12 @@ DeliveryService.prototype.editRecord = (req, res, next)=> {
     }
     if (req.body.delivery_pay  !== undefined) {
         record_obj.delivery_pay = req.body.delivery_pay;
-        order_history_obj.option += '修改{配送工资}为{' + (order_obj.delivery_pay / 100) + '}元\n';
+        order_history_obj.option += '修改{配送工资}为{' + (record_obj.delivery_pay / 100) + '}元\n';
     }
-    if (req.body.remark  !== undefined) {
+    if (req.body.remark) {
         record_obj.remark = req.body.remark;
         order_history_obj.option += '修改{配送工资审核备注}为{' + order_obj.remark + '}\n';
     }
-
     let promise = co(function *() {
         let _res = yield orderDao.findOrderById(order_id);
         if (toolUtils.isEmptyArray(_res)) {

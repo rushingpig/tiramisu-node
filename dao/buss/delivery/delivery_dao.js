@@ -353,7 +353,6 @@ DeliveryDao.prototype.updateDeliveryRecord = function (order_id, order_obj, reco
         baseDao.transWrapPromise(trans);
 
         if (order_obj) {
-            console.log(order_obj);
             let sql = `UPDATE ?? SET ? WHERE id = ? `;
             let params = [tables.buss_order, order_obj, order_id];
             yield trans.queryPromise(sql, params);

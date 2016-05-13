@@ -1052,7 +1052,7 @@ DeliveryService.prototype.editRecord = (req, res, next)=> {
     }
     if (req.body.remark) {
         record_obj.remark = req.body.remark;
-        order_history_obj.option += '修改{配送工资审核备注}为{' + order_obj.remark + '}\n';
+        order_history_obj.option += '修改{配送工资审核备注}为{' + record_obj.remark + '}\n';
     }
     let promise = co(function *() {
         let _res = yield orderDao.findOrderById(order_id);

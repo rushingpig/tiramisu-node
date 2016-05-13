@@ -1013,7 +1013,11 @@ DeliveryService.prototype.getHistoryRecord = (req, res, next)=> {
                 return ((a.created_time <= b.created_time) && req.query.sort_type == 'ASC') ? -1 : 1;
             });
         }
-        res.api(result);
+        let data = {
+            list: result,
+            total: result.length
+        };
+        res.api(data);
     });
     systemUtils.wrapService(res, next, promise);
 };

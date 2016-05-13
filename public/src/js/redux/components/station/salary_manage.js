@@ -186,7 +186,7 @@ class FilterHeader extends Component{
 	}
 	onExportExcel(){
 		var data = {};
-		var {deliveryman_id} = this.state;
+		var deliveryman_id = this.refs.deliveryman.value;
 		data.begin_time=this.state.begin_time;
 		data.end_time = this.state.end_time;
 		if(deliveryman_id == -1){
@@ -429,7 +429,7 @@ var SalaryRow = React.createClass({
 				this.setState({Edit_ing:true});
 				Noty('warning','金额格式不正确');return;
 			}
-			if(this.state.COD_amount != this.props.total_amount && !data.remark){
+			if(this.state.COD_amount * 100 != this.props.total_amount && !data.remark){
 				this.setState({Edit_ing:true});
 				Noty('warning', '实收金额与应收金额数目不一致，请在备注原因'); return; 			
 			}

@@ -346,25 +346,28 @@ DeliveryDao.prototype.findHistoryRecord = function (order_id) {
     return baseDao.select(sql, params);
 };
 DeliveryDao.prototype.updateDeliveryRecord = function (order_id, order_obj, record_obj) {
+    if (!order_id) return Promise.reject('order_id = ', order_id);
     let trans;
     return co(function *() {
         trans = yield baseDao.trans();
         baseDao.transWrapPromise(trans);
 
-        if(order_obj){
+        if (order_obj) {
             let sql = `UPDATE ?? SET ? WHERE id = ? `;
             let params = [tables.buss_order, order_obj, order_id];
             yield trans.queryPromise(sql, params);
         }
-        if(record_obj){
-            let sql = `UPDATE ?? SET ? WHERE order_id = ? `;
-            let params = [tables.buss_delivery_record, record_obj, order_id];
+        if (record_obj) {
+            let tmp_obj = Object.assign({order_id: order_id}, record_obj);
+            // TODO: 在没有计算配送工资前的订单，在此表中没有数据，需要插入
+            let sql = `INSERT INTO ?? SET ? ON DUPLICATE KEY UPDATE ? `;
+            let params = [tables.buss_delivery_record, tmp_obj, tmp_obj];
             yield trans.queryPromise(sql, params);
         }
 
         yield trans.commitPromise();
     }).catch(err=> {
-        if(trans && typeof trans.rollbackPromise == 'function') trans.rollbackPromise();
+        if (trans && typeof trans.rollbackPromise == 'function') trans.rollbackPromise();
         return Promise.reject(err);
     });
 };

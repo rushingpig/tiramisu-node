@@ -980,15 +980,16 @@ DeliveryService.prototype.getRecord = (req, res, next)=>{
     let deliveryman_id = req.query.deliveryman_id;
     let is_COD = req.query.is_COD;
     let promise = deliveryDao.findDeliveryRecord(begin_time, end_time, deliveryman_id, is_COD).then((result)=> {
-        if (toolUtils.isEmptyArray(result)) {
+        if (!_.isArray(result)) {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
         result.sort((a, b)=> {
             return (a.delivery_time <= b.delivery_time) ? -1 : 1;
         });
         result.map(r=> {
-            if(r.COD_amount === null) r.COD_amount = r.total_amount;
-            if(r.delivery_count === null) r.delivery_count = 1;
+            r.order_id = systemUtils.getShowOrderId(r.order_id, r.created_time);
+            if (r.COD_amount === null) r.COD_amount = r.total_amount;
+            if (r.delivery_count === null) r.delivery_count = 1;
         });
 
         res.api(result);

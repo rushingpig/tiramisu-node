@@ -59,30 +59,46 @@ export function autoMatch(city, district, address){
   return new Promise((resolve, reject) => {
     if(BMap){
       let map = self._bmap;
-      map.getPoint(address, function(poi){
-        if(poi){
-          map.getPoint(district, function(poi_district){
-            //当详细地址搜索失败时，则会显示区的中心坐标
-            //(当两者相等时，意味着搜索失败, 然后启用localsearch)
-            if(poi_district.lng == poi.lng && poi_district.lat == poi.lat){
-              let LS = new BMap.LocalSearch(city, {
-                onSearchComplete: function( result ){
-                  if(result.getPoi(0)){
-                    getStation(result.getPoi(0).point);
-                  }else{
-                    reject();
-                  }
-                }
-              });
-              LS.search(address);
-            }else{
-              getStation(poi);
-            }
-          }, city);
-        }else{
-          reject();
+      let LS = new BMap.LocalSearch(city, {
+        onSearchComplete: function( result ){
+          if(result.getPoi(0)){
+            getStation(result.getPoi(0).point);
+          }else{
+            map.getPoint(address, function(poi){
+              if(poi){
+                getStation(poi);
+              }else{
+                reject('解析改地址失败');
+              }
+            }, city);
+          }
         }
-      }, city);
+      });
+      LS.search(address);
+      // map.getPoint(address, function(poi){
+      //   if(poi){
+      //     map.getPoint(district, function(poi_district){
+      //       //当详细地址搜索失败时，则会显示区的中心坐标
+      //       //(当两者相等时，意味着搜索失败, 然后启用localsearch)
+      //       if(poi_district.lng == poi.lng && poi_district.lat == poi.lat){
+      //         let LS = new BMap.LocalSearch(city, {
+      //           onSearchComplete: function( result ){
+      //             if(result.getPoi(0)){
+      //               getStation(result.getPoi(0).point);
+      //             }else{
+      //               reject();
+      //             }
+      //           }
+      //         });
+      //         LS.search(address);
+      //       }else{
+      //         getStation(poi);
+      //       }
+      //     }, city);
+      //   }else{
+      //     reject();
+      //   }
+      // }, city);
 
       function getStation( poi ){
         autoGetDeliveryStations( poi )

@@ -186,7 +186,7 @@ class FilterHeader extends Component{
 	}
 	onExportExcel(){
 		var data = {};
-		var {deliveryman_id} = this.state;
+		var deliveryman_id = this.refs.deliveryman.value;
 		data.begin_time=this.state.begin_time;
 		data.end_time = this.state.end_time;
 		if(deliveryman_id == -1){

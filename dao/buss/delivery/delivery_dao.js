@@ -314,8 +314,11 @@ DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, deliv
         sql += `AND bo.deliveryman_id = ? `;
         params.push(deliveryman_id);
     }
-    if(is_COD){
-        sql += `AND bo.total_amount > 0 `;
+    if (is_COD !== undefined && is_COD !== null) {
+        if (is_COD == true)
+            sql += `AND bo.total_amount > 0 `;
+        else
+            sql += `AND bo.total_amount = 0 `;
     }
 
     return baseDao.select(sql, params);

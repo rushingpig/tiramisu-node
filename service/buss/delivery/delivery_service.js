@@ -978,8 +978,8 @@ DeliveryService.prototype.getRecord = (req, res, next)=>{
     let begin_time = req.query.begin_time;
     let end_time = req.query.end_time;
     let deliveryman_id = req.query.deliveryman_id;
-    let is_COD = req.query.is_COD;
-    let promise = deliveryDao.findDeliveryRecord(begin_time, end_time, deliveryman_id, is_COD).then((result)=> {
+    let isCOD = req.query.isCOD;
+    let promise = deliveryDao.findDeliveryRecord(begin_time, end_time, deliveryman_id, isCOD).then((result)=> {
         if (!_.isArray(result)) {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }

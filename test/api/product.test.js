@@ -60,7 +60,7 @@ module.exports = function() {
                     done();
                 });
         })
-        
+
         it('GET /v1/a/product/sku/size', function(done) {
             agent.get('/v1/a/product/sku/size')
                 .expect('Content-Type', /json/)
@@ -75,7 +75,14 @@ module.exports = function() {
                 "price": 12800,
                 "website": 1,
                 "book_time": 3,
-                "regionalism_id": 441300
+                "regionalism_id": 441300,
+                "secondary_booktimes": [{
+                    "book_time": 2,
+                    "regionalism_id": 441310
+                }, {
+                    "book_time": 2,
+                    "regionalism_id": 441320
+                }]
             };
             let sku_2 = {
                 "size": "约2磅",
@@ -118,6 +125,10 @@ module.exports = function() {
                         let sku_sql = 'select product_id,size,website,regionalism_id,book_time from buss_product_sku where product_id = ' + product_id;
                         pool.query(sku_sql, function(err, result) {
                             assert.equal(result.length, 4);
+                            let sku_booktime_sql = 'select count(1) as count from buss_product_sku a join buss_product_sku_booktime b on a.id = b.sku_id where a.product_id = ' + product_id + ' and a.size = \'约1磅\'';
+                            pool.query(sku_booktime_sql, function (err, result) {
+                                assert.equal(result[0].count, 2);
+                            });
                             done();
                         });
                     });

@@ -125,10 +125,39 @@ ProductDao.prototype.insertProduct = function(req, data, connection){
     }
 };
 ProductDao.prototype.insertSku = function (req, data, connection) {
+    let self = this;
+    let secondary_booktimes = data.secondary_booktimes || [];
+    delete data.secondary_booktimes;
     if(connection){
-        return baseDao.insertWithConnection(connection, this.base_insert_sql, [config.tables.buss_product_sku, systemUtils.assembleInsertObj(req, data)]);
+        return baseDao.insertWithConnection(connection, self.base_insert_sql, [config.tables.buss_product_sku, systemUtils.assembleInsertObj(req, data)])
+            .then(skuId => {
+                let promises = secondary_booktimes.map(secondary_booktime => {
+                    let book_time_date = {
+                        sku_id: skuId,
+                        book_time: secondary_booktime.book_time,
+                        regionalism_id: secondary_booktime.regionalism_id
+                    };
+                    return baseDao.insertWithConnection(connection, self.base_insert_sql, [config.tables.buss_product_sku_booktime, book_time_date]);
+                });
+                return Promise.all(promises).then(() => {
+                    return Promise.resolve(skuId);
+                });
+            });
     } else {
-        return baseDao.insert(this.base_insert_sql, [config.buss_product_sku, systemUtils.assembleInsertObj(req, data)]);
+        return baseDao.insert(this.base_insert_sql, [config.buss_product_sku, systemUtils.assembleInsertObj(req, data)])
+            .then(skuId => {
+                let promises = secondary_booktimes.map(secondary_booktime => {
+                    let book_time_date = {
+                        sku_id: skuId,
+                        book_time: secondary_booktime.book_time,
+                        regionalism_id: secondary_booktime.regionalism_id
+                    };
+                    return baseDao.insert(self.base_insert_sql, [config.tables.buss_product_sku_booktime, book_time_date]);
+                });
+                return Promise.all(promises).then(() => {
+                    return Promise.resolve(skuId);
+                });
+            });
     }
 }
 ProductDao.prototype.insertProductWithSku = function (req, data) {
@@ -155,7 +184,8 @@ ProductDao.prototype.insertProductWithSku = function (req, data) {
                         send_start: sku.send_start,
                         send_end: sku.send_end,
                         expire_flag: EXPIRE.valid,
-                        del_flag: del_flag.SHOW
+                        del_flag: del_flag.SHOW,
+                        secondary_booktimes: sku.secondary_booktimes
                     };
                     let promise = self.insertSku(req, sku_data, connection);
                     // 如果是活动sku，需要同时存储关联的非活动sku
@@ -165,7 +195,7 @@ ProductDao.prototype.insertProductWithSku = function (req, data) {
                             sku_data.activity_price = sku.activity_price;
                             sku_data.activity_start = sku.activity_start;
                             sku_data.activity_end = sku.activity_end;
-                            sku_data.expire_flag = EXPIRE.invalid;
+                            sku_data.expire_flag = EXPIRE.valid;
                             sku_data.del_flag = del_flag.SHOW;
                             return self.insertSku(req, sku_data, connection);
                         });

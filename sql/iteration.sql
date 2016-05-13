@@ -126,7 +126,8 @@ DROP COLUMN `sort`,
 CHANGE COLUMN `del_flag` `del_flag` TINYINT(1) NULL DEFAULT 1,
 ADD COLUMN `original_price` INT(8) NOT NULL DEFAULT '0' COMMENT '产品原价（单位：分）' AFTER `price`,
 ADD COLUMN `book_time` INT(4) NOT NULL DEFAULT '0' COMMENT '预约时间' AFTER `original_price`,
-ADD COLUMN `presell_start` DATETIME NULL DEFAULT NULL COMMENT '预售上架开始时间' AFTER `book_time`,
+ADD COLUMN `detail_page` varchar(255) NULL COMMENT '商品网站详情页' AFTER `book_time`,
+ADD COLUMN `presell_start` DATETIME NULL DEFAULT NULL COMMENT '预售上架开始时间' AFTER `detail_page`,
 ADD COLUMN `presell_end` DATETIME NULL DEFAULT NULL COMMENT '预售上架结束时间' AFTER `presell_start`,
 ADD COLUMN `send_start` DATETIME NULL DEFAULT NULL COMMENT '预售发货开始时间' AFTER `presell_end`,
 ADD COLUMN `send_end` DATETIME NULL DEFAULT NULL COMMENT '预售发货结束时间' AFTER `send_start`,
@@ -168,3 +169,11 @@ DO
 BEGIN
   update buss_product_sku set expire_flag = 0 where presell_end < now() and expire_flag = 1 and del_flag = 1;
 END;
+
+DROP TABLE IF EXISTS `buss_product_pic`;
+CREATE TABLE `buss_product_pic` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_id` int(10) DEFAULT NULL COMMENT '产品id',
+  `pic_url` varchar(255) DEFAULT NULL COMMENT '图片url',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='产品图片';

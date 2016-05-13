@@ -333,7 +333,7 @@ var SalaryRow = React.createClass({
 				<td>{'原价:￥'+ props.total_original_price }<br/>
 					{ '实际售价:￥'+ props.total_discount_price }<br/>
 					{'应收金额:￥' + props.total_amount}</td>
-				<td><input type='text' readOnly value={this.state.delivery_pay}
+				<td><input type='text' readOnly value={this.state.delivery_pay / 100}
 						ref = 'delivery_pay'
 						className='form-control input-xs short-input'
 						onChange = {this.onDeliverypayChange} 
@@ -342,7 +342,7 @@ var SalaryRow = React.createClass({
 				<td>
 					<input type='text' readOnly className="form-control short-input" 
 						ref = 'COD_amount'
-						value ={this.state.COD_amount}
+						value ={this.state.COD_amount / 100}
 						className='form-control input-xs short-input' 
 						onChange = {this.onReceiveAmountChange}
 						style={{height:27,width:50, marginLeft:'auto', marginRight:'auto', 
@@ -518,15 +518,15 @@ class DeliveryManSalaryManagePannel extends Component{
 						    <div className='form-inline' style={{marginTop:20,float:'right'}}>
 						    	<span style={{fontWeight:'bold'}}>{'应收金额总计：'}</span>
 						    	<input readOnly type='text' style={{width:50}} 
-						    		value = {amount_total}
+						    		value = {amount_total / 100}
 						    		className="form-control input-xs short-input"/>
 						    	<span style={{fontWeight:'bold'}}>{'　工资总计：'}</span>
 						    	<input readOnly type='text' style={{width:50}} 
-						    		value ={salary_total}
+						    		value ={salary_total / 100}
 						    		className="form-control input-xs short-input"/>
 						    	<span style={{fontWeight:'bold'}}>{'　实收金额总计：'}</span>
 						    	<input readOnly type='text' style={{width:50}} 
-						    		value = {receive_total}
+						    		value = {receive_total / 100}
 						    		className="form-control input-xs short-input"/>
 						    	{'　(现金:￥' + cash }{',POS机:￥' + pos}{')　'}
 						    </div>

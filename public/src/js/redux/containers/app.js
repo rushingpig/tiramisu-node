@@ -31,7 +31,8 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
           DeliveryChangePannel:     require('../components/delivery/change'),
           DeliveryManagePannel:     require('../components/delivery/delivery_manage'),
           DistributeManagePannel:   require('../components/delivery/distribute_manage'),
-          DeliverPrintReviewPannel: require('../components/delivery/print_review')
+          DeliverPrintReviewPannel: require('../components/delivery/print_review'),
+          DeliveryManSalaryManagePannel:   require('../components/delivery/salary_manage'),
         };
         callback();
       });
@@ -51,7 +52,6 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
           StationManageDetailPannel:  require('../components/station/station_manage_detail_pannel'),
           StationScopeManagePannel:   require('../components/station/station_scope_manage'),
           StationScopeSharePannel:    require('../components/station/station_scope_share'),
-          DeliveryManSalaryManagePannel:   require('../components/station/salary_manage'),
         };
         callback();
       });
@@ -98,7 +98,7 @@ const App = () => (
         <Route path="delivery"   onEnter={onEnter('DeliveryManageAccess')}   getComponent={get('DeliveryManagePannel')}   />
         <Route path="distribute" onEnter={onEnter('DistributeManageAccess')} getComponent={get('DistributeManagePannel')}   />
         <Route path="review"   onEnter={onEnter('PrintReviewAccess')}    getComponent={get('DeliverPrintReviewPannel')} />
-        
+        <Route path="salary" onEnter={onEnter('DeliveryManSalaryManageAccess')} getComponent={get('DeliveryManSalaryManagePannel')} />
       </Route>
 
       <Route path="cm" onEnter={getComponents('cm')}>
@@ -123,7 +123,6 @@ const App = () => (
         <Route path="scope" onEnter={onEnter('StationScopeManageAccess')} getComponent={get('StationScopeManagePannel')} />
         <Route path="scope/:id" onEnter={onEnter('StationScopeManageAccess')} getComponent={get('StationScopeManagePannel')} />
         <Route path="scope_s/:id" onEnter={onEnter('StationScopeShareAccess')} getComponent={get('StationScopeSharePannel')} />
-        <Route path="salary" onEnter={onEnter('DeliveryManSalaryManageAccess')} getComponent={get('DeliveryManSalaryManagePannel')} />
       </Route>
 
       <Redirect from="logout" to="/" />

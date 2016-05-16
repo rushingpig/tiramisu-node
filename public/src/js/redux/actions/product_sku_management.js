@@ -1,6 +1,6 @@
 import Req from 'utils/request';
 import Url from 'config/url';
-import { clone } from 'utils/index';
+import { clone, dateFormat } from 'utils/index';
 
 import { ActionTypes as CitiesSelectorActionTypes } from './cities_selector';
 
@@ -18,6 +18,7 @@ const ActionTypes = {
     CHANGE_SELECTED_CITY:     Symbol('CHANGE_SELECTED_CITY'),
 
     CHANGE_PRESALE_STATUS: Symbol('CHANGE_PRESALE_STATUS'),
+    CHANGE_DELIVERY_TIME:  Symbol('CHANGE_DELIVERY_TIME'),
     CHANGE_PRESALE_TIME:   Symbol('CHANGE_PRESALE_TIME'),
     CHANGE_BOOKING_TIME:   Symbol('CHANGE_BOOKING_TIME'),
 
@@ -42,7 +43,9 @@ const ActionTypes = {
     CHANGE_SOURCE_SPEC:      Symbol('CHANGE_SOURCE_SPEC'),
     CHANGE_SOURCE_SPEC_COST: Symbol('CHANGE_SOURCE_SPEC_COST'),
 
-    SAVE_CITIY_OPTION:       Symbol('SAVE_CITIY_OPTION')
+    SAVE_CITIY_OPTION:       Symbol('SAVE_CITIY_OPTION'),
+    SAVE_OPTION:             Symbol('SAVE_OPTION'),
+    RESET_SAVE_STATUS:       Symbol('RESET_SAVE_STATUS')
 };
 
 const es6promisify = function(func) {
@@ -55,11 +58,14 @@ const es6promisify = function(func) {
 };
 
 const get = es6promisify(Req.get);
+const post = es6promisify(Req.post);
 
 const loadCategories         = () => get(Url.categories.toString());
 const loadAllGeographiesData = () => get(Url.allGeographies.toString());
+const loadOrderSource        = () => get(Url.order_srcs.toString());
 const loadEnableCities       = id => get(Url.activatedCity.toString(id));
 const loadDistricts          = id => get(Url.districts.toString(id));
+const addSku                 = postData => post(Url.addSku.toString(), postData);
 
 const transformPrice = num => (
     num <= 0 ? 0.01 : Number(num.toFixed(2))
@@ -72,10 +78,12 @@ const loadBasicData = () => (
 
         return Promise.all([
             loadCategories(),
-            loadAllGeographiesData()
+            loadAllGeographiesData(),
+            loadOrderSource()
         ]).then(([
             categoriesData,
-            geographiesData
+            geographiesData,
+            orderSourceData
         ]) => {
             return loadEnableCities(categoriesData[0].id).then(
                 enableList => {
@@ -87,7 +95,8 @@ const loadBasicData = () => (
 
                     dispatch({
                         type: ActionTypes.LOADED_BASIC_DATA,
-                        categoriesData
+                        categoriesData,
+                        orderSourceData
                     });
 
                     const sid = getState().productSKUManagement.selectSecondaryCategory;
@@ -224,7 +233,7 @@ const changeDeliveryTime = (beginTime, endTime) => {
 const changeBookingTime = hour => {
     return {
         type: ActionTypes.CHANGE_BOOKING_TIME,
-        hour
+        hour: Number(hour)
     };
 }
 
@@ -253,7 +262,7 @@ const changeSecondaryBookingTimeStatus = () => (
 const changeSecondaryBookingTime = hour => {
     return {
         type: ActionTypes.CHANGE_SECONDARY_BOOKINGTIME,
-        hour
+        hour: Number(hour)
     };
 }
 
@@ -381,6 +390,188 @@ const saveCityOption = () => {
     }
 }
 
+const resetSaveStatus = () => {
+    return {
+        type: ActionTypes.RESET_SAVE_STATUS
+    }
+}
+
+const saveOption = () => (
+    (dispatch, getState) => {
+        dispatch({
+            type: ActionTypes.SAVE_OPTION,
+            saveStatus: 'padding'
+        });
+
+        const { productSKUManagement, citiesSelector } = getState();
+        const state = productSKUManagement;
+        const citiesSelectorState = citiesSelector
+
+        let postData = {
+            category_id: state.selectSecondaryCategory,
+            name: state.productName.trim()
+        };
+
+        let sku = [];
+
+        const transformShangjiaOption = option => {
+            let transformedOption = {};
+            const { onSaleTime, delivery } = option;
+
+            transformedOption = {
+                book_time: option.bookingTime,
+                presell_start: dateFormat(onSaleTime[0], 'yyyy-MM-dd hh:mm:ss'),
+                send_start: dateFormat(delivery[0], 'yyyy-MM-dd hh:mm:ss')
+            }
+
+            if (onSaleTime[1] !== 'Infinite') {
+                transformedOption.presell_end = dateFormat(onSaleTime[1], 'yyyy-MM-dd hh:mm:ss')
+            }
+
+            if (delivery[1] !== 'Infinite') {
+                transformedOption.send_end = dateFormat(delivery[1], 'yyyy-MM-dd hh:mm:ss')
+            }
+
+            if (state.citiesOptionApplyRange === 1 && option.hasSecondaryBookingTime) {
+                transformedOption.secondary_booktimes = [...option.applyDistrict].map(
+                    districtCode => ({
+                        book_time: option.secondaryBookingTime,
+                        regionalism_id: Number(districtCode)
+                    })
+                );
+            }
+
+            return transformedOption;
+        };
+
+        const transformShopSpecificationOption = option => {
+            let transformedOption = {
+                size: option.spec.trim(),
+                original_price: parseInt(option.originalCost * 100),
+                price: parseInt(option.cost * 100),
+                website: 1 // 商城商品，渠道固定为1
+            };
+
+            if (option.hasEvent) {
+                transformedOption = {
+                    ...transformedOption,
+                    activity_price: parseInt(option.eventCost * 100),
+                    activity_start: dateFormat(option.eventTime[0], 'yyyy-MM-dd hh:mm:ss')
+                }
+
+                if (option.eventTime[1] !== 'Infinite') {
+                    transformedOption.activity_end = dateFormat(option.eventTime[1], 'yyyy-MM-dd hh:mm:ss');
+                }
+            }
+
+            return transformedOption;
+        }
+
+        const transformSourceSpecificationOption = ([ sourceId, options ]) => options.map(
+            opt => ({
+                website: sourceId,
+                size: opt.spec.trim(),
+                price: parseInt(opt.cost)
+            })
+        );
+
+        if (state.citiesOptionApplyRange === 0) {
+
+            const shangjiaOpt = transformShangjiaOption(state.tempOptions);
+            let sourceSpecifications = [];
+
+            [...state.tempOptions.sourceSpecifications]
+                .map(transformSourceSpecificationOption)
+                .forEach(srcArr => {
+                    srcArr.map(
+                        opt => sourceSpecifications.push({
+                            ...shangjiaOpt,
+                            ...opt
+                        })
+                    )
+                });
+
+            let shopSpecifications = [];
+
+            if (state.tempOptions.isPreSale) {
+                shopSpecifications = state.tempOptions.shopSpecifications
+                    .map(transformShopSpecificationOption)
+                    .map( opt => ({ ...shangjiaOpt, ...opt }) );
+            }
+
+            [...citiesSelectorState.checkedCities].forEach(cityId => {
+                sku = [
+                    ...sku,
+                    ...[...shopSpecifications, ...sourceSpecifications].map(
+                        opt => ({
+                            regionalism_id: cityId,
+                            ...opt
+                        })
+                    )
+                ];
+            });
+        } else { // state.citiesOptionApplyRange === 1
+            [...state.citiesOptions].forEach(([cityId, cityOption]) => {
+                if (cityId === 'all')
+                    return;
+
+                const shangjiaOpt = transformShangjiaOption(cityOption);
+                let sourceSpecifications = [];
+
+                [...cityOption.sourceSpecifications]
+                    .map(transformSourceSpecificationOption)
+                    .forEach(srcArr => {
+                        srcArr.map(
+                            opt => sourceSpecifications.push({
+                                ...shangjiaOpt,
+                                ...opt
+                            })
+                        )
+                    });
+
+                let shopSpecifications = [];
+
+                if (cityOption.isPreSale) {
+                    shopSpecifications = cityOption.shopSpecifications
+                        .map(transformShopSpecificationOption)
+                        .map( opt => ({ ...shangjiaOpt, ...opt }) );
+                }
+
+                sku = [
+                    ...sku,
+                    ...[...shopSpecifications, ...sourceSpecifications].map(
+                        opt => ({
+                            regionalism_id: cityId,
+                            ...opt
+                        })
+                    )
+                ];
+            });
+        }
+
+        postData = {
+            ...postData,
+            sku
+        }
+
+        return addSku(postData).then(
+            () => {
+                dispatch({
+                    type: ActionTypes.SAVE_OPTION,
+                    saveStatus: 'success'
+                });
+            }
+        ).catch(
+            () => {
+                dispatch({
+                    type: ActionTypes.SAVE_OPTION,
+                    saveStatus: 'failed'
+                });
+            }
+        );
+    }
+)
+
 export { ActionTypes }
 
 export default {
@@ -419,5 +610,7 @@ export default {
     changeSourceSpec,
     changeSourceSpecCost,
 
-    saveCityOption
+    saveCityOption,
+    resetSaveStatus,
+    saveOption
 }

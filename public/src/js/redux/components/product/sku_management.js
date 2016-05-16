@@ -233,7 +233,12 @@ class PreSaleOptions extends Component {
                 <Row>
                     <Col xs="10" offset="2">
                         <div className="form-inline">
-                            {'　　'}预约时间：<Input value={tempOptions.bookingTime} onChange={getDOMValue(Action.changeBookingTime)} />
+                            {'　　'}
+                            预约时间：
+                            <Input value={tempOptions.bookingTime} onChange={getDOMValue(Action.changeBookingTime)} />
+                            <small className='text-muted'>
+                                （单位：小时）
+                            </small>
                         </div>
                     </Col>
                 </Row>
@@ -263,7 +268,7 @@ class PreSaleOptions extends Component {
                             <p />
                             <Row>
                                 <Col xs="10" offset="2">
-                                    <div className="form-inline">{'　　　　'}时间：<Input /></div>
+                                    <div className="form-inline">{'　　　　'}时间：<Input onChange={getDOMValue(Action.changeSecondaryBookingTime)} /></div>
                                 </Col>
                             </Row>
                             <p />
@@ -609,10 +614,12 @@ class CitiesOptions extends Component {
                                 />
                                 {'　'}
                                 {
-                                    state.cityOptionSaved ? (
+                                    state.cityOptionSavable ? state.cityOptionSaved ? (
                                         <button className="btn btn-default btn-xs" disabled={true}>已保存</button>
                                     ) : (
                                         <button className="btn btn-theme btn-xs" onClick={Action.saveCityOption}>保存城市设置</button>
+                                    ) : (
+                                        <button className="btn btn-default btn-xs" disabled={true}>保存城市设置</button>
                                     )
                                 }
                             </Col>
@@ -692,7 +699,20 @@ class Main extends Component {
                         <hr/>
                         <div className="row">
                             <div className="col-xs-4 col-xs-offset-2">
-                                <button className="btn btn-theme">保存商品设置</button>
+                            {
+                                state.citiesOptionApplyRange === 1 && [...state.citiesOptions.keys()].filter(x => x !== 'all').length === 0 ? (
+                                    <button className="btn btn-default" disabled={true}>
+                                        保存商品设置
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="btn btn-theme"
+                                        onClick={Action.saveOption}
+                                    >
+                                        保存商品设置
+                                    </button>
+                                )
+                            }
                             </div>
                         </div>
                     </div>
@@ -703,6 +723,28 @@ class Main extends Component {
 
     componentDidMount() {
         this.props.Action.loadBasicData();
+    }
+
+    componentDidUpdate() {
+        const { state, Action } = this.props;
+
+        if (state.saveStatus === 'failed') {
+            return MessageBox({
+                icon: MessageBoxIcon.Error,
+                text: '保存失败'
+            }).then(
+                Action.resetSaveStatus
+            );
+        }
+
+        if (state.saveStatus === 'success') {
+            return MessageBox({
+                icon: MessageBoxIcon.Success,
+                text: '保存成功'
+            }).then(
+                Action.resetSaveStatus
+            );
+        }
     }
 }
 

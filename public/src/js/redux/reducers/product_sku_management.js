@@ -2,6 +2,8 @@ import { ActionTypes } from 'actions/product_sku_management';
 import { ActionTypes as CitiesSelectorActionTypes } from 'actions/cities_selector';
 import { clone, dateFormat, getDate } from 'utils/index';
 
+const iNow = new Date();
+
 const initialState = {
     basicDataLoadStatus: 'pending',
 
@@ -27,12 +29,13 @@ const initialState = {
     selectedProvince: 0,
     selectedCity: 0,
 
+    cityOptionSavable: false,
     cityOptionSaved: true,
 
     tempOptions: {
         isPreSale: true,
-        onSaleTime: [],
-        delivery: [],
+        onSaleTime: [iNow, new Date(getDate(iNow, 7))],
+        delivery: [iNow, new Date(getDate(iNow, 7))],
         bookingTime: "",
         hasSecondaryBookingTime: false,
         secondaryBookingTime: "",
@@ -40,14 +43,51 @@ const initialState = {
         shopSpecifications: [],
         sourceSpecifications: new Map(),
         selectedSource: ""
-    }
+    },
+
+    saveStatus: 'normal', // normal, padding, success, failed
 };
 
+const tempOptionsValidator = state => {
+    let cityOptionSavable = true;
+    const { tempOptions } = state;
+
+    if (
+        (typeof tempOptions.bookingTime) !== 'number'
+        || tempOptions.bookingTime <= 0
+    ) {
+        cityOptionSavable = false;
+    } else if (
+        tempOptions.hasSecondaryBookingTime
+        && (
+            (typeof tempOptions.secondaryBookingTime) !== 'number'
+            || tempOptions.secondaryBookingTime <= 0
+        )
+    ) {
+        cityOptionSavable = false;
+    } else if (
+        tempOptions.hasSecondaryBookingTime
+        && tempOptions.applyDistrict.size === 0
+    ) {
+        cityOptionSavable = false;
+    } else if (
+        tempOptions.shopSpecifications.length === 0 && tempOptions.sourceSpecifications.size === 0
+    ) {
+        cityOptionSavable = false;
+    }
+
+    return {
+        ...state,
+        cityOptionSavable
+    }
+}
+
 const switchType = {
-    [ActionTypes.LOADED_BASIC_DATA]: (state, { categoriesData }) => {
+    [ActionTypes.LOADED_BASIC_DATA]: (state, { categoriesData, orderSourceData }) => {
 
         let primaryCategoriesMap = new Map();
         let secondaryCategoriesMap = new Map();
+        let orderSource = new Map();
         let firstID = 0;
 
         categoriesData.filter(
@@ -76,8 +116,17 @@ const switchType = {
             }
         });
 
+        orderSourceData.forEach(src => {
+            // src.id !== 1
+            // id为1是PC官网，禁止1是为了防止渠道设置里重复设置PC官网的渠道的规格
+            if (src.id !== 1 && src.level === 2) {
+                orderSource.set(src.id, src.name);
+            }
+        });
+
         return {
             ...state,
+            orderSource,
             basicDataLoadStatus: 'success',
             primaryCategories: primaryCategoriesMap,
             secondaryCategories: secondaryCategoriesMap,
@@ -255,14 +304,14 @@ const switchType = {
     },
 
     [ActionTypes.CHANGE_PRESALE_TIME]: (state, { beginTime, endTime }) => {
-        return {
+        return tempOptionsValidator({
             ...state,
             cityOptionSaved: false,
             tempOptions: {
                 ...state.tempOptions,
                 onSaleTime: [ beginTime, endTime ]
             }
-        }
+        });
     },
 
     [ActionTypes.CHANGE_DELIVERY_TIME]: (state, { beginTime, endTime }) => {
@@ -277,14 +326,14 @@ const switchType = {
     },
 
     [ActionTypes.CHANGE_BOOKING_TIME]: (state, { hour }) => {
-        return {
+        return tempOptionsValidator({
             ...state,
             cityOptionSaved: false,
             tempOptions: {
                 ...state.tempOptions,
-                bookingTime: hour <= 0 ? 0.1 : hour
+                bookingTime: hour
             }
-        }
+        });
     },
 
     [ActionTypes.CHANGE_SECONDARY_BOOKINGTIME_STATUS]: (state, { districtsData }) => {
@@ -302,18 +351,18 @@ const switchType = {
         state.tempOptions.hasSecondaryBookingTime = !state.tempOptions.hasSecondaryBookingTime;
 
         state.cityOptionSaved = false;
-        return state;
+        return tempOptionsValidator(state);
     },
 
     [ActionTypes.CHANGE_SECONDARY_BOOKINGTIME]: (state, { hour }) => {
-        return {
+        return tempOptionsValidator({
             ...state,
             cityOptionSaved: false,
             tempOptions: {
                 ...state.tempOptions,
-                secondaryBookingTime: hour <= 0 ? 0.1 : hour
+                secondaryBookingTime: hour
             }
-        }
+        });
     },
 
     [ActionTypes.CHANGE_SECONDARY_BOOKINGTIME_RANGE]: (state, { districtCode }) => {
@@ -321,14 +370,14 @@ const switchType = {
 
         applyDistrict[applyDistrict.has(districtCode) ? 'delete' : 'add'](districtCode);
 
-        return {
+        return tempOptionsValidator({
             ...state,
             cityOptionSaved: false,
             tempOptions: {
                 ...state.tempOptions,
                 applyDistrict
             }
-        }
+        });
     },
 
     [ActionTypes.CREATE_SHOP_SPECIFICATIONS]: (state, { index }) => {
@@ -338,10 +387,10 @@ const switchType = {
 
         let newShopSpecifications = {
             spec: "",
-            originalCost: 0.01,
-            cost: 0.01,
+            originalCost: 0,
+            cost: 0,
             hasEvent: false,
-            eventCost: 0.01,
+            eventCost: 0,
             eventTime: [now, new Date(getDate(now, 7))]
         }
 
@@ -349,7 +398,7 @@ const switchType = {
 
         state.cityOptionSaved = false;
 
-        return state;
+        return tempOptionsValidator(state);
     },
 
     [ActionTypes.CHANGE_SHOP_SPECIFICATIONS]: (state, { index, spec }) => {
@@ -360,14 +409,14 @@ const switchType = {
     },
 
     [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_ORIGINAL_COST]: (state, { index, money }) => {
-        state.tempOptions.shopSpecifications[index].originalCost = Number(money) || 0.01;
+        state.tempOptions.shopSpecifications[index].originalCost = Number(money) || 0;
 
         state.cityOptionSaved = false;
         return state;
     },
 
     [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_COST]: (state, { index, money }) => {
-        state.tempOptions.shopSpecifications[index].cost = Number(money) || 0.01;
+        state.tempOptions.shopSpecifications[index].cost = Number(money) || 0;
 
         state.cityOptionSaved = false;
         return state;
@@ -382,7 +431,7 @@ const switchType = {
     },
 
     [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_EVENT_COST]: (state, { index, money }) => {
-        state.tempOptions.shopSpecifications[index].eventCost = Number(money) || 0.01;
+        state.tempOptions.shopSpecifications[index].eventCost = Number(money) || 0;
 
         state.cityOptionSaved = false;
         return state;
@@ -396,10 +445,10 @@ const switchType = {
     },
 
     [ActionTypes.REMOVE_SHOP_SPECIFICATIONS]: (state, { index }) => {
-        state.tempOptions.shopSpecifications = shopSpecifications.filter((x, i) => i !== index);
+        state.tempOptions.shopSpecifications = state.tempOptions.shopSpecifications.filter((x, i) => i !== index);
 
         state.cityOptionSaved = false;
-        return state;
+        return tempOptionsValidator(state);
     },
 
     [ActionTypes.ADD_SOURCE]: (state, { sourceId }) => {
@@ -418,14 +467,14 @@ const switchType = {
         state.tempOptions.selectedSource = sourceId;
 
         state.cityOptionSaved = false;
-        return state;
+        return tempOptionsValidator(state);
     },
 
     [ActionTypes.REMOVE_SOURCE]: (state, { sourceId }) => {
         state.tempOptions.sourceSpecifications.delete(sourceId);
 
         state.cityOptionSaved = false;
-        return state;
+        return tempOptionsValidator(state);
     },
 
     [ActionTypes.CHANGE_SELECTED_SOURCE]: (state, { sourceId }) => {
@@ -464,7 +513,7 @@ const switchType = {
     },
 
     [ActionTypes.CHANGE_SOURCE_SPEC_COST]: (state, { index, money }) => {
-        state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource)[index].cost = money;
+        state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource)[index].cost = Number(money) || 0;
 
         state.cityOptionSaved = false;
         return state;
@@ -476,6 +525,20 @@ const switchType = {
         state.citiesData.get(state.selectedCity).checked = true;
 
         return state;
+    },
+
+    [ActionTypes.SAVE_OPTION]: (state, { saveStatus }) => {
+        return {
+            ...state,
+            saveStatus
+        }
+    },
+
+    [ActionTypes.RESET_SAVE_STATUS]: state => {
+        return {
+            ...state,
+            saveStatus: 'normal'
+        }
     }
 };
 

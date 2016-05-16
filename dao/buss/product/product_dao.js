@@ -226,5 +226,82 @@ ProductDao.prototype.getAllSkuByParams = function(params){
     let sql = 'select ' + params.join(',') + ' from ?? where 1=1';
     return baseDao.select(sql, [config.tables.buss_product_sku]);
 };
+ProductDao.prototype.getProductDetailByParams = function (data) {
+    let columns = [
+        'product.id as spu',
+        'product.name as name',
+        'product.detail_page as detail_page',
+        'pic.pic_url as pic_url',
+        'primary_cate.name as primary_cate_name',
+        'secondary_cate.name as secondary_cate_name',
+        'city.name as city_name',
+        'province.name as province_name',
+        'sku.website as website',
+        'sku.book_time as book_time',
+        'sku.presell_start as presell_start',
+        'sku.presell_end as presell_end',
+        'sku.activity_start as activity_start',
+        'sku.activity_end as activity_end',
+    ];
+    let params = [];
+    let sql = 'select ' + columns.join(',') + ' from buss_product product ' 
+        + ' left join (select product_id,pic_url FROM buss_product_pic group by product_id) pic on product.del_flag = 1 and product.id = pic.product_id';
+    
+    sql += ' join buss_product_sku sku on sku.del_flag = 1 and product.id = sku.product_id ';
+    // 如果是预售商品，presell_start大于上线时间
+    // 如果是预售商品，presell_end小于下线时间
+    if (data.presell_start) {
+        sql += ' and sku.presell_start > ? or sku.presell_start is null ';
+        params.push(data.presell_start);
+    }
+    if (data.presell_end) {
+        sql += ' and sku.presell_end < ? or sku.presell_end is null ';
+        params.push(data.presell_end);
+    }
+    // 商城是否上线
+    if (data.isMall) {
+        sql += ' and website = 1 ';
+    }
+    // 是否促销(活动)
+    if (data.isActivity) {
+        sql += ' and activity_start is not null ';
+    }
+    
+    // 二级分类
+    sql += ' join buss_product_category secondary_cate on secondary_cate.del_flag = 1 and product.category_id = secondary_cate.id ';
+    if (data.secondary_cate) {
+        sql += ' and secondary_cate.id = ? ';
+        params.push(data.secondary_cate);
+    }
+    
+    // 一级分类
+    sql += ' join buss_product_category primary_cate on primary_cate.del_flag = 1 and secondary_cate.parent_id = primary_cate.id ';
+    if (data.primary_cate) {
+        sql += ' and primary_cate = ? ';
+        params.push(data.primary_cate);
+    }
+    
+    // 城市
+    sql += ' join dict_regionalism city on city.del_flag = 1 and sku.regionalism_id = city.id ';
+    if (data.city) {
+        sql += ' and city.id = ? ';
+        params.push(data.city);
+    }
+    
+    // 省份
+    sql += ' join dict_regionalism province on province.del_flag = 1 and city.parent_id = province.id';
+    if (data.province) {
+        sql += ' and province.id = ? ';
+        params.push(data.province);
+    }
+    
+    sql += ' where product.del_flag = 1 ';
+    // 产品名称
+    if (data.name) {
+        sql += ' and product.name like \'%' + data.name + '%\'';
+    }
+    
+    return baseDao.select(sql, params);
+};
 
 module.exports = ProductDao;

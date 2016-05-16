@@ -135,5 +135,67 @@ module.exports = function() {
                 });
         })
 
+        describe('test for get product details', function() {
+            before(function (done) {
+                new Promise(function(resolve, reject){
+                    let sql = 'insert into buss_product_category(parent_id,name,remarks) values(0,\'测试产品列表一级分类\',\'here is remarks\')';
+                    pool.query(sql, function(err, result) {
+                        if(err){
+                            return reject(err);
+                        }
+                        resolve(result.insertId);
+                    });
+                }).then(primary_cate_id => {
+                    return new Promise((resolve, reject) => {
+                        let sql = 'insert into buss_product_category(parent_id,name,remarks) values(' + primary_cate_id + ',\'测试产品列表二级分类\',\'here is remarks\')';
+                        pool.query(sql, function(err, result) {
+                            if(err){
+                                return reject(err);
+                            }
+                            resolve(result.insertId);
+                        });
+                    });
+                }).then(secondary_cate_id => {
+                    return new Promise((resolve, reject) => {
+                        let sql = 'insert into buss_product(name,category_id) values(\'测试产品列表产品1\',' + secondary_cate_id + ')';
+                        pool.query(sql, function (err, result) {
+                            if(err){
+                                return reject(err);
+                            }
+                            resolve(result.insertId);
+                        });
+                    });
+                }).then(product_id => {
+                    let promises = ['测试产品列表规格1','测试产品列表规格2'].map(item => {
+                        return new Promise((resolve, reject) => {
+                            let sql = 'insert into buss_product_sku(product_id,size,website,regionalism_id,price,original_price,book_time) '
+                                + 'values(' + product_id + ',\'' + item + '\',1,440300,200,100,3)';
+                            pool.query(sql, function (err, result) {
+                                if(err){
+                                    return reject(err);
+                                }
+                                resolve(result.insertId);
+                            });
+                        });
+                    });
+                    return Promise.all(promises);
+                }).then(function(){
+                    done();
+                }).catch(function(err) {
+                    done(err);
+                });
+            });
+            it('GET /v1/a/product/details', function(done) {
+                agent.get('/v1/a/product/details?name=测试列表产品1')
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if(err) return done(err);
+                        console.log(res.body);
+                        done();
+                    });
+            });
+        });
+        
     });
 };

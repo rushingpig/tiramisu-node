@@ -100,8 +100,6 @@ class FilterHeader extends Component{
 		var content = filter_deliveryman_results.map( n => {
       		return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name }</option>
 		})
-		var m = <option value='-1'>请选择配送员</option>;
-		content.unshift(m);
 		return(
 			<div>
 			<div className='clearfix top-header'>
@@ -152,7 +150,7 @@ class FilterHeader extends Component{
 						{
 							content.length
 							? content
-							: [<option value='-1' >请选择配送员</option>,<option>无</option>]
+							: <option>无</option>
 						}
 					</select>
 					<select ref='COD' default-text = '是否货到付款' className='form-control input-xs'>
@@ -328,8 +326,9 @@ var SalaryRow = React.createClass({
 				<td>{props.delivery_count >= 2
 					? '是'
 					:'否'}</td>
-				<td>{pay_status[props.pay_status]}<br />
-					{props.pay_modes_name}
+				<td>
+					{	pay_status[props.pay_status] }
+					 {/*props.pay_modes_name*/}
 				</td>
 				<td>{'原价:￥'+ props.total_original_price / 100 }<br/>
 					{ '实际售价:￥'+ props.total_discount_price /100 }<br/>
@@ -416,7 +415,7 @@ var SalaryRow = React.createClass({
 		delivery_pay.removeAttribute('readOnly');
 	},
 	onChangeDeliveryRecord:function(){
-		if(this.state.Edit_ing){
+		if(this.state.Edit_ing || !this.state.is_review){
 			this.setState({Edit_ing:false});
 			var data = {};
 			data.COD_amount = this.state.COD_amount * 100;
@@ -491,13 +490,13 @@ class DeliveryManSalaryManagePannel extends Component{
 						<div className="panel-body">
 						  <div ref="table-container" className="table-responsive ">
 						  	<div ref='box' id='box'  style={{maxHeight:434, overflowY:'auto', position:'relative'}} onscroll = {this.onTbScroll.bind(this)}>
-							    <table id='tab' className="table table-hover text-center " ref='tab' style={{width:1524}}>
+							    <table id='tab' className="table table-hover text-center " ref='tab' style={{width:1644}}>
 							      <thead >
 							      <tr>
 							        <th><div style={{width:80}}>配送时间</div></th>
 							        <th><div style={{width:80}}>签收时间</div></th>
 							        <th><div style={{width:120}}>订单号</div></th>
-							        <th><div style={{width:100}}>收货人信息</div></th>
+							        <th><div style={{width:120}}>收货人信息</div></th>
 							        <th><div style={{width:80}}>配送方式</div></th>
 							        <th><div style={{width:80}}>签收状态</div></th>
 							        <th><div style={{width:100}}>是否第二次配送</div></th>
@@ -505,9 +504,9 @@ class DeliveryManSalaryManagePannel extends Component{
 							        <th><div style={{width:80}}>总金额</div></th>
 							        <th><div style={{width:80}}>配送工资</div></th>
 							        <th><div style={{width:80}}>实收金额</div></th>							        
-							        <th><div style={{width:100}}>备注</div></th>
+							        <th><div style={{width:160}}>备注</div></th>
 							        <th><div style={{width:80}}>管理操作</div></th>
-							        <th><div style={{width:80}}>操作时间</div></th>
+							        <th><div style={{width:120}}>操作时间</div></th>
 							      </tr>
 							      </thead>
 							      <tbody>
@@ -518,7 +517,7 @@ class DeliveryManSalaryManagePannel extends Component{
 							    </table>
 						    </div>
 						    <div className='form-inline' style={{marginTop:20,float:'left'}}>
-						    	<span style={{marginRight:10}}><i style={{color:'#eee',}} className='fa fa-square'></i><span style={{fontSize:10}}>待审核</span></span>
+						    	<span style={{marginRight:10}}><i style={{color:'#ccc',}} className='fa fa-square'></i><span style={{fontSize:10}}>待审核</span></span>
 						    	<span ><i style={{color:'#dac7a7'}} className='fa fa-square'></i><span style={{fontSize:10}}>审核完成</span></span>
 						    </div>
 						    <div className='form-inline' style={{marginTop:20,float:'right'}}>

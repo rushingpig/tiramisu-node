@@ -4,14 +4,17 @@ import { SELECT_DEFAULT_VALUE } from 'config/app.config';
 import Promise from 'utils/promise';
 import { Noty } from 'utils/index';
 import { triggerFormUpdate } from 'actions/form';
+import LazyLoad from 'utils/lazy_load';
 
 //step: 1
 export function createMap(t, callback){
   //初始化地图
   MyMap.create( (map, geocoder) => {
     t._bmap = geocoder; //解析地址貌似只需要 geocoder就够了
+    getPointByGeocoder = getPointByGeocoder.bind(geocoder);
     callback && callback();
   });
+  LazyLoad('GeoUtils');
 }
 //step: 2
 export function startMatchDeliveryStations(success_cb, fail_cb){
@@ -59,22 +62,26 @@ export function autoMatch(city, district, address){
   return new Promise((resolve, reject) => {
     if(BMap){
       let map = self._bmap;
-      let LS = new BMap.LocalSearch(city, {
-        onSearchComplete: function( result ){
-          if(result.getPoi(0)){
-            getStation(result.getPoi(0).point);
-          }else{
-            map.getPoint(address, function(poi){
-              if(poi){
-                getStation(poi);
-              }else{
-                reject('解析改地址失败');
-              }
-            }, city);
-          }
-        }
-      });
-      LS.search(address);
+
+      //方案1
+      // let LS = new BMap.LocalSearch(city, {
+      //   onSearchComplete: function( result ){
+      //     if(result.getPoi(0)){
+      //       getStation(result.getPoi(0).point);
+      //     }else{
+      //       map.getPoint(address, function(poi){
+      //         if(poi){
+      //           getStation(poi);
+      //         }else{
+      //           reject('解析改地址失败');
+      //         }
+      //       }, city);
+      //     }
+      //   }
+      // });
+      // LS.search(address);
+      
+      //方案2
       // map.getPoint(address, function(poi){
       //   if(poi){
       //     map.getPoint(district, function(poi_district){
@@ -100,25 +107,50 @@ export function autoMatch(city, district, address){
       //   }
       // }, city);
 
+      //方案3
+      $.when(
+        getPointByGeocoder(address, city),
+        getPointByGeocoder(district, city),
+        getPointByLocalSearch(address, city)
+      ).done(function(poi_gc, poi_di, poi_ls){
+        console.log(poi_gc, poi_di, poi_ls);
+        if(
+          poi_gc && poi_di && poi_ls
+          &&
+          (poi_gc.lng != poi_di.lng || poi_gc.lat != poi_di.lat)
+          &&
+          BMapLib.GeoUtils.getDistance(poi_gc, poi_ls) < 1000 //1公里
+        ){
+          getStation(poi_gc);
+        }else if((poi_gc && !poi_ls) || poi_ls){
+          autoGetDeliveryStations( poi_ls || poi_gc ) //poi_ls必须在前
+          .done(function(data){
+            if(data && data.delivery_id){
+              Noty('warning', '可能的配送中心为：' + data.delivery_name + '，请手动确认！', false);
+            }
+            reject();
+          })
+          .fail(function(msg){
+            reject(msg || '自动检索配送中心异常，请重试');
+          })
+        }else{
+          reject();
+        }
+      }).fail(function(err){
+        reject();
+      })
+
       function getStation( poi ){
         autoGetDeliveryStations( poi )
           .done(function(data){
-            setTimeout(function(){
-              if(data && data.delivery_id){
-                resolve(data.delivery_id); //成功，且有数据
-              }else{
-                reject('服务器异常');
-              }
-            }, 0);
+            if(data && data.delivery_id){
+              resolve(data.delivery_id); //成功，且有数据
+            }else{
+              reject('服务器异常');
+            }
           })
           .fail(function(msg, code){
-            setTimeout(function(){
-              if(code && code == '3001'){
-                reject(); //成功，但没有数据
-              }else{
-                reject('自动检索配送中心异常，请重试');
-              }
-            }, 0);
+            reject(msg || '自动检索配送中心异常，请重试');
           })
       }
     }else{
@@ -129,6 +161,25 @@ export function autoMatch(city, district, address){
   .fail(autoMatchFail.bind(this))
   .done(addEffect.bind(this, 'alert-success'))
   .fail(addEffect.bind(this, 'alert-danger'))
+}
+
+function getPointByGeocoder(address, city){
+  var geo = this;
+  return new Promise(function(resolve, reject){
+    geo.getPoint(address, function(poi){
+      resolve(poi);
+    }, city)
+  })
+}
+
+function getPointByLocalSearch(address, city){
+  return new Promise(function(resolve, reject){
+    new BMap.LocalSearch(city, {
+      onSearchComplete: function( result ){
+        resolve(result.getPoi(0) && result.getPoi(0).point);
+      }
+    }).search(address);
+  })
 }
 
 function addEffect(animate_name){

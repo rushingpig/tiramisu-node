@@ -213,10 +213,14 @@ export function search( place ){
     var map = this.map;
     this.LocalSearch = new BMap.LocalSearch(this.centerPoint, {
       onSearchComplete: function(){
-        var pp = self.LocalSearch.getResults().getPoi(0).point;
-        self.map.centerAndZoom(pp, 16);
-        self.searchMarker = new BMap.Marker(pp);
-        map.addOverlay(self.searchMarker);
+        var p = self.LocalSearch.getResults().getPoi(0);
+        if(p && p.point){
+          self.map.centerAndZoom(p.point, 16);
+          self.searchMarker = new BMap.Marker(p.point);
+          map.addOverlay(self.searchMarker);
+        }else{
+          Noty('warning', '请尝试修改地址后重新搜索');
+        }
       }
     });
   }

@@ -1,4 +1,4 @@
-export default function Noty(type, text){
+export default function Noty(type, text, time){
   var timeout = {
     success: 2500,
     alert: 3500,
@@ -16,7 +16,7 @@ export default function Noty(type, text){
         // easing: 'swing', // unavailable - no need
         // speed: 500 // unavailable - no need
     },
-    timeout: timeout[type] || false
+    timeout: typeof time == 'undefined' ? timeout[type] : time
   })
   : alert(text);
 }

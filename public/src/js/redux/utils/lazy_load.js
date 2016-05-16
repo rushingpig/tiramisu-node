@@ -11,6 +11,9 @@ var config = {
     css: '/plugins/jquery-ui/jquery-ui.css',
     js: '/plugins/jquery-ui/autocomplete.js',
   },
+  GeoUtils: {
+    js: root + 'lib/GeoUtils.min.js',
+  }
 };
 var load_map = {};
 

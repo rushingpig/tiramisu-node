@@ -319,7 +319,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
     };
     if(req.body.POS_terminal_id !== undefined){
         order_obj.pos_id = req.body.POS_terminal_id;
-        order_obj.pay_modes_id = Constant.OPM.POS;
+        // order_obj.pay_modes_id = Constant.OPM.POS;  // 不去修改支付方式
     }
     let order_sign_history_obj = {
         order_id: orderId
@@ -1036,7 +1036,9 @@ DeliveryService.prototype.editRecord = (req, res, next)=> {
     }
     let order_id = systemUtils.getDBOrderId(req.params.orderId);
     let order_obj = {};
-    let record_obj = {};
+    let record_obj = {
+        is_review: 1
+    };
     let order_history_obj = {
         order_id: order_id,
         option: ''

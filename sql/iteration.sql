@@ -50,6 +50,7 @@ CREATE TABLE `buss_delivery_picture` (
     `delivery_count` int(11) NOT NULL DEFAULT 1 COMMENT '第几次配送',
     `picture_type` enum  ('RECEIPT','DOOR','CALL','SMS') NOT NULL COMMENT '单据，门牌，通话记录，短信记录',
     `picture_url` varchar(255) NOT NULL COMMENT '图片url',
+    UNIQUE KEY `IDX_UNIQUE` (`order_id`,`delivery_count`,`picture_type`),
     KEY `IDX_ORDER_ID` (`order_id`),
     KEY `IDX_DM_ID` (`deliveryman_id`),
     KEY `IDX_DC` (`delivery_count`)

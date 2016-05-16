@@ -119,9 +119,9 @@ ProductDao.prototype.findDeliveryPayRule = function () {
 
 ProductDao.prototype.insertProduct = function(req, data, connection){
     if(connection){
-        return baseDao.insertWithConnection(connection, this.base_insert_sql, [this.base_table, systemUtils.assembleInsertObj(req, data)]);
+        return baseDao.insertWithConnection(connection, this.base_insert_sql, [this.base_table, systemUtils.assembleInsertObj(req, data, true)]);
     } else {
-        return baseDao.insert(this.base_insert_sql, [this.base_table, systemUtils.assembleInsertObj(req, data)]);
+        return baseDao.insert(this.base_insert_sql, [this.base_table, systemUtils.assembleInsertObj(req, data, true)]);
     }
 };
 ProductDao.prototype.insertSku = function (req, data, connection) {
@@ -129,7 +129,7 @@ ProductDao.prototype.insertSku = function (req, data, connection) {
     let secondary_booktimes = data.secondary_booktimes || [];
     delete data.secondary_booktimes;
     if(connection){
-        return baseDao.insertWithConnection(connection, self.base_insert_sql, [config.tables.buss_product_sku, systemUtils.assembleInsertObj(req, data)])
+        return baseDao.insertWithConnection(connection, self.base_insert_sql, [config.tables.buss_product_sku, systemUtils.assembleInsertObj(req, data, true)])
             .then(skuId => {
                 let promises = secondary_booktimes.map(secondary_booktime => {
                     let book_time_date = {
@@ -144,7 +144,7 @@ ProductDao.prototype.insertSku = function (req, data, connection) {
                 });
             });
     } else {
-        return baseDao.insert(this.base_insert_sql, [config.buss_product_sku, systemUtils.assembleInsertObj(req, data)])
+        return baseDao.insert(this.base_insert_sql, [config.buss_product_sku, systemUtils.assembleInsertObj(req, data, true)])
             .then(skuId => {
                 let promises = secondary_booktimes.map(secondary_booktime => {
                     let book_time_date = {

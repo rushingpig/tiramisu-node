@@ -97,7 +97,17 @@ export function getDeliveryRecord(data){
 
 export const UPDATE_DELIVERY_RECORD = 'UPDATE_DELIVERY_RECORD';
 export function UpdateDeliverymanSalary(order_id, data){
-  return PUT(Url.update_delivery_record.toString(order_id),data,UPDATE_DELIVERY_RECORD);
+  return (dispatch) => {
+    return put(Url.update_delivery_record.toString(order_id),data)
+      .done((_data) => {
+        dispatch({
+          type:UPDATE_DELIVERY_RECORD,
+          data: data,
+          order_id:order_id,
+        })
+      })
+  }
+  /*return PUT(Url.update_delivery_record.toString(order_id),data,UPDATE_DELIVERY_RECORD);*/
   /*return {type:UPDATE_DELIVERY_RECORD}*/
 }
 

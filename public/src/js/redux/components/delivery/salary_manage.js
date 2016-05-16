@@ -344,14 +344,12 @@ var SalaryRow = React.createClass({
 					<input type='text' readOnly className="form-control short-input" 
 						ref = 'COD_amount'
 						value ={this.state.COD_amount }
-						className='form-control input-xs short-input' 
 						onChange = {this.onReceiveAmountChange}
 						style={{height:27,width:50, marginLeft:'auto', marginRight:'auto', 
 								backgroundColor: this.state.is_review? '#dac7a7':''}}/></td>
 				<td><input type='text' readOnly className='form-control' style={{height:27,
 						backgroundColor: this.state.is_review? '#dac7a7':''}}
 						ref = 'remark' 
-						className='form-control input-xs short-input'
 						value = {this.state.remark}
 						onChange = {this.onRemarkChange}/></td>
 				<td>
@@ -376,7 +374,8 @@ var SalaryRow = React.createClass({
 			)
 	},
 	ClickHandler:function(){
-		this.props.actions.activeOrder(this.props.order_id);
+		if(this.props.main.active_order_id != this.props.order_id)
+			this.props.actions.activeOrder(this.props.order_id);
 	},
 	showCredential:function(){
 		this.props.viewCredentialModal(this.props.order_id);
@@ -451,7 +450,7 @@ var SalaryRow = React.createClass({
 		COD_amount.setAttribute('readOnly','true');
 		remark.setAttribute('readOnly','true');
 		delivery_pay.setAttribute('readOnly','true');
-		this.setState({COD_amount:this.props.COD_amount, remark:this.props.remark,delivery_pay:this.props.delivery_pay,Edit_ing:false});
+		this.setState({COD_amount:this.props.COD_amount / 100 , remark:this.props.remark,delivery_pay:this.props.delivery_pay / 100,Edit_ing:false});
 	}
 
 })

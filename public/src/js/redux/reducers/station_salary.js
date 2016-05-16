@@ -34,6 +34,18 @@ function main(state = main_state, action){
 			var data = action.data;
 			data.page_size = data.total;
 		  	return {...state, operationRecord:data }
+		case Actions.UPDATE_DELIVERY_RECORD:
+			var order_id = action.order_id;
+			var  deliveryRecord  = clone(state.deliveryRecord);
+			deliveryRecord = deliveryRecord.map( m => {
+				if (m.order_id == order_id){
+					m.COD_amount = action.data.COD_amount;
+					m.delivery_pay = action.data.delivery_pay;
+					m.remark = action.data.remark;
+				}
+				return m;
+			})
+			return {...state, deliveryRecord: deliveryRecord}
 		default:
 			return state;
 	}

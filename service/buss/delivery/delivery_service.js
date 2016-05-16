@@ -1037,7 +1037,6 @@ DeliveryService.prototype.editRecord = (req, res, next)=> {
     let order_id = systemUtils.getDBOrderId(req.params.orderId);
     let order_obj = {};
     let record_obj = {};
-    let updated_time = req.body.updated_time;
     let order_history_obj = {
         order_id: order_id,
         option: ''
@@ -1046,7 +1045,7 @@ DeliveryService.prototype.editRecord = (req, res, next)=> {
         order_obj.COD_amount = req.body.COD_amount;
         order_history_obj.option += '修改{实收金额}为{' + (order_obj.COD_amount / 100) + '}元\n';
     }
-    if (req.body.delivery_pay  !== undefined) {
+    if (req.body.delivery_pay !== undefined) {
         record_obj.delivery_pay = req.body.delivery_pay;
         order_history_obj.option += '修改{配送工资}为{' + (record_obj.delivery_pay / 100) + '}元\n';
     }
@@ -1055,11 +1054,10 @@ DeliveryService.prototype.editRecord = (req, res, next)=> {
         order_history_obj.option += '修改{配送工资审核备注}为{' + record_obj.remark + '}\n';
     }
     let promise = co(function *() {
+        if (order_history_obj.option == '') return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS));
         let _res = yield orderDao.findOrderById(order_id);
         if (toolUtils.isEmptyArray(_res)) {
             return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID));
-        } else if (updated_time !== _res[0].updated_time) {
-            return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
         }
         yield deliveryDao.updateDeliveryRecord(order_id, systemUtils.assembleUpdateObj(req, order_obj), systemUtils.assembleUpdateObj(req, record_obj));
         yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));

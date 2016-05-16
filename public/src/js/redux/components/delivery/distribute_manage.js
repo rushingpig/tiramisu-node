@@ -466,7 +466,7 @@ var PartRow = React.createClass({
         <button 
           className='btn btn-sm btn-default' 
           style={{borderRadius:'10px 10px',width:'20px',height:'20px',lineHeight:'0.5',padding:'5px 5px'}}
-          onClick = { this.onDecrement }><i>-</i></button>
+          onClick = { this.onDecrement }>-</button>
         {' ' + props.num + ' '}
         <button 
           className='btn btn-sm btn-default' 
@@ -856,7 +856,7 @@ var SignedModal = React.createClass({
        }
        return m;
      });
-     old_orderSpareparts = old_orderSpareparts.filter( m => { m.num != 0 });
+     old_orderSpareparts = old_orderSpareparts.filter( m =>  m.num != 0 );
      this.setState({orderSpareparts:old_orderSpareparts}); 
      this.getCurrentAmount();  
   },

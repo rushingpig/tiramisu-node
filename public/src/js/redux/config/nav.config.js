@@ -55,6 +55,11 @@ export default [
             "name": "打印审核",
             "icon": "",
             "link": "/dm/review",
+        },{
+            "key": "DeliveryManSalaryManageAccess",
+            "name": "配送员工资管理",
+            "icon": "",
+            "link": "/dm/salary"
         }]
     } ,{
         "key": "station_management",
@@ -71,11 +76,6 @@ export default [
             "name": "配送区域管理",
             "icon": "",
             "link": "/sm/scope"
-        },{
-            "key": "DeliveryManSalaryManageAccess",
-            "name": "配送员工资管理",
-            "icon": "",
-            "link": "/sm/salary"
         }]
     },{
         "key": "central_management",

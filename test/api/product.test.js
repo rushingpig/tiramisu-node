@@ -221,8 +221,38 @@ module.exports = function() {
                         done();
                     });
             });
-            it('GET /v1/a/product/details by product name and city id', function(done) {
+            it('GET /v1/a/product/details by product name & city id', function(done) {
                 agent.get('/v1/a/product/details?name=测试产品列表&city=440400')
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if(err) return done(err);
+                        assert.equal(res.body.data.count, 1);
+                        done();
+                    });
+            });
+            it('GET /v1/a/product/details by product name & city id & primary_cate', function(done) {
+                agent.get('/v1/a/product/details?name=测试产品列表&city=440400&primary_cate=123')
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if(err) return done(err);
+                        assert.equal(res.body.data.count, 0);
+                        done();
+                    });
+            });
+            it('GET /v1/a/product/details by product name & city id & isMall', function(done) {
+                agent.get('/v1/a/product/details?name=测试产品列表&city=440300&isMall=false')
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if(err) return done(err);
+                        assert.equal(res.body.data.count, 1);
+                        done();
+                    });
+            });
+            it('GET /v1/a/product/details by product name & city id & isActivity', function(done) {
+                agent.get('/v1/a/product/details?name=测试产品列表&city=440400&isActivity=true')
                     .expect('Content-Type', /json/)
                     .expect(200)
                     .end(function (err, res) {

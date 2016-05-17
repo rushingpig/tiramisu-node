@@ -215,12 +215,31 @@ ProductService.prototype.getAllSize = (req, res, next)=> {
  * @param next
  */
 ProductService.prototype.getProductDetails = (req, res, next)=> {
+    let formatDetails = results => {
+        return results.map(result => {
+            return {
+              spu: result.spu,
+              name: result.name,
+              detail_page: result.detail_page,
+              pic_url: result.pic_url,
+              primary_cate_name: result.primary_cate_name,
+              secondary_cate_name: result.secondary_cate_name,
+              city_name: result.city_name,
+              province_name: result.province_name,
+              book_time: result.book_time,
+              isMall: result.isMall > 0 ? true : false,
+              start_time: result.presell_start ? result.presell_start : result.created_time,
+              end_time: result.presell_end,
+              isActivity: result.isActivity > 0 ? true : false
+            };
+        });
+    }
     let promise = productDao.getProductDetailByParams(req.query)
         .then((results) => {
             if(toolUtils.isEmptyArray(results)){
                 throw new TiramisuError(res_obj.NO_MORE_RESULTS);
             }
-            res.api(results);
+            res.api(formatDetails(results));
         });
     systemUtils.wrapService(res, next, promise);
 };

@@ -229,19 +229,20 @@ ProductDao.prototype.getAllSkuByParams = function(params){
 ProductDao.prototype.getProductDetailByParams = function (data) {
     let columns = [
         'product.id as spu',
-        'product.name as name',
-        'product.detail_page as detail_page',
-        'pic.pic_url as pic_url',
-        'primary_cate.name as primary_cate_name',
-        'secondary_cate.name as secondary_cate_name',
-        'city.name as city_name',
-        'province.name as province_name',
-        'sku.website as website',
-        'sku.book_time as book_time',
-        'sku.presell_start as presell_start',
-        'sku.presell_end as presell_end',
-        'sku.activity_start as activity_start',
-        'sku.activity_end as activity_end',
+        'min(product.name) as name',
+        'min(product.detail_page) as detail_page',
+        'min(pic.pic_url) as pic_url',
+        'min(primary_cate.name) as primary_cate_name',
+        'min(secondary_cate.name) as secondary_cate_name',
+        'min(city.name) as city_name',
+        'min(province.name) as province_name',
+        //  统计当前条件下是否有商城上线sku
+        'count(CASE WHEN website = 1 THEN 1 ELSE NULL END) as isMall',
+        'min(sku.book_time) as book_time',
+        'min(sku.created_time) as created_time',
+        'min(sku.presell_start) as presell_start',
+        'max(sku.presell_end) as presell_end',
+        'count(CASE WHEN activity_start is not null THEN 1 ELSE NULL END) as isActivity',
     ];
     let params = [];
     let sql = 'select ' + columns.join(',') + ' from buss_product product ' 
@@ -300,6 +301,15 @@ ProductDao.prototype.getProductDetailByParams = function (data) {
     if (data.name) {
         sql += ' and product.name like \'%' + data.name + '%\'';
     }
+    
+    // 根据产品、省份、城市分组
+    sql += ' group by product.id,city.id';
+    
+    // 分页
+    let pageNo = data.pageno || 0;
+    let pageSize = data.pagesize || 10;
+    let startIndex = pageNo * pageSize;
+    sql += ' limit ' + startIndex + ',' + pageSize;
     
     return baseDao.select(sql, params);
 };

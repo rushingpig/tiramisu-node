@@ -136,6 +136,7 @@ module.exports = function() {
         })
 
         describe('test for get product details', function() {
+            let primary_cate_id,secondary_cate_id,product_id,skus=[];
             before(function (done) {
                 new Promise(function(resolve, reject){
                     let sql = 'insert into buss_product_category(parent_id,name,remarks) values(0,\'测试产品列表一级分类\',\'here is remarks\')';
@@ -143,6 +144,7 @@ module.exports = function() {
                         if(err){
                             return reject(err);
                         }
+                        primary_cate_id = result.insertId;
                         resolve(result.insertId);
                     });
                 }).then(primary_cate_id => {
@@ -152,6 +154,7 @@ module.exports = function() {
                             if(err){
                                 return reject(err);
                             }
+                            secondary_cate_id = result.insertId;
                             resolve(result.insertId);
                         });
                     });
@@ -162,6 +165,7 @@ module.exports = function() {
                             if(err){
                                 return reject(err);
                             }
+                            product_id = result.insertId;
                             resolve(result.insertId);
                         });
                     });
@@ -179,19 +183,51 @@ module.exports = function() {
                         });
                     });
                     return Promise.all(promises);
+                }).then(() => {
+                    return new Promise((resolve, reject) => {
+                        let sql = 'insert into buss_product_sku(product_id,size,website,regionalism_id,price,original_price,book_time,presell_start) '
+                            + 'values(' + product_id + ',\'测试产品列表规格3\',2,440400,200,100,3,\'2016-05-17 17:38:43\')';
+                        pool.query(sql, function (err, result) {
+                            if(err){
+                                return reject(err);
+                            }
+                            resolve(result.insertId);
+                        });
+                    });
+                }).then(() => {
+                    return new Promise((resolve, reject) => {
+                        let sql = 'insert into buss_product_sku(product_id,size,website,regionalism_id,price,original_price,book_time,activity_start) '
+                            + 'values(' + product_id + ',\'测试产品列表规格4\',2,440400,200,100,3,\'2016-05-17 17:38:43\')';
+                        pool.query(sql, function (err, result) {
+                            if(err){
+                                return reject(err);
+                            }
+                            resolve(result.insertId);
+                        });
+                    });
                 }).then(function(){
                     done();
                 }).catch(function(err) {
                     done(err);
                 });
             });
-            it('GET /v1/a/product/details', function(done) {
-                agent.get('/v1/a/product/details?name=测试列表产品1')
+            it('GET /v1/a/product/details only by product name', function(done) {
+                agent.get('/v1/a/product/details?name=测试产品列表')
                     .expect('Content-Type', /json/)
                     .expect(200)
                     .end(function (err, res) {
                         if(err) return done(err);
-                        console.log(res.body);
+                        assert.equal(res.body.data.count, 2);
+                        done();
+                    });
+            });
+            it('GET /v1/a/product/details by product name and city id', function(done) {
+                agent.get('/v1/a/product/details?name=测试产品列表&city=440400')
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if(err) return done(err);
+                        assert.equal(res.body.data.count, 1);
                         done();
                     });
             });

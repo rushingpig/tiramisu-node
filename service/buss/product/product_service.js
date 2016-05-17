@@ -226,6 +226,7 @@ ProductService.prototype.getProductDetails = (req, res, next)=> {
               secondary_cate_name: result.secondary_cate_name,
               city_name: result.city_name,
               province_name: result.province_name,
+              price: result.price,
               book_time: result.book_time,
               isMall: result.isMall > 0 ? true : false,
               start_time: result.presell_start ? result.presell_start : result.created_time,
@@ -239,7 +240,11 @@ ProductService.prototype.getProductDetails = (req, res, next)=> {
             if(toolUtils.isEmptyArray(results)){
                 throw new TiramisuError(res_obj.NO_MORE_RESULTS);
             }
-            res.api(formatDetails(results));
+            let res_data = {
+                count: results.result[0].total,
+                products: formatDetails(results._result)
+            };
+            res.api(res_data);
         });
     systemUtils.wrapService(res, next, promise);
 };

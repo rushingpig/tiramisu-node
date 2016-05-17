@@ -229,15 +229,16 @@ ProductDao.prototype.getAllSkuByParams = function(params){
 ProductDao.prototype.getProductDetailByParams = function (data) {
     let columns = [
         'product.id as spu',
-        'min(product.name) as name',
-        'min(product.detail_page) as detail_page',
-        'min(pic.pic_url) as pic_url',
-        'min(primary_cate.name) as primary_cate_name',
-        'min(secondary_cate.name) as secondary_cate_name',
-        'min(city.name) as city_name',
-        'min(province.name) as province_name',
+        'product.name as name',
+        'product.detail_page as detail_page',
+        'pic.pic_url as pic_url',
+        'primary_cate.name as primary_cate_name',
+        'secondary_cate.name as secondary_cate_name',
+        'city.name as city_name',
+        'province.name as province_name',
         //  统计当前条件下是否有商城上线sku
         'count(CASE WHEN website = 1 THEN 1 ELSE NULL END) as isMall',
+        'sku.price as price',
         'min(sku.book_time) as book_time',
         'min(sku.created_time) as created_time',
         'min(sku.presell_start) as presell_start',
@@ -246,7 +247,7 @@ ProductDao.prototype.getProductDetailByParams = function (data) {
     ];
     let params = [];
     let sql = 'select ' + columns.join(',') + ' from buss_product product ' 
-        + ' left join (select product_id,pic_url FROM buss_product_pic group by product_id) pic on product.del_flag = 1 and product.id = pic.product_id';
+        + ' left join (select product_id,pic_url FROM buss_product_pic group by product_id) pic on product.id = pic.product_id';
     
     sql += ' join buss_product_sku sku on sku.del_flag = 1 and product.id = sku.product_id ';
     // 如果是预售商品，presell_start大于上线时间
@@ -278,7 +279,7 @@ ProductDao.prototype.getProductDetailByParams = function (data) {
     // 一级分类
     sql += ' join buss_product_category primary_cate on primary_cate.del_flag = 1 and secondary_cate.parent_id = primary_cate.id ';
     if (data.primary_cate) {
-        sql += ' and primary_cate = ? ';
+        sql += ' and primary_cate.id = ? ';
         params.push(data.primary_cate);
     }
     
@@ -308,10 +309,16 @@ ProductDao.prototype.getProductDetailByParams = function (data) {
     // 分页
     let pageNo = data.pageno || 0;
     let pageSize = data.pagesize || 10;
-    let startIndex = pageNo * pageSize;
-    sql += ' limit ' + startIndex + ',' + pageSize;
     
-    return baseDao.select(sql, params);
+    let count_sql = dbHelper.countSql(sql);
+    return baseDao.select(count_sql, params).then(result => {
+        return baseDao.select(dbHelper.paginate(sql, pageNo, pageSize), params).then(_result => {
+            return {
+                result,
+                _result
+            };
+        });
+    });
 };
 
 module.exports = ProductDao;

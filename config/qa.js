@@ -47,6 +47,7 @@ var tables = {
   buss_delivery_picture: 'buss_delivery_picture',
   //=================Dict===================
   dict_regionalism: 'dict_regionalism',
+  delivery_pay_rule: 'delivery_pay_rule'
 };
 //  mysql config options
 var mysql_options = {

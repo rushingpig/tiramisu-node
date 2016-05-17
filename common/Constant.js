@@ -187,4 +187,11 @@ Constant.BDPT = {
     SMS: 'SMS'
 };
 
+Constant.PAY_RULE = {
+    CAKE: 'CAKE',
+    COOKIE: 'COOKIE',
+    WINE: 'WINE',
+    SOUVENIR: 'SOUVENIR'
+};
+
 module.exports = Constant;

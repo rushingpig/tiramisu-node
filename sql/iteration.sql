@@ -32,7 +32,7 @@ CREATE TABLE `buss_delivery_record` (
     `order_id` int(11) NOT NULL COMMENT '订单id',
     `deliveryman_id` int(11) NOT NULL COMMENT '配送员id',
     `delivery_pay` int(11) NOT NULL COMMENT '配送工资',
-    `delivery_count` int(11) NOT NULL COMMENT '配送次数',
+    `delivery_count` int(11) NOT NULL DEFAULT '1' COMMENT '配送次数',
     `is_review` tinyint(1) DEFAULT '0' COMMENT '审核标志（0：未审核；1：已审核）',
     `updated_by` int(11) NOT NULL COMMENT '记录更新操作者id',
     `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
@@ -40,21 +40,21 @@ CREATE TABLE `buss_delivery_record` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `IDX_ORDER_ID` (`order_id`),
     KEY `IDX_DM_ID` (`deliveryman_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单配转移送员记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单配送记录表';
 
 # 2016-05-09 Wei Zhao
 # 配送成功图片凭证
 CREATE TABLE `buss_delivery_picture` (
     `order_id` int(11) NOT NULL COMMENT '订单id',
     `deliveryman_id` int(11) NOT NULL COMMENT '配送员id',
-    `delivery_count` int(11) NOT NULL DEFAULT 1 COMMENT '第几次配送',
+    `delivery_count` int(11) NOT NULL DEFAULT '1' COMMENT '第几次配送',
     `picture_type` enum  ('RECEIPT','DOOR','CALL','SMS') NOT NULL COMMENT '单据，门牌，通话记录，短信记录',
     `picture_url` varchar(255) NOT NULL COMMENT '图片url',
     UNIQUE KEY `IDX_UNIQUE` (`order_id`,`delivery_count`,`picture_type`),
     KEY `IDX_ORDER_ID` (`order_id`),
     KEY `IDX_DM_ID` (`deliveryman_id`),
     KEY `IDX_DC` (`delivery_count`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='订单配转移送员记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='配送成功图片凭证';
 INSERT INTO `buss_delivery_picture` VALUES
     (10000001, 1, 1, 'RECEIPT', 'http://picture.xfxb.net/receipt_1.jpg'),
     (10000001, 1, 1, 'DOOR', 'http://picture.xfxb.net/door_1.jpg'),
@@ -62,5 +62,28 @@ INSERT INTO `buss_delivery_picture` VALUES
     (10000001, 1, NULL, 'SMS', 'http://picture.xfxb.net/sms_1.jpg');
 
 # 2016-05-10 Wei Zhao
-# 增加pos终端号字段
+# 增加pos相关字段
 ALTER TABLE `tiramisu`.`buss_order` ADD COLUMN `pos_id` varchar(32) DEFAULT NULL COMMENT 'pos终端号';
+ALTER TABLE `tiramisu`.`buss_order` ADD COLUMN `is_pos_pay` tinyint(1) DEFAULT NULL COMMENT 'pos支付标志';
+
+# 2016-05-17 Wei Zhao
+# 创建产品配送工资计算规则对应表
+CREATE TABLE `delivery_pay_rule` (
+    `category_id` int(11) NOT NULL COMMENT '产品类型',
+    `rule_type` enum  ('CAKE','COOKIE','WINE','SOUVENIR') NOT NULL DEFAULT 'UNTREATED' COMMENT '蛋糕，下午茶/曲奇，红酒，手信',
+    `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+    PRIMARY KEY (`category_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='创建产品配送工资计算规则对应表';
+INSERT INTO `delivery_pay_rule` VALUES
+    (1, 'CAKE', 1),
+    (3, 'SOUVENIR', 1),
+    (4, 'COOKIE', 1),
+    (5, 'COOKIE', 1),
+    (6, 'SOUVENIR', 1),
+    (7, 'SOUVENIR', 1),
+    (8, 'SOUVENIR', 1),
+    (10, 'CAKE', 1),
+    (11, 'CAKE', 1),
+    (12, 'CAKE', 1),
+    (13, 'CAKE', 1),
+    (14, 'CAKE', 1);

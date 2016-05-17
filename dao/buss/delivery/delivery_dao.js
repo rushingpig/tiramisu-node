@@ -279,6 +279,7 @@ DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, deliv
         'bo.updated_time',
         'bo.created_time',
         'bo.status AS order_status',
+        'bo.is_pos_pay AS is_POS',
 
         'br.delivery_type',
         'br.name AS recipient_name',

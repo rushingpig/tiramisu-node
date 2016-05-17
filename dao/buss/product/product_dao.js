@@ -98,4 +98,10 @@ ProductDao.prototype.findProductsByOrderId = function(orderId){
     return baseDao.select(sql,params);
 };
 
+ProductDao.prototype.findDeliveryPayRule = function () {
+    let sql = `SELECT * FROM ${tables.delivery_pay_rule} WHERE del_flag = ${del_flag.SHOW} `;
+    let params = [];
+    return baseDao.select(sql, params);
+};
+
 module.exports = ProductDao;

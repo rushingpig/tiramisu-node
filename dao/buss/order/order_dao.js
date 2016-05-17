@@ -1280,7 +1280,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
                 body: {
                   timestamp: moment().unix(),
                   phone: recipient_mobile,
-                  method: 'redwine',
+                  method: 'promotion.redwine',
                   params: {}
                 }
               });

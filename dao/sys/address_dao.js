@@ -33,11 +33,12 @@ AddressDao.prototype.findAllProvinces = function(query_data) {
         // data filter start
         if (!toolUtils.isEmptyArray(ds)) {
             if (!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1) {
-                ds.forEach(curr => {
-                    if (curr == constant.DS.OFFICEANDCHILD.id && query_data.user.role_ids) {
-                        sql += " and id in " + dbHelper.genInSql(query_data.user.city_ids);
-                    }
-                });
+                sql += " and id in " + dbHelper.genInSql(query_data.user.city_ids);
+                // ds.forEach(curr => {
+                //     if (curr == constant.DS.OFFICEANDCHILD.id && query_data.user.role_ids) {
+                //         sql += " and id in " + dbHelper.genInSql(query_data.user.city_ids);
+                //     }
+                // });
             }
         }
         // data filter end

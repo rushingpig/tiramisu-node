@@ -70,7 +70,7 @@ ALTER TABLE `tiramisu`.`buss_order` ADD COLUMN `is_pos_pay` tinyint(1) DEFAULT N
 # 创建产品配送工资计算规则对应表
 CREATE TABLE `delivery_pay_rule` (
     `category_id` int(11) NOT NULL COMMENT '产品类型',
-    `rule_type` enum  ('CAKE','COOKIE','WINE','SOUVENIR') NOT NULL DEFAULT 'UNTREATED' COMMENT '蛋糕，下午茶/曲奇，红酒，手信',
+    `rule_type` enum  ('CAKE','COOKIE','WINE','SOUVENIR') NOT NULL COMMENT '蛋糕，下午茶/曲奇，红酒，手信',
     `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
     PRIMARY KEY (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='创建产品配送工资计算规则对应表';

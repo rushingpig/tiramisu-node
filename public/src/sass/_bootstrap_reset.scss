@@ -214,7 +214,18 @@ button, .btn:focus, .btn.focus, .btn:active:focus, .btn:active.focus, .btn.activ
 input {
   outline: 0
 }
-
+.has-success .form-control {
+  border-color: #5AD65D; 
+  &:focus{
+    border-color: #5AD65D;
+  }
+}
+.has-error .form-control {
+  border-color: #F56F6D; 
+  &:focus{
+    border-color: #F56F6D;
+  }
+}
 .form-control:focus, #focusedInput {
   border: 1px solid #424F63;
   box-shadow: none;

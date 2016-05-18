@@ -261,4 +261,17 @@ ProductService.prototype.deleteProduct = (req, res, next)=> {
         });
     systemUtils.wrapService(res, next, promise);
 };
+/**
+ * batch delete skus
+ * @param req
+ * @param res
+ * @param next
+ */
+ProductService.prototype.deleteSku = (req, res, next)=> {
+    let promise = productDao.batchDeleteSku(req, req.body)
+        .then(() => {
+            res.api();
+        });
+    systemUtils.wrapService(res, next, promise);
+};
 module.exports = new ProductService();

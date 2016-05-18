@@ -354,5 +354,38 @@ ProductDao.prototype.deleteProductAndSku = function (req, id) {
             });
     });
 }
-
+ProductDao.prototype.deleteSku = function (req, data, connection) {
+    let sql = this.base_update_sql + ' where product_id = ? and regionalism_id = ? ';
+    return baseDao.execWithConnection(connection, sql, [config.tables.buss_product_sku, systemUtils.assembleUpdateObj(req, {del_flag: del_flag.HIDE}, true), data.product_id, data.regionalism_id]);
+}
+ProductDao.prototype.batchDeleteSku = function (req, skus) {
+    let self = this;
+    return baseDao.trans().then(connection => {
+        let promises = skus.map(sku => {
+            let data = {
+                product_id: sku.spu,
+                regionalism_id: sku.city
+            };
+            return self.deleteSku(req, data, connection);
+        });
+        Promise.all(promises)
+            .then(() => {
+                return new Promise((resolve, reject) => {
+                    connection.commit(err => {
+                        connection.release();
+                        if (err) return reject(err);
+                        resolve();
+                    });
+                });
+            }).catch(err => {
+                return new Promise((resolve, reject) => {
+                    connection.rollback(rollbackErr => {
+                        connection.release();
+                        if (rollbackErr) return reject(rollbackErr);
+                        reject(err);
+                    });
+                });
+            });
+    });
+}
 module.exports = ProductDao;

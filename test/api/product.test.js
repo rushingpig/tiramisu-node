@@ -312,5 +312,53 @@ module.exports = function() {
             });
         });
 
+        describe('test for batch delete skus', function() {
+            let body = [{
+                spu: 1,
+                city: 440300
+            },{
+                spu: 2,
+                city: 440400
+            }];
+            before(function(done) {
+                let promises = body.map(data => {
+                    return new Promise((resolve, reject) => {
+                        let sql = 'insert into buss_product_sku(product_id,size,website,regionalism_id,price,original_price,book_time) ' + 'values(' + data.spu + ',\'xxx\',1,' + data.city + ',200,100,3)';
+                        pool.query(sql, function(err, result) {
+                            if (err) {
+                                return reject(err);
+                            }
+                            resolve(result.insertId);
+                        });
+                    });
+                });
+                return Promise.all(promises)
+                    .then(function() {
+                        done();
+                    }).catch(function(err) {
+                        done(err);
+                    });
+            });
+            it('PUT /v1/a/product/skus', function(done) {
+                agent.put('/v1/a/product/skus')
+                    .type('application/json')
+                    .send(body)
+                    .end(function(err, res) {
+                        if (err) return done(err);
+                        let sql = 'select count(1) as count from buss_product_sku where product_id = 1 and regionalism_id = 440300 and del_flag = 0';
+                        pool.query(sql, function(err, result) {
+                            if (err) return done(err);
+                            assert.equal(result[0].count, 1);
+                            let sql = 'select count(1) as count from buss_product_sku where product_id = 2 and regionalism_id = 440400 and del_flag = 0';
+                            pool.query(sql, function(err, result) {
+                                if (err) return done(err);
+                                assert.equal(result[0].count, 1);
+                                done();
+                            });
+                        });
+                    });
+            });
+        });
+
     });
 }

@@ -114,6 +114,8 @@ a.put('/product/category/primary', categoryService.modifyPrimaryCategory);  // �
 a.put('/product/category/secondary', categoryService.modifySecondaryCategory);  // 修改二级分类
 a.put('/product/categories/sort', categoryService.rankCategoris);  // 二级分类排序
 
+a.put('/product/skus', productService.deleteSku);  // 批量删除sku
+
 //************************
 //******** DELETE ********
 //************************

@@ -24,6 +24,8 @@ function main(state = main_state, action){
 			return {...state,active_order_id: action.active_order_id}
 		case Actions.GET_DELIVERY_RECORD:
 			return {...state,deliveryRecord:action.data}
+		case Actions.RESET_DELIVERY_RECORD:
+			return {...state,deliveryRecord:[], active_order_id: -1, check_order_info: null}
 		case Actions.GET_ORDER_DETAIL_PRODUCTS:
 			return {...state, check_order_info:action.data }
 		case Actions.GET_DELIVERY_PROOF:

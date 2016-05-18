@@ -204,6 +204,13 @@ export function resetOrderOptRecord(){
   }
 }
 
+export const RESET_DELIVERY_RECORD = 'RESET_DELIVERY_RECORD';
+export function resetDeliveryRecord(){
+  return {
+    type: RESET_DELIVERY_RECORD,
+  }
+}
+
 
 
 

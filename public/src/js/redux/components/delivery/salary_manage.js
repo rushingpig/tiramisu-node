@@ -556,6 +556,7 @@ class DeliveryManSalaryManagePannel extends Component{
 	componentDidMount(){
 		this.onTbScroll('tab','box',1);
 		LazyLoad('chinese_py');
+		this.props.actions.resetDeliveryRecord();
 		/*this.props.actions.getDeliveryRecord();*/
 		//this.props.actions.getProvinces();
 /*		window.onload = function (){

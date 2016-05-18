@@ -26,6 +26,7 @@ var dao = require('../../../dao'),
     _ = require('lodash'),
     xlsx = require('node-xlsx'),
     tartetatin = require('../../../api/tartetatin'),
+    calculator = require('../../../api/calculator'),
     async = require('async');
 function DeliveryService(){
 
@@ -317,9 +318,8 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
         signin_time : req.body.signin_time || new Date(),
         status : Constant.OS.COMPLETED
     };
-    if(req.body.POS_terminal_id !== undefined){
-        order_obj.pos_id = req.body.POS_terminal_id;
-        order_obj.pay_modes_id = Constant.OPM.POS;
+    if(req.body.is_POS !== undefined){
+        order_obj.is_pos_pay = req.body.is_POS ? 1 : 0;
     }
     let order_sign_history_obj = {
         order_id: orderId
@@ -420,14 +420,27 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
         order_history_obj.option = option;
         //===========for history end=============
 
+        let user_id = req.session.user.id;
         return co(function*() {
-            console.log(products);
-            yield orderDao.editOrder(systemUtils.assembleUpdateObj(req, order_obj), orderId, null, null, products, add_skus, delete_skuIds, update_skus);
+            let delivery_pay_obj = {
+                deliveryman_id: order_obj.deliveryman_id || current_order.deliveryman_id
+            };
+            delivery_pay_obj.delivery_pay = yield calculator.deliveryPay(_res);
+            let delivery_pay_history_obj = {
+                order_id: orderId,
+                option: '自动计算{配送工资}为{' + (delivery_pay_obj.delivery_pay / 100) + '}元\n'
+            };
 
+            yield orderDao.editOrder(systemUtils.assembleUpdateObj(req, order_obj), orderId, null, null, products, add_skus, delete_skuIds, update_skus);
+            yield deliveryDao.updateDeliveryRecord(orderId, null, systemUtils.assembleUpdateObj(req, delivery_pay_obj));
+
+            let historyArr = [];
             if (order_history_obj.option != '') {
-                yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
+                historyArr.push([orderId, order_history_obj.option, user_id, new Date()]);
             }
-            yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_sign_history_obj, true));
+            historyArr.push([orderId, order_sign_history_obj.option, user_id, new Date()]);
+            historyArr.push([orderId, delivery_pay_history_obj.option, user_id, new Date()]);
+            yield orderDao.batchInsertOrderHistory(historyArr);
 
             if (refund_amount > 0) {
                 return yield tartetatin.refund(refund_amount, current_order.id, current_order.id)
@@ -439,7 +452,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
     }).then(refund_result => {
         if (refund_result) return res.api({refund_result: refund_result});
         res.api();
-    });
+    }).catch(console.log);
     systemUtils.wrapService(res, next, promise);
 };
 /**
@@ -1036,7 +1049,9 @@ DeliveryService.prototype.editRecord = (req, res, next)=> {
     }
     let order_id = systemUtils.getDBOrderId(req.params.orderId);
     let order_obj = {};
-    let record_obj = {};
+    let record_obj = {
+        is_review: 1
+    };
     let order_history_obj = {
         order_id: order_id,
         option: ''

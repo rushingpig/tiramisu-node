@@ -225,6 +225,7 @@ ProductService.prototype.getProductDetails = (req, res, next)=> {
               primary_cate_name: result.primary_cate_name,
               secondary_cate_name: result.secondary_cate_name,
               city_name: result.city_name,
+              city_id: result.city_id,
               province_name: result.province_name,
               price: result.price,
               book_time: result.book_time,

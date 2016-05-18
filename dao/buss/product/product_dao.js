@@ -235,6 +235,7 @@ ProductDao.prototype.getProductDetailByParams = function (data) {
         'primary_cate.name as primary_cate_name',
         'secondary_cate.name as secondary_cate_name',
         'city.name as city_name',
+        'city.id as city_id',
         'province.name as province_name',
         //  统计当前条件下是否有商城上线sku
         'count(CASE WHEN website = 1 THEN 1 ELSE NULL END) as isMall',

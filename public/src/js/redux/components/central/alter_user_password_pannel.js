@@ -31,7 +31,7 @@ const AlterUserPasswordPannel =  React.createClass({
     };
   },
   render(){
-    var { username, secret, submitting, new_psd_error, ensure_new_psd_error } = this.state;
+    var { username, old_psd, new_psd, ensure_new_psd, secret, submitting, new_psd_error, ensure_new_psd_error } = this.state;
     return (
       <div>
         <div className="panel">
@@ -43,23 +43,23 @@ const AlterUserPasswordPannel =  React.createClass({
             </div>
             <div className="form-group form-inline">
               <label htmlFor="old_psd">旧密码：　</label>
-              <input onChange={this.onOldPsdChange} id="old_psd" autoComplete="off" type={secret ? "password" : "text"} className="form-control input-xs"/>
+              <input value={old_psd} onChange={this.onOldPsdChange} id="old_psd" autoComplete="off" type={secret ? "password" : "text"} className="form-control input-xs"/>
               <a onClick={this.handlePsd} tabIndex="-1" href="javascript:;" style={{position: 'relative', right: 16}}>
                 <i className={`fa fa-eye${secret ? '-slash' : ''}`}></i>
               </a>
             </div>
             <div className={classNames('form-group', 'form-inline', {'has-success': !new_psd_error})}>
               <label htmlFor="new_psd">新密码：　</label>
-              <input onChange={this.onNewPsdChange} id="new_psd" autoComplete="off" type={secret ? "password" : "text"} className="form-control input-xs"/>
+              <input value={new_psd} onChange={this.onNewPsdChange} id="new_psd" autoComplete="off" type={secret ? "password" : "text"} className="form-control input-xs"/>
               { new_psd_error
                 ? null
                 : <i className="fa fa-check text-success" style={{position: 'relative', right: 16, width: 0}}></i>
               }
-              <span className="gray small">（长度不少于6位）</span>
+              <span className="gray small">（数字或字母且长度不少于6位）</span>
             </div>
             <div className={classNames('form-group', 'form-inline', {'has-success': !ensure_new_psd_error})}>
               <label htmlFor="ensure_new_psd">确认密码：</label>
-              <input onChange={this.onEnsureNewPsdChange} id="ensure_new_psd" autoComplete="off" type={secret ? "password" : "text"} className="form-control input-xs"/>
+              <input value={ensure_new_psd} onChange={this.onEnsureNewPsdChange} id="ensure_new_psd" autoComplete="off" type={secret ? "password" : "text"} className="form-control input-xs"/>
               { ensure_new_psd_error
                 ? null
                 : <i className="fa fa-check text-success" style={{position: 'relative', right: 16}}></i>
@@ -94,14 +94,14 @@ const AlterUserPasswordPannel =  React.createClass({
     var { value } = e.target;
     this.setState({
       new_psd: value,
-      new_psd_error: value.length < 6
+      new_psd_error: value.length < 6 || !/^[\da-z]{6,}$/i.test(value)
     })
   },
   onEnsureNewPsdChange(e){
     var { value } = e.target;
     this.setState({
       ensure_new_psd: value,
-      ensure_new_psd_error: value.length < 6 || value != this.state.new_psd
+      ensure_new_psd_error: value.length < 6 || !/^[\da-z]{6,}$/i.test(value) || value != this.state.new_psd
     })
   },
   submitHandler(){
@@ -110,9 +110,9 @@ const AlterUserPasswordPannel =  React.createClass({
     if(old_psd_error){
       Noty('error', '请填写旧密码'); return;
     }else if(new_psd_error){
-      Noty('error', '新密码格式错误'); return;
+      Noty('error', '新密码格式错误'); this.setState({ ensure_new_psd: '' }); return;
     }else if(ensure_new_psd_error){
-      Noty('error', '确认密码错误'); return;
+      Noty('error', '确认密码错误'); this.setState({ ensure_new_psd: '' }); return;
     }
 
     this.setState({ submitting: true });
@@ -126,8 +126,8 @@ const AlterUserPasswordPannel =  React.createClass({
       }).then(function(){
         location.href="/logout";
       })
-    }).fail(function(){
-      Noty('error', '服务器忙，请稍后再试');
+    }).fail(function(msg){
+      Noty('error', msg || '服务器忙，请稍后再试');
     })
     .always(function(){
       this.setState({ submitting: false })

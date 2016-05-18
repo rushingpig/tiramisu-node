@@ -154,6 +154,7 @@ module.exports = {
     let user = {};
     if (userInfo) {
       user = {
+        username : userInfo.username,
         name: userInfo.name,
         permissions: userInfo.permissions,
         is_admin : userInfo.is_admin

@@ -354,4 +354,45 @@ UserService.prototype.editUser = (req,res,next) => {
         }
     ]);
 };
+/**
+ * change the user password
+ * @param req
+ * @param res
+ * @param next
+ */
+UserService.prototype.changePwd = (req,res,next) => {
+    req.checkParams('username','请指定要修改的用户登录名。。。').notEmpty();
+    req.checkBody(schema.changePwd);
+    let errors = req.validationErrors();
+    if (errors) {
+        return res.api(res_obj.INVALID_PARAMS,errors);
+    }
+    let new_password = req.body.new_password,
+        old_password = req.body.old_password,
+        db_password = cryptoUtils.md5(old_password.toString().trim()),
+        new_db_password = cryptoUtils.md5(new_password.toString().trim()),
+        verify_new_password = req.body.verify_new_password,
+        username = req.params.username;
+    if(new_password !== verify_new_password){
+        return res.api(res_obj.PWD_NOT_CONSISTENT,null,null);
+    }
+    let promise = new UserService().getUserInfo(username,db_password).then(user => {
+        if(!user){
+            throw new TiramisuError(res_obj.INCORRECT_PWD);
+        }
+        let user_id = user.id;
+        let user_obj = {
+            password : new_db_password
+        };
+        return userDao.updateUserById(user_obj,user_id);
+
+    }).then(affectRows => {
+        if(!toolUtils.isInt(affectRows)){
+            throw new TiramisuError(res_obj.FAIL,'重置密码异常...');
+        }
+        res.api();
+    });
+    systemUtils.wrapService(res,next,promise);
+
+};
 module.exports = new UserService();

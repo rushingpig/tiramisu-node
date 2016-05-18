@@ -30,6 +30,14 @@ module.exports = {
     code : '1005',
     msg : '该用户已被禁用,请联系管理员...'
   },
+  PWD_NOT_CONSISTENT : {
+    code : '1006',
+    msg : '新密码与确认密码不一致,请重新输入...'
+  },
+  INCORRECT_PWD : {
+    code : '1007',
+    msg : '旧密码输入有误,请重新输入...'
+  },
   ORDER_AUDITING: {
     code: '2000',
     msg: '有订单打印正在审核中,请等待审核通过...'

@@ -24,6 +24,7 @@ module.exports = function(router){
 //*********************
     router.put('/user/:userId/usable',userService.enOrdisableUser);
     router.put('/user/:userId',userService.editUser);
+    router.put('/user/:username/password',userService.changePwd);
 
 //************************
 //******** DELETE ********

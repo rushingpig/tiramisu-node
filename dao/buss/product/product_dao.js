@@ -253,7 +253,7 @@ ProductDao.prototype.getProductDetailByParams = function (data) {
     // 如果是预售商品，presell_start大于上线时间
     // 如果是预售商品，presell_end小于下线时间
     if (data.presell_start) {
-        sql += ' and sku.presell_start > ? or sku.presell_start is null ';
+        sql += ' and sku.presell_start > ? or sku.created_time > ? ';
         params.push(data.presell_start);
     }
     if (data.presell_end) {

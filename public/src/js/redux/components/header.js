@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {dateFormat} from 'utils/index';
 import cookie from 'utils/cookie';
+import history from 'history_instance';
 import { NAV_COLLAPSED_CLASS, NAV_COLLAPSED_COOKIE, 
   NAV_COLLAPSED_COOKIE_NO, NAV_COLLAPSED_COOKIE_YES } from 'config/app.config';
 
@@ -31,14 +32,14 @@ class Header extends Component {
             </li>
             <li className={this.state.usermenu_open ? 'open' : ''}>
               <a href="#" className="btn btn-default dropdown-toggle"
-                  onClick={this.showUserMenu.bind(this)} data-toggle="dropdown" aria-expanded="false">
+                  onClick={this.toggleUserMenu.bind(this)} data-toggle="dropdown" aria-expanded="false">
                 {/*<img src="http://www.qq1234.org/uploads/allimg/141119/2252043613-8.png" alt="" />*/}
                 { this.state.user.name || '--'}
                 <span className="caret"></span>
               </a>
               <ul className="dropdown-menu dropdown-menu-usermenu pull-right">
                 <li><a href="javascript:;"><i className="fa fa-user"></i>  个人</a></li>
-                <li><a href="javascript:;"><i className="fa fa-cog"></i>  设置</a></li>
+                <li><a href="javascript:;" onClick={this.alterPsd.bind(this)}><i className="fa fa-cog"></i>  修改密码</a></li>
                 <li><a href="javascript:;" onClick={this.logout.bind(this)}><i className="fa fa-sign-out"></i> 退出</a></li>
               </ul>
             </li>
@@ -61,17 +62,29 @@ class Header extends Component {
       cookie.set(NAV_COLLAPSED_COOKIE, NAV_COLLAPSED_COOKIE_YES);
     }
   }
-  showUserMenu(){
-    // this.setState({
-    //   usermenu_open: !this.state.usermenu_open
-    // })
+  toggleUserMenu(){
+    this.setState({
+      usermenu_open: !this.state.usermenu_open
+    }, function(){
+      var self = this;
+      if(this.state.usermenu_open){
+        $('body').on('click', function hideUserMenu(){
+          self.setState({ usermenu_open: false });
+          $('body').off('click', hideUserMenu);
+        })
+      }
+    })
+  }
+  hideUserMenu(){
+    this.setState({ usermenu_open: false })
+  }
+  alterPsd(){
+    history.push('/cm/account');
   }
   logout(){
     location.href="/logout";
   }
   componentDidMount(){
-    // $('body').on('click', this.hideDropDown);
-    // $('#notification-menu').on('click', '.dropdown-menu', this.stopPropagation);
     this.timer = setInterval(()=>{
       var now = new Date();
       if(now.getDay() != this.state.day){
@@ -82,17 +95,6 @@ class Header extends Component {
       }
     }, 500);
   }
-  componentWillUnmount(){
-    // $('body').off('click', this.hideDropDown);
-    // $('#notification-menu').off('click', this.stopPropagation);
-  }
-  // hideDropDown(e){
-  //   $('#notification-menu').find('li.open').removeClass('open');
-  // }
-  // stopPropagation(e){
-  //   e.stopPropagation();
-  //   return false;
-  // }
 }
 
 export default Header;

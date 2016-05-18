@@ -40,7 +40,8 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
     case 'cm':
       require.ensure([], require => {
         components = {...components,
-          SrcChannelPannel: require('../components/central/src_channel_manage'),
+          SrcChannelPannel:         require('../components/central/src_channel_manage'),
+          AlterUserPasswordPannel:  require('../components/central/alter_user_password_pannel')
         };
         callback();
       })
@@ -103,6 +104,7 @@ const App = () => (
 
       <Route path="cm" onEnter={getComponents('cm')}>
         <Route path="src" onEnter={onEnter('SrcChannelManageAccess')}  getComponent={get('SrcChannelPannel')}   />
+        <Route path="account" getComponent={get('AlterUserPasswordPannel')}   />
       </Route>
 
       <Route path="am" onEnter={getComponents('am')}>

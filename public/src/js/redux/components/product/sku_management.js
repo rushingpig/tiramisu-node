@@ -229,19 +229,6 @@ class PreSaleOptions extends Component {
                         </div>
                     </Col>
                 </Row>
-                <p />
-                <Row>
-                    <Col xs="10" offset="2">
-                        <div className="form-inline">
-                            {'　　'}
-                            预约时间：
-                            <Input value={tempOptions.bookingTime} onChange={getDOMValue(Action.changeBookingTime)} />
-                            <small className='text-muted'>
-                                （单位：小时）
-                            </small>
-                        </div>
-                    </Col>
-                </Row>
                 {
                     state.citiesOptionApplyRange === 0 ? null : (
                         <div>
@@ -626,6 +613,18 @@ class CitiesOptions extends Component {
                         </FormGroup>
                     )
                 }
+                <Row><Col xs='10' offset='1'><hr/></Col></Row>
+                <FormGroup>
+                    <label className="col-xs-2 control-label">预约时间：</label>
+                    <Col xs="6">
+                        <div className="form-inline">
+                            <Input value={state.tempOptions.bookingTime} onChange={getDOMValue(Action.changeBookingTime)} />
+                            <small className='text-muted'>
+                                （单位：小时）
+                            </small>
+                        </div>
+                    </Col>
+                </FormGroup>
                 <Row><Col xs='10' offset='1'><hr/></Col></Row>
                 <FormGroup>
                     <label className="col-xs-2 control-label">上架设置：</label>

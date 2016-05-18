@@ -72,6 +72,8 @@ const URL = (function() {
     sortCategories:           '/product/categories/sort',
     activatedCity:            '/product/category/:id/regions/pc',
     addSku:                   '/product/sku',
+    searchSku:                '/product/details',
+    deleteSku:                '/product/skus',
 
     //送货管理
     order_exchange:     '/orders/exchange', //订单转送单列表

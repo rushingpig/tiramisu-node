@@ -283,6 +283,7 @@ const switchType = {
             state.tempOptions = clone(state.citiesOptions.get(id));
         } else {
             state.tempOptions = clone(initialState.tempOptions);
+            state.cityOptionSavable = false;
         }
 
         return {

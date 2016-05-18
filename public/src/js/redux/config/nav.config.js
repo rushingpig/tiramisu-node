@@ -96,7 +96,7 @@ export default [{
     "key": "sku_manage",
     "name": "商品管理",
     "icon": "",
-    "link": "/pm/sku_manage/add"
+    "link": "/pm/sku_manage"
   }]
 }, {
   "key": "category_manage",

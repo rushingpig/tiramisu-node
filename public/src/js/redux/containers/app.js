@@ -50,6 +50,7 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
       require.ensure([], require => {
         components = {
           ...components,
+          SkuSearch: require('../components/product/sku_search'),
           SkuManage: require('../components/product/sku_management')
         }
         callback();
@@ -150,6 +151,7 @@ const App = () => (
 
       <Route path="pm" onEnter={getComponents('pm')}>
         <Route path="sku_manage">
+          <IndexRoute getComponent={get('SkuSearch')} />
           <Route path="add" getComponent={get('SkuManage')} />
         </Route>
       </Route>

@@ -419,7 +419,6 @@ const saveOption = () => (
             const { onSaleTime, delivery } = option;
 
             transformedOption = {
-                book_time: option.bookingTime,
                 presell_start: dateFormat(onSaleTime[0], 'yyyy-MM-dd hh:mm:ss'),
                 send_start: dateFormat(delivery[0], 'yyyy-MM-dd hh:mm:ss')
             }
@@ -477,7 +476,7 @@ const saveOption = () => (
 
         if (state.citiesOptionApplyRange === 0) {
 
-            const shangjiaOpt = transformShangjiaOption(state.tempOptions);
+            const shangjiaOpt = state.tempOptions.isPreSale ? transformShangjiaOption(state.tempOptions) : {};
             let sourceSpecifications = [];
 
             [...state.tempOptions.sourceSpecifications]
@@ -493,11 +492,9 @@ const saveOption = () => (
 
             let shopSpecifications = [];
 
-            if (state.tempOptions.isPreSale) {
-                shopSpecifications = state.tempOptions.shopSpecifications
-                    .map(transformShopSpecificationOption)
-                    .map( opt => ({ ...shangjiaOpt, ...opt }) );
-            }
+            shopSpecifications = state.tempOptions.shopSpecifications
+                .map(transformShopSpecificationOption)
+                .map( opt => ({ ...shangjiaOpt, ...opt }) );
 
             [...citiesSelectorState.checkedCities].forEach(cityId => {
                 sku = [
@@ -505,6 +502,7 @@ const saveOption = () => (
                     ...[...shopSpecifications, ...sourceSpecifications].map(
                         opt => ({
                             regionalism_id: cityId,
+                            book_time: state.tempOptions.bookingTime,
                             ...opt
                         })
                     )
@@ -515,7 +513,7 @@ const saveOption = () => (
                 if (cityId === 'all')
                     return;
 
-                const shangjiaOpt = transformShangjiaOption(cityOption);
+                const shangjiaOpt = cityOption.isPreSale ? transformShangjiaOption(cityOption) : {};
                 let sourceSpecifications = [];
 
                 [...cityOption.sourceSpecifications]
@@ -531,17 +529,16 @@ const saveOption = () => (
 
                 let shopSpecifications = [];
 
-                if (cityOption.isPreSale) {
-                    shopSpecifications = cityOption.shopSpecifications
-                        .map(transformShopSpecificationOption)
-                        .map( opt => ({ ...shangjiaOpt, ...opt }) );
-                }
+                shopSpecifications = cityOption.shopSpecifications
+                    .map(transformShopSpecificationOption)
+                    .map( opt => ({ ...shangjiaOpt, ...opt }) );
 
                 sku = [
                     ...sku,
                     ...[...shopSpecifications, ...sourceSpecifications].map(
                         opt => ({
                             regionalism_id: cityId,
+                            book_time: cityOption.bookingTime,
                             ...opt
                         })
                     )

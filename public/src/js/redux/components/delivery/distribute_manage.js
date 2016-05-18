@@ -598,7 +598,6 @@ var SignedModal = React.createClass({
       current_id: -1,
       deliverymanAtSameStation: [],
       pay_way:1,
-      POS_terminal_id:'',
     };
   },
   mixins: [ LinkedStateMixin ],
@@ -634,14 +633,14 @@ var SignedModal = React.createClass({
         </div>
         <div className="form-group form-inline mg-15">
           <div className="row">
-            <div className="col-xs-4">
+            <div className="col-xs-6">
               <label>迟到时长：</label>
               <div className="inline-block input-group input-group-xs">
                 <input value={late_minutes} onChange={this.onLateTimeChange} type="text" className="form-control" style={{'width': 50}} />
                 <span className="input-group-addon">Min</span>
               </div>
             </div>
-            <div className="col-xs-8">
+            <div className="col-xs-6">
               <label>货到付款金额：￥</label>
               <input value={this.state.order.total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
               {
@@ -650,11 +649,6 @@ var SignedModal = React.createClass({
                   <option value='1'>现金</option>
                   <option value='2'>POS机</option>
                 </select>
-                :null
-              }
-              {
-                this.state.pay_way == 2 ?
-                <input value= { POS_terminal_id } className='form-control input-xs v-mg' placeholder='POS机终端号' onChange = {this.onPOSChange} />
                 :null
               }            
             </div>
@@ -725,7 +719,7 @@ var SignedModal = React.createClass({
     )
   },
   submitHandler(){
-    var { order, CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date, current_id, deliverymanAtSameStation, pay_way, POS_terminal_id } = this.state;
+    var { order, CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date, current_id, deliverymanAtSameStation, pay_way } = this.state;
     var { orderDetail } = this.props.D_;
     var currentOrderSpareparts = this.state.orderSpareparts;
     var { updated_time } = orderDetail;
@@ -777,13 +771,11 @@ var SignedModal = React.createClass({
       signin_time: signin_date + ' ' + signin_hour,
       updated_time: updated_time,
       order: { products ,...this.state.order },
+      is_POS: this.state.pay_way == 1? false:true,
       /* deliveryman: deliveryman,*/
     }
     if( orderDetail.deliveryman_id != current_id ){
       signData.deliveryman = deliveryman;
-    }
-    if( pay_way == 2){
-      signData.POS_terminal_id = POS_terminal_id;
     }
     delete signData.D_;
     delete signData.order.D_;
@@ -828,9 +820,6 @@ var SignedModal = React.createClass({
   onPayWayChange: function(e){
     var pay_way = e.target.value;
     this.setState({pay_way})
-  },
-  onPOSChange: function(e){
-    this.setState({POS_terminal_id: e.target.value});
   },
   onLateTimeChange: function(e){
     var { value } = e.target;
@@ -973,7 +962,7 @@ var SignedModal = React.createClass({
         current_id = 0;
       }*/
     var pay_way = 1;
-    if('POS_terminal_id' in D_.orderDetail) 
+    if(D_.orderDetail.is_POS) 
       pay_way =2;
     this.setState({orderSpareparts ,current_id ,deliverymanAtSameStation, pay_way});
   },

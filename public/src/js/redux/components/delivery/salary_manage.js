@@ -474,10 +474,11 @@ class DeliveryManSalaryManagePannel extends Component{
 			amount_total += n.total_amount;
 			receive_total += n.COD_amount;
 			salary_total += n.delivery_pay;
-			if( n.pay_modes_id == MODES['cash'])
-				cash += n.COD_amount;
-			else if( n.pay_modes_id == MODES['card'])
-				pos += n.COD_amount;
+			if( n.is_POS != null) {
+				if(n.is_POS) {pos += n.COD_amount}
+				else {cash += n.COD_amount}
+
+			}
 			return <SalaryRow key={n.order_id}
 						{...{...n, ...this.props, viewCredentialModal, viewOperationRecordModal}} />;
 		});

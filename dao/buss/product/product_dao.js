@@ -321,5 +321,38 @@ ProductDao.prototype.getProductDetailByParams = function (data) {
         });
     });
 };
+ProductDao.prototype.deleteProductById = function (req, id, connection) {
+    let sql = this.base_update_sql + ' where id = ?';
+    return baseDao.execWithConnection(connection, sql, [this.base_table, systemUtils.assembleUpdateObj(req, {del_flag: del_flag.HIDE}, true), id]);
+}
+ProductDao.prototype.deleteSkuByProductId = function (req, id, connection) {
+    let sql = this.base_update_sql + ' where product_id = ?';
+    return baseDao.execWithConnection(connection, sql, [config.tables.buss_product_sku, systemUtils.assembleUpdateObj(req, {del_flag: del_flag.HIDE}, true), id]);
+}
+ProductDao.prototype.deleteProductAndSku = function (req, id) {
+    let self = this;
+    return baseDao.trans().then(connection => {
+        return self.deleteProductById(req, id, connection)
+            .then(() => {
+                return self.deleteSkuByProductId(req, id, connection);
+            }).then(() => {
+                return new Promise((resolve, reject) => {
+                    connection.commit(err => {
+                        connection.release();
+                        if (err) return reject(err);
+                        resolve();
+                    });
+                });
+            }).catch(err => {
+                return new Promise((resolve, reject) => {
+                    connection.rollback(rollbackErr => {
+                        connection.release();
+                        if (rollbackErr) return reject(rollbackErr);
+                        reject(err);
+                    });
+                });
+            });
+    });
+}
 
 module.exports = ProductDao;

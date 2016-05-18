@@ -171,6 +171,18 @@ BaseDao.insertWithConnection = function (connection, sql, params, noInsertId) {
     });
 }
 
+BaseDao.execWithConnection = function (connection, sql, params) {
+    return new Promise((resolve, reject) => {
+        connection.query(sql, params, (err, results, fields) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(results.affectedRows);
+            }
+        });
+    });
+}
+
 BaseDao.del_flag = {
     SHOW: 1,
     HIDE: 0

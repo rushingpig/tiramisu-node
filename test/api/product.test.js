@@ -126,7 +126,7 @@ module.exports = function() {
                         pool.query(sku_sql, function(err, result) {
                             assert.equal(result.length, 4);
                             let sku_booktime_sql = 'select count(1) as count from buss_product_sku a join buss_product_sku_booktime b on a.id = b.sku_id where a.product_id = ' + product_id + ' and a.size = \'约1磅\'';
-                            pool.query(sku_booktime_sql, function (err, result) {
+                            pool.query(sku_booktime_sql, function(err, result) {
                                 assert.equal(result[0].count, 2);
                             });
                             done();
@@ -136,12 +136,12 @@ module.exports = function() {
         })
 
         describe('test for get product details', function() {
-            let primary_cate_id,secondary_cate_id,product_id,skus=[];
-            before(function (done) {
-                new Promise(function(resolve, reject){
+            let primary_cate_id, secondary_cate_id, product_id, skus = [];
+            before(function(done) {
+                new Promise(function(resolve, reject) {
                     let sql = 'insert into buss_product_category(parent_id,name,remarks) values(0,\'测试产品列表一级分类\',\'here is remarks\')';
                     pool.query(sql, function(err, result) {
-                        if(err){
+                        if (err) {
                             return reject(err);
                         }
                         primary_cate_id = result.insertId;
@@ -151,7 +151,7 @@ module.exports = function() {
                     return new Promise((resolve, reject) => {
                         let sql = 'insert into buss_product_category(parent_id,name,remarks) values(' + primary_cate_id + ',\'测试产品列表二级分类\',\'here is remarks\')';
                         pool.query(sql, function(err, result) {
-                            if(err){
+                            if (err) {
                                 return reject(err);
                             }
                             secondary_cate_id = result.insertId;
@@ -161,8 +161,8 @@ module.exports = function() {
                 }).then(secondary_cate_id => {
                     return new Promise((resolve, reject) => {
                         let sql = 'insert into buss_product(name,category_id) values(\'测试产品列表产品1\',' + secondary_cate_id + ')';
-                        pool.query(sql, function (err, result) {
-                            if(err){
+                        pool.query(sql, function(err, result) {
+                            if (err) {
                                 return reject(err);
                             }
                             product_id = result.insertId;
@@ -170,12 +170,11 @@ module.exports = function() {
                         });
                     });
                 }).then(product_id => {
-                    let promises = ['测试产品列表规格1','测试产品列表规格2'].map(item => {
+                    let promises = ['测试产品列表规格1', '测试产品列表规格2'].map(item => {
                         return new Promise((resolve, reject) => {
-                            let sql = 'insert into buss_product_sku(product_id,size,website,regionalism_id,price,original_price,book_time) '
-                                + 'values(' + product_id + ',\'' + item + '\',1,440300,200,100,3)';
-                            pool.query(sql, function (err, result) {
-                                if(err){
+                            let sql = 'insert into buss_product_sku(product_id,size,website,regionalism_id,price,original_price,book_time) ' + 'values(' + product_id + ',\'' + item + '\',1,440300,200,100,3)';
+                            pool.query(sql, function(err, result) {
+                                if (err) {
                                     return reject(err);
                                 }
                                 resolve(result.insertId);
@@ -185,10 +184,9 @@ module.exports = function() {
                     return Promise.all(promises);
                 }).then(() => {
                     return new Promise((resolve, reject) => {
-                        let sql = 'insert into buss_product_sku(product_id,size,website,regionalism_id,price,original_price,book_time,presell_start) '
-                            + 'values(' + product_id + ',\'测试产品列表规格3\',2,440400,200,100,3,\'2016-05-17 17:38:43\')';
-                        pool.query(sql, function (err, result) {
-                            if(err){
+                        let sql = 'insert into buss_product_sku(product_id,size,website,regionalism_id,price,original_price,book_time,presell_start) ' + 'values(' + product_id + ',\'测试产品列表规格3\',2,440400,200,100,3,\'2016-05-17 17:38:43\')';
+                        pool.query(sql, function(err, result) {
+                            if (err) {
                                 return reject(err);
                             }
                             resolve(result.insertId);
@@ -196,16 +194,15 @@ module.exports = function() {
                     });
                 }).then(() => {
                     return new Promise((resolve, reject) => {
-                        let sql = 'insert into buss_product_sku(product_id,size,website,regionalism_id,price,original_price,book_time,activity_start) '
-                            + 'values(' + product_id + ',\'测试产品列表规格4\',2,440400,200,100,3,\'2016-05-17 17:38:43\')';
-                        pool.query(sql, function (err, result) {
-                            if(err){
+                        let sql = 'insert into buss_product_sku(product_id,size,website,regionalism_id,price,original_price,book_time,activity_start) ' + 'values(' + product_id + ',\'测试产品列表规格4\',2,440400,200,100,3,\'2016-05-17 17:38:43\')';
+                        pool.query(sql, function(err, result) {
+                            if (err) {
                                 return reject(err);
                             }
                             resolve(result.insertId);
                         });
                     });
-                }).then(function(){
+                }).then(function() {
                     done();
                 }).catch(function(err) {
                     done(err);
@@ -215,8 +212,8 @@ module.exports = function() {
                 agent.get('/v1/a/product/details?name=测试产品列表')
                     .expect('Content-Type', /json/)
                     .expect(200)
-                    .end(function (err, res) {
-                        if(err) return done(err);
+                    .end(function(err, res) {
+                        if (err) return done(err);
                         assert.equal(res.body.data.count, 2);
                         done();
                     });
@@ -225,8 +222,8 @@ module.exports = function() {
                 agent.get('/v1/a/product/details?name=测试产品列表&city=440400')
                     .expect('Content-Type', /json/)
                     .expect(200)
-                    .end(function (err, res) {
-                        if(err) return done(err);
+                    .end(function(err, res) {
+                        if (err) return done(err);
                         assert.equal(res.body.data.count, 1);
                         done();
                     });
@@ -235,8 +232,8 @@ module.exports = function() {
                 agent.get('/v1/a/product/details?name=测试产品列表&city=440400&primary_cate=123')
                     .expect('Content-Type', /json/)
                     .expect(200)
-                    .end(function (err, res) {
-                        if(err) return done(err);
+                    .end(function(err, res) {
+                        if (err) return done(err);
                         assert.equal(res.body.data.count, 0);
                         done();
                     });
@@ -245,8 +242,8 @@ module.exports = function() {
                 agent.get('/v1/a/product/details?name=测试产品列表&city=440300&isMall=false')
                     .expect('Content-Type', /json/)
                     .expect(200)
-                    .end(function (err, res) {
-                        if(err) return done(err);
+                    .end(function(err, res) {
+                        if (err) return done(err);
                         assert.equal(res.body.data.count, 1);
                         done();
                     });
@@ -255,13 +252,65 @@ module.exports = function() {
                 agent.get('/v1/a/product/details?name=测试产品列表&city=440400&isActivity=true')
                     .expect('Content-Type', /json/)
                     .expect(200)
-                    .end(function (err, res) {
-                        if(err) return done(err);
+                    .end(function(err, res) {
+                        if (err) return done(err);
                         assert.equal(res.body.data.count, 1);
                         done();
                     });
             });
         });
-        
+
+        describe('test for delete product and its skus', function() {
+            let product_id;
+            before(function(done) {
+                new Promise((resolve, reject) => {
+                    let sql = 'insert into buss_product(name,category_id) values(\'测试删除产品产品1\',1)';
+                    pool.query(sql, function(err, result) {
+                        if (err) {
+                            return reject(err);
+                        }
+                        product_id = result.insertId;
+                        resolve(result.insertId);
+                    });
+                }).then(product_id => {
+                    let promises = ['测试删除产品规格1', '测试删除产品规格2'].map(item => {
+                        return new Promise((resolve, reject) => {
+                            let sql = 'insert into buss_product_sku(product_id,size,website,regionalism_id,price,original_price,book_time) ' + 'values(' + product_id + ',\'' + item + '\',1,440300,200,100,3)';
+                            pool.query(sql, function(err, result) {
+                                if (err) {
+                                    return reject(err);
+                                }
+                                resolve(result.insertId);
+                            });
+                        });
+                    });
+                    return Promise.all(promises);
+                }).then(function() {
+                    done();
+                }).catch(function(err) {
+                    done(err);
+                });
+            });
+            it('DELETE /v1/a/product/:productId', function(done) {
+                agent.delete('/v1/a/product/' + product_id)
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end(function(err, res) {
+                        if (err) return done(err);
+                        let sql = 'select count(1) as count from buss_product where id = ' + product_id + ' and del_flag = 0';
+                        pool.query(sql, function(err, result) {
+                            if (err) return done(err);
+                            assert.equal(result[0].count, 1);
+                            let sql = 'select count(1) as count from buss_product_sku where product_id = ' + product_id + ' and del_flag = 0';
+                            pool.query(sql, function(err, result) {
+                                if (err) return done(err);
+                                assert.equal(result[0].count, 2);
+                                done();
+                            });
+                        });
+                    });
+            });
+        });
+
     });
-};
+}

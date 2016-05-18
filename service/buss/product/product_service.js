@@ -248,5 +248,17 @@ ProductService.prototype.getProductDetails = (req, res, next)=> {
         });
     systemUtils.wrapService(res, next, promise);
 };
-
+/**
+ * delete product & skus
+ * @param req
+ * @param res
+ * @param next
+ */
+ProductService.prototype.deleteProduct = (req, res, next)=> {
+    let promise = productDao.deleteProductAndSku(req, req.params.productId)
+        .then(() => {
+            res.api();
+        });
+    systemUtils.wrapService(res, next, promise);
+};
 module.exports = new ProductService();

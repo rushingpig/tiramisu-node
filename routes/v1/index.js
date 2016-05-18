@@ -122,6 +122,8 @@ a.delete('/order/src/:srcId', orderService.delOrderSrc); // 删除来源渠道
 
 a.delete('/station/:stationId', addressService.deleteStation);
 
+a.delete('/product/:productId', productService.deleteProduct);  // 删除产品及其sku
+
 //=====================router for business end======================
 
 //======================将路由分模块管理,不同的路由放在不同的文件夹下按需传入不同的路由即可====================

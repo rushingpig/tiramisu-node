@@ -28,7 +28,7 @@ const Select = props => (
 );
 
 const Button = props => (
-  <button className="btn btn-theme btn-xs" {...props} />
+  <button className={props.disabled ? "btn btn-default btn-xs" : "btn btn-theme btn-xs"} {...props} />
 );
 
 const warpLine = timeString => (
@@ -44,12 +44,12 @@ class Main extends Component {
   constructor(props) {
     super(props);
 
-    this.componentDidMount      = this.componentDidMount.bind(this);
-    this.handleChangeBeginTime    = this.handleChangeBeginTime.bind(this);
-    this.handleChangeEndTime    = this.handleChangeEndTime.bind(this);
-    this.handleChangeFilter     = this.handleChangeFilter.bind(this);
-    this.handleChangeDealStatus   = this.handleChangeDealStatus.bind(this);
-    this.handlePageChange       = this.handlePageChange.bind(this);
+    this.componentDidMount          = this.componentDidMount.bind(this);
+    this.handleChangeBeginTime      = this.handleChangeBeginTime.bind(this);
+    this.handleChangeEndTime        = this.handleChangeEndTime.bind(this);
+    this.handleChangeFilter         = this.handleChangeFilter.bind(this);
+    this.handleChangeDealStatus     = this.handleChangeDealStatus.bind(this);
+    this.handlePageChange           = this.handlePageChange.bind(this);
     this.handleChangeMerchantFilter = this.handleChangeMerchantFilter.bind(this);
 
     this.state = {};
@@ -78,11 +78,14 @@ class Main extends Component {
             autoFocus={true}
             onChange={this.handleChangeMerchantFilter}
             ref='merchantFilter'
+            value={state.searchFilter.merchantId}
           />
           {'　'}
-          <Button onClick={() => props.searchWithID()}>
-            搜索
-          </Button>
+          {
+            state.searching
+            ? (<Button disabled={true}>搜索中</Button>)
+            : (<Button onClick={e => props.searchWithID()}>搜索</Button>)
+          }
         </FormInline>
         <p />
         <FormInline>
@@ -133,9 +136,11 @@ class Main extends Component {
             }
           </Select>
           {'　'}
-          <Button onClick={() => props.searchWithFilter()}>
-            搜索
-          </Button>
+          {
+            state.searching
+            ? (<Button disabled={true}>搜索中</Button>)
+            : (<Button onClick={e => props.searchWithFilter()}>搜索</Button>)
+          }
         </FormInline>
         <hr/>
         <div className="panel">
@@ -195,7 +200,7 @@ class Main extends Component {
   }
 
   componentDidMount() {
-    this.props.searchWithFilter();
+    this.props.firstLoad();
   }
 
   handleChangeBeginTime(time) {

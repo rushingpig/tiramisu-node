@@ -19,6 +19,8 @@ const es6promisify = function(func) {
 const get = es6promisify(Req.get);
 const put = es6promisify(Req.put);
 
+const search = parms => get(Url.abnormal_order.toString(), parms);
+
 const changeFilter = (filter, value) => {
   return {
     type: ActionTypes.CHANGE_FILTER,
@@ -30,11 +32,17 @@ const changeFilter = (filter, value) => {
 const dispatchResult = (dispatch, pageNum = 0, searchWithID = false) => result => {
   dispatch({
     type: ActionTypes.GET_SEARCH_RESULT,
+    status: 'success',
     result,
     pageNum,
     searchWithID
   });
 };
+
+const getResultFailed = dispatch => e => dispatch({
+  type: ActionTypes.GET_SEARCH_RESULT,
+  status: 'failed'
+})
 
 const searchWithFilter = (pageNum = 0) => (
   (dispatch, getState) => {
@@ -61,7 +69,15 @@ const searchWithFilter = (pageNum = 0) => (
       parms.type = filter.abnormalType
     }
 
-    get(Url.abnormal_order.toString(), parms).then(dispatchResult(dispatch, pageNum));
+    dispatch({
+      type: ActionTypes.GET_SEARCH_RESULT,
+      status: 'pending'
+    });
+
+    return search(parms).then(
+      dispatchResult(dispatch, pageNum),
+      getResultFailed(dispatch)
+    );
   }
 )
 
@@ -76,9 +92,28 @@ const searchWithID = (pageNum = 0) => (
       page_size: state.pageSize
     };
 
-    get(Url.abnormal_order.toString(), parms).then(dispatchResult(dispatch, pageNum, true));
+    dispatch({
+      type: ActionTypes.GET_SEARCH_RESULT,
+      status: 'pending'
+    });
+
+    return search(parms).then(
+      dispatchResult(dispatch, pageNum, true),
+      getResultFailed(dispatch)
+    );
   }
 );
+
+const firstLoad = () => (
+  (dispatch, getState) => {
+    const state = getState().orderAbnormal;
+    if (state.firstLoad) {
+      return;
+    }
+
+    return state.searchWithID ? searchWithID(0)(dispatch, getState) : searchWithFilter(0)(dispatch)(getState);
+  }
+)
 
 const changeDealStatus = (index, merchantId, orderSource, checked) => (
   dispatch => {
@@ -99,6 +134,7 @@ const changeDealStatus = (index, merchantId, orderSource, checked) => (
 export { ActionTypes }
 
 export default {
+  firstLoad,
   changeFilter,
   searchWithID,
   searchWithFilter,

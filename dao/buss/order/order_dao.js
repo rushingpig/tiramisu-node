@@ -508,7 +508,7 @@ OrderDao.prototype.findOrderList = function(query_data) {
   ];
   if (query_data.list_products) {
     columns_arr = columns_arr.concat(['bp.`name` as product_name',
-      'bp.original_price',
+      'bps.original_price',
       'bosku.amount',
       'bosku.num',
       'bps.size',

@@ -695,7 +695,12 @@ OrderDao.prototype.findOrderList = function(query_data) {
   switch (query_data.order_sorted_rules) {
     case constant.OSR.LIST:
       sql += ds_sql;
-      sql += " order by bo.created_time desc";
+      // 根据页面的要求进行不同的排序
+      if(query_data.order_by === 'delivery_time'){
+        sql += " order by bo.delivery_time asc";
+      }else{
+        sql += " order by bo.created_time desc";
+      }
       break;
     case constant.OSR.DELIVERY_EXCHANGE:
       sql += ds_sql;

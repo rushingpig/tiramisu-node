@@ -452,7 +452,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
     }).then(refund_result => {
         if (refund_result) return res.api({refund_result: refund_result});
         res.api();
-    }).catch(console.log);
+    });
     systemUtils.wrapService(res, next, promise);
 };
 /**

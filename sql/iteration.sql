@@ -126,7 +126,6 @@ ALTER TABLE `tiramisu`.`buss_product_sku`
 DROP INDEX `IDX_PRODUCT_SIZE_WEBSITE`,
 DROP COLUMN `is_local_site`,
 DROP COLUMN `is_delivery`,
-DROP COLUMN `sort`,
 CHANGE COLUMN `del_flag` `del_flag` TINYINT(1) NULL DEFAULT 1,
 ADD COLUMN `original_price` INT(8) NULL DEFAULT '0' COMMENT '产品原价（单位：分）' AFTER `price`,
 ADD COLUMN `book_time` INT(4) NOT NULL DEFAULT '0' COMMENT '第一预约时间' AFTER `original_price`,

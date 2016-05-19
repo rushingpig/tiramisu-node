@@ -1206,6 +1206,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
           greeting_card: greeting_card,
           coupon: coupon,
           merchant_id: merchant_id,
+          shop_id: shop_id,
           // Force using system id
           created_by: 20
         };

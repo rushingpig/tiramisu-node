@@ -26,6 +26,7 @@ ALTER TABLE `tiramisu`.`buss_print_apply` ADD INDEX `IDX_SHOW_ORDER_ID` (`show_o
 
 # 2016-05-09 Wei Zhao
 # 订单配送记录表
+DROP TABLE IF EXISTS `buss_delivery_record`;
 CREATE TABLE `buss_delivery_record` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '记录编号',
     `order_id` int(11) NOT NULL COMMENT '订单id',
@@ -43,6 +44,7 @@ CREATE TABLE `buss_delivery_record` (
 
 # 2016-05-09 Wei Zhao
 # 配送成功图片凭证
+DROP TABLE IF EXISTS `buss_delivery_picture`;
 CREATE TABLE `buss_delivery_picture` (
     `order_id` int(11) NOT NULL COMMENT '订单id',
     `deliveryman_id` int(11) NOT NULL COMMENT '配送员id',
@@ -67,6 +69,7 @@ ALTER TABLE `tiramisu`.`buss_order` ADD COLUMN `is_pos_pay` tinyint(1) DEFAULT N
 
 # 2016-05-17 Wei Zhao
 # 创建产品配送工资计算规则对应表
+DROP TABLE IF EXISTS `delivery_pay_rule`;
 CREATE TABLE `delivery_pay_rule` (
     `category_id` int(11) NOT NULL COMMENT '产品类型',
     `rule_type` enum  ('CAKE','COOKIE','WINE','SOUVENIR') NOT NULL COMMENT '蛋糕，下午茶/曲奇，红酒，手信',

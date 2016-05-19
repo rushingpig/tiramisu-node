@@ -48,7 +48,7 @@ export default class OrderProductsDetail extends Component {
     })
     return (
       <div className="table-responsive">
-        <table className="table text-center">
+        <table className="table table-bordered text-center">
           <thead>
           <tr>
             <th>产品名称</th>

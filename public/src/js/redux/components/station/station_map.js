@@ -25,7 +25,10 @@ export default class StationMap extends Component {
             </div>
             <div id="map_container" className="map-container"></div>
           </div>
-          <div className="font-sm mgt-4" style={{marginTop: '3px'}}>( * 编辑状态时，您可以点击新地点来增加标记 )</div>
+          <div className="font-sm mgt-4 text" style={{marginTop: '3px'}}>
+            ( * 编辑状态时，您可以点击新地点来增加标记 )<br/>
+            ( * 灰色虚线区域表示当前地址所在的行政区域 )
+          </div>
         </div>
       </div>
     );
@@ -72,6 +75,9 @@ export default class StationMap extends Component {
   }
   createNewScope(){
     MyMap.createNewScope();
+  }
+  drawBoundary(province_city_district){
+    MyMap.drawBoundary(province_city_district);
   }
   locationCenter(province, city, district, address, station_info){
     MyMap.locationCenter(province, city, district, address, station_info);

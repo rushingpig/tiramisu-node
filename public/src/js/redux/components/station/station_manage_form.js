@@ -113,6 +113,7 @@ class StationManageForm extends Component {
               <label><input type="radio" {...is_national} value="1" checked={is_national.value == '1'}/> 是</label>
               {'　'}
               <label><input type="radio" {...is_national} value="0" checked={is_national.value == '0'}/> 否</label>
+              <span className="gray">　（特指配送给全国的配送中心）</span>
             </div>
           </div>
           <div className="form-group form-inline">
@@ -233,6 +234,7 @@ class StationManageForm extends Component {
     var name = this.props.fields.name.value;
     if(name && this.props.fields.regionalism_id.value != SELECT_DEFAULT_VALUE){
       this.refs.stationMap.locationCenter( province_name, city_name, district, address, {name, address});
+      this.refs.stationMap.drawBoundary(province_name + city_name + district,);
     }else{
       Noty('warning', '请填写完整的配送中心地址');
     }

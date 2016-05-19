@@ -18,14 +18,14 @@ export const PUT_MULTIPLE_SCOPE_ING = 'PUT_MULTIPLE_SCOPE_ING';
 export const PUT_MULTIPLE_SCOPE_SUCCESS = 'PUT_MULTIPLE_SCOPE_SUCCESS';
 export const PUT_MULTIPLE_SCOPE_FAILURE = 'PUT_MULTIPLE_SCOPE_FAILURE';
 
-export function getStationList(data = {}){
+export function getStationList(data = {}, filter_form_name){
   return (dispatch, getState) => {
     if(!data.province_id || !data.city_id){
       //TODO
       data.province_id = 440000;
       data.city_id = 440300;
     }
-    var filter_data = getValues(getState().form.station_manage_filter);
+    var filter_data = getValues(getState().form[filter_form_name]);
     filter_data = formCompile(filter_data);
     return GET(Url.station_list.toString(), {...data, ...filter_data}, GET_STATION_LIST)(dispatch)
   }
@@ -42,10 +42,6 @@ export function getAllStationsName(){
   //   "9":"深圳观澜配送中心","10":"惠州配送中心","11":"深圳西丽配送中心","12":"工厂配送站","13":"待确定配送站","14":"广州海珠配送中心","15":"广州白云配送中心","16":"待确定配送站",
   //   "17":"广州天河配送中心","18":"广州番禺配送中心","19":"深圳西乡配送中心","20":"深圳民治配送中心"
   // }, 'GET_ALL_STATIONS_NAME')
-}
-
-export function getStationByName(station_name){
-  return GET(Url.station_single.toString(), station_name, GET_STATIONS_BY_NAME);
 }
 
 export function deleteStation(station_id){

@@ -109,7 +109,7 @@ class FilterHeader extends Component {
       getCities(this.props.fields.province_id.initialValue);
       getDistricts(this.props.fields.city_id.initialValue);
     }else{
-      getStationList({isPage: false});
+      getStationList({isPage: false}, 'station_scope_manage_filter');
       getCities(ADDRESS.GUANG_ZHOU);
       getDistricts(ADDRESS.SHEN_ZHENG);
     }
@@ -137,16 +137,18 @@ class FilterHeader extends Component {
         return;
       }
       this.setState({search_ing: true});
-      this.props.getStationList({isPage: false, station_name: this.state.station_name || undefined})
-        .always(()=>{
-          this.setState({search_ing: false});
-        });
+      this.props.getStationList(
+        {isPage: false, station_name: this.state.station_name || undefined},
+        'station_scope_manage_filter'
+      ).always(()=>{
+        this.setState({search_ing: false});
+      });
     }, 0);
   }
 }
 
 FilterHeader = reduxForm({
-  form: 'station_manage_filter',
+  form: 'station_scope_manage_filter',
   fields: [
     'name',
     'province_id',

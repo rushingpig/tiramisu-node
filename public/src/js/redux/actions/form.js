@@ -1,3 +1,6 @@
+/*
+ * 使用前需要 bindActionCreators
+ */
 import { reset, focus, blur, change, actionTypes, initialize, destroy } from 'redux-form';
 import FormFields from 'config/form.fields';
 

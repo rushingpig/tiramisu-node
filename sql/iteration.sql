@@ -90,8 +90,6 @@ INSERT INTO `delivery_pay_rule` VALUES
     (13, 'CAKE', 1),
     (14, 'CAKE', 1);
 
-INSERT INTO `buss_product_category` VALUES (15, 0, '配件', 0, 1, now(), null, null, 1);
-
 DROP TABLE IF EXISTS `buss_product_category_regionalism`;
 CREATE TABLE `buss_product_category_regionalism` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -148,8 +146,10 @@ CREATE TABLE `buss_product_sku_booktime` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='sku第二预约时间';
 
-DROP EVENT IF EXISTS Expire_Activity_Time;
 SET GLOBAL event_scheduler = ON;
+
+DROP EVENT IF EXISTS Expire_Activity_Time;
+DELIMITER //
 CREATE EVENT Expire_Activity_Time
 On SCHEDULE EVERY 1 MINUTE
 COMMENT '定时结束活动sku，开启原有sku'
@@ -169,17 +169,17 @@ BEGIN
     update buss_product_sku set expire_flag = 1 where id = ref_id;
   END LOOP;
   CLOSE cur;
-END;
+END;//
 
 DROP EVENT IF EXISTS Expire_Presell_Time;
-SET GLOBAL event_scheduler = ON;
+DELIMITER //
 CREATE EVENT Expire_Presell_Time
 On SCHEDULE EVERY 1 MINUTE
 COMMENT '定时结束预售sku'
 DO
 BEGIN
   update buss_product_sku set expire_flag = 0 where presell_start > now() or presell_end < now() and expire_flag = 1 and del_flag = 1;
-END;
+END;//
 
 DROP TABLE IF EXISTS `buss_product_pic`;
 CREATE TABLE `buss_product_pic` (

@@ -196,7 +196,7 @@ module.exports = function() {
                         return done(err);
                     }
                     let id = result.insertId;
-                    let sql = 'insert into buss_product(name,category_id,original_price) values(\'产品1\',' + id + ',100)';
+                    let sql = 'insert into buss_product(name,category_id) values(\'产品1\',' + id + ')';
                     pool.query(sql, done);
                 });
             });
@@ -298,7 +298,7 @@ module.exports = function() {
                     });
                     return Promise.all(promises);
                 }).then(function() {
-                    let sql = 'insert into buss_product(name,category_id,original_price) values(\'分类产品1\',' + secondary_ids[0] + ',100)';
+                    let sql = 'insert into buss_product(name,category_id) values(\'分类产品1\',' + secondary_ids[0] + ')';
                     return new Promise(function(resolve, reject) {
                         pool.query(sql, function(err, result) {
                             if (err) {

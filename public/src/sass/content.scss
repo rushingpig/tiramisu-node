@@ -12,6 +12,10 @@
     overflow: hidden !important;
 }
 
+//offset-top: 194px, offset-bottom: 238px
+@media screen and ( min-height: 1000px ) {
+  .table-responsive.main-list{ max-height: 500px; }
+}
 @media screen and ( max-height: 1000px ) {
   .table-responsive.main-list{ max-height: 434px; }
 }
@@ -22,7 +26,9 @@
   .table-responsive.main-list{ max-height: 329px; } //主列表
   .table-responsive.modal-list{ max-height: 292px; } //弹窗列表
 }
-
+.table-responsive.main-list{
+  max-height: calc(100vh - 194px - 238px);
+}
 //配送站管理
 .station-manage{
   .station-map{

@@ -170,6 +170,21 @@ MyMap.prototype.drawScope = function(points){
     this.map.addOverlay(this.oldPolygon);
   }
 }
+MyMap.prototype.drawBoundary = function(province_city_district){   
+  var map = this.map;    
+  var bdary = new BMap.Boundary();
+  bdary.get(province_city_district, function(rs){       //获取行政区域   
+    var count = rs.boundaries.length; //行政区域的点有多少个
+    if (count === 0) {
+      Noty('未能获取当前输入行政区域');
+      return ;
+    }
+    for (var i = 0; i < count; i++) {
+      var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, fillColor: '', strokeStyle: 'dashed', strokeColor: "gray"}); //建立多边形覆盖物
+      map.addOverlay(ply);  //添加覆盖物
+    }
+  });
+}
 
 export function _initialize() {
   var self = this;

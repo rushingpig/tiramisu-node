@@ -41,7 +41,7 @@ class TopHeader extends Component {
       <div className="clearfix top-header">
         {
           V( 'OrderManageAddOrder' )
-            ? <button onClick={this.addOrder.bind(this)} className="btn btn-sm btn-theme pull-left">添加订单</button>
+            ? <button onClick={this.addOrder.bind(this)} className="btn btn-xs btn-theme pull-left">添加订单</button>
             : null
         }
         {
@@ -84,6 +84,7 @@ class FilterHeader extends Component {
     this.state = {
       submit_opts: [{id: 1, text: '已提交'}, {id: 0, text: '未提交'}],
       deal_opts: [{id: 1, text: '已处理'}, {id: 0, text: '未处理'}],
+      all_order_bys: [{id: 'created_time', text: '下单时间'}, {id: 'delivery_time', text: '配送时间'}],
       selected_order_src_level1_id: SELECT_DEFAULT_VALUE,
       search_ing: false,
     }
@@ -100,13 +101,14 @@ class FilterHeader extends Component {
         province_id,
         city_id,
         status,
+        order_by
       },
       provinces,
       cities,
       all_order_srcs,
       all_order_status,
     } = this.props;
-    var { search_ing } = this.state;
+    var { search_ing, all_order_bys } = this.state;
 
     return (
       <div className="panel search">
@@ -132,6 +134,7 @@ class FilterHeader extends Component {
                 ]
               : null
           }
+          <Select {...order_by} options={all_order_bys} default-text="排序方式" className="space-right"/>
           <Select {...status} options={all_order_status} default-text="订单状态" className="space-right"/>
           <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
             <i className="fa fa-search"></i>{' 搜索'}
@@ -182,6 +185,7 @@ FilterHeader = reduxForm({
     'src_id',
     'province_id',
     'city_id',
+    'order_by',
     'status'
   ],
   destroyOnUnmount: false,
@@ -449,7 +453,7 @@ class ManagePannel extends Component {
         { show_products_detail && check_order_info
           ? <div className="panel">
               <div className="panel-body" style={{position: 'relative'}}>
-                <div>订单管理 >> 产品详情</div>
+                <div style={{paddingBottom: 5}}>订单管理 >> 产品详情</div>
                 <OrderProductsDetail loading={get_products_detail_ing} products={check_order_info.products} />
               </div>
             </div>

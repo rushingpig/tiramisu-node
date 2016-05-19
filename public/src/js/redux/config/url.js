@@ -100,7 +100,6 @@ const URL = (function() {
     auto_loc: '/delivery/autoAllocate', //自动分配配送站
 
     //配送站管理
-    station_single: '/stations/getStationsByName', //单个配送站
     station_list: '/stations/search', //配送站列表
     station_get: '/station/',//获取配送站
     station_add: '/station/',//添加配送站

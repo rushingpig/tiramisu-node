@@ -151,8 +151,8 @@ const App = () => (
 
       <Route path="pm" onEnter={getComponents('pm')}>
         <Route path="sku_manage">
-          <IndexRoute getComponent={get('SkuSearch')} />
-          <Route path="add" getComponent={get('SkuManage')} />
+          <IndexRoute onEnter={onEnter('ProductionManageAccess')} getComponent={get('SkuSearch')} />
+          <Route path="add" onEnter={onEnter('ProductionManageAdd')} getComponent={get('SkuManage')} />
         </Route>
       </Route>
 

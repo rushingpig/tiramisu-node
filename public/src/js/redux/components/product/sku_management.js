@@ -12,7 +12,7 @@ import LazyLoad from 'utils/lazy_load';
 import SkuAction from 'actions/product_sku_management';
 import CitiesSelectorAction from 'actions/cities_selector';
 
-const TopHeader = getTopHeader([{name: '产品管理', link: ''}, {name: '添加商品', link: '/pm/sku_manage/add'}]);
+const TopHeader = getTopHeader([{name: '产品管理', link: '/pm/sku_manage'}, {name: '添加商品', link: '/pm/sku_manage/add'}]);
 
 LazyLoad('datetimerangepicker');
 

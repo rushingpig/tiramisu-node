@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { Link } from 'react-router';
 
 import MessageBox, { MessageBoxIcon, MessageBoxType } from 'common/message_box';
 import DatePicker from 'common/datepicker';
@@ -15,6 +16,8 @@ const Input = props => (<input type="text" className="form-control input-xs" {..
 
 const getDOMValue = func => (event, ...args) => func.apply(undefined, [event.currentTarget.value, ...args]);
 const Anchor = props => (<a style={{textDecoration:'underline'}} href="javascript:;" {...props} />);
+
+const TopHeader = getTopHeader([{name: '产品管理', link: ''}, {name: '搜索商品', link: '/pm/sku_manage'}]);
 
 class Main extends Component {
     constructor(props) {
@@ -44,6 +47,7 @@ class Main extends Component {
 
         return (
             <div className="wrapper">
+                <TopHeader />
                 <div className="form-inline">
                     按名称搜索：
                     <input
@@ -153,7 +157,12 @@ class Main extends Component {
                 <hr/>
                 <div className="panel">
                     <div className="panel-heading">
-                        搜索结果：
+                        <p>
+                            搜索结果：
+                            <span className="pull-right">
+                                <Link to="/pm/sku_manage/add" className="btn btn-xs btn-theme">新建</Link>
+                            </span>
+                        </p>
                     </div>
                     <table className="table table-bordered">
                         <thead>

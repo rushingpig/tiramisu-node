@@ -55,13 +55,14 @@ ProductService.prototype.listProducts = (req, res, next) => {
         category_id = req.query.category_id,
         regionalism_id = req.query.city_id,
         page_no = req.query.page_no,
-        page_size = req.query.page_size;
+        page_size = req.query.page_size,
+        isAddition = req.query.isAddition;
     let res_data = {
         list: [],
         page_no : page_no
     }, temp_obj = {};
     // 要通过子查询进行分页
-    let promise = productDao.findProductsCount(product_name, category_id ,regionalism_id).then((data)=> {
+    let promise = productDao.findProductsCount(product_name, category_id, regionalism_id, isAddition).then((data)=> {
         if (toolUtils.isEmptyArray(data.results)) {
             throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);
         }
@@ -150,7 +151,7 @@ ProductService.prototype.listOrderProducts = (req,res,next)=>{
  * @param next
  */
 ProductService.prototype.listAccessory = (req, res, next)=> {
-    req.query.category_id = Constant.PRODUCT.ACCESSORY_ID;
+    req.query.isAddition = 1;
     req.query.page_no = 0;
     // req.query.page_size = 10;
     return ProductService.prototype.listProducts(req, res, next);
@@ -164,7 +165,7 @@ ProductService.prototype.listAccessoryByOrder = (req, res, next)=> {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
         let curr = orders[0];
-        req.query.category_id = Constant.PRODUCT.ACCESSORY_ID;
+        req.query.isAddition = 1;
         req.query.page_no = 0;
         req.query.city_id = curr.city_id;
         req.query.__only_accessory__ = true;

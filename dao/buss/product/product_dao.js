@@ -39,9 +39,9 @@ ProductDao.prototype.findAllCatetories = function(){
 /**
  * query for the product list
  */
-ProductDao.prototype.findProductsCount = function(product_name,category_id,regionalism_id){
+ProductDao.prototype.findProductsCount = function(product_name,category_id,regionalism_id, isAddition){
     let sql = "",params = [];
-    sql += "select bp.id,bps.size,bp.name,bpc.name as category_name,bps.regionalism_id ";
+    sql += "select bp.id,bps.size,bp.name,bpc.name as category_name,bpc.isAddition,bps.regionalism_id ";
     sql += " from ?? bp";
     sql += " inner join ?? bpc on bp.category_id = bpc.id";
     sql += " inner join ?? bps on bp.id = bps.product_id where 1=1";
@@ -59,6 +59,10 @@ ProductDao.prototype.findProductsCount = function(product_name,category_id,regio
     if(regionalism_id){
         sql += " and bps.regionalism_id = ?";
         params.push(regionalism_id);
+    }
+    if(isAddition){
+        sql += " and bpc.isAddition = ?";
+        params.push(isAddition);
     }
     sql += ' group by bp.id,bps.size';
     return baseDao.select(dbHelper.countSql(sql),params).then((results)=>{

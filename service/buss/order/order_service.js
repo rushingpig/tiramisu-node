@@ -279,7 +279,8 @@ OrderService.prototype.getOrderDetail = (req, res, next) => {
           atlas: curr.atlas,
           size: curr.size,
           amount: curr.amount,
-          category_id: curr.category_id
+          category_id: curr.category_id,
+          isAddition: curr.isAddition
         };
         data.products.push(product_obj);
       }

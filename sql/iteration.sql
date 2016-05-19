@@ -64,7 +64,6 @@ INSERT INTO `buss_delivery_picture` VALUES
 
 # 2016-05-10 Wei Zhao
 # 增加pos相关字段
-ALTER TABLE `tiramisu`.`buss_order` ADD COLUMN `pos_id` varchar(32) DEFAULT NULL COMMENT 'pos终端号';
 ALTER TABLE `tiramisu`.`buss_order` ADD COLUMN `is_pos_pay` tinyint(1) DEFAULT NULL COMMENT 'pos支付标志';
 
 # 2016-05-17 Wei Zhao

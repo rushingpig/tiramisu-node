@@ -274,7 +274,7 @@ OrderService.prototype.getOrderDetail = (req, res, next) => {
           discount_price: curr.discount_price,
           greeting_card: curr.greeting_card,
           num: curr.num,
-          original_price: curr.price,
+          original_price: curr.original_price,
           name: curr.product_name,
           atlas: curr.atlas,
           size: curr.size,

@@ -399,6 +399,7 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
     'bos.num',
     'bps.size',
     'bps.price',
+    'bps.original_price',
     'bos.sku_id',
     'bos.discount_price',
     'bos.choco_board',

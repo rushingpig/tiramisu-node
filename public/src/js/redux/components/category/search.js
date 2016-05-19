@@ -393,6 +393,9 @@ class Main extends Component {
   }
 
   componentDidMount() {
+    if (this.props.state.toJS().basicDataLoadStatus === 'success')
+      return;
+
     this.handleLoadData();
   }
 

@@ -157,12 +157,12 @@ const App = () => (
         <Route path="cam" onEnter={getComponents('cam', onEnter('CategoryManageAccess'))}>
           <IndexRoute getComponent={get('CategoryManage')} />
           <Route path="primary_category">
-            <Route path="add" getComponent={get('CategoryManagePrimary')} />
-            <Route path="edit/:id" getComponent={get('CategoryManagePrimary')} />
+            <Route path="add" onEnter={onEnter("CategoryManageAddPrimaryCategory")} getComponent={get('CategoryManagePrimary')} />
+            <Route path="edit/:id" onEnter={onEnter('CategoryManageEditPrimaryCategory')} getComponent={get('CategoryManagePrimary')} />
           </Route>
           <Route path="second_category">
-            <Route path="add" getComponent={get('CategoryManageSecond')} />
-            <Route path="edit/:id" getComponent={get('CategoryManageSecond')} />
+            <Route path="add" onEnter={onEnter("CategoryManageAddSecondaryCategory")} getComponent={get('CategoryManageSecond')} />
+            <Route path="edit/:id" onEnter={onEnter('CategoryManageEditSecondaryCategory')} getComponent={get('CategoryManageSecond')} />
           </Route>
         </Route>
       </Route>

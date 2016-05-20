@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Link } from 'react-router';
 
+import V from 'utils/acl';
 import MessageBox, { MessageBoxIcon, MessageBoxType } from 'common/message_box';
 import DatePicker from 'common/datepicker';
 import Pagination from 'common/pagination';
@@ -160,7 +161,9 @@ class Main extends Component {
                         <p>
                             搜索结果：
                             <span className="pull-right">
-                                <Link to="/pm/sku_manage/add" className="btn btn-xs btn-theme">新建</Link>
+                                {
+                                    V("ProductionManageAdd") ? (<Link to="/pm/sku_manage/add" className="btn btn-xs btn-theme">新建</Link>) : null
+                                }
                             </span>
                         </p>
                     </div>

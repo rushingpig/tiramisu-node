@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect }            from 'react-redux';
 import ReactDOM               from 'react-dom';
 
+import V              from 'utils/acl';
 import Modal          from 'common/modal';
 import CitiesSelector from 'common/cities_selector';
 import MessageBox, { MessageBoxIcon, MessageBoxType } from 'common/message_box';
@@ -27,6 +28,23 @@ const Anchor = props => {
 
   return (<a href="javascript:;" {...props} />);
 }
+
+/**
+ *
+ * CategoryManageAddSecondaryCategory 新建二级分类
+ * CategoryManageEditSecondaryCategoryActiveCities 编辑二级分类上线城市
+ * CategoryManageCheckSecondaryCategoryComment 检查二级分类备注
+ * CategoryManageEditSecondaryCategory 编辑二级分类
+ * CategoryManageDeleteSecondaryCategory 删除二级分类
+ * CategoryManageSortSecondaryCategory 对二级分类进行排序
+ *
+ * CategoryManageAddPrimaryCategory 新建一级分类
+ * CategoryManageEditPrimaryCategoryActiveCities 编辑一级分类上线城市
+ * CategoryManageCheckPrimaryCategoryComment 检查一级分类备注
+ * CategoryManageEditPrimaryCategory 编辑一级分类
+ * CategoryManageDeletePrimaryCategory 删除一级分类
+ *
+ **/
 
 class Row extends Component {
   constructor(props) { super(props) }
@@ -174,17 +192,25 @@ class Main extends Component {
             )
           }
           <span className="pull-right">
-            <Link className="btn btn-xs btn-theme" to="/cam/primary_category/add">
-              <Icon icon="plus" />
-              {' '}
-              新建一级分类
-            </Link>
+            {
+              V("CategoryManageAddPrimaryCategory") ? (
+                <Link className="btn btn-xs btn-theme" to="/cam/primary_category/add">
+                  <Icon icon="plus" />
+                  {' '}
+                  新建一级分类
+                </Link>
+              ) : null
+            }
             {'　'}
-            <Link className="btn btn-xs btn-theme" to="/cam/second_category/add">
-              <Icon icon="plus" />
-              {' '}
-              新建二级分类
-            </Link>
+            {
+              V("CategoryManageAddSecondaryCategory") ? (
+                <Link className="btn btn-xs btn-theme" to="/cam/second_category/add">
+                  <Icon icon="plus" />
+                  {' '}
+                  新建二级分类
+                </Link>
+              ) : null
+            }
           </span>
         </div>
         <hr/>
@@ -228,6 +254,45 @@ class Main extends Component {
                       const nextId        = list[i + 1] ? list[i + 1].id    : undefined;
                       const nextIndex     = list[i + 1] ? list[i + 1].index : undefined;
 
+                      let editAuth = [];
+
+                      if (V("CategoryManageEditSecondaryCategoryActiveCities")) {
+                        editAuth.push(
+                          <Anchor onClick={props.showActiveCities.bind(undefined, secondaryCategory.id, true)}>PC端上线城市</Anchor>
+                        );
+                      }
+
+                      if (V("CategoryManageCheckSecondaryCategoryComment")) {
+                        if (editAuth.length !== 0) {
+                          editAuth.push(<span key="divider1">{'｜'}</span>)
+                        }
+                        editAuth.push(
+                          <Anchor data-category-id={secondaryCategory.id} onClick={this.handleShowComment}>备注</Anchor>
+                        );
+                      }
+
+                      if (V("CategoryManageEditSecondaryCategory")) {
+                        if (editAuth.length !== 0) {
+                          editAuth.push(<span key="divider2">{'｜'}</span>)
+                        }
+                        editAuth.push(
+                          <Link to={"/cam/second_category/edit/" + secondaryCategory.id}>编辑</Link>
+                        );
+                      }
+
+                      if (V("CategoryManageDeleteSecondaryCategory")) {
+                        if (editAuth.length !== 0) {
+                          editAuth.push(<span key="divider3">{'｜'}</span>)
+                        }
+                        editAuth.push(
+                          <Anchor data-second-category-id={secondaryCategory.id} onClick={this.handleClickDeleteBtn}>删除</Anchor>
+                        );
+                      }
+
+                      if (editAuth.length === 0) {
+                        editAuth = (<span>-</span>);
+                      }
+
                       const rv = (
                         <li className="list-group-item" key={secondaryCategory.id}>
                           <div className="row">
@@ -240,7 +305,7 @@ class Main extends Component {
                             <div className="col-xs-2">
                               <center>
                                 {
-                                  state.sortable && previousId ? (
+                                  V("CategoryManageSortSecondaryCategory") && state.sortable && previousId ? (
                                     <Anchor
                                       onClick={props.sortCategories.bind(
                                         undefined,
@@ -257,7 +322,7 @@ class Main extends Component {
                                 }
                                 {'｜'}
                                 {
-                                  state.sortable && nextId ? (
+                                  V("CategoryManageSortSecondaryCategory") && state.sortable && nextId ? (
                                     <Anchor
                                       onClick={props.sortCategories.bind(
                                         undefined,
@@ -279,13 +344,7 @@ class Main extends Component {
                             </div>
                             <div className="col-xs-4">
                               <center>
-                                <Anchor onClick={props.showActiveCities.bind(undefined, secondaryCategory.id, true)}>PC端上线城市</Anchor>
-                                {'｜'}
-                                <Anchor data-category-id={secondaryCategory.id} onClick={this.handleShowComment}>备注</Anchor>
-                                {'｜'}
-                                <Link to={"/cam/second_category/edit/" + secondaryCategory.id}>编辑</Link>
-                                {'｜'}
-                                <Anchor data-second-category-id={secondaryCategory.id} onClick={this.handleClickDeleteBtn}>删除</Anchor>
+                                {editAuth}
                               </center>
                             </div>
                           </div>
@@ -294,6 +353,65 @@ class Main extends Component {
 
                       return rv;
                     });
+
+                    let editAuth = [];
+
+                    if (V("CategoryManageEditPrimaryCategoryActiveCities")) {
+                      editAuth.push(
+                        <Anchor
+                          key="CategoryManageEditPrimaryCategoryActiveCities"
+                          onClick={props.showActiveCities.bind(undefined, primaryCategory.id, false)}
+                        >
+                          PC端上线城市
+                        </Anchor>
+                        );
+                    }
+
+                    if (V("CategoryManageCheckPrimaryCategoryComment")) {
+                      if (editAuth.length !== 0) {
+                        editAuth.push(<span key="divider1">{'｜'}</span>)
+                      }
+                      editAuth.push(
+                        <Anchor
+                          key="CategoryManageCheckPrimaryCategoryComment"
+                          data-category-id={props.id} onClick={props.showCommentHandler}
+                        >
+                          备注
+                        </Anchor>
+                        );
+                    }
+
+                    if (V("CategoryManageEditPrimaryCategory")) {
+                      if (editAuth.length !== 0) {
+                        editAuth.push(<span key="divider2">{'｜'}</span>)
+                      }
+                      editAuth.push(
+                        <Link
+                          key="CategoryManageEditPrimaryCategory"
+                          to={"/cam/primary_category/edit/" + primaryCategory.id}
+                        >
+                          编辑
+                        </Link>
+                        );
+                    }
+
+                    if (V("CategoryManageDeletePrimaryCategory")) {
+                      if (editAuth.length !== 0) {
+                        editAuth.push(<span key="divider3">{'｜'}</span>)
+                      }
+                      editAuth.push(
+                        <Anchor
+                          key="CategoryManageDeletePrimaryCategory"
+                          disabled={true}
+                        >
+                          删除
+                        </Anchor>
+                        );
+                    }
+
+                    if (editAuth.length === 0) {
+                      editAuth = (<span>-</span>);
+                    }
 
                     returnValue.unshift(
                       <li className="list-group-item" key={primaryCategory.id}>
@@ -306,13 +424,7 @@ class Main extends Component {
                           </div>
                           <div className="col-xs-4">
                             <center>
-                              <Anchor onClick={props.showActiveCities.bind(undefined, primaryCategory.id, false)}>PC端上线城市</Anchor>
-                              {'｜'}
-                              <Anchor data-category-id={props.id} onClick={props.showCommentHandler}>备注</Anchor>
-                              {'｜'}
-                              <Link to={"/cam/primary_category/edit/" + primaryCategory.id}>编辑</Link>
-                              {'｜'}
-                              <Anchor disabled={true}>删除</Anchor>
+                              {editAuth}
                             </center>
                           </div>
                         </div>

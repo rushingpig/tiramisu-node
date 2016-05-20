@@ -171,6 +171,7 @@ const switchType = {
             const lastSearchFilter = searchWithProductName ? {
                 searchProductName: state.searchProductName
             } : {
+                searchProductName: state.searchProductName,
                 searchBeginTime: state.searchBeginTime,
                 searchEndTime: state.searchEndTime,
                 selectedPrimaryCategory: state.selectedPrimaryCategory,

@@ -99,7 +99,7 @@ class Selector extends Component {
             {
               (state.checkedProvinces.size === 0 && (state.checkedCities.size === 0))
               ? '您未选择任何城市'
-              : [...state.checkedCities].map(id => (
+              : [...state.checkedCities].map(id => state.citiesData.has(id) ? (
                 <Tooltip msg="删除" key={id}>
                   <Button
                     onClick={props.toggleCityCheckStatus.bind(undefined, id)}
@@ -107,7 +107,7 @@ class Selector extends Component {
                     {state.citiesData.get(id).name}
                   </Button>
                 </Tooltip>
-              ))
+              ) : null)
             }
           </div>
         </Panel>

@@ -99,7 +99,7 @@ export default [{
     "link": "/pm/sku_manage"
   }, {
     "key": "CategoryManageAccess",
-    "name": "产品类型管理",
+    "name": "类型管理",
     "short_name": "类型",
     "icon": "",
     "link": "/pm/cam"

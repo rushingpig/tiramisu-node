@@ -194,6 +194,7 @@ const searchWithFilter = (pageNum = 0, isPageChange = false) => (
         const filterSrc = isPageChange ? state.lastSearchFilter : state;
 
         const filter = {
+            name: filterSrc.searchProductName,
             presell_start: filterSrc.searchBeginTime + ' 00:00:00',
             ...filterSrc.noEndTimeLimit ? {} : {
                 presell_end: filterSrc.searchEndTime + ' 23:59:59'

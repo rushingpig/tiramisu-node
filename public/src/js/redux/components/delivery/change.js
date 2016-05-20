@@ -27,6 +27,7 @@ import * as OrderActions from 'actions/orders';
 import * as OrderSupportActions from 'actions/order_support';
 import AreaActions from 'actions/area';
 import * as ChangeActions from 'actions/delivery_change';
+import { getStationListByScope, resetStationListWhenScopeChange } from 'actions/station_manage';
 
 import getTopHeader from '../top_header';
 
@@ -51,7 +52,7 @@ class FilterHeader extends Component {
       },
       provinces,
       cities,
-      delivery_stations,
+      stations: { station_list },
       changeHandler,
       change_submitting,
     } = this.props;
@@ -68,13 +69,13 @@ class FilterHeader extends Component {
             V( 'DeliveryManageChangeAddressFilter' )
               ? [
                   <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" key="province" className="space-right"/>,
-                  <Select {...city_id} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>
+                  <Select {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>
                 ]
               : null
           }
           { 
             V( 'DeliveryManageChangeStationFilter' )
-              ? <Select {...delivery_id} options={delivery_stations} default-text="选择配送中心" className="space-right"/>
+              ? <Select {...delivery_id} options={station_list} default-text="选择配送中心" className="space-right"/>
               : null
           }
           <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
@@ -95,20 +96,33 @@ class FilterHeader extends Component {
   }
   componentDidMount(){
     setTimeout(function(){
-      var { getProvinces, getDeliveryStations } = this.props;
+      var { getProvinces, getStationListByScope } = this.props;
       getProvinces();
-      getDeliveryStations();
+      getStationListByScope();
       LazyLoad('noty');
     }.bind(this),0)
   }
   onProvinceChange(callback, e){
     var {value} = e.target;
     this.props.resetCities();
-    if(value != this.refs.province.props['default-value'])
+    if(value != this.refs.province.props['default-value']){
       var $city = $(findDOMNode(this.refs.city));
       this.props.getCities(value).done(() => {
         $city.trigger('focus'); //聚焦已使city_id的值更新
       });
+      this.props.getStationListByScope({ province_id: value });
+    }else{
+      this.props.resetStationListWhenScopeChange();
+    }
+    callback(e);
+  }
+  onCityChange(callback, e){
+    var {value} = e.target;
+    if(value != this.refs.city.props['default-value']){ 
+      this.props.getStationListByScope({ city_id: value });
+    }else{
+      this.props.resetStationListWhenScopeChange();
+    }
     callback(e);
   }
   search(){
@@ -320,7 +334,14 @@ function mapStateToProps({deliveryChange}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  return bindActionCreators({...OrderActions, ...OrderSupportActions, ...AreaActions(), ...ChangeActions}, dispatch);
+  return bindActionCreators({
+    ...OrderActions,
+    ...OrderSupportActions,
+    ...AreaActions(),
+    ...ChangeActions,
+    getStationListByScope,
+    resetStationListWhenScopeChange
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeliverChangePannel);

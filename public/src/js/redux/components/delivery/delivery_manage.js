@@ -29,6 +29,7 @@ import * as DeliverymanActions from 'actions/deliveryman';
 import * as DeliveryManageActions from 'actions/delivery_manage';
 import * as OrderSupportActions from 'actions/order_support';
 import { triggerFormUpdate } from 'actions/form';
+import { getStationListByScope, resetStationListWhenScopeChange } from 'actions/station_manage';
 
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from './order_detail_modal';
@@ -66,7 +67,7 @@ class FilterHeader extends Component {
       },
       provinces,
       cities,
-      delivery_stations,
+      stations: { station_list },
       change_submitting,
     } = this.props;
     var { search_ing, delivery_types, all_print_status } = this.state;
@@ -86,13 +87,13 @@ class FilterHeader extends Component {
               V( 'DeliveryManageDeliveryAddressFilter' )
               ? [
                   <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" key="province" default-text="选择省份" className="space-right"/>,
-                  <Select {...city_id} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>
+                  <Select {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>
                 ]
               : null
             }
             {
               V( 'DeliveryManageDeliveryStationFilter' )
-                ? <Select {...delivery_id} options={delivery_stations} default-text="选择配送中心" className="space-right"/>
+                ? <Select {...delivery_id} options={station_list} default-text="选择配送中心" className="space-right"/>
                 : null
             }
             <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
@@ -119,25 +120,38 @@ class FilterHeader extends Component {
   }
   componentDidMount(){
     setTimeout(function(){
-      var { getProvinces, getDeliveryStations } = this.props;
+      var { getProvinces, getStationListByScope } = this.props;
       getProvinces();
-      getDeliveryStations();
+      getStationListByScope();
       LazyLoad('noty');
     }.bind(this),0)
   }
   onProvinceChange(callback, e){
     var {value} = e.target;
     this.props.resetCities();
-    if(value != this.refs.province.props['default-value'])
+    if(value != this.refs.province.props['default-value']){
       var $city = $(findDOMNode(this.refs.city));
       this.props.getCities(value).done(() => {
         $city.trigger('focus'); //聚焦已使city_id的值更新
       });
+      this.props.getStationListByScope({ province_id: value });
+    }else{
+      this.props.resetStationListWhenScopeChange();
+    }
+    callback(e);
+  }
+  onCityChange(callback, e){
+    var {value} = e.target;
+    if(value != this.refs.city.props['default-value']){ 
+      this.props.getStationListByScope({ city_id: value });
+    }else{
+      this.props.resetStationListWhenScopeChange();
+    }
     callback(e);
   }
   search(){
     this.setState({search_ing: true});
-    this.props.triggerFormUpdate('order_delivery_filter', 'order_ids', undefined); //清空扫描列表
+    this.props.triggerFormUpdate('order_delivery_filter', 'order_ids', ''); //清空扫描列表
     this.props.getOrderDeliveryList({page_no: 0, page_size: this.props.page_size})
       .always(()=>{
         this.setState({search_ing: false});
@@ -245,8 +259,8 @@ class OrderRow extends Component {
         <td className="text-left">
         {
           this.state.greeting_card_focus
-          ? <input ref="greetingCardInput" value={reactReplace(props.greeting_card, '|', ' ')} onBlur={this.setGreetingCardStatus.bind(this, false)} />
-          : <div ref="greetingCard" onClick={this.setGreetingCardStatus.bind(this, true)}>{reactReplace(props.greeting_card, '|', <br />)}</div>
+          ? <input key="greetingCardInput" ref="greetingCardInput" value={reactReplace(props.greeting_card, '|', ' ')} onBlur={this.setGreetingCardStatus.bind(this, false)} />
+          : <div key="greetingCard" ref="greetingCard" onClick={this.setGreetingCardStatus.bind(this, true)}>{reactReplace(props.greeting_card, '|', <br key="br" />)}</div>
         }
         </td>
         <td>{props.exchange_time}</td>
@@ -257,7 +271,7 @@ class OrderRow extends Component {
             onMouseEnter={() => props.status == 'DELIVERY' && this.refs.tooltip_delivery.show()}
             onMouseLeave={() => props.status == 'DELIVERY' && this.refs.tooltip_delivery.hide()}
             >
-            {_order_status.value}
+            <span key="_order_status">{_order_status.value}</span>
             {
               props.status == 'DELIVERY'
                 ? (
@@ -812,6 +826,8 @@ export default connect(
     ...OrderSupportActions,
     ...DeliverymanActions,
     ...DeliveryManageActions,
-    triggerFormUpdate
+    triggerFormUpdate,
+    getStationListByScope,
+    resetStationListWhenScopeChange
   }, dispatch)
 )(DeliveryManagePannel);

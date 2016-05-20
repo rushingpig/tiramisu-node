@@ -99,7 +99,8 @@ AddressDao.prototype.findStationsByMultipleCondition = function(query_obj) {
     }
     let sql = util.format(query, this.table, this.table, this.table, tables.buss_delivery_station);
     // return paging result if isPage
-    if (query_obj.isPage) {
+    // 兼容
+    if (query_obj.isPage == 1 || query_obj.isPage == 'true') {
         let countSql = dbHelper.countSql(sql);
         let pagination_sql = dbHelper.paginate(sql, query_obj.page_no, query_obj.page_size);
         return baseDao.select(countSql, params).then((count_result) => {

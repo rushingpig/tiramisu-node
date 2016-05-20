@@ -113,10 +113,17 @@ AddressService.prototype.getStationsByMultipleCondition = (req, res, next) => {
             res.api(res_obj.NO_MORE_RESULTS, null);
             return;
         }
-        let data = {
-            list: results.pagination_result,
-            total: results.count_result[0].total
-        };
+        let data;
+        if (req.query.isPage == 0 || req.query.isPage == 'false') {
+            data = {
+                list: results
+            };
+        } else {
+            data = {
+                list: results.pagination_result,
+                total: results.count_result[0].total
+            };
+        }
         res.api(data);
     });
     systemUtils.wrapService(res, next, promise);

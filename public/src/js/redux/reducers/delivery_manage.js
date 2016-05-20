@@ -8,6 +8,7 @@ import { GET_ORDER_LIST, CHECK_ALL_ORDERS } from 'actions/orders';
 import { GOT_DELIVERY_STATIONS } from 'actions/order_manage_form';
 import { REQUEST } from 'config/app.config';
 import { UPDATE_PATH } from 'redux-simple-router';
+import stations from 'reducers/stations';
 import { map } from 'utils/index';
 
 var filter_state = {
@@ -67,6 +68,7 @@ export default combineReducers({
   orders: orders(),
   operationRecord,
   deliveryman,
+  stations,
   main,
   area: area(),
   ...OrderSupportReducers

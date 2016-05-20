@@ -329,7 +329,7 @@ class DeleteStationModal extends Component{
   render(){
     return (
       <StdModal ref="modal" title="确认删除" onConfirm={this.onConfirm}>
-        <p>请确认是否删除{this.state.name}所以数据</p>
+        <p>请确认是否删除 <span className="theme">{this.state.name}</span> 所有数据</p>
       </StdModal>
     )
   }

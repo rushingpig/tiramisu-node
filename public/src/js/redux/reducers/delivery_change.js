@@ -5,6 +5,7 @@ import { GOT_DELIVERY_STATIONS } from 'actions/order_manage_form';
 import { orders, operationRecord } from 'reducers/orders';
 import * as OrderSupportReducers from 'reducers/order_support';
 import { area } from 'reducers/area_select';
+import stations from 'reducers/stations';
 import { REQUEST } from 'config/app.config';
 
 var filter_state = {
@@ -46,6 +47,7 @@ function main( state = main_state, action ){
 export default combineReducers({
   filter,
   area: area(),
+  stations,
   orders: orders(),
   operationRecord,
   ...OrderSupportReducers

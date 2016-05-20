@@ -9,6 +9,7 @@ import { GET_ORDER_LIST } from 'actions/orders';
 import * as Actions from 'actions/delivery_distribute';
 import { UPDATE_PATH } from 'redux-simple-router';
 import * as OrderSupportReducers from 'reducers/order_support';
+import stations from 'reducers/stations';
 
 var filter_state = {
   search_ing: false,
@@ -120,6 +121,7 @@ export default combineReducers({
   operationRecord,
   main,
   D_,
+  stations,
   area: area(),
   deliveryman,
   ...OrderSupportReducers

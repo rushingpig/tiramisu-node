@@ -210,11 +210,12 @@ function formCompile(form_data){
 
 function reactReplace(input, reg_or_string, reactElement){
   input = (input || '').split(reg_or_string);
-  var results = [];
+  var results = [], re;
   for(var i=0,len=input.length; i<len; i++){
     results.push(input[i]);
+    re = React.cloneElement(reactElement, {key: reactElement.key + i});
     if(i < len - 1){
-      results.push(reactElement); //待定，没有加key
+      results.push(re);
     }
   }
   return results;

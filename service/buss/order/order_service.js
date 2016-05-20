@@ -733,7 +733,7 @@ OrderService.prototype.cancelOrder = (req, res, next) => {
     return;
   }
   let orderId = systemUtils.getDBOrderId(req.params.orderId),updated_time = req.body.updated_time;
-  let promise = orderDao.findOrderById(orderId).then((_res) => {
+  let order_promise = orderDao.findOrderById(orderId).then((_res) => {
     if (toolUtils.isEmptyArray(_res)) {
       throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
     } else if (updated_time !== _res[0].updated_time) {
@@ -752,8 +752,13 @@ OrderService.prototype.cancelOrder = (req, res, next) => {
     if (parseInt(result) <= 0) {
       throw new TiramisuError(res_obj.FAIL);
     }
-    res.api();
   });
+  let order_history_obj = {
+    order_id : orderId,
+    option : '取消订单'
+  };
+  let history_promise = orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
+  let promise = Promise.all([order_promise,history_promise]).then(()=>res.api());
   systemUtils.wrapService(res,next,promise);
 };
 
@@ -907,7 +912,7 @@ OrderService.prototype.exceptionOrder = (req,res,next)=>{
     return;
   }
   let orderId = systemUtils.getDBOrderId(req.params.orderId),updated_time = req.body.updated_time;
-  let promise = orderDao.findOrderById(orderId).then((_res) => {
+  let order_promise = orderDao.findOrderById(orderId).then((_res) => {
     if (toolUtils.isEmptyArray(_res)) {
       throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
     } else if (updated_time !== _res[0].updated_time) {
@@ -926,8 +931,13 @@ OrderService.prototype.exceptionOrder = (req,res,next)=>{
     if (parseInt(result) <= 0) {
       throw new TiramisuError(res_obj.FAIL);
     }
-    res.api();
   });
+  let order_history_obj = {
+    order_id : orderId,
+    option : '将订单状态置为{订单异常}'
+  };
+  let history_promise = orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
+  let promise = Promise.all([order_promise,history_promise]).then(()=>res.api());
   systemUtils.wrapService(res,next,promise);
 };
 /**

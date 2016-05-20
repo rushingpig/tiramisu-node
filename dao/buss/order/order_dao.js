@@ -713,6 +713,7 @@ OrderDao.prototype.findOrderList = function(query_data) {
        * <li> 未打印  ->     配送紧急程度 </li>
        * <li> 已打印  ->     打印时间的先后顺序 </li>
        */
+      sql += ds_sql;
       let sql_template = "select * from (%s order by bo.delivery_time asc)a union (select * from (%s order by print_time desc)b)";
       sql = util.format(sql_template,sql.replace("( bo.status = 'CONVERT' or bo.status = 'INLINE')"," bo.status = 'CONVERT'"),sql.replace("( bo.status = 'CONVERT' or bo.status = 'INLINE')"," bo.status = 'INLINE'"));
       params = params.concat(params);
@@ -726,6 +727,7 @@ OrderDao.prototype.findOrderList = function(query_data) {
     default:
       // do nothing && order by with the db self
   }
+  console.log(sql);
   let promise = null,
     countSql = "",
     result = 0;

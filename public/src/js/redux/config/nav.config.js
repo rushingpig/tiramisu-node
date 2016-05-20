@@ -93,17 +93,17 @@ export default [{
   "short_name": "产品",
   "icon": "",
   "link": [{
-    "key": "ProductionManageAdd",
+    "key": "ProductionManage",
     "name": "商品管理",
     "icon": "",
     "link": "/pm/sku_manage"
+  }, {
+    "key": "CategoryManageAccess",
+    "name": "产品类型管理",
+    "short_name": "类型",
+    "icon": "",
+    "link": "/pm/cam"
   }]
-}, {
-  "key": "CategoryManageAccess",
-  "name": "产品类型管理",
-  "short_name": "类型",
-  "icon": "",
-  "link": "/cam"
 }, {
   "key": "authority_manage",
   "name": "权限管理",

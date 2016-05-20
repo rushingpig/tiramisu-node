@@ -154,19 +154,19 @@ const App = () => (
           <IndexRoute onEnter={onEnter('ProductionManageAccess')} getComponent={get('SkuSearch')} />
           <Route path="add" onEnter={onEnter('ProductionManageAdd')} getComponent={get('SkuManage')} />
         </Route>
+        <Route path="cam" onEnter={getComponents('cam', onEnter('CategoryManageAccess'))}>
+          <IndexRoute getComponent={get('CategoryManage')} />
+          <Route path="primary_category">
+            <Route path="add" getComponent={get('CategoryManagePrimary')} />
+            <Route path="edit/:id" getComponent={get('CategoryManagePrimary')} />
+          </Route>
+          <Route path="second_category">
+            <Route path="add" getComponent={get('CategoryManageSecond')} />
+            <Route path="edit/:id" getComponent={get('CategoryManageSecond')} />
+          </Route>
+        </Route>
       </Route>
 
-      <Route path="cam" onEnter={getComponents('cam')}>
-        <IndexRoute getComponent={get('CategoryManage')} />
-        <Route path="primary_category">
-          <Route path="add" getComponent={get('CategoryManagePrimary')} />
-          <Route path="edit/:id" getComponent={get('CategoryManagePrimary')} />
-        </Route>
-        <Route path="second_category">
-          <Route path="add" getComponent={get('CategoryManageSecond')} />
-          <Route path="edit/:id" getComponent={get('CategoryManageSecond')} />
-        </Route>
-      </Route>
 
       <Redirect from="logout" to="/" />
       <Route path="403" component={NoPermission} />

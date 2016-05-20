@@ -615,8 +615,7 @@ OrderDao.prototype.findOrderList = function(query_data) {
     if (Array.isArray(query_data.status)) {
       let temp_sql = " and (";
       query_data.status.forEach((curr) => {
-        temp_sql += " bo.status = ? or";
-        params.push(curr);
+        temp_sql += " bo.status = '"+curr+"' or";
       });
       sql += temp_sql.substring(0, temp_sql.length - 3);
       sql += ")";
@@ -708,8 +707,16 @@ OrderDao.prototype.findOrderList = function(query_data) {
       sql += " order by bo.delivery_time asc";
       break;
     case constant.OSR.DELIVER_LIST:
-      sql += ds_sql;
-      sql += " order by bo.print_status asc,bo.delivery_time asc";
+      /**
+       * 这里需要特殊处理
+       * <li> 未打印  ->     配送紧急程度 </li>
+       * <li> 已打印  ->     打印时间的先后顺序 </li>
+       */
+      let sql_template = "select * from (%s order by bo.delivery_time asc)a union (select * from (%s order by print_time desc)b)";
+      sql = util.format(sql_template,sql.replace("( bo.status = 'CONVERT' or bo.status = 'INLINE')"," bo.status = 'CONVERT'"),sql.replace("( bo.status = 'CONVERT' or bo.status = 'INLINE')"," bo.status = 'INLINE'"));
+      params = params.concat(params);
+      // sql += ds_sql;
+      // sql += " order by bo.print_status asc,bo.delivery_time asc";
       break;
     case constant.OSR.RECEIVE_LIST:
       sql += ds_sql;

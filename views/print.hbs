@@ -9,7 +9,7 @@
         body {
             font-size: .85em;
             font-family: "微软雅黑", "宋体", "Segoe UI", Verdana, Helvetica, Sans-Serif;
-            color: #000;
+            color: #232323;
             background-color: #fff;
         }
 
@@ -85,6 +85,22 @@
             .page-before { page-break-before: always; }
             .page-block { page-break-inside: avoid; }
         }
+        .change-lan{
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            height: 26px;
+            text-align: center;
+            font-weight: bold;
+            background: none;
+            border-radius: 4px;
+            border: 1px solid #aaa;
+            color: #999;
+            outline: 0;
+        }
+        .change-lan:hover{
+            color: #444;
+        }
     </style>
     <script type="text/javascript">
         function init() {
@@ -96,12 +112,23 @@
     <script src="/lib/vendor/jquery-1.11.3.min.js"></script>
     <!-- <script src="/plugins/barcode/jquery-barcode.min.js"></script> -->
     <script src="/plugins/barcode/jsbarcode.all.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            var lan = ["'Segoe UI', Verdana, Helvetica, Sans-Serif", "'微软雅黑', '宋体'"];
+            var lan_index = 0;
+            $('.change-lan').on('click', function(){
+                document.body.style.fontFamily = lan[lan_index++ % 2];
+            })
+        })
+    </script>
 </head>
 
 <body onload="init()">
+<button class="change-lan no-print">字体切换</button>
 {{#if list}}
 {{#list}}
 <div class="Content page-block">
+
     <div class="inner">
         <div class="tb">
             <div class="clearfix">
@@ -317,6 +344,5 @@
 </div>
 {{/list}}
 {{/if}}
-<!--<object style="position: absolute; left: -9000px; top: -9000px;" type="application/x-bang5taoplugin" id="b5tplugin" height="0" width="0"></object>-->
 </body>
 </html>

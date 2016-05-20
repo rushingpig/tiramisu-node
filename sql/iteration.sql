@@ -187,3 +187,7 @@ CREATE TABLE `buss_product_pic` (
   `pic_url` varchar(255) DEFAULT NULL COMMENT '图片url',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='产品图片';
+
+# 2016-05-20 Wei Zhao
+# 增加退款金额字段
+ALTER TABLE `tiramisu`.`buss_order` ADD COLUMN `refund_amount` int(10) unsigned DEFAULT NULL COMMENT '退款金额';

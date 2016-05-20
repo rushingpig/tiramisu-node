@@ -249,6 +249,7 @@ OrderService.prototype.getOrderDetail = (req, res, next) => {
         data.remarks = curr.remarks;
         data.src_id = curr.src_id;
         data.src_name = curr.merge_name;
+        data.shop_id = curr.shop_id;
         data.province_id = curr.province_id;
         data.province_name = curr.province_name;
         data.city_id = curr.city_id;

@@ -361,7 +361,7 @@ var SalaryRow = React.createClass({
 					}
 					
 					{
-						V('DeliveryManSalaryManageEdit')
+						V('DeliveryManSalaryManageCheck')
 							?<a href='javascript:;' onClick={this.onChangeDeliveryRecord}>[审核完成]</a>
 							:null
 					}

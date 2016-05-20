@@ -44,7 +44,7 @@ class Nav extends Component {
         return (
           <li key={firstLevelItem.key} className={check_active(firstLevelItem.link, current_path) ? 'menu-list active open' : 'menu-list'}>
             <Link to={firstLevelItem.link} className="menu-1">
-              {firstLevelItem.name}
+              <span>{firstLevelItem.name}</span>
             </Link>
             <Link to={firstLevelItem.link} className="menu-1 short-menu">
               {firstLevelItem.short_name}

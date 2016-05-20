@@ -830,10 +830,11 @@ OrderService.prototype.changeDelivery = (req,res,next)=>{
         address = req.body.recipient_address,
         prefix_address = req.body.prefix_address,
         updated_time = req.body.updated_time,
-        last_opt_cs = req.session.user.id;
+        last_opt_cs = req.session.user.id,
+        status = Constant.OS.STATION;
 
     let recipient_obj = {regionalism_id, delivery_type,address};
-    let order_obj = {delivery_id, delivery_time,last_opt_cs};
+    let order_obj = {delivery_id, delivery_time,last_opt_cs,status};
     let promise = orderDao.findOrderById(order_id).then((_res)=> {
         if (toolUtils.isEmptyArray(_res)) {
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);

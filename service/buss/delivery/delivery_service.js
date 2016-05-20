@@ -430,6 +430,9 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                 order_id: orderId,
                 option: '自动计算{配送工资}为{' + (delivery_pay_obj.delivery_pay / 100) + '}元\n'
             };
+            if (refund_amount > 0) {
+                order_obj.refund_amount = refund_amount;
+            }
 
             yield orderDao.editOrder(systemUtils.assembleUpdateObj(req, order_obj), orderId, null, null, products, add_skus, delete_skuIds, update_skus);
             yield deliveryDao.updateDeliveryRecord(orderId, null, systemUtils.assembleUpdateObj(req, delivery_pay_obj));
@@ -442,12 +445,12 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
             historyArr.push([orderId, delivery_pay_history_obj.option, user_id, new Date()]);
             yield orderDao.batchInsertOrderHistory(historyArr);
 
-            if (refund_amount > 0) {
-                return yield tartetatin.refund(refund_amount, current_order.id, current_order.id)
-                    .catch(err=> {
-                        return Promise.resolve(err);
-                    });
-            }
+            // if (refund_amount > 0) {
+            //     return yield tartetatin.refund(refund_amount, current_order.id, current_order.id)
+            //         .catch(err=> {
+            //             return Promise.resolve(err);
+            //         });
+            // }
         });
     }).then(refund_result => {
         if (refund_result) return res.api({refund_result: refund_result});

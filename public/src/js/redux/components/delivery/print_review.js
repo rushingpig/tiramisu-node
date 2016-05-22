@@ -282,8 +282,8 @@ var ReviewModal = React.createClass({
         this.refs.modal.hide();
         this.props.callback();
       }.bind(this))
-      .fail(function(){
-        Noty('error', '服务器异常');
+      .fail(function(msg){
+        Noty('error', msg || '服务器异常');
       })
   },
 });

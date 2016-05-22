@@ -454,8 +454,8 @@ class DeliveryManagePannel extends Component {
         .done(() => {
           this.search(); //重新请求，刷新数据
         })
-        .fail(function(){
-          Noty('error', '异常错误');
+        .fail(function(msg){
+          Noty('error', msg || '异常错误');
         })
     }else if(print_status == 'UNPRINTABLE'){
       this.refs.ApplyPrintModal.show(order_id);
@@ -681,9 +681,8 @@ var EditModal = React.createClass({
       Noty('success', '操作成功！');
       this.refs.modal.hide();
       this.props.callback();
-    }.bind(this)).fail(function(json){
-      console.error(json);
-      Noty('error', '操作失败！');
+    }.bind(this)).fail(function(msg){
+      Noty('error', msg || '操作失败！');
     })
   },
   componentDidMount: function(){
@@ -743,8 +742,10 @@ var ApplyPrintModal = React.createClass({
     )
   },
   saveHandler: function(){
-    var { applicant_mobile } = this.state;
-    if(!form.isMobile(applicant_mobile)){
+    var { reason, applicant_mobile } = this.state;
+    if(!reason){
+      Noty('warning', '请填写申请理由！');return;
+    }else if(!form.isMobile(applicant_mobile)){
       Noty('warning', '错误的电话号！');return;
     }
     this.props.applyPrint({...this.state, order_id: this.state.order_id})
@@ -779,32 +780,64 @@ var RePrintModal = React.createClass({
   },
   render: function(){
     return (
-      <StdModal onConfirm={this.saveHandler} onCancel={this.hideCallback} submitting={this.props.submitting} ref="modal" size="sm" title="打印">
-        <div className="pl-50">
-          <div className="form-group form-inline">
-            <label>{'订单编号：'}</label>
-            <span>{` ${this.state.order_id}`}</span>
+      <div>
+        <StdModal onConfirm={this.saveHandler} onCancel={this.hideCallback} submitting={this.props.submitting} ref="modal" size="sm" title="打印">
+          <div className="pl-50">
+            <div className="form-group form-inline">
+              <label>{'订单编号：'}</label>
+              <span>{` ${this.state.order_id}`}</span>
+            </div>
+            <div className="form-group form-inline">
+              <label>{'　验证码：'}</label>
+              <input valueLink={this.linkState('validate_code')} type="text" className="form-control input-xs" />
+            </div>
           </div>
-          <div className="form-group form-inline">
-            <label>{'　验证码：'}</label>
-            <input valueLink={this.linkState('validate_code')} type="text" className="form-control input-xs" />
+        </StdModal>
+        <StdModal ref="tipsModal" onConfirm={this.hideTipsModal} title="提示">
+          <div style={{maxHeight: 500, overflow: 'auto'}}>
+            <div className="form-group text-warning">
+              当前检测到，打印页面已被拦截，请按如下操作方式执行打印：
+            </div>
+            <div className="form-group">
+              <div><label>第1步</label></div>
+              <center><img style={{width: '80%'}} src="/images/print_tips_1.png" alt=""/></center>
+            </div>
+            <hr />
+            <div className="form-group">
+              <div><label>第2步</label></div>
+              <center><img style={{width: '80%'}}  src="/images/print_tips_2.png" alt=""/></center>
+            </div>
+            <hr />
+            <div className="form-group">
+              <div><label>第3步</label></div>
+              <center><img style={{width: '80%'}}  src="/images/print_tips_3.png" alt=""/></center>
+            </div>
+            <hr />
+            <div className="form-group">
+              <div><label>第4步</label></div>
+              {'　　　　重新打印'}
+            </div>
           </div>
-        </div>
-      </StdModal>
+        </StdModal>
+      </div>
     )
   },
   saveHandler: function(){
     var { order_id } = this.state;
     this.props.validatePrintCode(order_id, this.state.validate_code)
       .done(function(){
-        this.props.rePrint(order_id).done(function(){
-          this.refs.modal.hide();
-          setTimeout(this.props.callback, 1000);
-        }.bind(this));
-        this.refs.modal.hide();
+        this.props.rePrint(order_id)
+          .done(function(){
+            this.refs.modal.hide();
+            setTimeout(this.props.callback, 1000);
+          }.bind(this))
+          .fail(function(){
+            this.refs.modal.hide();
+            this.refs.tipsModal.show();
+          }.bind(this))
       }.bind(this))
-      .fail(function(){
-        Noty('error', '服务器异常')
+      .fail(function(msg){
+        Noty('error', msg || '服务器异常')
       })
   },
   mixins: [LinkedStateMixin],
@@ -816,6 +849,9 @@ var RePrintModal = React.createClass({
   hideCallback: function(){
     this.setState(this.getInitialState());
   },
+  hideTipsModal: function(){
+    this.refs.tipsModal.hide();
+  }
 });
 
 export default connect(

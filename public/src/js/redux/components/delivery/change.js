@@ -374,8 +374,8 @@ class ChangeModal extends Component {
       this.hide();
       Noty('success', '转换成功！')
       go('/dm/delivery');
-    }.bind(this)).fail(() => {
-      Noty('error', '转换异常')
+    }.bind(this)).fail((msg) => {
+      Noty('error', msg || '转换异常')
     })
   }
 };

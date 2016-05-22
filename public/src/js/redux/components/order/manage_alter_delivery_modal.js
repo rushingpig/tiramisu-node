@@ -158,8 +158,8 @@ var AlterDeliveryModal = React.createClass({
     }).done(function(){
       this.props.callback();
       this.refs.modal.hide();
-    }.bind(this)).fail(function(){
-      Noty('error', '服务器异常')
+    }.bind(this)).fail(function(msg){
+      Noty('error', msg || '服务器异常')
     })
   },
   findSelectedOptionText(_refs){

@@ -22,12 +22,11 @@ export function startPrint(order_ids){
       if(!order_ids.length){
         reject('参数错误');
       }else{
-        try{
-          window.open(Url.print.toString() + '?order_ids=' + order_ids.join(','));
+        var win = window.open(Url.print.toString() + '?order_ids=' + order_ids.join(','));
+        if(win){
           setTimeout(resolve, 500);
-        }catch(e){
-          console.error(e);
-          reject('打印出错');
+        }else{
+          reject('打印页面被拦截了');
         }
       }
     })
@@ -58,12 +57,11 @@ export function validatePrintCode(order_id, validate_code) {
 export function rePrint(order_id){
   return dispatch => {
     return new Promise(function(resolve, reject){
-      try{
-        window.open(Url.reprint.toString(order_id));
+      var win = window.open(Url.reprint.toString(order_id));
+      if(win){
         resolve();
-      }catch(e){
-        console.error(e);
-        reject('打印出错');
+      }else{
+        reject('打印页面被拦截了');
       }
     })
   }

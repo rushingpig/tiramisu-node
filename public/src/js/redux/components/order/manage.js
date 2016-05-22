@@ -678,8 +678,8 @@ var AlterStationModal = React.createClass({
         callback();
         this.refs.modal.hide();
       }.bind(this))
-      .fail(function(){
-        Noty('error', '服务器异常')
+      .fail(function(msg){
+        Noty('error', msg || '服务器异常')
       })
   },
   show(){

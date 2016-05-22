@@ -656,7 +656,7 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
         is_reprint : 1,
         reprint_time : new Date()
     };
-    let promise = deliveryDao.updateReprintApply(systemUtils.assembleUpdateObj(req,reprint_apply_update_obj),null,true,order_id).then((result)=>{
+    let promise = deliveryDao.updateReprintApply(reprint_apply_update_obj,null,true,order_id).then((result)=>{
         if(parseInt(result) <= 0){
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
         }

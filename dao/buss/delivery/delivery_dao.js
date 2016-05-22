@@ -176,7 +176,7 @@ DeliveryDao.prototype.updateOrderWithDeliveryman = function(order_ids,update_obj
  * find the deliverymans list by the login user of the station
  * @param userId
  */
-DeliveryDao.prototype.findDeliverymansByStation = function(city_id,currentUser){
+DeliveryDao.prototype.findDeliverymansByStation = function(city_ids,currentUser){
     let columns = [
         'su.id as deliveryman_id',
         'su.name as deliveryman_name',
@@ -190,10 +190,10 @@ DeliveryDao.prototype.findDeliverymansByStation = function(city_id,currentUser){
     params.push(tables.sys_user_role);
     params.push(constant.DELIVERYMAN_ID);
     //sql += " inner join ?? dr on bds.regionalism_id = dr.id and dr.parent_id = ?";
-    if(city_id && systemUtils.isToFilterDeliverymans(currentUser)){
-        sql += " inner join ?? dr on dr.id = su.city_id and dr.id = ?";
+    if(city_ids && systemUtils.isToFilterDeliverymans(currentUser)){
+        sql += " inner join ?? dr on FIND_IN_SET(dr.id, su.city_ids) and FIND_IN_SET(dr.id, ?)";
         params.push(tables.dict_regionalism);
-        params.push(city_id);
+        params.push(city_ids.join());
     }
     return baseDao.select(sql,params);
 

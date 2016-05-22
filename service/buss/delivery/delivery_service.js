@@ -566,8 +566,8 @@ DeliveryService.prototype.listDeliverymans = (req,res,next)=>{
         res.api(res_obj.SESSION_TIME_OUT,null);
         return;
     }
-    let city_id = currentUser.city_id;
-    let promise = deliveryDao.findDeliverymansByStation(city_id,currentUser).then((results)=>{
+    let city_ids = currentUser.city_ids;
+    let promise = deliveryDao.findDeliverymansByStation(city_ids,currentUser).then((results)=>{
         if(toolUtils.isEmptyArray(results)){
             throw new TiramisuError(res_obj.NO_MORE_RESULTS_ARR,'该条件下没有可选的配送员...');
         }

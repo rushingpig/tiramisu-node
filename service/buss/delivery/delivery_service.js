@@ -702,6 +702,7 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
                 data.remarks = curr.remarks;
                 data.coupon = curr.coupon;
                 data.src_id = curr.src_id;
+                data.merge_name = curr.merge_name;
                 data.province_id = curr.province_id;
                 data.province_name = curr.province_name;
                 data.city_id = curr.city_id;
@@ -713,21 +714,24 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
                 data.recipient_landmark = curr.landmark;
                 data.deliveryman_name = curr.deliveryman_name;
                 data.total_amount = curr.total_amount/100; // 总应收金额
+                data.last_op_cs_name = curr.last_op_cs_name;
+                data.greeting_card = curr.greeting_card;
+                data.custom_name = '';
                 if(curr.sku_id){
                     let product_obj = {
                         sku_id : curr.sku_id,
                         choco_board : curr.choco_board,
                         custom_desc : curr.custom_desc,
-                        custom_name : curr.custom_name,
-                        discount_price : curr.discount_price/100,   // 总的实际售价
-                        greeting_card : curr.greeting_card,
+                        discount_price : curr.discount_price/100,
+                        // greeting_card : curr.greeting_card,
                         num : curr.num,
-                        original_price : curr.discount_price/curr.num/100,  // 单价显示为实际售价
+                        // original_price : curr.original_price/100,
                         product_name : curr.product_name,
-                        atlas : curr.atlas,
                         size : curr.size,
                         amount : curr.amount/100
                     };
+                    data.custom_name += '【' + curr.custom_name + '】';
+                    data.atlas = curr.atlas ? '【√产品图册】' : '【无】';
                     data.products.push(product_obj);
                 }
                 map.set(curr.id,data);
@@ -737,16 +741,18 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
                         sku_id: curr.sku_id,
                         choco_board: curr.choco_board,
                         custom_desc: curr.custom_desc,
-                        custom_name: curr.custom_name,
                         discount_price: curr.discount_price/100,
-                        greeting_card: curr.greeting_card ? curr.greeting_card : '不需要',
+                        // greeting_card: curr.greeting_card ? curr.greeting_card : '不需要',
                         num: curr.num,
                         original_price: curr.original_price/100,
                         product_name: curr.product_name,
-                        atlas: curr.atlas,
                         size: curr.size,
                         amount : curr.amount/100
                     };
+                    if(curr.atlas){
+                        data.atlas = '【√产品图册】';
+                    }
+                    data.custom_name += '【' + curr.custom_name + '】';
                     map.get(curr.id).products.push(product_obj);
                 }
             }

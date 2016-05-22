@@ -418,7 +418,8 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
     'bo.updated_time',
     'bo.created_time',
     'su1.name as created_by',
-    'su2.name as deliveryman_name'
+    'su2.name as deliveryman_name',
+    'su3.name as last_op_cs_name'
   ].join(',');
   let sql = "select " + columns + " from ?? bo",
     params = [];
@@ -447,6 +448,8 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
   sql += " left join ?? su1 on bo.created_by = su1.id";
   params.push(tables.sys_user);
   sql += " left join ?? su2 on bo.deliveryman_id = su2.id";
+  params.push(tables.sys_user);
+  sql += " left join ?? su3 on bo.last_opt_cs = su3.id";
   params.push(tables.sys_user);
   sql += " where 1=1 and bo.del_flag = ? ";
   params.push(del_flag.SHOW);

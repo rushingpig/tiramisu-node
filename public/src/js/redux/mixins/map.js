@@ -126,7 +126,7 @@ export function autoMatch(city, district, address){
           autoGetDeliveryStations( poi_ls || poi_gc ) //poi_ls必须在前
           .done(function(data){
             if(data && data.delivery_id){
-              Noty('warning', '可能的配送中心为：' + data.delivery_name + '，请手动确认！', false);
+              Noty('warning', '可能的配送中心为：' + data.delivery_name + '，请手动确认！');
             }
             reject();
           })

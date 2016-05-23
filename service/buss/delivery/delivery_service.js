@@ -756,7 +756,7 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
                         curr_order.atlas = '【√产品图册】';
                     }
                     if(curr.custom_name){
-                        data.custom_name += '【' + curr.custom_name + '】';
+                        curr_order.custom_name += '【' + curr.custom_name + '】';
                     }
                     curr_order.products.push(product_obj);
                 }
@@ -898,7 +898,7 @@ DeliveryService.prototype.print = (req,res,next)=>{
                         curr_order.atlas = '【√产品图册】';
                     }
                     if(curr.custom_name){
-                        data.custom_name += '【' + curr.custom_name + '】';
+                        curr_order.custom_name += '【' + curr.custom_name + '】';
                     }
                     curr_order.products.push(product_obj);
                 }

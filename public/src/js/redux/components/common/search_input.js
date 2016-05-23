@@ -21,7 +21,7 @@ export default class SearchInput extends React.Component {
   }
   keyDownHandler(e){
     //enter键
-    if(!this.props.searching && e.which == 13){
+    if(!this.props.searching && e.which == 13 && e.target.value){
       this.searchHandler();
     }
   }

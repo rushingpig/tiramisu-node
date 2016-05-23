@@ -14,6 +14,7 @@ import Pagination from 'common/pagination';
 import StdModal from 'common/std_modal';
 import LineRouter from 'common/line_router';
 import { tableLoader } from 'common/loading';
+import SearchInput from 'common/search_input';
 import RecipientInfo from 'common/recipient_info';
 import ToolTip from 'common/tooltip';
 
@@ -75,7 +76,7 @@ class FilterHeader extends Component {
       <div className="panel search">
         <div className="panel-body">
           <div className="form-group form-inline">
-            <input {...keywords} className="form-control input-xs v-mg" placeholder="关键字" />
+            <SearchInput {...keywords} searchHandler={this.search.bind(this, null)} searching={search_ing} className="form-inline v-mg" placeholder="关键字" />
             {' 开始时间'}
             <DatePicker editable redux-form={begin_time} className="short-input" />
             {' 结束时间'}

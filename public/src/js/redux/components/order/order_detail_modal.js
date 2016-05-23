@@ -12,9 +12,9 @@ export default class DetailModal extends Component {
   }
   render(){
     var { data, data: {products = []} } = this.props;
-    var products = products.map( n => {
+    var products = products.map( (n, i) => {
       return (
-        <tr key={n.sku_id}>
+        <tr key={n.sku_id + '' + i}>
           <td>{n.name}</td>
           <td className="text-left">规格：{n.size}<br/>数量：{n.num}</td>
           <td className="text-left">原价：￥{n.original_price / 100}<br/>实际售价：￥{n.discount_price/100}</td>

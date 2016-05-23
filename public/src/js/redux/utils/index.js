@@ -308,6 +308,7 @@ export default {
     isArray: core_isArray,
     isObject: core_isObject,
     isString: core_isString,
+    isFunc: core_isFunction,
   },
   form: {
     isNumber: form_isNumber,

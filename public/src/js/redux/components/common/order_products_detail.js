@@ -43,8 +43,8 @@ class ProductRow extends Component {
 
 export default class OrderProductsDetail extends Component {
   render(){
-    var products = this.props.products.map(function(n){
-      return <ProductRow key={n.sku_id} {...n} />;
+    var products = this.props.products.map(function(n, i){
+      return <ProductRow key={n.sku_id + '' + i} {...n} />;
     })
     return (
       <div className="table-responsive">

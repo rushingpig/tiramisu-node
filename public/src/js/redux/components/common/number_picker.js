@@ -26,7 +26,7 @@ var NumberPicker = React.createClass({
     return (
       <div className="number-picker form-inline">
         <a onClick={this.minus} href="javascript:;"><i className="fa fa-minus"></i></a>
-        <input value={this.state.value} onChange={this.input} className="form-control input-xs" />
+        <input value={this.state.value} onChange={this.input} onBlur={this.check} className="form-control input-xs" />
         <a onClick={this.add} href="javascript:;"><i className="fa fa-plus"></i></a>
       </div>
     );
@@ -49,11 +49,19 @@ var NumberPicker = React.createClass({
   },
   input: function(e){
     var v = e.target.value.replace(/[^\d]/g, '');
-    console.log(v);
     if(v > this.props.upper_limit){
       v = v.substring(0, v.length - 1);
     }
-    this.setState({value: v});
+    this.setState({value: v}, function(){
+      this.props.onChange(v);
+    });
+  },
+  check: function(){
+    if(!this.state.value || this.state.value == 0){
+      this.setState({ value: 1}, function(){
+        this.props.onChange(1);
+      });
+    }
   }
 });
 

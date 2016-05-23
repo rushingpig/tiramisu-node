@@ -11,6 +11,7 @@ import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import Pagination from 'common/pagination';
 import StdModal from 'common/std_modal';
+import SearchInput from 'common/search_input';
 import { tableLoader } from 'common/loading';
 
 import { Noty, parseTime, dateFormat, dom } from 'utils/index';
@@ -60,7 +61,7 @@ class FilterHeader extends Component {
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <input {...keywords} className="form-control input-xs v-mg" placeholder="关键字" />
+          <SearchInput {...keywords} searchHandler={this.search.bind(this, null)} searching={search_ing} className="form-inline v-mg" placeholder="关键字" />
           {' 开始时间'}
           <DatePicker editable redux-form={begin_time} className="short-input" />
           {' 结束时间'}

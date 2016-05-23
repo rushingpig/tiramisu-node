@@ -11,7 +11,7 @@ export default class ManageAddProducts extends Component {
   render(){
     var { confirm_list, dispatch } = this.props;
     var list = confirm_list.map(function(n){
-      return <AddedProductsRow key={n.sku_id} data={n} dispatch={dispatch} />;
+      return <AddedProductsRow key={n.sku_id + '' + i} data={n} dispatch={dispatch} />;
     });
     return (
       <div>

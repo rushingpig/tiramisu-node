@@ -28,6 +28,7 @@ import LazyLoad from 'utils/lazy_load';
 import { colour, Noty, core, dom } from 'utils/index';
 import V from 'utils/acl';
 import { createMap, autoMatch } from 'mixins/map';
+import { searchOnEnterKeyDown } from 'mixins/common_func';
 
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from './order_detail_modal';
@@ -113,7 +114,8 @@ class FilterHeader extends Component {
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <input {...keywords} className="form-control input-xs v-mg" placeholder="关键字" />
+          {/*<input {...keywords} onKeyDown={searchOnEnterKeyDown.bind(this, this.search)} className="form-control input-xs v-mg" placeholder="关键字" />*/}
+          <SearchInput {...keywords} searchHandler={this.search.bind(this, null)} searching={search_ing} className="form-inline v-mg" placeholder="关键字" />
           {' 开始时间'}
           <DatePicker editable redux-form={begin_time} className="short-input" />
           {' 结束时间'}

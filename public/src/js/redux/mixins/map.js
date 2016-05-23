@@ -119,7 +119,7 @@ export function autoMatch(city, district, address){
           &&
           (poi_gc.lng != poi_di.lng || poi_gc.lat != poi_di.lat)
           &&
-          BMapLib.GeoUtils.getDistance(poi_gc, poi_ls) < 1000 //1公里
+          BMapLib.GeoUtils.getDistance(poi_gc, poi_ls) < 500 //0.5公里
         ){
           getStation(poi_gc);
         }else if((poi_gc && !poi_ls) || poi_ls){

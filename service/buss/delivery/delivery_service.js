@@ -717,6 +717,7 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
                 data.last_op_cs_name = curr.last_op_cs_name;
                 data.greeting_card = curr.greeting_card;
                 data.custom_name = '';
+                data.custom_desc = '';
                 if(curr.sku_id){
                     let product_obj = {
                         sku_id : curr.sku_id,
@@ -730,8 +731,8 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
                         size : curr.size,
                         amount : curr.amount/100
                     };
-                    if(curr.custom_name){
-                        data.custom_name += '【' + curr.custom_name + '】';
+                    if(curr.custom_name || curr.custom_desc){
+                        data.custom_name += '【' + curr.custom_name + ';' + curr.custom_desc +'】';
                     }
                     data.atlas = curr.atlas ? '【√产品图册】' : '【无】';
                     data.products.push(product_obj);
@@ -755,8 +756,8 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
                     if(curr.atlas){
                         curr_order.atlas = '【√产品图册】';
                     }
-                    if(curr.custom_name){
-                        curr_order.custom_name += '【' + curr.custom_name + '】';
+                    if(curr.custom_name || curr.custom_desc){
+                        curr_order.custom_name += '【' + curr.custom_name + ';' + curr.custom_desc +'】';
                     }
                     curr_order.products.push(product_obj);
                 }
@@ -859,6 +860,7 @@ DeliveryService.prototype.print = (req,res,next)=>{
                 data.last_op_cs_name = curr.last_op_cs_name;
                 data.greeting_card = curr.greeting_card;
                 data.custom_name = '';
+                data.custom_desc = '';
                 if(curr.sku_id){
                     let product_obj = {
                         sku_id : curr.sku_id,
@@ -872,8 +874,8 @@ DeliveryService.prototype.print = (req,res,next)=>{
                         size : curr.size,
                         amount : curr.amount/100
                     };
-                    if(curr.custom_name){
-                        data.custom_name += '【' + curr.custom_name + '】';
+                    if(curr.custom_name || curr.custom_desc){
+                        data.custom_name += '【' + curr.custom_name + ';' + curr.custom_desc +'】';
                     }
                     data.atlas = curr.atlas ? '【√产品图册】' : '【无】';
                     data.products.push(product_obj);
@@ -897,8 +899,8 @@ DeliveryService.prototype.print = (req,res,next)=>{
                     if(curr.atlas){
                         curr_order.atlas = '【√产品图册】';
                     }
-                    if(curr.custom_name){
-                        curr_order.custom_name += '【' + curr.custom_name + '】';
+                    if(curr.custom_name || curr.custom_desc){
+                        curr_order.custom_name += '【' + curr.custom_name + ';' + curr.custom_desc +'】';
                     }
                     curr_order.products.push(product_obj);
                 }

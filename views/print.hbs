@@ -8,8 +8,8 @@
     <style type="text/css">
         body {
             font-size: .85em;
-            font-family: "微软雅黑", "宋体", "Segoe UI", Verdana, Helvetica, Sans-Serif;
-            color: #232323;
+            font-family: "微软雅黑", "华文细黑", "黑体", "宋体", "Segoe UI", Verdana, Helvetica, Sans-Serif;
+            color: #000;
             background-color: #fff;
         }
 
@@ -114,7 +114,7 @@
     <script src="/plugins/barcode/jsbarcode.all.min.js"></script>
     <script type="text/javascript">
         $(function(){
-            var lan = ["'Segoe UI', Verdana, Helvetica, Sans-Serif", "'微软雅黑', '宋体'"];
+            var lan = ["'Segoe UI', Verdana, Helvetica, Sans-Serif", "'微软雅黑', '华文细黑', '黑体','宋体'"];
             var lan_index = 0;
             $('.change-lan').on('click', function(){
                 document.body.style.fontFamily = lan[lan_index++ % 2];
@@ -124,7 +124,7 @@
 </head>
 
 <body onload="init()">
-<button class="change-lan no-print">字体切换</button>
+<!-- <button class="change-lan no-print">字体切换</button> -->
 {{#if list}}
 {{#list}}
 <div class="Content page-block">

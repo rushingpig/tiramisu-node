@@ -194,4 +194,6 @@ Constant.PAY_RULE = {
     SOUVENIR: 'SOUVENIR'
 };
 
+Constant.HK_PROVINCE_ID = 810000;
+
 module.exports = Constant;

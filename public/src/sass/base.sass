@@ -156,6 +156,7 @@ a
 hr.dotted
   border: none
   border-bottom: 1px dotted rgba(0, 0, 0, 0.2)
+  margin: 15px 0
 .form-inline
   .form-control.input-date
     width: 95px
@@ -252,6 +253,12 @@ hr.dotted
 
 .table-modal //modal里面的table最大高度
   max-height: 380px
+/* modal: ---> 30px: margin, 52px: header, 61px: footer*/
+.modal-body
+  overflow-y: auto;
+  max-height: calc(100vh - 52px - 30px - 30px)
+.modal-header+.modal-body
+  max-height: calc(100vh - 52px - 30px - 30px - 61px)
 
 .time-input
   @extend .tc

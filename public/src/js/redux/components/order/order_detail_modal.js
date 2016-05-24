@@ -75,6 +75,10 @@ export default class DetailModal extends Component {
           <label>{'　　　备注：'}</label>
           <span className="gray">{data.remarks}</span>
         </div>
+        <div className="form-group form-inline">
+          <label>{'　发票备注：'}</label>
+          <span className="gray">{data.invoice}</span>
+        </div>
         <hr className="dotted" />
         <div className="form-group form-inline">
           <label>{'　产品信息：'}</label>

@@ -28,6 +28,9 @@ var dao = require('../../../dao'),
     tartetatin = require('../../../api/tartetatin'),
     calculator = require('../../../api/calculator'),
     async = require('async');
+
+const img_host = config.img_host;
+
 function DeliveryService(){
 
 }
@@ -1020,9 +1023,11 @@ DeliveryService.prototype.getRecord = (req, res, next)=>{
     }
     let begin_time = req.query.begin_time;
     let end_time = req.query.end_time;
+    let city_id = req.query.city_id;
+    let delivery_id = req.query.delivery_id;
     let deliveryman_id = req.query.deliveryman_id;
     let isCOD = req.query.isCOD;
-    let promise = deliveryDao.findDeliveryRecord(begin_time, end_time, deliveryman_id, isCOD).then((result)=> {
+    let promise = deliveryDao.findDeliveryRecord(begin_time, end_time, city_id, delivery_id, deliveryman_id, isCOD).then((result)=> {
         if (!_.isArray(result)) {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
@@ -1134,10 +1139,10 @@ DeliveryService.prototype.getProof = (req, res, next)=> {
         }
         let data = {};
         result.forEach(r=> {
-            if(r.picture_type == Constant.BDPT.RECEIPT) data.receipt_picture_url = r.picture_url;
-            if(r.picture_type == Constant.BDPT.DOOR) data.door_picture_url = r.picture_url;
-            if(r.picture_type == Constant.BDPT.CALL) data.call_picture_url = r.picture_url;
-            if(r.picture_type == Constant.BDPT.SMS) data.sms_picture_url = r.picture_url;
+            if (r.picture_type == Constant.BDPT.RECEIPT) data.receipt_picture_url = img_host + r.picture_url;
+            if (r.picture_type == Constant.BDPT.DOOR) data.door_picture_url = img_host + r.picture_url;
+            if (r.picture_type == Constant.BDPT.CALL) data.call_picture_url = img_host + r.picture_url;
+            if (r.picture_type == Constant.BDPT.SMS) data.sms_picture_url = img_host + r.picture_url;
         });
         if (_.isEqual(data, {})) {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);

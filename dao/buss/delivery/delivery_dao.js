@@ -260,7 +260,7 @@ DeliveryDao.prototype.findStationById = function(station_id){
     let params = [3, del_flag.SHOW, station_id];
     return baseDao.select(sql,params);
 };
-DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, deliveryman_id, is_COD) {
+DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, city_id, delivery_id, deliveryman_id, is_COD) {
     let columns = [
         'bo.id AS order_id',
         'bo.delivery_time',
@@ -311,6 +311,15 @@ DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, deliv
     if(end_time){
         sql += `AND bo.delivery_time <= ? `;
         params.push(end_time + ' 24:00~24:00');
+    }
+    if (city_id) {
+        sql += `INNER JOIN ?? dr2 ON dr2.id = br.regionalism_id AND dr2.parent_id = ? `;
+        params.push(tables.dict_regionalism);
+        params.push(city_id);
+    }
+    if (delivery_id) {
+        sql += `AND bo.delivery_id = ? `;
+        params.push(delivery_id);
     }
     if(deliveryman_id){
         sql += `AND bo.deliveryman_id = ? `;

@@ -355,12 +355,14 @@ class ManageAddForm extends Component {
   }
   componentWillReceiveProps(nextProps){
     //编辑订单时，对于已支付订单，需更改应收金额为0
+    var data = nextProps['form-data'].data;
     if(
-      nextProps.editable && 
-      Object.keys(nextProps['form-data'].data) && 
-      nextProps['form-data'].data != this.props['form-data'].data
+      nextProps.editable &&
+      Object.keys(data).length &&
+      data != this.props['form-data'].data &&
+      data.pay_status != 'COD' //货到付款，无需变动
     ){
-      this.props.actions.triggerFormUpdate('add_order', 'pay_status', nextProps['form-data'].data.pay_status);
+      this.props.actions.triggerFormUpdate('add_order', 'pay_status', data.pay_status);
     }
   }
   findSelectedOptionText(_refs){

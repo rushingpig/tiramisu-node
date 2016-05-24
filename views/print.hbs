@@ -7,76 +7,59 @@
     <title>打印送货单</title>
     <style type="text/css">
         body {
-            font-size: .85em;
+            font-size: 14px;
             font-family: "微软雅黑", "华文细黑", "黑体", "宋体", "Segoe UI", Verdana, Helvetica, Sans-Serif;
             color: #000;
             background-color: #fff;
         }
-
-        header, footer, nav, section {
-            display: block;
+        .eng{
+            font-family: 'Times New Roman', Times;
         }
-
-        a {
-            text-decoration: none;
-        }
-
-        fieldset {
-            border: 1px solid #aaa;
-            padding: 5px 10px 10px 10px;
-            margin: 5px auto 12px auto;
-        }
-
-        legend {
-            font-weight: bold;
-        }
-
-        fieldset input {
-            border: 1px solid #95B8E7;
-            line-height: 18px;
-        }
-
-        textarea {
-            min-height: 75px;
-        }
-
-        .editor-label {
-            margin: 1em 0 0 0;
-        }
-
-        .editor-field {
-            margin: 0.5em 0 0 0;
-        }
-
         .Content {
             width: 847px;
-            /*border:1px solid red;*/
             margin-left: 0px;
             height: 477px;
             display: table;
-            /*margin-top: 20px;*/
         }
         .inner {
             display: table-cell;
             vertical-align: middle;
         }
-
-        tr {
-            /*width: 30px;*/
-            margin: 0 auto;
-            height: 16px;
-            font-size: 14px;
-            padding: 0;
-            line-height: 16px;
-        }
-
-        td {
-            height: 16px;
-            margin: 0;
-            padding: 0;
-            line-height: 16px;
-            font-size: 14px;
-        }
+        /****<<*****/
+        .logo-container{ float: left; width: 170px; font-weight: bold; font-family: '幼圆'; }
+        .eng .logo-container{ font-weight: normal; font-family: inherit; }
+        .logo{ font-size: 23px; line-height: 25px; margin-left:15px; }
+        .eng .logo{ font-size: 15px; line-height: 16px;}
+        .logo-brand{ font-size: 17px; margin-left:15px; }
+        .eng .logo-brand{ font-size: 13px; margin-left: 28px;}
+        .title-container{ float: left; width: 419px; }
+        .title{ font-size: 30px; font-weight: bold; line-height: 40px; height: 40px; font-family: '华文中宋'; }
+        .eng .title{ font-size: 20px; line-height: 33px; font-family: inherit;}
+        .main-table{ width: 730px; border-collapse: collapse; border: 1px solid #000000; height: 300px; float: left; text-align: center; }
+        .col-order-id{ width: 65px; }
+        .col-order-id-value{ width: 120px; }
+        .col-order-time{ width: 70px; }
+        .col-order-time-value{ width: 112px; }
+        .col-order-src{ width: 90px; }
+        .col-order-src-value{ }
+        .eng .col-order-id{ width: 106px; }
+        .eng .col-order-id-value{ width: auto; }
+        .eng .col-order-time{ width: 104px; }
+        .eng .col-order-time-value{ width: auto; }
+        .eng .col-order-src{ width: 102px; }
+        .eng .col-order-src-value{ }
+        .discount-price{ width: 65px; }
+        .right-side-info{ float: left; padding: 0; margin: 0; width: 10px; }
+        .right-side-info ul{ list-style: none; padding: 8px 0 0 3px; margin: 0; width: 10px; font-size: 13px; }
+        .barcode-container{ float: left; width: 94px; height: 369px; position: relative; }
+        .barcode-inner{ position:absolute; top: 43%; left: -120px; transform: rotate(90deg); margin-left: 13px; }
+        body[data-ip=hk] .barcode-inner{ top: 40%; }
+        tr { margin: 0 auto; height: 16px; padding: 0; }
+        .eng tr{ height: 14px; }
+        td { font-size: 14px; height: 16px; line-height: 16px; margin: 0; padding: 0; }
+        .eng td{ font-size: 12px; line-height: 14px;}
+        /*****>>****/
+        .text-left{ text-align: left; }
         .clearfix{*+height:1%;}
         .clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden}
         @media print{
@@ -85,10 +68,9 @@
             .page-before { page-break-before: always; }
             .page-block { page-break-inside: avoid; }
         }
-        .change-lan{
+        .change-font, .change-lan{
             position: absolute;
             top: 20px;
-            right: 20px;
             height: 26px;
             text-align: center;
             font-weight: bold;
@@ -98,7 +80,13 @@
             color: #999;
             outline: 0;
         }
-        .change-lan:hover{
+        .change-font{
+            right: 101px;
+        }
+        .change-lan{
+            right: 20px;
+        }
+        .change-lan:hover, .change-font:hover{
             color: #444;
         }
     </style>
@@ -110,21 +98,14 @@
         }
     </script>
     <script src="/lib/vendor/jquery-1.11.3.min.js"></script>
-    <!-- <script src="/plugins/barcode/jquery-barcode.min.js"></script> -->
+    <script src="/lib/vendor/template-native.js"></script>
     <script src="/plugins/barcode/jsbarcode.all.min.js"></script>
-    <script type="text/javascript">
-        $(function(){
-            var lan = ["'Segoe UI', Verdana, Helvetica, Sans-Serif", "'微软雅黑', '华文细黑', '黑体','宋体'"];
-            var lan_index = 0;
-            $('.change-lan').on('click', function(){
-                document.body.style.fontFamily = lan[lan_index++ % 2];
-            })
-        })
-    </script>
 </head>
-
 <body data-ip="{{region}}" onload="init()">
-<!-- <button class="change-lan no-print">字体切换</button> -->
+<button class="change-font no-print">字体切换</button>
+<button class="change-lan no-print">中英文切换</button>
+<div id="container">正在加载...</div>
+<script id="tpl" type="text/template">
 {{#if list}}
 {{#list}}
 <div class="Content page-block">
@@ -132,217 +113,357 @@
     <div class="inner">
         <div class="tb">
             <div class="clearfix">
-                <div style="float: left; height: 40px; width: 170px;">
-                    <div style="font-size: 23px; margin-left:15px; font-weight: bold; line-height: 23px; height: 23px; font-family: '幼圆'">幸福西饼</div>
-                    <div style="font-size: 17px; margin-left:15px; font-weight: bold; line-height: 17px; height: 17px; font-family: '幼圆'; ">BLISS CAKE</div>
+                <div class="logo-container">
+                    <div class="logo"><%= lan.logo %></div>
+                    <div class="logo-brand">BLISS CAKE</div>
                 </div>
-                <div style="float: left; width: 419px;">
-                    <span style="font-size: 30px; font-weight: bold; line-height: 40px; height: 40px; font-family: '华文中宋'">幸福西饼网络商城配送签收单</span>
-                </div>
+                <div class="title-container">
+                    <span class="title"><%= lan.title %></span>
                 </div>
             </div>
 
-            <div style="width: 100%" class="clearfix">
-                <table id="tablemoney" style="width: 730px; border-collapse: collapse; border: 1px solid #000000; height: 300px; float: left; " border="1">
+            <div class="clearfix">
+                <table class="main-table" border="1">
                     <tbody>
                     <tr>
-                        <td style="width: 65px; text-align: center;">订单号</td>
-                        <td style="width: 120px; text-align: center;">{{order_id}}</td>
-                        <td style="width: 70px; text-align: center;">下单时间</td>
-                        <td style="width: 112px; text-align: center;" colspan="2">{{created_time}}</td>
-                        <td style="width: 90px; text-align: center;">订单来源</td>
-                        <td style="text-align: center;" colspan="3">
-                            {{merge_name}}
-                        </td>
+                        <td class="col-order-id"><%= lan.order_id %></td>
+                        <td class="col-order-id-value">{{order_id}}</td>
+                        <td class="col-order-time"><%= lan.order_time %></td>
+                        <td class="col-order-time-value" colspan="2">{{created_time}}</td>
+                        <td class="col-order-src"><%= lan.order_src %></td>
+                        <td class="col-order-src-value" colspan="3">{{merge_name}}</td>
                     </tr>
 
                     <tr>
-                        <td style="text-align: center;">订货人</td>
-                        <td style="text-align: center;">
+                        <td><%= lan.orderer %></td>
+                        <td>
                             {{owner_name}}
                         </td>
 
-                        <td style="text-align: center;">订货电话</td>
-                        <td style="text-align: center;" colspan="2">{{owner_mobile}}</td>
-                        <td style="text-align: center;">收货人</td>
-                        <td style="text-align: center;">{{recipient_name}}</td>
-                        <td>收货人电话</td>
+                        <td><%= lan.orderer_phone %></td>
+                        <td colspan="2">{{owner_mobile}}</td>
+                        <td><%= lan.recipient_name %></td>
+                        <td>{{recipient_name}}</td>
+                        <td><%= lan.recipient_mobile %></td>
                         <td>{{recipient_mobile}}</td>
                     </tr>
 
                     <tr>
-                        <td style="text-align: center;">送货地址</td>
+                        <td><%= lan.recipient_address %></td>
 
-                        <td style="text-align: center;" colspan="8">
+                        <td colspan="8">
                             {{province_name}}  {{city_name}}  {{regionalism_name}}  {{recipient_address}}                           </td>
                     </tr>
                     <tr>
-                        <td style="text-align: center;">支付方式</td>
-                        <td colspan="4" style="text-align: center;">
+                        <td><%= lan.pay_name %></td>
+                        <td colspan="4">
                             {{pay_name}}
                         </td>
-                        <td style="text-align: center;">送达时间</td>
-                        <td style="text-align: center;" colspan="3">{{delivery_time}}</td>
+                        <td><%= lan.delivery_time %></td>
+                        <td colspan="3">{{delivery_time}}</td>
                     </tr>
 
 
                     <tr>
-                        <td style="text-align: center;">NO.</td>
-                        <td style="text-align: center;">商品名称</td>
-                        <td style="text-align: center;">商品规格</td>
-                        <td style="text-align: center;">单价</td>
-                        <td style="text-align: center;">数量</td>
-                        <td style="text-align: center; width: 80px;">实际售价</td>
-                        <td style="text-align: center; width: 65px;">应收金额</td>
-
-                        <td style="text-align: center;" colspan="2">巧克力牌内容</td>
+                        <td>NO.</td>
+                        <td><%= lan.product_name %></td>
+                        <td><%= lan.product_size %></td>
+                        <td><%= lan.product_price %></td>
+                        <td><%= lan.product_num %></td>
+                        <td><%= lan.product_discount_price %></td>
+                        <td class="discount-price"><%= lan.product_amount %></td>
+                        <td colspan="2"><%= lan.product_choco_board %></td>
                     </tr>
                     {{#if products}}
                         {{#products}}
-                    <tr class="trprint">
-                        <td style="text-align: center;">{{add @index 1}}</td>
-                        <td style="text-align: center;">{{product_name}}</td>
-                        <td style="text-align: center;">
-                            {{size}}                                        </td>
-                        <td style="text-align: center;">{{original_price}}</td>
-                        <td style="text-align: center;">{{num}}</td>
-                        <td style="text-align: center;">{{discount_price}}</td>
-                        <td style="text-align: center;" class="mm">{{amount}}</td>
-                        <td style="text-align: center;" colspan="2">{{choco_board}}</td>
-                    </tr>
-
-                            {{/products}}
+                        <tr class="trprint">
+                            <td>{{add @index 1}}</td>
+                            <td>{{product_name}}</td>
+                            <td>{{size}}</td>
+                            <td>{{original_price}}</td>
+                            <td>{{num}}</td>
+                            <td>{{discount_price}}</td>
+                            <td>{{amount}}</td>
+                            <td colspan="2">{{choco_board}}</td>
+                        </tr>
+                        {{/products}}
                     {{/if}}
 
                     <tr>
-                        <td style="text-align: center;" colspan="6">合计</td>
-                        <td style="text-align: center;">&#165;{{total_amount}}</td>
-                        <td style="text-align: center;" colspan="2"></td>
+                        <td colspan="6"><%= lan.total %></td>
+                        <td>&#165;{{total_amount}}</td>
+                        <td colspan="2"></td>
                     </tr>
                     <tr>
-                        <td style="text-align: center;">1</td>
-                        <td style="text-align: center;">免费产品</td>
-                        <td colspan="7">
-
-                                                <span style="float: left;">
-                                                    {{atlas}}
-                                                </span>
+                        <td >1</td>
+                        <td ><%= lan.free_product %></td>
+                        <td colspan="7" class="text-left">
+                            <span>
+                                {{atlas}}
+                            </span>
                         </td>
-
                     </tr>
                     <tr>
                         <td style="text-align: center;">1</td>
-                        <td style="text-align: center;">祝福贺卡</td>
+                        <td style="text-align: center;"><%= lan.greeting_card %></td>
                         <td style="text-align: left;" colspan="7">{{greeting_card}}</td>
                     </tr>
                     <tr>
-                        <td style="text-align: center;">1</td>
-                        <td style="text-align: center;">商品名称</td>
-                        <td style="text-align: left;" colspan="7">
-                            {{custom_name}}
-                        </td>
-                    </tr>
-
-
-
-                    <tr>
-                        <td style="text-align: center;">备注</td>
-                        <td style="text-align: left;" colspan="5">{{remarks}}</td>
-                        <td style="text-align: center;">验证码</td>
-                        <td style="text-align: left;" colspan="2"></td>
+                        <td>1</td>
+                        <td><%= lan.custom_name %></td>
+                        <td class="text-left" colspan="7">{{custom_name}}</td>
                     </tr>
                     <tr>
-                        <td style="text-align: center;">接单人</td>
-                        <td style="text-align: center;">{{last_op_cs_name}}</td>
-                        <td style="text-align: center;" colspan="2">蛋糕师傅</td>
-                        <td style="text-align: center;" colspan="2"></td>
-                        <td style="text-align: center;">配送员</td>
-                        <td style="text-align: center;" colspan="2">{{deliveryman_name}}</td>
+                        <td><%= lan.remarks %></td>
+                        <td class="text-left;" colspan="5">{{remarks}}</td>
+                        <td><%= lan.verification_code %></td>
+                        <td class="text-left;" colspan="2"></td>
+                    </tr>
+                    <tr>
+                        <td><%= lan.last_op_cs_name %></td>
+                        <td>{{last_op_cs_name}}</td>
+                        <td colspan="2"><%= lan.cake_baker %></td>
+                        <td colspan="2"></td>
+                        <td><%= lan.deliveryman %></td>
+                        <td colspan="2">{{deliveryman_name}}</td>
                     </tr>
 
                     <tr></tr>
                     <tr>
-                        <td style="text-align: center;">顾客签字</td>
-                        <td style="text-align: center;"></td>
-                        <td style="text-align: center;" colspan="2">签收时间</td>
-                        <td style="text-align: center;" colspan="2"></td>
-                        <td style="text-align: center;">配送费用</td>
-                        <td style="text-align: center;" colspan="2"></td>
-
+                        <td><%= lan.customer_signature %></td>
+                        <td></td>
+                        <td colspan="2"><%= lan.signin_time %></td>
+                        <td colspan="2"></td>
+                        <td><%= lan.delivery_fee %></td>
+                        <td colspan="2"></td>
                     </tr>
                     <tr>
-                        <td colspan="8" style="border-right:none; font-size:14px;">
-                            <span style="margin:2px;">&nbsp;温馨提示：</span><br />
-                            <span style="margin:2px;">&nbsp;1.烘培产品对环境温度敏感度不同，容易影响各种口感，建议收货时间与食用时间间隔30分钟；</span><br />
-                            <span style="margin:2px;">&nbsp;2.保存条件：0-4℃冷藏保存一天，4小时内5℃食用最佳；</span><br />
-                            <span style="margin:2px;">&nbsp;3.就敢退：实物不对版，退款不退货！</span><br />
-                            <span style="margin:2px;">&nbsp;4.就敢减：约定时间，迟到一分钟减一元！</span><br />
-                            <span style="margin:2px;">&nbsp;5.就敢送：迟到30分钟免费赠送！</span><br />
-                            <span style="margin:2px;">&nbsp;6.微信扫描右方二维码评价或反馈！</span>
+                        <td colspan="8" class="text-left" style="border-right:none;">
+                            <%= lan.warm_tips %><br/>
+
+                            <% for(var t_index=0; t_index < lan.tips.length; t_index++){ %>
+                                &nbsp;<%= (t_index + 1) %>.<span style="margin:2px;"><%= lan.tips[t_index] %></span>
+                                <% if(t_index < lan.tips.length - 1){ %>
+                                    <br />
+                                <% } %>
+                            <% } %>
                         </td>
                         <td style="border-left:none;">
                             <img src="{{../baseHref}}/src/images/qrcode.jpg" style="width: 89px; height: 89px;vertical-align: middle;">
                         </td>
                     </tr>
-                    <tr>
-                        <td colspan="9">
-                            &nbsp;幸福热线：400-999-6666&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            官网订购：www.xfxb.net&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            微信订购：扫描右上方二维码或添加xfxbsz
-                        </td>
-                    </tr>
+                    <% if(lan.footer_info){ %>
+                        <tr>
+                            <td colspan="9">
+                                <%= lan.footer_info %>
+                            </td>
+                        </tr>
+                    <% } %>
                     </tbody>
                 </table>
-                <div style="float: left; padding: 0; margin: 0; width: 10px;">
-                    <ul style="list-style: none; padding: 8px 0 0 3px; margin: 0; width: 10px; font-size: 13px;">
-                        <li>生</li>
-                        <li>产</li>
-                        <li>︵</li>
-                        <li>白</li>
-                        <li>︶</li>
-                        <li></li>
-                        <li>客</li>
-                        <li>户</li>
-                        <li>︵</li>
-                        <li>红</li>
-                        <li>︶</li>
-                        <li></li>
-                        <li>财</li>
-                        <li>务</li>
-                        <li>︵</li>
-                        <li>蓝</li>
-                        <li>︶</li>
-                        <li></li>
-                        <li>物</li>
-                        <li>流</li>
-                        <li>︵</li>
-                        <li>黄</li>
-                        <li>︶</li>
-                    </ul>
+                <div class="right-side-info">
+                    <% if(lan.right_side_info){ %>
+                        <ul>
+                            <% for(var r_i=0; r_i<lan.right_side_info.length; r_i++){ %>
+                                <li><%= lan.right_side_info[r_i] %></li>
+                            <% } %>
+                        </ul>
+                    <% } %>
                 </div>
-                <div style="float: right;width: 94px;height: 369px;position: relative;">
-                    <div style="position:absolute; top: 43%;left: -120px;transform: rotate(90deg)">
-                        <image id="barcode{{@index}}" />
+                <div class="barcode-container">
+                    <div class="barcode-inner">
+                        <image data-order-id="{{order_id}}" class="barcode" />
                     </div>
                 </div>
-                <script type="text/javascript">
-                    $(function(){
-                        var canvas = document.createElement("canvas");
-                        JsBarcode(canvas, '{{order_id}}', {
-                          format: "CODE128C",
-                          width:2,
-                          height:40,
-                          quite: 20,
-                          displayValue: false,
-                        });
-                        $('#barcode{{@index}}').get(0).src = canvas.toDataURL("image/png");
-                    })
-                </script>
             </div>
         </div>
     </div>
 </div>
 {{/list}}
 {{/if}}
+</script>
+<script type="text/javascript">
+    var LAN = {
+        zh: {
+            logo: '幸福西饼',
+            title: '幸福西饼网络商城配送签收单',
+            order_id: '订单号',
+            order_time: '下单时间',
+            order_src: '订单来源',
+            orderer: '订货人',
+            orderer_phone: '订货电话',
+            recipient_name: '收货人',
+            recipient_mobile: '收货人电话',
+            recipient_address: '送货地址',
+            pay_name: '支付方式',
+            delivery_time: '送达时间',
+
+            product_name: '商品名称',
+            product_size: '商品规格',
+            product_price: '单价',
+            product_num: '数量',
+            product_discount_price: '实际售价',
+            product_amount: '应收金额',
+            product_choco_board: '巧克力牌内容',
+
+            total: '合计',
+            free_product: '免费产品',
+            greeting_card: '祝福贺卡',
+            custom_name: '商品名称',
+            remarks: '备注',
+            verification_code: '验证码',
+            last_op_cs_name: '接单人',
+            cake_baker: '蛋糕师傅',
+            deliveryman: '配送员',
+            customer_signature: '顾客签字',
+            signin_time: '签收时间',
+            delivery_fee: '配送费用',
+
+            warm_tips: '&nbsp;温馨提示：',
+            tips: [
+                '烘培产品对环境温度敏感度不同，容易影响各种口感，建议收货时间与食用时间间隔30分钟；',
+                '保存条件：0-4℃冷藏保存一天，4小时内5℃食用最佳；',
+                '就敢退：实物不对版，退款不退货！',
+                '就敢减：约定时间，迟到一分钟减一元！',
+                '就敢送：迟到30分钟免费赠送！',
+                '微信扫描右方二维码评价或反馈！'
+            ],
+            footer_info: '&nbsp;幸福热线：400-999-6666&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;官网订购：www.xfxb.net&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;微信订购：扫描右上方二维码或添加xfxbsz',
+            right_side_info: '生产︵白︶客户︵红︶财务︵蓝︶物流︵黄︶'
+        },
+        zh_hk: {
+            logo: '幸福密語',
+            title: '幸福西餅网络商城配送簽收單',
+            order_id: '訂單號',
+            order_time: '下單時間',
+            order_src: '訂單來源',
+            orderer: '訂貨人',
+            orderer_phone: '訂貨電話',
+            recipient_name: '收貨人',
+            recipient_mobile: '收貨人電話',
+            recipient_address: '送貨地址',
+            pay_name: '支付方式',
+            delivery_time: '送達時間',
+
+            product_name: '商品名稱',
+            product_size: '商品規格',
+            product_price: '單價',
+            product_num: '數量',
+            product_discount_price: '實際售價',
+            product_amount: '應收金額',
+            product_choco_board: '巧克力牌內容',
+
+            total: '合计',
+            free_product: '免費產品',
+            greeting_card: '祝福賀卡',
+            custom_name: '商品名稱',
+            remarks: '備註',
+            verification_code: '驗證碼',
+            last_op_cs_name: '接單人',
+            cake_baker: '蛋糕師傅',
+            deliveryman: '配送員',
+            customer_signature: '顧客簽字',
+            signin_time: '簽收時間',
+            delivery_fee: '配送費用',
+
+            warm_tips: ' 溫馨提示：',
+            tips: [
+                '烘培產品對環境溫度敏感度不同，容易影響各種口感，建議收貨時間與食用時間間隔30分鐘；',
+                '保存條件：0-4℃冷藏保存一天，4小時內5℃食用最佳；',
+                '就敢退：實物不對版，退款不退貨！',
+                '就敢減：約定時間，遲到一分鐘減一元！',
+                '就敢送：遲到30分鐘免費贈送！'
+            ],
+            right_side_info: '生產︵白︶客戶︵紅︶財務︵藍︶物流︵黃︶',
+            footer_info: '',
+        },
+        en_us: {
+            logo: 'BLISS BAKERY',
+            title: 'Delivery Receipt of BLISS BAKERY E-shop',
+            order_id: 'Order No.',
+            order_time: 'Ordering Time',
+            order_src: 'Source of Order',
+            orderer: 'Orderer',
+            orderer_phone: "Orderer's Phone No.",
+            recipient_name: 'Consignee',
+            recipient_mobile: 'Consignee\'s Phone No.',
+            recipient_address: 'Delivery Address',
+            pay_name: 'Modes of Payment',
+            delivery_time: ' Delivery Time ',
+
+            product_name: 'Name',
+            product_size: 'Specification',
+            product_price: 'Price',
+            product_num: 'Quantity',
+            product_discount_price: 'Actual Selling price',
+            product_amount: 'Receivables',
+            product_choco_board: 'The Content of Chocolate Brand',
+
+            total: 'Total',
+            free_product: 'Free Product',
+            greeting_card: 'Greeting Card',
+            custom_name: 'Product Name',
+            remarks: 'Remarks',
+            verification_code: 'Verification Code',
+            last_op_cs_name: 'Order Receiver',
+            cake_baker: 'Cake Baker',
+            deliveryman: 'Deliveryman',
+            customer_signature: 'Customer\'s Signature',
+            signin_time: ' Time of Receipt',
+            delivery_fee: 'Delivery Fee',
+
+            warm_tips: 'Warm Tips',
+            tips: [
+                'Since bakery products have different sensitivity to environment and temperature, and their flavors are easily affected, we sincerely suggest that there should be 30 minutes between  the time of receipt and time of eating.',
+                'Storage Condition: The cake could be refrigerated in 0-4 degree for a day, but it is better to finish eating in 4 hours in 5 degree.',
+                'Promised Refund: If the product delivered is a wrong item, we will refund your expense without taking back the delivered item!',
+                'Promised Reduction: Each minute late in delivery is compensated by 1 HK dollar less in the price of the delivered item!',
+                'Promised Free Charge: You can enjoy the item free of charge if it is delivered 30 minutes late!'
+            ],
+            right_side_info: false,
+            footer_info: '',
+        }
+    }
+    var $tpl = template.compile( $('#tpl').html() );
+    function render( lan ){
+        $('#container').html( $tpl({lan: lan}) );
+        createBarCode();
+    }
+    function createBarCode(){
+        $('.barcode').each(function(){
+            var canvas = document.createElement("canvas");
+            var $this = $(this);
+            JsBarcode(canvas, '' + $this.data('order-id'), {
+              format: "CODE128C",
+              width:2,
+              height:40,
+              quite: 20,
+              displayValue: false,
+            });
+            $this.get(0).src = canvas.toDataURL("image/png");
+        })
+    }
+    
+    if($('body').data('ip') == 'cn'){
+        render( LAN.zh );
+    }else{
+        render( LAN.zh_hk );
+    }
+
+    var lan = [LAN.en_us, LAN.zh_hk];
+    $('.change-lan').on('click', function(){
+        var lan_index = $(this).data('lan_index') || 0;
+        $('#container').toggleClass('eng');
+        render( lan[lan_index % 2] );
+        $(this).data('lan_index', ++lan_index);
+    });
+
+    var font = ["'Segoe UI', Verdana, Helvetica, Sans-Serif", "\"微软雅黑\", \"华文细黑\", \"黑体\", \"宋体\""];
+    $('.change-font').on('click', function(){
+        var font_index = $(this).data('font_index') || 0;
+        document.body.style.fontFamily = font[font_index % 2];
+        $(this).data('font_index', ++font_index);
+    });
+</script>
 </body>
 </html>

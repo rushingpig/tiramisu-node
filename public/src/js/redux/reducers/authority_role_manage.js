@@ -29,6 +29,7 @@ var initial_state = {
   list: [],
   checked_authority_ids: [],
   module_list: [],
+  module_srcs: [],
   editable: false,
   on_role_id: undefined,
 }
@@ -75,6 +76,8 @@ export function roleAccessManage( state = initial_state, action){
         })
         return {...state, checked_authority_ids: ret,on_role_id: action.id };
       })();
+    case Actions.GOT_MODULE_SRCS:
+      return {...state, module_srcs: action.data}
     case Actions.GOT_MODULE_LIST:
       return {...state, module_list: _f(action.data)};
     case Actions.RESET_ROLR_AUTHORITY:

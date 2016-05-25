@@ -124,4 +124,6 @@ export default {
   },
   SIGN_STATUS_EXCEPTION: 'EXCEPTION',
 
+  MAX: 500, //
+
 }

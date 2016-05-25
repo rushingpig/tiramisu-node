@@ -10,7 +10,6 @@ import OrderProductsDetail from 'common/order_products_detail';
 import { tableLoader, get_table_empty } from 'common/loading';
 import StdModal from 'common/std_modal';
 import OperationRecordModal from 'common/operation_record_modal.js';
-import RecipientInfo from 'common/recipient_info';
 
 
 import AreaActions from 'actions/area';
@@ -24,7 +23,7 @@ import { Noty, dateFormat, parseTime,getDate } from 'utils/index';
 import {post ,GET,POST,PUT,TEST,del,get} from 'utils/request';
 import V from 'utils/acl';
 
-import { DELIVERY_MAP ,pay_status, MODES, SELECT_DEFAULT_VALUE, SIGN_STATUS_EXCEPTION, MAX} from 'config/app.config';
+import { DELIVERY_MAP ,pay_status, MODES, SELECT_DEFAULT_VALUE, SIGN_STATUS_EXCEPTION} from 'config/app.config';
 
 
 class TopHeader extends Component{
@@ -53,7 +52,6 @@ class FilterHeader extends Component{
 			end_time:getDate(),
 			province_id:-1,
 			city_id:-1,
-			station_id:-1,
 			deliveryman_id:-1,
 			COD:1,
 			search_txt:'',
@@ -65,12 +63,7 @@ class FilterHeader extends Component{
 		//只需要初始化一次
 		if(deliveryman.load_success && !this.state._hasInitial){
 		  this.setState({ _hasInitial:true});
-		  var all = {} ;
-		  all.deliveryman_id = 0;
-		  all.deliveryman_name = '全部配送员';
-		  all.deliveryman_mobile = '';
 		  var { list } = deliveryman;
-		  list.unshift(all);
 /*		  this.setState({
 		  	all_deliveryman: list, filter_deliveryman_results: list, selected_deliveryman_id: list.length && list[0].deliveryman_id
 		  })*/
@@ -100,17 +93,15 @@ class FilterHeader extends Component{
 	}
 	render(){
 		var {
-<<<<<<< 1e72c6ac1748b2b7323f1009e8be26ff674c0fd2
-			area,stations
-=======
-			area, stations
->>>>>>> 暂存修改模块一二级
+			area
 		} = this.props;
 		var {provinces , cities} = area ;
 		var { filter_deliveryman_results, search_ing } = this.state;
 		var content = filter_deliveryman_results.map( n => {
-      		return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
+      		return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name }</option>
 		})
+		var m = <option value='-1'>请选择配送员</option>;
+		content.unshift(m);
 		return(
 			<div>
 			<div className='clearfix top-header'>
@@ -147,27 +138,21 @@ class FilterHeader extends Component{
 					 			default-text = '请选择省份'/>,
 					 		<Select name='city' options = { cities} 
 					 			onChange= {this.onCityChange.bind(this)}
-					 			default-text = '请选择城市'/>,
-<<<<<<< 1e72c6ac1748b2b7323f1009e8be26ff674c0fd2
-					 		<Select ref='station' name = 'station' options = { stations }
-=======
-					 		<Select ref='station' name = 'station' options = { stations } 
->>>>>>> 暂存修改模块一二级
-					 			default-text = '请选择配送站' />
+					 			default-text = '请选择城市'/>
 					 	]:null
 					 }
 					
 					<div className="input-group input-group-sm" style={{height:'27px'}}>
 						<span  style={{height:'27px',lineHeight:1}} className="input-group-addon"><i className="fa fa-search"></i></span>
 						<input type="text"  style={{height:'27px', width:'120px'}} 
-						  className="form-control" placeholder="配送员拼音首字母或手机号" 
+						  className="form-control" placeholder="配送员拼音首字母" 
 						  onChange = {this.filterHandler.bind(this)} />
 					</div>
 					<select name= 'deliveryman' ref='deliveryman' className="form-control input-sm"  style={{height:'27px',minWidth:100}}>
 						{
 							content.length
 							? content
-							: <option>无</option>
+							: [<option value='-1' >请选择配送员</option>,<option>无</option>]
 						}
 					</select>
 					<select ref='COD' default-text = '是否货到付款' className='form-control input-xs'>
@@ -190,9 +175,7 @@ class FilterHeader extends Component{
 	  value = value.toUpperCase();
 	  if(value === ''){
 	    results = all_deliveryman;
-	  }else if(/^\d+$/i.test(value)){ //电话号码
-      	results = all_deliveryman.filter(n => n.deliveryman_mobile.indexOf(value) != -1)
-      }else if(/^\w+$/i.test(value)){ //首字母
+	  }else if(/^\w+$/i.test(value)){ //首字母
 	    results = all_deliveryman.filter(n => {
 	      return n.py.some(m => m.toUpperCase().indexOf(value) == 0)
 	    })
@@ -230,14 +213,13 @@ class FilterHeader extends Component{
 	  if(value != this.refs.province.props['default-value'])
 	    var $city = $(findDOMNode(this.refs.city));
 		//this.props.actions.getCities(value);
-	    this.props.actions.getCitiesSignal(value, 'authority').done(() => {
+	    this.props.actions.getCities(value).done(() => {
 	      $city.trigger('focus'); //聚焦已使city_id的值更新
 	    });
 	}
 	onCityChange(e){
 		this.setState({ _hasInitial: false});
 		var {value} = e.target;
-		/*this.props.actions.getCityStations(value);*/
 		var $deliveryman = $(findDOMNode(this.refs.deliveryman));
 		if(value == SELECT_DEFAULT_VALUE){
 			this.props.actions.getAllDeliveryman().done(() => {
@@ -246,7 +228,6 @@ class FilterHeader extends Component{
 		}else{
 			this.props.actions.getCityDeliveryman(value).done(() => {
 				$deliveryman.trigger('focus');
-				this.props.actions.getCityStations(value);
 			});			
 		}
 
@@ -256,17 +237,12 @@ class FilterHeader extends Component{
 		var filterdata =  {};
 		filterdata.begin_time = this.state.begin_time;
 		filterdata.end_time = this.state.end_time;
-<<<<<<< 1e72c6ac1748b2b7323f1009e8be26ff674c0fd2
-		var station_id = parseInt($(findDOMNode(this.refs.station))[0].value);
-		if(station_id != this.refs.station.props['default-value'])
-			filterdata.station_id = station_id;
-=======
-		filterdata.station_id = $(findDOMNode(this.refs.station))[0].value;
->>>>>>> 暂存修改模块一二级
 		var deliveryman_id = this.refs.deliveryman.value;
-		if(deliveryman_id != 0){
-			filterdata.deliveryman_id = deliveryman_id;			 
+		if(deliveryman_id == -1){
+			this.setState({search_ing:false});
+			Noty('warning', '请选择配送员'); return; 
 		}
+		filterdata.deliveryman_id = deliveryman_id;
 		var cod = this.refs.COD.value;
 		if(cod == 1){
 			filterdata.isCOD = 1;
@@ -281,7 +257,7 @@ class FilterHeader extends Component{
 	componentDidMount(){
 		setTimeout(() => {
 			LazyLoad('noty');
-			this.props.actions.getProvincesSignal('authority');
+			this.props.actions.getProvinces();
 			this.props.actions.getAllDeliveryman();
 
 		}, 0);		
@@ -327,19 +303,19 @@ var SalaryRow = React.createClass({
 	},*/
 	render(){
 		var {props} = this;
-		var {main, is_POS} = props;
+		var {main} = props;
 		var {active_order_id} = main;
-		var str = '';
-		if(is_POS != null && props.pay_status == 'COD'){
-			if(is_POS) str = '(POS机)';
-			else str = '(现金)'
-		}
 		return(
 			<tr className={active_order_id == props.order_id ? 'active' : ''} onClick={this.ClickHandler}>
 				<td ><div style={{width:80}}>{props.delivery_time}</div></td>
 				<td><div style={{width:80}}>{props.signin_time}</div></td>
 				<td>{props.order_id}</td>
-				<RecipientInfo data={props} />
+				<td>
+					<span>{props.recipient_name}</span>
+					<span>{props.recipient_mobile}</span>
+					<span>{props.recipient_address}</span>
+					<span>{props.recipient_landmark}</span>
+				</td>
 				<td>
 					{ DELIVERY_MAP[props.delivery_type] }
 				</td>
@@ -352,9 +328,8 @@ var SalaryRow = React.createClass({
 				<td>{props.delivery_count >= 2
 					? '是'
 					:'否'}</td>
-				<td>
-					{	pay_status[props.pay_status] }<br />
-					{str}
+				<td>{pay_status[props.pay_status]}<br />
+					{props.pay_modes_name}
 				</td>
 				<td>{'原价:￥'+ props.total_original_price / 100 }<br/>
 					{ '实际售价:￥'+ props.total_discount_price /100 }<br/>
@@ -369,12 +344,14 @@ var SalaryRow = React.createClass({
 					<input type='text' readOnly className="form-control short-input" 
 						ref = 'COD_amount'
 						value ={this.state.COD_amount }
+						className='form-control input-xs short-input' 
 						onChange = {this.onReceiveAmountChange}
 						style={{height:27,width:50, marginLeft:'auto', marginRight:'auto', 
 								backgroundColor: this.state.is_review? '#dac7a7':''}}/></td>
 				<td><input type='text' readOnly className='form-control' style={{height:27,
 						backgroundColor: this.state.is_review? '#dac7a7':''}}
 						ref = 'remark' 
+						className='form-control input-xs short-input'
 						value = {this.state.remark}
 						onChange = {this.onRemarkChange}/></td>
 				<td>
@@ -387,7 +364,7 @@ var SalaryRow = React.createClass({
 					}
 					
 					{
-						V('DeliveryManSalaryManageCheck')
+						V('DeliveryManSalaryManageEdit')
 							?<a href='javascript:;' onClick={this.onChangeDeliveryRecord}>[审核完成]</a>
 							:null
 					}
@@ -399,8 +376,7 @@ var SalaryRow = React.createClass({
 			)
 	},
 	ClickHandler:function(){
-		if(this.props.main.active_order_id != this.props.order_id)
-			this.props.actions.activeOrder(this.props.order_id);
+		this.props.actions.activeOrder(this.props.order_id);
 	},
 	showCredential:function(){
 		this.props.viewCredentialModal(this.props.order_id);
@@ -441,7 +417,7 @@ var SalaryRow = React.createClass({
 		delivery_pay.removeAttribute('readOnly');
 	},
 	onChangeDeliveryRecord:function(){
-		if(this.state.Edit_ing || !this.state.is_review){
+		if(this.state.Edit_ing){
 			this.setState({Edit_ing:false});
 			var data = {};
 			data.COD_amount = this.state.COD_amount * 100;
@@ -475,7 +451,7 @@ var SalaryRow = React.createClass({
 		COD_amount.setAttribute('readOnly','true');
 		remark.setAttribute('readOnly','true');
 		delivery_pay.setAttribute('readOnly','true');
-		this.setState({COD_amount:this.props.COD_amount / 100 , remark:this.props.remark,delivery_pay:this.props.delivery_pay / 100,Edit_ing:false});
+		this.setState({COD_amount:this.props.COD_amount, remark:this.props.remark,delivery_pay:this.props.delivery_pay,Edit_ing:false});
 	}
 
 })
@@ -489,7 +465,7 @@ class DeliveryManSalaryManagePannel extends Component{
 	render(){
 		var {area, dispatch, deliveryman, main, loading, refresh} = this.props;
 		var {exportExcel , getDeliveryProof, getOrderOptRecord, resetOrderOptRecord} = this.props.actions;
-		var {deliveryRecord, check_order_info, active_order_id, proof, operationRecord, stations} = main;
+		var {deliveryRecord, check_order_info, active_order_id, proof, operationRecord} = main;
 		var { viewCredentialModal ,viewOperationRecordModal} = this;
 		var {provinces, cities } = area;
 		var amount_total = 0;
@@ -500,30 +476,29 @@ class DeliveryManSalaryManagePannel extends Component{
 			amount_total += n.total_amount;
 			receive_total += n.COD_amount;
 			salary_total += n.delivery_pay;
-			if( n.is_POS != null) {
-				if(n.is_POS) {pos += n.COD_amount}
-				else {cash += n.COD_amount}
-
-			}
+			if( n.pay_modes_id == MODES['cash'])
+				cash += n.COD_amount;
+			else if( n.pay_modes_id == MODES['card'])
+				pos += n.COD_amount;
 			return <SalaryRow key={n.order_id}
 						{...{...n, ...this.props, viewCredentialModal, viewOperationRecordModal}} />;
 		});
 		return (
 				<div className=''>
 					{/*<TopHeader {...{exportExcel}}/>*/}
-					<FilterHeader  {...{area,deliveryman,stations}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, ...stationSalaryActions, exportExcel},dispatch) }}/>
+					<FilterHeader  {...{area,deliveryman}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, ...stationSalaryActions, exportExcel},dispatch) }}/>
 					<div className='panel' >
 						<header className="panel-heading">工资信息列表</header>
 						<div className="panel-body">
 						  <div ref="table-container" className="table-responsive ">
 						  	<div ref='box' id='box'  style={{maxHeight:434, overflowY:'auto', position:'relative'}} onscroll = {this.onTbScroll.bind(this)}>
-							    <table id='tab' className="table table-hover text-center " ref='tab' style={{width:1644}}>
+							    <table id='tab' className="table table-hover text-center " ref='tab' style={{width:1524}}>
 							      <thead >
 							      <tr>
 							        <th><div style={{width:80}}>配送时间</div></th>
 							        <th><div style={{width:80}}>签收时间</div></th>
 							        <th><div style={{width:120}}>订单号</div></th>
-							        <th><div style={{width:120}}>收货人信息</div></th>
+							        <th><div style={{width:100}}>收货人信息</div></th>
 							        <th><div style={{width:80}}>配送方式</div></th>
 							        <th><div style={{width:80}}>签收状态</div></th>
 							        <th><div style={{width:100}}>是否第二次配送</div></th>
@@ -531,9 +506,9 @@ class DeliveryManSalaryManagePannel extends Component{
 							        <th><div style={{width:80}}>总金额</div></th>
 							        <th><div style={{width:80}}>配送工资</div></th>
 							        <th><div style={{width:80}}>实收金额</div></th>							        
-							        <th><div style={{width:160}}>备注</div></th>
+							        <th><div style={{width:100}}>备注</div></th>
 							        <th><div style={{width:80}}>管理操作</div></th>
-							        <th><div style={{width:120}}>操作时间</div></th>
+							        <th><div style={{width:80}}>操作时间</div></th>
 							      </tr>
 							      </thead>
 							      <tbody>
@@ -544,9 +519,8 @@ class DeliveryManSalaryManagePannel extends Component{
 							    </table>
 						    </div>
 						    <div className='form-inline' style={{marginTop:20,float:'left'}}>
-						    	<span style={{marginRight:10}}><i style={{color:'#ccc',}} className='fa fa-square'></i><span style={{fontSize:10}}>待审核</span></span>
+						    	<span style={{marginRight:10}}><i style={{color:'#eee',}} className='fa fa-square'></i><span style={{fontSize:10}}>待审核</span></span>
 						    	<span ><i style={{color:'#dac7a7'}} className='fa fa-square'></i><span style={{fontSize:10}}>审核完成</span></span>
-						    	<span>{'　　　'}共{deliveryRecord.length}项</span>
 						    </div>
 						    <div className='form-inline' style={{marginTop:20,float:'right'}}>
 						    	<span style={{fontWeight:'bold'}}>{'应收金额总计：'}</span>
@@ -583,7 +557,6 @@ class DeliveryManSalaryManagePannel extends Component{
 	componentDidMount(){
 		this.onTbScroll('tab','box',1);
 		LazyLoad('chinese_py');
-		this.props.actions.resetDeliveryRecord();
 		/*this.props.actions.getDeliveryRecord();*/
 		//this.props.actions.getProvinces();
 /*		window.onload = function (){

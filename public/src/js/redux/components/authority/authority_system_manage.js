@@ -117,14 +117,15 @@ class SystemAuthorityPannel extends Component{
     this.ViewAddModal = this.ViewAddModal.bind(this);
     this.viewAddAuthority = this.viewAddAuthority.bind(this);
     this.viewAddModule = this.viewAddModule.bind(this);
+    this.viewEditModule = this.viewEditModule.bind(this);
     this.viewEditAuthorityModal = this.viewEditAuthorityModal.bind(this);
     this.viewDeleteAuthorityModal = this.viewDeleteAuthorityModal.bind(this);
   }
   render(){
-    const { data, list, module_list ,module_name} = this.props.roleAccessManage;
+    const { data, list, module_list ,module_name, module_srcs} = this.props.roleAccessManage;
     const { active_authority_id } = this.props.systemAccessManage;
     const { addAuthority, changeAuthority, deleteAuthority, addModule, gotAuthorityList, gotModuleList, resetAuthorityForm,
-        getAuthorityDetail, authorityYesNo, activeAtuthority ,gotAuthorityListByModuleName} = this.props;
+        getAuthorityDetail, authorityYesNo, activeAtuthority ,gotAuthorityListByModuleName, gotModuleSrcs} = this.props;
     let fliterList = list;   
     if(module_name != ''){
       fliterList = list.filter(function(e){
@@ -167,10 +168,16 @@ class SystemAuthorityPannel extends Component{
             </div>
           </div>
 
-          <AddModal ref="viewAdd" viewAddAuthority={this.viewAddAuthority} viewAddModule={this.viewAddModule}/>
+          <AddModal ref="viewAdd" viewAddAuthority={this.viewAddAuthority} viewAddModule={this.viewAddModule} viewEditModule={this.viewEditModule}/>
           <AddAuthorityModal ref="viewAddAuthority" options={module_list} addAuthority={addAuthority} gotAuthorityList={gotAuthorityList} resetAuthorityForm={resetAuthorityForm}/>
           <EditAuthorityModal ref="editAuthority" active_authority_id={active_authority_id} gotAuthorityList={gotAuthorityList} options={module_list} getAuthorityDetail={getAuthorityDetail} changeAuthority={changeAuthority}/>
-          <AddModuleModal ref="viewAddModule" options={module_list} addModule={addModule} gotModuleList={gotModuleList}/>
+          <AddModuleModal ref="viewAddModule" options={module_list}
+            module_srcs = {module_srcs}
+            gotModuleSrcs = {gotModuleSrcs} 
+            addModule={addModule} gotModuleList={gotModuleList}/>
+          <EditModuleModal ref='viewEditModule' options={module_list}
+            module_srcs = {module_srcs}
+            gotModuleSrcs = {gotModuleSrcs}/>
           <DeleteAuthorityModal ref="deleteAuthority" deleteAuthority={deleteAuthority}/>
         </div>
     )
@@ -195,6 +202,9 @@ class SystemAuthorityPannel extends Component{
   viewAddModule(){
     this.refs.viewAddModule.show();
   }
+  viewEditModule(){
+    this.refs.viewEditModule.show();
+  }
   viewEditAuthorityModal(id){
     this.refs.editAuthority.show(id);
   }
@@ -208,6 +218,7 @@ class AddModal extends Component{
     super(props);
     this.openAddAuthority = this.openAddAuthority.bind(this);
     this.openAddModule = this.openAddModule.bind(this);
+    this.openEditModule = this.openEditModule.bind(this);
   }
   render(){
     return (
@@ -222,8 +233,14 @@ class AddModal extends Component{
             {
               V('SystemAuthorityManageAddModule')
                   ?
-                  <button onClick={this.openAddModule} className="btn btn-theme btn-md pull-right">添加模块</button>
+                  <button onClick={this.openAddModule} className="btn btn-theme btn-md" style={{marginLeft:110}}>添加模块</button>
                   :null
+            }
+            {
+              V('SystemAuthorityManageEditModule')
+                ?
+                <button onClick={this.openEditModule} className='btn btn-theme btn-md pull-right'>编辑模块</button>
+                :null
             }
 
           </div>
@@ -238,6 +255,9 @@ class AddModal extends Component{
   }
   openAddModule(){
     this.props.viewAddModule();
+  }
+  openEditModule(){
+    this.props.viewEditModule();
   }
 }
 
@@ -289,11 +309,20 @@ class EditAuthorityModal extends Component{
 class AddModuleModal extends Component{
   constructor(props){
     super(props);
-    this.state = {module_name: '', error: false};
+    this.state = {
+      module_name: '',
+      level:1, 
+      error: false,
+      pri_module_id:-1,
+    };
     this.onChange = this.onChange.bind(this);
   }
   render(){
-    const { options } = this.props;
+    const { options ,module_srcs } = this.props;
+    var pri_module_srcs, sec_module_srcs = [];
+    var {pri_module_id } = this.state;
+    pri_module_srcs = module_srcs.filter( m => m.level == 1);
+    sec_module_srcs = module_srcs.filter( m => m.level == 2 && m.parent_id == pri_module_id);
     var content = options.map((n, i) => {
       return <li key={n.id} className="list-group-item" style={{padding: '5px'}}>{n.text}</li>;
     })
@@ -301,22 +330,66 @@ class AddModuleModal extends Component{
         <StdModal title="添加模块" ref="viewModuleAdd" onConfirm={this.onConfirm.bind(this)}>
           <form>
             <div className="form-group form-inline">
+              <label>{'模块等级：'}</label>
+              <label><input type = 'radio' checked = {this.state.level == 1} onClick={this.onPriLevelCheck.bind(this)}/>一级</label>{'　'}
+              <label><input type = 'radio' checked = {this.state.level == 2} onClick={this.onSecLevelCheck.bind(this)}/>二级</label>
+            </div>
+            <div className="form-group form-inline">
               <label>{'模块名称：'}</label>
               <input value={this.state.module_name} onChange={this.onChange} className={`form-control input-xs ${this.state.error? 'error': ''}`} type="text" placeholder="必填"/>
             </div>
-            <div className="form-group form-inline">
+            {
+              this.state.level != 1
+              ? [<div className="form-group form-inline">
+                  <label>{'所属模块：'}</label>
+                  <Select default-text='--请选择一级模块--' options = {pri_module_srcs}/>
+                </div>,
+                <div className="form-group form-inline">
+                  <label className="pull-left">{'已有模块：'}</label>
+                  {
+                    sec_module_srcs.map( m => {
+                      return (
+                        <div style={{float:'left',height:'30px',margin:'5px 5px',}}>
+                          <span className='partBtn'><i className='fa fa-star-o'></i>{ m.text }</span>      
+                        </div>
+                        )
+                    })
+                  }
+                </div>
+                ]
+
+              : <div className="form-group form-inline">
+                  <label className="pull-left">{'已有模块：'}</label>
+                  {
+                    pri_module_srcs.map( m => {
+                      return (
+                        <div style={{float:'left',height:'30px',margin:'0px 5px',}}>
+                          <span className='partBtn'><i className='fa fa-star-o'></i>{ m.text }</span>      
+                        </div>
+                        )
+                    })
+                  }
+                </div>
+            }
+            {/*<div className="form-group form-inline">
               <label className="pull-left">{'已有模块：'}</label>
-              <ul style={{marginLeft: '65px', width: '200px',height: '150px', overflow: 'auto'}} className="list-group">
-                { content }
-              </ul>
-            </div>
+              {
+                sec_module_srcs.map( m => {
+                  return (
+                    <div style={{float:'left',height:'30px',margin:'5px 5px',}} onClick={this.chooseSecModule.bind(this, m.id, m.text)}>
+                      <span className={this.state.active_module_id == m.id ?'partBtn active':'partBtn'}><i className='fa fa-star-o'></i>{ m.text }</span>      
+                    </div>
+                    )
+                })
+              }
+            </div>*/}
           </form>
         </StdModal>
     )
   }
   show(){
     this.refs.viewModuleAdd.show();
-    this.props.gotModuleList();
+    this.props.gotModuleSrcs();
   }
   onChange(e){
     this.setState({
@@ -342,6 +415,106 @@ class AddModuleModal extends Component{
       });
       Noty('warning', '请填写模块名');
     }
+  }
+  onPriLevelCheck(){
+    this.setState({level:1});
+  }
+  onSecLevelCheck(){
+    this.setState({level:2});
+  }
+}
+
+class EditModuleModal extends Component{
+  constructor(props){
+    super(props);
+    this.state={
+      level:1,
+      active_module_id:0,
+      active_module_name:'',
+      pri_module_id:-1,
+    }
+  }
+  render(){
+    var {module_srcs } = this.props;
+    var pri_module_srcs = module_srcs.filter (m => m.level == 1);
+    var {pri_module_id } = this.state;
+    var sec_module_srcs = module_srcs.filter ( m => m.level == 2 && m.parent_id == pri_module_id);
+    return (
+      <StdModal ref='viewModuleEdit' title='编辑模块' footer={false}>
+        <div className='form-group '>
+          <div className='form-inline'><label>一级模块：</label></div>
+          <div className='form-inline'>
+            {
+              pri_module_srcs.map( m => {
+                return (
+                  <div style={{float:'left',height:'30px',margin:'5px 5px',}} onClick={this.chooseModule.bind(this, m.id, m.text)}>
+                    <span className={this.state.pri_module_id == m.id ?'partBtn active':'partBtn'}><i className='fa fa-star-o'></i>{ m.text }</span>      
+                  </div>
+                  )
+              })
+            }
+          </div>
+          <div className='form-inline' style={{clear: 'both'}}><label>二级模块：</label></div>
+          <div className='form-inline'>
+            {
+              sec_module_srcs.map( m => {
+                return (
+                  <div style={{float:'left',height:'30px',margin:'5px 5px',}} onClick={this.chooseSecModule.bind(this, m.id, m.text)}>
+                    <span className={this.state.active_module_id == m.id ?'partBtn active':'partBtn'}><i className='fa fa-star-o'></i>{ m.text }</span>      
+                  </div>
+                  )
+              })
+            }
+          </div>
+          <hr style={{clear:'both'}}/>
+          <div className='form-inline'>
+            <label>模块名称：</label>
+            <input type='text' className='form-control input-xs' value={this.state.active_module_name}
+              onChange={this.moduleNameChange.bind(this)}/>
+          </div>
+          <div className='form-inline'>
+            <label>模块等级：</label>
+            <input type='radio' checked={this.state.level == 1} onClick={this.onPriLevelCheck.bind(this)}/>一级{'　'}
+            <input type='radio' checked={this.state.level != 1} onClick={this.onSecLevelCheck.bind(this)}/>二级
+          </div>
+          {
+            this.state.level != 1
+            ?<div className='form-inline'>
+              <label>{'　父模块：'}</label>
+              <Select options={pri_module_srcs} value={this.state.pri_module_id} onChange={this.onPriModuleChange.bind(this)}/>
+            </div>
+            :null
+          }
+          <div className='form-inline' style={{marginTop:15}}>
+            <button className='btn btn-default btn-xs space-right '>重置</button>
+            <button className='btn btn-theme btn-xs space-left '>确定</button>
+          </div>
+        </div>
+
+      </StdModal>
+      )
+  }
+  show(){
+    this.refs.viewModuleEdit.show();
+    this.props.gotModuleSrcs();
+  }
+  chooseModule(id,text){
+    this.setState({active_module_id:id, pri_module_id: id, active_module_name: text, level:1});
+  }
+  chooseSecModule(id, text){
+    this.setState({active_module_id:id, active_module_name:text, level:2});
+  }
+  onPriLevelCheck(){
+    this.setState({level:1})
+  }
+  onSecLevelCheck(){
+    this.setState({level:2})
+  }
+  moduleNameChange(e){
+    this.setState({active_module_name: e.target.value});
+  }
+  onPriModuleChange(e){
+    this.setState({pri_module_id: e.target.value})
   }
 }
 

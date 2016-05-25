@@ -57,7 +57,8 @@ class AuthorityForm extends Component{
           <input {...name} className={`form-control input-xs ${name.error}`} type="text" placeholder="必填"/>
         </div>
         <div className="form-group form-inline">
-          <label>{'所属模块名称：'}</label>
+          <label>{'　　所属模块：'}</label>
+          <Select />
           <Select {...module_id} values={module_id}  options={options} className={`form-control input-xs ${module_id.error}`} placeholder="必填"/>
         </div>
         <div className="form-group form-inline">

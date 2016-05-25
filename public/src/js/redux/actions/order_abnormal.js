@@ -92,6 +92,9 @@ const searchWithID = (pageNum = 0) => (
       page_size: state.pageSize
     };
 
+    if (parms.merchant_id.trim() === '')
+      return;
+
     dispatch({
       type: ActionTypes.GET_SEARCH_RESULT,
       status: 'pending'

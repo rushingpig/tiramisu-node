@@ -239,9 +239,7 @@ class Main extends Component {
 
   handleChangeMerchantFilter() {
     const value = this.refs.merchantFilter.value.trim();
-
-    if (value !== '')
-      this.props.changeFilter('merchantId', value);
+    this.props.changeFilter('merchantId', value);
   }
 
 }

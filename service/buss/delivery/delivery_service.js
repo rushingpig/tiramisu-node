@@ -717,7 +717,7 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
                 data.deliveryman_name = curr.deliveryman_name;
                 data.total_amount = curr.total_amount/100; // 总应收金额
                 data.last_op_cs_name = curr.last_op_cs_name;
-                data.greeting_card = curr.greeting_card;
+                data.greeting_card = curr.greeting_card_order;
                 data.custom_name = '';
                 data.custom_desc = '';
                 if(curr.sku_id){
@@ -862,7 +862,7 @@ DeliveryService.prototype.print = (req,res,next)=>{
                 data.deliveryman_name = curr.deliveryman_name;
                 data.total_amount = curr.total_amount/100; // 总应收金额
                 data.last_op_cs_name = curr.last_op_cs_name;
-                data.greeting_card = curr.greeting_card;
+                data.greeting_card = curr.greeting_card_order;
                 data.custom_name = '';
                 data.custom_desc = '';
                 if(curr.sku_id){

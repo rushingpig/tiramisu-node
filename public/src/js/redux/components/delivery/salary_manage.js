@@ -10,6 +10,7 @@ import OrderProductsDetail from 'common/order_products_detail';
 import { tableLoader, get_table_empty } from 'common/loading';
 import StdModal from 'common/std_modal';
 import OperationRecordModal from 'common/operation_record_modal.js';
+import RecipientInfo from 'common/recipient_info';
 
 
 import AreaActions from 'actions/area';
@@ -301,18 +302,24 @@ var SalaryRow = React.createClass({
 	},*/
 	render(){
 		var {props} = this;
-		var {main} = props;
+		var {main, is_POS} = props;
 		var {active_order_id} = main;
+		var str = '';
+		if(is_POS != null && props.pay_status == 'COD'){
+			if(is_POS) str = '(POS机)';
+			else str = '(现金)'
+		}
 		return(
 			<tr className={active_order_id == props.order_id ? 'active' : ''} onClick={this.ClickHandler}>
 				<td ><div style={{width:80}}>{props.delivery_time}</div></td>
 				<td><div style={{width:80}}>{props.signin_time}</div></td>
 				<td>{props.order_id}</td>
 				<td>
-					<span>{props.recipient_name}</span>
+					{/*<span>{props.recipient_name}</span>
 					<span>{props.recipient_mobile}</span>
 					<span>{props.recipient_address}</span>
-					<span>{props.recipient_landmark}</span>
+					<span>{props.recipient_landmark}</span>*/}
+					<RecipientInfo data={props} />
 				</td>
 				<td>
 					{ DELIVERY_MAP[props.delivery_type] }
@@ -327,8 +334,8 @@ var SalaryRow = React.createClass({
 					? '是'
 					:'否'}</td>
 				<td>
-					{	pay_status[props.pay_status] }
-					 {/*props.pay_modes_name*/}
+					{	pay_status[props.pay_status] }<br />
+					{str}
 				</td>
 				<td>{'原价:￥'+ props.total_original_price / 100 }<br/>
 					{ '实际售价:￥'+ props.total_discount_price /100 }<br/>

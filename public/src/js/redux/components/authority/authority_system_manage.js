@@ -380,7 +380,6 @@ class AddModuleModal extends Component{
                   }
                 </div>
                 ]
-
               : <div className="form-group form-inline" style={{paddingBottom:10}}>
                   <label className="pull-left">{'已有模块：'}</label>
                   {

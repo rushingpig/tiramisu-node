@@ -53,7 +53,8 @@ ProductDao.prototype.findProductsCount = function(product_name,category_id,regio
         params.push('%'+product_name+'%');
     }
     if(category_id){
-        sql += " and bp.category_id = ? ";
+        sql += " and (bpc.id = ? or bpc.parent_id = ?) ";
+        params.push(category_id);
         params.push(category_id);
     }
     if(regionalism_id){

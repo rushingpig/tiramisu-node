@@ -83,7 +83,7 @@ function form_isTime(input){
 }
 //简单版
 function form_isMobile(input){
-  return /(^1[\d\*]{10}$)|(^0[\d\*]{9,11}$)/.test(input);
+  return /(^1[\d\*]{10}$)|(^0[\d\*]{9,12}$)/.test(input);
 }
 
 function form_isCoupon( input ){

@@ -148,7 +148,6 @@ CREATE TABLE `buss_product_sku_booktime` (
 SET GLOBAL event_scheduler = ON;
 
 DROP EVENT IF EXISTS Expire_Activity_Time;
-DELIMITER //
 CREATE EVENT Expire_Activity_Time
 On SCHEDULE EVERY 1 MINUTE
 COMMENT '定时结束活动sku，开启原有sku'
@@ -168,17 +167,16 @@ BEGIN
     update buss_product_sku set expire_flag = 1 where id = ref_id;
   END LOOP;
   CLOSE cur;
-END;//
+END;
 
 DROP EVENT IF EXISTS Expire_Presell_Time;
-DELIMITER //
 CREATE EVENT Expire_Presell_Time
 On SCHEDULE EVERY 1 MINUTE
 COMMENT '定时结束预售sku'
 DO
 BEGIN
   update buss_product_sku set expire_flag = 0 where presell_start > now() or presell_end < now() and expire_flag = 1 and del_flag = 1;
-END;//
+END;
 
 DROP TABLE IF EXISTS `buss_product_pic`;
 CREATE TABLE `buss_product_pic` (

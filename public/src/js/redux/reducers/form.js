@@ -97,6 +97,11 @@ export default formReducer.plugin({
               state.pay_status = {...state.pay_status, ...getPayStatus(state, action)};
             }
             return {...state};
+          case actionTypes.BLUR:
+            if(action.field == '_update'){
+              state.pay_status = {...state.pay_status, ...getPayStatusByProductChange(state, action)};
+            }
+            return {...state};
           case actionTypes.RESET:
             if(action.field == 'src_id' || action.key == 'src_id'){
               state.src_id = {touched: false, value: SELECT_DEFAULT_VALUE, visited: false};
@@ -227,5 +232,24 @@ function getPayStatus(state, action){
         }
       }
     }
+  }
+}
+/*
+ * 产品变动只能将已付款变为部分付款
+ */
+function getPayStatusByProductChange(state, action){
+  var src_id = state.src_id.value;
+  var pay_status = state.pay_status.value;
+  if(src_id){
+    if(isSrc( SRC.group_site, src_id)){ //团购网站
+      var { orderManageForm: { products: { confirm_list }}} = getGlobalState();
+      //属于团购网站
+      if(confirm_list.length > 1 || (confirm_list[0] && confirm_list[0].num > 1)){
+        return { value: 'PARTPAYED' }; //部分付款
+      }else{
+        return { value: 'PAYED' }; //已付款
+      }
+    }
+    return state;
   }
 }

@@ -5,7 +5,7 @@ import * as OrderProductsActions from 'actions/order_products';
 import { UPDATE_PATH } from 'redux-simple-router';
 import AreaActions from 'actions/area';
 import { ProductsModalActionTypes } from 'actions/action_types';
-import { updateAddOrderForm, initForm } from 'actions/form';
+import { updateAddOrderForm, updateAddOrderFormPayStatus, initForm } from 'actions/form';
 import { map, delay, core } from 'utils/index';
 import { getValues } from 'redux-form';
 import { pay_status as PAY_STATUS, MODES } from 'config/app.config';
@@ -211,7 +211,7 @@ function products_choosing(state = products_choosing_state, action){
           delete new_item.is_new;
           return new_item;
         })
-        delay(() => store.dispatch(updateAddOrderForm())); //商品数变化，通知add_order表单更新，支付方式、支付状态的默认值与所选商品数是紧密相关的
+        delay(() => store.dispatch(updateAddOrderFormPayStatus())); //商品数变化，通知add_order表单更新，支付方式、支付状态的默认值与所选商品数是紧密相关的
         delay(() => store.dispatch(OrderProductsActions.updateConfirmProductDiscountPrice())); //更新商品应收金额
         return {...state, confirm_list: confirm_list, selected_list_deleted: [] };
       })();

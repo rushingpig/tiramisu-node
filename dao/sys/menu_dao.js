@@ -87,8 +87,13 @@ MenuDao.prototype.findMenuById = function(menu_id){
     let params = [this.table,this.table,menu_id,del_flag.SHOW];
     return baseDao.select(sql,params);
 };
+MenuDao.prototype.findModuleById = function (module_id) {
+    let sql = "select id,name,parent_id,level,parent_ids from ?? where id = ? and type = 'MODULE' and del_flag = ?";
+    let params = [this.table, module_id, del_flag.SHOW];
+    return baseDao.select(sql, params);
+};
 MenuDao.prototype.findAllModules = function(){
-    let sql = "select id,name from ?? where type = 'MODULE' and del_flag = ?";
+    let sql = "select id,name,parent_id,level from ?? where type = 'MODULE' and del_flag = ?";
     let params = [this.table,del_flag.SHOW];
     return baseDao.select(sql,params);
 };

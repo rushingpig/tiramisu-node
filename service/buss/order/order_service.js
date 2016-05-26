@@ -392,12 +392,23 @@ OrderService.prototype.editOrder = function (is_submit) {
       if (regionalism_id != current_order.regionalism_id || recipient_address != current_order.recipient_address) {
         option += '修改收货地址\n';
       }
+      if(coupon != current_order.coupon){
+        option += '修改团购券号[{' + current_order.coupon + '}]为[{' + coupon + '}]\n';
+      }
+      if(remarks != current_order.remarks){
+        option += '修改备注为{' + remarks + '}\n';
+      }
+      if(pay_status != current_order.pay_status){
+        option += '修改付款状态为{' + Constant.PSD[pay_status] + '}\n';
+      }
       for (let i = 0; i < products.length; i++) {
         let isAdd = true;
         for (let j = 0; j < _res.length; j++) {
           if (products[i].sku_id == _res[j].sku_id) {
             isAdd = false;
             let curr = products[i];
+            let origin_product = _res[j];
+            let origin_product_name = origin_product.product_name;
             let order_sku_obj = {
               order_id: orderId,
               sku_id: curr.sku_id,
@@ -410,12 +421,21 @@ OrderService.prototype.editOrder = function (is_submit) {
               discount_price: curr.discount_price,
               amount: curr.amount
             };
+            if(curr.num != origin_product.num){
+              option += '修改{' + origin_product_name + '}数量为{' + curr.num +'}\n';
+            }
+            if(curr.discount_price != origin_product.discount_price){
+              option += '修改{' + origin_product_name + '}实际售价为{' + curr.discount_price/100 + '}\n';
+            }
+            if(curr.amount != origin_product.amount){
+              option += '修改{' + origin_product_name + '}应收金额为{' + curr.amount/100 + '}\n';
+            }
             update_skus.push(systemUtils.assembleUpdateObj(req, order_sku_obj));
           }
         }
         if (isAdd) {
           let curr = products[i];
-          option += '增加{' + curr.product_name + '}\n';
+          option += '增加{' + (curr.product_name || '未知产品') + '}\n';
           let order_sku_obj = {
             order_id: orderId,
             sku_id: curr.sku_id,
@@ -440,7 +460,7 @@ OrderService.prototype.editOrder = function (is_submit) {
         }
         if (isDelete && _res[i].sku_id) {
           let curr = _res[i];
-          option += '删除{' + curr.product_name + '}\n';
+          option += '删除{' + (curr.product_name || '未知产品') + '}\n';
           delete_skuIds.push(curr.sku_id);
         }
       }
@@ -1121,7 +1141,7 @@ OrderService.prototype.editOrderRemarks = (req,res,next) => {
 
   let order_history_obj = {
     order_id: orderId,
-    option : '修改{订单备注}为{'+ remarks || '空' +'}'
+    option : '修改{订单备注}为{'+ (remarks || '空') +'}'
   };
   let order_promise = orderDao.updateOrder(systemUtils.assembleUpdateObj(req,order_obj),orderId);
   let orderHistoryPromise = orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));

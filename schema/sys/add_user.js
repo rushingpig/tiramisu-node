@@ -13,11 +13,11 @@ module.exports = {
             errorMessage : 'the role_ids must be an array...'
         }
     },
-    mobile: {
-        isMobilePhone: {
-            options: ['zh-CN']
-        }
-    },
+    // mobile: {
+    //     isMobilePhone: {
+    //         options: ['zh-CN']
+    //     }
+    // },
     name: {
         notEmpty : true
     },

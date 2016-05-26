@@ -41,14 +41,20 @@ class AuthorityForm extends Component{
     this.saveAuthority = this.saveAuthority.bind(this);
     this.changeAuthority = this.changeAuthority.bind(this);
     this.addAuthority = this.addAuthority.bind(this);
+    this.state = {
+      pri_module_id: -1,
+    }
   }
   render(){
     const {
       handleSubmit,
       resetForm,
-      fields: {name, module_id, description, code, type},
+      fields: {name, module_id, parent_id,description, code, type},
     } = this.props;
-    const { options } = this.props;
+    const { options ,module_srcs} = this.props;
+    var { pri_module_id } = this.state;
+    var pri_module_srcs = module_srcs.filter( m => m.level == 1);
+    var sec_module_srcs = module_srcs.filter( m => m.level == 2 && m.parent_id == pri_module_id);
     const authorityType = [{id: 'LIST', text: '列表'},{id: 'ELEMENT', text: '页面元素'}]
     return (
       <div>
@@ -58,8 +64,10 @@ class AuthorityForm extends Component{
         </div>
         <div className="form-group form-inline">
           <label>{'　　所属模块：'}</label>
-          <Select />
-          <Select {...module_id} values={module_id}  options={options} className={`form-control input-xs ${module_id.error}`} placeholder="必填"/>
+          <Select default-text='请选择一级模块' {...parent_id} values={parent_id}  options = {pri_module_srcs}
+            onChange = {this.onPriModuleSelect.bind(this)}/>
+          <Select default-text='请选择二级模块' {...module_id} values={module_id}  options={sec_module_srcs} 
+            className={`form-control input-xs ${module_id.error}`} placeholder="必填"/>
         </div>
         <div className="form-group form-inline">
           <label>{'所属权限类型：'}</label>
@@ -85,6 +93,7 @@ class AuthorityForm extends Component{
   }
   componentDidMount() {
     LazyLoad('noty');
+    //this.props.got
   }
   hide(){
     this.props.resetForm();
@@ -99,6 +108,11 @@ class AuthorityForm extends Component{
         Noty('warning', '请填写完整');
       }
     }, 0);
+  }
+  onPriModuleSelect(e){
+    this.setState({
+      pri_module_id:e.target.value,
+    })
   }
   saveAuthority(form_data){
     let { active_authority_id } = this.props;

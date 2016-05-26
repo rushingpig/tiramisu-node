@@ -169,8 +169,15 @@ class SystemAuthorityPannel extends Component{
           </div>
 
           <AddModal ref="viewAdd" viewAddAuthority={this.viewAddAuthority} viewAddModule={this.viewAddModule} viewEditModule={this.viewEditModule}/>
-          <AddAuthorityModal ref="viewAddAuthority" options={module_list} addAuthority={addAuthority} gotAuthorityList={gotAuthorityList} resetAuthorityForm={resetAuthorityForm}/>
-          <EditAuthorityModal ref="editAuthority" active_authority_id={active_authority_id} gotAuthorityList={gotAuthorityList} options={module_list} getAuthorityDetail={getAuthorityDetail} changeAuthority={changeAuthority}/>
+          <AddAuthorityModal ref="viewAddAuthority" options={module_list}
+             module_srcs = {module_srcs}
+             gotModuleSrcs = {gotModuleSrcs}
+             addAuthority={addAuthority} gotAuthorityList={gotAuthorityList} resetAuthorityForm={resetAuthorityForm}/>
+            }
+          <EditAuthorityModal ref="editAuthority" 
+            module_srcs = {module_srcs}
+            gotModuleSrcs = {gotModuleSrcs}
+            active_authority_id={active_authority_id} gotAuthorityList={gotAuthorityList} options={module_list} getAuthorityDetail={getAuthorityDetail} changeAuthority={changeAuthority}/>
           <AddModuleModal ref="viewAddModule" options={module_list}
             module_srcs = {module_srcs}
             gotModuleSrcs = {gotModuleSrcs} 
@@ -267,10 +274,13 @@ class AddAuthorityModal extends Component{
     this.hide = this.hide.bind(this);
   }
   render(){
-    const { options, addAuthority, gotAuthorityList } = this.props;
+    const { options, addAuthority, gotAuthorityList, module_srcs, gotModuleSrcs } = this.props;
     return (
         <StdModal footer={false} title="添加权限" ref="viewAuthorityAdd" >
-          <AuthorityFormEdit editable={false} ref="authorityFormAdd" options={options} gotAuthorityList={gotAuthorityList} addAuthority={addAuthority} hide={this.hide}/>
+          <AuthorityFormEdit editable={false} ref="authorityFormAdd" options={options}
+            module_srcs = {module_srcs}
+            gotModuleSrcs = {gotModuleSrcs} 
+            gotAuthorityList={gotAuthorityList} addAuthority={addAuthority} hide={this.hide}/>
         </StdModal>
     )
   }
@@ -289,10 +299,13 @@ class EditAuthorityModal extends Component{
     this.hide = this.hide.bind(this);
   }
   render(){
-    const { options,changeAuthority, gotAuthorityList } = this.props;
+    const { options,changeAuthority, gotAuthorityList, module_srcs, gotModuleSrcs } = this.props;
     return (
         <StdModal footer={false} title="修改权限" ref="viewAuthorityEdit">
-          <AuthorityFormEdit editable={true} ref="authorityFormEdit" gotAuthorityList={gotAuthorityList} active_authority_id={this.props.active_authority_id} options={options} changeAuthority={changeAuthority} hide={this.hide}/>
+          <AuthorityFormEdit editable={true} ref="authorityFormEdit"
+            module_srcs = {module_srcs}
+            gotModuleSrcs = {gotModuleSrcs} 
+            gotAuthorityList={gotAuthorityList} active_authority_id={this.props.active_authority_id} options={options} changeAuthority={changeAuthority} hide={this.hide}/>
         </StdModal>
     )
   }
@@ -342,14 +355,14 @@ class AddModuleModal extends Component{
               this.state.level != 1
               ? [<div className="form-group form-inline">
                   <label>{'所属模块：'}</label>
-                  <Select default-text='--请选择一级模块--' options = {pri_module_srcs}/>
+                  <Select ref='pri_module' default-text='--请选择一级模块--' options = {pri_module_srcs} onChange={this.onPriLevelSelect.bind(this)}/>
                 </div>,
-                <div className="form-group form-inline">
+                <div className="form-group form-inline" style={{paddingBottom:10}}>
                   <label className="pull-left">{'已有模块：'}</label>
                   {
                     sec_module_srcs.map( m => {
                       return (
-                        <div style={{float:'left',height:'30px',margin:'5px 5px',}}>
+                        <div style={{float:'left',height:'30px',margin:'0px 5px',}}>
                           <span className='partBtn'><i className='fa fa-star-o'></i>{ m.text }</span>      
                         </div>
                         )
@@ -358,7 +371,7 @@ class AddModuleModal extends Component{
                 </div>
                 ]
 
-              : <div className="form-group form-inline">
+              : <div className="form-group form-inline" style={{paddingBottom:10}}>
                   <label className="pull-left">{'已有模块：'}</label>
                   {
                     pri_module_srcs.map( m => {
@@ -399,12 +412,17 @@ class AddModuleModal extends Component{
   }
   onConfirm(){
     let module_name = this.state.module_name;
+    var {level, pri_module_id} = this.state;
+    if(level == 2 && pri_module_id == -1){
+      Noty('warning', '请选择一级模块');
+      return;
+    }
     if(module_name){
       this.props.addModule(module_name)
           .done(function(){
             Noty('success', '保存成功');
             this.refs.viewModuleAdd.hide();
-            this.setState({module_name: ''});
+            this.setState({module_name: '', level: 1, pri_module_id: -1});
           }.bind(this))
           .fail(function(msg, code){
             Noty('error', msg || '保存异常');
@@ -421,6 +439,9 @@ class AddModuleModal extends Component{
   }
   onSecLevelCheck(){
     this.setState({level:2});
+  }
+  onPriLevelSelect(e){
+    this.setState({pri_module_id: e.target.value});
   }
 }
 

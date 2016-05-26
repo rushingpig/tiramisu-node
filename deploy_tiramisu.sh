@@ -19,7 +19,8 @@ function init(){
   cd .. && \
   ${npm} run dfe && \
   ${npm} install && \
-  ${npm} prune
+  ${npm} prune && \
+  rm -fr ./*.jpg *.png
 }
 
 function start(){

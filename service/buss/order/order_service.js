@@ -357,6 +357,7 @@ OrderService.prototype.editOrder = function (is_submit) {
       total_discount_price: total_discount_price,
       is_deal: 1,
       greeting_card: greeting_card,
+      coupon : coupon,
       last_opt_cs : req.session.user.id
     };
     if (is_submit) {

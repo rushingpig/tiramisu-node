@@ -30,6 +30,7 @@ module.exports = function (router) {
 //*********************
 //******** PUT ********
 //*********************
+    router.put('/order/:orderId/remarks',orderService.editOrderRemarks);
     router.put('/order/:orderId',orderService.editOrder(false));     // 保存
     router.put('/order/:orderId/submit',orderService.editOrder(true)); // 提交
     router.put('/order/:orderId/cancel',orderService.cancelOrder);   // 取消订单

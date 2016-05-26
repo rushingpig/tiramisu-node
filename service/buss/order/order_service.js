@@ -1104,4 +1104,29 @@ OrderService.prototype.exportExcel = (req,res,next) => {
   });
 
 };
+/**
+ * modify the remarks of the order
+ * @param req
+ * @param res
+ * @param next
+ */
+OrderService.prototype.editOrderRemarks = (req,res,next) => {
+  let remarks = req.body.remarks;
+  let orderId = systemUtils.getDBOrderId(req.params.orderId),
+  order_obj = {
+    remarks : remarks
+  };
+
+  let order_history_obj = {
+    order_id: orderId,
+    option : '修改{订单备注}为{'+ remarks || '空' +'}'
+  };
+  let order_promise = orderDao.updateOrder(systemUtils.assembleUpdateObj(req,order_obj),orderId);
+  let orderHistoryPromise = orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
+
+  let promise = Promise.all([order_promise,orderHistoryPromise]).then(() => {
+    res.api()
+  });
+  systemUtils.wrapService(res,next,promise);
+};
 module.exports = new OrderService();

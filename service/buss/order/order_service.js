@@ -924,6 +924,7 @@ OrderService.prototype.exceptionOrder = (req,res,next)=>{
 
     let order_update_obj = {
       status: Constant.OS.EXCEPTION,
+      deliveryman_id: 0,
       cancel_reason: req.body.cancel_reason,
       last_opt_cs : req.session.user.id
     };

@@ -67,7 +67,8 @@ Constant.PSD = {
     'COD' : '货到付款',
     'REFUNDING' : '退款中',
     'REFUNDED' : '退款完成',
-    'PAYED' : '已付款'
+    'PAYED' : '已付款',
+    'PARTPAYED' : '部分付款'
 };
 /**
  * the order sorted rules

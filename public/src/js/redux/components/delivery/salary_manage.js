@@ -314,13 +314,7 @@ var SalaryRow = React.createClass({
 				<td ><div style={{width:80}}>{props.delivery_time}</div></td>
 				<td><div style={{width:80}}>{props.signin_time}</div></td>
 				<td>{props.order_id}</td>
-				<td>
-					{/*<span>{props.recipient_name}</span>
-					<span>{props.recipient_mobile}</span>
-					<span>{props.recipient_address}</span>
-					<span>{props.recipient_landmark}</span>*/}
-					<RecipientInfo data={props} />
-				</td>
+				<RecipientInfo data={props} />
 				<td>
 					{ DELIVERY_MAP[props.delivery_type] }
 				</td>

@@ -304,6 +304,8 @@ DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, city_
     params.push(tables.buss_delivery_record);
     sql += `LEFT JOIN ?? bpm ON bo.pay_modes_id = bpm.id `;
     params.push(tables.buss_pay_modes);
+    sql += `INNER JOIN ?? dr on dr.id = br.regionalism_id `;
+    params.push(tables.dict_regionalism);
     sql += `WHERE bo.status IN ('${constant.OS.COMPLETED}', '${constant.OS.EXCEPTION}') `;
     if(begin_time){
         sql += `AND bo.delivery_time >= ? `;

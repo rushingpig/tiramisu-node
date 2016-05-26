@@ -1038,6 +1038,14 @@ DeliveryService.prototype.getRecord = (req, res, next)=>{
             r.order_id = systemUtils.getShowOrderId(r.order_id, r.created_time);
             if (r.COD_amount === null) r.COD_amount = r.total_amount;
             if (r.delivery_count === null) r.delivery_count = 1;
+            let delivery_adds = [], city_name = '';
+            if (r.merger_name) {
+                delivery_adds = r.merger_name.split(',');
+                city_name = delivery_adds[2];
+            }
+            delivery_adds.shift();
+            r.city = city_name;
+            r.recipient_address = delivery_adds.join(',') + '  ' + r.address;
         });
 
         res.api(result);

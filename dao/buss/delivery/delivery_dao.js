@@ -284,7 +284,8 @@ DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, city_
         'br.delivery_type',
         'br.name AS recipient_name',
         'br.mobile AS recipient_mobile',
-        'br.address AS recipient_address',
+        'dr.merger_name',
+        'br.address',
         'br.landmark',
 
         'bdr.delivery_pay',

@@ -176,7 +176,7 @@ DeliveryDao.prototype.updateOrderWithDeliveryman = function(order_ids,update_obj
  * find the deliverymans list by the login user of the station
  * @param userId
  */
-DeliveryDao.prototype.findDeliverymansByStation = function(city_id,currentUser){
+DeliveryDao.prototype.findDeliverymansByStation = function(city_ids,currentUser){
     let columns = [
         'su.id as deliveryman_id',
         'su.name as deliveryman_name',
@@ -190,10 +190,10 @@ DeliveryDao.prototype.findDeliverymansByStation = function(city_id,currentUser){
     params.push(tables.sys_user_role);
     params.push(constant.DELIVERYMAN_ID);
     //sql += " inner join ?? dr on bds.regionalism_id = dr.id and dr.parent_id = ?";
-    if(city_id && systemUtils.isToFilterDeliverymans(currentUser)){
-        sql += " inner join ?? dr on dr.id = su.city_id and dr.id = ?";
+    if(city_ids && systemUtils.isToFilterDeliverymans(currentUser)){
+        sql += " inner join ?? dr on FIND_IN_SET(dr.id, su.city_ids) and FIND_IN_SET(dr.id, ?)";
         params.push(tables.dict_regionalism);
-        params.push(city_id);
+        params.push(city_ids.join());
     }
     return baseDao.select(sql,params);
 
@@ -260,7 +260,7 @@ DeliveryDao.prototype.findStationById = function(station_id){
     let params = [3, del_flag.SHOW, station_id];
     return baseDao.select(sql,params);
 };
-DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, deliveryman_id, is_COD) {
+DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, city_id, delivery_id, deliveryman_id, is_COD) {
     let columns = [
         'bo.id AS order_id',
         'bo.delivery_time',
@@ -284,7 +284,7 @@ DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, deliv
         'br.delivery_type',
         'br.name AS recipient_name',
         'br.mobile AS recipient_mobile',
-        'br.address',
+        'br.address AS recipient_address',
         'br.landmark',
 
         'bdr.delivery_pay',
@@ -311,6 +311,15 @@ DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, deliv
     if(end_time){
         sql += `AND bo.delivery_time <= ? `;
         params.push(end_time + ' 24:00~24:00');
+    }
+    if (city_id) {
+        sql += `INNER JOIN ?? dr2 ON dr2.id = br.regionalism_id AND dr2.parent_id = ? `;
+        params.push(tables.dict_regionalism);
+        params.push(city_id);
+    }
+    if (delivery_id) {
+        sql += `AND bo.delivery_id = ? `;
+        params.push(delivery_id);
     }
     if(deliveryman_id){
         sql += `AND bo.deliveryman_id = ? `;

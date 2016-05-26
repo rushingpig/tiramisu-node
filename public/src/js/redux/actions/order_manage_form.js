@@ -218,7 +218,7 @@ export function getOrderById(id){
 export function copyOrder(){
   return ( dispatch, getState ) => {
     var new_order = getState().orderManageForm.mainForm.data;
-    new_order.products = [];
+    // new_order.products = [];
     return initForm('add_order', new_order)(dispatch); //注意这种action间的相互引用
   }
 }

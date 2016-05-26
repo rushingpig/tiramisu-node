@@ -205,8 +205,9 @@ var OrderRow = React.createClass({
           this.ACL(
             [<a onClick={this.editHandler} key="OrderManageEdit" href={'/om/index/' + props.order_id}>[编辑]</a>, <br key="1" />],
             [<a onClick={this.viewOrderDetail} key="OrderManageView" href="javascript:;">[查看]</a>, <br key="2" />],
-            [<a onClick={this.alterDelivery} key="OrderManageAlterDelivery" href="javascript:;" className="nowrap">[修改配送]</a>, <br key="3" />],
-            [<a onClick={this.alterStation} key="OrderManageAlterStation" href="javascript:;" className="nowrap">[分配配送站]</a>, <br key="4" />],
+            [<a onClick={this.alterOrderRemarks} key="OrderManageAlterRemarks" href="javascript:;" className="nowrap">[修改备注]</a>, <br key="3" />],
+            [<a onClick={this.alterDelivery} key="OrderManageAlterDelivery" href="javascript:;" className="nowrap">[修改配送]</a>, <br key="4" />],
+            [<a onClick={this.alterStation} key="OrderManageAlterStation" href="javascript:;" className="nowrap">[分配配送站]</a>, <br key="5" />],
             [<a onClick={this.cancelOrder} key="OrderManageCancel" href="javascript:;" className="nowrap">[订单取消]</a>],
             [<a onClick={this.orderException} key="OrderManageException" href="javascript:;" className="nowrap">[订单异常]</a>]
           )
@@ -295,11 +296,11 @@ var OrderRow = React.createClass({
         roles = ['OrderManageEdit', 'OrderManageCancel']; break;
       case 'STATION':
       case 'CONVERT':
-        roles = ['OrderManageCancel', 'OrderManageAlterDelivery']; break;
+        roles = ['OrderManageCancel', 'OrderManageAlterDelivery', 'OrderManageAlterRemarks']; break;
       case 'INLINE':
-        roles = ['OrderManageException']; break;
+        roles = ['OrderManageException', 'OrderManageAlterRemarks']; break;
       case 'DELIVERY':
-        roles = ['OrderManageException']; break;
+        roles = ['OrderManageException', 'OrderManageAlterRemarks']; break;
       default:
         roles = []; break;
     }
@@ -357,6 +358,11 @@ var OrderRow = React.createClass({
     this.activeOrder();
     e.stopPropagation();
   },
+  alterOrderRemarks(e){
+    this.props.showAlterRemarks(this.props);
+    this.activeOrder();
+    e.stopPropagation();
+  },
   viewOrderOperationRecord(e){
     this.props.viewOrderOperationRecord(this.props);
     e.stopPropagation();
@@ -379,6 +385,7 @@ class ManagePannel extends Component {
     this.viewOrderDetail = this.viewOrderDetail.bind(this);
     this.showAlterDelivery = this.showAlterDelivery.bind(this);
     this.showAlterStation = this.showAlterStation.bind(this);
+    this.showAlterRemarks = this.showAlterRemarks.bind(this);
     this.showCancelOrder = this.showCancelOrder.bind(this);
     this.showOrderException = this.showOrderException.bind(this);
     this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
@@ -391,13 +398,13 @@ class ManagePannel extends Component {
   render(){
     var { filter, area, alter_delivery_area, delivery_stations,
       main: {submitting, prepare_delivery_data_ok},
-      activeOrder, showProductsDetail, operationRecord, dispatch, getOrderList, exportExcel, getOrderOptRecord, resetOrderOptRecord, cancelOrder, orderException } = this.props;
+      activeOrder, showProductsDetail, operationRecord, dispatch, getOrderList, exportExcel, getOrderOptRecord, resetOrderOptRecord, cancelOrder, orderException, alterOrderRemarks } = this.props;
     var { loading, refresh, page_no, total, list, check_order_info, active_order_id, show_products_detail, get_products_detail_ing } = this.props.orders;
-    var { viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, refreshDataList } = this;
+    var { viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, refreshDataList, showAlterRemarks } = this;
 
     var content = list.map((n, i) => {
       return <OrderRow key={n.order_id} 
-        {...{...n, active_order_id, ...this.props, viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord}} />;
+        {...{...n, active_order_id, ...this.props, viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, showAlterRemarks}} />;
     })
     return (
       <div className="order-manage">
@@ -465,6 +472,7 @@ class ManagePannel extends Component {
         <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
         <CancelOrderModal ref="CancelOrderModal" {...{submitting, cancelOrder, callback: refreshDataList}} />
         <OrderExceptionModal ref="OrderExceptionModal" {...{submitting, orderException, callback: refreshDataList}} />
+        <AlterRemarksModal ref="AlterRemarksModal" {...{submitting, alterOrderRemarks, callback: refreshDataList}} />
         <AlterStationModal ref="AlterStationModal" 
           {...{submitting, ...delivery_stations, order: check_order_info, active_order_id, show_products_detail, loading: !prepare_delivery_data_ok,
             ...alter_delivery_area, actions: this.props, callback: refreshDataList}} />
@@ -503,6 +511,9 @@ class ManagePannel extends Component {
   showCancelOrder(order){
     this.refs.CancelOrderModal.show(order);
   }
+  showAlterRemarks(order){
+    this.refs.AlterRemarksModal.show(order);
+  }
   showOrderException(order){
     this.refs.OrderExceptionModal.show(order);
   }
@@ -536,6 +547,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(ManagePannel);
 /***************   子模态框   *****************/
 /***************   *******   *****************/
 
+//取消订单窗口
 var CancelOrderModal = React.createClass({
   getInitialState: function() {
     return {
@@ -592,6 +604,57 @@ var CancelOrderModal = React.createClass({
   },
   show(order){
     this.setState({order}, function(){
+      this.refs.modal.show();
+    })
+  },
+  hideCallback(){
+    this.setState(this.getInitialState());
+  }
+});
+
+//修改备注窗口
+var AlterRemarksModal = React.createClass({
+  getInitialState: function() {
+    return {
+      order: {},
+      remarks: '',
+    };
+  },
+  mixins: [LinkedStateMixin],
+  render(){
+    return (
+      <StdModal submitting={this.props.submitting} title="修改备注" onConfirm={this.onConfirm} onCancel={this.hideCallback} ref="modal">
+        <label htmlFor="remarks-textarea">备注：</label><br/>
+        <textarea 
+          id="remarks-textarea"
+          valueLink={this.linkState('remarks')}
+          className="form-control" 
+          rows="3"
+          >
+        </textarea>
+      </StdModal>
+    )
+  },
+  onConfirm(){
+    var { remarks, order: {order_id, updated_time} } = this.state;
+    if(remarks){
+      this.props.alterOrderRemarks(order_id, {remarks, updated_time})
+        .done(function(){
+          this.refs.modal.hide();
+          this.props.callback();
+        }.bind(this))
+        .fail(function(msg, code){
+          Noty('error', msg || '异常错误');
+        }.bind(this));
+    }else{
+      Noty('warning', tips);
+    }
+  },
+  componentDidMount(){
+
+  },
+  show(order){
+    this.setState({order, remarks: order.remarks}, function(){
       this.refs.modal.show();
     })
   },

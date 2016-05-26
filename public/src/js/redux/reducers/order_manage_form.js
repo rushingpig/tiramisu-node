@@ -191,6 +191,8 @@ function products_choosing(state = products_choosing_state, action){
             //如果该产品存在
             new_item = {
               ...n,
+              discount_price: confirm_pro.num != n.num ? (confirm_pro.discount_price / confirm_pro.num * n.num).toFixed(2) : confirm_pro.discount_price,
+              amount: confirm_pro.num != n.num ? (confirm_pro.amount / confirm_pro.num * n.num).toFixed(2) : confirm_pro.amount,
               choco_board: confirm_pro.choco_board || '生日快乐',
               greeting_card: confirm_pro.greeting_card || '',
               atlas: confirm_pro.atlas,
@@ -199,11 +201,11 @@ function products_choosing(state = products_choosing_state, action){
             }
           }else{
             //如果不存在
-            new_item = {...n, ...base}
+            new_item = {...n, ...base};
+            new_item.discount_price = n.discount_price * n.num / 100 || 0;
+            new_item.amount = new_item.discount_price;
           }
-          new_item.discount_price = n.discount_price * n.num / 100 || 0;
-          new_item.old_discount_price = new_item.discount_price;
-          new_item.amount = new_item.discount_price;
+          new_item.old_discount_price = new_item.discount_price; //old_discount_price实际上是discount_price的一个缓存
           //最后将is_new属性删除
           delete n.is_new;
           delete new_item.is_new;
@@ -241,7 +243,18 @@ function products_choosing(state = products_choosing_state, action){
           n[action.data.attr.name] = action.data.attr.value;
         }
       });
-      return {...state, confirm_list: clone(state.confirm_list)};
+      //将修改映射到selected_list上，防止再次添加商品时，之前的修改被覆盖
+      state.selected_list.forEach(function(n){
+        if(n.sku_id == sku_id){
+          if(action.data.attr.name == 'discount_price'){
+            n.discount_price = action.data.attr.value;
+            n.old_discount_price = n.discount_price;
+          }else if(action.data.attr.name == 'amount'){
+            n.amount = action.data.attr.value;
+          }
+        }
+      });
+      return {...state, confirm_list: clone(state.confirm_list), selected_list: clone(state.selected_list)};
 
     case OrderProductsActions.DELETE_CONFIRM_PRODUCT:
       sku_id = action.data.sku_id;
@@ -266,37 +279,44 @@ function products_choosing(state = products_choosing_state, action){
       return (function(){
         var order = getValues(store.getState().form.add_order);
         var pay_status = PAY_STATUS[order.pay_status];
-        var {confirm_list} = state;
+        var {confirm_list, selected_list} = state;
         //支付状态：已付款，或者，支付方式：免费（此时，商品的实际售价和应收金额为0）
         if(pay_status == '已付款' || order.pay_modes_id == MODES.free){
           confirm_list.forEach(function(n){
-            n.amount = 0;
+            //保留可能已修改的amount值（手动修改级别最高）
+            var pro = selected_list.filter( m => m.sku_id == n.sku_id )[0];
+            n.amount = core.isUndefined(pro.amount) ? 0 : pro.amount;
             if(order.pay_modes_id == MODES.free){
               n.discount_price = 0;
             }
           })
         }else if(pay_status == '部分付款'){
           confirm_list.forEach(function(n, i){
+            //保留可能已修改的amount值
+            var pro = selected_list.filter( m => m.sku_id == n.sku_id )[0];
             if( i == 0 ){
               if( n.num > 1 ){
-                n.amount = n.old_discount_price * (n.num - 1) / n.num;
+                n.amount = core.isUndefined(pro.amount) ? n.old_discount_price * (n.num - 1) / n.num : pro.amount;
               }else{
-                n.amount = 0;
+                n.amount = core.isUndefined(pro.amount) ? 0 : pro.amount;
               }
             }else{
-              n.amount = n.old_discount_price;
+              n.amount = core.isUndefined(pro.amount) ? n.old_discount_price : pro.amount;
             }
           })
         }else{
           confirm_list.forEach(function(n){
             n.discount_price = n.old_discount_price;
-            n.amount = n.old_discount_price;
+            //保留可能已修改的amount值
+            var pro = selected_list.filter( m => m.sku_id == n.sku_id )[0];
+            n.amount = core.isUndefined(pro.amount) ? n.old_discount_price : pro.amount;
           })
         }
-        return {...state};
+        return {...state, confirm_list: clone(confirm_list)};
       })()
 
     case FormActions.GOT_ORDER_BY_ID:
+    case FormActions.GOT_COPY_ORDER_BY_ID:
       return (function(){
         var confirm_list = clone(action.data.products);
         confirm_list.forEach( n => {

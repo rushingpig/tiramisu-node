@@ -66,3 +66,12 @@ export function exportExcel(){
     window.open(Url.orders_export + '?' + Utils.url.toParams({...data, entrance: 'LIST'}));
   }
 }
+
+export const ALTER_ORDER_REMARKS = 'ALTER_ORDER_REMARKS';
+export function alterOrderRemarks(order_id, data){
+  return PUT(Url.alter_order_remarks.toString(order_id), data, ALTER_ORDER_REMARKS);
+  // return TEST(null, [
+  //   {type: ALTER_ORDER_REMARKS, key: 0},  //立即派发
+  //   {type: ALTER_ORDER_REMARKS, key: 1}   //2000毫秒后派发
+  // ], 2000);
+}

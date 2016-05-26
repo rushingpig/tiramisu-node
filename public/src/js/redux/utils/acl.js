@@ -3,9 +3,12 @@
  */
 import { test_acl } from 'config/app.config';
 
-//测试数据
-// var PERMISSIONS = [
-// ];
+//测试时，需先将 app.config.js里面的test_acl设置为true
+var PERMISSIONS = [
+  /**将待测试的权限放到这里，如下：（表示用户当前所拥有的权限）**/
+  // 'OrderManageAccess',
+  // 'OrderManageAlterRemarks',
+];
 
 /**
  * 有无该权限

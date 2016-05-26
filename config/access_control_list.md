@@ -6,6 +6,7 @@
 * 取消：OrderManageCancel
 * 异常：OrderManageException
 * 查看：OrderManageView
+* +修改备注：OrderManageAlterRemarks
 * 订单导出：OrderManageExportExcel
 * 修改配送：OrderManageAlterDelivery
 * 修改配送站：OrderManageAlterStation

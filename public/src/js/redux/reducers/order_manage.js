@@ -49,6 +49,7 @@ function main(state = main_state, action){
     case Actions.CANCEL_ORDER:
     case Actions.ORDER_EXCEPTION:
     case Actions.ALTER_DELIVERY:
+    case Actions.ALTER_ORDER_REMARKS:
       if(action.key == REQUEST.ING){
         return {...state, submitting: true }
       }else if(action.key == REQUEST.SUCCESS || action.key == REQUEST.FAIL){

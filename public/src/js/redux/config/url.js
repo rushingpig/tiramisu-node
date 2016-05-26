@@ -45,6 +45,7 @@ const URL = (function() {
     cancel_order:             '/order/:orderId/cancel',
     alter_delivery:           '/order/:orderId/delivery',
     alter_station:            '/order/:orderId/station',
+    alter_order_remarks:      '/order/:orderId/remarks',
     check_groupbuy_psd:       '/coupon', //验券
     abnormal_order:           '/error/orders',
     change_error_deal_status: '/error/order/:merchantId/:srcId',

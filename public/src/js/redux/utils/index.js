@@ -309,6 +309,7 @@ export default {
     isObject: core_isObject,
     isString: core_isString,
     isFunc: core_isFunction,
+    isUndefined: core_isUndefined,
   },
   form: {
     isNumber: form_isNumber,

@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'production') {
     actionTransformer: action => {
       let loggerAction = {};
       Object.keys(action).forEach(key => {
-        loggerAction[key] = action[key].toJS ? action[key].toJS() : action[key]
+        loggerAction[key] = action[key] && action[key].toJS ? action[key].toJS() : action[key]
       });
       return {
         ...loggerAction,
@@ -21,7 +21,7 @@ if (process.env.NODE_ENV === 'production') {
     stateTransformer: state => {
         let loggerState = {};
         Object.keys(state).forEach(key => {
-            loggerState[key] = state[key].toJS ? state[key].toJS() : state[key]
+            loggerState[key] = state[key] && state[key].toJS ? state[key].toJS() : state[key]
         });
         return loggerState;
     }

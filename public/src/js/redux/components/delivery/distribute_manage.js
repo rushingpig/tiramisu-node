@@ -68,7 +68,39 @@ class FilterHeader extends Component {
     super(props);
     this.state = {
       search_ing: false,
+      filter_deliveryman_results: [],
+      selected_deliveryman_id:0,
       all_print_status: YES_OR_NO,
+    }
+  }
+  componentWillReceiveProps(nextProps){
+    var { deliveryman } = nextProps;
+    //只需要初始化一次
+    if(deliveryman.load_success && !this.state._hasInitial){
+      this.setState({ _hasInitial:true});
+      var { list } = deliveryman;
+      var build = function(){
+        var new_data = list.map(function(n){
+          n.py = window.makePy(n.deliveryman_name);
+          return n;
+        })
+        this.setState({
+          all_deliveryman: list, filter_deliveryman_results: new_data, selected_deliveryman_id: list.length && list[0].deliveryman_id
+        })
+      }.bind(this);
+
+      if(window.makePy){
+        build();
+      }else{
+        //异步加载的chinese_py库可能还未加载完成，所以需要定时检测
+        this._build_timer = setInterval(() => {
+          if(window.makePy){
+            build();
+            clearInterval(this._build_timer);
+            delete this._build_timer;
+          }
+        }, 100);
+      }
     }
   }
   render(){
@@ -89,9 +121,11 @@ class FilterHeader extends Component {
       stations: { station_list },
       all_order_status,
       all_pay_modes,
-      all_deliveryman,
     } = this.props;
-    var { search_ing } = this.state;
+    var { filter_deliveryman_results, search_ing } = this.state;
+    var content = filter_deliveryman_results.map( n => {
+          return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
+    })
     return (
       <div className="panel search">
         <div className="panel-body">
@@ -116,7 +150,19 @@ class FilterHeader extends Component {
                 ? <Select {...delivery_id} options={station_list} default-text="选择配送中心" className="space-right"/>
                 : null
             }
-            <Select {...deliveryman_id} options={all_deliveryman.map(n => ({id: n.deliveryman_id, text: n.deliveryman_name}))} default-text="选择配送员" className="space-right"/>
+            <div className="input-group input-group-sm" style={{height:'27px'}}>
+              <span  style={{height:'27px',lineHeight:1}} className="input-group-addon"><i className="fa fa-search"></i></span>
+              <input type="text"  style={{height:'27px', width:'120px'}} 
+                className="form-control" placeholder="配送员拼音首字母或手机号" 
+                onChange = {this.filterHandler.bind(this)} />
+            </div>
+            <select onChange={this.onSelectDeliveryman.bind(this)} {...deliveryman_id} value={this.state.selected_deliveryman_id} name= 'deliveryman' ref='deliveryman' className="form-control input-sm"  style={{height:'27px',minWidth:100}}>
+              {
+                content.length
+                ? content
+                : <option>无</option>
+              }
+            </select>
             {' '}
             <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs space-right">
               <i className="fa fa-search"></i>{' 搜索'}
@@ -143,6 +189,27 @@ class FilterHeader extends Component {
       LazyLoad('noty');
     }.bind(this),0)
   }
+  filterHandler(e){
+    var { value } = e.target;
+    var { all_deliveryman } = this.state;
+    var results = [];
+    value = value.toUpperCase();
+    if(value === ''){
+      results = all_deliveryman;
+    }else if(/^\d+$/i.test(value)){ //电话号码
+        results = all_deliveryman.filter(n => n.deliveryman_mobile.indexOf(value) != -1)
+      }else if(/^\w+$/i.test(value)){ //首字母
+      results = all_deliveryman.filter(n => {
+        return n.py.some(m => m.toUpperCase().indexOf(value) == 0)
+      })
+    }else{ //中文全称
+      results = all_deliveryman.filter(n => n.deliveryman_name.indexOf(value) != -1)
+    }
+    this.setState({ filter_deliveryman_results: results, selected_deliveryman_id: results.length && results[0].deliveryman_id });
+  }
+  onSelectDeliveryman(e){
+    this.setState({ selected_deliveryman_id: e.target.value});
+  } 
   onProvinceChange(callback, e){
     var {value} = e.target;
     this.props.resetCities();
@@ -328,7 +395,7 @@ class DeliveryDistributePannel extends Component {
 
         <TopHeader exportExcel={exportExcel} />
         <FilterHeader
-          {...{...this.props, ...filter, ...area, showScanModal, all_deliveryman: deliveryman.list}}
+          {...{...this.props, ...filter, ...area, showScanModal}}
           page_size={this.state.page_size}
         />
 
@@ -398,6 +465,7 @@ class DeliveryDistributePannel extends Component {
     this.search();
 
     LazyLoad('noty');
+    LazyLoad('chinese_py');
 
     var { getOrderSrcs, getPayModes } = this.props;
     getOrderSrcs();

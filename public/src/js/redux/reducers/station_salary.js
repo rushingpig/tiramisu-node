@@ -6,9 +6,17 @@ import { deliveryman } from 'reducers/deliveryman';
 
 import clone from 'clone';
 
+function _f(obj){
+  var ret = [];
+  for(var key in obj){
+    ret.push({id: key, text: obj[key]})
+  }
+  return ret;
+}
 
 var main_state = {
 	deliveryRecord:[],
+	stations: [],
 	check_order_info: null,
 	active_order_id:-1,
 	proof: {},
@@ -28,6 +36,8 @@ function main(state = main_state, action){
 			return {...state,deliveryRecord:[], active_order_id: -1, check_order_info: null}
 		case Actions.GET_ORDER_DETAIL_PRODUCTS:
 			return {...state, check_order_info:action.data }
+		case Actions.GET_CITY_STATIONS:
+			return {...state, stations: _f(action.data)}
 		case Actions.GET_DELIVERY_PROOF:
 			return {...state, proof: action.data}
 		case Actions.RESET_ORDER_OPT_RECORD:

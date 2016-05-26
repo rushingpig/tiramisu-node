@@ -53,6 +53,7 @@ class FilterHeader extends Component{
 			end_time:getDate(),
 			province_id:-1,
 			city_id:-1,
+			station_id:-1,
 			deliveryman_id:-1,
 			COD:1,
 			search_txt:'',
@@ -64,7 +65,12 @@ class FilterHeader extends Component{
 		//只需要初始化一次
 		if(deliveryman.load_success && !this.state._hasInitial){
 		  this.setState({ _hasInitial:true});
+		  var all = {} ;
+		  all.deliveryman_id = 0;
+		  all.deliveryman_name = '全部配送员';
+		  all.deliveryman_mobile = '';
 		  var { list } = deliveryman;
+		  list.unshift(all);
 /*		  this.setState({
 		  	all_deliveryman: list, filter_deliveryman_results: list, selected_deliveryman_id: list.length && list[0].deliveryman_id
 		  })*/
@@ -94,12 +100,12 @@ class FilterHeader extends Component{
 	}
 	render(){
 		var {
-			area
+			area,stations
 		} = this.props;
 		var {provinces , cities} = area ;
 		var { filter_deliveryman_results, search_ing } = this.state;
 		var content = filter_deliveryman_results.map( n => {
-      		return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name }</option>
+      		return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
 		})
 		return(
 			<div>
@@ -137,14 +143,16 @@ class FilterHeader extends Component{
 					 			default-text = '请选择省份'/>,
 					 		<Select name='city' options = { cities} 
 					 			onChange= {this.onCityChange.bind(this)}
-					 			default-text = '请选择城市'/>
+					 			default-text = '请选择城市'/>,
+					 		<Select ref='station' name = 'station' options = { stations }
+					 			default-text = '请选择配送站' />
 					 	]:null
 					 }
 					
 					<div className="input-group input-group-sm" style={{height:'27px'}}>
 						<span  style={{height:'27px',lineHeight:1}} className="input-group-addon"><i className="fa fa-search"></i></span>
 						<input type="text"  style={{height:'27px', width:'120px'}} 
-						  className="form-control" placeholder="配送员拼音首字母" 
+						  className="form-control" placeholder="配送员拼音首字母或手机号" 
 						  onChange = {this.filterHandler.bind(this)} />
 					</div>
 					<select name= 'deliveryman' ref='deliveryman' className="form-control input-sm"  style={{height:'27px',minWidth:100}}>
@@ -174,7 +182,9 @@ class FilterHeader extends Component{
 	  value = value.toUpperCase();
 	  if(value === ''){
 	    results = all_deliveryman;
-	  }else if(/^\w+$/i.test(value)){ //首字母
+	  }else if(/^\d+$/i.test(value)){ //电话号码
+      	results = all_deliveryman.filter(n => n.deliveryman_mobile.indexOf(value) != -1)
+      }else if(/^\w+$/i.test(value)){ //首字母
 	    results = all_deliveryman.filter(n => {
 	      return n.py.some(m => m.toUpperCase().indexOf(value) == 0)
 	    })
@@ -227,6 +237,7 @@ class FilterHeader extends Component{
 		}else{
 			this.props.actions.getCityDeliveryman(value).done(() => {
 				$deliveryman.trigger('focus');
+				this.props.actions.getCityStations(value);
 			});			
 		}
 
@@ -236,12 +247,13 @@ class FilterHeader extends Component{
 		var filterdata =  {};
 		filterdata.begin_time = this.state.begin_time;
 		filterdata.end_time = this.state.end_time;
+		var station_id = parseInt($(findDOMNode(this.refs.station))[0].value);
+		if(station_id != this.refs.station.props['default-value'])
+			filterdata.station_id = station_id;
 		var deliveryman_id = this.refs.deliveryman.value;
-		if(deliveryman_id == -1){
-			this.setState({search_ing:false});
-			Noty('warning', '请选择配送员'); return; 
+		if(deliveryman_id != 0){
+			filterdata.deliveryman_id = deliveryman_id;			 
 		}
-		filterdata.deliveryman_id = deliveryman_id;
 		var cod = this.refs.COD.value;
 		if(cod == 1){
 			filterdata.isCOD = 1;
@@ -464,7 +476,7 @@ class DeliveryManSalaryManagePannel extends Component{
 	render(){
 		var {area, dispatch, deliveryman, main, loading, refresh} = this.props;
 		var {exportExcel , getDeliveryProof, getOrderOptRecord, resetOrderOptRecord} = this.props.actions;
-		var {deliveryRecord, check_order_info, active_order_id, proof, operationRecord} = main;
+		var {deliveryRecord, check_order_info, active_order_id, proof, operationRecord, stations} = main;
 		var { viewCredentialModal ,viewOperationRecordModal} = this;
 		var {provinces, cities } = area;
 		var amount_total = 0;
@@ -486,7 +498,7 @@ class DeliveryManSalaryManagePannel extends Component{
 		return (
 				<div className=''>
 					{/*<TopHeader {...{exportExcel}}/>*/}
-					<FilterHeader  {...{area,deliveryman}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, ...stationSalaryActions, exportExcel},dispatch) }}/>
+					<FilterHeader  {...{area,deliveryman,stations}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, ...stationSalaryActions, exportExcel},dispatch) }}/>
 					<div className='panel' >
 						<header className="panel-heading">工资信息列表</header>
 						<div className="panel-body">

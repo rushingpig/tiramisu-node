@@ -122,6 +122,11 @@ export function exportExcel(data){
 
 }
 
+export const GET_CITY_STATIONS = 'GET_CITY_STATIONS';
+export function getCityStations(city_ids){
+  return GET(Url.stations.toString(), {city_ids}, GET_CITY_STATIONS)
+}
+
 export const GET_DELIVERY_PROOF = 'GET_DELIVERY_PROOF';
 export function getDeliveryProof(orderId){
   return GET(Url.delivery_proof.toString(orderId), null ,GET_DELIVERY_PROOF);

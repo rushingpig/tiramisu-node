@@ -246,7 +246,7 @@ var ReviewModal = React.createClass({
           </div>
           <div className="form-group form-inline">
             <label>{'　审核意见：'}</label>
-            <textarea valueLink={this.linkState('audit_opinion')} cols="25" rows="2" className="form-control input-xs"></textarea>
+            <textarea valueLink={this.linkState('audit_opinion')} placeholder="非必填" cols="25" rows="2" className="form-control input-xs"></textarea>
           </div>
           <div className="form-group form-inline">
             <label>{'　是否通过：'}</label>

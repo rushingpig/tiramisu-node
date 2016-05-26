@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import LinkedStateMixin from 'react-addons-linked-state-mixin';
 import { reduxForm } from 'redux-form';
+import classNames from 'classnames';
 
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
@@ -714,7 +715,10 @@ var ApplyPrintModal = React.createClass({
       order_id: '',
       reason: '',
       applicant_mobile: '',
-      director_mobile: ''
+      director_mobile: '',
+
+      applicant_mobile_error: false,
+      director_mobile_error: false
     };
   },
   mixins: [LinkedStateMixin],
@@ -728,28 +732,32 @@ var ApplyPrintModal = React.createClass({
           </div>
           <div className="form-group form-inline">
             <label>{'　申请理由：'}</label>
-            <textarea valueLink={this.linkState('reason')} cols="18" rows="2" className="form-control input-xs"></textarea>
+            <textarea valueLink={this.linkState('reason')} placeholder="必填" cols="18" rows="2" className="form-control input-xs"></textarea>
           </div>
-          <div className="form-group form-inline">
+          <div className={classNames('form-group form-inline ', {'has-error': this.state.applicant_mobile_error})}>
             <label>{'申请人手机：'}</label>
-            <input valueLink={this.linkState('applicant_mobile')} type="text" className="form-control input-xs" />
+            <input valueLink={this.linkState('applicant_mobile')} onFocus={this.hideApplicantMobileError} placeholder="必填" type="text" className="form-control input-xs" />
           </div>
-          <div className="form-group form-inline">
+          <div className={classNames('form-group form-inline ', {'has-error': this.state.director_mobile_error})}>
             <label>{'　主管手机：'}</label>
-            <input valueLink={this.linkState('director_mobile')} type="text" className="form-control input-xs" />
+            <input valueLink={this.linkState('director_mobile')} onFocus={this.hideDirectorMobileError} placeholder="必填" type="text" className="form-control input-xs" />
           </div>
         </div>
       </StdModal>
     )
   },
   saveHandler: function(){
-    var { reason, applicant_mobile } = this.state;
+    var { reason, applicant_mobile, director_mobile } = this.state;
     if(!reason){
       Noty('warning', '请填写申请理由！');return;
     }else if(!form.isMobile(applicant_mobile)){
-      Noty('warning', '错误的电话号！');return;
+      this.setState({applicant_mobile_error: true});
+      Noty('warning', '申请人手机错误！');return;
+    }else if(!form.isMobile(director_mobile)){
+      this.setState({director_mobile_error: true});
+      Noty('warning', '主管手机错误！');return;
     }
-    this.props.applyPrint({...this.state, order_id: this.state.order_id})
+    this.props.applyPrint({reason, applicant_mobile, director_mobile, order_id: this.state.order_id})
       .done(function(){
         this.refs.modal.hide();
         this.props.callback();
@@ -757,6 +765,12 @@ var ApplyPrintModal = React.createClass({
       .fail(function(msg, code){
         Noty('error', msg || '服务器异常')
       })
+  },
+  hideApplicantMobileError: function(){
+    this.setState({ applicant_mobile_error: false });
+  },
+  hideDirectorMobileError: function(){
+    this.setState({ director_mobile_error: false })
   },
   show: function(order_id){
     this.setState({order_id}, function(){

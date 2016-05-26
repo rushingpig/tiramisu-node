@@ -8,15 +8,28 @@ import { setSelectProductStatus, deleteConfirmProduct } from 'actions/order_prod
 import * as ProductsActions from 'actions/order_products';
 
 export default class ManageAddProducts extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      show_tips: false,
+    };
+    this.showTips = this.showTips.bind(this);
+  }
   render(){
     var { confirm_list, dispatch } = this.props;
+    var { showTips } = this;
     var list = confirm_list.map(function(n, i){
-      return <AddedProductsRow key={n.sku_id + '' + i} data={n} dispatch={dispatch} />;
+      return <AddedProductsRow key={n.sku_id + '' + i} data={n} dispatch={dispatch} showTips={showTips} />;
     });
     return (
       <div>
         <div className="form-group">
           选择产品：<button onClick={this.addProducts.bind(this)} className="btn btn-xs btn-theme">添加</button>
+          {
+            this.state.show_tips
+             ? <span style={{marginLeft: 13}} className="text-warning small">* 修改金额后请注意之后的<strong> 金额 </strong>及<strong> 支付状态 </strong>是否正确！</span>
+             : null
+          }
         </div>
         <div className="table-responsive">
           <table className="table text-center">
@@ -47,6 +60,9 @@ export default class ManageAddProducts extends Component {
   }
   addProducts(){
     this.refs.productsModal.show();
+  }
+  showTips(){
+    this.setState({ show_tips: true });
   }
 }
 
@@ -105,6 +121,9 @@ var AddedProductsRow = React.createClass({
     )
   },
   handleChange(attr_name, e){
+    if(attr_name == 'discount_price' || attr_name == 'amount'){
+      this.props.showTips();
+    }
     this.props.dispatch(ProductsActions.productAttrChange({
       sku_id: this.props.data.sku_id,
       attr: {

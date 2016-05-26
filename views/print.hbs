@@ -68,9 +68,15 @@
             .page-before { page-break-before: always; }
             .page-block { page-break-inside: avoid; }
         }
-        .change-font, .change-lan{
+        .tools{
             position: absolute;
+            right: 6px;
             top: 20px;
+        }
+        .change-lan{
+            display: none;
+        }
+        .change-font, .change-lan{
             height: 26px;
             text-align: center;
             font-weight: bold;
@@ -79,12 +85,7 @@
             border: 1px solid #aaa;
             color: #999;
             outline: 0;
-        }
-        .change-font{
-            right: 101px;
-        }
-        .change-lan{
-            right: 20px;
+            margin-left: 4px;
         }
         .change-lan:hover, .change-font:hover{
             color: #444;
@@ -101,9 +102,12 @@
     <script src="/lib/vendor/template-native.js"></script>
     <script src="/plugins/barcode/jsbarcode.all.min.js"></script>
 </head>
-<body data-ip="{{region}}" onload="init()">
-<button class="change-font no-print">字体切换</button>
+<!-- <body data-ip="{{region}}" onload="init()"> -->
+<body data-ip="HK" onload="init()">
+<div class="tools">
+<!-- <button class="change-font no-print">字体切换</button> -->
 <button class="change-lan no-print">中英文切换</button>
+</div>
 <div id="container">正在加载...</div>
 <script id="tpl" type="text/template">
 {{#if list}}
@@ -444,9 +448,11 @@
         })
     }
     
-    if($('body').data('ip') == 'cn'){
+    //CN 或 HK
+    if($('body').data('ip') == 'CN'){
         render( LAN.zh );
     }else{
+        $('.change-lan').show();
         render( LAN.zh_hk );
     }
 

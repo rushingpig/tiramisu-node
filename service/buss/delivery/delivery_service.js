@@ -800,12 +800,12 @@ DeliveryService.prototype.print = (req,res,next)=>{
         }
         result.forEach((curr)=>{
             //注释掉以下代码，即可直接打印
-            let print_status = curr.print_status;
-            if(print_status === Constant.PS.UNPRINTABLE){
-                throw new TiramisuError(res_obj.ORDER_NO_PRINT);
-            }else if (print_status === Constant.PS.AUDITING){
-                throw new TiramisuError(res_obj.ORDER_AUDITING);
-            }
+            // let print_status = curr.print_status;
+            // if(print_status === Constant.PS.UNPRINTABLE){
+            //     throw new TiramisuError(res_obj.ORDER_NO_PRINT);
+            // }else if (print_status === Constant.PS.AUDITING){
+            //     throw new TiramisuError(res_obj.ORDER_AUDITING);
+            // }
         });
         let print_status_update_obj = {
             print_status : Constant.PS.UNPRINTABLE,

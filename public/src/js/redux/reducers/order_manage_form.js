@@ -213,7 +213,7 @@ function products_choosing(state = products_choosing_state, action){
         })
         delay(() => store.dispatch(updateAddOrderForm())); //商品数变化，通知add_order表单更新，支付方式、支付状态的默认值与所选商品数是紧密相关的
         delay(() => store.dispatch(OrderProductsActions.updateConfirmProductDiscountPrice())); //更新商品应收金额
-        return {...state, confirm_list: confirm_list };
+        return {...state, confirm_list: confirm_list, selected_list_deleted: [] };
       })();
 
     case OrderProductsActions.CANCEL_ALL_SELECTED_PRODUCTS:
@@ -324,7 +324,11 @@ function products_choosing(state = products_choosing_state, action){
           n.old_discount_price = n.discount_price;
           n.amount /= 100;
         });
-        return {...state, confirm_list, selected_list: clone(action.data.products) };
+        var selected_list = clone(action.data.products);
+        selected_list.forEach( n => {
+          delete n.amount; //selected_list 中的 amount有特殊意义，（代表有没有修改应收金额）
+        })
+        return {...state, confirm_list, selected_list };
       })()
     default:
       return state;

@@ -477,7 +477,7 @@ var PartRow = React.createClass({
     return (
       <tr>
         <td>{ props.name }</td>
-        <td>{ '￥ ' + (props.discount_price/100).toString() }</td>
+        <td>{ '￥ ' + (props.unit_price/100).toString() }</td>
         <td>{ props.sub }</td>
         <td>
         <button 
@@ -858,8 +858,10 @@ var SignedModal = React.createClass({
        if( m.sku_id == id){
         if(m.num>0){
          m.num --;
+         m.amount -= m.unit_price;
         }
        }
+       m.amount = m.amount > 0 ? m.amount : 0;
        return m;
      });
      old_orderSpareparts = old_orderSpareparts.filter( m =>  m.num != 0 );
@@ -871,6 +873,7 @@ var SignedModal = React.createClass({
       old_orderSpareparts = old_orderSpareparts.map( m => {
        if( m.sku_id == id){
          m.num ++;
+         m.amount += m.unit_price;
        }
        return m;
      });
@@ -922,6 +925,8 @@ var SignedModal = React.createClass({
         }else{
           var newvalue = e;
           e.num = 1;
+          newvalue.unit_price = newvalue.discount_price;
+          newvalue.amount = newvalue.discount_price;
           old_orderSpareparts.push(newvalue);
         }
 
@@ -943,10 +948,10 @@ var SignedModal = React.createClass({
     var refund_amount = 0;
 
     orderSpareparts.forEach(function(m){
-      orderSparepartsAmount += parseInt( m.discount_price ) * m.num;
+      orderSparepartsAmount += m.discount_price;
     });
     currentOrderSpareparts.forEach(m => {
-      currentOrderSparepartsAmount += parseInt( m.discount_price ) * m.num;
+      currentOrderSparepartsAmount += parseInt( m.unit_price ) * m.num;
     });
     var rest = currentOrderSparepartsAmount - orderSparepartsAmount;
     if(this.state.order.pay_status == pay_status.PAYED && rest < 0){
@@ -967,8 +972,12 @@ var SignedModal = React.createClass({
   componentWillReceiveProps(nextProps){
     var { D_ } = nextProps;
     var  products  = D_.orderDetail.products || [];
-    products = products.filter( m => m.category_id == ACCESSORY_CATE_ID)
+    products = products.filter( m => m.category_id == ACCESSORY_CATE_ID);
     var orderSpareparts = clone(products);
+    orderSpareparts = orderSpareparts.map( m => {
+       m.unit_price = m.discount_price / m.num;
+      return m;     
+    })
     var current_id = D_.current_id;
     var deliverymanAtSameStation = D_.deliverymanAtSameStation;
 /*    var order = clone(this.state.order);
@@ -981,6 +990,10 @@ var SignedModal = React.createClass({
     var pay_way = 1;
     if(D_.orderDetail.is_POS) 
       pay_way =2;
+    orderSpareparts = orderSpareparts.map( m => {
+      m.unit_price = m.discount_price / m.num;
+      return m;
+    })
     this.setState({orderSpareparts ,current_id ,deliverymanAtSameStation, pay_way});
   },
 });

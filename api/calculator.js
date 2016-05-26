@@ -18,9 +18,9 @@ module.exports.deliveryPay = function (products) {
 
         let x = 0, y = 0, z = 0, r = 0;
         products.forEach(p=> {
-            if (p.product_name == '步步高升') {
+            if (p.product_name.indexOf('步步高升') != -1) {
                 pay += 50;
-            } else if (p.product_name == '鹏程万里') {
+            } else if (p.product_name.indexOf('鹏程万里') != -1) {
                 pay += 80;
             } else {
                 if (rule[p.category_id] == Constant.PAY_RULE.CAKE) x++;

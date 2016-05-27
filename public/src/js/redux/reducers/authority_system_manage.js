@@ -18,7 +18,21 @@ export function systemAccessManage(state = initial_state, action){
     case Actions.ACTIVE_AUTHORITY:
       return {...state, active_authority_id: action.data};
     case Actions.GET_AUTHORITY_DETAIL:
-      return {...state, active_authority_info: action.data}
+      var store = getGlobalStore();
+      var module_srcs = store.getState().RoleAuthorityManage.roleAccessManage.module_srcs;
+      var newdata = clone(action.data);
+      module_srcs.forEach( m => {
+        if( m.id == newdata.module_id){
+          if(m.level == 1){
+            newdata.parent_id = m.id;
+          }else{
+            newdata.parent_id = m.parent_id;
+            newdata.module_id = m.id;
+          }
+          newdata.level = m.level;
+        }
+      })
+      return {...state, active_authority_info: newdata}
     case Actions.RESET_AUTHORITY_FORM:
       return {...state, active_authority_info: {module_id: -1,type: -1,description:'',code:'',name:'' }};
     default:

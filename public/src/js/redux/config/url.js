@@ -146,6 +146,7 @@ const URL = (function() {
     authority_change: '/privilege/:privilegeId',//修改权限
     authority_detail:'/privilege/:privilegeId',//获取权限详情
     module_add: '/module',//添加模块
+    module_edit: '/module/:moduleId', //编辑模块
     module_list:'/privileges/modules',
 
     //用户管理

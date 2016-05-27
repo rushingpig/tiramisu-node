@@ -125,7 +125,7 @@ class SystemAuthorityPannel extends Component{
     const { data, list, module_list ,module_name, module_srcs} = this.props.roleAccessManage;
     const { active_authority_id } = this.props.systemAccessManage;
     const { addAuthority, changeAuthority, deleteAuthority, addModule, gotAuthorityList, gotModuleList, resetAuthorityForm,
-        getAuthorityDetail, authorityYesNo, activeAtuthority ,gotAuthorityListByModuleName, gotModuleSrcs} = this.props;
+        getAuthorityDetail, authorityYesNo, activeAtuthority ,gotAuthorityListByModuleName, gotModuleSrcs, changeModule} = this.props;
     let fliterList = list;   
     if(module_name != ''){
       fliterList = list.filter(function(e){
@@ -173,7 +173,6 @@ class SystemAuthorityPannel extends Component{
              module_srcs = {module_srcs}
              gotModuleSrcs = {gotModuleSrcs}
              addAuthority={addAuthority} gotAuthorityList={gotAuthorityList} resetAuthorityForm={resetAuthorityForm}/>
-            }
           <EditAuthorityModal ref="editAuthority" 
             module_srcs = {module_srcs}
             gotModuleSrcs = {gotModuleSrcs}
@@ -184,7 +183,8 @@ class SystemAuthorityPannel extends Component{
             addModule={addModule} gotModuleList={gotModuleList}/>
           <EditModuleModal ref='viewEditModule' options={module_list}
             module_srcs = {module_srcs}
-            gotModuleSrcs = {gotModuleSrcs}/>
+            gotModuleSrcs = {gotModuleSrcs}
+            changeModule = {changeModule}/>
           <DeleteAuthorityModal ref="deleteAuthority" deleteAuthority={deleteAuthority}/>
         </div>
     )
@@ -418,7 +418,12 @@ class AddModuleModal extends Component{
       return;
     }
     if(module_name){
-      this.props.addModule(module_name)
+      var data = {};
+      data.module_name = module_name;
+      if(level == 2){
+        data.parent_id = this.state.pri_module_id;
+      }
+      this.props.addModule(data)
           .done(function(){
             Noty('success', '保存成功');
             this.refs.viewModuleAdd.hide();
@@ -507,8 +512,8 @@ class EditModuleModal extends Component{
             :null
           }
           <div className='form-inline' style={{marginTop:15}}>
-            <button className='btn btn-default btn-xs space-right '>重置</button>
-            <button className='btn btn-theme btn-xs space-left '>确定</button>
+            <button className='btn btn-default btn-xs space-right ' onClick = {this.onReset.bind(this)}>重置</button>
+            <button className='btn btn-theme btn-xs space-left ' onClick={this.onConfirm.bind(this)}>确定</button>
           </div>
         </div>
 
@@ -536,6 +541,42 @@ class EditModuleModal extends Component{
   }
   onPriModuleChange(e){
     this.setState({pri_module_id: e.target.value})
+  }
+  onReset(){
+    var {active_module_id} = this.state;
+    var {module_srcs} = this.props;
+    module_srcs.forEach( m => {
+      if(m.id == active_module_id)
+        {
+          this.setState({
+            level:m.level,
+            pri_module_id:m.parent_id ? m.parent_id : 0,
+            active_module_name: m.text,
+          })
+        }
+    })
+  }
+  onConfirm(){
+    var form_data = {};
+    var {level,pri_module_id, active_module_id} = this.state;
+    if( level == 2){
+      if(pri_module_id == -1)
+        {Noty('warning', '请选择一级模块')}
+      else 
+        form_data.parent_id = pri_module_id;
+    }
+    form_data.module_name = active_module_name;
+    this.props.changeModule(form_data, active_module_id)
+      .done(function(){
+        Noty('success', '修改成功');
+        this.setState({
+          active_module_id:0,
+          level:1,
+          active_module_name: '',
+          pri_module_id: -1
+        })
+      })
+
   }
 }
 

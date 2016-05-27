@@ -60,6 +60,11 @@ export function deleteAuthority(authority_id){
 }
 
 export const ADD_MODULE = 'ADD_MODULE';
-export function addModule(module_name){
-  return POST(Url.module_add.toString(), {module_name: module_name}, ADD_MODULE);
+export function addModule(data){
+  return POST(Url.module_add.toString(), data, ADD_MODULE);
+}
+
+export const CHANGE_MODULE = 'CHANGE_MODULE';
+export function changeModule(form_data, module_id){
+  return PUT(Url.module_edit.toString(module_id),form_data, CHANGE_MODULE);
 }

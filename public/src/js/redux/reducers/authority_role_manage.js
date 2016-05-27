@@ -24,6 +24,14 @@ function _f(obj){
   return ret;
 }
 
+function _m(obj){
+  var ret = [];
+  obj.forEach( m => {
+    ret.push({id:m.module_id, text: m.module_name, level: m.module_lv, parent_id: m.parent_id})
+  })
+  return ret;
+}
+
 var initial_state = {
   department_list: [],
   list: [],
@@ -77,7 +85,7 @@ export function roleAccessManage( state = initial_state, action){
         return {...state, checked_authority_ids: ret,on_role_id: action.id };
       })();
     case Actions.GOT_MODULE_SRCS:
-      return {...state, module_srcs: action.data}
+      return {...state, module_srcs: _m(action.data)}
     case Actions.GOT_MODULE_LIST:
       return {...state, module_list: _f(action.data)};
     case Actions.RESET_ROLR_AUTHORITY:

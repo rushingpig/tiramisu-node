@@ -8,7 +8,7 @@ import LazyLoad from 'utils/lazy_load';
 import { Noty } from 'utils/index';
 import { SELECT_DEFAULT_VALUE } from 'config/app.config';
 
-export const fields = ['name', 'module_id', 'type', 'description', 'code'];
+export const fields = ['name', 'module_id', 'type', 'description', 'code', 'parent_id'];
 
 const validate = (values, props) => {
   const errors = {};
@@ -54,7 +54,7 @@ class AuthorityForm extends Component{
     const { options ,module_srcs} = this.props;
     var { pri_module_id } = this.state;
     var pri_module_srcs = module_srcs.filter( m => m.level == 1);
-    var sec_module_srcs = module_srcs.filter( m => m.level == 2 && m.parent_id == pri_module_id);
+    var sec_module_srcs = module_srcs.filter( m => m.level == 2 && m.parent_id == parent_id.value);
     const authorityType = [{id: 'LIST', text: '列表'},{id: 'ELEMENT', text: '页面元素'}]
     return (
       <div>
@@ -93,7 +93,7 @@ class AuthorityForm extends Component{
   }
   componentDidMount() {
     LazyLoad('noty');
-    //this.props.got
+    this.props.gotModuleSrcs();
   }
   hide(){
     this.props.resetForm();

@@ -60,7 +60,7 @@ MenuService.prototype.addModule = (req,res,next) => {
             if (toolUtils.isEmptyArray(parent)) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, 'not found parent_id...'));
             parent = parent[0];
             menu_obj.parent_id = parent.id;
-            menu_obj.parent_ids = parent.parent_ids + ',' + parent.id;
+            menu_obj.parent_ids = (parent.parent_ids + ',' + parent.id).replace(/^,/, '');
             menu_obj.level = parent.level + 1;
         } else {
             menu_obj.parent_id = 0;
@@ -90,7 +90,7 @@ MenuService.prototype.editModule = (req, res, next) => {
             if (toolUtils.isEmptyArray(parent)) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, 'not found parent_id...'));
             parent = parent[0];
             menu_obj.parent_id = parent.id;
-            menu_obj.parent_ids = parent.parent_ids + ',' + parent.id;
+            menu_obj.parent_ids = (parent.parent_ids + ',' + parent.id).replace(/^,/, '');
             menu_obj.level = parent.level + 1;
         }
         let result = yield menuDao.updateMenuById(module_id, systemUtils.assembleUpdateObj(req, menu_obj));

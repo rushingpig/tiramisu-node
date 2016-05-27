@@ -66,5 +66,16 @@ export function addModule(data){
 
 export const CHANGE_MODULE = 'CHANGE_MODULE';
 export function changeModule(form_data, module_id){
-  return PUT(Url.module_edit.toString(module_id),form_data, CHANGE_MODULE);
+  return (dispatch) => {
+    return PUT(Url.module_edit.toString(module_id),form_data)
+      .done(() => {
+        dispatch({
+          id:module_id,
+          parent_id:form_data.parent_id || 0,
+          text:form_data.module_name,
+          level:form_data.parent_id? 2:1,
+        })
+      })
+
+  }
 }

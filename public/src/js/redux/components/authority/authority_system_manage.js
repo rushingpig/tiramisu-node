@@ -77,6 +77,7 @@ class FilterHeader extends Component{
   }
   render(){
     var {module_srcs}=this.props;
+    var {pri_module_id} = this.state;
     var pri_module_srcs = module_srcs.filter( m => m.level == 1);
     var sec_module_srcs = module_srcs.filter( m => m.level == 2 && m.parent_id == pri_module_id);
     return (
@@ -436,6 +437,7 @@ class AddModuleModal extends Component{
       Noty('warning', '请选择一级模块');
       return;
     }
+    var _this = this;
     if(module_name){
       var data = {};
       data.module_name = module_name;
@@ -446,7 +448,7 @@ class AddModuleModal extends Component{
           .done(function(){
             Noty('success', '保存成功');
             this.refs.viewModuleAdd.hide();
-            this.setState({module_name: '', level: 1, pri_module_id: -1});
+            _this.setState({module_name: '', level: 1, pri_module_id: -1});
           }.bind(this))
           .fail(function(msg, code){
             Noty('error', msg || '保存异常');
@@ -577,18 +579,19 @@ class EditModuleModal extends Component{
   }
   onConfirm(){
     var form_data = {};
-    var {level,pri_module_id, active_module_id} = this.state;
+    var {level,pri_module_id, active_module_id, active_module_name} = this.state;
     if( level == 2){
       if(pri_module_id == -1)
         {Noty('warning', '请选择一级模块')}
       else 
         form_data.parent_id = pri_module_id;
     }
+    var _this = this;
     form_data.module_name = active_module_name;
     this.props.changeModule(form_data, active_module_id)
       .done(function(){
         Noty('success', '修改成功');
-        this.setState({
+        _this.setState({
           active_module_id:0,
           level:1,
           active_module_name: '',

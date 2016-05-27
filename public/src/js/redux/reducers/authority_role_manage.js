@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import * as Actions from 'actions/authority_role_manage';
-import { DELETE_AUTHORITY, ADD_MODULE } from 'actions/authority_system_manage';
+import { DELETE_AUTHORITY, ADD_MODULE, CHANGE_MODULE } from 'actions/authority_system_manage';
 import clone from 'clone';
 
 
@@ -108,6 +108,16 @@ export function roleAccessManage( state = initial_state, action){
         return n.id !== action.id;
       })
       return {...state, list: clone(list)};
+    case CHANGE_MODULE:
+      var module_srcs = state.module_srcs.map((n) => {
+        if(n.id == action.id){
+          n.level = action.level;
+          n.parent_id = action.parent_id;
+          n.text = action.text;
+        }
+        return n;
+      })
+      return {...state, module_srcs:clone(module_srcs)}
     default:
       return state;
   }

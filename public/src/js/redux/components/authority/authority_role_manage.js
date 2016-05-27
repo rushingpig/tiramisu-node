@@ -90,6 +90,7 @@ class FilterHeader extends Component{
   }
   render(){
     let { editable,module_srcs } = this.props;
+    var {pri_module_id} = this.state;
     var pri_module_srcs = module_srcs.filter( m => m.level == 1);
     var sec_module_srcs = module_srcs.filter( m => m.level == 2 && m.parent_id == pri_module_id); 
     return (

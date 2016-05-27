@@ -1,4 +1,4 @@
-import {post, get, GET, POST, PUT, TEST, del } from 'utils/request'; //Promise
+import {post, get, GET, POST, PUT, TEST, del, put} from 'utils/request'; //Promise
 import Url from 'config/url';
 import Utils from 'utils/index';
 import { Noty } from 'utils/index';
@@ -67,13 +67,14 @@ export function addModule(data){
 export const CHANGE_MODULE = 'CHANGE_MODULE';
 export function changeModule(form_data, module_id){
   return (dispatch) => {
-    return PUT(Url.module_edit.toString(module_id),form_data)
+    return put(Url.module_edit.toString(module_id),form_data)
       .done(() => {
         dispatch({
           id:module_id,
           parent_id:form_data.parent_id || 0,
           text:form_data.module_name,
           level:form_data.parent_id? 2:1,
+          type: CHANGE_MODULE
         })
       })
 

@@ -117,16 +117,6 @@ class FilterHeader extends Component{
     let {value} = e.target;
     if(value != this.refs.secmodules.props['default-value']){
       let selected = $(findDOMNode(this.refs.secmodules)).find(':selected').text();
-      this.props.gotRoleListByModuleName(selected);
-      this.props.scrollTop(selected);
-    }else{
-      this.props.gotRoleListByModuleName('');
-    }
-  }
-  onSelectModule(e){
-    let {value} = e.target;
-    if(value != this.refs.modules.props['default-value']){
-      let selected = $(findDOMNode(this.refs.modules)).find(':selected').text();
       this.props.gotAuthorityListByModuleName(selected);
       this.props.scrollTop(selected);
     }else{

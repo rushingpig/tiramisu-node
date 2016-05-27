@@ -138,11 +138,7 @@ class SystemAuthorityPannel extends Component{
   render(){
     const { data, list, module_name, module_srcs} = this.props.roleAccessManage;
     const { active_authority_id } = this.props.systemAccessManage;
-<<<<<<< 18bbc22176b3aa274b332c83427196d665345f25
     const { addAuthority, changeAuthority, deleteAuthority, addModule, gotAuthorityList, resetAuthorityForm,
-=======
-    const { addAuthority, changeAuthority, deleteAuthority, addModule, gotAuthorityList, gotModuleList, resetAuthorityForm,
->>>>>>> 二级模块添加
         getAuthorityDetail, authorityYesNo, activeAtuthority ,gotAuthorityListByModuleName, gotModuleSrcs, changeModule} = this.props;
     let fliterList = list;   
     if(module_name != ''){
@@ -572,30 +568,19 @@ class EditModuleModal extends Component{
   }
   onConfirm(){
     var form_data = {};
-<<<<<<< 18bbc22176b3aa274b332c83427196d665345f25
     var {level,pri_module_id, active_module_id, active_module_name} = this.state;
-=======
-    var {level,pri_module_id, active_module_id} = this.state;
->>>>>>> 二级模块添加
     if( level == 2){
       if(pri_module_id == -1)
         {Noty('warning', '请选择一级模块')}
       else 
         form_data.parent_id = pri_module_id;
     }
-<<<<<<< 18bbc22176b3aa274b332c83427196d665345f25
     var _this = this;
-=======
->>>>>>> 二级模块添加
     form_data.module_name = active_module_name;
     this.props.changeModule(form_data, active_module_id)
       .done(function(){
         Noty('success', '修改成功');
-<<<<<<< 18bbc22176b3aa274b332c83427196d665345f25
         _this.setState({
-=======
-        this.setState({
->>>>>>> 二级模块添加
           active_module_id:0,
           level:1,
           active_module_name: '',

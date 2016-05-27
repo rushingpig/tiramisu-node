@@ -83,7 +83,7 @@ MenuService.prototype.editModule = (req, res, next) => {
             type: 'MODULE'
         };
         if (b.module_name) {
-            menu_obj.module_name = b.module_name;
+            menu_obj.name = b.module_name;
         }
         if (b.parent_id) {
             let parent = yield menuDao.findModuleById(b.parent_id);
@@ -197,9 +197,12 @@ MenuService.prototype.listAllModules = (req,res,next) => {
         if(toolUtils.isEmptyArray(result)){
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
-        let data = {};
+        let data = [];
         result.forEach(curr => {
-            data[curr.id] = _.omit(curr, 'id');
+            curr.module_id = curr.id;
+            curr.module_name = curr.name;
+            curr.module_lv = curr.level;
+            data.push(_.omit(curr, ['id', 'name', 'level']));
         });
         res.api(data);
     });

@@ -83,20 +83,23 @@ class FilterHeader extends Component{
     this.state = {
       editable: false,
       submitting: false,
+      pri_module_id:-1
     };
     this.submitHanler = this.submitHanler.bind(this);
     this.toggleEditHandler = this.toggleEditHandler.bind(this);
-    this.onSelectModule = this.onSelectModule.bind(this);
   }
   render(){
-    let { editable } = this.props;
+    let { editable,module_srcs } = this.props;
+    var pri_module_srcs = module_srcs.filter( m => m.level == 1);
+    var sec_module_srcs = module_srcs.filter( m => m.level == 2 && m.parent_id == pri_module_id); 
     return (
         <div className="panel search">
           <div className="panel-body form-inline">
             {
               V('RoleAuthorityManageModuleFilter')
                   ?
-                  <Select ref="modules" options={this.props.options} onChange={this.onSelectModule} default-text="--请选择所属模块--" className="space-right"/>
+                  [<Select ref="primodules" options={pri_module_srcs} onChange={this.onSelectPriModule.bind(this)} default-text="--请选择一级模块--" className="space-right"/>,
+                  <Select ref="secmodules" options={sec_module_srcs} onChange={this.onSelectSecModule.bind(this)} default-text="--请选择二级模块--" className="space-right"/>]
                   :
                   null
             }
@@ -137,10 +140,16 @@ class FilterHeader extends Component{
           })
         })
   }
-  onSelectModule(e){
+  onSelectPriModule(e){
     let {value} = e.target;
-    if(value != this.refs.modules.props['default-value']){
-      let selected = $(findDOMNode(this.refs.modules)).find(':selected').text();
+    if( value != this.refs.primodules.props['default-value']){
+      this.setState({pri_module_id:value});
+    }
+  }
+  onSelectSecModule(e){
+    let {value} = e.target;
+    if(value != this.refs.secmodules.props['default-value']){
+      let selected = $(findDOMNode(this.refs.secmodules)).find(':selected').text();
       this.props.gotRoleListByModuleName(selected);
       this.props.scrollTop(selected);
     }else{
@@ -161,9 +170,9 @@ class FilterHeader extends Component{
 
 class RoleAuthorityPannel extends Component{
   render(){
-    const { department_list, list, module_list, editable, checked_authority_ids, submitting, on_role_id ,module_name} = this.props.roleAccessManage;
+    const { department_list, list, module_srcs, editable, checked_authority_ids, submitting, on_role_id ,module_name} = this.props.roleAccessManage;
     const { toggleEdit, resetRoleAuthority, gotRoleAuthorities, putRoleAuthority, gotRoletList, toggleDept, authorityYesNo , gotRoleListByModuleName} = this.props;
-    let fliterList = list;   
+    let fliterList = list;
     if(module_name != ''){
       fliterList = list.filter(function(e){
         return e.module_name == module_name;
@@ -191,7 +200,7 @@ class RoleAuthorityPannel extends Component{
                         checked_authority_ids={checked_authority_ids}
                         role_id={on_role_id}
                         editable={editable}
-                        options={module_list}
+                        module_srcs = {module_srcs}
                         toggleEdit={toggleEdit}
                         resetRoleAuthority={resetRoleAuthority}
                         gotRoleAuthorities={gotRoleAuthorities}
@@ -227,9 +236,9 @@ class RoleAuthorityPannel extends Component{
     )
   }
   componentWillMount() {
-    const { gotDepartmentList, gotModuleList } = this.props;
+    const { gotDepartmentList, gotModuleSrcs } = this.props;
     gotDepartmentList();
-    gotModuleList();
+    gotModuleSrcs();
   }
   componentDidMount() {
     LazyLoad('noty');

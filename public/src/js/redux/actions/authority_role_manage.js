@@ -66,10 +66,10 @@ export function gotRoleAuthorities(role_id){
   } 
 }
 
-export const GOT_MODULE_LIST = 'GOT_MODULE_LIST';
+/*export const GOT_MODULE_LIST = 'GOT_MODULE_LIST';
 export function gotModuleList(){
   return GET(Url.module_list.toString(), null, GOT_MODULE_LIST);
-}
+}*/
 
 export const GOT_MODULE_SRCS = 'GOT_MODULE_SRCS';
 export function gotModuleSrcs(){

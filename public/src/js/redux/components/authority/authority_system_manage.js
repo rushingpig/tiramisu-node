@@ -71,16 +71,23 @@ class TableRow extends Component{
 class FilterHeader extends Component{
   constructor(props){
     super(props);
-    this.onSelectModule = this.onSelectModule.bind(this);
+    this.state= {
+      pri_module_id:-1,
+    }
   }
   render(){
+    var {module_srcs}=this.props;
+    var pri_module_srcs = module_srcs.filter( m => m.level == 1);
+    var sec_module_srcs = module_srcs.filter( m => m.level == 2 && m.parent_id == pri_module_id);
     return (
         <div className="panel search">
           <div className="panel-body form-inline">
             {
               V('SystemAuthorityManageModuleFilter')
                   ?
-                  <Select ref="modules" options={this.props.options} onChange={this.onSelectModule} default-text="--请选择所属模块--" className="space-right"/>
+                  [<Select ref="primodules" options={pri_module_srcs} onChange={this.onSelectPriModule.bind(this)} default-text="--请选择一级模块--" className="space-right"/>,
+                  <Select ref="secmodules" options={sec_module_srcs} onChange={this.onSelectSecModule.bind(this)} default-text="--请选择二级模块--" className="space-right"/>]
+
                   :
                   null
             }
@@ -98,6 +105,22 @@ class FilterHeader extends Component{
   }
   viewAdd(){
     this.props.ViewAddModal();
+  }
+  onSelectPriModule(e){
+    let {value} = e.target;
+    if( value != this.refs.primodules.props['default-value']){
+      this.setState({pri_module_id:value});
+    }
+  }
+  onSelectSecModule(e){
+    let {value} = e.target;
+    if(value != this.refs.secmodules.props['default-value']){
+      let selected = $(findDOMNode(this.refs.secmodules)).find(':selected').text();
+      this.props.gotRoleListByModuleName(selected);
+      this.props.scrollTop(selected);
+    }else{
+      this.props.gotRoleListByModuleName('');
+    }
   }
   onSelectModule(e){
     let {value} = e.target;
@@ -122,9 +145,9 @@ class SystemAuthorityPannel extends Component{
     this.viewDeleteAuthorityModal = this.viewDeleteAuthorityModal.bind(this);
   }
   render(){
-    const { data, list, module_list ,module_name, module_srcs} = this.props.roleAccessManage;
+    const { data, list, module_name, module_srcs} = this.props.roleAccessManage;
     const { active_authority_id } = this.props.systemAccessManage;
-    const { addAuthority, changeAuthority, deleteAuthority, addModule, gotAuthorityList, gotModuleList, resetAuthorityForm,
+    const { addAuthority, changeAuthority, deleteAuthority, addModule, gotAuthorityList, resetAuthorityForm,
         getAuthorityDetail, authorityYesNo, activeAtuthority ,gotAuthorityListByModuleName, gotModuleSrcs, changeModule} = this.props;
     let fliterList = list;   
     if(module_name != ''){
@@ -145,7 +168,7 @@ class SystemAuthorityPannel extends Component{
           <TopHeader className="pull-right"/>
           <FilterHeader list={list}
                         scrollTop = {this.scrollTop.bind(this)}
-                        options={module_list} ViewAddModal={this.ViewAddModal}
+                        module_srcs={module_srcs} ViewAddModal={this.ViewAddModal}
                         gotAuthorityListByModuleName = {gotAuthorityListByModuleName}/>
           <div className="panel">
             <div className="panel-body">
@@ -169,19 +192,19 @@ class SystemAuthorityPannel extends Component{
           </div>
 
           <AddModal ref="viewAdd" viewAddAuthority={this.viewAddAuthority} viewAddModule={this.viewAddModule} viewEditModule={this.viewEditModule}/>
-          <AddAuthorityModal ref="viewAddAuthority" options={module_list}
+          <AddAuthorityModal ref="viewAddAuthority" 
              module_srcs = {module_srcs}
              gotModuleSrcs = {gotModuleSrcs}
              addAuthority={addAuthority} gotAuthorityList={gotAuthorityList} resetAuthorityForm={resetAuthorityForm}/>
           <EditAuthorityModal ref="editAuthority" 
             module_srcs = {module_srcs}
             gotModuleSrcs = {gotModuleSrcs}
-            active_authority_id={active_authority_id} gotAuthorityList={gotAuthorityList} options={module_list} getAuthorityDetail={getAuthorityDetail} changeAuthority={changeAuthority}/>
-          <AddModuleModal ref="viewAddModule" options={module_list}
+            active_authority_id={active_authority_id} gotAuthorityList={gotAuthorityList}  getAuthorityDetail={getAuthorityDetail} changeAuthority={changeAuthority}/>
+          <AddModuleModal ref="viewAddModule" 
             module_srcs = {module_srcs}
             gotModuleSrcs = {gotModuleSrcs} 
-            addModule={addModule} gotModuleList={gotModuleList}/>
-          <EditModuleModal ref='viewEditModule' options={module_list}
+            addModule={addModule}/>
+          <EditModuleModal ref='viewEditModule' 
             module_srcs = {module_srcs}
             gotModuleSrcs = {gotModuleSrcs}
             changeModule = {changeModule}/>
@@ -190,9 +213,8 @@ class SystemAuthorityPannel extends Component{
     )
   }
   componentWillMount() {
-    const { gotAuthorityList, gotModuleList } = this.props;
+    const { gotAuthorityList } = this.props;
     gotAuthorityList();
-    gotModuleList();
   }
   scrollTop(selected){
     let container = $(findDOMNode(this.refs.authoritys_container));
@@ -336,9 +358,6 @@ class AddModuleModal extends Component{
     var {pri_module_id } = this.state;
     pri_module_srcs = module_srcs.filter( m => m.level == 1);
     sec_module_srcs = module_srcs.filter( m => m.level == 2 && m.parent_id == pri_module_id);
-    var content = options.map((n, i) => {
-      return <li key={n.id} className="list-group-item" style={{padding: '5px'}}>{n.text}</li>;
-    })
     return (
         <StdModal title="添加模块" ref="viewModuleAdd" onConfirm={this.onConfirm.bind(this)}>
           <form>

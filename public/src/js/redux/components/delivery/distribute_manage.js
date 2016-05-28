@@ -300,7 +300,8 @@ class OrderRow extends Component {
                   V('DeliveryManageDistributeUnSigninOrder') &&
                   <a onClick={this.showUnSignedModal.bind(this)} key="unsignin" href="javascript:;">[未签收]</a>
                 ]
-              : null
+              : V('DeliveryManageDistributeEditSigninOrder') &&
+                    <a onClick={this.showSignedModal.bind(this)} key="signin" href="javascript:;">[编辑签收]</a>
           }
         </td>
         <td>{props.delivery_time ? parseTime(props.delivery_time) : '未知'}</td>

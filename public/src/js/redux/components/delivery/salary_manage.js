@@ -533,6 +533,7 @@ class DeliveryManSalaryManagePannel extends Component{
 						    <div className='form-inline' style={{marginTop:20,float:'left'}}>
 						    	<span style={{marginRight:10}}><i style={{color:'#ccc',}} className='fa fa-square'></i><span style={{fontSize:10}}>待审核</span></span>
 						    	<span ><i style={{color:'#dac7a7'}} className='fa fa-square'></i><span style={{fontSize:10}}>审核完成</span></span>
+						    	<span>{'　　　'}共{deliveryRecord.length}项</span>
 						    </div>
 						    <div className='form-inline' style={{marginTop:20,float:'right'}}>
 						    	<span style={{fontWeight:'bold'}}>{'应收金额总计：'}</span>

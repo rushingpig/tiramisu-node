@@ -222,7 +222,7 @@ class FilterHeader extends Component{
 	  if(value != this.refs.province.props['default-value'])
 	    var $city = $(findDOMNode(this.refs.city));
 		//this.props.actions.getCities(value);
-	    this.props.actions.getCities(value).done(() => {
+	    this.props.actions.getCitiesSignal(value, 'authority').done(() => {
 	      $city.trigger('focus'); //聚焦已使city_id的值更新
 	    });
 	}
@@ -268,7 +268,7 @@ class FilterHeader extends Component{
 	componentDidMount(){
 		setTimeout(() => {
 			LazyLoad('noty');
-			this.props.actions.getProvinces();
+			this.props.actions.getProvincesSignal('authority');
 			this.props.actions.getAllDeliveryman();
 
 		}, 0);		

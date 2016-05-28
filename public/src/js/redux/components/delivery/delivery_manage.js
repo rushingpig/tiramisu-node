@@ -122,8 +122,8 @@ class FilterHeader extends Component {
   }
   componentDidMount(){
     setTimeout(function(){
-      var { getProvinces, getStationListByScope } = this.props;
-      getProvinces();
+      var { getProvincesSignal, getStationListByScope } = this.props;
+      getProvincesSignal('authority');
       getStationListByScope();
       LazyLoad('noty');
     }.bind(this),0)
@@ -133,7 +133,7 @@ class FilterHeader extends Component {
     this.props.resetCities();
     if(value != this.refs.province.props['default-value']){
       var $city = $(findDOMNode(this.refs.city));
-      this.props.getCities(value).done(() => {
+      this.props.getCitiesSignal(value, 'authority').done(() => {
         $city.trigger('focus'); //聚焦已使city_id的值更新
       });
       this.props.getStationListByScope({ province_id: value });

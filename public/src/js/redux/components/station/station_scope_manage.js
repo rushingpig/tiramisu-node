@@ -101,16 +101,16 @@ class FilterHeader extends Component {
     )
   }
   componentDidMount(){
-    var { getProvinces, getCities, getDistricts, getAllStationsName, getStationList} = this.props;
-    getProvinces();
+    var { getProvincesSignal, getCitiesSignal, getDistricts, getAllStationsName, getStationList} = this.props;
+    getProvincesSignal();
     var {params ,getStationListById} = this.props;
     if(params && params.id){
       getStationListById(params.id);
-      getCities(this.props.fields.province_id.initialValue);
+      getCitiesSignal(this.props.fields.province_id.initialValue,'authority');
       getDistricts(this.props.fields.city_id.initialValue);
     }else{
       getStationList({isPage: false}, 'station_scope_manage_filter');
-      getCities(ADDRESS.GUANG_ZHOU);
+      getCities(ADDRESS.GUANG_ZHOU, 'authority');
       getDistricts(ADDRESS.SHEN_ZHENG);
     }
     getAllStationsName();
@@ -124,7 +124,7 @@ class FilterHeader extends Component {
     this.props.resetCities();
     if(value != this.refs.province.props['default-value'])
       var $city = $(findDOMNode(this.refs.city));
-      this.props.getCities(value).done(() => {
+      this.props.getCitiesSignal(value, 'authority').done(() => {
         $city.trigger('focus'); //聚焦已使city_id的值更新
       });
     callback(e);

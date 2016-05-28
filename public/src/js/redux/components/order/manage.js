@@ -147,10 +147,10 @@ class FilterHeader extends Component {
   }
   componentDidMount(){
     setTimeout(()=>{
-      var { getProvinces, getCities, getOrderSrcs } = this.props.actions;
+      var { getProvincesSignal, getCitiesSignal, getOrderSrcs } = this.props.actions;
       var { fields: { province_id } } = this.props;
-      getProvinces();
-      province_id.value && getCities( province_id.value );
+      getProvincesSignal('authority');
+      province_id.value && getCitiesSignal( province_id.value, 'authority' );
       getOrderSrcs();
       LazyLoad('noty');
     },0)
@@ -160,7 +160,7 @@ class FilterHeader extends Component {
     this.props.actions.resetCities();
     if(value != this.refs.province.props['default-value'])
       var $city = $(findDOMNode(this.refs.city));
-      this.props.actions.getCities(value).done(() => {
+      this.props.actions.getCitiesSignal(value, 'authority').done(() => {
         $city.trigger('focus'); //聚焦已使city_id的值更新
       });
     callback(e);
@@ -317,15 +317,15 @@ var OrderRow = React.createClass({
   activeOrder(){
     var { 
       order_id, active_order_id, activeOrder, prepareDeliveryDataOK,
-      getProvinces, getCities, getDistricts, getDeliveryShops, getDeliveryStations
+      getProvincesSignal, getCitiesSignal, getDistricts, getDeliveryShops, getDeliveryStations
     } = this.props;
     if(order_id != active_order_id){
       activeOrder(order_id).done(function(data){
         //这里拉取数据完全是为了给“修改配送”modal使用
         setTimeout(function(){
           $.when(
-            getProvinces(),
-            getCities(data.province_id),
+            getProvincesSignal('authority'),
+            getCitiesSignal(data.province_id, 'authority'),
             getDistricts(data.city_id),
             getDeliveryShops(data.regionalism_id),
             getDeliveryStations({city_id: data.city_id})

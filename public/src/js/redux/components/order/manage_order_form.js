@@ -402,8 +402,8 @@ class ManageAddForm extends Component {
     });
   }
   componentDidMount(){
-    var {getProvinces, getOrderSrcs, getDeliveryStations, getPayModes} = this.props.actions;
-    getProvinces();
+    var {getProvincesSignal, getOrderSrcs, getDeliveryStations, getPayModes} = this.props.actions;
+    getProvincesSignal('authority');
     getOrderSrcs();
     getPayModes();
     // getDeliveryStations();
@@ -437,7 +437,7 @@ class ManageAddForm extends Component {
     var {value} = e.target;
     this.props.actions.resetCities();
     if(value != this.refs.province.props['default-value'])
-      this.props.actions.getCities(value);
+      this.props.actions.getCitiesSignal(value, 'authority');
     callback(e);
     this.props.actions.getDeliveryStations({city_id: SELECT_DEFAULT_VALUE}); //等同于clear stations数据
     this.props.actions.triggerFormUpdate('add_order', 'delivery_id', SELECT_DEFAULT_VALUE)
@@ -525,7 +525,7 @@ ManageAddForm.propTypess = {
   }).isRequired,
 
   actions: PropTypes.shape({
-    getProvinces: PropTypes.func.isRequired,
+    getProvincesSignal: PropTypes.func.isRequired,
     getOrderSrcs: PropTypes.func.isRequired,
     getDeliveryStations: PropTypes.func.isRequired,
     getPayModes: PropTypes.func.isRequired,

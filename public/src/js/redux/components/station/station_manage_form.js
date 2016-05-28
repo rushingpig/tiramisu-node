@@ -162,8 +162,8 @@ class StationManageForm extends Component {
     }, 0);
   }
   componentDidMount(){
-    var { getProvinces } = this.props.actions;
-    getProvinces();
+    var { getProvincesSignal } = this.props.actions;
+    getProvincesSignal('authority');
     var city = this.findSelectedOptionText('city');
     this.setState({ city });
     LazyLoad('noty');
@@ -172,7 +172,7 @@ class StationManageForm extends Component {
     var {value} = e.target;
     this.props.actions.resetCities();
     if(value != this.refs.province.props['default-value'])
-      this.props.actions.getCities(value);
+      this.props.actions.getCitiesSignal(value, 'authority');
     callback(e);
   }
   onCityChange(callback, e) {

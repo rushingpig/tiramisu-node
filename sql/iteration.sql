@@ -567,3 +567,30 @@ insert into `dict_regionalism` VALUES
 ('820299','未知区',820200,'未知','3','','','中国,澳门特别行政区,氹仔岛,未知区','','','Weizhi','1',null,null),
 ('820399','未知区',820300,'未知','3','','','中国,澳门特别行政区,路环岛,未知区','','','Weizhi','1',null,null);
 COMMIT;
+
+# 修改连云港市区域信息
+BEGIN;
+update `dict_regionalism` set name = '赣榆县' where id = '320707';
+insert into `dict_regionalism` VALUES
+('320725','新浦区',320700,'新浦','3','0518','','中国,江苏省,连云港市,新浦区','','','Xinpu','1',null,null);
+COMMIT;
+
+
+# 修改区域信息to匹配有赞
+BEGIN;
+update `dict_regionalism` set name = '西区街道' where id = '442026';
+update `dict_regionalism` set name = '东区街道' where id = '442025';
+update `dict_regionalism` set name = '南区街道' where id = '442004';
+update `dict_regionalism` set name = '五桂山镇' where id = '442005';
+update `dict_regionalism` set name = '石岐区街道' where id = '442001';
+insert into `dict_regionalism` VALUES
+('442028','古镇',442000,'古镇','3','0760','','中国,广东省,中山市,古镇','','','Guzhen','1',null,null);
+insert into `dict_regionalism` VALUES
+('442029','沙朗镇',442000,'沙朗','3','0760','','中国,广东省,中山市,沙朗镇','','','ShaLang','1',null,null);
+insert into `dict_regionalism` VALUES
+('410186','高新技术开发区',410100,'高新技术开发','3','0371','','中国,河南省,郑州市,高新技术开发区','','','Gaoxinjishukaifa','1',null,null);
+insert into `dict_regionalism` VALUES
+('410187','经济开发区',410100,'经济开发','3','0371','','中国,河南省,郑州市,经济开发区','','','Jingjikaifa','1',null,null);
+insert into `dict_regionalism` VALUES
+('410188','郑东新区',410100,'郑东新','3','0371','','中国,河南省,郑州市,郑东新区','','','Zhengdongxin','1',null,null);
+COMMIT;

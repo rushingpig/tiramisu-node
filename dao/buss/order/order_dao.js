@@ -1269,6 +1269,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
             landmark: systemUtils.encodeForFulltext(recipient_landmark),
             merchant_id: merchant_id
           };
+          if(coupon) order_fulltext_obj.coupon = coupon;
           let order_history_obj = {
             order_id: orderId,
             option: '添加订单',

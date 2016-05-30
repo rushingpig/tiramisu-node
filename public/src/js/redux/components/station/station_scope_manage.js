@@ -110,7 +110,7 @@ class FilterHeader extends Component {
       getDistricts(this.props.fields.city_id.initialValue);
     }else{
       getStationList({isPage: false}, 'station_scope_manage_filter');
-      getCities(ADDRESS.GUANG_ZHOU, 'authority');
+      getCitiesSignal(ADDRESS.GUANG_ZHOU, 'authority');
       getDistricts(ADDRESS.SHEN_ZHENG);
     }
     getAllStationsName();

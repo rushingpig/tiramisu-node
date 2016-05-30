@@ -575,14 +575,8 @@ insert into `dict_regionalism` VALUES
 ('320725','新浦区',320700,'新浦','3','0518','','中国,江苏省,连云港市,新浦区','','','Xinpu','1',null,null);
 COMMIT;
 
-
 # 修改区域信息to匹配有赞
 BEGIN;
-update `dict_regionalism` set name = '西区街道' where id = '442026';
-update `dict_regionalism` set name = '东区街道' where id = '442025';
-update `dict_regionalism` set name = '南区街道' where id = '442004';
-update `dict_regionalism` set name = '五桂山镇' where id = '442005';
-update `dict_regionalism` set name = '石岐区街道' where id = '442001';
 insert into `dict_regionalism` VALUES
 ('442028','古镇',442000,'古镇','3','0760','','中国,广东省,中山市,古镇','','','Guzhen','1',null,null);
 insert into `dict_regionalism` VALUES

@@ -108,7 +108,14 @@ AddressService.prototype.getStationsByMultipleCondition = (req, res, next) => {
         res.api(res_obj.INVALID_PARAMS, errors);
         return;
     }
-    let promise = addressDao.findStationsByMultipleCondition(req.query).then((results) => {
+    let query = {
+        signal: req.query.signal,
+        regionalism_id: req.query.regionalism_id,
+        city_id: req.query.city_id,
+        province_id: req.query.province_id,
+        user: req.session.user
+    };
+    let promise = addressDao.findStationsByMultipleCondition(query).then((results) => {
         if (!results || results.length == 0) {
             res.api(res_obj.NO_MORE_RESULTS, null);
             return;

@@ -300,10 +300,10 @@ class OrderRow extends Component {
                   V('DeliveryManageDistributeUnSigninOrder') &&
                   <a onClick={this.showUnSignedModal.bind(this)} key="unsignin" href="javascript:;">[未签收]</a>
                 ]
-              : V('DeliveryManageDistributeEditSigninOrder') && props.status == 'EXCEPTION' && 
+              : V('DeliveryManageDistributeEditSigninOrder') && props.status == 'COMPLETED' && 
                     <a onClick={this.showSignedModal.bind(this)} key="signin" href="javascript:;">[编辑签收]</a>
                 ,
-                V('DeliveryManageDistributeEditUnSigninOrder') && props.status == "COMPLETED" && 
+                V('DeliveryManageDistributeEditUnSigninOrder') && props.status == "EXCEPTION" && 
                   <a onClick={this.showUnSignedModal.bind(this)} key="unsignin" href="javascript:;">[编辑未签收]</a>
 
           }

@@ -194,7 +194,7 @@ class Main extends Component {
           <span className="pull-right">
             {
               V("CategoryManageAddPrimaryCategory") ? (
-                <Link className="btn btn-xs btn-theme" to="/cam/primary_category/add">
+                <Link className="btn btn-xs btn-theme" to="/pm/cam/primary_category/add">
                   <Icon icon="plus" />
                   {' '}
                   新建一级分类
@@ -204,7 +204,7 @@ class Main extends Component {
             {'　'}
             {
               V("CategoryManageAddSecondaryCategory") ? (
-                <Link className="btn btn-xs btn-theme" to="/cam/second_category/add">
+                <Link className="btn btn-xs btn-theme" to="/pm/cam/second_category/add">
                   <Icon icon="plus" />
                   {' '}
                   新建二级分类
@@ -276,7 +276,7 @@ class Main extends Component {
                           editAuth.push(<span key="divider2">{'｜'}</span>)
                         }
                         editAuth.push(
-                          <Link to={"/cam/second_category/edit/" + secondaryCategory.id}>编辑</Link>
+                          <Link to={"/pm/cam/second_category/edit/" + secondaryCategory.id}>编辑</Link>
                         );
                       }
 
@@ -388,7 +388,7 @@ class Main extends Component {
                       editAuth.push(
                         <Link
                           key="CategoryManageEditPrimaryCategory"
-                          to={"/cam/primary_category/edit/" + primaryCategory.id}
+                          to={"/pm/cam/primary_category/edit/" + primaryCategory.id}
                         >
                           编辑
                         </Link>

@@ -14,6 +14,8 @@ export default function stations(state = initail_state, action){
       return initail_state;
     case STATION_ACTIONS.GET_STATION_LIST_BY_SCOPE:
       return {...state, station_list: map(action.data.list || [], ({station_id, name}) => ({id: station_id, text: name}))};
+    case STATION_ACTIONS.GET_STATION_LIST_BY_SCOPE_SIGNAL:
+      return {...state, station_list: map(action.data.list || [], ({station_id, name}) => ({id: station_id, text: name}))};
     case STATION_ACTIONS.RESET_STATION_LSIT_WHEN_SCOPE_CHANGE:
       return {...state, station_list: []};
     default :

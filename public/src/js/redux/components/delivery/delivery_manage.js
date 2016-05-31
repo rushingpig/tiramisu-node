@@ -31,7 +31,7 @@ import * as DeliverymanActions from 'actions/deliveryman';
 import * as DeliveryManageActions from 'actions/delivery_manage';
 import * as OrderSupportActions from 'actions/order_support';
 import { triggerFormUpdate } from 'actions/form';
-import { getStationListByScope, resetStationListWhenScopeChange } from 'actions/station_manage';
+import { getStationListByScopeSignal, resetStationListWhenScopeChange } from 'actions/station_manage';
 
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from './order_detail_modal';
@@ -122,9 +122,9 @@ class FilterHeader extends Component {
   }
   componentDidMount(){
     setTimeout(function(){
-      var { getProvincesSignal, getStationListByScope } = this.props;
+      var { getProvincesSignal, getStationListByScopeSignal } = this.props;
       getProvincesSignal('authority');
-      getStationListByScope();
+      getStationListByScopeSignal({signal: 'authority'});
       LazyLoad('noty');
     }.bind(this),0)
   }
@@ -136,7 +136,7 @@ class FilterHeader extends Component {
       this.props.getCitiesSignal(value, 'authority').done(() => {
         $city.trigger('focus'); //聚焦已使city_id的值更新
       });
-      this.props.getStationListByScope({ province_id: value });
+      this.props.getStationListByScopeSignal({ province_id: value, signal: 'authority' });
     }else{
       this.props.resetStationListWhenScopeChange();
     }
@@ -145,7 +145,7 @@ class FilterHeader extends Component {
   onCityChange(callback, e){
     var {value} = e.target;
     if(value != this.refs.city.props['default-value']){ 
-      this.props.getStationListByScope({ city_id: value });
+      this.props.getStationListByScopeSignal({ city_id: value, signal: 'authority' });
     }else{
       this.props.resetStationListWhenScopeChange();
     }
@@ -878,7 +878,7 @@ export default connect(
     ...DeliverymanActions,
     ...DeliveryManageActions,
     triggerFormUpdate,
-    getStationListByScope,
+    getStationListByScopeSignal,
     resetStationListWhenScopeChange
   }, dispatch)
 )(DeliveryManagePannel);

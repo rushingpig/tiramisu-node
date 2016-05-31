@@ -7,6 +7,7 @@ import { Noty, formCompile } from 'utils/index';
 export const GET_ALL_STATIONS_NAME = 'GET_ALL_STATIONS_NAME';
 export const GET_STATION_LIST = 'GET_STATION_LIST';
 export const GET_STATION_LIST_BY_SCOPE = 'GET_STATION_LIST_BY_SCOPE';
+export const GET_STATION_LIST_BY_SCOPE_SIGNAL = 'GET_STATION_LIST_BY_SCOPE_SIGNAL';
 export const RESET_STATION_LSIT_WHEN_SCOPE_CHANGE = 'RESET_STATION_LSIT_WHEN_SCOPE_CHANGE';
 export const GET_STATION_LIST_BY_ID = 'GET_STATION_LIST_BY_ID';
 export const GET_STATIONS_BY_NAME = 'GET_STATIONS_BY_NAME';
@@ -36,6 +37,11 @@ export function getStationList(data = {}, filter_form_name){
 export function getStationListByScope({ province_id, city_id, regionalism_id } = {}){
   return GET(Url.station_list.toString(), { province_id, city_id, regionalism_id, isPage: 0 }, GET_STATION_LIST_BY_SCOPE);
 }
+
+export function getStationListByScopeSignal({ province_id, city_id, regionalism_id, signal } = {}){
+  return GET(Url.station_list.toString(), { province_id, city_id, regionalism_id, isPage: 0, signal }, GET_STATION_LIST_BY_SCOPE_SIGNAL);
+}
+
 export function resetStationListWhenScopeChange(){
   return {
     type: RESET_STATION_LSIT_WHEN_SCOPE_CHANGE

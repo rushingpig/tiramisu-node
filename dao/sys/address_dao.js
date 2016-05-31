@@ -100,7 +100,7 @@ AddressDao.prototype.findStationsByMultipleCondition = function(query_obj) {
     let ds = (query_obj.user) ? query_obj.user.data_scopes : [];
     if (query_obj.signal && !toolUtils.isEmptyArray(ds)) {
         if (!query_obj.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1 && !query_obj.user.is_headquarters) {
-            query += ' and id in ' + dbHelper.genInSql(query_obj.user.city_ids);
+            query += ' and c.id in ' + dbHelper.genInSql(query_obj.user.city_ids);
         }
     }
     let sql = util.format(query, this.table, this.table, this.table, tables.buss_delivery_station);

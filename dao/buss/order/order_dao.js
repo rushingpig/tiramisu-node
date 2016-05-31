@@ -560,7 +560,7 @@ OrderDao.prototype.findOrderList = function(query_data) {
   sql += " left join ?? bds2 on bo.delivery_id = bds2.id";
   params.push(tables.buss_delivery_station);
   if (data_scopes.indexOf(constant.DS.CITY.id) !== -1 && !query_data.user.is_headquarters) {
-    sql += " inner join ?? dr3 on dr3.id = bds2.regionalism_id";
+    sql += " inner join ?? dr3 on dr3.id = br.regionalism_id";
     params.push(tables.dict_regionalism);
 
   }
@@ -731,7 +731,6 @@ OrderDao.prototype.findOrderList = function(query_data) {
     default:
       // do nothing && order by with the db self
   }
-  console.log(sql);
   let promise = null,
     countSql = "",
     result = 0;

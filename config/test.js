@@ -138,7 +138,7 @@ var coupon_host = "http://120.76.101.107:3000";
 
 var tartetatin_host = 'http://120.76.25.32:3007';
 
-var img_host = 'http://o7mffqvw5.bkt.clouddn.com/';
+var img_host = 'http://blisscake.cn/';
 
 module .exports = {
     exp_static_options : exp_static_options,

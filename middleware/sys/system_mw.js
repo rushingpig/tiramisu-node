@@ -8,7 +8,7 @@ function SystemMiddleware(type) {
 }
 
 const tiramisu_env = process.env.NODE_ENV;
-const debug_arr = ['dev', 'development','production','qa','test'];
+const debug_arr = ['dev', 'development','qa','test'];
 
 SystemMiddleware.prototype = {
   // intercept and wrap the ServerResponse instance

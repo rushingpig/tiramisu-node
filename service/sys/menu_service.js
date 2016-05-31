@@ -15,6 +15,8 @@ var dao = require('../../dao'),
     res_obj = require('../../util/res_obj'),
     TiramisuError = require('../../error/tiramisu_error'),
     constant = require('../../common/Constant');
+var _ = require('lodash');
+var co = require('co');
 
 function MenuService() {
 
@@ -52,13 +54,49 @@ MenuService.prototype.addModule = (req,res,next) => {
         name : b.module_name,
         type : 'MODULE'
     };
-    let promise = menuDao.insertMenu(systemUtils.assembleInsertObj(req,menu_obj)).then(insertId => {
-        if(!insertId){
-            throw new TiramisuError(res_obj.FAIL,'新增模块记录异常...');
+    let promise = co(function *() {
+        if (b.parent_id) {
+            let parent = yield menuDao.findModuleById(b.parent_id);
+            if (toolUtils.isEmptyArray(parent)) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, 'not found parent_id...'));
+            parent = parent[0];
+            menu_obj.parent_id = parent.id;
+            menu_obj.parent_ids = (parent.parent_ids + ',' + parent.id).replace(/^,/, '');
+            menu_obj.level = parent.level + 1;
+        } else {
+            menu_obj.parent_id = 0;
+            menu_obj.parent_ids = '';
+            menu_obj.level = 1;
         }
-        res.api();
-    });
-    systemUtils.wrapService(res,next,promise);
+        let insertId = yield menuDao.insertMenu(systemUtils.assembleInsertObj(req, menu_obj));
+        if (!insertId) return Promise.reject(new TiramisuError(res_obj.FAIL, '新增模块记录异常...'));
+    }).then(res.api);
+    systemUtils.wrapService(res, next, promise);
+};
+MenuService.prototype.editModule = (req, res, next) => {
+    let promise = co(function *() {
+        let b = req.body;
+        if (!b.parent_id || !b.module_name) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS));
+        let module_id = req.params.moduleId;
+        let module = yield menuDao.findModuleById(module_id);
+        if (toolUtils.isEmptyArray(module)) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, 'not found moduleId...'));
+        let menu_obj = {
+            type: 'MODULE'
+        };
+        if (b.module_name) {
+            menu_obj.name = b.module_name;
+        }
+        if (b.parent_id) {
+            let parent = yield menuDao.findModuleById(b.parent_id);
+            if (toolUtils.isEmptyArray(parent)) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, 'not found parent_id...'));
+            parent = parent[0];
+            menu_obj.parent_id = parent.id;
+            menu_obj.parent_ids = (parent.parent_ids + ',' + parent.id).replace(/^,/, '');
+            menu_obj.level = parent.level + 1;
+        }
+        let result = yield menuDao.updateMenuById(module_id, systemUtils.assembleUpdateObj(req, menu_obj));
+        if (!result) return Promise.reject(new TiramisuError(res_obj.FAIL, '更新模块记录异常...'));
+    }).then(res.api);
+    systemUtils.wrapService(res, next, promise);
 };
 MenuService.prototype.deleteMenu = (req,res,next) => {
     req.checkParams('privilegeId','请指定要操作的权限ID...').isInt();
@@ -159,9 +197,12 @@ MenuService.prototype.listAllModules = (req,res,next) => {
         if(toolUtils.isEmptyArray(result)){
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
-        let data = {};
+        let data = [];
         result.forEach(curr => {
-            data[curr.id]  = curr.name;
+            curr.module_id = curr.id;
+            curr.module_name = curr.name;
+            curr.module_lv = curr.level;
+            data.push(_.omit(curr, ['id', 'name', 'level']));
         });
         res.api(data);
     });

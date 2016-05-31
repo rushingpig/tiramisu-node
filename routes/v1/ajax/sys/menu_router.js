@@ -25,6 +25,7 @@ module.exports = function(router){
 //******** PUT ********
 //*********************
     router.put('/privilege/:privilegeId',menuService.editMenu);
+    router.put('/module/:moduleId',menuService.editModule);
 
 //************************
 //******** DELETE ********

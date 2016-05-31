@@ -588,3 +588,11 @@ insert into `dict_regionalism` VALUES
 insert into `dict_regionalism` VALUES
 ('410188','郑东新区',410100,'郑东新','3','0371','','中国,河南省,郑州市,郑东新区','','','Zhengdongxin','1',null,null);
 COMMIT;
+
+# 2016-05-26 Wei Zhao
+# 菜单模块增加等级
+ALTER TABLE tiramisu.sys_menu ALTER COLUMN parent_id SET DEFAULT 0;
+ALTER TABLE tiramisu.sys_menu ALTER COLUMN parent_ids SET DEFAULT '';
+ALTER TABLE tiramisu.sys_menu ADD level tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '层级';
+UPDATE tiramisu.sys_menu SET parent_id = 0;
+UPDATE tiramisu.sys_menu SET parent_ids = '';

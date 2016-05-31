@@ -390,7 +390,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                 }
                 if (isAdd) {
                     let curr = products[i];
-                    option += '增加{' + curr.product_name + '}\n';
+                    option += '增加{' + curr.name + '}\n';
                     let order_sku_obj = {
                         order_id: orderId,
                         sku_id: curr.sku_id,
@@ -415,7 +415,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                 }
                 if (isDelete && _res[i].sku_id) {
                     let curr = _res[i];
-                    option += '删除{' + curr.product_name + '}\n';
+                    option += '删除{' + curr.name + '}\n';
                     delete_skuIds.push(curr.sku_id);
                 }
             }
@@ -441,11 +441,11 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
             yield deliveryDao.updateDeliveryRecord(orderId, null, systemUtils.assembleUpdateObj(req, delivery_pay_obj));
 
             let historyArr = [];
+            historyArr.push([orderId, order_sign_history_obj.option, user_id, new Date()]);
+            historyArr.push([orderId, delivery_pay_history_obj.option, user_id, new Date()]);
             if (order_history_obj.option != '') {
                 historyArr.push([orderId, order_history_obj.option, user_id, new Date()]);
             }
-            historyArr.push([orderId, order_sign_history_obj.option, user_id, new Date()]);
-            historyArr.push([orderId, delivery_pay_history_obj.option, user_id, new Date()]);
             yield orderDao.batchInsertOrderHistory(historyArr);
 
             // if (refund_amount > 0) {

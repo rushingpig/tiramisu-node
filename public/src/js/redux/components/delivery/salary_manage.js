@@ -100,11 +100,7 @@ class FilterHeader extends Component{
 	}
 	render(){
 		var {
-<<<<<<< 1e72c6ac1748b2b7323f1009e8be26ff674c0fd2
 			area,stations
-=======
-			area, stations
->>>>>>> 暂存修改模块一二级
 		} = this.props;
 		var {provinces , cities} = area ;
 		var { filter_deliveryman_results, search_ing } = this.state;
@@ -148,11 +144,7 @@ class FilterHeader extends Component{
 					 		<Select name='city' options = { cities} 
 					 			onChange= {this.onCityChange.bind(this)}
 					 			default-text = '请选择城市'/>,
-<<<<<<< 1e72c6ac1748b2b7323f1009e8be26ff674c0fd2
 					 		<Select ref='station' name = 'station' options = { stations }
-=======
-					 		<Select ref='station' name = 'station' options = { stations } 
->>>>>>> 暂存修改模块一二级
 					 			default-text = '请选择配送站' />
 					 	]:null
 					 }
@@ -256,13 +248,9 @@ class FilterHeader extends Component{
 		var filterdata =  {};
 		filterdata.begin_time = this.state.begin_time;
 		filterdata.end_time = this.state.end_time;
-<<<<<<< 1e72c6ac1748b2b7323f1009e8be26ff674c0fd2
 		var station_id = parseInt($(findDOMNode(this.refs.station))[0].value);
 		if(station_id != this.refs.station.props['default-value'])
 			filterdata.station_id = station_id;
-=======
-		filterdata.station_id = $(findDOMNode(this.refs.station))[0].value;
->>>>>>> 暂存修改模块一二级
 		var deliveryman_id = this.refs.deliveryman.value;
 		if(deliveryman_id != 0){
 			filterdata.deliveryman_id = deliveryman_id;			 

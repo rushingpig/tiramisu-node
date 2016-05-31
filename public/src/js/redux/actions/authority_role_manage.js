@@ -83,18 +83,6 @@ export function gotModuleSrcs(){
    ], GOT_MODULE_SRCS);*/
 }
 
-export const GOT_MODULE_SRCS = 'GOT_MODULE_SRCS';
-export function gotModuleSrcs(){
-   return GET(Url.module_list.toString(),null, GOT_MODULE_SRCS);
-/*   return TEST([
-     {module_id: 1, module_name: '订单管理', module_lv: 1, parent_id:0},
-     {module_id: 2, module_name: '送货管理', module_lv: 1, parent_id:0},
-     {module_id: 3, module_name: '配送管理', module_lv: 1, parent_id: 0},
-     {module_id: 28, module_name: '订单管理', module_lv: 2, parent_id: 1},
-     {module_id: 5, module_name: '订单转送货单', module_lv: 2, parent_id: 2}
-   ], GOT_MODULE_SRCS);*/
-}
-
 export const RESET_ROLR_AUTHORITY = 'RESET_ROLR_AUTHORITY';
 export function resetRoleAuthority(editable){
   return {

@@ -225,6 +225,7 @@ class FilterHeader extends Component{
 		//this.props.actions.getCities(value);
 	    this.props.actions.getCitiesSignal(value, 'authority').done(() => {
 	      $city.trigger('focus'); //聚焦已使city_id的值更新
+	      this.props.getStationListByScopeSignal({signal:'authority', province_id: value});
 	    });
 	}
 	onCityChange(e){
@@ -240,7 +241,7 @@ class FilterHeader extends Component{
 			this.props.actions.getCityDeliveryman(value).done(() => {
 				$deliveryman.trigger('focus');
 				//this.props.actions.getCityStations(value);
-				this.props.actions.getStationListByScopeSignal({signal:'authority', city_id: value})
+				this.props.getStationListByScopeSignal({signal:'authority', city_id: value})
 			});			
 		}
 
@@ -275,7 +276,7 @@ class FilterHeader extends Component{
 			LazyLoad('noty');
 			this.props.actions.getProvincesSignal('authority');
 			this.props.actions.getAllDeliveryman();
-			this.props.actions.getStationListByScopeSignal({signal: 'authority'});
+			this.props.getStationListByScopeSignal({signal:'authority'});
 		}, 0);		
 	}
 }
@@ -503,7 +504,10 @@ class DeliveryManSalaryManagePannel extends Component{
 		return (
 				<div className=''>
 					{/*<TopHeader {...{exportExcel}}/>*/}
-					<FilterHeader  {...{area,deliveryman,stations: stations.station_list}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, ...stationSalaryActions, exportExcel, getStationListByScopeSignal, resetStationListWhenScopeChange},dispatch) }}/>
+					<FilterHeader  {...{area,deliveryman,stations: stations.station_list}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, 
+											...stationSalaryActions, exportExcel, 
+											resetStationListWhenScopeChange},dispatch) }}
+									getStationListByScopeSignal = { getStationListByScopeSignal }/>
 					<div className='panel' >
 						<header className="panel-heading">工资信息列表</header>
 						<div className="panel-body">
@@ -576,6 +580,7 @@ class DeliveryManSalaryManagePannel extends Component{
 		this.onTbScroll('tab','box',1);
 		LazyLoad('chinese_py');
 		this.props.actions.resetDeliveryRecord();
+
 		/*this.props.actions.getDeliveryRecord();*/
 		//this.props.actions.getProvinces();
 /*		window.onload = function (){

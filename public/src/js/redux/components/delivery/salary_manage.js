@@ -248,9 +248,11 @@ class FilterHeader extends Component{
 		var filterdata =  {};
 		filterdata.begin_time = this.state.begin_time;
 		filterdata.end_time = this.state.end_time;
-		var station_id = parseInt($(findDOMNode(this.refs.station))[0].value);
-		if(station_id != this.refs.station.props['default-value'])
-			filterdata.station_id = station_id;
+		if(this.refs.station){
+			var station_id = parseInt($(findDOMNode(this.refs.station))[0].value);
+			if(station_id != this.refs.station.props['default-value'])
+				filterdata.station_id = station_id;			
+		}
 		var deliveryman_id = this.refs.deliveryman.value;
 		if(deliveryman_id != 0){
 			filterdata.deliveryman_id = deliveryman_id;			 

@@ -18,6 +18,7 @@ import { AreaActionTypes1 } from 'actions/action_types';
 import * as stationSalaryActions from 'actions/station_salary';
 import * as FormActions from 'actions/form';
 import * as DeliverymanActions from 'actions/deliveryman';
+import { getStationListByScopeSignal, resetStationListWhenScopeChange } from 'actions/station_manage';
 
 import LazyLoad from 'utils/lazy_load';
 import { Noty, dateFormat, parseTime,getDate } from 'utils/index';
@@ -238,7 +239,8 @@ class FilterHeader extends Component{
 		}else{
 			this.props.actions.getCityDeliveryman(value).done(() => {
 				$deliveryman.trigger('focus');
-				this.props.actions.getCityStations(value);
+				//this.props.actions.getCityStations(value);
+				this.props.actions.getStationListByScopeSignal({signal:'authority', city_id: value})
 			});			
 		}
 
@@ -273,7 +275,7 @@ class FilterHeader extends Component{
 			LazyLoad('noty');
 			this.props.actions.getProvincesSignal('authority');
 			this.props.actions.getAllDeliveryman();
-
+			this.props.actions.getStationListByScopeSignal({signal: 'authority'});
 		}, 0);		
 	}
 }
@@ -477,9 +479,9 @@ class DeliveryManSalaryManagePannel extends Component{
 		this.viewOperationRecordModal = this.viewOperationRecordModal.bind(this);
 	}
 	render(){
-		var {area, dispatch, deliveryman, main, loading, refresh} = this.props;
-		var {exportExcel , getDeliveryProof, getOrderOptRecord, resetOrderOptRecord} = this.props.actions;
-		var {deliveryRecord, check_order_info, active_order_id, proof, operationRecord, stations} = main;
+		var {area, dispatch, deliveryman, main, loading, refresh, stations} = this.props;
+		var {exportExcel , getDeliveryProof, getOrderOptRecord, resetOrderOptRecord, getStationListByScopeSignal, resetStationListWhenScopeChange} = this.props.actions;
+		var {deliveryRecord, check_order_info, active_order_id, proof, operationRecord} = main;
 		var { viewCredentialModal ,viewOperationRecordModal} = this;
 		var {provinces, cities } = area;
 		var amount_total = 0;
@@ -501,7 +503,7 @@ class DeliveryManSalaryManagePannel extends Component{
 		return (
 				<div className=''>
 					{/*<TopHeader {...{exportExcel}}/>*/}
-					<FilterHeader  {...{area,deliveryman,stations}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, ...stationSalaryActions, exportExcel},dispatch) }}/>
+					<FilterHeader  {...{area,deliveryman,stations: stations.station_list}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, ...stationSalaryActions, exportExcel, getStationListByScopeSignal, resetStationListWhenScopeChange},dispatch) }}/>
 					<div className='panel' >
 						<header className="panel-heading">工资信息列表</header>
 						<div className="panel-body">
@@ -697,6 +699,8 @@ function mapDispatchToProps(dispatch){
 	  	...AreaActions(AreaActionTypes1), 
 	    ...stationSalaryActions,
 	    ...DeliverymanActions,
+	    getStationListByScopeSignal,
+	    resetStationListWhenScopeChange
 	  }, dispatch)};
 	actions.dispatch = dispatch;
 	return actions;

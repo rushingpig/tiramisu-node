@@ -1207,10 +1207,10 @@ DeliveryService.prototype.signRecord = (req, res, next)=> {
     }
     let promise = co(function *() {
         let order_id = systemUtils.getDBOrderId(req.params.orderId);
-        let _res = orderDao.findOrderById(order_id);
+        let _res = yield orderDao.findOrderById(order_id);
         if (toolUtils.isEmptyArray(_res)) {
             return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID));
-        } else if (_res[0].status !== Constant.OS.COMPLETED || _res[0].status !== Constant.OS.EXCEPTION) {
+        } else if ([Constant.OS.COMPLETED, Constant.OS.EXCEPTION].indexOf(_res[0].status) == -1) {
             return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID));
         }
 
@@ -1221,6 +1221,7 @@ DeliveryService.prototype.signRecord = (req, res, next)=> {
         let deliveryman_id = req.body.deliveryman_id;
         let deliveryman_name = req.body.deliveryman_name;
         let deliveryman_mobile = req.body.deliveryman_mobile;
+        let is_pos_pay = req.body.is_POS;
         let order_obj = null;
         let record_obj = null;
         let order_history_obj = {
@@ -1234,17 +1235,17 @@ DeliveryService.prototype.signRecord = (req, res, next)=> {
             record_obj.deliveryman_id = deliveryman_id;
             order_history_obj.option += '修改{配送员}为{' + deliveryman_name + '(' + deliveryman_mobile + ')}\n';
         }
-        if (req.body.is_POS !== undefined) {
-            if(!order_obj) order_obj = {};
-            order_obj.is_pos_pay = req.body.is_POS ? 1 : 0;
+        if (is_pos_pay !== undefined && is_pos_pay != _res[0].is_pos_pay) {
+            if (!order_obj) order_obj = {};
+            order_obj.is_pos_pay = is_pos_pay ? 1 : 0;
             order_history_obj.option += '修改{收款方式}为{' + (order_obj.is_pos_pay ? 'POS' : '现金') + '}\n';
         }
 
-        if(order_obj) order_obj = systemUtils.assembleUpdateObj(req, order_obj);
-        if(record_obj) record_obj = systemUtils.assembleUpdateObj(req, record_obj);
+        if (order_obj) order_obj = systemUtils.assembleUpdateObj(req, order_obj);
+        if (record_obj) record_obj = systemUtils.assembleUpdateObj(req, record_obj);
 
-        yield deliveryDao.updateDeliveryRecord(order_id, order_obj, record_obj);
-        if (order_history_obj.option != '') {
+        if (order_obj || record_obj) {
+            yield deliveryDao.updateDeliveryRecord(order_id, order_obj, record_obj);
             yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
         }
 

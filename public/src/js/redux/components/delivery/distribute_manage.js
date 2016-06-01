@@ -156,7 +156,7 @@ class FilterHeader extends Component {
                 className="form-control" placeholder="配送员拼音首字母或手机号" 
                 onChange = {this.filterHandler.bind(this)} />
             </div>
-            <select onChange={this.onSelectDeliveryman.bind(this)} {...deliveryman_id} value={this.state.selected_deliveryman_id} name= 'deliveryman' ref='deliveryman' className="form-control input-sm"  style={{height:'27px',minWidth:100}}>
+            <select onChange={this.onSelectDeliveryman.bind(this)} {...deliveryman_id} name= 'deliveryman' ref='deliveryman' className="form-control input-sm"  style={{height:'27px',minWidth:100}}>
               {
                 content.length
                 ? content

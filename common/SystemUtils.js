@@ -10,6 +10,8 @@ var dateUtils = require('./DateUtils'),
   version = require('../package.json').version,
   constant = require('./Constant');
 
+const OS = Constant.OS;
+
 module.exports = {
   /**
    * wrap the service promise for catch error
@@ -171,6 +173,34 @@ module.exports = {
   },
   isDoDataFilter : (query_data) => {
     return query_data && !(query_data.user.is_admin || query_data.user.data_scopes.indexOf(Constant.DS.ALLCOMPANY.id) != -1);
+  },
+  isOrderCanUpdateStatus: (curr_status, new_status)=> {
+    let result;
+    switch (curr_status) {
+      case OS.UNTREATED:  // 未处理
+        result = [OS.CANCEL, OS.UNTREATED, OS.TREATED].indexOf(new_status);
+        break;
+      case OS.TREATED:  // 已处理
+        result = [OS.CANCEL, OS.TREATED, OS.STATION].indexOf(new_status);
+        break;
+      case OS.STATION:  // 已分配配送站
+        result = [OS.CANCEL, OS.STATION, OS.CONVERT].indexOf(new_status);
+        break;
+      case OS.CONVERT:  // 已转换
+        result = [OS.CANCEL, OS.INLINE].indexOf(new_status);
+        break;
+      case OS.INLINE:  // 生产中
+        result = [OS.EXCEPTION, OS.DELIVERY].indexOf(new_status);
+        break;
+      case OS.DELIVERY:  // 已分配配送员
+        result = [OS.EXCEPTION, OS.COMPLETED].indexOf(new_status);
+        break;
+      case OS.CANCEL:
+      case OS.COMPLETED:
+      case OS.EXCEPTION:
+        return false;
+        break;
+    }
+    return (result !== undefined && result !== -1);
   }
-
 };

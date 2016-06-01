@@ -305,12 +305,9 @@ class OrderRow extends Component {
                   V('DeliveryManageDistributeUnSigninOrder') &&
                   <a onClick={this.showUnSignedModal.bind(this)} key="unsignin" href="javascript:;">[未签收]</a>
                 ]
-              : [
-                  V('DeliveryManageDistributeEditSigninOrder') && props.status == 'COMPLETED' && 
-                    <a onClick={this.showSignedModal.bind(this)} key="signin" href="javascript:;">[编辑签收]</a>
-                  ,
-                  V('DeliveryManageDistributeEditUnSigninOrder') && props.status == "EXCEPTION" && 
-                    <a onClick={this.showUnSignedModal.bind(this)} key="unsignin" href="javascript:;">[编辑未签收]</a>]
+              : 
+                  V('DeliveryManageDistributeEditSigninOrder') && 
+                    <a onClick={this.showEditModal.bind(this)} key="signin" href="javascript:;">[编辑]</a>
 
           }
         </td>
@@ -356,6 +353,10 @@ class OrderRow extends Component {
     this.props.showUnSignedModal(this.props);
     e.stopPropagation();
   }
+  showEditModal(e){
+    this.props.showEditModal(this.props);
+    e.stopPropagation();
+  }
   checkOrderHandler(e){
     var { order_id, checkOrderHandler } = this.props;
     checkOrderHandler(order_id, e.target.checked);
@@ -377,6 +378,7 @@ class DeliveryDistributePannel extends Component {
     }
     this.showSignedModal = this.showSignedModal.bind(this);
     this.showUnSignedModal = this.showUnSignedModal.bind(this);
+    this.showEditModal = this.showEditModal.bind(this);
     this.checkOrderHandler = this.checkOrderHandler.bind(this);
     this.activeOrderHandler = this.activeOrderHandler.bind(this);
     this.viewOrderDetail = this.viewOrderDetail.bind(this);
@@ -387,17 +389,17 @@ class DeliveryDistributePannel extends Component {
   }
   render(){
     var { filter, area, deliveryman, orders, main, all_order_srcs, all_pay_modes, signOrder, unsignOrder, 
-      searchByScan, exportExcel, getOrderOptRecord, resetOrderOptRecord, operationRecord, D_  } = this.props;
+      searchByScan, exportExcel, getOrderOptRecord, resetOrderOptRecord, operationRecord, D_, editSignedOrder  } = this.props;
     var { submitting } = main;
     var { loading, refresh, page_no, checkall, total, list, check_order_info, active_order_id, get_products_detail_ing } = orders;
-    var { search, showSignedModal, showUnSignedModal, showScanModal, checkOrderHandler, 
+    var { search, showSignedModal, showUnSignedModal, showEditModal,showScanModal, checkOrderHandler, 
       viewOrderDetail, activeOrderHandler, viewOrderOperationRecord, refreshDataList } = this;
 
     var {scan} = main; //扫描
     var content = list.map((n, i) => {
       return <OrderRow 
         key={n.order_id} 
-        {...{...n, active_order_id, showSignedModal, showUnSignedModal, 
+        {...{...n, active_order_id, showSignedModal, showUnSignedModal, showEditModal,
           viewOrderDetail, checkOrderHandler, activeOrderHandler, viewOrderOperationRecord, D_}}
       />;
     })
@@ -463,6 +465,7 @@ class DeliveryDistributePannel extends Component {
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} all_order_srcs={all_order_srcs.map} all_pay_modes={all_pay_modes} />
         <SignedModal ref="SignedModal" {...{submitting, signOrder,loading,refresh, D_, callback: refreshDataList}} />
         <UnSignedModal ref="UnSignedModal" {...{submitting, unsignOrder, callback: refreshDataList}} />
+        <EditModal ref="EditModal" {...{D_, editSignedOrder}}/>
         <ScanModal ref="ScanModal" submitting={submitting} search={searchByScan}  />
         <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
       </div>
@@ -521,6 +524,11 @@ class DeliveryDistributePannel extends Component {
   }
   showScanModal(){
     this.refs.ScanModal.show();
+  }
+  showEditModal(n){
+    this.props.getDeliverymanAtSameStation(n.order_id);
+    this.props.getOrderDetail(n.order_id);
+    this.refs.EditModal.show(n);
   }
 
 }
@@ -1183,3 +1191,86 @@ var UnSignedModal = React.createClass({
     this.setState(this.getInitialState());
   },
 })
+
+class EditModal extends Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      pay_way:1,
+      deliveryman_id:0,
+      deliverymanAtSameStation:[],
+      is_POS:0,
+      total_amount:0,
+      order_id:'',
+    } 
+  }
+
+  render(){
+    var {deliverymanAtSameStation,is_POS, total_amount, deliveryman_id} = this.state;
+    var pay_way = is_POS ? 2:1;
+    return(
+      <StdModal ref='modal' title='编辑订单完成页面' onConfirm={this.submitHandler.bind(this)}>
+        <div className='form-group mg-15 form-inline'>
+          <div className='row'>
+            <div className='col-xs-6'>
+              <label>配送员：</label>
+              <Select options={deliverymanAtSameStation} value={deliveryman_id}/>
+            </div>
+            <div className='col-xs-6'>
+              <label>货到付款金额：￥</label>
+              <input value={total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+              {
+                total_amount != 0 ?
+                <select value={pay_way} ref='pay_way' name='pay_way' value={this.state.pay_way} className='form-control input-xs' onChange={this.onPayWayChange}>
+                  <option value='1'>现金</option>
+                  <option value='2'>POS机</option>
+                </select>
+                :null
+              }               
+            </div>
+          </div>
+        </div>
+      </StdModal>
+      )
+  }
+  show(order){
+    this.setState({total_amount: order.total_amount, is_POS: order.is_POS, order_id: order.order_id});
+    this.refs.modal.show();
+  }
+  componentWillReceiveProps(nextProps){
+    var { D_ } = nextProps;
+    var {deliverymanAtSameStation,current_id} = D_;
+    this.setState({deliverymanAtSameStation, deliveryman_id: current_id});
+  }
+  submitHandler(){
+    var {deliverymanAtSameStation, deliveryman_id, order_id} = this.state;
+    var deliveryman_name ='';
+    var deliveryman_mobile = '';
+    deliverymanAtSameStation.forEach( m => {
+      if(m.deliveryman_id == deliveryman_id){
+        deliveryman_mobile = m.deliveryman_mobile;
+        deliveryman_name = m.deliveryman_name;
+      }
+    })
+    var form_data = {};
+    form_data.deliveryman_id = deliveryman_id;
+    form_data.deliveryman_name = deliveryman_name;
+    form_data.deliveryman_mobile = deliveryman_mobile;
+    if(this.state.total_amount != 0){
+      if(this.refs.pay_way.value == 1){
+        form_data.is_POS = 0;
+      }else{
+        form_data.is_POS = 1;
+      }
+    }
+    this.props.editSignedOrder(order_id, form_data).done(function(){
+        this.refs.modal.hide();
+        Noty('success', '编辑成功！');
+      }.bind(this))
+      .fail(function(msg, code){
+        Noty('error', msg || '编辑失败')
+    })
+  }
+}
+
+

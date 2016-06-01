@@ -66,6 +66,7 @@ var D_state = {
   spareparts: [],
   orderSpareparts: [],
   current_id: -1,
+  pay_way: -1,
   orderDetail:{},
 }
 

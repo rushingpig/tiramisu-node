@@ -40,6 +40,7 @@ const URL = (function() {
     pay_modes:                '/pay/modes',
     order_sign:               '/order/:orderId/signin',
     order_unsign:             '/order/:orderId/unsignin',
+    order_sign_edit:          '/delivery/order/:orderId/signrecord',
     order_opt_record:         '/order/:orderId/history',
     order_exception:          '/order/:orderId/exception',
     cancel_order:             '/order/:orderId/cancel',

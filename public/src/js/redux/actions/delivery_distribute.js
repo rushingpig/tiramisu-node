@@ -105,6 +105,11 @@ export function getOrderDetail(orderId) {
   return GET( Url.order_detail.toString(orderId), null ,GET_ORDER_DETAIL );
 }
 
+export const EDIT_SIGNED_ORDER = 'EDIT_SIGNED_ORDER';
+export function editSignedOrder(orderId, form_data){
+  return POST( Url.order_sign_edit.toString(orderId), {form_data} , EDIT_SIGNED_ORDER)
+}
+
 
 
 

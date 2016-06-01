@@ -82,6 +82,7 @@ var operation_record = {
   page_no: 0,
   total: 0,
   list: [],
+  loading: true,
 }
 
 export function operationRecord(state = operation_record, action){
@@ -89,7 +90,7 @@ export function operationRecord(state = operation_record, action){
     case OrderActions.RESET_ORDER_OPT_RECORD:
       return {...operation_record};
     case OrderActions.GET_ORDER_OPT_RECORD:
-      return {...state, ...action.data}
+      return {...state, ...action.data, loading: false}
     default:
       return state;
   }

@@ -35,7 +35,8 @@
         .title-container{ float: left; width: 419px; }
         .title{ font-size: 30px; font-weight: bold; line-height: 40px; height: 40px; font-family: '华文中宋'; }
         .eng .title{ font-size: 20px; line-height: 33px; font-family: inherit;}
-        .main-table{ width: 730px; border-collapse: collapse; border: 1px solid #000000; height: 300px; float: left; text-align: center; }
+        .box{ display: -webkit-box; -webkit-box-align: center; }
+        .main-table{ width: 730px; border-collapse: collapse; border: 1px solid #000000; height: 300px; /*float: left;*/ text-align: center; }
         .col-order-id{ width: 65px; }
         .col-order-id-value{ width: 120px; }
         .col-order-time{ width: 70px; }
@@ -49,9 +50,9 @@
         .eng .col-order-src{ width: 102px; }
         .eng .col-order-src-value{ }
         .discount-price{ width: 65px; }
-        .right-side-info{ float: left; padding: 0; margin: 0; width: 10px; }
+        .right-side-info{ /*float: left;*/ padding: 0; margin: 0; width: 10px; }
         .right-side-info ul{ list-style: none; padding: 8px 0 0 3px; margin: 0; width: 10px; font-size: 13px; }
-        .barcode-container{ float: left; width: 94px; height: 369px; position: relative; }
+        .barcode-container{ /*float: left;*/ width: 94px; height: 369px; position: relative; }
         .barcode-inner{ position:absolute; top: 43%; left: -120px; transform: rotate(90deg); margin-left: 13px; }
         body[data-ip=hk] .barcode-inner{ top: 40%; }
         tr { margin: 0 auto; height: 16px; padding: 0; }
@@ -102,8 +103,8 @@
     <script src="/lib/vendor/template-native.js"></script>
     <script src="/plugins/barcode/jsbarcode.all.min.js"></script>
 </head>
- <body data-ip="{{region}}" onload="init()">
-<!--<body data-ip="HK" onload="init()">-->
+<body data-ip="{{region}}" onload="init()">
+<!-- <body data-ip="HK" onload="init()"> -->
 <div class="tools">
 <!-- <button class="change-font no-print">字体切换</button> -->
 <button class="change-lan no-print">中英文切换</button>
@@ -126,7 +127,7 @@
                 </div>
             </div>
 
-            <div class="clearfix">
+            <div class="box">
                 <table class="main-table" border="1">
                     <tbody>
                     <tr>
@@ -195,7 +196,7 @@
 
                     <tr>
                         <td colspan="6"><%= lan.total %></td>
-                        <td>&#165;{{total_amount}}</td>
+                        <td><%= lan.currency_symbol %>{{total_amount}}</td>
                         <td colspan="2"></td>
                     </tr>
                     <tr>
@@ -311,6 +312,7 @@
             product_choco_board: '巧克力牌内容',
 
             total: '合计',
+            currency_symbol: '￥',
             free_product: '免费产品',
             greeting_card: '祝福贺卡',
             custom_name: '商品名称',
@@ -358,6 +360,7 @@
             product_choco_board: '巧克力牌內容',
 
             total: '合计',
+            currency_symbol: '$',
             free_product: '免費產品',
             greeting_card: '祝福賀卡',
             custom_name: '商品名稱',
@@ -404,6 +407,7 @@
             product_choco_board: 'The Content of Chocolate Brand',
 
             total: 'Total',
+            currency_symbol: '$',
             free_product: 'Free Product',
             greeting_card: 'Greeting Card',
             custom_name: 'Product Name',

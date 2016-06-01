@@ -22,7 +22,7 @@ export function getOrderList(data){
   return (dispatch, getState) => {
     var filter_data = getValues(getState().form.order_manage_filter);
     filter_data = formCompile(filter_data);
-    return GET(Url.orders.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch)
+    return GET(Url.orders.toString() + '?v=' + new Date().getTime(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch)
       // .fail(function(msg, code){
       //   if(code == NO_MORE_CODE){
       //     Noty('alert', '没有查询到任何结果');

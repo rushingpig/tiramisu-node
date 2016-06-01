@@ -14,7 +14,7 @@ var OperationRecordModal = React.createClass({
   },
   render(){
     var { order_id, owner_mobile, owner_name } = this.state.data;
-    var { page_no, total, list } = this.props;
+    var { page_no, total, list, loading } = this.props;
     var content = list.map( (n, i) => {
       return (
         <tr key={n.order_id + '' + i}>
@@ -44,7 +44,7 @@ var OperationRecordModal = React.createClass({
             </tr>
             </thead>
             <tbody>
-            {content.length ? content : get_table_empty()}
+            { tableLoader( loading, content ) }
             </tbody>
           </table>
         </div>

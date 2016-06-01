@@ -95,6 +95,9 @@ export function getOrderDistributeList(data){
     // dispatch({ type: GET_ORDER_LIST_ING });
     delete filter_data.province_id;
     delete filter_data.city_id;
+    if(filter_data.deliveryman_id == 0){
+      delete filter_data.deliveryman_id;
+    }
     if( filter_data.order_ids ){
       return searchByScanInDistributeManage( filter_data.order_ids )(dispatch); //按扫描结果搜索
     }else{

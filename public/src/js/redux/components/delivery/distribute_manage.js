@@ -77,8 +77,13 @@ class FilterHeader extends Component {
     var { deliveryman } = nextProps;
     //只需要初始化一次
     if(deliveryman.load_success && !this.state._hasInitial){
+      var all = {} ;
+      all.deliveryman_id = 0;
+      all.deliveryman_name = '选择配送员';
+      all.deliveryman_mobile = '';
       this.setState({ _hasInitial:true});
       var { list } = deliveryman;
+      list.unshift(all);
       var build = function(){
         var new_data = list.map(function(n){
           n.py = window.makePy(n.deliveryman_name);

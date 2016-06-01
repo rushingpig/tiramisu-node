@@ -265,6 +265,7 @@ OrderService.prototype.getOrderDetail = (req, res, next) => {
         data.total_amount = curr.total_amount;  // 总应收金额
         data.total_discount_price = curr.total_discount_price;  // 总实际售价
         data.total_original_price = curr.total_original_price;  // 总原价
+        data.is_POS = curr.is_pos_pay;
       }
       if (curr.sku_id) {
         let product_obj = {

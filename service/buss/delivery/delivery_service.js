@@ -1210,8 +1210,6 @@ DeliveryService.prototype.signRecord = (req, res, next)=> {
         let _res = orderDao.findOrderById(order_id);
         if (toolUtils.isEmptyArray(_res)) {
             return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID));
-        } else if (updated_time !== _res[0].updated_time) {
-            return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
         } else if (_res[0].status !== Constant.OS.COMPLETED || _res[0].status !== Constant.OS.EXCEPTION) {
             return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID));
         }

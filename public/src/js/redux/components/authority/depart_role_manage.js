@@ -356,6 +356,21 @@ class EditRoleModal extends Component{
   }
 }
 
+class RoleDetailModal extends Component{
+  constructor(props){
+    super(props);
+  }
+  render(){
+    return (
+      <StdModal footer = {false} title = '查看角色详情' ref = 'viewRoleDetail' >
+        <RoleFormEdit {...{all_order_srcs}} handle_role_id={handle_role_id} hide={this.hide} editable={true} 
+          ref='roleFormEdit' depts={depts} dataaccess={dataaccess} changeRole={changeRole} 
+          getOrderSrcs={getOrderSrcs} triggerFormUpdate={triggerFormUpdate} _disabled={true}/>      
+      </StdModal>
+      )
+  }
+}
+
 class DeleteRoleModal extends Component{
   constructor(props){
     super(props);

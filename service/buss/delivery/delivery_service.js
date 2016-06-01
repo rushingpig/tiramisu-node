@@ -1198,4 +1198,60 @@ DeliveryService.prototype.exportRecordExcel = (req, res)=> {
         res.render('error',{err:'该条件下没有可选配送记录,请重新筛选...'});
     });
 };
+DeliveryService.prototype.signRecord = (req, res, next)=> {
+    req.checkParams('orderId').notEmpty().isOrderId();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let promise = co(function *() {
+        let order_id = systemUtils.getDBOrderId(req.params.orderId);
+        let _res = orderDao.findOrderById(order_id);
+        if (toolUtils.isEmptyArray(_res)) {
+            return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID));
+        } else if (updated_time !== _res[0].updated_time) {
+            return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
+        } else if (_res[0].status !== Constant.OS.COMPLETED || _res[0].status !== Constant.OS.EXCEPTION) {
+            return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID));
+        }
+
+        if (req.body.deliveryman_id === undefined && req.body.is_POS === undefined) {
+            return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID));
+        }
+
+        let deliveryman_id = req.body.deliveryman_id;
+        let deliveryman_name = req.body.deliveryman_name;
+        let deliveryman_mobile = req.body.deliveryman_mobile;
+        let order_obj = null;
+        let record_obj = null;
+        let order_history_obj = {
+            order_id: order_id,
+            option: ''
+        };
+        if (deliveryman_id !== undefined && deliveryman_id != _res[0].deliveryman_id) {
+            order_obj = {};
+            record_obj = {};
+            order_obj.deliveryman_id = deliveryman_id;
+            record_obj.deliveryman_id = deliveryman_id;
+            order_history_obj.option += '修改{配送员}为{' + deliveryman_name + '(' + deliveryman_mobile + ')}\n';
+        }
+        if (req.body.is_POS !== undefined) {
+            if(!order_obj) order_obj = {};
+            order_obj.is_pos_pay = req.body.is_POS ? 1 : 0;
+            order_history_obj.option += '修改{收款方式}为{' + (order_obj.is_pos_pay ? 'POS' : '现金') + '}\n';
+        }
+
+        if(order_obj) order_obj = systemUtils.assembleUpdateObj(req, order_obj);
+        if(record_obj) record_obj = systemUtils.assembleUpdateObj(req, record_obj);
+
+        yield deliveryDao.updateDeliveryRecord(order_id, order_obj, record_obj);
+        if (order_history_obj.option != '') {
+            yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history_obj, true));
+        }
+
+        res.api();
+    });
+    systemUtils.wrapService(res, next, promise);
+};
 module.exports = new DeliveryService();

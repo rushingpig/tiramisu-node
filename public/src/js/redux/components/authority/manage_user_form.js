@@ -175,7 +175,7 @@ class ManageAddForm extends Component{
             <div className="form-group form-inline" style={{clear:'both',}}>
               <label className={`input-xs ${station_ids.error}`}>{'所属配送站：'}</label>
                 <div style={{'marginLeft':60,}}>
-                  <CheckBoxGroup name="配送站" {...tmp_stations} checkboxs={[{'id':999,'text':'所属城市全部配送站'},...stations]} value={stations_in.value || []}/>
+                  <CheckBoxGroup name="配送站" {...tmp_stations} checkboxs={[{'id':999,'text':'所属城市全部配送站'},...stations]} value={stations_in.value || []} onChange={this.tmpStationChange.bind(this, tmp_stations.onChange)}/>
                 </div>
               <label  className="input-xs">{'已选配送站：'}</label>
                 <div style={{'marginLeft':60,}}>
@@ -239,6 +239,10 @@ class ManageAddForm extends Component{
         Noty('error', msg || '操作异常');
       });
 
+  }
+  tmpStationChange(e){
+    //var {value} = e.target;
+    var value = 1;
   }
   cancel(){
     history.push("/am/user");

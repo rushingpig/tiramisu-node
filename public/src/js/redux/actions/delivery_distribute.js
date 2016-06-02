@@ -107,7 +107,7 @@ export function getOrderDetail(orderId) {
 
 export const EDIT_SIGNED_ORDER = 'EDIT_SIGNED_ORDER';
 export function editSignedOrder(orderId, form_data){
-  return POST( Url.order_sign_edit.toString(orderId), {form_data} , EDIT_SIGNED_ORDER)
+  return POST( Url.order_sign_edit.toString(orderId), {...form_data} , EDIT_SIGNED_ORDER)
 }
 
 

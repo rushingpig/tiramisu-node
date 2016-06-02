@@ -178,7 +178,7 @@ module.exports = {
     let result;
     switch (curr_status) {
       case OS.UNTREATED:  // 未处理
-        result = [OS.CANCEL, OS.UNTREATED, OS.TREATED].indexOf(new_status);
+        result = [OS.CANCEL, OS.UNTREATED, OS.TREATED, OS.STATION].indexOf(new_status);
         break;
       case OS.TREATED:  // 已处理
         result = [OS.CANCEL, OS.TREATED, OS.STATION].indexOf(new_status);

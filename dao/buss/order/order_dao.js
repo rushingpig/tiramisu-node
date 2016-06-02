@@ -997,7 +997,7 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
         let orderObj = {
           office_id: req.session.user.office_id,
           recipient_id: recipientId,
-          delivery_id: delivery_id,
+          delivery_id: delivery_id || 0,
           src_id: src_id,
           pay_modes_id: pay_modes_id,
           pay_status: pay_status,

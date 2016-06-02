@@ -32,6 +32,7 @@ module.exports = function (router) {
     router.post('/orders/delivery',orderService.listOrders(Constant.OSR.DELIVER_LIST,true)); // 批量扫描获取送货单列表
     router.post('/orders/signin',orderService.listOrders(Constant.OSR.RECEIVE_LIST,true));   // 批量扫面获取配送单列表
     router.post('/order/reprint/apply',deliveryService.applyForRePrint); // 申请重新打印
+    router.post('/delivery/order/:orderId/signrecord',deliveryService.signRecord); // 修改签收记录
 
 //*********************
 //******** PUT ********

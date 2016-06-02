@@ -395,6 +395,7 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
     'bo.total_original_price',
     'bo.merchant_id',
     'bo.greeting_card as greeting_card_order',
+    'bo.is_pos_pay',
     'bp.`name` as product_name',
     'bp.category_id',
     'bos.amount',

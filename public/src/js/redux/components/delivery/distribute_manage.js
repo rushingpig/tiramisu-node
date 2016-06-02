@@ -1196,7 +1196,6 @@ class EditModal extends Component{
   constructor(props){
     super(props);
     this.state = {
-      pay_way:1,
       deliveryman_id:0,
       deliverymanAtSameStation:[],
       is_POS:0,
@@ -1214,14 +1213,14 @@ class EditModal extends Component{
           <div className='row'>
             <div className='col-xs-6'>
               <label>配送员：</label>
-              <Select options={deliverymanAtSameStation} value={deliveryman_id}/>
+              <Select options={deliverymanAtSameStation} value={deliveryman_id} onChange={this.deliveryManChange.bind(this)}/>
             </div>
             <div className='col-xs-6'>
               <label>货到付款金额：￥</label>
               <input value={total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
               {
                 total_amount != 0 ?
-                <select value={pay_way} ref='pay_way' name='pay_way' value={this.state.pay_way} className='form-control input-xs' onChange={this.onPayWayChange}>
+                <select value={pay_way} ref='pay_way' name='pay_way' value={pay_way} className='form-control input-xs' onChange={this.onPayWayChange.bind(this)}>
                   <option value='1'>现金</option>
                   <option value='2'>POS机</option>
                 </select>
@@ -1234,13 +1233,23 @@ class EditModal extends Component{
       )
   }
   show(order){
-    this.setState({total_amount: order.total_amount, is_POS: order.is_POS, order_id: order.order_id});
+    this.setState({total_amount: order.total_amount, order_id: order.order_id});
     this.refs.modal.show();
   }
   componentWillReceiveProps(nextProps){
     var { D_ } = nextProps;
-    var {deliverymanAtSameStation,current_id} = D_;
-    this.setState({deliverymanAtSameStation, deliveryman_id: current_id});
+    var {deliverymanAtSameStation,current_id, is_POS} = D_;
+    this.setState({deliverymanAtSameStation, deliveryman_id: current_id, is_POS});
+  }
+  deliveryManChange(e){
+    var {value} = e.target;
+    this.setState({deliveryman_id:value});
+  }
+  onPayWayChange(e){
+    var {value} = e.target;
+    var is_POS = 0;
+    if(value == 2) is_POS = 1;
+    this.setState({is_POS});
   }
   submitHandler(){
     var {deliverymanAtSameStation, deliveryman_id, order_id} = this.state;
@@ -1265,6 +1274,14 @@ class EditModal extends Component{
     }
     this.props.editSignedOrder(order_id, form_data).done(function(){
         this.refs.modal.hide();
+        this.setState({
+          pay_way:1,
+          deliveryman_id:0,
+          deliverymanAtSameStation:[],
+          is_POS:0,
+          total_amount:0,
+          order_id:'',
+        })
         Noty('success', '编辑成功！');
       }.bind(this))
       .fail(function(msg, code){

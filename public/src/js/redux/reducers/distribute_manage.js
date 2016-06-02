@@ -66,7 +66,7 @@ var D_state = {
   spareparts: [],
   orderSpareparts: [],
   current_id: -1,
-  pay_way: -1,
+  is_POS: 1,
   orderDetail:{},
 }
 
@@ -110,7 +110,8 @@ function D_(state = D_state, action) {
       var orderSpareparts = action.data.products;
       orderSpareparts = orderSpareparts.filter( m => m.category_id == ACCESSORY_CATE_ID);
       var current_id = action.data.deliveryman_id;
-      return { ...state, orderSpareparts: orderSpareparts || [], orderDetail: action.data, current_id };
+      var is_POS = action.data.is_POS;
+      return { ...state, orderSpareparts: orderSpareparts || [], orderDetail: action.data, current_id, is_POS };
     default:
       return state;
   }

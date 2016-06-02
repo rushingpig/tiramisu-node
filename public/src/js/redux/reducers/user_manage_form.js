@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import { getGlobalStore, getGlobalState } from 'stores/getter';
 import * as FormActions from 'actions/user_manage_form';
 
 import { area } from './area_select';
@@ -58,10 +59,13 @@ function mainForm(state=initial_state,action){
 
 				return {...state,data:{...clone(data),pwd:"",city_ids:city_ids,station_ids:station_ids,
 					role_ids:role_ids,roles_in:roles_in,stations_in:stations_in,cities_in:cities_in,
-					tmp_roles:tmp_roles,tmp_cities:tmp_cities,tmp_stations:tmp_stations}};
+					tmp_roles:tmp_roles,tmp_cities:tmp_cities,tmp_stations:tmp_stations, is_national}};
 			})();
 			/*{...state,data:clone(action.data)};*/
-
+		case FormActions.CHECK_ALL_CITY_STATIONS:
+		  var store = getGlobalStore();
+		  var stations = store.getState().UserManageForm.dept_role.stations;
+		  return {...state, data:{stations_in:stations}}
 		case FormActions.SAVE_USER_INFO_ING:
 		  return {...state, save_ing: true }
 		case FormActions.SAVE_USER_INFO_SUCCESS:

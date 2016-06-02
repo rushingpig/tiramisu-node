@@ -39,5 +39,6 @@ export default {
     'cities_in',
     'stations_in',
     'roles_in',
+    'is_national',
   ]
 }

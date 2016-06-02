@@ -32,7 +32,7 @@ function _getFormData(form_data,getState){
   var roles = form_data.roles_in;
   var stations = form_data.stations_in;
   var is_headquarters = 0;
-  var is_national = 0
+  var is_national = form_data.is_national ? 1:0;
   cities.forEach((n)=>{
     city_ids.push(n.id);
     city_names.push(n.text);
@@ -45,9 +45,9 @@ function _getFormData(form_data,getState){
   });
   stations.forEach((n)=>{
     station_ids.push(n.id);
-    if(n.id==999){
+/*    if(n.id==999){
       is_national=1;
-    }
+    }*/
   })
   return !password 
   ? {
@@ -133,6 +133,11 @@ export function submitUser(form_data){
   //   {type: SUBMIT_ING},  //立即派发
   //   {type: SUBMIT_COMPLETE}   //2000毫秒后派发
   // ], 2000);
+}
+
+export const CHECK_ALL_CITY_STATIONS = 'CHECK_ALL_CITY_STATIONS';
+export function checkAllCityStations(){
+  return ({type: CHECK_ALL_CITY_STATIONS})
 }
 /*export const GOT_DELIVERY_STATIONS_BY_CITYIDS =  'GOT_DELIVERY_STATIONS_BY_CITY_ID'
 export function getDeliveryStationsByCityId(city_ids){

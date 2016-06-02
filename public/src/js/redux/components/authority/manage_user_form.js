@@ -97,6 +97,7 @@ class ManageAddForm extends Component{
         cities_in,
         stations_in,
         roles_in,
+        is_national,
       },
       roles_in_test,
     } = this.props;
@@ -175,7 +176,8 @@ class ManageAddForm extends Component{
             <div className="form-group form-inline" style={{clear:'both',}}>
               <label className={`input-xs ${station_ids.error}`}>{'所属配送站：'}</label>
                 <div style={{'marginLeft':60,}}>
-                  <CheckBoxGroup name="配送站" {...tmp_stations} checkboxs={[{'id':999,'text':'所属城市全部配送站'},...stations]} value={stations_in.value || []} />
+                  <input type='checkbox' {...is_national} checked={is_national.value}/>{'所属城市全部配送站'}
+                  <CheckBoxGroup name="配送站" {...tmp_stations} checkboxs={stations} value={stations_in.value || []} />
                 </div>
               <label  className="input-xs">{'已选配送站：'}</label>
                 <div style={{'marginLeft':60,}}>
@@ -253,7 +255,6 @@ class ManageAddForm extends Component{
     getProvincesSignal("authority");
     getDeptsSignal("authority");
   }
-
   onProvinceChange(callback,e){
     var {value} = e.target;
     this.props.actions.resetCities();
@@ -276,7 +277,6 @@ class ManageAddForm extends Component{
           city_id_str=n.id + ',' + city_id_str;
         });
         city_id_str=city_id_str.substring(0,city_id_str.length-1);
-        console.warn(city_id_str);
         this.props.actions.getStationsByCityIdsSignal(city_id_str,'authority');
       }
     callback(e);
@@ -315,7 +315,9 @@ class ManageAddForm extends Component{
       document.getElementById("togglePwdStatus").innerHTML = '密码可视';
     }
   }
-
+  onCheckAllStations(){
+    this.props.actions.checkAllCityStations();
+  }
 }
 ManageAddForm.propTypes = {
 

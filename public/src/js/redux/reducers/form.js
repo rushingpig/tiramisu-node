@@ -152,6 +152,16 @@ export default formReducer.plugin({
         if(action.type == actionTypes.CHANGE){
           state.stations_in = {...state.stations_in||[],...state.tmp_stations||[]};
         }
+      }else if(action.field == 'is_national'){
+        if(action.type == actionTypes.CHANGE){
+          var store = getGlobalStore();
+          var stations = store.getState().UserManageForm.dept_role.stations;
+          if(state.is_national.value){
+            state.stations_in = {value:stations};
+          }else{
+            state.stations_in = {value:[]};
+          }
+        }
       }
       /*if(action.field == '')*/
     }

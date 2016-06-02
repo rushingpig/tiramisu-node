@@ -1067,6 +1067,9 @@ var SignedModal = React.createClass({
     })
     var current_id = D_.current_id;
     var deliverymanAtSameStation = D_.deliverymanAtSameStation;
+    var all_deliveryman = deliverymanAtSameStation.map( m => 
+      ({id: m.deliveryman_id, text: m.deliveryman_name + ' ' + m.deliveryman_mobile})
+    )
 /*    var order = clone(this.state.order);
     var selectText = order.deliveryman_name + ':' + order.deliveryman_mobile;
     if( order.deliveryman_name != null )
@@ -1074,6 +1077,7 @@ var SignedModal = React.createClass({
         $(findDOMNode(this.refs.deliveryman_id)).find(':selected').text(selectText);
         current_id = 0;
       }*/
+    deliverymanAtSameStation = all_deliveryman;
     var pay_way = 1;
     if(D_.orderDetail.is_POS) 
       pay_way =2;
@@ -1201,21 +1205,37 @@ class EditModal extends Component{
       is_POS:0,
       total_amount:0,
       order_id:'',
+      filter_deliveryman_results:[],
     } 
   }
 
   render(){
-    var {deliverymanAtSameStation,is_POS, total_amount, deliveryman_id} = this.state;
+    var {deliverymanAtSameStation,is_POS, total_amount, deliveryman_id, filter_deliveryman_results} = this.state;
     var pay_way = is_POS ? 2:1;
+    var content = filter_deliveryman_results.map( n => {
+          return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
+    })    
     return(
       <StdModal ref='modal' title='编辑订单完成页面' onConfirm={this.submitHandler.bind(this)}>
         <div className='form-group mg-15 form-inline'>
           <div className='row'>
-            <div className='col-xs-6'>
-              <label>配送员：</label>
-              <Select options={deliverymanAtSameStation} value={deliveryman_id} onChange={this.deliveryManChange.bind(this)}/>
+            <div className='col-xs-7'>
+              <div className="input-group input-group-sm" style={{height:'27px'}}>
+                <span  style={{height:'27px',lineHeight:1}} className="input-group-addon"><i className="fa fa-search"></i></span>
+                <input type="text"  style={{height:'27px', width:'100px'}} 
+                  className="form-control" placeholder="配送员拼音首字母或手机号" 
+                  onChange = {this.filterHandler.bind(this)} />
+              </div>
+              <select name= 'deliveryman' value={deliveryman_id} ref='deliveryman' className="form-control input-sm"  style={{height:'27px',minWidth:100}}>
+                {
+                  content.length
+                  ? content
+                  : <option>无</option>
+                }
+              </select>
+              {/*<Select options={deliverymanAtSameStation} value={deliveryman_id} onChange={this.deliveryManChange.bind(this)}/>*/}
             </div>
-            <div className='col-xs-6'>
+            <div className='col-xs-5'>
               <label>货到付款金额：￥</label>
               <input value={total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
               {
@@ -1234,12 +1254,56 @@ class EditModal extends Component{
   }
   show(order){
     this.setState({total_amount: order.total_amount, order_id: order.order_id});
+    LazyLoad('chinese_py');
     this.refs.modal.show();
+  }
+  filterHandler(e){
+    var { value } = e.target;
+    var { deliverymanAtSameStation } = this.state;
+    var results = [];
+    value = value.toUpperCase();
+    if(value === ''){
+      results = deliverymanAtSameStation;
+    }else if(/^\d+$/i.test(value)){ //电话号码
+        results = deliverymanAtSameStation.filter(n => n.deliveryman_mobile.indexOf(value) != -1)
+      }else if(/^\w+$/i.test(value)){ //首字母
+      results = deliverymanAtSameStation.filter(n => {
+        return n.py.some(m => m.toUpperCase().indexOf(value) == 0)
+      })
+    }else{ //中文全称
+      results = deliverymanAtSameStation.filter(n => n.deliveryman_name.indexOf(value) != -1)
+    }
+    this.setState({ filter_deliveryman_results: results, deliveryman_id: results.length && results[0].deliveryman_id });
   }
   componentWillReceiveProps(nextProps){
     var { D_ } = nextProps;
-    var {deliverymanAtSameStation,current_id, is_POS} = D_;
-    this.setState({deliverymanAtSameStation, deliveryman_id: current_id, is_POS});
+    var {deliverymanAtSameStation,current_id, is_POS, load_success} = D_;
+    this.setState({ is_POS});
+    if(load_success){
+      var list = deliverymanAtSameStation;
+      var build = function(){
+        var new_data = list.map(function(n){
+          n.py = window.makePy(n.deliveryman_name);
+          return n;
+        })
+        this.setState({
+          deliverymanAtSameStation: list, filter_deliveryman_results: new_data, deliveryman_id: current_id
+        })
+      }.bind(this);
+
+      if(window.makePy){
+        build();
+      }else{
+        //异步加载的chinese_py库可能还未加载完成，所以需要定时检测
+        this._build_timer = setInterval(() => {
+          if(window.makePy){
+            build();
+            clearInterval(this._build_timer);
+            delete this._build_timer;
+          }
+        }, 100);
+      }
+    }
   }
   deliveryManChange(e){
     var {value} = e.target;

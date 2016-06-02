@@ -68,6 +68,7 @@ var D_state = {
   current_id: -1,
   is_POS: 1,
   orderDetail:{},
+  load_success: false,
 }
 
 function D_(state = D_state, action) {
@@ -104,8 +105,8 @@ function D_(state = D_state, action) {
     case Actions.GET_DELIVERYMAN_AT_SAME_STATION:
       var list = action.data;
       /*var {current_id} = action.data;*/
-      var  deliverymanAtSameStation = list.map( m => ({id: m.deliveryman_id, text: m.deliveryman_name + ':' + m.deliveryman_mobile}));
-      return {...state,deliverymanAtSameStation: deliverymanAtSameStation }
+      //var  deliverymanAtSameStation = list.map( m => ({id: m.deliveryman_id, text: m.deliveryman_name + ':' + m.deliveryman_mobile}));
+      return {...state,deliverymanAtSameStation: list, load_success: true }
     case Actions.GET_ORDER_DETAIL:
       var orderSpareparts = action.data.products;
       orderSpareparts = orderSpareparts.filter( m => m.category_id == ACCESSORY_CATE_ID);

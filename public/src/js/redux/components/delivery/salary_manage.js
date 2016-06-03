@@ -256,6 +256,16 @@ class FilterHeader extends Component{
 			if(station_id != this.refs.station.props['default-value'])
 				filterdata.station_id = station_id;			
 		}
+		if(this.refs.province){
+			var province_id = parseInt($(findDOMNode(this.refs.province))[0].value);
+			if(province_id != this.refs.province.props['default-value'])
+				filterdata.province_id = province_id;
+		}
+		if(this.refs.city){
+			var city_id = parseInt($(findDOMNode(this.refs.city))[0].value);
+			if(city_id != this.refs.city.props['default-value'])
+				filterdata.city_id = city_id;
+		}
 		var deliveryman_id = this.refs.deliveryman.value;
 		if(deliveryman_id != 0){
 			filterdata.deliveryman_id = deliveryman_id;			 

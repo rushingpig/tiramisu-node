@@ -66,8 +66,8 @@ export function getOrderExchangeList(data){
   return (dispatch, getState) => {
     var filter_data = getValues(getState().form.order_exchange_filter);
     filter_data = formCompile(filter_data);
-    delete filter_data.province_id;
-    delete filter_data.city_id;
+/*    delete filter_data.province_id;
+    delete filter_data.city_id;*/
     // dispatch({ type: GET_ORDER_LIST_ING });
     return GET(Url.order_exchange.toString(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch);
   }
@@ -78,8 +78,8 @@ export function getOrderDeliveryList(data){
     var filter_data = getValues(getState().form.order_delivery_filter);
     filter_data = formCompile(filter_data);
     // dispatch({ type: GET_ORDER_LIST_ING });
-    delete filter_data.province_id;
-    delete filter_data.city_id;
+/*    delete filter_data.province_id;
+    delete filter_data.city_id;*/
     if( filter_data.order_ids ){
       return searchByScanInDeliveryManage( filter_data.order_ids )(dispatch); //按扫描结果搜索
     }else{
@@ -93,8 +93,8 @@ export function getOrderDistributeList(data){
     var filter_data = getValues(getState().form.order_distribute_filter);
     filter_data = formCompile(filter_data);
     // dispatch({ type: GET_ORDER_LIST_ING });
-    delete filter_data.province_id;
-    delete filter_data.city_id;
+/*    delete filter_data.province_id;
+    delete filter_data.city_id;*/
     if(filter_data.deliveryman_id == 0){
       delete filter_data.deliveryman_id;
     }

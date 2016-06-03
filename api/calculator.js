@@ -6,7 +6,6 @@ const dao = require('../dao');
 const productDao = new dao.product();
 
 module.exports.deliveryPay = function (products) {
-    console.log(products);
     return co(function *() {
         let pay = 0;
         let rules = yield productDao.findDeliveryPayRule();
@@ -18,15 +17,16 @@ module.exports.deliveryPay = function (products) {
 
         let x = 0, y = 0, z = 0, r = 0;
         products.forEach(p=> {
+            let num = p.num || 0;
             if (p.product_name.indexOf('步步高升') != -1) {
-                pay += 50;
+                pay += 50 * num;
             } else if (p.product_name.indexOf('鹏程万里') != -1) {
-                pay += 80;
+                pay += 80 * num;
             } else {
-                if (rule[p.category_id] == Constant.PAY_RULE.CAKE) x++;
-                if (rule[p.category_id] == Constant.PAY_RULE.COOKIE) y++;
-                if (rule[p.category_id] == Constant.PAY_RULE.WINE) z++;
-                if (rule[p.category_id] == Constant.PAY_RULE.SOUVENIR) r++;
+                if (rule[p.category_id] == Constant.PAY_RULE.CAKE) x = x + num;
+                if (rule[p.category_id] == Constant.PAY_RULE.COOKIE) y = y + num;
+                if (rule[p.category_id] == Constant.PAY_RULE.WINE) z = z + num;
+                if (rule[p.category_id] == Constant.PAY_RULE.SOUVENIR) r = r + num;
             }
         });
 

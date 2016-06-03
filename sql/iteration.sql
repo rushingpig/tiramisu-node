@@ -596,3 +596,7 @@ ALTER TABLE tiramisu.sys_menu ALTER COLUMN parent_ids SET DEFAULT '';
 ALTER TABLE tiramisu.sys_menu ADD level tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '层级';
 UPDATE tiramisu.sys_menu SET parent_id = 0;
 UPDATE tiramisu.sys_menu SET parent_ids = '';
+
+# 2016-06-02 Wei Zhao
+# 用户权限增加是否仅仅只有管理该用户的权限
+ALTER TABLE tiramisu.sys_user_role ADD only_admin tinyint(1) unsigned DEFAULT '0' COMMENT '是否仅仅只有管理该类型用户的权限';

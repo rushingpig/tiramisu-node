@@ -123,8 +123,13 @@ UserService.prototype.addUser = (req,res,next) => {
                     throw new TiramisuError(res_obj.FAIL,'新增用户异常...');
                 }
                 let user_role_objs = [];
-                b.role_ids.forEach(curr=>{
-                    user_role_objs.push([insertId,curr]);
+                let only_admin_roles = b.only_admin_roles || [];
+                b.role_ids.forEach(curr=> {
+                    let user_role = [insertId, curr, 0];
+                    if (only_admin_roles.indexOf(curr) != -1) {
+                        user_role[2] = 1;
+                    }
+                    user_role_objs.push(user_role);
                 });
                 return userDao.batchInsertUserRole(user_role_objs);
             }).then(affectRows => {
@@ -224,7 +229,7 @@ UserService.prototype.getUserDetail = (req,res,next) => {
                 res_data.is_national = curr.is_national;
                 station_ids_str = curr.station_ids || '';
             }
-            res_data.roles.push({role_id : curr.role_id,role_name : curr.role_name});
+            res_data.roles.push({role_id: curr.role_id, role_name: curr.role_name, only_admin: curr.only_admin});
         });
         let city_ids = city_ids_str.split(','),station_ids = station_ids_str.split(',');
         return addressDao.findCitiesByIds(city_ids).then(result => {
@@ -339,8 +344,13 @@ UserService.prototype.editUser = (req,res,next) => {
                     throw new TiramisuError(res_obj.FAIL,'更新用户异常...');
                 }
                 let user_role_objs = [];
-                b.role_ids.forEach(curr=>{
-                    user_role_objs.push([user_id,curr]);
+                let only_admin_roles = b.only_admin_roles || [];
+                b.role_ids.forEach(curr=> {
+                    let user_role = [user_id, curr, 0];
+                    if (only_admin_roles.indexOf(curr) != -1) {
+                        user_role[2] = 1;
+                    }
+                    user_role_objs.push(user_role);
                 });
                 return userDao.batchInsertUserRole(user_role_objs);
             }).then(affectRows => {

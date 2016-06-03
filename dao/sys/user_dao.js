@@ -90,7 +90,8 @@ UserDao.prototype.findUserById = function(user_id){
         'su.is_headquarters',
         'su.is_national',
         'sr.id as role_id',
-        'sr.name as role_name'
+        'sr.name as role_name',
+        'sur.only_admin'
     ].join(','),params = [];
     let sql = "select " + columns + " from ?? su";
     params.push(tables.sys_user);

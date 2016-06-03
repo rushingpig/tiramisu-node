@@ -40,5 +40,6 @@ export default {
     'stations_in',
     'roles_in',
     'is_national',
+    'en_delivery',
   ]
 }

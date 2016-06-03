@@ -98,6 +98,7 @@ class ManageAddForm extends Component{
         stations_in,
         roles_in,
         is_national,
+        en_delivery,
       },
       roles_in_test,
     } = this.props;
@@ -147,7 +148,12 @@ class ManageAddForm extends Component{
             <label >{'　已选角色：'}</label>
             {/*<CheckBoxGroup  name="已选角色" {...role_ids} checkboxs={roles.filter( n => role_ids.value.some(m => m == n.id) )}/>*/}
             <div style={{'marginLeft':60}}>
-              <CheckBoxGroup  name="已选角色" checkboxs={roles_in.value||[]} value={roles_in.value}  {...roles_in}/>
+              <CheckBoxGroup ref='roles_in' name="已选角色" checkboxs={roles_in.value||[]} value={roles_in.value}  {...roles_in}/>
+              {
+                roles_in.value && roles_in.value.some( m => m.text == '配送员')
+                ?<div style={{color:'#9C6B21'}}><input {...en_delivery} checked={en_delivery.value} type='checkbox'/>{'参与配送'}</div>
+                :null
+              }
             </div>
           </div>
         </fieldset>
@@ -175,8 +181,8 @@ class ManageAddForm extends Component{
             <hr/>   
             <div className="form-group form-inline" style={{clear:'both',}}>
               <label className={`input-xs ${station_ids.error}`}>{'所属配送站：'}</label>
-                <div style={{'marginLeft':60,}}>
-                  <input type='checkbox' {...is_national} checked={is_national.value}/>{'所属城市全部配送站'}
+                <div style={{'marginLeft':60}}>
+                  <div style={{color:'#9C6B21'}}><input type='checkbox' {...is_national} checked={is_national.value}/>{'所属城市全部配送站'}</div>
                   <CheckBoxGroup name="配送站" {...tmp_stations} checkboxs={stations} value={stations_in.value || []} />
                 </div>
               <label  className="input-xs">{'已选配送站：'}</label>
@@ -314,9 +320,6 @@ class ManageAddForm extends Component{
       document.getElementById("pwd").setAttribute('type','password');
       document.getElementById("togglePwdStatus").innerHTML = '密码可视';
     }
-  }
-  onCheckAllStations(){
-    this.props.actions.checkAllCityStations();
   }
 }
 ManageAddForm.propTypes = {

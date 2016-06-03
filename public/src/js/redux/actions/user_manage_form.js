@@ -33,6 +33,8 @@ function _getFormData(form_data,getState){
   var stations = form_data.stations_in;
   var is_headquarters = 0;
   var is_national = form_data.is_national ? 1:0;
+  var en_delivery = form_data.en_delivery;
+  var only_admin_roles = [];
   cities.forEach((n)=>{
     city_ids.push(n.id);
     city_names.push(n.text);
@@ -41,6 +43,8 @@ function _getFormData(form_data,getState){
     }
   });
   roles.forEach((n)=>{
+    if( n.text == '配送员' && en_delivery)
+      only_admin_roles.push(n.id);
     role_ids.push(n.id);
   });
   stations.forEach((n)=>{
@@ -60,6 +64,7 @@ function _getFormData(form_data,getState){
     is_national,
     is_headquarters,
     city_names,
+    only_admin_roles,
   }
   :
    {
@@ -73,6 +78,7 @@ function _getFormData(form_data,getState){
     is_national,
     is_headquarters,
     city_names,
+    only_admin_roles,
   }
 
 }
@@ -135,10 +141,6 @@ export function submitUser(form_data){
   // ], 2000);
 }
 
-export const CHECK_ALL_CITY_STATIONS = 'CHECK_ALL_CITY_STATIONS';
-export function checkAllCityStations(){
-  return ({type: CHECK_ALL_CITY_STATIONS})
-}
 /*export const GOT_DELIVERY_STATIONS_BY_CITYIDS =  'GOT_DELIVERY_STATIONS_BY_CITY_ID'
 export function getDeliveryStationsByCityId(city_ids){
 	return TEST({

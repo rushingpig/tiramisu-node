@@ -8,6 +8,7 @@ import { order_status, REQUEST } from 'config/app.config';
 
 import { area } from 'reducers/area_select';
 import delivery_stations from 'reducers/delivery_stations';
+import stations from 'reducers/stations';
 import { orders, operationRecord } from 'reducers/orders';
 import { core } from 'utils/index';
 
@@ -73,6 +74,7 @@ export default combineReducers({
   area: area(),
   orders: orders(true),
   operationRecord,
+  stations,
   main,
   alter_delivery_area: area(AreaActionTypes2),
   delivery_stations,

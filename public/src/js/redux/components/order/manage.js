@@ -11,6 +11,7 @@ import * as OrderActions from 'actions/orders';
 import * as OrderManageActions from 'actions/order_manage';
 import * as FormActions from 'actions/form';
 import { getOrderSrcs, getDeliveryStations, autoGetDeliveryStations } from 'actions/order_manage_form';
+import { getStationListByScopeSignal, resetStationListWhenScopeChange } from 'actions/station_manage';
 
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
@@ -101,11 +102,13 @@ class FilterHeader extends Component {
         src_id,
         province_id,
         city_id,
+        delivery_id,
         status,
         order_by
       },
       provinces,
       cities,
+      stations: {station_list},
       all_order_srcs,
       all_order_status,
     } = this.props;
@@ -132,8 +135,13 @@ class FilterHeader extends Component {
             V( 'OrderManageAddressFilter' )
               ? [
                   <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" key="province" className="space-right"/>,
-                  <Select {...city_id} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>
+                  <Select {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>
                 ]
+              : null
+          }
+          { 
+            V( 'OrderManageStationFilter' )
+              ? <Select {...delivery_id} options={station_list} default-text="选择配送中心" className="space-right"/>
               : null
           }
           <Select {...order_by} options={all_order_bys} default-text="排序方式" className="space-right"/>
@@ -147,10 +155,11 @@ class FilterHeader extends Component {
   }
   componentDidMount(){
     setTimeout(()=>{
-      var { getProvincesSignal, getCitiesSignal, getOrderSrcs } = this.props.actions;
-      var { fields: { province_id } } = this.props;
+      var { getProvincesSignal, getCitiesSignal, getOrderSrcs  } = this.props.actions;
+      var { fields: { province_id }, getStationListByScopeSignal } = this.props;
       getProvincesSignal('authority');
       province_id.value && getCitiesSignal( province_id.value, 'authority' );
+      getStationListByScopeSignal({signal:'authority'});
       getOrderSrcs();
       LazyLoad('noty');
     },0)
@@ -158,11 +167,23 @@ class FilterHeader extends Component {
   onProvinceChange(callback, e){
     var {value} = e.target;
     this.props.actions.resetCities();
-    if(value != this.refs.province.props['default-value'])
+    if(value != this.refs.province.props['default-value']){
       var $city = $(findDOMNode(this.refs.city));
+      this.props.getStationListByScopeSignal({ province_id: value ,signal:'authority'});
       this.props.actions.getCitiesSignal(value, 'authority').done(() => {
         $city.trigger('focus'); //聚焦已使city_id的值更新
-      });
+      });}else{
+        this.props.resetStationListWhenScopeChange();
+      }
+    callback(e);
+  }
+  onCityChange(callback, e){
+    var {value} = e.target;
+    if(value != this.refs.city.props['default-value'])
+      this.props.getStationListByScopeSignal({ city_id: value, signal: 'authority' });
+    else{
+      this.props.resetStationListWhenScopeChange();     
+    }
     callback(e);
   }
   search(){
@@ -188,7 +209,8 @@ FilterHeader = reduxForm({
     'province_id',
     'city_id',
     'order_by',
-    'status'
+    'status',
+    'delivery_id',
   ],
   destroyOnUnmount: false,
 })( FilterHeader );
@@ -396,9 +418,10 @@ class ManagePannel extends Component {
     }
   }
   render(){
-    var { filter, area, alter_delivery_area, delivery_stations,
+    var { filter, area, alter_delivery_area, delivery_stations,stations,
       main: {submitting, prepare_delivery_data_ok},
-      activeOrder, showProductsDetail, operationRecord, dispatch, getOrderList, exportExcel, getOrderOptRecord, resetOrderOptRecord, cancelOrder, orderException, alterOrderRemarks } = this.props;
+      activeOrder, showProductsDetail, operationRecord, dispatch, getOrderList, exportExcel, getOrderOptRecord, resetOrderOptRecord, cancelOrder, orderException, alterOrderRemarks, 
+      getStationListByScopeSignal, resetStationListWhenScopeChange } = this.props;
     var { loading, refresh, page_no, total, list, check_order_info, active_order_id, show_products_detail, get_products_detail_ing } = this.props.orders;
     var { viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, refreshDataList, showAlterRemarks } = this;
 
@@ -410,9 +433,11 @@ class ManagePannel extends Component {
       <div className="order-manage">
 
         <TopHeader {...{getOrderList, exportExcel, pageSize: this.state.page_size}} />
-        <FilterHeader {...{...filter, ...area}}
+        <FilterHeader {...{...filter, ...area, stations}}
            actions={{...bindActionCreators({...AreaActions(), getOrderSrcs, ...FormActions}, dispatch), getOrderList}}
-           page_size={this.state.page_size} />
+           page_size={this.state.page_size} getStationListByScopeSignal={getStationListByScopeSignal}
+           resetStationListWhenScopeChange = {resetStationListWhenScopeChange}
+           />
 
         <div className="panel">
           <header className="panel-heading">订单列表</header>
@@ -533,6 +558,8 @@ function mapDispatchToProps(dispatch){
     ...AreaActions(AreaActionTypes2), 
     getDeliveryStations, 
     autoGetDeliveryStations,
+    getStationListByScopeSignal,
+    resetStationListWhenScopeChange,
     ...OrderManageActions
   }, dispatch);
   actions.dispatch = dispatch;

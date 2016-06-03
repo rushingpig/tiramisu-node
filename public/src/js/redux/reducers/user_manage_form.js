@@ -37,6 +37,7 @@ function mainForm(state=initial_state,action){
 				var tmp_stations=[];
 				var is_headquarters = data.is_headquarters;
 				var is_national = data.is_national;
+				var en_delivery = 0;
 
 				if(is_headquarters)
 					cities_in.push({id:'999',text:'总部'});
@@ -49,6 +50,8 @@ function mainForm(state=initial_state,action){
 				data.roles.forEach(n=>{
 					role_ids.push(n.role_id);
 					roles_in.push({id:n.role_id,text:n.role_name});
+					if(n.role_name == '配送员' && !n.only_admin)
+						en_delivery = 1;
 				});
 				data.cities.forEach(n=>{
 					city_ids.push(n.city_id);
@@ -59,13 +62,9 @@ function mainForm(state=initial_state,action){
 
 				return {...state,data:{...clone(data),pwd:"",city_ids:city_ids,station_ids:station_ids,
 					role_ids:role_ids,roles_in:roles_in,stations_in:stations_in,cities_in:cities_in,
-					tmp_roles:tmp_roles,tmp_cities:tmp_cities,tmp_stations:tmp_stations, is_national}};
+					tmp_roles:tmp_roles,tmp_cities:tmp_cities,tmp_stations:tmp_stations, is_national,en_delivery}};
 			})();
 			/*{...state,data:clone(action.data)};*/
-		case FormActions.CHECK_ALL_CITY_STATIONS:
-		  var store = getGlobalStore();
-		  var stations = store.getState().UserManageForm.dept_role.stations;
-		  return {...state, data:{stations_in:stations}}
 		case FormActions.SAVE_USER_INFO_ING:
 		  return {...state, save_ing: true }
 		case FormActions.SAVE_USER_INFO_SUCCESS:

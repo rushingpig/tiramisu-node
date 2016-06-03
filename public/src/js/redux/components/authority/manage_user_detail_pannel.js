@@ -79,6 +79,8 @@ class ManageUserDetailPannel extends Component{
           var city_ids_str = city_ids.join(',');
           _this.props.actions.getStationsByCityIdsSignal(city_ids_str, 'authority');
         })
+    }else{
+      _this.props.actions.resetStations();
     }
   }
 

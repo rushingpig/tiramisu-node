@@ -96,7 +96,7 @@ export default function dept_role(ActionTypes=DeptRoleActionTypes){
     },
     resetStations:function(){
       return {
-        type:ActionTypes.RESET_ROLES
+        type:ActionTypes.RESET_STATIONS
       }
     },
     getStationsByCityIds:function(city_ids){

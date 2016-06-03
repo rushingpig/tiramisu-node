@@ -47,7 +47,7 @@ export function dept_role(Actions=DeptRoleActionTypes){
 				return {...state,stations:_t(action.data)};
 			case Actions.GOT_STATIONS_BY_CITYIDS_SIGNAL:
 				return {...state,stations:_t(action.data)};
-			case Actions.RESET_ROLES:
+			case Actions.RESET_STATIONS:
 				return {...state,stations:[]};
 			default:
 				return state;

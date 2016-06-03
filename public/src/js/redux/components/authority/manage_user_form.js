@@ -232,7 +232,7 @@ class ManageAddForm extends Component{
   handleCreateUser(form_data){
     this.props.actions.createUser(form_data)
       .done(function(){
-        this.props.actions.resetStations();
+        //this.props.actions.resetStations();
         Noty('success','保存成功');
         history.push('/am/user');
       }.bind(this))
@@ -242,7 +242,7 @@ class ManageAddForm extends Component{
   }
   handleSubmitUser(form_data){
       this.props.actions.submitUser(form_data).done(function(){
-        this.props.actions.resetStations();
+        //this.props.actions.resetStations();
         Noty('success', '已成功提交！');
         history.push('/am/user');
       }).fail(function(msg){

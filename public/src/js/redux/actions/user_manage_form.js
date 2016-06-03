@@ -43,7 +43,7 @@ function _getFormData(form_data,getState){
     }
   });
   roles.forEach((n)=>{
-    if( n.text == '配送员' && en_delivery)
+    if( n.text == '配送员' && !en_delivery)
       only_admin_roles.push(n.id);
     role_ids.push(n.id);
   });

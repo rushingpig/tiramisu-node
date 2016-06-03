@@ -112,7 +112,7 @@ var UserRow = React.createClass({
             {
               V('UserManageUserEdit')
                   ?
-                  <a className="space-right"  key="UserManageUserEdit" href="javascript:;" onClick={this.editHandler.bind(this)}>[编辑]</a>
+                  <a className="space-right"  key="UserManageUserEdit" href="javascript:;" onClick={this.editHandler}>[编辑]</a>
                   :
                   null
             }

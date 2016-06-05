@@ -131,6 +131,8 @@ var tartetatin_host = 'http://127.0.0.1:3007';
 var img_host = 'http://blisscake.cn/';
 
 var login_required = true;
+// 导出excel的远程host
+var excel_export_host = 'http://localhost:8080/excel/order/';
 
 module .exports = {
     exp_static_options : exp_static_options,
@@ -145,6 +147,7 @@ module .exports = {
     sms_host : sms_host,
     coupon_host : coupon_host,
     tartetatin_host: tartetatin_host,
-    img_host: img_host
+    img_host: img_host,
+    excel_export_host : excel_export_host
 };
 

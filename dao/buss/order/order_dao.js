@@ -472,7 +472,7 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
 /**
  * query for the order list by the given terms
  */
-OrderDao.prototype.findOrderList = function(query_data) {
+OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
   let columns_arr = [
     'bo.id',
     'bo.merchant_id',
@@ -735,6 +735,13 @@ OrderDao.prototype.findOrderList = function(query_data) {
   let promise = null,
     countSql = "",
     result = 0;
+  // 如果是导出excel,直接返回要执行的sql和参数列表
+  if(isExcelExport){
+    return new Promise((resolve,reject)=>{
+      resolve({sql,params});
+    });
+  }
+
   //  刚进入订单列表页面,不带筛选条件,用explain来优化获取记录总数
   if (/^.*(where 1=1 and)[\s\w\W]+/.test(sql) || query_data.keywords) {
     countSql = dbHelper.countSql(sql);

@@ -149,13 +149,14 @@ var tartetatin_host = 'http://127.0.0.1:3007';
 var img_host = 'http://blissmall.net/';
 
 var login_required = true;
+// 导出excel的远程host
+var excel_export_host = 'http://localhost:8080/excel/order/';
 
 module .exports = {
     exp_static_options : exp_static_options,
     exp_session_options : exp_session_options,
     exp_router_options : exp_router_options,
     tables : tables,
-    ping_xx: ping_xx,
     login_required: login_required,
     mysql_options : mysql_options,
     log4js_options : log4js_options,
@@ -165,6 +166,5 @@ module .exports = {
     coupon_host : coupon_host,
     tartetatin_host: tartetatin_host,
     img_host: img_host,
-    use_sms: use_sms
+    excel_export_host : excel_export_host
 };
-

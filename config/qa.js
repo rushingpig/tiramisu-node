@@ -137,19 +137,22 @@ var coupon_host = "http://120.76.101.107:3000";
 var tartetatin_host = 'http://127.0.0.1:3007';
 
 var img_host = 'http://blisscake.cn/';
+// 导出excel的远程host
+var excel_export_host = 'http://localhost:8080/excel/order/';
 
-module.exports = {
-  exp_static_options: exp_static_options,
-  exp_session_options: exp_session_options,
-  exp_router_options: exp_router_options,
-  tables: tables,
-  login_required: login_required,
-  mysql_options: mysql_options,
-  log4js_options: log4js_options,
-  exclude_paths: exclude_paths,
-  white_ips: white_ips,
-  sms_host: sms_host,
-  coupon_host: coupon_host,
-  tartetatin_host: tartetatin_host,
-  img_host: img_host
+module .exports = {
+    exp_static_options : exp_static_options,
+    exp_session_options : exp_session_options,
+    exp_router_options : exp_router_options,
+    tables : tables,
+    login_required: login_required,
+    mysql_options : mysql_options,
+    log4js_options : log4js_options,
+    exclude_paths : exclude_paths,
+    white_ips : white_ips,
+    sms_host : sms_host,
+    coupon_host : coupon_host,
+    tartetatin_host: tartetatin_host,
+    img_host: img_host,
+    excel_export_host : excel_export_host
 };

@@ -33,6 +33,7 @@ var res_obj = require('../../../util/res_obj'),
   order_excel_caption = require('../../../config/excel/OrderTpl'),
   xlsx = require('node-xlsx');
 var toolUtils = require('../../../common/ToolUtils');
+var request = require('request');
 function OrderService() {
 }
 /**
@@ -1033,101 +1034,119 @@ OrderService.prototype.exportExcel = (req,res,next) => {
   }else{
     delete query_data.order_sorted_rules;
   }
-  let promise = orderDao.findOrderList(query_data).then((resObj) => {
-    if (!(resObj.result && resObj._result)) {
-      throw new TiramisuError(res_obj.FAIL);
-    } else if (toolUtils.isEmptyArray(resObj._result)) {
-      throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);
+  let promise = orderDao.findOrderList(query_data,true).then((resObj) => {
+    if (!resObj) {
+      return res.api(res_obj.FAIL);
     }
-    for (let curr of resObj._result) {
-      let delivery_adds = [],city_name = '';
-      if(curr.merger_name){
-        delivery_adds = curr.merger_name.split(',');
-        city_name = delivery_adds[2];
-      }
 
-      delivery_adds.shift();
-//  do not change the order in the object
-      let list_obj = null;
-      if(isList){
-        data.push([
-          systemUtils.getShowOrderId(curr.id, curr.created_time),
-          curr.src_name,
-          curr.created_by,
-          curr.created_time,
-          curr.last_opt_cs,
-          curr.owner_name,
-          curr.owner_mobile,
-          curr.created_time,
-          curr.recipient_name,
-          curr.recipient_mobile,
-          delivery_adds.join(',') + '  '+curr.address,
-          Constant.DTD[curr.delivery_type],
-          curr.delivery_type == Constant.DT.COLLECT ? curr.address : '',
-          curr.pay_modes_name,
-          Constant.PSD[curr.print_status],
-          curr.total_original_price/100,
-          curr.total_discount_price/100,
-          '',
-          Constant.OSD[curr.status],
-          curr.delivery_time,
-          curr.delivery_name,
-          curr.invoice,
-          curr.coupon,
-          city_name,
-          curr.cancel_reason,
-          curr.remarks,
-//  the products properties
-          curr.product_name ? curr.product_name : '',
-          curr.size ? curr.size : '',
-          curr.num ? curr.num : '',
-          curr.discount_price ? curr.discount_price/100 : '',
-          curr.amount ? curr.amount/100 : '',
-          curr.greeting_card ? curr.product_greeting_card : '',
-          curr.choco_board ? curr.choco_board : '',
-          curr.atlas ? '需要' : '不需要'
-        ]);
-      }else if(isReceiveList){
-        data.push([
-          systemUtils.getShowOrderId(curr.id, curr.created_time),
-          curr.owner_name,
-          curr.owner_mobile,
-          curr.created_time,
-          curr.src_name,
-          curr.recipient_name,
-          curr.recipient_mobile,
-          delivery_adds.join(',') + '  '+curr.address,
-          curr.delivery_time,
-          curr.pay_modes_name,
-          curr.delivery_name,
-          curr.created_by,
-          Constant.OSD[curr.status],
-          curr.deliveryman_name,
-          curr.signin_time,
-          '',
-          curr.total_discount_price/100,
-//  the products properties
-          curr.num ? curr.num : '',
-          curr.product_name ? curr.product_name : '',
-          curr.size ? curr.size : '',
-          curr.discount_price ? curr.discount_price/100 : '',
-          curr.amount ? curr.amount/100 : ''
-        ]);
-      }
-    }
-  }).then(()=>{
-      let buffer = xlsx.build([{name: "订单列表", data: data}]); // returns a buffer
-      res.set({
-        'Content-Type': 'application/vnd.ms-excel',
-        'Content-Disposition':  "attachment;filename="+encodeURIComponent(fileName) ,
-        'Pragma':'no-cache',
-        'Expires': 0
-      });
-      res.send(buffer);
-  }).catch((err)=>{
-      console.error(err);
-      res.render('error',{err:'亲,该条件下没有可选订单,请重新筛选...'});
+  let uri = config.excel_export_host;
+
+  if(isList){
+    uri += 'list';
+  }else if(isReceiveList){
+    uri += 'delivery';
+  }
+// 请求导出excel服务
+    request({
+      uri : uri,
+      method : 'post',
+      timeout : 30000, // 30s超时
+      json : true,
+      body : resObj
+    }).on('error', (err) => {
+      return res.api(res_obj.FAIL, err);
+    }).pipe(res || null);
   });
+
+//     for (let curr of resObj._result) {
+//       let delivery_adds = [],city_name = '';
+//       if(curr.merger_name){
+//         delivery_adds = curr.merger_name.split(',');
+//         city_name = delivery_adds[2];
+//       }
+//
+//       delivery_adds.shift();
+// //  do not change the order in the object
+//       let list_obj = null;
+//       if(isList){
+//         data.push([
+//           systemUtils.getShowOrderId(curr.id, curr.created_time),
+//           curr.src_name,
+//           curr.created_by,
+//           curr.created_time,
+//           curr.last_opt_cs,
+//           curr.owner_name,
+//           curr.owner_mobile,
+//           curr.created_time,
+//           curr.recipient_name,
+//           curr.recipient_mobile,
+//           delivery_adds.join(',') + '  '+curr.address,
+//           Constant.DTD[curr.delivery_type],
+//           curr.delivery_type == Constant.DT.COLLECT ? curr.address : '',
+//           curr.pay_modes_name,
+//           Constant.PSD[curr.print_status],
+//           curr.total_original_price/100,
+//           curr.total_discount_price/100,
+//           '',
+//           Constant.OSD[curr.status],
+//           curr.delivery_time,
+//           curr.delivery_name,
+//           curr.invoice,
+//           curr.coupon,
+//           city_name,
+//           curr.cancel_reason,
+//           curr.remarks,
+// //  the products properties
+//           curr.product_name ? curr.product_name : '',
+//           curr.size ? curr.size : '',
+//           curr.num ? curr.num : '',
+//           curr.discount_price ? curr.discount_price/100 : '',
+//           curr.amount ? curr.amount/100 : '',
+//           curr.greeting_card ? curr.product_greeting_card : '',
+//           curr.choco_board ? curr.choco_board : '',
+//           curr.atlas ? '需要' : '不需要'
+//         ]);
+//       }else if(isReceiveList){
+//         data.push([
+//           systemUtils.getShowOrderId(curr.id, curr.created_time),
+//           curr.owner_name,
+//           curr.owner_mobile,
+//           curr.created_time,
+//           curr.src_name,
+//           curr.recipient_name,
+//           curr.recipient_mobile,
+//           delivery_adds.join(',') + '  '+curr.address,
+//           curr.delivery_time,
+//           curr.pay_modes_name,
+//           curr.delivery_name,
+//           curr.created_by,
+//           Constant.OSD[curr.status],
+//           curr.deliveryman_name,
+//           curr.signin_time,
+//           '',
+//           curr.total_discount_price/100,
+// //  the products properties
+//           curr.num ? curr.num : '',
+//           curr.product_name ? curr.product_name : '',
+//           curr.size ? curr.size : '',
+//           curr.discount_price ? curr.discount_price/100 : '',
+//           curr.amount ? curr.amount/100 : ''
+//         ]);
+//       }
+//     }
+//   }).then(()=>{
+//       let buffer = xlsx.build([{name: "订单列表", data: data}]); // returns a buffer
+//       res.set({
+//         'Content-Type': 'application/vnd.ms-excel',
+//         'Content-Disposition':  "attachment;filename="+encodeURIComponent(fileName) ,
+//         'Pragma':'no-cache',
+//         'Expires': 0
+//       });
+//       res.send(buffer);
+//   }).catch((err)=>{
+//       console.error(err);
+//       res.render('error',{err:'亲,该条件下没有可选订单,请重新筛选...'});
+//   });
 
 };
 /**

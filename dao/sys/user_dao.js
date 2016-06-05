@@ -132,7 +132,7 @@ UserDao.prototype.findUsers = function(query_data){
             ds.forEach(curr => {
                 if(curr == constant.DS.OFFICEANDCHILD.id){
                     temp_sql += " or sr.org_id in" + dbHelper.genInSql(org_ids);
-                }else if(curr == constant.DS.STATION_ALL_USERS.id && is_national != 1){
+                }else if(curr == constant.DS.STATION_ALL_USERS.id ){
                     temp_sql += " or su.station_ids in" + dbHelper.genInSql(station_ids);
                     temp_sql += " or su.station_ids = ?";
                     params.push(station_ids.join(','));
@@ -142,6 +142,9 @@ UserDao.prototype.findUsers = function(query_data){
             ds_sql += temp_sql.replace(/^ or/,'');
             ds_sql += ")";
         }else {
+            ds_sql = "";
+        }
+        if(' and ()'.trim() == ds_sql.trim()){
             ds_sql = "";
         }
     }

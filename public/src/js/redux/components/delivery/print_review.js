@@ -31,6 +31,7 @@ class FilterHeader extends Component {
     super(props);
     this.state = {
       search_ing: false,
+      search_by_keywords_ing: false,
     }
   }
   render(){
@@ -43,11 +44,11 @@ class FilterHeader extends Component {
         status,
       },
       yes_or_no, all_review_status } = this.props;
-    var { search_ing } = this.state;
+    var { search_ing, search_by_keywords_ing } = this.state;
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <SearchInput {...keywords} searchHandler={this.search.bind(this, null)} searching={search_ing} className="form-inline v-mg" placeholder="订单号或申请人" />
+          <SearchInput {...keywords} searchHandler={this.search.bind(this, 'search_by_keywords_ing')} searching={search_by_keywords_ing} className="form-inline v-mg" placeholder="订单号或申请人" />
           {' 开始时间'}
           <DatePicker redux-form={begin_time} editable className="short-input" />
           {' 结束时间'}
@@ -55,18 +56,18 @@ class FilterHeader extends Component {
           <Select {...is_reprint} options={yes_or_no} default-text="是否打印" className="space-right"/>
           <Select {...status} options={all_review_status} default-text="选择审核状态" className="space-right"/>
 
-          <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
+          <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this, 'search_ing')} className="btn btn-theme btn-xs">
             <i className="fa fa-search"></i>{' 搜索'}
           </button>
         </div>
       </div>
     )
   }
-  search(){
-    this.setState({search_ing: true});
+  search(search_in_state){
+    this.setState({[search_in_state]: true});
     this.props.search(0)
       .always(()=>{
-        this.setState({search_ing: false});
+        this.setState({[search_in_state]: false});
       });
   }
 }

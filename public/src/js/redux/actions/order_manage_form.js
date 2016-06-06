@@ -227,15 +227,15 @@ export function getCopyOrderById(id){
   return GET(Url.order_detail.toString(id), null, GOT_COPY_ORDER_BY_ID)
 }
 
-export const SUBMIT_ING = 'SUBMIT_ING';
-export const SUBMIT_COMPLETE = 'SUBMIT_COMPLETE';
+export const SUBMIT_ORDER_ING = 'SUBMIT_ORDER_ING';
+export const SUBMIT_ORDER_COMPLETE = 'SUBMIT_ORDER_COMPLETE';
 
 export function submitOrder(form_data){
   //若是异步的话，那么该函数必须也返回一个函数
   return (dispatch, getState) => {
     var data = _getFormData(form_data, getState);
     dispatch({
-      type: SUBMIT_ING,
+      type: SUBMIT_ORDER_ING,
     });
     if(!form_data.order_id){
       throw Error('order_id should not be undefined');
@@ -243,12 +243,16 @@ export function submitOrder(form_data){
     return put(Url.submit_order.toString(form_data.order_id), data)
       .always(function(){
         dispatch({
-          type: SUBMIT_COMPLETE,
+          type: SUBMIT_ORDER_COMPLETE,
         })
       })
   }
-  // return TEST(null, [
-  //   {type: SUBMIT_ING},  //立即派发
-  //   {type: SUBMIT_COMPLETE}   //2000毫秒后派发
-  // ], 2000);
+  // return ( dispatch, getState ) => {
+  //   var data = _getFormData(form_data, getState);
+  //   debugger;
+  //   dispatch({type: SUBMIT_ORDER_ING});
+  //   setTimeout(function(){
+  //     dispatch({type: SUBMIT_ORDER_COMPLETE});
+  //   }, 2000)
+  // }
 }

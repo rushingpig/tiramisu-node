@@ -89,6 +89,7 @@ class FilterHeader extends Component {
       all_order_bys: [{id: 'created_time', text: '下单时间'}, {id: 'delivery_time', text: '配送时间'}],
       selected_order_src_level1_id: SELECT_DEFAULT_VALUE,
       search_ing: false,
+      search_by_keywords_ing: false,
     }
   }
   render(){
@@ -112,13 +113,13 @@ class FilterHeader extends Component {
       all_order_srcs,
       all_order_status,
     } = this.props;
-    var { search_ing, all_order_bys } = this.state;
+    var { search_ing, search_by_keywords_ing, all_order_bys } = this.state;
 
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
           {/*<input {...keywords} onKeyDown={searchOnEnterKeyDown.bind(this, this.search)} className="form-control input-xs v-mg" placeholder="关键字" />*/}
-          <SearchInput {...keywords} searchHandler={this.search.bind(this, null)} searching={search_ing} className="form-inline v-mg" placeholder="关键字" />
+          <SearchInput {...keywords} searchHandler={this.search.bind(this, 'search_by_keywords_ing')} searching={search_by_keywords_ing} className="form-inline v-mg" placeholder="关键字" />
           {' 开始时间'}
           <DatePicker editable redux-form={begin_time} className="short-input" />
           {' 结束时间'}
@@ -146,7 +147,7 @@ class FilterHeader extends Component {
           }
           <Select {...order_by} options={all_order_bys} default-text="排序方式" className="space-right"/>
           <Select {...status} options={all_order_status} default-text="订单状态" className="space-right"/>
-          <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
+          <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this, 'search_ing')} className="btn btn-theme btn-xs">
             <i className="fa fa-search"></i>{' 搜索'}
           </button>
         </div>
@@ -186,11 +187,11 @@ class FilterHeader extends Component {
     }
     callback(e);
   }
-  search(){
-    this.setState({search_ing: true});
+  search(search_in_state){
+    this.setState({[search_in_state]: true});
     this.props.actions.getOrderList({page_no: 0, page_size: this.props.page_size})
       .always(()=>{
-        this.setState({search_ing: false});
+        this.setState({[search_in_state]: false});
       });
   }
 }

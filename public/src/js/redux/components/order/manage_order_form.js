@@ -360,7 +360,7 @@ class ManageAddForm extends Component {
       nextProps.editable &&
       Object.keys(data).length &&
       data != this.props['form-data'].data &&
-      data.pay_status != 'COD' //货到付款，无需变动
+      data.pay_status == 'PAYED'
     ){
       this.props.actions.triggerFormUpdate('add_order', 'pay_status', data.pay_status);
     }
@@ -384,7 +384,7 @@ class ManageAddForm extends Component {
     this.props.actions.saveOrder(form_data)
       .done(function(){
         Noty('success', '保存成功')
-        this.props.actions.getOrderById(form_data.order_id).fail(function(){history.go(0);}.bind(this));
+        // this.props.actions.getOrderById(form_data.order_id).fail(function(){history.go(0);}.bind(this));
       }.bind(this))
       .fail(function(msg){
         Noty('error', msg || '保存异常');

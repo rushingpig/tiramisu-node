@@ -50,6 +50,7 @@ class FilterHeader extends Component {
     super(props);
     this.state = {
       search_ing: false,
+      search_by_keywords_ing: false,
       all_print_status: YES_OR_NO,
       delivery_types: map(DELIVERY_MAP, (text, id) => ({id, text})),
     }
@@ -72,12 +73,12 @@ class FilterHeader extends Component {
       stations: { station_list },
       change_submitting,
     } = this.props;
-    var { search_ing, delivery_types, all_print_status } = this.state;
+    var { search_ing, search_by_keywords_ing, delivery_types, all_print_status } = this.state;
     return (
       <div className="panel search">
         <div className="panel-body">
           <div className="form-group form-inline">
-            <SearchInput {...keywords} searchHandler={this.search.bind(this, null)} searching={search_ing} className="form-inline v-mg" placeholder="关键字" />
+            <SearchInput {...keywords} searchHandler={this.search.bind(this, 'search_by_keywords_ing')} searching={search_by_keywords_ing} className="form-inline v-mg" placeholder="关键字" />
             {' 开始时间'}
             <DatePicker editable redux-form={begin_time} className="short-input" />
             {' 结束时间'}
@@ -98,7 +99,7 @@ class FilterHeader extends Component {
                 ? <Select {...delivery_id} options={station_list} default-text="选择配送中心" className="space-right"/>
                 : null
             }
-            <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this)} className="btn btn-theme btn-xs">
+            <button disabled={search_ing} data-submitting={search_ing} onClick={this.search.bind(this, 'search_ing')} className="btn btn-theme btn-xs">
               <i className="fa fa-search"></i>{' 搜索'}
             </button>
           </div>
@@ -151,12 +152,12 @@ class FilterHeader extends Component {
     }
     callback(e);
   }
-  search(){
-    this.setState({search_ing: true});
+  search(search_in_state){
+    this.setState({[search_in_state]: true});
     this.props.triggerFormUpdate('order_delivery_filter', 'order_ids', ''); //清空扫描列表
     this.props.getOrderDeliveryList({page_no: 0, page_size: this.props.page_size})
       .always(()=>{
-        this.setState({search_ing: false});
+        this.setState({[search_in_state]: false});
       });
   }
   printHandler(){

@@ -26,7 +26,7 @@ export default class SearchInput extends React.Component {
     }
   }
   searchHandler(){
-    if(!this.props.searching){
+    if(!this.props.searching && this.refs.input.value){
       this.props.searchHandler(this.refs.input.value);
     }
   }

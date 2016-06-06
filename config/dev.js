@@ -128,7 +128,7 @@ var coupon_host = "http://120.76.101.107:3000";
 
 var tartetatin_host = 'http://127.0.0.1:3007';
 
-var img_host = 'http://blisscake.cn/';
+var img_host = 'http://rs.blissmall.net/';
 
 var login_required = true;
 // 导出excel的远程host

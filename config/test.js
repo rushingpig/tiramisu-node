@@ -138,7 +138,7 @@ var coupon_host = "http://120.76.101.107:3000";
 
 var tartetatin_host = 'http://120.76.25.32:3007';
 
-var img_host = 'http://blisscake.cn/';
+var img_host = 'http://rs.blissmall.net/';
 // 导出excel的远程host
 var excel_export_host = 'http://localhost:8080/excel/order/';
 

@@ -142,7 +142,7 @@ class FilterHeader extends Component{
 					 		<Select ref='province' name='province' options = {provinces} 
 					 			onChange = {this.onProvinceChange.bind(this)}
 					 			default-text = '请选择省份'/>,
-					 		<Select name='city' options = { cities} 
+					 		<Select ref='city' name='city' options = { cities} 
 					 			onChange= {this.onCityChange.bind(this)}
 					 			default-text = '请选择城市'/>,
 					 		<Select ref='station' name = 'station' options = { stations }

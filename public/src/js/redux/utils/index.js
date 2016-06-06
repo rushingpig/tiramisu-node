@@ -328,7 +328,7 @@ export default {
     toParams: url_toParams, //将一个对象转化为url参数
   },
   dom: {
-    lock: dom_lock       //锁定dom，显示数据正在加载
+    lock: dom_lock       //锁定dom，显示数据正在加载（解锁为其返回值）
   },
   dateFormat,
   getDate,

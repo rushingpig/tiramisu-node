@@ -91,6 +91,8 @@ function _getFormData(form_data, getState){
   products.forEach(n => {
     n.discount_price *= 100;
     n.amount *= 100;
+    n.discount_price = Number(n.discount_price.toFixed(0)); //防止浮点误差
+    n.amount = Number(n.amount.toFixed(0));
 
     total_amount += n.amount;
     total_original_price += n.original_price * n.num;

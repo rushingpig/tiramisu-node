@@ -112,8 +112,9 @@ export function productAttrChange(data){
 }
 
 export const UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE = 'UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE';
-export function updateConfirmProductDiscountPrice(){
+export function updateConfirmProductDiscountPrice(sku_ids){
   return {
-    type: UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE
+    type: UPDATE_CONFIRM_PRODUCT_DISCOUNT_PRICE,
+    sku_ids
   }
 }

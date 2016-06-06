@@ -13,6 +13,8 @@ import DatePicker from 'common/datepicker';
 import Alert from 'common/alert';
 import LineRouter from 'common/line_router';
 
+import { Noty } from 'utils/index';
+
 import ManageOrderFormCreate from './manage_order_form_create';
 import ManageOrderFormEdit from './manage_order_form_edit';
 import ManageOrderProducts from './manage_order_products';
@@ -53,7 +55,7 @@ class ManageOrderDetailPannel extends Component {
         <TopHeader editable={editable} />
         <div className="panel">
           <header className="panel-heading">订单详情</header>
-          <div className="panel-body">
+          <div ref="content" className="panel-body">
             {
               !editable
                 ? <ManageOrderFormCreate

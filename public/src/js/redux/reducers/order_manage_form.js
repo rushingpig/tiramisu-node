@@ -5,7 +5,7 @@ import * as OrderProductsActions from 'actions/order_products';
 import { UPDATE_PATH } from 'redux-simple-router';
 import AreaActions from 'actions/area';
 import { ProductsModalActionTypes } from 'actions/action_types';
-import { updateAddOrderForm, updateAddOrderFormPayStatus, initForm } from 'actions/form';
+import { updateAddOrderForm, updateAddOrderFormPayStatus, triggerFormUpdate, initForm } from 'actions/form';
 import { map, delay, core } from 'utils/index';
 import { getValues } from 'redux-form';
 import { pay_status as PAY_STATUS, MODES } from 'config/app.config';
@@ -184,10 +184,12 @@ function products_choosing(state = products_choosing_state, action){
           custom_name: '',  //自定义名称
           custom_desc: '',  //自定义描述
         }
+        var new_added_products = [];
         var confirm_list = state.selected_list.map(function(n){
           var confirm_pro = state.confirm_list.filter( m => m.sku_id == n.sku_id )[0];
           var new_item;
           if( confirm_pro ){
+            confirm_pro.num != n.num && new_added_products.push(confirm_pro.sku_id);
             //如果该产品存在
             new_item = {
               ...n,
@@ -201,6 +203,7 @@ function products_choosing(state = products_choosing_state, action){
             }
           }else{
             //如果不存在
+            new_added_products.push(n.sku_id);
             new_item = {...n, ...base};
             new_item.discount_price = n.discount_price * n.num / 100 || 0;
             new_item.amount = new_item.discount_price;
@@ -212,7 +215,7 @@ function products_choosing(state = products_choosing_state, action){
           return new_item;
         })
         delay(() => store.dispatch(updateAddOrderFormPayStatus())); //商品数变化，通知add_order表单更新，支付方式、支付状态的默认值与所选商品数是紧密相关的
-        delay(() => store.dispatch(OrderProductsActions.updateConfirmProductDiscountPrice())); //更新商品应收金额
+        delay(() => store.dispatch(OrderProductsActions.updateConfirmProductDiscountPrice(new_added_products))); //更新商品应收金额
         return {...state, confirm_list: confirm_list, selected_list_deleted: [] };
       })();
 
@@ -267,11 +270,16 @@ function products_choosing(state = products_choosing_state, action){
         })
       });
       let new_confirm_list = clone(state.confirm_list);
-      new_confirm_list.splice(new_confirm_list.findIndex( n => n.sku_id == sku_id), 1);
+      let delete_product_index = new_confirm_list.findIndex( n => n.sku_id == sku_id);
+      new_confirm_list.splice(delete_product_index, 1);
       new_selected_list = clone(state.selected_list);
       new_selected_list.splice(new_selected_list.findIndex( n => n.sku_id == sku_id), 1);
-      delay(() => store.dispatch(updateAddOrderForm())); //商品数变化，通知add_order表单更新，支付方式、支付状态的默认值与所选商品数是紧密相关的
-      delay(() => store.dispatch(OrderProductsActions.updateConfirmProductDiscountPrice())); //更新商品应收金额
+      if(new_confirm_list.length == 1 && store.getState().form.add_order.pay_status.value == 'PARTPAYED'){
+        delay(() => store.dispatch(triggerFormUpdate('add_order', 'pay_status', 'PAYED'))); //商品数变化(可能的更改，部分付款变为已付款)
+      }
+      if(delete_product_index == 0 && store.getState().form.add_order.pay_status.value == 'PARTPAYED'){ //删除的为第一个商品，且为部分付款
+        delay(() => store.dispatch(OrderProductsActions.updateConfirmProductDiscountPrice())); //更新商品应收金额
+      }
       return {...state, confirm_list: new_confirm_list, selected_list: new_selected_list }
 
     //其实这个应该主要是更新应收金额
@@ -280,36 +288,47 @@ function products_choosing(state = products_choosing_state, action){
         var order = getValues(store.getState().form.add_order);
         var pay_status = PAY_STATUS[order.pay_status];
         var {confirm_list, selected_list} = state;
+        var added_sku_ids = [];
+        //更新指定的sku，而不是全部
+        if(!action.sku_ids || action.sku_ids.length == 0){
+          added_sku_ids = confirm_list.map( n => n.sku_id );
+        }
         //支付状态：已付款，或者，支付方式：免费（此时，商品的实际售价和应收金额为0）
         if(pay_status == '已付款' || order.pay_modes_id == MODES.free){
-          confirm_list.forEach(function(n){
-            //保留可能已修改的amount值（手动修改级别最高）
-            var pro = selected_list.filter( m => m.sku_id == n.sku_id )[0];
-            n.amount = core.isUndefined(pro.amount) ? 0 : pro.amount;
-            if(order.pay_modes_id == MODES.free){
-              n.discount_price = 0;
+          confirm_list.forEach( n => {
+            if(added_sku_ids.some(sku_id => sku_id == n.sku_id)){
+              //保留可能已修改的amount值（手动修改级别最高）
+              var pro = selected_list.filter( m => m.sku_id == n.sku_id )[0];
+              n.amount = core.isUndefined(pro.amount) ? 0 : pro.amount;
+              if(order.pay_modes_id == MODES.free){
+                n.discount_price = 0;
+              }
             }
           })
         }else if(pay_status == '部分付款'){
           confirm_list.forEach(function(n, i){
-            //保留可能已修改的amount值
-            var pro = selected_list.filter( m => m.sku_id == n.sku_id )[0];
-            if( i == 0 ){
-              if( n.num > 1 ){
-                n.amount = core.isUndefined(pro.amount) ? n.old_discount_price * (n.num - 1) / n.num : pro.amount;
+            if(added_sku_ids.some(sku_id => sku_id == n.sku_id)){
+              //保留可能已修改的amount值
+              var pro = selected_list.filter( m => m.sku_id == n.sku_id )[0];
+              if( i == 0 ){
+                if( n.num > 1 ){
+                  n.amount = core.isUndefined(pro.amount) ? n.old_discount_price * (n.num - 1) : pro.amount;
+                }else{
+                  n.amount = core.isUndefined(pro.amount) ? 0 : pro.amount;
+                }
               }else{
-                n.amount = core.isUndefined(pro.amount) ? 0 : pro.amount;
+                n.amount = core.isUndefined(pro.amount) ? n.old_discount_price : pro.amount;
               }
-            }else{
-              n.amount = core.isUndefined(pro.amount) ? n.old_discount_price : pro.amount;
             }
           })
         }else{
           confirm_list.forEach(function(n){
-            n.discount_price = n.old_discount_price;
-            //保留可能已修改的amount值
-            var pro = selected_list.filter( m => m.sku_id == n.sku_id )[0];
-            n.amount = core.isUndefined(pro.amount) ? n.old_discount_price : pro.amount;
+            if(added_sku_ids.some(sku_id => sku_id == n.sku_id)){
+              n.discount_price = n.old_discount_price;
+              //保留可能已修改的amount值
+              var pro = selected_list.filter( m => m.sku_id == n.sku_id )[0];
+              n.amount = core.isUndefined(pro.amount) ? n.old_discount_price : pro.amount;
+            }
           })
         }
         return {...state, confirm_list: clone(confirm_list)};

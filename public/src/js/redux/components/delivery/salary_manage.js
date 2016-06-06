@@ -572,7 +572,7 @@ class DeliveryManSalaryManagePannel extends Component{
 					  : null }
 
 					  <CredentialsModal ref="viewCredential" pics = {proof} {...{getDeliveryProof}}/>
-					  <OperationRecordModal ref='viewOperationRecord' {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}}/>
+					  <OperationRecordModal ref='viewOperationRecord' {...{getOrderOptRecord, resetOrderOptRecord, list:operationRecord.list || [], page_no:0}}/>
 				</div>
 			)
 	}

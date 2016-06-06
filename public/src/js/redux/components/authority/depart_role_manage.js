@@ -11,6 +11,7 @@ import V from 'utils/acl';
 
 import * as DeptRoleManageActions from 'actions/depart_role_manage';
 import DeptRoleActions from 'actions/dept_role';
+import { ORG_ID_HAS_CHANNELS} from 'config/app.config';
 
 import {triggerFormUpdate} from 'actions/form';
 
@@ -73,6 +74,12 @@ class RoleInfoRow extends Component{
           <td>{props.description}</td>
           <td>
             {
+              V('DeptRoleManageRoleDetail')
+              ?
+              <a onClick={this.viewRoleDetailModal.bind(this)} href="javascript:;">[ 查看 ]</a>
+              :null
+            }
+            {
               V('DeptRoleManageRoleEdit')
               ?
               <a onClick={this.viewEditRoleModal.bind(this)} href="javascript:;">[ 编辑 ]</a>
@@ -101,6 +108,9 @@ class RoleInfoRow extends Component{
   viewDeleteRoleModal(){
     this.props.viewDeleteRoleModal(this.props.id);
   }
+  viewRoleDetailModal(){
+    this.props.viewRoleDetailModal(this.props.id);
+  }
 }
 
 
@@ -111,13 +121,14 @@ class DeptManagePanel extends Component{
     this.viewAddRoleModal = this.viewAddRoleModal.bind(this);
     this.viewEditRoleModal=this.viewEditRoleModal.bind(this);
     this.viewDeleteRoleModal = this.viewDeleteRoleModal.bind(this);
+    this.viewRoleDetailModal = this.viewRoleDetailModal.bind(this);
   }
   render(){
     var {dept_role,filter}=this.props;
     var {all_order_srcs} = filter;
     var {depts,dataaccess} = dept_role;
     const { list,active_org_id } = this.props.RoleInfoListManage;
-    var {handle_role_id} = this.props.RoleManage;
+    var {handle_role_id, role_info} = this.props.RoleManage;
     var depts_active = depts.map(e => {
       e.id == active_org_id ? e.chosen = true :e.chosen = false;
       return e;
@@ -128,7 +139,8 @@ class DeptManagePanel extends Component{
       getRoleDetail = {this.props.actions.getRoleDetail}
       role_info = {this.props.RoleInfoListManage}
       viewEditRoleModal = {this.viewEditRoleModal}
-      viewDeleteRoleModal = {this.viewDeleteRoleModal} />;
+      viewDeleteRoleModal = {this.viewDeleteRoleModal}
+      viewRoleDetailModal = {this.viewRoleDetailModal}/>;
     })
     return (
         <div className="">
@@ -166,6 +178,12 @@ class DeptManagePanel extends Component{
             reset={reset} changeRole = {changeRole} getRoleDetail={getRoleDetail}
             getOrderSrcs={getOrderSrcs} triggerFormUpdate={triggerFormUpdate} />
           <DeleteRoleModal ref='deleteRole' deleteRole = {deleteRole} />
+          <RoleDetailModal {...filter} ref='roleDetail' 
+            getRoleDetail = {getRoleDetail}
+            depts = {depts}
+            dataaccess = {dataaccess}
+            getOrderSrcs={getOrderSrcs}
+            role_info = {role_info} />
         </div>
       )
   }
@@ -196,6 +214,9 @@ class DeptManagePanel extends Component{
     this.refs.deleteRole.show(id);
   }
 
+  viewRoleDetailModal(id){
+    this.refs.roleDetail.show(id);
+  }
 }
 
 class AddDeptModal extends Component{
@@ -361,13 +382,96 @@ class RoleDetailModal extends Component{
     super(props);
   }
   render(){
+    var {depts, dataaccess, role_info, all_order_srcs} = this.props;
+    var {data_scope_id, description, name, org_id, src_id} = role_info;
+    var org_name = '';
+    var data_scope_name = '';
+    var src_name = '';
+    var src_parent_name = '';
+    depts.forEach( m => {
+      if( m.id == org_id){
+        org_name = m.text;
+      }
+    })
+    dataaccess.forEach( m => {
+      if(m.id == data_scope_id){
+        data_scope_name = m.text;
+      }
+    })
+    if(all_order_srcs.length > 0){
+      all_order_srcs[1].forEach( 
+        m => {
+          if(m.id == src_id){
+            src_name = m.name;
+            all_order_srcs[0].forEach(
+              n => {
+                if(n.id == m.parent_id){
+                  src_parent_name = n.name;
+                }
+              }
+              )
+          }else{
+            all_order_srcs[0].forEach(
+              m => {
+                if(m.id == src_id){
+                  src_name = m.name;
+                }
+              }
+              )
+          };
+        }
+        )
+
+    }
     return (
       <StdModal footer = {false} title = '查看角色详情' ref = 'viewRoleDetail' >
-        <RoleFormEdit {...{all_order_srcs}} handle_role_id={handle_role_id} hide={this.hide} editable={true} 
-          ref='roleFormEdit' depts={depts} dataaccess={dataaccess} changeRole={changeRole} 
-          getOrderSrcs={getOrderSrcs} triggerFormUpdate={triggerFormUpdate} _disabled={true}/>      
+        <div>
+          <div className='form-group form-inline'>
+            <label>{'　　角色名称：'}</label>
+            <input value={name} readOnly ref='name' type="text" className='form-control input-xs'/>
+          </div>
+          <div className='form-group form-inline'>
+            <label>{'角色职能描述：'}</label>
+            <input value={description} readOnly type="text" className="form-control input-xs" style={{width: 240}}/>
+          </div>
+          <div className='form-group form-inline'>
+            <label>{'　　所属部门：'}</label>
+            <input value={org_name} readOnly type="text" className="form-control input-xs"/>
+             {
+
+                (org_id == ORG_ID_HAS_CHANNELS && src_id)?
+                  [src_parent_name &&<input readOnly type='text' value={src_parent_name} className='form-control input-xs'/>,                   
+                  <input readOnly type='text' value={src_name} className='form-control input-xs'/>
+                  ]              
+              :
+              null
+              }
+          </div>
+          <div className='form-group form-inline'>
+            <label>{'角色数据权限：'}</label>
+            <input value={data_scope_name} readOnly type="text" className="form-control input-xs"/>
+          </div>
+          <div className='clearfix'>
+            <div className='form-group pull-right'>
+              <button className="btn btn-theme btn-sm space-right" onClick={this.hide.bind(this)}>关闭</button>           
+            </div>
+          </div> 
+        </div>      
       </StdModal>
       )
+  }
+  show(id){
+    var _this = this;
+    this.props.getRoleDetail(id)
+      .done(function(){
+        _this.props.getOrderSrcs()
+        .done(function(){
+          _this.refs.viewRoleDetail.show();         
+        })
+      });
+  }
+  hide(){
+    this.refs.viewRoleDetail.hide();
   }
 }
 

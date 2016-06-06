@@ -127,16 +127,16 @@ class RoleForm extends Component{
       all_order_srcs,
       triggerFormUpdate,
     } = this.props;
-    const { depts,dataaccess, _disabled}=this.props;
+    const { depts,dataaccess}=this.props;
     return (
       <div>
         <div className='form-group form-inline'>
           <label>{'　　角色名称：'}</label>
-          <input disabled = {_disabled } ref='name' {...name} type="text" className={`form-control input-xs ${name.error}`}/>
+          <input ref='name' {...name} type="text" className={`form-control input-xs ${name.error}`}/>
         </div>
         <div className='form-group form-inline'>
           <label>{'角色职能描述：'}</label>
-          <input disabled = {_disabled }  {...description} type="text" className="form-control input-xs"/>
+          <input {...description} type="text" className="form-control input-xs"/>
         </div>
         <div className='form-group form-inline'>
           <label>{'　　所属部门：'}</label>

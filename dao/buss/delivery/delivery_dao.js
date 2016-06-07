@@ -306,6 +306,11 @@ DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, city_
     params.push(tables.buss_pay_modes);
     sql += `INNER JOIN ?? dr on dr.id = br.regionalism_id `;
     params.push(tables.dict_regionalism);
+    if (city_id) {
+        sql += `INNER JOIN ?? dr2 ON dr2.id = br.regionalism_id AND dr2.parent_id = ? `;
+        params.push(tables.dict_regionalism);
+        params.push(city_id);
+    }
     sql += `WHERE bo.status IN ('${constant.OS.COMPLETED}', '${constant.OS.EXCEPTION}') `;
     if(begin_time){
         sql += `AND bo.delivery_time >= ? `;
@@ -314,11 +319,6 @@ DeliveryDao.prototype.findDeliveryRecord = function (begin_time, end_time, city_
     if(end_time){
         sql += `AND bo.delivery_time <= ? `;
         params.push(end_time + ' 24:00~24:00');
-    }
-    if (city_id) {
-        sql += `INNER JOIN ?? dr2 ON dr2.id = br.regionalism_id AND dr2.parent_id = ? `;
-        params.push(tables.dict_regionalism);
-        params.push(city_id);
     }
     if (delivery_id) {
         sql += `AND bo.delivery_id = ? `;

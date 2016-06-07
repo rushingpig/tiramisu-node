@@ -107,6 +107,13 @@ ProductService.prototype.listProducts = (req, res, next) => {
             for (let i = 0; i < res_data.list.length; i++) {
                 let tmpP = res_data.list[i];
                 selectStr.forEach(str=> {
+                    // TODO: 餐具模糊匹配
+                    if (tmpP.name && tmpP.name.indexOf('餐具') != -1) {
+                        tmpP.skus = [tmpP.skus[0]];
+                        tmpList.push(tmpP);
+                        existProduct.push('餐具');
+                        return false;
+                    }
                     if(tmpP.name == str && existProduct.indexOf(str) == -1){
                         tmpP.skus = [tmpP.skus[0]];
                         tmpList.push(tmpP);

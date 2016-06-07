@@ -641,32 +641,44 @@ class DeliveryManSalaryManagePannel extends Component{
 class CredentialsModal extends Component{
 	render(){
 		var {call_picture_url, door_picture_url, receipt_picture_url, sms_picture_url} = this.props.pics;
+		var credentials =[];
+		credentials = [
+			{url:receipt_picture_url, title:'单据'},
+			{url:door_picture_url, title: '门牌'},
+			{url:call_picture_url, title: '通话记录'},
+			{url:sms_picture_url, title:'短信截屏'},
+		]
 		return(
-			<StdModal title = '未签收照片凭证' ref='viewCredential'>
-				<table>
+			<StdModal title = '未签收照片凭证' ref='viewCredential' footer={false}>
+				
+				<table className='table table-responsive'>
 				<tbody>
 					<tr>
 						<td>
-							<img src = {receipt_picture_url} /><br/>
+							<img onClick={this.alertBigImg.bind(this, 0)} style={{width:200,height:200}} src = {receipt_picture_url}/><br/>
 							<span>单据</span>
 						</td>
 						<td>
-							<img src = {door_picture_url} /><br />
+							<img onClick={this.alertBigImg.bind(this, 1)} style={{width:200,height:200}} src = {door_picture_url} /><br />
 							<span>门牌</span>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<img src={call_picture_url} /><br/>
+							<img onClick={this.alertBigImg.bind(this, 2)} style={{width:200,height:200}} src={call_picture_url} /><br/>
 							<span>通话记录</span>
 						</td>
 						<td>
-							<img src={sms_picture_url} /><br />
+							<img onClick={this.alertBigImg.bind(this, 3)} style={{width:200,height:200}} src={sms_picture_url} /><br />
 							<span>短信截屏</span>
 						</td>
 					</tr>
 				</tbody>
 				</table>
+				<div className='form-group pull-right'>
+				  <button className="btn btn-theme btn-sm space-right" onClick={this.hide.bind(this)}>关闭</button>           
+				</div>
+				<BigImgModal ref='bigImgModal' {...{credentials}}/>
 			</StdModal>
 			)
 	}
@@ -676,6 +688,59 @@ class CredentialsModal extends Component{
 	}
 	hide(){
 		this.refs.viewCredential.hide();
+	}
+	alertBigImg(index){
+		this.refs.bigImgModal.show(index);
+	}
+}
+
+class BigImgModal extends Component{
+	constructor(props){
+		super(props);
+		this.state = {
+			index: 0,
+		}
+	}
+	render(){
+		var {credentials} = this.props;
+		var {index} = this.state;
+		var title = credentials[index].title;
+		var url = credentials[index].url;
+		return(
+			<StdModal ref='bigImg' title={title} footer={false}>
+				<div>
+					<div>
+						<img style={{maxWidth: 570}} src={url}/>
+					</div>
+					<div>
+						<span style={{cursor:'pointer'}} onClick={this.goPre.bind(this)}>上一张</span>
+						<span style={{cursor:'pointer'}} onClick={this.goNext.bind(this)}>下一张</span>
+					</div>
+				</div>
+			</StdModal>
+			)
+	}
+	show(index){
+		this.setState({index});
+		this.refs.bigImg.show();
+	}
+	goPre(){
+		var {index} = this.state;
+		var {credentials} = this.props;
+		if(index <= 0)
+			index = credentials.length -1;
+		else
+			index -= 1;
+		this.setState({index});		
+	}
+	goNext(){
+		var {index} = this.state;
+		var {credentials} = this.props;
+		if(index >= credentials.length -1)
+			index = 0;
+		else
+			index += 1;
+		this.setState({index});
 	}
 }
 

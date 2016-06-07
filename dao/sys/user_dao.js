@@ -12,6 +12,8 @@ var baseDao = require('../base_dao'),
     dbHelper = require('../../common/DBHelper'),
     constant = require('../../common/Constant'),
     toolUtils = require('../../common/ToolUtils');
+var co = require('co');
+
 function UserDao(table){
     this.table = table || tables.sys_user;
     this.base_insert_sql = "insert into ?? set ?";
@@ -65,18 +67,65 @@ UserDao.prototype.findByUsername = (username,password)=>{
     params = params.concat(del_flag.SHOW,username,password);
     return baseDao.select(sql,params);
 };
-UserDao.prototype.insertUser = function(user_obj){
-    return baseDao.insert(this.base_insert_sql,[tables.sys_user,user_obj]);
+UserDao.prototype.insertUser = function(user_obj, role_ids, only_admin_roles){
+    let _this = this;
+    let trans;
+    return co(function *() {
+        trans = yield baseDao.trans(true);
+        let results = yield trans.query(_this.base_insert_sql, [tables.sys_user, user_obj]);
+        let user_id = results.insertId;
+        let user_roles = [];
+        role_ids.forEach(curr=> {
+            let user_role = [user_id, curr, 0];
+            if (only_admin_roles.indexOf(curr) != -1) {
+                user_role[2] = 1;
+            }
+            user_roles.push(user_role);
+        });
+        let sql = "insert into ?? values ?";
+        let params = [tables.sys_user_role, user_roles];
+        yield trans.query(sql, params);
+        yield trans.commit();
+        return user_id;
+    }).catch(err=> {
+        if (trans && typeof trans.rollback == 'function') trans.rollback();
+        return Promise.reject(err);
+    });
 };
 UserDao.prototype.batchInsertUserRole = function(user_role_objs){
     let sql = "insert into ?? values ?";
     let params = [tables.sys_user_role,user_role_objs];
     return baseDao.batchInsert(sql,params);
 };
-UserDao.prototype.updateUserById = function(user_obj,user_id){
-    let sql = this.base_update_sql + " where id = ?";
-    let params = [tables.sys_user,user_obj,user_id];
-    return baseDao.update(sql,params);
+UserDao.prototype.updateUserById = function(user_obj, user_id, role_ids, only_admin_roles){
+    let _this = this;
+    let trans;
+    return co(function *() {
+        trans = yield baseDao.trans(true);
+        let sql = _this.base_update_sql + " where id = ?";
+        let params = [tables.sys_user, user_obj, user_id];
+        yield trans.query(sql, params);
+
+        sql = "delete from ?? where user_id = ?";
+        params = [tables.sys_user_role, user_id];
+        yield trans.query(sql, params);
+
+        let user_roles = [];
+        role_ids.forEach(curr=> {
+            let user_role = [user_id, curr, 0];
+            if (only_admin_roles.indexOf(curr) != -1) {
+                user_role[2] = 1;
+            }
+            user_roles.push(user_role);
+        });
+        sql = "insert into ?? values ?";
+        params = [tables.sys_user_role, user_roles];
+        yield trans.query(sql, params);
+        yield trans.commit();
+    }).catch(err=> {
+        if (trans && typeof trans.rollback == 'function') trans.rollback();
+        return Promise.reject(err);
+    });
 };
 UserDao.prototype.findUserById = function(user_id){
     let columns = [

@@ -118,23 +118,11 @@ UserService.prototype.addUser = (req,res,next) => {
             }
         },
         function(cb){
-            let promise = userDao.insertUser(systemUtils.assembleInsertObj(req,user_obj)).then(insertId=>{
+            let role_ids = b.role_ids || [];
+            let only_admin_roles = b.only_admin_roles || [];
+            let promise = userDao.insertUser(systemUtils.assembleInsertObj(req,user_obj), role_ids, only_admin_roles).then(insertId=>{
                 if(!insertId){
                     throw new TiramisuError(res_obj.FAIL,'新增用户异常...');
-                }
-                let user_role_objs = [];
-                let only_admin_roles = b.only_admin_roles || [];
-                b.role_ids.forEach(curr=> {
-                    let user_role = [insertId, curr, 0];
-                    if (only_admin_roles.indexOf(curr) != -1) {
-                        user_role[2] = 1;
-                    }
-                    user_role_objs.push(user_role);
-                });
-                return userDao.batchInsertUserRole(user_role_objs);
-            }).then(affectRows => {
-                if(!affectRows){
-                    throw new TiramisuError(res_obj.FAIL,'新增用户角色映射关系异常...');
                 }
                 res.api();
                 cb(null);
@@ -334,29 +322,9 @@ UserService.prototype.editUser = (req,res,next) => {
             }
         },
         function(cb){
-            let promise = userDao.updateUserById(systemUtils.assembleUpdateObj(req,user_obj),user_id).then(affectRows=>{
-                if(!toolUtils.isInt(affectRows)){
-                    throw new TiramisuError(res_obj.FAIL,'更新用户异常...');
-                }
-                return userDao.deleteUserRole(user_id);
-            }).then(deleteRows => {
-                if(!deleteRows){
-                    throw new TiramisuError(res_obj.FAIL,'更新用户异常...');
-                }
-                let user_role_objs = [];
-                let only_admin_roles = b.only_admin_roles || [];
-                b.role_ids.forEach(curr=> {
-                    let user_role = [user_id, curr, 0];
-                    if (only_admin_roles.indexOf(curr) != -1) {
-                        user_role[2] = 1;
-                    }
-                    user_role_objs.push(user_role);
-                });
-                return userDao.batchInsertUserRole(user_role_objs);
-            }).then(affectRows => {
-                if(!affectRows){
-                    throw new TiramisuError(res_obj.FAIL,'新增用户角色映射关系异常...');
-                }
+            let role_ids = b.role_ids || [];
+            let only_admin_roles = b.only_admin_roles || [];
+            let promise = userDao.updateUserById(systemUtils.assembleUpdateObj(req, user_obj), user_id, role_ids, only_admin_roles).then(()=> {
                 res.api();
                 cb(null);
             });

@@ -392,7 +392,7 @@ OrderService.prototype.editOrder = function (is_submit) {
         option += '修改{配送站}为{' + delivery_name + '}\n';
       }
       if (delivery_time != current_order.delivery_time) {
-        option += '修改{配送时间}为{' + delivery_time + '}\n';
+        option += '修改{配送时间'+current_order.delivery_time+'}为{' + delivery_time + '}\n';
       }
       if (regionalism_id != current_order.regionalism_id || recipient_address != current_order.recipient_address) {
         option += '修改收货地址\n';
@@ -401,10 +401,10 @@ OrderService.prototype.editOrder = function (is_submit) {
         option += '修改团购券号[{' + current_order.coupon + '}]为[{' + coupon + '}]\n';
       }
       if(remarks != current_order.remarks){
-        option += '修改备注为{' + remarks + '}\n';
+        option += '修改备注{'+current_order.remarks+'}为{' + remarks + '}\n';
       }
       if(pay_status != current_order.pay_status){
-        option += '修改付款状态为{' + Constant.PSD[pay_status] + '}\n';
+        option += '修改付款状态{'+Constant.PSD[current_order.pay_status]+'}为{' + Constant.PSD[pay_status] + '}\n';
       }
       for (let i = 0; i < products.length; i++) {
         let isAdd = true;
@@ -427,13 +427,13 @@ OrderService.prototype.editOrder = function (is_submit) {
               amount: curr.amount
             };
             if(curr.num != origin_product.num){
-              option += '修改{' + origin_product_name + '}数量为{' + curr.num +'}\n';
+              option += '修改{' + origin_product_name + '}数量{'+origin_product.num+'}为{' + curr.num +'}\n';
             }
             if(curr.discount_price != origin_product.discount_price){
-              option += '修改{' + origin_product_name + '}实际售价为{' + curr.discount_price/100 + '}\n';
+              option += '修改{' + origin_product_name + '}实际售价{'+origin_product.discount_price/100+'}为{' + curr.discount_price/100 + '}\n';
             }
             if(curr.amount != origin_product.amount){
-              option += '修改{' + origin_product_name + '}应收金额为{' + curr.amount/100 + '}\n';
+              option += '修改{' + origin_product_name + '}应收金额{'+origin_product.amount+'}为{' + curr.amount/100 + '}\n';
             }
             update_skus.push(systemUtils.assembleUpdateObj(req, order_sku_obj));
           }

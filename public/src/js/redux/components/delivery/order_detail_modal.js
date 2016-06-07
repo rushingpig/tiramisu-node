@@ -27,7 +27,10 @@ export default class DetailModal extends Component {
         <tr key={n.sku_id + '' + i}>
           <td>{n.name}</td>
           <td className="text-left">规格：{n.size}<br/>数量：{n.num}</td>
-          <td className="text-left">原价：￥{n.original_price / 100}<br/>实际售价：￥{n.discount_price/100}</td>
+          <td className="text-left">
+            <span className="nowrap">原价：￥{n.original_price / 100}</span><br/>
+            <span className="nowrap">实际售价：￥{n.discount_price/100}</span>
+          </td>
           <td>{n.choco_board}</td>
           <td>{n.greeting_card}</td>
           <td><input checked={n.atlas} disabled type="checkbox" /></td>

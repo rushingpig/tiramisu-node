@@ -84,6 +84,7 @@ class ManageAddForm extends Component {
       groupbuy_msg: '', //验券结果
       auto_match_delivery_center: false,
       auto_match_msg: '',
+      auto_match_ing: false,
     };
     this._check = this._check.bind(this);
   }
@@ -123,7 +124,7 @@ class ManageAddForm extends Component {
       all_delivery_time, all_pay_status, all_order_srcs, 
       delivery_stations, all_pay_modes, data: { merchant_id }} = this.props['form-data'];
     var {provinces, cities, districts, delivery_shops} = this.props.area;
-    var {invoices, selected_order_src_level1_id = src_id.value, groupbuy_psd, groupbuy_check_ing, groupbuy_msg, groupbuy_success} = this.state;
+    var {invoices, selected_order_src_level1_id = src_id.value, groupbuy_psd, groupbuy_check_ing, groupbuy_msg, groupbuy_success, auto_match_ing} = this.state;
 
     var isThird = isSrc(SRC.group_site, src_id.value); //是否第三方，显示团购密码组件
     
@@ -201,7 +202,7 @@ class ManageAddForm extends Component {
       <div className="form-group form-inline">
         <label>{'　配送中心：'}</label>
         <Select {...delivery_id} options={delivery_stations} className={`form-select transition ${delivery_id.error}`} ref="delivery_center" />{' '}
-        <button onClick={this.startMatchStation.bind(this)} className="btn btn-default btn-xs"><i className="fa fa-map-marker fa-fw"></i></button>{' '}
+        <button onClick={this.startMatchStation.bind(this)} disabled={auto_match_ing} data-submitting={auto_match_ing}  className="btn btn-default btn-xs"><i className="fa fa-map-marker fa-fw"></i></button>{' '}
         <span className={this.state.auto_match_delivery_center ? 'text-success' : 'text-danger'}>
           {this.state.auto_match_msg}
         </span>
@@ -420,12 +421,15 @@ class ManageAddForm extends Component {
   }
   startMatchStation(callback){
     var { triggerFormUpdate } = this.props.actions;
+    this.setState({ auto_match_ing: true });
     startMatchDeliveryStations.call(this, delivery_id => {
       delivery_id = delivery_id || SELECT_DEFAULT_VALUE;
       $(findDOMNode(this.refs.delivery_center)).val(delivery_id);
       triggerFormUpdate('add_order', 'delivery_id', delivery_id); //手动更改表单值后，需要使用该方法，主动触发redux-form进行更新，否则数据将不会同步
+      this.setState({ auto_match_ing: false });
     }, () => {
-      triggerFormUpdate('add_order', 'delivery_id', SELECT_DEFAULT_VALUE)
+      triggerFormUpdate('add_order', 'delivery_id', SELECT_DEFAULT_VALUE);
+      this.setState({ auto_match_ing: false });
     });
     typeof callback == 'function' && callback();
   }

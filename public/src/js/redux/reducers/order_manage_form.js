@@ -250,7 +250,7 @@ function products_choosing(state = products_choosing_state, action){
       state.selected_list.forEach(function(n){
         if(n.sku_id == sku_id){
           if(action.data.attr.name == 'discount_price'){
-            n.discount_price = action.data.attr.value;
+            n.discount_price = action.data.attr.value * 100;
             n.old_discount_price = n.discount_price;
           }else if(action.data.attr.name == 'amount'){
             n.amount = action.data.attr.value;
@@ -288,7 +288,7 @@ function products_choosing(state = products_choosing_state, action){
         var order = getValues(store.getState().form.add_order);
         var pay_status = PAY_STATUS[order.pay_status];
         var {confirm_list, selected_list} = state;
-        var added_sku_ids = [];
+        var added_sku_ids = action.sku_ids;
         //更新指定的sku，而不是全部
         if(!action.sku_ids || action.sku_ids.length == 0){
           added_sku_ids = confirm_list.map( n => n.sku_id );
@@ -339,7 +339,7 @@ function products_choosing(state = products_choosing_state, action){
       return (function(){
         var confirm_list = clone(action.data.products);
         confirm_list.forEach( n => {
-          n.discount_price /= 100;
+          n.discount_price /= 100; //暂没有除以num，表示总价
           n.old_discount_price = n.discount_price;
           n.amount /= 100;
         });

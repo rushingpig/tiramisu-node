@@ -458,7 +458,7 @@ class DeliveryManagePannel extends Component {
           this.search(); //重新请求，刷新数据
         })
         .fail(function(msg){
-          Noty('error', msg || '异常错误');
+          Noty('error', msg || '打印出错，请稍后再试');
         })
     }else if(print_status == 'UNPRINTABLE'){
       this.refs.ApplyPrintModal.show(order_id);
@@ -550,7 +550,7 @@ var PrintModal = React.createClass({
         this.props.callback();
       }.bind(this))
       .fail(function(e){
-        Noty('error', e || '异常错误');
+        Noty('error', e || '出错了，请稍后再试');
       })
   },
   show: function(){
@@ -764,7 +764,7 @@ var ApplyPrintModal = React.createClass({
         this.props.callback();
       }.bind(this))
       .fail(function(msg, code){
-        Noty('error', msg || '服务器异常')
+        Noty('error', msg || '网络繁忙，请稍后再试')
       })
   },
   hideApplicantMobileError: function(){
@@ -853,7 +853,7 @@ var RePrintModal = React.createClass({
           }.bind(this))
       }.bind(this))
       .fail(function(msg){
-        Noty('error', msg || '服务器异常')
+        Noty('error', msg || '网络繁忙，请稍后再试')
       })
   },
   mixins: [LinkedStateMixin],

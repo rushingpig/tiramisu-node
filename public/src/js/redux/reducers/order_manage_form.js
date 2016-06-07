@@ -178,7 +178,7 @@ function products_choosing(state = products_choosing_state, action){
       return (function(){
         var base = {
           discount_price: 0,
-          choco_board: '生日快乐', //巧克力牌
+          choco_board: '', //巧克力牌
           greeting_card: '', //祝福语
           atlas: true, //产品图册
           custom_name: '',  //自定义名称
@@ -195,7 +195,7 @@ function products_choosing(state = products_choosing_state, action){
               ...n,
               discount_price: confirm_pro.num != n.num ? (confirm_pro.discount_price / confirm_pro.num * n.num).toFixed(2) : confirm_pro.discount_price,
               amount: confirm_pro.num != n.num ? (confirm_pro.amount / confirm_pro.num * n.num).toFixed(2) : confirm_pro.amount,
-              choco_board: confirm_pro.choco_board || '生日快乐',
+              choco_board: confirm_pro.choco_board || '',
               greeting_card: confirm_pro.greeting_card || '',
               atlas: confirm_pro.atlas,
               custom_name: confirm_pro.custom_name || '',

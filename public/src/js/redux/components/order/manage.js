@@ -621,7 +621,7 @@ var CancelOrderModal = React.createClass({
           this.props.callback();
         }.bind(this))
         .fail(function(msg, code){
-          Noty('error', msg || '异常错误');
+          Noty('error', msg || '网络繁忙，请稍后再试');
         }.bind(this));
     }else{
       Noty('warning', tips);
@@ -672,7 +672,7 @@ var AlterRemarksModal = React.createClass({
           this.props.callback();
         }.bind(this))
         .fail(function(msg, code){
-          Noty('error', msg || '异常错误');
+          Noty('error', msg || '网络繁忙，请稍后再试');
         }.bind(this));
     }else{
       Noty('warning', tips);
@@ -772,7 +772,7 @@ var AlterStationModal = React.createClass({
         this.refs.modal.hide();
       }.bind(this))
       .fail(function(msg){
-        Noty('error', msg || '服务器异常')
+        Noty('error', msg || '网络繁忙，请稍后再试')
       })
   },
   show(){
@@ -830,7 +830,7 @@ var OrderExceptionModal = React.createClass({
           this.props.callback();
         }.bind(this))
         .fail(function(msg, code){
-          Noty('error', msg || '异常错误');
+          Noty('error', msg || '网络繁忙，请稍后再试');
         }.bind(this));
     }else{
       Noty('warning', tips);

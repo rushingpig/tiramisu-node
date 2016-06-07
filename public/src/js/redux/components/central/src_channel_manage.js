@@ -230,7 +230,7 @@ class SrcChannelPannel extends Component {
   }
   componentDidMount() {
     LazyLoad('noty');
-    this.props.getOrderSrcs().fail( (msg) => Noty('error', msg || '服务器忙'));
+    this.props.getOrderSrcs().fail( (msg) => Noty('error', msg || '网络繁忙，请稍后再试'));
   }
   onPageChange(page){
     this.props.filterSrcChannel({page_no: page});

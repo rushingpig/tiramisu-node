@@ -113,7 +113,7 @@ export default class StationGroupMap extends Component {
       closeActive(this.state.edit_station_id);
     }.bind(this))
     .fail(function(msg, code){
-      Noty('error', msg || '保存异常');
+      Noty('error', msg || '保存失败，请稍后再试');
     })
     .always(function(){
       this.setState({ submitable: false })

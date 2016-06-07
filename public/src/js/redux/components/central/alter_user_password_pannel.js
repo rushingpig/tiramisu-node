@@ -127,7 +127,7 @@ const AlterUserPasswordPannel =  React.createClass({
         location.href="/logout";
       })
     }).fail(function(msg){
-      Noty('error', msg || '服务器忙，请稍后再试');
+      Noty('error', msg || '网络繁忙，请稍后再试');
     })
     .always(function(){
       this.setState({ submitting: false })

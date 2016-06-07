@@ -378,7 +378,7 @@ class ManageAddForm extends Component {
         history.push('/om/index');
       }.bind(this))
       .fail(function(msg, code){
-        Noty('error', msg || '保存异常');
+        Noty('error', msg || '网络繁忙，请稍后再试');
       });
   }
   handleSaveOrder(form_data){
@@ -388,7 +388,7 @@ class ManageAddForm extends Component {
         // this.props.actions.getOrderById(form_data.order_id).fail(function(){history.go(0);}.bind(this));
       }.bind(this))
       .fail(function(msg){
-        Noty('error', msg || '保存异常');
+        Noty('error', msg || '网络繁忙，请稍后再试');
       });
   }
   handleSubmitOrder(form_data){
@@ -399,7 +399,7 @@ class ManageAddForm extends Component {
       Noty('success', '已成功提交！');
       history.push('/om/index');
     }).fail(function(msg){
-      Noty('error', msg || '操作异常');
+      Noty('error', msg || '网络繁忙，请稍后再试');
     });
   }
   componentDidMount(){

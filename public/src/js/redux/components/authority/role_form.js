@@ -204,7 +204,7 @@ class RoleForm extends Component{
         this.refs.submit_btn.disabled = false;
       }.bind(this))
       .fail(function(msg, code){
-        Noty('error', msg || '保存异常');
+        Noty('error', msg || '网络繁忙，请稍后再试');
         this.refs.submit_btn.disabled = false;
       });
   }
@@ -217,7 +217,7 @@ class RoleForm extends Component{
         //this.props.getRoleInfoList();
       }.bind(this))
       .fail(function(msg, code){
-        Noty('error', msg || '保存异常');
+        Noty('error', msg || '网络繁忙，请稍后再试');
         this.refs.submit_btn.disabled = false;
       });
   }

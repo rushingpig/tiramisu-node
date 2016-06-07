@@ -150,7 +150,7 @@ class HistoryOrders extends Component {
           this.refs.modal.hide();
         })
         .fail((msg) => {
-          Noty('error', msg || '服务器忙')
+          Noty('error', msg || '网络繁忙，请稍后再试')
         })
     }else{
       Noty('warning', '请点击选择你想要复制的订单');

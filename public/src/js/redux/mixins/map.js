@@ -131,7 +131,7 @@ export function autoMatch(city, district, address){
             reject();
           })
           .fail(function(msg){
-            reject(msg || '自动检索配送中心异常，请重试');
+            reject(msg || '没有检索到该地址');
           })
         }else{
           reject();
@@ -146,11 +146,11 @@ export function autoMatch(city, district, address){
             if(data && data.delivery_id){
               resolve(data.delivery_id); //成功，且有数据
             }else{
-              reject('服务器异常');
+              reject('没有检索到该地址');
             }
           })
           .fail(function(msg, code){
-            reject(msg || '自动检索配送中心异常，请重试');
+            reject(msg || '没有检索到该地址');
           })
       }
     }else{

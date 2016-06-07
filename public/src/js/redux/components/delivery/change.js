@@ -377,7 +377,7 @@ class ChangeModal extends Component {
       Noty('success', '转换成功！')
       go('/dm/delivery');
     }.bind(this)).fail((msg) => {
-      Noty('error', msg || '转换异常')
+      Noty('error', msg || '网络繁忙，请稍后再试')
     })
   }
 };

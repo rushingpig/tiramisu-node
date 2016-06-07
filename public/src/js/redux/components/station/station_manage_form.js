@@ -194,7 +194,7 @@ class StationManageForm extends Component {
         }, 200)
       })
       .fail(function(msg, code){
-        Noty('error', msg || '保存异常');
+        Noty('error', msg || '网络繁忙，请稍后再试');
       });
   }
   handleUpdateStationInfo(form_data){
@@ -209,7 +209,7 @@ class StationManageForm extends Component {
         }, 200)
       })
       .fail(function(msg, code){
-        Noty('error', msg || '保存异常');
+        Noty('error', msg || '网络繁忙，请稍后再试');
       }); 
   }
   findSelectedOptionText(_refs){

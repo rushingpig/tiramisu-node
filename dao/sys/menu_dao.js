@@ -39,6 +39,7 @@ MenuDao.prototype.findMenus = function(query_data){
         'sm.description',
         'sm2.name as module_name',
         'sm.module_id',
+        'sm.parent_id',
         'sm.type',
         'sm.permission as code'
     ].join(',');

@@ -32,6 +32,14 @@ class TableRow extends Component{
   render(){
     const { props } = this;
     return (
+        props.first_module?
+        <tr>
+          <td></td>
+          <td></td>
+          <td style={{fontSize:16,color:'#9C6B21'}}>{props.module_name}</td>
+          <td></td>
+          <td></td>
+        </tr>:
         <tr className={props.module_name}>
           <td style={{textAlign:'left',color:props.type == 'LIST'?'#4f9fcf':''}}>{props.type == 'LIST' ?  props.name: `　　`+props.name}</td>
           <td style={{color:props.type == 'LIST'?'#4f9fcf':''}}>{props.module_name}</td>
@@ -144,6 +152,16 @@ class SystemAuthorityPannel extends Component{
     if(module_name != ''){
       fliterList = list.filter(function(e){
         return e.module_name == module_name;
+      })
+    }else{
+      fliterList =[];
+      var pri_module_srcs = module_srcs.filter( m => m.level == 1);
+      pri_module_srcs.forEach( m => {
+        fliterList.push({first_module:true, module_name: m.text})
+        var sec_module_srcs = module_srcs.filter( n => n.level == 2 && n.parent_id == m.id);
+        sec_module_srcs.forEach( j => {
+          fliterList =[...fliterList,...list.filter( h => h.module_id == j.id)];
+        }) 
       })
     }
 

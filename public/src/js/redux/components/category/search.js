@@ -258,7 +258,12 @@ class Main extends Component {
 
                       if (V("CategoryManageEditSecondaryCategoryActiveCities")) {
                         editAuth.push(
-                          <Anchor onClick={props.showActiveCities.bind(undefined, secondaryCategory.id, true)}>PC端上线城市</Anchor>
+                          <Anchor
+                            key="CategoryManageEditPrimaryCategoryActiveCities"
+                            onClick={props.showActiveCities.bind(undefined, secondaryCategory.id, true)}
+                          >
+                            PC端上线城市
+                          </Anchor>
                         );
                       }
 
@@ -267,7 +272,13 @@ class Main extends Component {
                           editAuth.push(<span key="divider1">{'｜'}</span>)
                         }
                         editAuth.push(
-                          <Anchor data-category-id={secondaryCategory.id} onClick={this.handleShowComment}>备注</Anchor>
+                          <Anchor
+                            key="CategoryManageCheckPrimaryCategoryComment"
+                            data-category-id={secondaryCategory.id}
+                            onClick={this.handleShowComment}
+                          >
+                            备注
+                          </Anchor>
                         );
                       }
 
@@ -276,7 +287,12 @@ class Main extends Component {
                           editAuth.push(<span key="divider2">{'｜'}</span>)
                         }
                         editAuth.push(
-                          <Link to={"/pm/cam/second_category/edit/" + secondaryCategory.id}>编辑</Link>
+                          <Link
+                            key="CategoryManageEditSecondaryCategory"
+                            to={"/pm/cam/second_category/edit/" + secondaryCategory.id}
+                          >
+                            编辑
+                          </Link>
                         );
                       }
 
@@ -285,12 +301,18 @@ class Main extends Component {
                           editAuth.push(<span key="divider3">{'｜'}</span>)
                         }
                         editAuth.push(
-                          <Anchor data-second-category-id={secondaryCategory.id} onClick={this.handleClickDeleteBtn}>删除</Anchor>
+                          <Anchor
+                            key="CategoryManageDeleteSecondaryCategory"
+                            data-second-category-id={secondaryCategory.id}
+                            onClick={this.handleClickDeleteBtn}
+                          >
+                            删除
+                          </Anchor>
                         );
                       }
 
                       if (editAuth.length === 0) {
-                        editAuth = (<span>-</span>);
+                        editAuth = (<span key="no-auth">-</span>);
                       }
 
                       const rv = (
@@ -410,7 +432,7 @@ class Main extends Component {
                     }
 
                     if (editAuth.length === 0) {
-                      editAuth = (<span>-</span>);
+                      editAuth = (<span key="no-auth">-</span>);
                     }
 
                     returnValue.unshift(

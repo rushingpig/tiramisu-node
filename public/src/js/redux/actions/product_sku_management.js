@@ -67,9 +67,14 @@ const loadEnableCities       = id => get(Url.activatedCity.toString(id));
 const loadDistricts          = id => get(Url.districts.toString(id));
 const addSku                 = postData => post(Url.addSku.toString(), postData);
 
-const transformPrice = num => (
-    num <= 0 ? 0.01 : Number(num.toFixed(2))
-);
+const transformPrice = num => {
+    let money = Number(num) || 0.01
+
+    if (money < 0)
+        money = 0.01
+
+    return Math.trunc(money * 100) / 100
+}
 
 const loadBasicData = () => (
     (dispatch, getState) => {
@@ -291,7 +296,7 @@ const changeShopSpecificationsOriginalCost = (index, money) => {
     return {
         type: ActionTypes.CHANGE_SHOP_SPECIFICATIONS_ORIGINAL_COST,
         index,
-        money
+        money: transformPrice(money)
     }
 }
 
@@ -299,7 +304,7 @@ const changeShopSpecificationsCost = (index, money) => {
     return {
         type: ActionTypes.CHANGE_SHOP_SPECIFICATIONS_COST,
         index,
-        money
+        money: transformPrice(money)
     }
 }
 
@@ -314,7 +319,7 @@ const changeShopSpecificationsEventCost = (index, money) => {
     return {
         type: ActionTypes.CHANGE_SHOP_SPECIFICATIONS_EVENT_COST,
         index,
-        money
+        money: transformPrice(money)
     }
 }
 
@@ -380,7 +385,7 @@ const changeSourceSpecCost = (index, money) => {
     return {
         type: ActionTypes.CHANGE_SOURCE_SPEC_COST,
         index,
-        money
+        money: transformPrice(money)
     }
 }
 

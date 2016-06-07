@@ -36,7 +36,7 @@ const initialState = {
         isPreSale: true,
         onSaleTime: [iNow, new Date(getDate(iNow, 7))],
         delivery: [iNow, new Date(getDate(iNow, 7))],
-        bookingTime: "",
+        bookingTime: 0.5,
         hasSecondaryBookingTime: false,
         secondaryBookingTime: "",
         applyDistrict: new Set(),
@@ -49,14 +49,14 @@ const initialState = {
 };
 
 const tempOptionsValidator = state => {
-    let cityOptionSavable = true;
+    let vaild = true;
     const { tempOptions } = state;
 
     if (
         (typeof tempOptions.bookingTime) !== 'number'
         || tempOptions.bookingTime <= 0
     ) {
-        cityOptionSavable = false;
+        vaild = false;
     } else if (
         tempOptions.hasSecondaryBookingTime
         && (
@@ -64,21 +64,59 @@ const tempOptionsValidator = state => {
             || tempOptions.secondaryBookingTime <= 0
         )
     ) {
-        cityOptionSavable = false;
+        vaild = false;
     } else if (
         tempOptions.hasSecondaryBookingTime
         && tempOptions.applyDistrict.size === 0
     ) {
-        cityOptionSavable = false;
+        vaild = false;
     } else if (
         tempOptions.shopSpecifications.length === 0 && tempOptions.sourceSpecifications.size === 0
     ) {
-        cityOptionSavable = false;
+        vaild = false;
+    }
+
+    for (var index in tempOptions.shopSpecifications) {
+        const ss = tempOptions.shopSpecifications[index];
+        if (ss.spec.trim() === "") {
+            vaild = false
+            break;
+        }
+    }
+
+    const ssArr = [...tempOptions.sourceSpecifications.values()];
+
+    if (ssArr.length === 0) {
+        vaild = false
+    } else {
+        for (let x in ssArr) {
+            const ss = ssArr[x];
+            if (ss.length === 0) {
+                vaild = false
+                break;
+            }
+
+            for (let y in ss) {
+                if (ss[y].spec.trim() === "") {
+                    vaild = false
+                    break;
+                }
+
+                if (Number(ss[y].cost) <= 0) {
+                    vaild = false
+                    break;
+                }
+            }
+
+            if (!vaild) {
+                break;
+            }
+        }
     }
 
     return {
         ...state,
-        cityOptionSavable
+        cityOptionSavable: vaild
     }
 }
 
@@ -180,6 +218,7 @@ const switchType = {
                 state.tempOptions = clone(state.citiesOptions.get('all'));
             } else {
                 state.tempOptions = clone(initialState.tempOptions);
+                state.cityOptionSavable = false;
             }
         }
 
@@ -188,6 +227,7 @@ const switchType = {
                 state.tempOptions = clone(state.citiesOptions.get(state.selectedCity));
             } else {
                 state.tempOptions = clone(initialState.tempOptions);
+                state.cityOptionSavable = false;
             }
         }
 
@@ -226,7 +266,7 @@ const switchType = {
             selectedProvince = [...provincesData.keys()][0];
 
         if (!citiesData.has(selectedCity))
-            selectedCity = [...citiesData.keys()][0];
+            selectedCity = [...citiesData.keys()][0] || 0;
 
         const citiesDataKeySet = new Set([...citiesData.keys()]);
         const diff = [...state.citiesOptions.keys()].filter(x => !citiesDataKeySet.has(x) && x !== 'all');
@@ -388,39 +428,40 @@ const switchType = {
 
         let newShopSpecifications = {
             spec: "",
-            originalCost: 0,
-            cost: 0,
+            originalCost: 0.01,
+            cost: 0.01,
             hasEvent: false,
-            eventCost: 0,
+            eventCost: 0.01,
             eventTime: [now, new Date(getDate(now, 7))]
         }
 
         shopSpecifications.push(newShopSpecifications);
 
         state.cityOptionSaved = false;
+        state.cityOptionSavable = false;
 
-        return tempOptionsValidator(state);
+        return state;
     },
 
     [ActionTypes.CHANGE_SHOP_SPECIFICATIONS]: (state, { index, spec }) => {
         state.tempOptions.shopSpecifications[index].spec = spec;
 
         state.cityOptionSaved = false;
-        return state;
+        return tempOptionsValidator(state);
     },
 
     [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_ORIGINAL_COST]: (state, { index, money }) => {
         state.tempOptions.shopSpecifications[index].originalCost = Number(money) || 0;
 
         state.cityOptionSaved = false;
-        return state;
+        return tempOptionsValidator(state);
     },
 
     [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_COST]: (state, { index, money }) => {
         state.tempOptions.shopSpecifications[index].cost = Number(money) || 0;
 
         state.cityOptionSaved = false;
-        return state;
+        return tempOptionsValidator(state);
     },
 
     [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_EVENT_STATUS]: (state, { index }) => {
@@ -435,7 +476,7 @@ const switchType = {
         state.tempOptions.shopSpecifications[index].eventCost = Number(money) || 0;
 
         state.cityOptionSaved = false;
-        return state;
+        return tempOptionsValidator(state);
     },
 
     [ActionTypes.CHANGE_SHOP_SPECIFICATIONS_EVENT_TIME]: (state, { index, beginTime, endTime }) => {
@@ -468,6 +509,7 @@ const switchType = {
         state.tempOptions.selectedSource = sourceId;
 
         state.cityOptionSaved = false;
+
         return tempOptionsValidator(state);
     },
 
@@ -488,10 +530,12 @@ const switchType = {
     [ActionTypes.ADD_SOURCE_SPEC]: state => {
         state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource).push({
             spec: '',
-            cost: 0
+            cost: 0.01
         });
 
         state.cityOptionSaved = false;
+        state.cityOptionSavable = false;
+
         return state;
     },
 
@@ -510,14 +554,14 @@ const switchType = {
         state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource)[index].spec = spec;
 
         state.cityOptionSaved = false;
-        return state;
+        return tempOptionsValidator(state);
     },
 
     [ActionTypes.CHANGE_SOURCE_SPEC_COST]: (state, { index, money }) => {
         state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource)[index].cost = Number(money) || 0;
 
         state.cityOptionSaved = false;
-        return state;
+        return tempOptionsValidator(state);
     },
 
     [ActionTypes.SAVE_CITIY_OPTION]: state => {

@@ -91,9 +91,7 @@ class Main extends Component {
                     }
                     无下线时间：
                     <CheckBox checked={state.noEndTimeLimit} onChange={Action.changeNoEndTimeLimit} />
-                    <p />
-                    {'　　　　　　'}
-                    分类：
+                    {'　'}
                     <Select
                         value={state.selectedPrimaryCategory}
                         onChange={getDOMValue(Action.changeSelectPrimaryCategory)}
@@ -126,7 +124,6 @@ class Main extends Component {
                         }
                     </Select>
                     {'　'}
-                    位置：
                     <Select value={state.selectedProvince} onChange={getDOMValue(Action.changeSelectProvince)}>
                         {
                             state.provincesList.map(p => (
@@ -145,8 +142,7 @@ class Main extends Component {
                             ]
                         }
                     </Select>
-                    <p />
-                    {'　　　　　　'}
+                    {'　'}
                     已上线：
                     <CheckBox checked={state.searchIsEvent} onChange={Action.changeSearchActiveStatus} />
                     {'　'}
@@ -162,7 +158,7 @@ class Main extends Component {
                             搜索结果：
                             <span className="pull-right">
                                 {
-                                    V("ProductionManageAdd") ? (<Link to="/pm/sku_manage/add" className="btn btn-xs btn-theme">新建</Link>) : null
+                                    V("ProductionManageAdd") ? (<Link to="/pm/sku_manage/add" className="btn btn-xs btn-success">新建商品</Link>) : null
                                 }
                             </span>
                         </p>

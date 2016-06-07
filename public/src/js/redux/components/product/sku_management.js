@@ -51,6 +51,7 @@ const tabContentBoxStyle = {
 }
 const pickerStyle = { width: 260, textAlign: 'center' }
 const inputStyle = { width: 70 }
+const warningInputStyle = { width: 70, borderColor: "#f00" }
 const pointCursor = { cursor: 'pointer' }
 
 const getDOMValue = func => (event, ...args) => func.apply(undefined, [event.currentTarget.value, ...args]);
@@ -84,24 +85,25 @@ class BasicOptions extends Component {
                     <Col xs="6">
                         <p>
                             <label className="radio-inline">
-                            <Radio
-                                name="inlineRadioOptions"
-                                value="0"
-                                onChange={getDOMValue(Action.changeBuyEntry)}
-                                checked={state.buyEntry === 0}
-                            />
+                                <Radio
+                                    name="inlineRadioOptions"
+                                    value="0"
+                                    onChange={getDOMValue(Action.changeBuyEntry)}
+                                    checked={state.buyEntry === 0}
+                                />
                               {' 商城可购买'}
                             </label>
                             {'　　'}
                             <label className="radio-inline">
-                            <Radio
-                                name="inlineRadioOptions"
-                                value="1"
-                                onChange={getDOMValue(Action.changeBuyEntry)}
-                                checked={state.buyEntry === 1}
-                            />
+                                <Radio
+                                    name="inlineRadioOptions"
+                                    value="1"
+                                    onChange={getDOMValue(Action.changeBuyEntry)}
+                                    checked={state.buyEntry === 1}
+                                />
                               {' 外部渠道可购买'}
                             </label>
+                            <small className="text-muted">（外部渠道购买则代表此商品不直接展示在商城中）</small>
                         </p>
                     </Col>
                 </FormGroup>
@@ -132,6 +134,7 @@ class BasicOptions extends Component {
                                     ))
                                 }
                             </select>
+                            <small className="text-muted">（商品所在城市默认为分类设置的城市）</small>
                         </div>
                     </Col>
                 </FormGroup>
@@ -140,12 +143,12 @@ class BasicOptions extends Component {
                     <Col xs="10">
                         <p>
                             <label className="radio-inline">
-                              <Radio
-                                name="aaa"
-                                value="0"
-                                onChange={getDOMValue(Action.changeActiveCitiesOption)}
-                                checked={state.activeCitiesOption === 0}
-                            />
+                                <Radio
+                                    name="aaa"
+                                    value="0"
+                                    onChange={getDOMValue(Action.changeActiveCitiesOption)}
+                                    checked={state.activeCitiesOption === 0}
+                                />
                                 {' 所有已开通城市'}
                             </label>
                             {'　　'}
@@ -166,6 +169,7 @@ class BasicOptions extends Component {
                                     {this.state.showCitiesSelector ? '收起' : '展开'}
                                 </Anchor>
                             </label>
+                            <small className="text-muted">（当前可选择城市或默认已开通城市均为该分类上线范围内）</small>
                         </p>
                     </Col>
                 </FormGroup>
@@ -298,7 +302,11 @@ class ShopSpecificationsOptions extends Component {
 
         return (
             <FormGroup>
-                <label className="col-xs-2 control-label">商城规格：</label>
+                <label className="col-xs-2 control-label">
+                    商城规格：
+                    <br/>
+                    <small className="text-muted">原价为商城详情页显示价格，价格栏为商城实际销售价格</small>
+                </label>
                 <Col xs="9">
                     <table className="table table-bordered table-striped">
                         <thead>
@@ -323,7 +331,7 @@ class ShopSpecificationsOptions extends Component {
                                                 <center>
                                                     <Input
                                                         type="text"
-                                                        style={inputStyle}
+                                                        style={detail.spec.trim() === "" ? warningInputStyle : inputStyle}
                                                         value={detail.spec}
                                                         onChange={getSpecInputValue(index, Action.changeShopSpecifications)}
                                                     />
@@ -332,7 +340,9 @@ class ShopSpecificationsOptions extends Component {
                                             <td>
                                                 <center>
                                                     <Input
-                                                        style={inputStyle}
+                                                        step="0.01"
+                                                        min="0.01"
+                                                        style={detail.originalCost <= 0 ? warningInputStyle : inputStyle}
                                                         value={detail.originalCost}
                                                         onChange={getSpecInputValue(index, Action.changeShopSpecificationsOriginalCost)}
                                                     />
@@ -341,7 +351,9 @@ class ShopSpecificationsOptions extends Component {
                                             <td>
                                                 <center>
                                                     <Input
-                                                        style={inputStyle}
+                                                        step="0.01"
+                                                        min="0.01"
+                                                        style={detail.originalCost <= 0 ? warningInputStyle : inputStyle}
                                                         value={detail.cost}
                                                         onChange={getSpecInputValue(index, Action.changeShopSpecificationsCost)}
                                                     />
@@ -360,6 +372,8 @@ class ShopSpecificationsOptions extends Component {
                                                     <td key='1'>
                                                         <center>
                                                             <Input
+                                                                step="0.01"
+                                                                min="0.01"
                                                                 style={inputStyle}
                                                                 value={detail.eventCost}
                                                                 onChange={getSpecInputValue(index, Action.changeShopSpecificationsEventCost)}
@@ -501,6 +515,8 @@ class SourceOptions extends Component {
                                             <tr key={index}>
                                                 <td>
                                                     <Input
+                                                        step="0.01"
+                                                        min="0.01"
                                                         type='text'
                                                         value={detail.spec}
                                                         onChange={this.handleChangeSourceSpec.bind(this, index)}
@@ -508,6 +524,8 @@ class SourceOptions extends Component {
                                                 </td>
                                                 <td>
                                                     <Input
+                                                        step="0.01"
+                                                        min="0.01"
                                                         value={detail.cost}
                                                         onChange={this.handleChangeSourceSpecCost.bind(this, index)}
                                                     />
@@ -601,7 +619,7 @@ class CitiesOptions extends Component {
                                 />
                                 {'　'}
                                 {
-                                    state.cityOptionSavable ? state.cityOptionSaved ? (
+                                    (state.selectedCity !== 0 && state.cityOptionSavable) ? state.cityOptionSaved ? (
                                         <button className="btn btn-default btn-xs" disabled={true}>已保存</button>
                                     ) : (
                                         <button className="btn btn-theme btn-xs" onClick={Action.saveCityOption}>保存城市设置</button>
@@ -609,6 +627,8 @@ class CitiesOptions extends Component {
                                         <button className="btn btn-default btn-xs" disabled={true}>保存城市设置</button>
                                     )
                                 }
+                                {'　'}
+                                <small className="text-muted">（暂存当前城市配置）</small>
                             </Col>
                         </FormGroup>
                     )
@@ -618,7 +638,13 @@ class CitiesOptions extends Component {
                     <label className="col-xs-2 control-label">预约时间：</label>
                     <Col xs="6">
                         <div className="form-inline">
-                            <Input value={state.tempOptions.bookingTime} onChange={getDOMValue(Action.changeBookingTime)} />
+                            <Input
+                                style={Number(state.tempOptions.bookingTime) <= 0 ? { borderColor: "#f00" } : {} }
+                                min="0"
+                                step="0.1"
+                                value={state.tempOptions.bookingTime}
+                                onChange={getDOMValue(Action.changeBookingTime)}
+                            />
                             <small className='text-muted'>
                                 （单位：小时）
                             </small>
@@ -678,6 +704,22 @@ class Main extends Component {
             );
         }
 
+        let enableSaveButton = true;
+
+        if (
+            state.citiesOptionApplyRange === 1
+            && [...state.citiesOptions.keys()].filter(x => x !== 'all').length === 0
+        ) {
+            enableSaveButton = false;
+        }
+
+        if (
+            state.citiesOptionApplyRange === 0
+            && state.cityOptionSavable === false
+        ) {
+            enableSaveButton = false;
+        }
+
         return (
             <div className="wrapper">
                 <TopHeader />
@@ -692,22 +734,19 @@ class Main extends Component {
                         <hr/>
                         <BasicOptions state={state} citiesSelectorState={citiesSelector} Action={Action} />
                         <p />
-                        <h3>{'　'}城市配置</h3>
+                        <h3>{'　'}城市配置<small className="text-primary">{'　'}城市一致操作，则默认所有城市该商品的价格规格全部一致。独立城市编辑，则城市的规格配置均不同</small></h3>
                         <hr/>
                         <CitiesOptions state={state} Action={Action} />
                         <hr/>
                         <div className="row">
                             <div className="col-xs-4 col-xs-offset-2">
                             {
-                                state.citiesOptionApplyRange === 1 && [...state.citiesOptions.keys()].filter(x => x !== 'all').length === 0 ? (
-                                    <button className="btn btn-default" disabled={true}>
+                                enableSaveButton ? (
+                                    <button className="btn btn-theme" onClick={Action.saveOption}>
                                         保存商品设置
                                     </button>
                                 ) : (
-                                    <button
-                                        className="btn btn-theme"
-                                        onClick={Action.saveOption}
-                                    >
+                                    <button className="btn btn-default" disabled={true}>
                                         保存商品设置
                                     </button>
                                 )

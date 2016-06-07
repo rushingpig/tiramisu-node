@@ -108,23 +108,58 @@ BaseDao.delete = function (sql, params) {
  * Remember to commit/rollback and release the connection
  * @returns {Promise}
  */
-BaseDao.trans = function(){
+BaseDao.trans = function(isPromise){
     return new Promise((resolve,reject)=>{
         pool.getConnection(function (err, connection) {
             if (err) {
                 reject(err);
             } else {
               connection.beginTransaction(err => {
-                if (err) {
-                  connection.release();
-                  return reject(err);
-                }
-                resolve(connection);
+                  if (err) {
+                      connection.release();
+                      return reject(err);
+                  }
+                  if (isPromise) {
+                      resolve(transWrapPromise(connection));
+                  } else {
+                      resolve(connection);
+                  }
               });
             }
         });
     });
 };
+
+function transWrapPromise(connection) {
+    let t = {};
+    t.query = function (sql, params) {
+        return new Promise((resolve, reject)=> {
+            connection.query(sql, params, function (err) {
+                if (err) reject(err);
+                else resolve.apply(this, _.drop(arguments));
+            });
+        });
+    };
+    t.commit = function () {
+        return new Promise((resolve, reject)=> {
+            connection.commit(err=> {
+                connection.release();
+                if (err) reject(err);
+                else resolve();
+            });
+        });
+    };
+    t.rollback = function () {
+        return new Promise((resolve, reject)=> {
+            connection.rollback(err=> {
+                connection.release();
+                if (err) reject(err);
+                else resolve();
+            });
+        });
+    };
+    return t;
+}
 
 BaseDao.transWrapPromise = function (transaction) {
     transaction.queryPromise = function (sql, params) {

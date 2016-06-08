@@ -529,7 +529,7 @@ class DeliveryManSalaryManagePannel extends Component{
 							        <th><div style={{width:80}}>配送时间</div></th>
 							        <th><div style={{width:80}}>签收时间</div></th>
 							        <th><div style={{width:120}}>订单号</div></th>
-							        <th><div style={{width:120}}>收货人信息</div></th>
+							        <th><div style={{width:220}}>收货人信息</div></th>
 							        <th><div style={{width:80}}>配送方式</div></th>
 							        <th><div style={{width:80}}>签收状态</div></th>
 							        <th><div style={{width:100}}>是否第二次配送</div></th>

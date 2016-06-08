@@ -157,10 +157,16 @@ class FilterHeader extends Component {
   componentDidMount(){
     setTimeout(()=>{
       var { getProvincesSignal, getCitiesSignal, getOrderSrcs  } = this.props.actions;
-      var { fields: { province_id }, getStationListByScopeSignal } = this.props;
+      var { fields: { province_id, city_id }, getStationListByScopeSignal } = this.props;
       getProvincesSignal('authority');
       province_id.value && getCitiesSignal( province_id.value, 'authority' );
-      getStationListByScopeSignal({signal:'authority'});
+      var data = {};
+      data.signal = 'authority';
+      if(province_id.value != SELECT_DEFAULT_VALUE)
+        data.province_id = province_id.value;
+      if(city_id.value != SELECT_DEFAULT_VALUE)
+        data.city_id = city_id.value;
+      getStationListByScopeSignal(data);
       getOrderSrcs();
       LazyLoad('noty');
     },0)

@@ -433,7 +433,7 @@ OrderService.prototype.editOrder = function (is_submit) {
               option += '修改{' + origin_product_name + '}实际售价{'+origin_product.discount_price/100+'}为{' + curr.discount_price/100 + '}\n';
             }
             if(curr.amount != origin_product.amount){
-              option += '修改{' + origin_product_name + '}应收金额{'+origin_product.amount+'}为{' + curr.amount/100 + '}\n';
+              option += '修改{' + origin_product_name + '}应收金额{'+origin_product.amount/100+'}为{' + curr.amount/100 + '}\n';
             }
             update_skus.push(systemUtils.assembleUpdateObj(req, order_sku_obj));
           }

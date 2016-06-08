@@ -319,7 +319,7 @@ OrderService.prototype.editOrder = function (is_submit) {
       regionalism_id = req.body.regionalism_id,
       recipient_address = req.body.recipient_address,
       recipient_landmark = req.body.recipient_landmark,
-      delivery_id = req.body.delivery_id,
+      delivery_id = req.body.delivery_id || 0,
       src_id = req.body.src_id,
       pay_modes_id = req.body.pay_modes_id,
       pay_status = req.body.pay_status,
@@ -388,7 +388,7 @@ OrderService.prototype.editOrder = function (is_submit) {
       if (delivery_type != current_order.delivery_type) {
         option += '修改{配送方式}为{' + Constant.DTD[delivery_name] + '}\n';
       }
-      if (delivery_id != current_order.delivery_id) {
+      if (delivery_id != current_order.delivery_id && delivery_id !== 0) {
         option += '修改{配送站}为{' + delivery_name + '}\n';
       }
       if (delivery_time != current_order.delivery_time) {
@@ -440,7 +440,7 @@ OrderService.prototype.editOrder = function (is_submit) {
         }
         if (isAdd) {
           let curr = products[i];
-          option += '增加{' + (curr.product_name || '未知产品') + '}\n';
+          option += '增加{' + (curr.name || '未知产品') + '}\n';
           let order_sku_obj = {
             order_id: orderId,
             sku_id: curr.sku_id,

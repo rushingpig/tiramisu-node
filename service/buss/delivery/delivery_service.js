@@ -708,7 +708,9 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
                 data.merge_name = curr.merge_name;
                 data.province_id = curr.province_id;
                 // 如果是HK,显示不同的样式打印风格页面
-                data.region = curr.province_id === Constant.HK_PROVINCE_ID ? 'HK' : 'CN';
+                if(index === 0){
+                    res_data.region = curr.province_id === Constant.HK_PROVINCE_ID ? 'HK' : 'CN';
+                }
                 data.province_name = curr.province_name;
                 data.city_id = curr.city_id;
                 data.city_name = curr.city_name;

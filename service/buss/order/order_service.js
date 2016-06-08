@@ -1050,7 +1050,7 @@ OrderService.prototype.exportExcel = (req,res,next) => {
     request({
       uri : uri,
       method : 'post',
-      timeout : 30000, // 30s超时
+      timeout : 120000, // 30s超时
       json : true,
       body : resObj
     }).on('error', (err) => {

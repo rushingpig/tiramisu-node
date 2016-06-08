@@ -150,7 +150,7 @@ var img_host = 'http://qn.blissmall.net/';
 
 var login_required = true;
 // 导出excel的远程host
-var excel_export_host = 'http://localhost:8080/excel/order/';
+var excel_export_host = 'http://localhost:8888/excel/order/';
 
 module .exports = {
     exp_static_options : exp_static_options,

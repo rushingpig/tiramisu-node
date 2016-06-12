@@ -684,7 +684,7 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
         }
         let res_data = {},map = new Map();
 
-        results.forEach((curr)=>{
+        results.forEach((curr, index)=>{
 
             if(!map.has(curr.id)){
                 let data = {

@@ -139,13 +139,13 @@ class FilterHeader extends Component{
 					 {
 					 	V('DeliveryManSalaryManageCityFilter')
 					 	?[
-					 		<Select ref='province' name='province' options = {provinces} 
+					 		<Select className='space-right' ref='province' name='province' options = {provinces} 
 					 			onChange = {this.onProvinceChange.bind(this)}
 					 			default-text = '请选择省份'/>,
-					 		<Select ref='city' name='city' options = { cities} 
+					 		<Select className='space-right' ref='city' name='city' options = { cities} 
 					 			onChange= {this.onCityChange.bind(this)}
 					 			default-text = '请选择城市'/>,
-					 		<Select ref='station' name = 'station' options = { stations }
+					 		<Select className='space-right' ref='station' name = 'station' options = { stations }
 					 			default-text = '请选择配送站' />
 					 	]:null
 					 }
@@ -153,17 +153,17 @@ class FilterHeader extends Component{
 					<div className="input-group input-group-sm" style={{height:'27px'}}>
 						<span  style={{height:'27px',lineHeight:1}} className="input-group-addon"><i className="fa fa-search"></i></span>
 						<input type="text"  style={{height:'27px', width:'120px'}} 
-						  className="form-control" placeholder="配送员拼音首字母或手机号" 
+						  className="form-control space-right" placeholder="配送员拼音首字母或手机号" 
 						  onChange = {this.filterHandler.bind(this)} />
 					</div>
-					<select name= 'deliveryman' ref='deliveryman' className="form-control input-sm"  style={{height:'27px',minWidth:100}}>
+					<select name= 'deliveryman' ref='deliveryman' className="form-control input-sm space-right"  style={{height:'27px',minWidth:100}}>
 						{
 							content.length
 							? content
 							: <option>无</option>
 						}
 					</select>
-					<select ref='COD' default-text = '是否货到付款' className='form-control input-xs'>
+					<select ref='COD' default-text = '是否货到付款' className='form-control input-xs space-right'>
 						<option value='-1'>是否货到付款</option>
 						<option value='1'>是</option>
 						<option value='2'>否</option>

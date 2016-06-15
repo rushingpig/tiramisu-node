@@ -95,8 +95,10 @@ var DatePicker = React.createClass({
     return (
       <div style={{'display': 'inline-block'}}>
         <input ref="date" {...spreadProps}
-           value={this.state.date} 
-           className={`form-control input-xs ${this.props.className}`} />
+          value={this.state.date} 
+          className={`form-control input-xs ${this.props.className}`}
+          {...this.props.style ? {style: this.props.style} : {}}
+        />
       </div>
     );
   },

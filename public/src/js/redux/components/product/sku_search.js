@@ -58,40 +58,42 @@ class Main extends Component {
                         onChange={getDOMValue(Action.changeSearchProductName)}
                         value={state.searchProductName}
                     />
-                    {'　'}
+                    &nbsp;
                     <button className="btn btn-theme btn-xs" onClick={e => Action.searchWithProductName(0)}>搜索</button>
                 </div>
                 <p />
                 <div className="form-inline">
-                    按条件搜索：上线时间：
+                    按条件搜索：上线时间&nbsp;
                     <DatePicker
+                        style={{width: 74}}
                         value={state.searchBeginTime}
                         upperLimit={state.noEndTimeLimit ? '2099-12-31' : state.searchEndTime}
                         onChange={Action.changeSearchBeginTime}
                     />
-                    {'　'}
+                    &nbsp;
                     {
                         state.noEndTimeLimit ? (
                             <div style={{display:'inline'}}>
-                                下线时间：
-                                <Input value='∞' disabled={true} />
-                                {'　'}
+                                下线时间&nbsp;
+                                <Input value='∞' disabled={true} style={{width: 74}} />
+                                &nbsp;
                             </div>
                         ) : (
                             <div style={{display:'inline'}}>
-                                下线时间：
+                                下线时间&nbsp;
                                 <DatePicker
+                                    style={{width: 74}}
                                     value={state.searchEndTime}
                                     lowerLimit={state.searchBeginTime}
                                     onChange={Action.changeSearchEndTime}
                                 />
-                                {'　'}
+                                &nbsp;
                             </div>
                         )
                     }
                     无下线时间：
                     <CheckBox checked={state.noEndTimeLimit} onChange={Action.changeNoEndTimeLimit} />
-                    {'　'}
+                    &nbsp;
                     <Select
                         value={state.selectedPrimaryCategory}
                         onChange={getDOMValue(Action.changeSelectPrimaryCategory)}
@@ -105,7 +107,7 @@ class Main extends Component {
                             })
                         }
                     </Select>
-                    {'　'}
+                    &nbsp;
                     <Select
                         value={state.selectedSecondaryCategory}
                         onChange={getDOMValue(Action.changeSelectSecondaryCategory)}
@@ -123,7 +125,7 @@ class Main extends Component {
                             ]
                         }
                     </Select>
-                    {'　'}
+                    &nbsp;
                     <Select value={state.selectedProvince} onChange={getDOMValue(Action.changeSelectProvince)}>
                         {
                             state.provincesList.map(p => (
@@ -131,7 +133,7 @@ class Main extends Component {
                             ))
                         }
                     </Select>
-                    {'　'}
+                    &nbsp;
                     <Select value={state.selectedCity} onChange={getDOMValue(Action.changeSelectCity)}>
                         {
                             [
@@ -142,13 +144,13 @@ class Main extends Component {
                             ]
                         }
                     </Select>
-                    {'　'}
+                    &nbsp;
                     已上线：
                     <CheckBox checked={state.searchIsEvent} onChange={Action.changeSearchActiveStatus} />
-                    {'　'}
+                    &nbsp;
                     促销：
                     <CheckBox checked={state.searchHasActive} onChange={Action.changeSearchIsEventStatus} />
-                    {'　'}
+                    &nbsp;
                     <button className="btn btn-theme btn-xs" onClick={e => Action.searchWithFilter(0)}>搜索</button>
                 </div>
                 <hr/>

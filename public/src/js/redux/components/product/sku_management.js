@@ -82,7 +82,7 @@ class BasicOptions extends Component {
                 </FormGroup>
                 <FormGroup>
                     <label className="col-xs-2 control-label">购买方式：</label>
-                    <Col xs="6">
+                    <Col xs="10">
                         <p>
                             <label className="radio-inline">
                                 <Radio

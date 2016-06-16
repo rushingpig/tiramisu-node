@@ -20,6 +20,7 @@ var dao = require('../../dao'),
     res_obj = require('../../util/res_obj'),
     TiramisuError = require('../../error/tiramisu_error'),
     async = require('async');
+var _ = require('lodash');
 
 function UserService() {
 
@@ -72,6 +73,7 @@ UserService.prototype.getUserInfo = (username, password)=> {
             }
             user.data_scopes = Array.from(data_scopes_set.values());
             user.org_ids = Array.from(org_ids_set.values());
+            _.pull(user.station_ids, '999');  // 删除999 当勾选所属城市全部配送站时会出现999
             return user;
         }
     });

@@ -202,6 +202,9 @@ UserDao.prototype.findUsers = function(query_data){
         sql += " and su.id != 1";
     }
     // data filter end
+    if(!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1) {
+        sql += " and sr.org_id in " + dbHelper.genInSql(org_ids);
+    }
     if(query_data.org_id){
         sql += " and sr.org_id = ?";
         params.push(query_data.org_id);

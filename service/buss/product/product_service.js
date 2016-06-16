@@ -163,7 +163,6 @@ ProductService.prototype.listAccessory = (req, res, next)=> {
     // req.query.page_size = 10;
     return ProductService.prototype.listProducts(req, res, next);
 };
-
 ProductService.prototype.listAccessoryByOrder = (req, res, next)=> {
     let orderId = systemUtils.getDBOrderId(req.params.orderId);
 
@@ -281,6 +280,99 @@ ProductService.prototype.deleteSku = (req, res, next)=> {
         .then(() => {
             res.api();
         });
+    systemUtils.wrapService(res, next, promise);
+};
+/**
+ * get product and its sku detail
+ * @param req
+ * @param res
+ * @param next
+ */
+ProductService.prototype.getProductAndSku = (req, res, next)=> {
+    req.checkQuery('productId', 'productId can not be null').notEmpty();
+    req.checkQuery('cityId', 'cityId can not be null').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let promise = productDao.getProductAndCategoryById(req.query.productId)
+        .then(product_result => {
+            return productDao.getSkuWithBooktimeByProductAndCity(req.query)
+                .then(sku_result => {
+                    //格式化最终返回结果
+                    let product = product_result[0];
+                    product.isPresell = 0;
+                    product.presell_start = null;
+                    product.presell_end = null;
+                    product.book_time = null;
+                    product.secondary_book_time = {};
+                    let skus = [];
+                    //临时存储skuid，用于过滤重复sku
+                    let sku_ids = [];
+                    sku_result.forEach(item => {
+                        //若sku存在预售，则整个产品为预售商品
+                        if(item.presell_start || item.presell_end){
+                            product.isPresell =1;
+                            product.presell_start = item.presell_start;
+                            product.presell_end = item.presell_end;
+                        }
+                        //若sku存在预约时间，则整个产品为此预约时间
+                        if(item.book_time){
+                            product.book_time = item.book_time;
+                        }
+                        //若sku存在第二预约时间，则整个产品为此第二预约时间
+                        if(item.secondary_book_time && item.secondary_book_time_region){
+                            product.secondary_book_time[item.secondary_book_time_region] = item.secondary_book_time;
+                        }
+                        if(sku_ids.indexOf(item.id) > -1){
+                            return;
+                        }
+                        skus.push({
+                            size: item.size,
+                            original_price: item.original_price,
+                            price: item.price,
+                            activity_price: item.activity_price,
+                            activity_start: item.activity_start,
+                            activity_end: item.activity_end
+                        });
+                        sku_ids.push(item.id);
+                    });
+                    return Promise.resolve({product,skus});
+                });
+        }).then(result => {
+            res.api(result);
+        });
+    systemUtils.wrapService(res, next, promise);
+};
+/**
+ * get sku and its price list
+ * @param req
+ * @param res
+ * @param next
+ */
+ProductService.prototype.listSkuPrice = (req, res, next)=> {
+    req.checkQuery('productId', 'productId can not be null').notEmpty();
+    req.checkQuery('cityId', 'cityId can not be null').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let promise = productDao.getProductAndCategoryById(req.query.productId)
+        .then(product_result => {
+            return productDao.getSkuByProductAndCity(req.query)
+                .then(sku_result => {
+                    let result = {
+                        total: sku_result.count_result[0].total,
+                        product: product_result[0],
+                        skus: sku_result.page_result
+                    };
+                    return Promise.resolve(result);
+                });
+        }).then(result => {
+            res.api(result);
+        });;
     systemUtils.wrapService(res, next, promise);
 };
 module.exports = new ProductService();

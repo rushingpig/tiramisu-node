@@ -394,4 +394,71 @@ ProductDao.prototype.batchDeleteSku = function (req, skus) {
             });
     });
 }
+ProductDao.prototype.getProductAndCategoryById = function (productId) {
+    let columns = [
+        'product.id as id',
+        'product.name as product_name',
+        'primary_cate.name as primary_cate_name',
+        'secondary_cate.name as secondary_cate_name'
+    ];
+    let sql = 'select ' + columns.join(',') + ' from ?? product left join ?? secondary_cate on product.category_id = secondary_cate.id left join ?? primary_cate on secondary_cate.parent_id = primary_cate.id where product.id = ?';
+    let params = [];
+    params.push(config.tables.buss_product);
+    params.push(config.tables.buss_product_category);
+    params.push(config.tables.buss_product_category);
+    params.push(productId);
+    return baseDao.select(sql, params);
+}
+ProductDao.prototype.getSkuWithBooktimeByProductAndCity = function (data) {
+    let columns = [
+        'sku.id as id',
+        'sku.size as size',
+        'sku.website as website',
+        'sku.original_price as original_price',
+        'sku.price as price',
+        'sku.book_time as book_time',
+        'secondary_booktime.book_time as secondary_book_time',
+        'dict.name as secondary_book_time_region',
+        'sku.presell_start as presell_start',
+        'sku.presell_end as presell_end',
+        'sku.activity_price as activity_price',
+        'sku.activity_start as activity_start',
+        'sku.activity_end as activity_end'
+    ];
+    let sql = 'select ' + columns.join(',') + ' from ?? sku left join ?? secondary_booktime on sku.id = secondary_booktime.sku_id left join ?? dict on secondary_booktime.regionalism_id = dict.id where sku.product_id = ? and sku.regionalism_id = ?';
+    let params = [];
+    params.push(config.tables.buss_product_sku);
+    params.push(config.tables.buss_product_sku_booktime);
+    params.push(config.tables.dict_regionalism);
+    params.push(data.productId);
+    params.push(data.cityId);
+    return baseDao.select(sql, params);
+}
+ProductDao.prototype.getSkuByProductAndCity = function (data) {
+    let columns = [
+        'sku.id as id',
+        'sku.website as website',
+        'sku.size as size',
+        'sku.original_price as original_price',
+        'sku.price as price'
+    ];
+    let sql = 'select ' + columns.join(',') + ' from ?? sku where sku.product_id = ? and sku.regionalism_id = ?';
+    let params = [];
+    params.push(config.tables.buss_product_sku);
+    params.push(data.productId);
+    params.push(data.cityId);
+    // 分页
+    let pageNo = data.pageno || 0;
+    let pageSize = data.pagesize || 10;
+    let count_sql = dbHelper.countSql(sql);
+    let page_sql = dbHelper.paginate(sql, pageNo, pageSize);
+    return baseDao.select(count_sql, params).then(count_result => {
+        return baseDao.select(page_sql, params).then(page_result => {
+            return {
+                count_result,
+                page_result
+            };
+        });
+    });
+}
 module.exports = ProductDao;

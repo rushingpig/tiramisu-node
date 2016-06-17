@@ -104,24 +104,27 @@ UserDao.prototype.updateUserById = function(user_obj, user_id, role_ids, only_ad
         trans = yield baseDao.trans(true);
         let sql = _this.base_update_sql + " where id = ?";
         let params = [tables.sys_user, user_obj, user_id];
-        yield trans.query(sql, params);
+        let result = yield trans.query(sql, params);
 
-        sql = "delete from ?? where user_id = ?";
-        params = [tables.sys_user_role, user_id];
-        yield trans.query(sql, params);
+        if (role_ids) {
+            sql = "delete from ?? where user_id = ?";
+            params = [tables.sys_user_role, user_id];
+            yield trans.query(sql, params);
 
-        let user_roles = [];
-        role_ids.forEach(curr=> {
-            let user_role = [user_id, curr, 0];
-            if (only_admin_roles.indexOf(curr) != -1) {
-                user_role[2] = 1;
-            }
-            user_roles.push(user_role);
-        });
-        sql = "insert into ?? values ?";
-        params = [tables.sys_user_role, user_roles];
-        yield trans.query(sql, params);
+            let user_roles = [];
+            role_ids.forEach(curr=> {
+                let user_role = [user_id, curr, 0];
+                if (only_admin_roles && only_admin_roles.indexOf(curr) != -1) {
+                    user_role[2] = 1;
+                }
+                user_roles.push(user_role);
+            });
+            sql = "insert into ?? values ?";
+            params = [tables.sys_user_role, user_roles];
+            yield trans.query(sql, params);
+        }
         yield trans.commit();
+        return result.affectedRows;
     }).catch(err=> {
         if (trans && typeof trans.rollback == 'function') trans.rollback();
         return Promise.reject(err);
@@ -202,6 +205,9 @@ UserDao.prototype.findUsers = function(query_data){
         sql += " and su.id != 1";
     }
     // data filter end
+    if(!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1) {
+        sql += " and sr.org_id in " + dbHelper.genInSql(org_ids);
+    }
     if(query_data.org_id){
         sql += " and sr.org_id = ?";
         params.push(query_data.org_id);

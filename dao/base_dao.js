@@ -226,6 +226,10 @@ BaseDao.is_usable = {
     enable : 1,
     disable : 0
 };
+BaseDao.ONLY_ADMIN = {
+    YEW: 1,
+    NO: 0
+};
 
 module.exports = BaseDao;
 module.exports.instance = new BaseDao();

@@ -8,6 +8,7 @@
 "use strict";
 var baseDao = require('../../base_dao'),
     del_flag = baseDao.del_flag,
+    ONLY_ADMIN = baseDao.ONLY_ADMIN,
     tables = require('../../../config').tables,
     toolUtils = require('../../../common/ToolUtils'),
     dbHelper = require('../../../common/DBHelper'),
@@ -195,6 +196,9 @@ DeliveryDao.prototype.findDeliverymansByStation = function(city_ids,currentUser)
         params.push(tables.dict_regionalism);
         params.push(city_ids.join());
     }
+    sql += ` WHERE su.del_flag = ? AND sur.only_admin = ? `;
+    params.push(del_flag.SHOW);
+    params.push(ONLY_ADMIN.NO);
     return baseDao.select(sql,params);
 
 };
@@ -218,6 +222,9 @@ DeliveryDao.prototype.findDeliverymansByCity = function(city_id){
         params.push(tables.dict_regionalism);
         params.push(city_id);
     }
+    sql += ` WHERE su.del_flag = ? AND sur.only_admin = ? `;
+    params.push(del_flag.SHOW);
+    params.push(ONLY_ADMIN.NO);
     return baseDao.select(sql,params);
 
 };
@@ -240,6 +247,9 @@ DeliveryDao.prototype.findDeliverymansByOrder = function(order_id){
     sql += " inner join ?? bo on bo.id = ? and FIND_IN_SET(bo.delivery_id, su.station_ids)";
     params.push(tables.buss_order);
     params.push(order_id);
+    sql += ` WHERE su.del_flag = ? AND sur.only_admin = ? `;
+    params.push(del_flag.SHOW);
+    params.push(ONLY_ADMIN.NO);
     return baseDao.select(sql,params);
 };
 /**

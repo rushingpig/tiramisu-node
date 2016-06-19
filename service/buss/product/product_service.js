@@ -334,7 +334,8 @@ ProductService.prototype.getProductAndSku = (req, res, next)=> {
                             price: item.price,
                             activity_price: item.activity_price,
                             activity_start: item.activity_start,
-                            activity_end: item.activity_end
+                            activity_end: item.activity_end,
+                            website: item.website
                         });
                         sku_ids.push(item.id);
                     });

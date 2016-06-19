@@ -75,6 +75,7 @@ const URL = (function() {
     activatedCity:            '/product/category/:id/regions/pc',
     addSku:                   '/product/sku',
     searchSku:                '/product/details',
+    viewSku:                  '/product/skus',
     deleteSku:                '/product/skus',
 
     //送货管理

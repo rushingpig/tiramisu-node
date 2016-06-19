@@ -1,0 +1,9 @@
+.svs .copy-product-id {
+    display: none
+}
+
+.svs #product-id:hover + span + a,
+.svs #product-id + span:hover + a,
+.svs #product-id + span + a:hover {
+    display: inline;
+}

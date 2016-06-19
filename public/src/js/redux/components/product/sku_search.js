@@ -25,6 +25,7 @@ class Main extends Component {
         super(props);
 
         this.handleDeleteSelectedRow = this.handleDeleteSelectedRow.bind(this);
+        this.handleKeyPress = this.handleKeyPress.bind(this);
     }
 
     render() {
@@ -56,6 +57,7 @@ class Main extends Component {
                         className="form-control input-xs"
                         placeholder="产品名称"
                         onChange={getDOMValue(Action.changeSearchProductName)}
+                        onKeyPress={this.handleKeyPress}
                         value={state.searchProductName}
                     />
                     {'　'}
@@ -188,7 +190,7 @@ class Main extends Component {
                                             <td><CheckBox checked={state.checkedRow.has(i)} onChange={e => Action.selectRow(i)} /></td>
                                             <td>{row.spu}</td>
                                             <td><Anchor>{row.name}</Anchor></td>
-                                            <td>{'¥ '}{row.price}</td>
+                                            <td>{'¥ '}{(row.price/100).toFixed(2)}</td>
                                             <td>
                                                 <span className="text-primary">{row.primary_cate_name}</span><br/>
                                                 <span className="text-muted">{row.secondary_cate_name}</span>
@@ -223,9 +225,12 @@ class Main extends Component {
                                                 {row.city_name}
                                             </td>
                                             <td>
-                                                <Anchor>[产看]</Anchor>{'　'}
-                                                <Anchor>[规格&价格]</Anchor>{'　'}
-                                                <Anchor>[编辑]</Anchor>{'　'}
+                                                <Link style={{textDecoration:'underline'}} to={"/pm/sku_manage/view/info/" + row.city_id + '/' + row.spu}>[查看]</Link>
+                                                {'　'}
+                                                <Link style={{textDecoration:'underline'}} to="/pm/sku_manage/view/specfications">[规格&价格]</Link>
+                                                {'　'}
+                                                <Anchor>[编辑]</Anchor>
+                                                {'　'}
                                                 <Anchor>[删除]</Anchor>
                                             </td>
                                         </tr>
@@ -281,6 +286,12 @@ class Main extends Component {
                 x => this.props.Action.deleteSelectedRow(true),
                 e => e
             )
+        }
+    }
+
+    handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            this.props.Action.searchWithProductName(0)
         }
     }
 

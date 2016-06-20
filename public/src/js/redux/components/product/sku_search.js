@@ -227,7 +227,7 @@ class Main extends Component {
                                             <td>
                                                 <Link style={{textDecoration:'underline'}} to={"/pm/sku_manage/view/info/" + row.city_id + '/' + row.spu}>[查看]</Link>
                                                 {'　'}
-                                                <Link style={{textDecoration:'underline'}} to="/pm/sku_manage/view/specfications">[规格&价格]</Link>
+                                                <Link style={{textDecoration:'underline'}} to={"/pm/sku_manage/view/specfications/" + row.city_id + '/' + row.spu}>[规格&价格]</Link>
                                                 {'　'}
                                                 <Anchor>[编辑]</Anchor>
                                                 {'　'}

@@ -157,7 +157,7 @@ const App = () => (
           <Route path="add" onEnter={onEnter('ProductionManageAdd')} getComponent={get('SkuManage')} />
           <Route path="view">
             <Route path="info/:cityId/:productId" onEnter={onEnter('ProductionViewInfoAccess')} getComponent={get('ViewInfo')} />
-            <Route path="specfications" onEnter={onEnter('ProductionViewSpecAccess')} getComponent={get('ViewSpecfications')} />
+            <Route path="specfications/:cityId/:productId" onEnter={onEnter('ProductionViewSpecAccess')} getComponent={get('ViewSpecfications')} />
           </Route>
         </Route>
         <Route path="cam" onEnter={getComponents('cam', onEnter('CategoryManageAccess'))}>

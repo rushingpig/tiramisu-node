@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+
 import Tooltip from 'common/tooltip2';
+import Pagination from 'common/pagination';
 
 import actions from 'actions/product_view_specifications';
 
@@ -36,7 +38,7 @@ class Main extends Component {
             selection.empty()
             selection.addRange(range);
 
-            var result = document.execCommand('copy');
+            const result = document.execCommand('copy');
             selection.empty()
 
             this.setState({
@@ -55,7 +57,7 @@ class Main extends Component {
 
     render() {
 
-        const { Action, state } = this.props;
+        const { Action, state, params } = this.props;
 
         if (state.basicDataLoadStatus === 'pending') {
             return (
@@ -126,18 +128,31 @@ class Main extends Component {
                                         <th>SKU编码</th>
                                         <th>渠道</th>
                                         <th>规格</th>
-                                        <th>原价<br/>(人民币：元)</th>
-                                        <th>渠道价格<br/>(人民币：元)</th>
+                                        <th>原价 (RMB)</th>
+                                        <th>渠道价格 (RMB)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>2111</td><td>商城</td><td>约2磅</td><td>168.00</td><td>168.00</td></tr>
-                                    <tr><td>2111</td><td>商城</td><td>约2磅</td><td>168.00</td><td>168.00</td></tr>
-                                    <tr><td>2111</td><td>商城</td><td>约2磅</td><td>168.00</td><td>168.00</td></tr>
-                                    <tr><td>2111</td><td>商城</td><td>约2磅</td><td>168.00</td><td>168.00</td></tr>
+                                    {
+                                        state.specifications.map(data => (
+                                            <tr key={data.id}>
+                                                <td>{data.id}</td>
+                                                <td>{state.orderSource.get(data.source)}</td>
+                                                <td>{data.spec}</td>
+                                                <td>{data.originalCost ? (data.originalCost/100).toFixed(2) : '-'}</td>
+                                                <td>{(data.cost/100).toFixed(2)}</td>
+                                            </tr>
+                                        ))
+                                    }
                                 </tbody>
                             </table>
                         </div>
+                        <Pagination
+                            page_no={state.pageNum}
+                            total_count={state.totalItem}
+                            page_size={state.pageSize}
+                            onPageChange={pageNum => Action.loadBasicData(params.cityId, params.productId, pageNum)}
+                        />
                     </Col>
                 </Row>
             </div>
@@ -149,7 +164,9 @@ class Main extends Component {
     }
 
     handleReloadBasicData() {
-        this.props.Action.loadBasicData();
+        const { Action, params } = this.props;
+        
+        Action.loadBasicData(params.cityId, params.productId, 0);
     }
 }
 

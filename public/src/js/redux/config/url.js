@@ -76,6 +76,7 @@ const URL = (function() {
     addSku:                   '/product/sku',
     searchSku:                '/product/details',
     viewSku:                  '/product/skus',
+    viewSkuSpec:              '/product/skus/price',
     deleteSku:                '/product/skus',
 
     //送货管理

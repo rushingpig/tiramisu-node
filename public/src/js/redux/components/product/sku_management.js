@@ -764,7 +764,7 @@ class Main extends Component {
     }
 
     componentDidUpdate() {
-        const { state, Action } = this.props;
+        const { state, Action, history } = this.props;
 
         if (state.saveStatus === 'failed') {
             return MessageBox({
@@ -779,9 +779,10 @@ class Main extends Component {
             return MessageBox({
                 icon: MessageBoxIcon.Success,
                 text: '保存成功'
-            }).then(
-                Action.resetSaveStatus
-            );
+            }).then(x => {
+                Action.resetSaveStatus();
+                history.push('/pm/sku_manage');
+            });
         }
     }
 }

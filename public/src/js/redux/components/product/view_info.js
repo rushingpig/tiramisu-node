@@ -74,106 +74,110 @@ class Main extends Component {
                 </Row>
                 <Row>
                     <Col xs="4"><label>预约时间：</label><span className="text-muted">{state.bookingTime + ' 小时'}</span></Col>
-                    <Col xs="4"><label>第二预约时间：</label><span className="text-muted">哈哈哈哈哈</span></Col>
+                    {
+                        state.hasSecondaryBookingTime ? (
+                            <Col xs="4"><label>第二预约时间：</label><span className="text-muted">-</span></Col>
+                        ) : undefined
+                    }
                 </Row>
                 <Row>
                 </Row>
-                <hr/>
-                <Row>
-                    <Col xs="12">
-                        <div className="panel">
-                            <div className="panel-heading">
-                                商城规格
-                            </div>
-                            <table className="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>规格</th>
-                                        <th>原价 (RMB)</th>
-                                        <th>价格 (RMB)</th>
-                                        <th>促销</th>
-                                        <th>活动价格</th>
-                                        <th>活动时间</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
-                                        state.shopSpecifications.map((ss, i) => (
-                                            <tr key={i}>
-                                                <td>{ss.spec}</td>
-                                                <td>{(ss.originalCost/100).toFixed(2)}</td>
-                                                <td>{(ss.cost/100).toFixed(2)}</td>
-                                                <td>{ss.hasEvent ? (<i className="fa fa-check text-success" />) : '-'}</td>
-                                                <td>{ss.hasEvent ? '-' : '-'}</td>
-                                                <td>{ss.hasEvent ? '-' : '-'}</td>
-                                            </tr>
-                                        ))
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    </Col>
-                </Row>
-                <hr/>
-                <Row>
-                    <Col xs="3">
-                        <div className="list-group">
-                            {
-                                sourceSpecificationsKeys.length === 0 ? (
-                                    <div className="list-group-item">没有其它渠道的规格</div>
-                                ) : (
-                                    sourceSpecificationsKeys.map(sid => {
-                                        const isSelected = state.selectedSource === sid;
-                                        return (
-                                            <div className={"list-group-item" + (isSelected ? ' active' : '')} key={sid}>
-                                                {
-                                                    isSelected ? (
-                                                        state.orderSource.get(sid)
-                                                    ) : (
-                                                        <a href="javascript:;" onClick={e => Action.changeSelectSource(sid)}>
-                                                            {state.orderSource.get(sid)}
-                                                        </a>
-                                                    )
-                                                }
-                                            </div>
-                                        )
-                                    })
-                                )
-                            }
-                        </div>
-                    </Col>
-                    <Col xs="6">
-                        <div className="panel">
-                            <div className="panel-heading">渠道规格：</div>
-                            <table className="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>规格</th>
-                                        <th>价格</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
-                                        sourceSpecificationsKeys.length === 0 ? (
+                {
+                    state.shopSpecifications.length === 0 ? undefined : [(
+                        <hr key="hr" />
+                    ), (
+                        <Row key='Row'>
+                            <Col xs="12">
+                                <div className="panel">
+                                    <div className="panel-heading">
+                                        商城规格
+                                    </div>
+                                    <table className="table table-bordered table-striped">
+                                        <thead>
                                             <tr>
-                                                <td colSpan="2">没有其它渠道的规格</td>
+                                                <th>规格</th>
+                                                <th>原价 (RMB)</th>
+                                                <th>价格 (RMB)</th>
+                                                <th>促销</th>
+                                                <th>活动价格</th>
+                                                <th>活动时间</th>
                                             </tr>
-                                        ) : (
-                                            state.sourceSpecifications.get(state.selectedSource).map(
-                                                (ss, i) => (
-                                                    <tr key={state.selectedSource + '@' + i}>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                state.shopSpecifications.map((ss, i) => (
+                                                    <tr key={i}>
                                                         <td>{ss.spec}</td>
+                                                        <td>{(ss.originalCost/100).toFixed(2)}</td>
                                                         <td>{(ss.cost/100).toFixed(2)}</td>
+                                                        <td>{ss.hasEvent ? (<i className="fa fa-check text-success" />) : '-'}</td>
+                                                        <td>{ss.hasEvent ? (ss.eventCost/100).toFixed(2) : '-'}</td>
+                                                        <td>{ss.hasEvent ? (ss.eventTime[0] + ' ~ ' + ss.eventTime[1]) : '-'}</td>
                                                     </tr>
-                                                )
+                                                ))
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Col>
+                        </Row>
+                    )]
+                }
+                {
+                    sourceSpecificationsKeys.length === 0 ? undefined : [(
+                        <hr key="hr" />
+                    ), (
+                        <Row key="Row">
+                            <Col xs="3">
+                                <div className="list-group">
+                                    {
+                                        sourceSpecificationsKeys.map(sid => {
+                                            const isSelected = state.selectedSource === sid;
+                                            return (
+                                                <div className={"list-group-item" + (isSelected ? ' active' : '')} key={sid}>
+                                                    {
+                                                        isSelected ? (
+                                                            state.orderSource.get(sid)
+                                                        ) : (
+                                                            <a href="javascript:;" onClick={e => Action.changeSelectSource(sid)}>
+                                                                {state.orderSource.get(sid)}
+                                                            </a>
+                                                        )
+                                                    }
+                                                </div>
                                             )
-                                        )
+                                        })
                                     }
-                                </tbody>
-                            </table>
-                        </div>
-                    </Col>
-                </Row>
+                                </div>
+                            </Col>
+                            <Col xs="6">
+                                <div className="panel">
+                                    <div className="panel-heading">渠道规格：</div>
+                                    <table className="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>规格</th>
+                                                <th>价格</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                state.sourceSpecifications.get(state.selectedSource).map(
+                                                    (ss, i) => (
+                                                        <tr key={state.selectedSource + '@' + i}>
+                                                            <td>{ss.spec}</td>
+                                                            <td>{(ss.cost/100).toFixed(2)}</td>
+                                                        </tr>
+                                                    )
+                                                )
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Col>
+                        </Row>
+                    )]
+                }
             </div>
         )
     }

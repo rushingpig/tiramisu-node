@@ -86,31 +86,27 @@ const tempOptionsValidator = state => {
 
     const ssArr = [...tempOptions.sourceSpecifications.values()];
 
-    if (ssArr.length === 0) {
-        vaild = false
-    } else {
-        for (let x in ssArr) {
-            const ss = ssArr[x];
-            if (ss.length === 0) {
+    for (let x in ssArr) {
+        const ss = ssArr[x];
+        if (ss.length === 0) {
+            vaild = false
+            break;
+        }
+
+        for (let y in ss) {
+            if (ss[y].spec.trim() === "") {
                 vaild = false
                 break;
             }
 
-            for (let y in ss) {
-                if (ss[y].spec.trim() === "") {
-                    vaild = false
-                    break;
-                }
-
-                if (Number(ss[y].cost) <= 0) {
-                    vaild = false
-                    break;
-                }
-            }
-
-            if (!vaild) {
+            if (Number(ss[y].cost) <= 0) {
+                vaild = false
                 break;
             }
+        }
+
+        if (!vaild) {
+            break;
         }
     }
 

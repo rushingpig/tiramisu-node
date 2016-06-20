@@ -463,4 +463,30 @@ ProductDao.prototype.getSkuByProductAndCity = function (data) {
         });
     });
 }
+ProductDao.prototype.getSkuByProductWithRegion = function (productId) {
+    let columns = [
+        'sku.id as id',
+        'sku.size as size',
+        'sku.website as website',
+        'sku.regionalism_id as regionalism_id',
+        'sku.original_price as original_price',
+        'sku.price as price',
+        'sku.book_time as book_time',
+        'secondary_booktime.book_time as secondary_book_time',
+        'secondary_booktime.regionalism_id as secondary_book_time_region',
+        'sku.presell_start as presell_start',
+        'sku.presell_end as presell_end',
+        'sku.send_start as send_start',
+        'sku.send_end as send_end',
+        'sku.activity_price as activity_price',
+        'sku.activity_start as activity_start',
+        'sku.activity_end as activity_end'
+    ];
+    let sql = 'select ' + columns.join(',') + ' from ?? sku left join ?? secondary_booktime on sku.id = secondary_booktime.sku_id where sku.product_id = ?';
+    let params = [];
+    params.push(config.tables.buss_product_sku);
+    params.push(config.tables.buss_product_sku_booktime);
+    params.push(productId);
+    return baseDao.select(sql, params);
+}
 module.exports = ProductDao;

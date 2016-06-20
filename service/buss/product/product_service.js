@@ -376,4 +376,67 @@ ProductService.prototype.listSkuPrice = (req, res, next)=> {
         });;
     systemUtils.wrapService(res, next, promise);
 };
+/**
+ * get product info and its sku list with regions
+ * @param req
+ * @param res
+ * @param next
+ */
+ProductService.prototype.getProductAndSkuWithRegions = (req, res, next)=> {
+
+    function formatSku(data) {
+        let format_data = {};
+        data.forEach(item => {
+            if(!format_data[item.id]){
+                format_data[item.id] = {
+                    id: item.id,
+                    size: item.size,
+                    website: item.website,
+                    regionalism_id: item.regionalism_id,
+                    original_price: item.original_price,
+                    price: item.price,
+                    book_time: item.book_time,
+                    presell_start: item.presell_start,
+                    presell_end: item.presell_end,
+                    send_start: item.send_start,
+                    send_end: item.send_end,
+                    activity_price: item.activity_price,
+                    activity_start: item.activity_start,
+                    activity_end: item.activity_end,
+                    secondary_book_time: {
+                        time: null,
+                        regions: []
+                    }
+                };
+            }
+            if(item.secondary_book_time && item.secondary_book_time_region){
+                format_data[item.id].secondary_book_time.time = item.secondary_book_time;
+                format_data[item.id].secondary_book_time.regions.push(item.secondary_book_time_region);
+            }
+        });
+        return Object.keys(format_data).map(key => {
+            return format_data[key];
+        });
+    }
+
+    req.checkQuery('productId', 'productId can not be null').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let promise = productDao.getProductAndCategoryById(req.query.productId)
+        .then(product_result => {
+            return productDao.getSkuByProductWithRegion(req.query.productId)
+                .then(sku_result => {
+                    // 格式化响应结果
+                    let product = product_result[0];
+                    let sku = formatSku(sku_result);
+                    return Promise.resolve({product, sku});
+                });
+        }).then(result => {
+            res.api(result);
+        });;
+    systemUtils.wrapService(res, next, promise);
+};
 module.exports = new ProductService();

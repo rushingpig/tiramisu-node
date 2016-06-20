@@ -76,6 +76,7 @@ a.get('/product/sku/size', productService.getAllSize); // 规格提示
 a.get('/product/details', productService.getProductDetails); // 根据多个条件搜索产品详情
 a.get('/product/skus', productService.getProductAndSku); // 查看产品信息
 a.get('/product/skus/price', productService.listSkuPrice); // 查看产品规格价格列表
+a.get('/product/skus/details', productService.getProductAndSkuWithRegions); // 获取产品信息(用于产品&sku编辑)
 
 //**********************
 //******** POST ********

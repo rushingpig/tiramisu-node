@@ -398,7 +398,9 @@ ProductDao.prototype.getProductAndCategoryById = function (productId) {
     let columns = [
         'product.id as id',
         'product.name as product_name',
+        'primary_cate.id as primary_cate_id',
         'primary_cate.name as primary_cate_name',
+        'secondary_cate.id as secondary_cate_id',
         'secondary_cate.name as secondary_cate_name'
     ];
     let sql = 'select ' + columns.join(',') + ' from ?? product left join ?? secondary_cate on product.category_id = secondary_cate.id left join ?? primary_cate on secondary_cate.parent_id = primary_cate.id where product.id = ?';

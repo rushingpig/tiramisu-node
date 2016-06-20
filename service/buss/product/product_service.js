@@ -403,6 +403,7 @@ ProductService.prototype.getProductAndSkuWithRegions = (req, res, next)=> {
                     activity_price: item.activity_price,
                     activity_start: item.activity_start,
                     activity_end: item.activity_end,
+                    ref: item.ref,
                     secondary_book_time: {
                         time: null,
                         regions: []

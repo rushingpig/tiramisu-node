@@ -600,3 +600,32 @@ UPDATE tiramisu.sys_menu SET parent_ids = '';
 # 2016-06-02 Wei Zhao
 # 用户权限增加是否仅仅只有管理该用户的权限
 ALTER TABLE tiramisu.sys_user_role ADD only_admin tinyint(1) unsigned DEFAULT '0' COMMENT '是否仅仅只有管理该类型用户的权限';
+
+-- ----------------------------
+--  Table structure for `sys_history`
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_history`;
+CREATE TABLE `sys_history` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `type` int(10) NOT NULL COMMENT '记录类型id',
+  `option` varchar(255) NOT NULL COMMENT '操作记录',
+  `created_by` varchar(255) NOT NULL COMMENT '创建人',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
+  `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统操作记录';
+
+-- ----------------------------
+--  Table structure for `sys_history_type`
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_history_type`;
+CREATE TABLE `sys_history_type` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `name` varchar(255) NOT NULL COMMENT '操作名称',
+  `created_by` varchar(255) NOT NULL COMMENT '创建人',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
+  `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统操作记录类型';
+
+INSERT INTO `tiramisu`.`sys_history_type` (`name`, `created_by`, `created_time`) VALUES ('编辑产品', '1', '2016-06-20 12:00:00');

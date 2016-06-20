@@ -403,7 +403,7 @@ ProductDao.prototype.getProductAndCategoryById = function (productId) {
         'secondary_cate.id as secondary_cate_id',
         'secondary_cate.name as secondary_cate_name'
     ];
-    let sql = 'select ' + columns.join(',') + ' from ?? product left join ?? secondary_cate on product.category_id = secondary_cate.id left join ?? primary_cate on secondary_cate.parent_id = primary_cate.id where product.id = ?';
+    let sql = 'select ' + columns.join(',') + ' from ?? product left join ?? secondary_cate on product.category_id = secondary_cate.id left join ?? primary_cate on secondary_cate.parent_id = primary_cate.id where product.id = ? and product.del_flag = 1';
     let params = [];
     params.push(config.tables.buss_product);
     params.push(config.tables.buss_product_category);
@@ -427,7 +427,7 @@ ProductDao.prototype.getSkuWithBooktimeByProductAndCity = function (data) {
         'sku.activity_start as activity_start',
         'sku.activity_end as activity_end'
     ];
-    let sql = 'select ' + columns.join(',') + ' from ?? sku left join ?? secondary_booktime on sku.id = secondary_booktime.sku_id left join ?? dict on secondary_booktime.regionalism_id = dict.id where sku.product_id = ? and sku.regionalism_id = ?';
+    let sql = 'select ' + columns.join(',') + ' from ?? sku left join ?? secondary_booktime on sku.id = secondary_booktime.sku_id left join ?? dict on secondary_booktime.regionalism_id = dict.id where sku.product_id = ? and sku.regionalism_id = ? and sku.del_flag = 1';
     let params = [];
     params.push(config.tables.buss_product_sku);
     params.push(config.tables.buss_product_sku_booktime);
@@ -444,7 +444,7 @@ ProductDao.prototype.getSkuByProductAndCity = function (data) {
         'sku.original_price as original_price',
         'sku.price as price'
     ];
-    let sql = 'select ' + columns.join(',') + ' from ?? sku where sku.product_id = ? and sku.regionalism_id = ?';
+    let sql = 'select ' + columns.join(',') + ' from ?? sku where sku.product_id = ? and sku.regionalism_id = ? and sku.del_flag = 1';
     let params = [];
     params.push(config.tables.buss_product_sku);
     params.push(data.productId);
@@ -482,7 +482,7 @@ ProductDao.prototype.getSkuByProductWithRegion = function (productId) {
         'sku.activity_start as activity_start',
         'sku.activity_end as activity_end'
     ];
-    let sql = 'select ' + columns.join(',') + ' from ?? sku left join ?? secondary_booktime on sku.id = secondary_booktime.sku_id where sku.product_id = ?';
+    let sql = 'select ' + columns.join(',') + ' from ?? sku left join ?? secondary_booktime on sku.id = secondary_booktime.sku_id where sku.product_id = ? and sku.del_flag = 1';
     let params = [];
     params.push(config.tables.buss_product_sku);
     params.push(config.tables.buss_product_sku_booktime);

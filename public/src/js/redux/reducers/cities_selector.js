@@ -98,9 +98,12 @@ const switchType = {
 
         if (checkedCities.size) {
             [...provincesData.values()].forEach(obj => {
-                const different = new Set([...obj.list].filter(id => !checkedCities.has(id))).size;
+                const provinceCitiesSet = obj.list;
+                const enableCities = [...provinceCitiesSet].filter(id => citiesData.get(id).enable);
 
-                if (different === 0) {
+                const different = enableCities.filter(id => !checkedCities.has(id)).length;
+
+                if (enableCities.length !== 0 && (different === 0)) {
                     checkedProvinces.add(obj.id);
                 }
             });

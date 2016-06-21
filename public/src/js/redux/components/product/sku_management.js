@@ -259,7 +259,10 @@ class PreSaleOptions extends Component {
                             <p />
                             <Row>
                                 <Col xs="10" offset="2">
-                                    <div className="form-inline">{'　　　　'}时间：<Input onChange={getDOMValue(Action.changeSecondaryBookingTime)} /></div>
+                                    <div className="form-inline">
+                                        {'　　　　'}时间：
+                                        <Input value={state.tempOptions.secondaryBookingTime} onChange={getDOMValue(Action.changeSecondaryBookingTime)} />
+                                    </div>
                                 </Col>
                             </Row>
                             <p />
@@ -760,7 +763,12 @@ class Main extends Component {
     }
 
     componentDidMount() {
-        this.props.Action.loadBasicData();
+        const { params } = this.props;
+
+        if (params.productId)
+            return this.props.Action.loadBasicData(params.productId);
+
+        this.props.Action.loadBasicData(params.productId || 0);
     }
 
     componentDidUpdate() {

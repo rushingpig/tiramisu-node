@@ -6,6 +6,7 @@ const iNow = new Date();
 
 const initialState = {
     basicDataLoadStatus: 'pending',
+    addMode: true, // false: 编辑模式
 
     productName: '', // 商品名称
     buyEntry: 0,     // 购买方式 0:商城可购买 1:外部渠道可购买
@@ -47,6 +48,14 @@ const initialState = {
 
     saveStatus: 'normal', // normal, padding, success, failed
 };
+
+const transformPositionData = obj => [
+    obj.id, {
+        ...obj,
+        checked: false,
+        disabled: false
+    }
+];
 
 const tempOptionsValidator = state => {
     let vaild = true;
@@ -116,50 +125,64 @@ const tempOptionsValidator = state => {
     }
 }
 
+const getCategoriesMap = categoriesData => {
+    let primaryCategoriesMap = new Map();
+    let secondaryCategoriesMap = new Map();
+
+    categoriesData.filter(
+        obj => obj.parent_id === 0
+    ).forEach(primaryCategory => {
+        primaryCategoriesMap.set(primaryCategory.id, primaryCategory.name);
+        secondaryCategoriesMap.set(primaryCategory.id, []);
+    });
+
+    categoriesData.filter(
+        obj => obj.parent_id !== 0
+    ).forEach(secondaryCategory => {
+        if (secondaryCategoriesMap.has(secondaryCategory.parent_id)) {
+            secondaryCategoriesMap.get(secondaryCategory.parent_id).push({
+                id: secondaryCategory.id,
+                name: secondaryCategory.name
+            });
+        }
+    });
+
+    [...primaryCategoriesMap.keys()].forEach(pid => {
+        if (secondaryCategoriesMap.get(pid).length === 0) {
+            primaryCategoriesMap.delete(pid);
+        }
+    });
+
+    return {
+        primaryCategoriesMap,
+        secondaryCategoriesMap
+    }
+}
+
+const getOrderSourcesMap = orderSourceData => {
+    let orderSource = new Map();
+
+    orderSourceData.forEach(src => {
+        // src.id !== 1
+        // id为1是PC官网，禁止1是为了防止渠道设置里重复设置PC官网的渠道的规格
+        if (src.id !== 1 && src.level === 2) {
+            orderSource.set(src.id, src.name);
+        }
+    });
+
+    return orderSource;
+}
+
 const switchType = {
     [ActionTypes.LOADED_BASIC_DATA]: (state, { categoriesData, orderSourceData }) => {
-
-        let primaryCategoriesMap = new Map();
-        let secondaryCategoriesMap = new Map();
-        let orderSource = new Map();
+        let orderSource = getOrderSourcesMap(orderSourceData);
+        let { primaryCategoriesMap, secondaryCategoriesMap } = getCategoriesMap(categoriesData);
         let firstID = 0;
-
-        categoriesData.filter(
-            obj => obj.parent_id === 0
-        ).forEach(primaryCategory => {
-            primaryCategoriesMap.set(primaryCategory.id, primaryCategory.name);
-            secondaryCategoriesMap.set(primaryCategory.id, []);
-        });
 
         firstID = [...primaryCategoriesMap.keys()][0];
 
-        categoriesData.filter(
-            obj => obj.parent_id !== 0
-        ).forEach(secondaryCategory => {
-            if (secondaryCategoriesMap.has(secondaryCategory.parent_id)) {
-                secondaryCategoriesMap.get(secondaryCategory.parent_id).push({
-                    id: secondaryCategory.id,
-                    name: secondaryCategory.name
-                });
-            }
-        });
-
-        [...primaryCategoriesMap.keys()].forEach(pid => {
-            if (secondaryCategoriesMap.get(pid).length === 0) {
-                primaryCategoriesMap.delete(pid);
-            }
-        });
-
-        orderSourceData.forEach(src => {
-            // src.id !== 1
-            // id为1是PC官网，禁止1是为了防止渠道设置里重复设置PC官网的渠道的规格
-            if (src.id !== 1 && src.level === 2) {
-                orderSource.set(src.id, src.name);
-            }
-        });
-
         return {
-            ...state,
+            ...initialState,
             orderSource,
             basicDataLoadStatus: 'success',
             primaryCategories: primaryCategoriesMap,
@@ -167,6 +190,136 @@ const switchType = {
             selectPrimaryCategory: firstID,
             selectSecondaryCategory: secondaryCategoriesMap.get(firstID)[0].id
         };
+    },
+
+    [ActionTypes.LOADED_PRODUCT_DATA]: (state, {
+        categoriesData,
+        orderSourceData,
+        citiesSelectorState,
+        productData,
+        isSelectedAllCity,
+        districtsDataGroup
+    }) => {
+
+        const now = new Date();
+        const orderSource = getOrderSourcesMap(orderSourceData);
+        const { primaryCategoriesMap, secondaryCategoriesMap } = getCategoriesMap(categoriesData);
+
+        const citiesData = new Map(
+            [...citiesSelectorState.citiesData.values()].filter(
+                cityData => citiesSelectorState.checkedCities.has(cityData.id)
+            ).map(transformPositionData)
+        );
+
+        const provincesData = new Map(
+            [...citiesData.values()].map(
+                cityData => citiesSelectorState.provincesData.get(cityData.province)
+            ).map(transformPositionData)
+        );
+
+        const districtsData = new Map(
+            Object.keys(districtsDataGroup).map(cityID => [
+                Number(cityID),
+                Object.keys(districtsDataGroup[cityID]).map(districtID => ({
+                    id: Number(districtID),
+                    name: districtsDataGroup[cityID][districtID]
+                }))
+            ])
+        );
+
+        state = {
+            ...state,
+            basicDataLoadStatus: 'success',
+            addMode: false,
+
+            productName: productData.product.product_name,
+            buyEntry: productData.sku.some(sku => sku.website === "1") ? 0 : 1,
+
+            primaryCategories: primaryCategoriesMap,
+            secondaryCategories: secondaryCategoriesMap,
+
+            selectPrimaryCategory: productData.product.primary_cate_id,
+            selectSecondaryCategory: productData.product.secondary_cate_id,
+
+            activeCitiesOption: isSelectedAllCity ? 0 : 1,
+
+            citiesOptionApplyRange: 1,
+
+            orderSource,
+            provincesData,
+            citiesData,
+            districtsData,
+
+            cityOptionSavable: true,
+            cityOptionSaved: true
+        }
+
+        productData.sku.forEach(sku => {
+            if (state.citiesOptions.has(sku.regionalism_id)) {
+                const cityOpt = state.citiesOptions.get(sku.regionalism_id);
+
+                if (sku.website === "1") {
+                    cityOpt.shopSpecifications.push({
+                        id: sku.id,
+                        spec: sku.size,
+                        originalCost: sku.original_price/100,
+                        cost: sku.price/100,
+                        hasEvent: sku.activity_price !== null,
+                        eventCost: sku.activity_price !== null ? sku.activity_price : 0.01,
+                        eventTime: sku.activity_price !== null ? [new Date(sku.activity_start), new Date(sku.activity_end)] : [now, new Date(getDate(now, 7))]
+                    })
+                } else {
+                    cityOpt.sourceSpecifications.set(Number(sku.website), [{
+                        id: sku.id,
+                        spec: sku.size,
+                        cost: sku.price
+                    }]);
+                }
+            } else {
+                let tempOptions = clone(initialState.tempOptions);
+
+                tempOptions.isPreSale = sku.presell_start !== null;
+                tempOptions = {
+                    ...tempOptions,
+                    onSaleTime: tempOptions.isPreSale ? [] : [iNow, new Date(getDate(iNow, 7))],
+                    delivery: tempOptions.isPreSale ? [] : [iNow, new Date(getDate(iNow, 7))],
+                    bookingTime: sku.book_time,
+                    hasSecondaryBookingTime: sku.secondary_book_time.time !== null,
+                    applyDistrict: new Set(sku.secondary_book_time.regions)
+                }
+                tempOptions.secondaryBookingTime = tempOptions.hasSecondaryBookingTime ? sku.secondary_book_time.time : "";
+
+                tempOptions.shopSpecifications = sku.website !== "1" ? [] : [{
+                    id: sku.id,
+                    spec: sku.size,
+                    originalCost: sku.original_price/100,
+                    cost: sku.price/100,
+                    hasEvent: sku.activity_price !== null,
+                    eventCost: sku.activity_price !== null ? sku.activity_price : 0.01,
+                    eventTime: sku.activity_price !== null ? [new Date(sku.activity_start), new Date(sku.activity_end)] : [now, new Date(getDate(now, 7))]
+                }];
+
+                tempOptions.sourceSpecifications = sku.website === "1" ? new Map() : new Map([[
+                    Number(sku.website), [{
+                        id: sku.id,
+                        spec: sku.size,
+                        cost: sku.price
+                    }]
+                ]]);
+
+                state.citiesOptions.set(sku.regionalism_id, clone(tempOptions));
+            }
+        });
+
+        state.tempOptions = clone([...state.citiesOptions.values()][0]);
+        state.selectedCity = [...state.citiesOptions.keys()][0];
+        state.selectedProvince = state.citiesData.get(state.selectedCity).province;
+
+        if (state.tempOptions.sourceSpecifications.size) {
+            state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0];
+        }
+
+        return state;
     },
 
     [ActionTypes.CHANGE_PRODUCT_NAME]: (state, { name }) => {
@@ -236,7 +389,7 @@ const switchType = {
     [CitiesSelectorActionTypes.CHANGED_CHECK_CITIES]: (state, { citiesSelectorState }) => {
         const { checkedCities } = citiesSelectorState;
 
-        const transform = obj => [
+        const transformPositionData = obj => [
             obj.id, {
                 ...obj,
                 checked: false,
@@ -247,13 +400,13 @@ const switchType = {
         const citiesData = new Map(
             [...citiesSelectorState.citiesData.values()].filter(
                 cityData => checkedCities.has(cityData.id)
-            ).map(transform)
+            ).map(transformPositionData)
         );
 
         const provincesData = new Map(
             [...citiesData.values()].map(
                 cityData => citiesSelectorState.provincesData.get(cityData.province)
-            ).map(transform)
+            ).map(transformPositionData)
         );
 
         let { selectedProvince, selectedCity } = state;
@@ -423,6 +576,7 @@ const switchType = {
         const now = new Date();
 
         let newShopSpecifications = {
+            id: 0,
             spec: "",
             originalCost: 0.01,
             cost: 0.01,
@@ -525,6 +679,7 @@ const switchType = {
 
     [ActionTypes.ADD_SOURCE_SPEC]: state => {
         state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource).push({
+            id: 0,
             spec: '',
             cost: 0.01
         });

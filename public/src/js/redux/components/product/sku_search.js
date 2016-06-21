@@ -229,7 +229,7 @@ class Main extends Component {
                                                 {'　'}
                                                 <Link style={{textDecoration:'underline'}} to={"/pm/sku_manage/view/specfications/" + row.city_id + '/' + row.spu}>[规格&价格]</Link>
                                                 {'　'}
-                                                <Anchor>[编辑]</Anchor>
+                                                <Link style={{textDecoration:'underline'}} to={"/pm/sku_manage/edit/" + row.spu}>[编辑]</Link>
                                                 {'　'}
                                                 <Anchor>[删除]</Anchor>
                                             </td>

@@ -6,6 +6,8 @@ import { ActionTypes as CitiesSelectorActionTypes } from './cities_selector';
 
 const ActionTypes = {
     LOADED_BASIC_DATA:                  Symbol('LOADED_BASIC_DATA'),
+    LOADED_PRODUCT_DATA:                Symbol('LOADED_PRODUCT_DATA'),
+
     CHANGE_PRODUCT_NAME:                Symbol('CHANGE_PRODUCT_NAME'),
     CHANGE_BUY_ENTRY:                   Symbol('CHANGE_BUY_ENTRY'),
     CHANGE_SELECTED_PRIMARY_CATEGORY:   Symbol('CHANGE_SELECTED_PRIMARY_CATEGORY'),
@@ -66,6 +68,7 @@ const loadOrderSource        = () => get(Url.order_srcs.toString());
 const loadEnableCities       = id => get(Url.activatedCity.toString(id));
 const loadDistricts          = id => get(Url.districts.toString(id));
 const addSku                 = postData => post(Url.addSku.toString(), postData);
+const getSku                 = id => get(Url.getSku.toString(), { productId: id });
 
 const transformPrice = num => {
     let money = Number(num) || 0.01
@@ -76,49 +79,106 @@ const transformPrice = num => {
     return Math.trunc(money * 100) / 100
 }
 
-const loadBasicData = () => (
+const loadBasicData = (productId = 0) => (
     (dispatch, getState) => {
-
         dispatch({ type: CitiesSelectorActionTypes.RESET_SELECTOR });
+
+        if (productId === 0) {
+            return Promise.all([
+                loadCategories(),
+                loadAllGeographiesData(),
+                loadOrderSource()
+            ]).then(([
+                categoriesData,
+                geographiesData,
+                orderSourceData
+            ]) => {
+                return loadEnableCities(categoriesData[0].id).then(
+                    enableList => {
+                        dispatch({
+                            type: CitiesSelectorActionTypes.LOAD_DATA,
+                            geographiesData,
+                            enableList
+                        });
+
+                        dispatch({
+                            type: ActionTypes.LOADED_BASIC_DATA,
+                            categoriesData,
+                            orderSourceData
+                        });
+
+                        const sid = getState().productSKUManagement.selectSecondaryCategory;
+
+                        return changeSelectedSecondaryCategory(sid)(dispatch, getState)
+                    }
+                ).then(() => {
+                    dispatch({
+                        type: CitiesSelectorActionTypes.CHECK_ALL_CITIES
+                    });
+
+                    dispatch({
+                        type: CitiesSelectorActionTypes.CHANGED_CHECK_CITIES,
+                        citiesSelectorState: clone(getState().citiesSelector)
+                    });
+                });
+            });
+        }
 
         return Promise.all([
             loadCategories(),
             loadAllGeographiesData(),
-            loadOrderSource()
+            loadOrderSource(),
+            getSku(productId)
         ]).then(([
             categoriesData,
             geographiesData,
-            orderSourceData
+            orderSourceData,
+            productData
         ]) => {
-            return loadEnableCities(categoriesData[0].id).then(
-                enableList => {
-                    dispatch({
-                        type: CitiesSelectorActionTypes.LOAD_DATA,
-                        geographiesData,
-                        enableList
-                    });
+            const hasSecondaryBookingTimeCities = new Set(
+                productData.sku.filter(
+                    sku => sku.secondary_book_time.time !== null
+                ).map(
+                    sku => sku.regionalism_id
+                )
+            );
 
-                    dispatch({
-                        type: ActionTypes.LOADED_BASIC_DATA,
-                        categoriesData,
-                        orderSourceData
-                    });
+            return Promise.all(
+                [...hasSecondaryBookingTimeCities].map( id => loadDistricts(id) )
+            ).then(
+                districtsDataGroup => loadEnableCities(productData.product.secondary_cate_id).then(
+                    enableList => {
+                        dispatch({
+                            type: CitiesSelectorActionTypes.LOAD_DATA,
+                            geographiesData,
+                            chekcedData: productData.sku.map(x => x.regionalism_id),
+                            enableList
+                        });
 
-                    const sid = getState().productSKUManagement.selectSecondaryCategory;
+                        const enableListSet = new Set(enableList.filter(x => x.city_id));
+                        const citesListSet = new Set(productData.sku.filter(x => x.regionalism_id));
+                        const hasDifference = [...enableList].filter(x => !citesListSet.has(x)).length > 0;
+                        const districtsData = {};
 
-                    return changeSelectedSecondaryCategory(sid)(dispatch, getState)
-                }
-            ).then(() => {
-                dispatch({
-                    type: CitiesSelectorActionTypes.CHECK_ALL_CITIES
-                });
+                        [...hasSecondaryBookingTimeCities].forEach(
+                            (id, i) => {
+                                districtsData[id] = districtsDataGroup[i]
+                            }
+                        );
 
-                dispatch({
-                    type: CitiesSelectorActionTypes.CHANGED_CHECK_CITIES,
-                    citiesSelectorState: clone(getState().citiesSelector)
-                });
-            });
-        });
+                        dispatch({
+                            type: ActionTypes.LOADED_PRODUCT_DATA,
+                            orderSourceData,
+                            categoriesData,
+                            citiesSelectorState: clone(getState().citiesSelector),
+                            productData,
+                            districtsDataGroup: districtsData,
+                            isSelectedAllCity: hasDifference
+                        });
+                    }
+                )
+            );
+        })
     }
 );
 

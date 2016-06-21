@@ -6,7 +6,8 @@ const iNow = new Date();
 
 const initialState = {
     basicDataLoadStatus: 'pending',
-    addMode: true, // false: 编辑模式
+    addMode: true,  // false: 编辑模式
+    deletedSku: [], // 被删除的sku id，编辑模式下用
 
     productName: '', // 商品名称
     buyEntry: 0,     // 购买方式 0:商城可购买 1:外部渠道可购买
@@ -208,7 +209,13 @@ const switchType = {
         const citiesData = new Map(
             [...citiesSelectorState.citiesData.values()].filter(
                 cityData => citiesSelectorState.checkedCities.has(cityData.id)
-            ).map(transformPositionData)
+            ).map(transformPositionData).map(
+                // 编辑模式下，所有城市的配置都默认为已保存状态
+                obj => {
+                    obj[1].checked = true;
+                    return obj
+                }
+            )
         );
 
         const provincesData = new Map(
@@ -313,7 +320,7 @@ const switchType = {
 
         state.tempOptions = clone([...state.citiesOptions.values()][0]);
         state.selectedCity = [...state.citiesOptions.keys()][0];
-        state.selectedProvince = state.citiesData.get(state.selectedCity).province;
+        state.selectedProvince = state.citiesData.get(state.selectedCity).province || 0;
 
         if (state.tempOptions.sourceSpecifications.size) {
             state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0];
@@ -412,16 +419,36 @@ const switchType = {
         let { selectedProvince, selectedCity } = state;
 
         if (!provincesData.has(selectedProvince))
-            selectedProvince = [...provincesData.keys()][0];
+            selectedProvince = [...provincesData.keys()][0] || 0;
 
         if (!citiesData.has(selectedCity))
             selectedCity = [...citiesData.keys()][0] || 0;
 
+        const citiesOptionsKeySet = new Set([...state.citiesOptions.keys()]);
         const citiesDataKeySet = new Set([...citiesData.keys()]);
-        const diff = [...state.citiesOptions.keys()].filter(x => !citiesDataKeySet.has(x) && x !== 'all');
+        const diff = [...citiesOptionsKeySet].filter(x => !citiesDataKeySet.has(x) && x !== 'all');
 
         diff.forEach(deleteId => {
+            const deletedOption = clone(state.citiesOptions.get(deleteId));
+            let deletedSku = [];
+
+            const getSkuID = data => {
+                if (data.id !== 0) {
+                    deletedSku.push(data.id);
+                }
+            }
+
+            deletedOption.shopSpecifications.forEach(getSkuID);
+            [...deletedOption.sourceSpecifications.values()].forEach(
+                data => data.forEach(getSkuID)
+            );
+
+            state.deletedSku = [...state.deletedSku, ...deletedSku];
             state.citiesOptions.delete(deleteId);
+        });
+
+        [...citiesData.values()].forEach(cityData => {
+            cityData.checked = citiesOptionsKeySet.has(cityData.id);
         });
 
         if (state.citiesOptions.has(selectedCity)) {
@@ -429,6 +456,7 @@ const switchType = {
             state.cityOptionSaved = true;
         } else {
             state.tempOptions = clone(initialState.tempOptions);
+            state.cityOptionSavable = false;
             state.cityOptionSaved = false;
         }
 
@@ -637,9 +665,14 @@ const switchType = {
     },
 
     [ActionTypes.REMOVE_SHOP_SPECIFICATIONS]: (state, { index }) => {
+        const shopSpecifications = clone(state.tempOptions.shopSpecifications[index]);
         state.tempOptions.shopSpecifications = state.tempOptions.shopSpecifications.filter((x, i) => i !== index);
 
         state.cityOptionSaved = false;
+
+        if (!state.addMode && shopSpecifications.id !== 0)
+            state.deletedSku.push(shopSpecifications.id);
+
         return tempOptionsValidator(state);
     },
 
@@ -691,11 +724,15 @@ const switchType = {
     },
 
     [ActionTypes.REMOVE_SOURCE_SPEC]: (state, { index }) => {
-        let sourceSpecification = state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource);
+        let sourceSpecifications = state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource);
+        const deletedSkuID = sourceSpecifications[index].id;
 
-        sourceSpecification = sourceSpecification.filter((x, i) => i !== index);
+        sourceSpecifications = sourceSpecifications.filter((x, i) => i !== index);
 
-        state.tempOptions.sourceSpecifications.set(state.tempOptions.selectedSource, sourceSpecification);
+        state.tempOptions.sourceSpecifications.set(state.tempOptions.selectedSource, sourceSpecifications);
+
+        if (!state.addMode && deletedSkuID !== 0)
+            state.deletedSku.push(deletedSkuID);
 
         state.cityOptionSaved = false;
         return state;

@@ -111,16 +111,7 @@ const loadBasicData = (productId = 0) => (
 
                         return changeSelectedSecondaryCategory(sid)(dispatch, getState)
                     }
-                ).then(() => {
-                    dispatch({
-                        type: CitiesSelectorActionTypes.CHECK_ALL_CITIES
-                    });
-
-                    dispatch({
-                        type: CitiesSelectorActionTypes.CHANGED_CHECK_CITIES,
-                        citiesSelectorState: clone(getState().citiesSelector)
-                    });
-                });
+                );
             });
         }
 
@@ -206,7 +197,7 @@ const changeSelectedPrimaryCategory = id => (
             id: Number(pid)
         });
 
-        changeSelectedSecondaryCategory(sid)(dispatch, getState);
+        return changeSelectedSecondaryCategory(sid)(dispatch, getState);
     }
 );
 
@@ -220,8 +211,17 @@ const changeSelectedSecondaryCategory = id => (
                 });
 
                 dispatch({
+                    type: CitiesSelectorActionTypes.CHECK_ALL_CITIES
+                });
+
+                dispatch({
                     type: ActionTypes.CHANGE_SELECTED_SECONDARY_CATEGORY,
                     id: Number(id)
+                });
+
+                dispatch({
+                    type: CitiesSelectorActionTypes.CHANGED_CHECK_CITIES,
+                    citiesSelectorState: clone(getState().citiesSelector)
                 });
 
                 return 1;

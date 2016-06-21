@@ -739,7 +739,11 @@ class Main extends Component {
                         <p />
                         <h3>{'　'}城市配置<small className="text-primary">{'　'}城市一致操作，则默认所有城市该商品的价格规格全部一致。独立城市编辑，则城市的规格配置均不同</small></h3>
                         <hr/>
-                        <CitiesOptions state={state} Action={Action} />
+                        {
+                            state.selectedProvince === 0
+                            ? <Row><Col offset="1" xs="11"><span className="text-danger">你还未选择上线城市，无法设置商品信息！</span></Col></Row>
+                            : <CitiesOptions state={state} Action={Action} />
+                        }
                         <hr/>
                         <div className="row">
                             <div className="col-xs-4 col-xs-offset-2">

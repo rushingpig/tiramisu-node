@@ -94,9 +94,7 @@ const switchType = {
         let checkedProvinces = new Set();
         let checkedCities    = new Set();
 
-        checkedCities = new Set(chekcedData.map(
-            ({ city_id }) => Number(city_id)
-        ));
+        checkedCities = new Set(chekcedData);
 
         if (checkedCities.size) {
             [...provincesData.values()].forEach(obj => {

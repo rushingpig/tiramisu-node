@@ -11,7 +11,7 @@ const initialState = {
     isPreSale: false,
     bookingTime: 0.5,
     hasSecondaryBookingTime: false,
-    secondaryBookingTime: 0.5,
+    secondaryBookingTime: [],
     shopSpecifications: [],
     sourceSpecifications: new Map(),
     selectedSource: "",
@@ -30,8 +30,11 @@ const switchType = {
                     productCategory: [productData.product.primary_cate_name, productData.product.secondary_cate_name],
                     isPreSale: productData.product.isPresell,
                     bookingTime: productData.product.book_time,
-                    hasSecondaryBookingTime: Array.from(Object.keys(productData.product.secondary_book_time)).length > 0,
-                    secondaryBookingTime: 0.5,
+                    hasSecondaryBookingTime: Object.keys(productData.product.secondary_book_time).length > 0,
+                    secondaryBookingTime: Object.keys(productData.product.secondary_book_time).map(districtName => ({
+                        districtName,
+                        time: productData.product.secondary_book_time[districtName]
+                    })),
                 };
 
                 productData.skus.forEach(sku => {
@@ -62,7 +65,10 @@ const switchType = {
                 orderSourceData.map(osd => {
                     state.orderSource.set(osd.id, osd.name);
                 });
-                state.selectedSource = [...state.sourceSpecifications.keys()][0];
+
+                if (state.sourceSpecifications.size) {
+                    state.selectedSource = [...state.sourceSpecifications.keys()][0];
+                }
 
                 break;
 

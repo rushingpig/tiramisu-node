@@ -74,13 +74,24 @@ class Main extends Component {
                 </Row>
                 <Row>
                     <Col xs="4"><label>预约时间：</label><span className="text-muted">{state.bookingTime + ' 小时'}</span></Col>
-                    {
-                        state.hasSecondaryBookingTime ? (
-                            <Col xs="4"><label>第二预约时间：</label><span className="text-muted">-</span></Col>
-                        ) : undefined
-                    }
                 </Row>
                 <Row>
+                    {
+                        state.hasSecondaryBookingTime ? (
+                            <Col xs="12">
+                                <label>第二预约时间：</label>
+                                {
+                                    state.secondaryBookingTime.map(opt => ([(
+                                        <div key="label" className="label label-default">
+                                            {opt.districtName + ': ' + opt.time + ' 小时'}
+                                        </div>
+                                    ), (
+                                        <span key="space">&nbsp;</span>
+                                    )]))
+                                }
+                            </Col>
+                        ) : undefined
+                    }
                 </Row>
                 {
                     state.shopSpecifications.length === 0 ? undefined : [(

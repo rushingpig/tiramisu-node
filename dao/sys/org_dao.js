@@ -44,7 +44,7 @@ OrgDao.prototype.findAllOrgs = function(query_data){
     sql += ds_sql;
     // data filter end
     sql += " where so.del_flag = ? and so.is_usable = ?";
-    if(query_data.signal && systemUtils.isDoDataFilter(query_data)){
+    if(query_data.signal || systemUtils.isDoDataFilter(query_data)){
         sql += " and so.id in" + dbHelper.genInSql(query_data.user.org_ids);
     }
     params.push(del_flag.SHOW);

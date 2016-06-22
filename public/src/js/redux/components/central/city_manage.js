@@ -74,7 +74,10 @@ class FilterHeader extends Component{
 			<div className='panel search'>
 				<div className='panel-body form-inline'>
 					<SearchInput searchHandler={this.search.bind(this, 'search_by_keywords_ing')} {...city_name} ref='city_name' className='form-inline v-img space-right' placeholder='城市名称' />
-					<Select {...province_id} ref='province' default-text = '请选择省份' className='space-right' options = {provinces}/>
+					{
+						V('CityManageProvince') &&
+						<Select {...province_id} ref='province' default-text = '请选择省份' className='space-right' options = {provinces}/>
+					}
 					<select {...is_county} ref='is_county' className='form-control input-xs space-right'>
 						<option value={SELECT_DEFAULT_VALUE}>是否县级市</option>
 						<option value={1}>县级市</option>
@@ -196,8 +199,8 @@ class CityPanel extends Component{
           					<table className='table table-hover text-center'>
           						<thead>
           							<tr>
+          								<th>城市</th>
           								<th>省份</th>
-          								<th>城市名称</th>
           								<th>是否县级市</th>
           								<th>配送时间段</th>
           								<th>预约时间(小时)</th>

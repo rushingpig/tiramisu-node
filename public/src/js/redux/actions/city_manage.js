@@ -86,10 +86,10 @@ export function gotRegionalismLetter(form_data){
 
 	}*/
 	return (dispatch) => {
-		return get(Url.regionalism_list.toString(),data )
+		return get(Url.regionalism_list.toString(),form_data )
 				.done((data) => {
 					dispatch({
-						dataType: type,
+						dataType: form_data.type,
 						data: data,
 						type: GOT_REGIONALISM_LETTER,
 					})

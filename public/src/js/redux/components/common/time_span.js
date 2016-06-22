@@ -115,6 +115,7 @@ var TimeSpan = React.createClass({
 	      					</div>
 	      					<div className='col-xs-5'>
 		      					<table className='text-center'>
+		      						<tbody>
 		      						<tr>
 		      							<td>
 		      								<a href='javascript:;' onClick={this.timeOpt.bind(this, 'end_h', 'plus')}><i className='fa fa-plus' /></a>
@@ -143,6 +144,7 @@ var TimeSpan = React.createClass({
 		      								<a href='javascript:;' onClick={this.timeOpt.bind(this, 'end_min', 'minus')}><i className='fa fa-minus' /></a>
 		      							</td>
 		      						</tr>
+		      						</tbody>
 		      					</table>
 	      					</div>
 	      				</div>

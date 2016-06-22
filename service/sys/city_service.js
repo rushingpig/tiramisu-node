@@ -16,7 +16,7 @@ module.exports.getRegionalisms = function (req, res, next) {
     let promise = co(function *() {
         let type = req.query.type;
         let level_type = 0;
-        if (type == 'provinces') level_type = 1;
+        if (type == 'province') level_type = 1;
         else if (type == 'city') level_type = 2;
         else if (type == 'area' || type == 'county') level_type = 3;
         if (level_type == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS));

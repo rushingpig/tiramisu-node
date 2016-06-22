@@ -79,12 +79,24 @@ module.exports.getList = function (req, res, next) {
                 if (!map[curr.parent_id]) map[curr.parent_id] = {};
                 let tmp = map[curr.parent_id];
                 if (!tmp.open_regionalisms) tmp.open_regionalisms = [];
+                if (!tmp.second_order_regionalisms) tmp.second_order_regionalisms = [];
                 let tr = {};
                 tr.regionalism_id = curr.id;
                 tr.regionalism_name = curr.name;
-                if (curr.order_time) tr.order_time = curr.order_time;
+                if (curr.order_time) {
+                    tr.order_time = curr.order_time;
+                    tmp.second_order_regionalisms.push(curr.name);
+                    if (!tmp.second_order_time) {
+                        tmp.second_order_time = curr.order_time;
+                    }
+                }
                 tmp.open_regionalisms.push(tr);
             }
+        });
+
+        let list = _.values(map);
+        list.forEach(curr=> {
+            curr.second_order_regionalisms = curr.second_order_regionalisms.join('/');
         });
 
         return {list: _.values(map), total_count: total_count};
@@ -97,13 +109,19 @@ module.exports.getList = function (req, res, next) {
 module.exports.getCityInfo = function (req, res, next) {
     let promise = co(function *() {
         let city_id = req.params.cityId;
+        if ((yield cityDao.isExist(city_id, true)) == false) {
+            return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID, '该城市未添加...'));
+        }
+
         let _res = yield cityDao.findCityById(city_id);
         if (!_res || _res.length == 0) return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS));
 
         let publicField = ['online_time', 'delivery_time_range', 'is_diversion', 'manager_name', 'manager_mobile', 'order_time', 'remarks', 'SEO'];
         let result = {};
         let area = [];
-        let open_regionalisms = [];
+        let regionalisms = [];
+        let second_order_time;
+        let second_order_regionalisms = [];
 
         _res.forEach(curr=> {
             if (curr.is_city) {
@@ -122,14 +140,29 @@ module.exports.getCityInfo = function (req, res, next) {
                 }
                 result.area = area.join(' ');
             } else {
-                let tr = {};
-                tr.regionalism_id = curr.id;
-                tr.regionalism_name = curr.name;
-                if (curr.order_time) tr.order_time = curr.order_time;
-                open_regionalisms.push(tr);
+                let tr = {
+                    is_open: 0,
+                    regionalism_id: curr.id,
+                    regionalism_name: curr.name
+                };
+                if (curr.regionalism_id) {
+                    tr.is_open = 1;
+                    if (curr.order_time) {
+                        tr.order_time = curr.order_time;
+                        second_order_regionalisms.push(curr.id);
+                        if (!second_order_time) second_order_time = curr.order_time;
+                    }
+                }
+                regionalisms.push(tr);
             }
         });
-        result.open_regionalisms = open_regionalisms;
+        if (!result.is_county) {
+            result.regionalisms = regionalisms;
+            if (second_order_time) {
+                result.second_order_time = second_order_time;
+                result.second_order_regionalisms = second_order_regionalisms;
+            }
+        }
 
         return result;
     }).then(result=> {

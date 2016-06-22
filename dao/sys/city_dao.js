@@ -33,6 +33,7 @@ CityDao.prototype.findRegionalisms = function (query) {
     sql += `LEFT JOIN ?? sc ON sc.regionalism_id = dr.id `;
     params.push(tables.sys_city);
     sql += `WHERE 1 = 1 `;
+    sql += `AND dr.id NOT REGEXP '[0-9]{4}99' `;
     if (query.level_type) {
         sql += `AND dr.level_type = ? `;
         params.push(query.level_type);
@@ -127,11 +128,11 @@ CityDao.prototype.findAllCity = function (query) {
         city_ids.forEach(curr=> {
             ids = curr.regionalism_id
         });
-        return CityDao.prototype.findCityById(ids);
+        return CityDao.prototype.findCityById(ids, true);
     });
 };
 
-CityDao.prototype.findCityById = function (city_id) {
+CityDao.prototype.findCityById = function (city_id, only_open) {
     let columns = [
         'sc.*',
         'dr.id',
@@ -145,7 +146,11 @@ CityDao.prototype.findCityById = function (city_id) {
     ];
     let sql = `SELECT ${columns.join()} FROM ?? sc `;
     let params = [tables.sys_city];
-    sql += `INNER JOIN ?? dr ON dr.id = sc.regionalism_id `;
+    if (only_open) {
+        sql += `INNER JOIN ?? dr ON dr.id = sc.regionalism_id `;
+    } else {
+        sql += `RIGHT JOIN ?? dr ON dr.id = sc.regionalism_id `;
+    }
     params.push(tables.dict_regionalism);
     sql += `LEFT JOIN ?? dr2 ON dr2.id = dr.parent_id `;
     params.push(tables.dict_regionalism);
@@ -157,7 +162,7 @@ CityDao.prototype.findCityById = function (city_id) {
         sql += `WHERE FIND_IN_SET(dr.id, ? ) OR (FIND_IN_SET(dr2.id, ? ) AND sc.is_city IS NULL ) `;
         params.push(city_id.join(), city_id.join());
     } else {
-        sql += `WHERE dr.id = ? OR (dr2.id = ? AND sc.is_city IS NULL ) `;
+        sql += `WHERE dr.id = ? OR ( dr2.id = ? AND dr.id NOT REGEXP '[0-9]{4}99' AND sc.is_city IS NULL ) `;
         params.push(city_id, city_id);
     }
 
@@ -179,7 +184,7 @@ CityDao.prototype.updateCityInfo = function (city_id, city_obj, areas) {
         sql += `INNER JOIN ?? dr2 ON dr2.id = dr.parent_id AND dr2.level_type = ${LEVEL_CITY} `;
         params.push(tables.dict_regionalism);
         sql += `SET dr.del_flag = ${del_flag.HIDE} `;
-        sql += `WHERE dr.id = ? OR (dr2.id = ? AND sc.is_city IS NULL ) `;
+        sql += `WHERE dr.id = ? OR (dr2.id = ? AND dr.id NOT REGEXP '[0-9]{4}99' AND sc.is_city IS NULL ) `;
         params.push(city_id, city_id);
         yield baseDao.delete(sql, params);
 
@@ -252,6 +257,35 @@ CityDao.prototype.deleteCityInfo = function (city_id) {
         sql += `WHERE dr.id = ? OR (dr2.id = ? AND sc.is_city IS NULL ) `;
         params.push(city_id, city_id);
         yield baseDao.delete(sql, params);
+
+        //  检查城市下是否还有开通的区域
+        sql = `SELECT dr.level_type, dr.parent_id FROM ?? dr WHERE dr.id = ? `;
+        params = [tables.dict_regionalism, city_id];
+        let city_info = yield baseDao.select(sql, params);
+        if (city_info && city_info[0]) {
+            city_info = city_info[0];
+            let c_id;
+            if (city_info.level_type == LEVEL_CITY) {
+                c_id = city_id;
+            } else if (city_info.level_type == LEVEL_CITY) {
+                c_id = city_info.parent_id;
+            }
+            let sql = `SELECT count(*) FROM ?? sc `;
+            let params = [tables.sys_city];
+            sql += `INNER JOIN ?? dr ON dr.id = sc.regionalism_id `;
+            params.push(tables.dict_regionalism);
+            sql += `INNER JOIN ?? dr2 ON dr2.id = dr.parent_id `;
+            params.push(tables.dict_regionalism);
+            sql += `WHERE dr.id = ? OR dr2.id = ? `;
+            params.push(c_id);
+            params.push(c_id);
+            let tmp = yield baseDao.select(sql, params);
+            if (tmp && tmp[0] && tmp[0]['count(*)'] > 0) {
+                sql = `UPDATE ?? dr SET dr.del_flag = ${del_flag.SHOW} WHERE dr.id = ? `;
+                params = [tables.dict_regionalism, c_id];
+                yield baseDao.select(sql, params);
+            }
+        }
 
         yield trans.commit();
     }).catch(err=> {

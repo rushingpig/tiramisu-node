@@ -128,9 +128,9 @@ var CityRow = React.createClass({
 				<td>{props.province_name}</td>
 				<td>{props.is_county ? '县级市': '区级市'}</td>
 				<td>{props.delivery_time_range}</td>
-				<td>{(parseFloat(props.order_time/60)).toFixed(1)}</td>
+				<td>{(parseFloat(props.order_time/60))}</td>
 				<td>{props.has_sec_order_time?'是': '否'}</td>
-				<td>{props.has_sec_order_time ? props.open_regionalisms[0].regionalism_name: '/'}</td>
+				<td>{props.has_sec_order_time ? props.sec_order_regions_txt: '/'}</td>
 				<td>{props.has_sec_order_time ? (parseFloat(props.sec_order_time)/60).toFixed(1): '/'}</td>
 				<td>{props.online_time}</td>
 				<td>
@@ -177,7 +177,20 @@ class CityPanel extends Component{
 		var SEO = accessible_city_info.SEO || '';
 		var {page_no } = accessible_city_info;
 		var content = accessible_cities.map( m => {
-			var has_sec_order_time = m.open_regionalisms.length >0 ? true: false;
+			var has_sec_order_time =m.open_regionalisms && m.open_regionalisms.length >0 ? true: false;
+			var sec_order_regions =[];
+			var sec_order_regions_txt =''
+			if(has_sec_order_time){
+				sec_order_regions = m.open_regionalisms.filter( n => n.order_time != undefined);
+				if(sec_order_regions.length <= 0){
+					has_sec_order_time = false;
+				}else{
+					sec_order_regions.forEach( n => {
+						sec_order_regions_txt = n.regionalism_name + '/' + sec_order_regions_txt;
+						m.sec_order_regions_txt = sec_order_regions_txt;
+					})
+				}
+			}
 			m.has_sec_order_time = has_sec_order_time;
 			if(has_sec_order_time) m.sec_order_time = m.open_regionalisms[0].order_time;
 			return <CityRow key = {m.city_id} {...m}
@@ -335,7 +348,7 @@ class ViewModal extends Component{
 					</div>*/
 					<div className='form-inline'>
 						<label className='control-form'>{'第二次预约区域/时间：'}</label>
-						<span className='gray'>{info.open_regionalisms[0].regionalism_name + ' ' + (parseFloat(info.sec_order_time/60)).toFixed(1)}</span>
+						<span className='gray'>{sec_order_regions_txt + ' ' + (parseFloat(info.sec_order_time/60)).toFixed(1)}</span>
 					</div>:
 					null
 				}				
@@ -392,7 +405,7 @@ class DeleteModal extends Component{
 		this.refs.deleteModal.show();
 	}
 	onConfirm(){
-		tihs.props.DeleteAccessibleCity(this.state.city_id);
+		this.props.DeleteAccessibleCity(this.state.city_id);
 		setTimeout(() => {
 		  this.refs.deleteModal.hide();
 		},500);

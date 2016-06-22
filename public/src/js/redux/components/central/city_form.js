@@ -40,6 +40,12 @@ const validate = (values, props) => {
 	    errors[key] = msg;
 	}
 
+	function _v_mobile(key){
+	   if (form[key] && form[key].touched && !values[key] || (form[key] && !form[key].focus && values[key] && !uForm.isMobile(values[key]))){
+	    errors[key] = msg;
+	  }   
+	}
+
 	function _v_citypicer(key){
 		if(form[key] && form[key].touched && !values[key])
 			errors[key] = msg;
@@ -50,6 +56,8 @@ const validate = (values, props) => {
 	_v_minute('online_time_min');
 
 	_v_select('order_time');
+
+	_v_mobile('manager_mobile');
 
 	_v_citypicer('city_id');
 	return	errors;
@@ -63,6 +71,7 @@ class AddCityForm extends Component{
 	  	sec_reservation: false,
 	  	hour_error: '',
 	  	minute_error: '',
+	  	initialFlag: true,
 	  }
 	}
 	render(){
@@ -228,7 +237,7 @@ class AddCityForm extends Component{
 				<div className='form-group form-inline'>
 					<label className='control-label'>{'　　　　城市经理：'}</label>
 					<input {...manager_name} className='form-control input-xs space-right' type='text' placeholder='姓名'/>
-					<input {...manager_mobile} className='form-control input-xs' type='text' placeholder='手机号码/只能填数字'/>
+					<input {...manager_mobile} className={`form-control input-xs ${manager_mobile.error}`} type='text' placeholder='手机号码/只能填数字'/>
 				</div>
 				<div className='form-inline form-group'>
 					<label className='control-label'>{'　　　　　　备注：'}</label>
@@ -311,13 +320,19 @@ class AddCityForm extends Component{
 	}
 	componentDidMount(){
 		LazyLoad('noty');
+		var {accessible_city_info} = this.props;
+		this.setState({county: accessible_city_info.is_county,
+						sec_reservation: accessible_city_info.sec_order,});
 	}
 	componentWillReceiveProps(nextProps){
 		if(nextProps.editable){
 			var {accessible_city_info} = nextProps;
-			this.setState({county: accessible_city_info.is_county,
+			if(this.state.initialFlag){
+				this.setState({county: accessible_city_info.is_county,
 							sec_reservation: accessible_city_info.sec_order,
-			});			
+							initialFlag: false,
+				});
+			}		
 		}
 	}
 }

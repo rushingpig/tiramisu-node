@@ -1,6 +1,6 @@
-import {post, get, put, GET, POST, PUT, TEST } from 'utils/request'; //Promise
+import {post, get, put, del,GET, POST, PUT, TEST } from 'utils/request'; //Promise
 import Url from 'config/url';
-import { Noty, formCompile, Utils } from 'utils/index';
+import { Noty, formCompile, Utils, clone } from 'utils/index';
 import { getValues } from 'redux-form';
 
 export const GET_ACCESSIBLE_CITIES_LIST = 'GET_ACCESSIBLE_CITIES_LIST'
@@ -189,11 +189,12 @@ function _getFormData(form_data, getState){
 		sec_open_regions.map( m => regionalismList.push({regionalism_id: m.id, order_time: accessibleCity.sec_order_time * 60}));
 	}
 	accessibleCity.open_regionalisms = regionalismList;
-	accessibleCity.order_time = accessibleCity.order_time * 60;
 	delete accessibleCity.sec_order_time;
 	delete accessibleCity.first_open_regions;
 	delete accessibleCity.sec_open_regions;
-	return {...accessibleCity,...form_data};
+	var accessibleCity_data = {...accessibleCity,...form_data}
+	accessibleCity_data.order_time = accessibleCity_data.order_time * 60;
+	return accessibleCity_data;
 	}else{
 		return form_data;
 	}

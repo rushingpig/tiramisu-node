@@ -10,10 +10,10 @@ module.exports = {
         isInt: true
     },
     manager_name: {
-        notEmpty: true
+        optional: true
     },
     manager_mobile: {
-        notEmpty: true
+        optional: true
     },
     online_time: {
         notEmpty: true

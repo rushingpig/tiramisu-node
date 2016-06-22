@@ -176,6 +176,14 @@ CityDao.prototype.updateCityInfo = function (city_id, city_obj, areas) {
         let sql;
         let params;
 
+        if (!areas) {
+            sql = `UPDATE ?? SET ? WHERE regionalism_id = ? `;
+            params = [tables.sys_city, city_obj, city_id];
+            yield baseDao.delete(sql, params);
+            yield trans.commit();
+            return;
+        }
+
         // 清除旧的信息
         sql = `UPDATE ?? dr `;
         params = [tables.dict_regionalism];

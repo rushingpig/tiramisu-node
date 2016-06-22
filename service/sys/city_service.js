@@ -67,6 +67,8 @@ module.exports.getList = function (req, res, next) {
                 if (!map[curr.regionalism_id]) map[curr.regionalism_id] = {};
                 map[curr.regionalism_id] = Object.assign(map[curr.regionalism_id], _.pick(curr, publicField));
                 let tmp = map[curr.regionalism_id];
+                if (!tmp.open_regionalisms) tmp.open_regionalisms = [];
+                if (!tmp.second_order_regionalisms) tmp.second_order_regionalisms = [];
                 tmp.city_id = curr.regionalism_id;
                 tmp.city_name = curr.name;
                 tmp.is_county = 0;
@@ -179,13 +181,14 @@ module.exports.editCityInfo = function (req, res, next) {
             return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID, '该城市未添加...'));
         }
 
-        let areas = [];
+        let areas;
         let city_obj = {
             regionalism_id: city_id,
             is_city: 1
         };
-        city_obj = Object.assign(city_obj, _.pick(b, ['online_time', 'is_diversion', 'delivery_time_range', 'order_time', 'remarks', 'manager_name', 'manager_mobile']));
+        city_obj = Object.assign(city_obj, _.pick(b, ['online_time', 'is_diversion', 'delivery_time_range', 'order_time', 'remarks', 'SEO', 'manager_name', 'manager_mobile']));
         if (b.open_regionalisms) {
+            areas = [];
             b.open_regionalisms.forEach(curr_r=> {
                 let a = {
                     regionalism_id: curr_r.regionalism_id,

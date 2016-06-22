@@ -209,7 +209,10 @@ module.exports.addCity = function (req, res, next) {
 module.exports.deleteCity = function (req, res, next) {
     let promise = co(function *() {
         let city_id = req.params.cityId;
-        let _res = yield cityDao.deleteCityInfo(city_id);
+        if ((yield cityDao.isExist(city_id, true)) == false) {
+            return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID, '该城市未添加...'));
+        }
+        yield cityDao.deleteCityInfo(city_id);
 
     }).then(()=> {
         res.api();

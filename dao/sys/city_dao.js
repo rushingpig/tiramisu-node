@@ -182,7 +182,6 @@ CityDao.prototype.updateCityInfo = function (city_id, city_obj, areas) {
         sql += `WHERE dr.id = ? OR (dr2.id = ? AND sc.is_city IS NULL ) `;
         params.push(city_id, city_id);
         yield baseDao.delete(sql, params);
-        console.log('清除完成1');
 
         sql = `DELETE sc FROM ?? sc `;
         params = [tables.sys_city];
@@ -193,7 +192,6 @@ CityDao.prototype.updateCityInfo = function (city_id, city_obj, areas) {
         sql += `WHERE dr.id = ? OR (dr2.id = ? AND sc.is_city IS NULL ) `;
         params.push(city_id, city_id);
         yield baseDao.delete(sql, params);
-        console.log('清除完成2');
 
         // 添加新信息
         let area_ids = [];
@@ -208,7 +206,6 @@ CityDao.prototype.updateCityInfo = function (city_id, city_obj, areas) {
         sql += `WHERE dr.id = ? OR FIND_IN_SET(dr2.id, ? )`;
         params.push(city_id, area_ids.join());
         yield baseDao.delete(sql, params);
-        console.log('添加完成1');
 
         areas.unshift(city_obj);
         for (let i = 0; i < areas.length; i++) {
@@ -219,7 +216,6 @@ CityDao.prototype.updateCityInfo = function (city_id, city_obj, areas) {
         // sql = `INSERT INTO ?? VALUES ? `;
         // params = [tables.sys_city, areas.unshift(city_obj)];
         // yield baseDao.insert(sql, params);
-        console.log('添加完成2');
 
         yield trans.commit();
     }).catch(err=> {
@@ -235,24 +231,26 @@ CityDao.prototype.deleteCityInfo = function (city_id) {
         let sql;
         let params = [];
 
-        sql = `DELETE sc FROM ?? sc `;
+        // 清除旧的信息
+        sql = `UPDATE ?? dr `;
+        params = [tables.dict_regionalism];
+        sql += `INNER JOIN ?? sc ON sc.regionalism_id = dr.id `;
         params.push(tables.sys_city);
-        sql += `INNER JOIN ?? dr ON dr.id = sc.regionalism_id AND dr.del_flag = ${del_flag.SHOW} `;
+        sql += `INNER JOIN ?? dr2 ON dr2.id = dr.parent_id AND dr2.level_type = ${LEVEL_CITY} `;
         params.push(tables.dict_regionalism);
-        sql += `LEFT JOIN ?? dr2 ON dr2.id = dr.parent_id AND dr2.level_type = ${LEVEL_CITY} AND dr.del_flag = ${del_flag.SHOW} `;
-        params.push(tables.dict_regionalism);
+        sql += `SET dr.del_flag = ${del_flag.HIDE} `;
         sql += `WHERE dr.id = ? OR (dr2.id = ? AND sc.is_city IS NULL ) `;
         params.push(city_id, city_id);
         yield baseDao.delete(sql, params);
 
-        sql = `UPDATE dr SET dr.del_flag = ${del_flag.HIDE} FROM ?? dr `;
+        sql = `DELETE sc FROM ?? sc `;
+        params = [tables.sys_city];
+        sql += `INNER JOIN ?? dr ON dr.id = sc.regionalism_id `;
         params.push(tables.dict_regionalism);
-        sql += `LEFT JOIN ?? dr2 ON dr2.id = dr.parent_id AND dr2.level_type = ${LEVEL_CITY} AND dr.del_flag = ${del_flag.SHOW} `;
+        sql += `LEFT JOIN ?? dr2 ON dr2.id = dr.parent_id AND dr2.level_type = ${LEVEL_CITY} `;
         params.push(tables.dict_regionalism);
-        sql += `LEFT JOIN ?? sc ON sc.regionalism_id = dr.id `;
-        params.push(tables.sys_city);
         sql += `WHERE dr.id = ? OR (dr2.id = ? AND sc.is_city IS NULL ) `;
-        params.push(city_id);
+        params.push(city_id, city_id);
         yield baseDao.delete(sql, params);
 
         yield trans.commit();

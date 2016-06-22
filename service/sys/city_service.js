@@ -68,7 +68,7 @@ module.exports.getList = function (req, res, next) {
                 map[curr.regionalism_id] = Object.assign(map[curr.regionalism_id], _.pick(curr, publicField));
                 let tmp = map[curr.regionalism_id];
                 tmp.city_id = curr.regionalism_id;
-                tmp.city_name = curr.regionalism_name;
+                tmp.city_name = curr.name;
                 tmp.is_county = 0;
                 tmp.province_name = curr.parent_name;
                 if (curr.level_type == 3) {

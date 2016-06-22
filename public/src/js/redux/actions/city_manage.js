@@ -9,7 +9,7 @@ export function getAccessibleCityList(data){
     	var filter_data = getValues(getState().form.accessible_cities_filter);
     	filter_data = formCompile(filter_data);
 
-    	return GET(Url.open_city_list.toString, {...filter_data,...data}, GET_ACCESSIBLE_CITIES_LIST)(dispatch);
+    	return GET(Url.open_city_list.toString(), {...filter_data,...data}, GET_ACCESSIBLE_CITIES_LIST)(dispatch);
 /*    	return TEST({list:[{
     		city_id:1,
     		city_name:'深圳',

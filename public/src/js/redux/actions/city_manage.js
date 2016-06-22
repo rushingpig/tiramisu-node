@@ -188,9 +188,7 @@ function _getFormData(form_data, getState){
 	if(sec_reservation && sec_open_regions && sec_open_regions.length > 0) {
 		sec_open_regions.map( m => regionalismList.push({regionalism_id: m.id, order_time: accessibleCity.sec_order_time * 60}));
 	}
-	if(regionalismList.length > 0){
-		accessibleCity.open_regionalisms = regionalismList;
-	}
+	accessibleCity.open_regionalisms = regionalismList;
 	accessibleCity.order_time = accessibleCity.order_time * 60;
 	delete accessibleCity.sec_order_time;
 	delete accessibleCity.first_open_regions;

@@ -334,8 +334,8 @@ var SalaryRow = React.createClass({
 		var {active_order_id} = main;
 		var str = '';
 		if(is_POS != null && props.total_amount > 0){
-			if(is_POS) str = '(POS机)';
-			else str = '(现金)'
+			if(is_POS) str = '签收收款: POS机';
+			else str = '签收收款: 现金'
 		}
 		return(
 			<tr className={active_order_id == props.order_id ? 'active' : ''} onClick={this.ClickHandler}>

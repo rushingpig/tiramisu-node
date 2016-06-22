@@ -113,11 +113,11 @@ class CityPicker extends Component{
 		this.setState({currentSelect});
 	}
 	selectProvince(id, text){
-		this.props.getRegionalism({province_id:id, type: 'city'})
+		this.props.getRegionalism({parent_id:id, type: 'city'})
 		this.setState({currentSelectPro:text,currentSelectCity:'',currentSelectDistrict:'', currentSelect:'city', currentSelectPro_id: id});
 	}
 	selectCity(id, text){
-		this.props.getRegionalism({city_id: id, type: 'district'});
+		this.props.getRegionalism({parent_id: id, type: 'district'});
 		if(this.props.is_county){}
 		else {
 			this.setState({citymenuDown: !this.state.citymenuDown});

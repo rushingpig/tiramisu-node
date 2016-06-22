@@ -131,7 +131,7 @@ var CityRow = React.createClass({
 				<td>{(parseFloat(props.order_time/60))}</td>
 				<td>{props.has_sec_order_time?'是': '否'}</td>
 				<td>{props.has_sec_order_time ? props.sec_order_regions_txt: '/'}</td>
-				<td>{props.has_sec_order_time ? (parseFloat(props.sec_order_time)/60).toFixed(1): '/'}</td>
+				<td>{props.has_sec_order_time ? (parseFloat(props.sec_order_time)/60): '/'}</td>
 				<td>{props.online_time}</td>
 				<td>
 					{
@@ -154,7 +154,7 @@ var CityRow = React.createClass({
 		this.props.showSEOModal(this.props.city_id);
 	},
 	showViewModal(){
-		this.props.showViewModal();
+		this.props.showViewModal(this.props.city_id);
 	},
 	showDeleteModal(){
 		this.props.showDeleteModal(this.props.city_id, this.props.city_name);
@@ -187,12 +187,12 @@ class CityPanel extends Component{
 				}else{
 					sec_order_regions.forEach( n => {
 						sec_order_regions_txt = n.regionalism_name + '/' + sec_order_regions_txt;
-						m.sec_order_regions_txt = sec_order_regions_txt;
+						m.sec_order_regions_txt = sec_order_regions_txt.substring(0, sec_order_regions_txt.length - 1);
+						m.sec_order_time = sec_order_regions[0].order_time;
 					})
 				}
 			}
 			m.has_sec_order_time = has_sec_order_time;
-			if(has_sec_order_time) m.sec_order_time = m.open_regionalisms[0].order_time;
 			return <CityRow key = {m.city_id} {...m}
 						showSEOModal = {this.showSEOModal.bind(this)}
 						showViewModal = {this.showViewModal.bind(this)}
@@ -254,8 +254,8 @@ class CityPanel extends Component{
     	LazyLoad('noty');
 		this.refs.seo.show(city_id);
 	}
-	showViewModal(){
-		this.refs.view.show();
+	showViewModal(city_id){
+		this.refs.view.show(city_id);
 	}
 	showDeleteModal(city_id, city_name){
     	LazyLoad('noty');		
@@ -316,13 +316,24 @@ class ViewModal extends Component{
 
 	render(){
 		var info = this.props.accessible_city_info;
-		var has_sec_order_time = info && info.open_regionalisms && info.open_regionalisms.length > 0 ? true : false;
-		if(has_sec_order_time) info.sec_order_time = info.open_regionalisms[0].order_time;
+		var has_sec_order_time = info && info.second_order_regionalisms && info.second_order_regionalisms.length > 0 ? true : false;
+		var regionalisms_name = '';
+		var sec_regionalisms_name = '';
+		var {regionalisms} = info;
+		if(regionalisms != undefined){
+			regionalisms.forEach( m => {
+				if( m.order_time == undefined){
+					regionalisms_name = m.regionalism_name + ' ' + regionalisms_name
+				}else{
+					sec_regionalisms_name = m.regionalism_name + ' ' + sec_regionalisms_name;
+				}
+			})
+		}
 		return(
 			<StdModal title='城市信息' ref='viewModal' footer = {false}>
 				<div className='form-inline'>
 					<label className='control-form'>{'　　　　　城市名称：'}</label>
-					<span className='gray'>{info.city_name}</span>
+					<span className='gray'>{info.area}</span>
 				</div>
 				<div className='form-inline'>
 					<label className='control-form'>{'　　　　　城市级别：'}</label>
@@ -330,7 +341,7 @@ class ViewModal extends Component{
 				</div>				
 				<div className='form-inline'>
 					<label className='control-form'>{'　　　　　开通区域：'}</label>
-					<span className='gray'>{info.regionalism_name}</span>
+					<span className='gray'>{regionalisms_name}</span>
 				</div>
 				<div className='form-inline'>
 					<label className='control-form'>{'　　　　配送时间段：'}</label>
@@ -338,7 +349,7 @@ class ViewModal extends Component{
 				</div>
 				<div className='form-inline'>
 					<label className='control-form'>{'　　　　　预约时间：'}</label>
-					<span className='gray'>{(parseFloat(info.order_time/60)).toFixed(1)}</span>
+					<span className='gray'>{info.order_time}</span>
 				</div>
 				{
 					has_sec_order_time ?
@@ -348,7 +359,7 @@ class ViewModal extends Component{
 					</div>*/
 					<div className='form-inline'>
 						<label className='control-form'>{'第二次预约区域/时间：'}</label>
-						<span className='gray'>{sec_order_regions_txt + ' ' + (parseFloat(info.sec_order_time/60)).toFixed(1)}</span>
+						<span className='gray'>{sec_regionalisms_name + ' ' + info.second_order_time / 60}</span>
 					</div>:
 					null
 				}				

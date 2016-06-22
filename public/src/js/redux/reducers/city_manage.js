@@ -66,11 +66,12 @@ function main(state = initail_state, action){
 
 			return {...state, accessible_city_info: data, districts_letter: regionalisms}
 		case Actions.GOT_REGIONALISM_LETTER:
-			var type = action.data.dataType;
+			var type = action.dataType;
 			var regionalisms = action.data.list;
 			regionalisms = regionalisms.map( m => {
 				var p = {};
-				p.ascii_value = m.first_letter.charCodeAt();
+				if(type == 'province')
+					p.ascii_value = m.first_letter.charCodeAt();
 				p.id = m.regionalism_id;
 				p.text = m.regionalism_name;
 				p.is_open = m.is_open;

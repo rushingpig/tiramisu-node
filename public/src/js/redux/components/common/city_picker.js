@@ -15,6 +15,9 @@ class CityPicker extends Component{
 	render(){
 		var {currentSelect, citymenuDown, currentSelectDistrict, currentSelectCity,currentSelectPro} = this.state;
 		var { provinces, cities, districts, is_county } = this.props;
+		var className = 'btn btn-default btn-xs dropdown-toggle' + (this.props.className || '');
+    	this.props = {...this.props, ...{className: className}};
+
 		var provincesAG, provincesHK, provincesLS, provincesTZ = [];
 		provincesAG = provinces.filter( p => p.ascii_value >= 'A'.charCodeAt() && p.ascii_value <= 'G'.charCodeAt() );
 		provincesHK = provinces.filter( p => p.ascii_value >= 'H'.charCodeAt() && p.ascii_value <= 'K'.charCodeAt() );
@@ -67,7 +70,7 @@ class CityPicker extends Component{
 			<div className='form-group'>
 				<div  className={"btn-group" + (citymenuDown ? ' open' : '')}>
 					{/*<input ref='city_picker3' className='form-control city-picker-input' readOnly type='text' />*/}
-						<button type="button" className="btn btn-default btn-xs dropdown-toggle" onClick={this.handleToggleShowState.bind(this)}>
+						<button type="button" className={className} onClick={this.handleToggleShowState.bind(this)}>
 						  {areatext }
 						  {' '}
 						  <span className="caret"></span>

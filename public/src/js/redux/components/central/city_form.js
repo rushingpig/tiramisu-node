@@ -21,23 +21,28 @@ import FormFields from 'config/form.fields';
 const pickerStyle = { width: 260, textAlign: 'center' }
 
 const validate = (values, props) => {
-	const error = {};
+	const errors = {};
 	var msg = 'error';
     var { form } = props;
 
 	function _v_hour(key){
-		if(!uForm.isNumber(values[key]) || values[key] < 0 && values[key] >= 24)
-			error[key] =msg
+		if(form[key] && form[key].touched && (!uForm.isNumber(values[key]) || values[key] < 0 || values[key] >= 24))
+			errors[key] =msg
 	}
 
 	function _v_minute(key){
-		if(!uForm.isNumber(values[key]) || values[key] < 0 && values[key] >= 60)
-			error[key] =msg;
+		if(form[key] && form[key].touched && (!uForm.isNumber(values[key]) || values[key] < 0 || values[key] >= 60))
+			errors[key] =msg;
 	}
 
 	function _v_select(key){
 	  if(form[key] && form[key].touched && (!values[key] || values[key] == SELECT_DEFAULT_VALUE))
-	    error[key] = msg;
+	    errors[key] = msg;
+	}
+
+	function _v_citypicer(key){
+		if(form[key] && form[key].touched && !values[key])
+			errors[key] = msg;
 	}
 
 	_v_hour('online_time_hour');
@@ -45,7 +50,9 @@ const validate = (values, props) => {
 	_v_minute('online_time_min');
 
 	_v_select('order_time');
-	return	error;
+
+	_v_citypicer('city_id');
+	return	errors;
 }
 
 class AddCityForm extends Component{
@@ -129,6 +136,7 @@ class AddCityForm extends Component{
 								districts = {districts_letter}
 								is_county = {county}
 								getRegionalism = {gotRegionalismLetter}
+								className = {`form-control ${city_id.error}`}
 								/>
 						]
 						:
@@ -235,13 +243,13 @@ class AddCityForm extends Component{
 				  {
 				  	editable?
 				  	<button 
-				    	onClick = {this._check.bind(this, this.handleSubmitCity)}
+				    	onClick = {handleSubmit(this._check.bind(this, this.handleSubmitCity))}
 				  	  className="btn btn-theme btn-xs space-left"
 				  	  >提交</button>
 				  	:
 				  	<button 
 				    className="btn btn-theme btn-xs space-left"
-				    onClick = {this._check.bind(this, this.handleCreateCity)}
+				    onClick = {handleSubmit(this._check.bind(this, this.handleCreateCity))}
 				    >提交</button>
 				  }      
 				  
@@ -318,8 +326,9 @@ export default function initAddCityForm(initFunc){
 	  return reduxForm({
 	    form:'add_city',
 	    fields:FormFields.add_city,
-	     validate,
+	    validate,
 	   /*roleinfo:{roleinfo},
 	    depts:{depts},*/
+	    touchOnBlur: true,
 	  },initFunc)(AddCityForm);	
 }

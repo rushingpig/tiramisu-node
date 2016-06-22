@@ -333,7 +333,7 @@ var SalaryRow = React.createClass({
 		var {main, is_POS} = props;
 		var {active_order_id} = main;
 		var str = '';
-		if(is_POS != null && props.pay_status == 'COD'){
+		if(is_POS != null && props.total_amount > 0){
 			if(is_POS) str = '(POS机)';
 			else str = '(现金)'
 		}

@@ -131,10 +131,8 @@ ADD COLUMN `presell_end` DATETIME NULL DEFAULT NULL COMMENT '预售上架结束�
 ADD COLUMN `send_start` DATETIME NULL DEFAULT NULL COMMENT '预售发货开始时间' AFTER `presell_end`,
 ADD COLUMN `send_end` DATETIME NULL DEFAULT NULL COMMENT '预售发货结束时间' AFTER `send_start`,
 ADD COLUMN `activity_price` INT(8) NULL DEFAULT NULL COMMENT '活动价格' AFTER `send_end`,
-ADD COLUMN `ref` INT(10) NULL DEFAULT NULL COMMENT '活动前原skuid' AFTER `activity_price`,
-ADD COLUMN `activity_start` DATETIME NULL DEFAULT NULL COMMENT '活动开始时间' AFTER `ref`,
-ADD COLUMN `activity_end` DATETIME NULL DEFAULT NULL COMMENT '活动结束时间' AFTER `activity_start`,
-ADD COLUMN `expire_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '过期标记，1为当前有效，0为过期失效' AFTER `activity_end`;
+ADD COLUMN `activity_start` DATETIME NULL DEFAULT NULL COMMENT '活动开始时间' AFTER `activity_price`,
+ADD COLUMN `activity_end` DATETIME NULL DEFAULT NULL COMMENT '活动结束时间' AFTER `activity_start`;
 
 DROP TABLE IF EXISTS `buss_product_sku_booktime`;
 CREATE TABLE `buss_product_sku_booktime` (
@@ -144,39 +142,6 @@ CREATE TABLE `buss_product_sku_booktime` (
   `regionalism_id` int(10) NOT NULL COMMENT '区域id',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='sku第二预约时间';
-
-SET GLOBAL event_scheduler = ON;
-
-DROP EVENT IF EXISTS Expire_Activity_Time;
-CREATE EVENT Expire_Activity_Time
-On SCHEDULE EVERY 1 MINUTE
-COMMENT '定时结束活动sku，开启原有sku'
-DO
-BEGIN
-  DECLARE done INT DEFAULT FALSE;
-  DECLARE sku_id,ref_id INT;
-  DECLARE cur CURSOR FOR SELECT id,ref FROM buss_product_sku where activity_start > now() or activity_end < now() and expire_flag = 1 and del_flag = 1;
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-  OPEN cur;
-  read_loop: LOOP
-    FETCH cur into sku_id,ref_id;
-    IF done THEN
-      LEAVE read_loop;
-    END IF;
-    update buss_product_sku set expire_flag = 0 where id = sku_id;
-    update buss_product_sku set expire_flag = 1 where id = ref_id;
-  END LOOP;
-  CLOSE cur;
-END;
-
-DROP EVENT IF EXISTS Expire_Presell_Time;
-CREATE EVENT Expire_Presell_Time
-On SCHEDULE EVERY 1 MINUTE
-COMMENT '定时结束预售sku'
-DO
-BEGIN
-  update buss_product_sku set expire_flag = 0 where presell_start > now() or presell_end < now() and expire_flag = 1 and del_flag = 1;
-END;
 
 DROP TABLE IF EXISTS `buss_product_pic`;
 CREATE TABLE `buss_product_pic` (

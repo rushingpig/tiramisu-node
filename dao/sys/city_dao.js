@@ -126,7 +126,7 @@ CityDao.prototype.findAllCity = function (query) {
         let city_ids = yield baseDao.select(sql, params);
         let ids = [];
         city_ids.forEach(curr=> {
-            ids = curr.regionalism_id
+            ids.push(curr.regionalism_id);
         });
         return CityDao.prototype.findCityById(ids, true);
     });

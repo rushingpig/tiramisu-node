@@ -91,11 +91,11 @@ function main(state = initail_state, action){
 		case Actions.SUBMIT_ING:
 			return {...state, submit_ing: true}
 		case Actions.SUBMIT_COMPLETE:
-			return {...state, submit_ing: false}
+			return {...state, submit_ing: false, districts_letter: []}
 		case Actions.SAVE_USER_INFO_ING:
 		  return {...state, save_ing: true }
 		case Actions.SAVE_USER_INFO_SUCCESS:
-		  return {...state, save_success: true, save_ing: false }
+		  return {...state, save_success: true, save_ing: false, districts_letter:[] }
 		case Actions.SAVE_USER_INFO_FAIL:
 		  return {...state, save_success: false, save_ing: false }
 		case Actions.DELETE_ACCESSIBLE_CITY:

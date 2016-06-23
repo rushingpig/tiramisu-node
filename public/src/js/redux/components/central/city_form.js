@@ -303,7 +303,7 @@ class AddCityForm extends Component{
 		this.props.actions.CreateAccessibleCity(form_data)
 			.done(function(){
 				Noty('success', '保存成功');
-				history.push('cm/city');
+				history.push('/cm/city');
 			}.bind(this))
 			.fail(function(msg){
         		Noty('error', msg || '操作异常');

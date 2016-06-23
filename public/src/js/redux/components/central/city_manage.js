@@ -322,10 +322,9 @@ class ViewModal extends Component{
 		var sec_regionalisms_name = '';
 		var {regionalisms} = info;
 		if(regionalisms != undefined){
-			regionalisms.forEach( m => {
+			regionalisms.filter( m => m.is_open == 1).forEach( m => {
+				regionalisms_name = m.regionalism_name + ' ' + regionalisms_name
 				if( m.order_time == undefined){
-					regionalisms_name = m.regionalism_name + ' ' + regionalisms_name
-				}else{
 					sec_regionalisms_name = m.regionalism_name + ' ' + sec_regionalisms_name;
 				}
 			})
@@ -338,7 +337,7 @@ class ViewModal extends Component{
 				</div>
 				<div className='form-inline'>
 					<label className='control-form'>{'　　　　　城市级别：'}</label>
-					<span className='gray'>{info.is_county ? '县级市': '区级市'}</span>
+					<span className='gray'>{info.is_county ? '县级市': '地级市'}</span>
 				</div>				
 				{info.is_county == 0 && <div className='form-inline'>
 					<label className='control-form'>{'　　　　　开通区域：'}</label>

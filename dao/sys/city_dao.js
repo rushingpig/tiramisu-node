@@ -68,6 +68,7 @@ CityDao.prototype.count = function (query) {
         sql += `(dr.level_type = ${LEVEL_CITY} AND dr.parent_id = ? ) OR (dr.level_type = ${LEVEL_COUNTY} AND dr2.parent_id = ? ) `;
         sql += `) `;
         params.push(query.province_id);
+        params.push(query.province_id);
     }
 
     return baseDao.select(sql, params).then(result=> {
@@ -119,6 +120,7 @@ CityDao.prototype.findAllCity = function (query) {
             sql += `AND ( `;
             sql += `(dr.level_type = ${LEVEL_CITY} AND dr.parent_id = ? ) OR (dr.level_type = ${LEVEL_COUNTY} AND dr2.parent_id = ? ) `;
             sql += `) `;
+            params.push(query.province_id);
             params.push(query.province_id);
         }
         sql += `LIMIT ${page_no * page_size},${page_size}  `;

@@ -151,7 +151,6 @@ CityDao.prototype.findAllCity = function (query) {
         }
         sql += `LIMIT ${page_no * page_size},${page_size}  `;
 
-        console.log(require('mysql').format(sql, params));
         let city_ids = yield baseDao.select(sql, params);
         let ids = [];
         city_ids.forEach(curr=> {
@@ -199,19 +198,16 @@ CityDao.prototype.findCityById = function (city_id, only_open) {
 };
 
 CityDao.prototype.updateCityInfo = function (city_id, city_obj, areas) {
+    if (!areas) {
+        let sql = `UPDATE ?? SET ? WHERE regionalism_id = ? `;
+        let params = [tables.sys_city, city_obj, city_id];
+        return baseDao.update(sql, params);
+    }
     let trans;
     return co(function *() {
         trans = yield baseDao.trans(true);
         let sql;
         let params;
-
-        if (!areas) {
-            sql = `UPDATE ?? SET ? WHERE regionalism_id = ? `;
-            params = [tables.sys_city, city_obj, city_id];
-            yield baseDao.delete(sql, params);
-            yield trans.commit();
-            return;
-        }
 
         // 清除旧的信息
         sql = `UPDATE ?? dr `;
@@ -221,9 +217,9 @@ CityDao.prototype.updateCityInfo = function (city_id, city_obj, areas) {
         sql += `INNER JOIN ?? dr2 ON dr2.id = dr.parent_id AND dr2.level_type = ${LEVEL_CITY} `;
         params.push(tables.dict_regionalism);
         sql += `SET dr.del_flag = ${del_flag.HIDE} `;
-        sql += `WHERE dr.id = ? OR (dr2.id = ? AND dr.id NOT REGEXP '[0-9]{4}99' AND sc.is_city IS NULL ) `;
+        sql += `WHERE dr2.id = ? AND dr.id NOT REGEXP '[0-9]{4}99' AND sc.is_city IS NULL `;
         params.push(city_id, city_id);
-        yield baseDao.delete(sql, params);
+        yield trans.query(sql, params);
 
         sql = `DELETE sc FROM ?? sc `;
         params = [tables.sys_city];
@@ -233,7 +229,7 @@ CityDao.prototype.updateCityInfo = function (city_id, city_obj, areas) {
         params.push(tables.dict_regionalism);
         sql += `WHERE dr.id = ? OR (dr2.id = ? AND sc.is_city IS NULL ) `;
         params.push(city_id, city_id);
-        yield baseDao.delete(sql, params);
+        yield trans.query(sql, params);
 
         // 添加新信息
         let area_ids = [];
@@ -245,19 +241,17 @@ CityDao.prototype.updateCityInfo = function (city_id, city_obj, areas) {
         sql += `INNER JOIN ?? dr2 ON dr2.id = dr.parent_id AND dr2.level_type = ${LEVEL_CITY} `;
         params.push(tables.dict_regionalism);
         sql += `SET dr.del_flag = ${del_flag.SHOW} `;
-        sql += `WHERE dr.id = ? OR FIND_IN_SET(dr2.id, ? )`;
+        sql += `WHERE dr.parent_id = ? AND FIND_IN_SET(dr.id, ? ) `;
         params.push(city_id, area_ids.join());
-        yield baseDao.delete(sql, params);
+        yield trans.query(sql, params);
+        yield addRegionalism(trans, city_id);
 
         areas.unshift(city_obj);
         for (let i = 0; i < areas.length; i++) {
             sql = `INSERT INTO ?? SET ? `;
             params = [tables.sys_city, areas[i]];
-            yield baseDao.insert(sql, params);
+            yield trans.query(sql, params);
         }
-        // sql = `INSERT INTO ?? VALUES ? `;
-        // params = [tables.sys_city, areas.unshift(city_obj)];
-        // yield baseDao.insert(sql, params);
 
         yield trans.commit();
     }).catch(err=> {
@@ -271,7 +265,7 @@ CityDao.prototype.deleteCityInfo = function (city_id) {
     return co(function *() {
         trans = yield baseDao.trans(true);
         let sql;
-        let params = [];
+        let params;
 
         // 清除旧的信息
         sql = `UPDATE ?? dr `;
@@ -281,9 +275,10 @@ CityDao.prototype.deleteCityInfo = function (city_id) {
         sql += `INNER JOIN ?? dr2 ON dr2.id = dr.parent_id AND dr2.level_type = ${LEVEL_CITY} `;
         params.push(tables.dict_regionalism);
         sql += `SET dr.del_flag = ${del_flag.HIDE} `;
-        sql += `WHERE dr.id = ? OR (dr2.id = ? AND sc.is_city IS NULL ) `;
+        sql += `WHERE dr2.id = ? AND sc.is_city IS NULL `;
         params.push(city_id, city_id);
-        yield baseDao.delete(sql, params);
+        yield trans.query(sql, params);
+        yield delRegionalism(trans, city_id);
 
         sql = `DELETE sc FROM ?? sc `;
         params = [tables.sys_city];
@@ -293,36 +288,7 @@ CityDao.prototype.deleteCityInfo = function (city_id) {
         params.push(tables.dict_regionalism);
         sql += `WHERE dr.id = ? OR (dr2.id = ? AND sc.is_city IS NULL ) `;
         params.push(city_id, city_id);
-        yield baseDao.delete(sql, params);
-
-        //  检查城市下是否还有开通的区域
-        sql = `SELECT dr.level_type, dr.parent_id FROM ?? dr WHERE dr.id = ? `;
-        params = [tables.dict_regionalism, city_id];
-        let city_info = yield baseDao.select(sql, params);
-        if (city_info && city_info[0]) {
-            city_info = city_info[0];
-            let c_id;
-            if (city_info.level_type == LEVEL_CITY) {
-                c_id = city_id;
-            } else if (city_info.level_type == LEVEL_CITY) {
-                c_id = city_info.parent_id;
-            }
-            let sql = `SELECT count(*) FROM ?? sc `;
-            let params = [tables.sys_city];
-            sql += `INNER JOIN ?? dr ON dr.id = sc.regionalism_id `;
-            params.push(tables.dict_regionalism);
-            sql += `INNER JOIN ?? dr2 ON dr2.id = dr.parent_id `;
-            params.push(tables.dict_regionalism);
-            sql += `WHERE dr.id = ? OR dr2.id = ? `;
-            params.push(c_id);
-            params.push(c_id);
-            let tmp = yield baseDao.select(sql, params);
-            if (tmp && tmp[0] && tmp[0]['count(*)'] > 0) {
-                sql = `UPDATE ?? dr SET dr.del_flag = ${del_flag.SHOW} WHERE dr.id = ? `;
-                params = [tables.dict_regionalism, c_id];
-                yield baseDao.select(sql, params);
-            }
-        }
+        yield trans.query(sql, params);
 
         yield trans.commit();
     }).catch(err=> {
@@ -330,6 +296,63 @@ CityDao.prototype.deleteCityInfo = function (city_id) {
         return Promise.reject(err);
     });
 };
+
+function setFlag(connection, ids, flag) {
+    if (ids.length == 0) return Promise.resolve();
+    let sql = `UPDATE ?? dr SET dr.del_flag = ? `;
+    let params = [tables.dict_regionalism, flag];
+    sql += `WHERE FIND_IN_SET(dr.id, ? ) `;
+    params.push(ids.join());
+    return connection.query(sql, params);
+}
+
+function addRegionalism(connection, id, reg_ids) {
+    return co(function *() {
+        if (!reg_ids) reg_ids = [];
+        reg_ids.push(id);
+        let sql = `SELECT dr.id, dr.parent_id, dr.del_flag FROM ?? dr WHERE dr.id = ? `;
+        let params = [tables.dict_regionalism, id];
+        let info = yield connection.query(sql, params);
+        if (!info || !info[0]) return Promise.reject(`NOT FOUND regionalism_id = ${id}`);
+        info = info[0];
+
+        if (info.del_flag == 1 || info.parent_id == 0) {
+            return yield setFlag(connection, reg_ids, del_flag.SHOW);
+        } else {
+            return yield addRegionalism(connection, info.parent_id, reg_ids);
+        }
+    });
+}
+
+function delRegionalism(connection, id, reg_ids) {
+    return co(function *() {
+        if (!reg_ids) reg_ids = [];
+        let sql = `SELECT dr.id, dr.parent_id FROM ?? dr WHERE dr.parent_id = ? `;
+        let params = [tables.dict_regionalism, id];
+        sql += `AND dr.id NOT REGEXP '[0-9]{4}99' `;
+        sql += `AND dr.del_flag = ${del_flag.SHOW} `;
+        sql += `AND dr.id NOT IN ( ? )`;
+        params.push(reg_ids.join());
+        let info = yield connection.query(sql, params);
+        if (!info) return Promise.reject(`NOT FOUND regionalism_id = ${id}`);
+
+        if (info.length > 0) {
+            return yield setFlag(connection, reg_ids, del_flag.HIDE);
+        } else {
+            reg_ids.push(id);
+            let sql = `SELECT dr.parent_id FROM ?? dr WHERE dr.id = ? `;
+            let params = [tables.dict_regionalism, id];
+            let tmp = yield connection.query(sql, params);
+            if (!tmp || !tmp[0]) return Promise.reject(`NOT FOUND regionalism_id = ${id}`);
+            let parent_id = tmp[0].parent_id;
+            if (parent_id == 0) {
+                return setFlag(connection, reg_ids, del_flag.HIDE);
+            } else {
+                return yield delRegionalism(connection, parent_id, reg_ids);
+            }
+        }
+    });
+}
 
 module.exports = new CityDao();
 

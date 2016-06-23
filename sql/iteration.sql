@@ -573,7 +573,8 @@ DROP TABLE IF EXISTS `sys_history`;
 CREATE TABLE `sys_history` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
   `type` int(10) NOT NULL COMMENT '记录类型id',
-  `option` varchar(255) NOT NULL COMMENT '操作记录',
+  `option` varchar(2000) NOT NULL COMMENT '操作记录',
+  `remarks` varchar(255) NOT NULL COMMENT '备注',
   `created_by` varchar(255) NOT NULL COMMENT '创建人',
   `created_time` datetime NOT NULL COMMENT '创建时间',
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',

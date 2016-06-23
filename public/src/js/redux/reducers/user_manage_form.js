@@ -37,7 +37,7 @@ function mainForm(state=initial_state,action){
 				var tmp_stations=[];
 				var is_headquarters = data.is_headquarters;
 				var is_national = data.is_national;
-				var en_delivery = 0;
+				var en_delivery = 1;
 
 				if(is_headquarters)
 					cities_in.push({id:'999',text:'总部'});
@@ -52,6 +52,8 @@ function mainForm(state=initial_state,action){
 					roles_in.push({id:n.role_id,text:n.role_name});
 					if(n.role_name == '配送员' && !n.only_admin)
 						en_delivery = 1;
+					else if(n.role_name == '配送员' && n.only_admin)
+						en_delivery = 0;
 				});
 				data.cities.forEach(n=>{
 					city_ids.push(n.city_id);

@@ -20,6 +20,7 @@ var initail_state = {
 	provinces_letter: [],
 	cities_letter: [],
 	districts_letter: [],
+	page_no: 0,
 
 };
 
@@ -30,7 +31,7 @@ function _t(data){
 function main(state = initail_state, action){
 	switch(action.type){
 		case Actions.GET_ACCESSIBLE_CITIES_LIST:
-			return {...state, accessible_cities: action.data.list, total_count:action.data.total_count,loading: false, refresh: false}
+			return {...state, accessible_cities: action.data.list, total_count:action.data.total_count,page_no:action.page_no,loading: false, refresh: false}
 		case Actions.GOT_PROVINCES_SIGNAL:
 			return {...state, provinces: _t(action.data)}
 		case Actions.GET_ACCESSIBLE_CITY_DETAIL:

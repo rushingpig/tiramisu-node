@@ -159,7 +159,7 @@ class AddCityForm extends Component{
 								provinces={provinces_letter}
 								cities = {cities_letter}
 								districts = {districts_letter}
-								is_county = {county}
+								is_county = {is_county.value}
 								getRegionalism = {gotRegionalismLetter}
 								className = {`form-control ${city_id.error}`}
 								/>
@@ -326,20 +326,6 @@ class AddCityForm extends Component{
 	}
 	componentDidMount(){
 		LazyLoad('noty');
-		var {accessible_city_info} = this.props;
-		this.setState({county: accessible_city_info.is_county,
-						sec_reservation: accessible_city_info.sec_order,});
-	}
-	componentWillReceiveProps(nextProps){
-		if(nextProps.editable){
-			var {accessible_city_info} = nextProps;
-			if(this.state.initialFlag){
-				this.setState({county: accessible_city_info.is_county,
-							sec_reservation: accessible_city_info.sec_order,
-							initialFlag: false,
-				});
-			}		
-		}
 	}
 }
 

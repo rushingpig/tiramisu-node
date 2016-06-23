@@ -9,7 +9,14 @@ export function getAccessibleCityList(data){
     	var filter_data = getValues(getState().form.accessible_cities_filter);
     	filter_data = formCompile(filter_data);
 
-    	return GET(Url.open_city_list.toString(), {...filter_data,...data}, GET_ACCESSIBLE_CITIES_LIST)(dispatch);
+    	return get(Url.open_city_list.toString(), {...filter_data,...data}, GET_ACCESSIBLE_CITIES_LIST)
+    			.done( (_data) => {
+    				dispatch({
+    					page_no: data.page_no,
+    					data: _data,
+    					type: 'GET_ACCESSIBLE_CITIES_LIST'
+    				})
+    			} )
 /*    	return TEST({list:[{
     		city_id:1,
     		city_name:'深圳',
@@ -180,12 +187,11 @@ function _getFormData(form_data, getState){
 	delete accessibleCity.online_time_hour;
 	delete accessibleCity.online_time_min;
 
-	var {first_open_regions, sec_open_regions} = accessibleCity;
-	var {sec_reservation } = form_data;
+	var {first_open_regions, sec_open_regions, sec_order} = accessibleCity;
 	var regionalismList = [];
 	if(first_open_regions && first_open_regions.length > 0)
 		first_open_regions.map( m => regionalismList.push({regionalism_id:m.id}));
-	if(sec_reservation && sec_open_regions && sec_open_regions.length > 0) {
+	if(sec_order && sec_open_regions && sec_open_regions.length > 0) {
 		sec_open_regions.forEach( m => {
 			regionalismList= regionalismList.map( n => {
 				if(n.regionalism_id == m.id){
@@ -196,7 +202,7 @@ function _getFormData(form_data, getState){
 		})
 	}
 	accessibleCity.open_regionalisms = regionalismList;
-	delete accessibleCity.sec_order_time;
+	delete accessibleCity.sec_order;
 	delete accessibleCity.first_open_regions;
 	delete accessibleCity.sec_open_regions;
 	var accessibleCity_data = {...accessibleCity,...form_data}

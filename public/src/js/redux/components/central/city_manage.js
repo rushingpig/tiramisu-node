@@ -81,7 +81,7 @@ class FilterHeader extends Component{
 					<select {...is_county} ref='is_county' className='form-control input-xs space-right'>
 						<option value={SELECT_DEFAULT_VALUE}>是否县级市</option>
 						<option value={1}>县级市</option>
-						<option value={0}>区级市</option>
+						<option value={0}>地级市</option>
 					</select>
 					<select {...exist_second_order_time} ref='has_sec_order_time' className='form-control input-xs space-right'>
 						<option value={SELECT_DEFAULT_VALUE}>是否有第二次预约时间</option>
@@ -126,7 +126,7 @@ var CityRow = React.createClass({
 			<tr>
 				<td>{props.city_name}</td>
 				<td>{props.province_name}</td>
-				<td>{props.is_county ? '县级市': '区级市'}</td>
+				<td>{props.is_county ? '县级市': '地级市'}</td>
 				<td>{props.delivery_time_range}</td>
 				<td>{(parseFloat(props.order_time/60))}</td>
 				<td>{props.has_sec_order_time?'是': '否'}</td>
@@ -173,9 +173,8 @@ class CityPanel extends Component{
 	}
 	render(){
 		var {getProvincesSignal, getAccessibleCityList, getAccessibleCityDetail, updateAccessibleCity, DeleteAccessibleCity} = this.props.actions;
-		var {provinces, accessible_cities, loading, refresh, accessible_city_info, submit_ing, total_count} = this.props;
+		var {provinces, accessible_cities, loading, refresh, accessible_city_info, submit_ing, total_count, page_no} = this.props;
 		var SEO = accessible_city_info.SEO || '';
-		var {page_no } = accessible_city_info;
 		var content = accessible_cities.map( m => {
 			var has_sec_order_time =m.open_regionalisms && m.open_regionalisms.length >0 ? true: false;
 			var sec_order_regions =[];

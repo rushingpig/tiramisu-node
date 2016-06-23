@@ -54,6 +54,7 @@ module.exports.getRegionalisms = function (req, res, next) {
 module.exports.getList = function (req, res, next) {
     let promise = co(function *() {
         let query = Object.assign({}, req.query);
+        if (query.is_county !== undefined) query.is_county = (query.is_county == 1);
 
         // 获取总数
         let total_count = yield cityDao.count(query);

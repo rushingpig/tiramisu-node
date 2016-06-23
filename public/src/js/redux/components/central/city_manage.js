@@ -337,7 +337,7 @@ class ViewModal extends Component{
 				</div>
 				<div className='form-inline'>
 					<label className='control-form'>{'　　　　　城市级别：'}</label>
-					<span className='gray'>{info.is_county ? '县级市': '区级市'}</span>
+					<span className='gray'>{info.is_county ? '县级市': '地级市'}</span>
 				</div>				
 				{info.is_county == 0 && <div className='form-inline'>
 					<label className='control-form'>{'　　　　　开通区域：'}</label>

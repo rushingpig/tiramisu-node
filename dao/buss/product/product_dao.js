@@ -258,11 +258,16 @@ ProductDao.prototype.getProductDetailByParams = function (data) {
     }
     // 商城是否上线
     if (data.isMall == 1) {
-        sql += ' and website = 1 ';
+        sql += ' and sku.website = 1 ';
     }
     // 是否促销(活动)
     if (data.isActivity == 1) {
-        sql += ' and activity_start is not null ';
+        if (data.presell_start) {
+            sql += ' and sku.activity_start > ? ';
+        }
+        if (data.presell_end) {
+            sql += ' and sku.activity_end < ? ';
+        }
     }
     
     // 二级分类

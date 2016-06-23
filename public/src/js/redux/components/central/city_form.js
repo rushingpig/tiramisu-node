@@ -26,7 +26,7 @@ const validate = (values, props) => {
     var { form } = props;
 
 	function _v_hour(key){
-		if(form[key] && form[key].touched && (!uForm.isNumber(values[key]) || values[key] < 0 || values[key] >= 24))
+		if(form[key] && form[key].touched  && (!uForm.isNumber(values[key]) || values[key] < 0 || values[key] >= 24))
 			errors[key] =msg
 	}
 
@@ -41,7 +41,7 @@ const validate = (values, props) => {
 	}
 
 	function _v_mobile(key){
-	   if (form[key] && form[key].touched && !values[key] || (form[key] && !form[key].focus && values[key] && !uForm.isMobile(values[key]))){
+	   if (form[key] && form[key].touched && values[key] != undefined && values[key] != ''  && !values[key] || (form[key] && !form[key].focus && values[key] && !uForm.isMobile(values[key]))){
 	    errors[key] = msg;
 	  }   
 	}
@@ -49,6 +49,12 @@ const validate = (values, props) => {
 	function _v_citypicer(key){
 		if(form[key] && form[key].touched && !values[key])
 			errors[key] = msg;
+	}
+
+	function _v_checkboxgroup(key){
+	  //|| values[key].length == 0
+	  if(form[key] && form[key].touched && ((!values[key]) || (values[key] != undefined && values[key].length==0)))
+	    errors[key] = msg;
 	}
 
 	_v_hour('online_time_hour');
@@ -60,6 +66,16 @@ const validate = (values, props) => {
 	_v_mobile('manager_mobile');
 
 	_v_citypicer('city_id');
+
+	if(values.is_county == 0){
+		_v_checkboxgroup('first_open_regions');
+	}
+
+	if(values.sec_order == 1){
+		_v_checkboxgroup('sec_open_regions');
+		_v_select('sec_order_time');
+	}
+
 	return	errors;
 }
 
@@ -67,8 +83,6 @@ class AddCityForm extends Component{
 	constructor(props){
 	  super(props);
 	  this.state = {
-	  	county: true,
-	  	sec_reservation: false,
 	  	hour_error: '',
 	  	minute_error: '',
 	  	initialFlag: true,
@@ -79,6 +93,8 @@ class AddCityForm extends Component{
 			editable,
 			handleSubmit,
 			fields:{
+				is_county,
+				sec_order,
 				city_id,
 				order_time,
 				delivery_time_range,
@@ -121,8 +137,8 @@ class AddCityForm extends Component{
 					<div className='form-group form-inline'>
 						<label className='control-label'>{'　　　　城市级别：'}</label>
 						<label>
-							<input type='radio' checked={county} onClick = {this.countyChange.bind(this)}/>{'县级市　'}
-							<input type='radio' checked={!county} onClick ={this.countyChange.bind(this)}/>{'地级市'}
+							<input {...is_county} type='radio' value={1} checked={is_county.value == 1} />{'县级市　'}
+							<input {...is_county} type='radio' value={0} checked={is_county.value == 0}/>{'地级市'}
 						</label>
 					</div>
 					:
@@ -153,14 +169,14 @@ class AddCityForm extends Component{
 					}
 					
 				</div>
-				<fieldset className='box-wrapper' style={{'border':'1px solid #ddd', 'marginBottom' :5}}>
+				<fieldset className={`box-wrapper ${first_open_regions.error}`} style={{'border':'1px solid #ddd', 'marginBottom' :5 , 'padding': '0px 5px'}}>
         			<legend  style={{'padding':'5px 10px','fontSize':'14','width':'auto','border':'0'}}>{'提前预约'}</legend>
         			<div>
-	        			{!county && 
+	        			{ is_county.value == 0 && 
 	        			<div className='form-group form-inline'>
 	        				<label className='control-label'>{'　　　　开通区域：'}</label>
 	        				<div className='inline-block'>
-	        					<CheckBoxGroup {...first_open_regions} checkboxs={districts_letter} value ={first_open_regions.value || districts_letter.filter( m => m.is_open)}/>
+	        					<CheckBoxGroup {...first_open_regions} checkboxs={districts_letter || []} value ={first_open_regions.value || districts_letter.filter( m => m.is_open)}/>
 	        				</div>
 	        			</div>}
 	        			<div className='form-group form-inline'>
@@ -169,25 +185,25 @@ class AddCityForm extends Component{
 	        			</div>
         			</div>
 				</fieldset>
-				{!county && [
+				{ is_county.value == 0 && [
 					<div className='form-group form-inline'>
 						<label className='control-label'>{'是否有第二提前预约时间：'}</label>
-						<input type='radio' checked={sec_reservation} onClick={this.secReservationChange.bind(this)}/>{'是　'}
-						<input type='radio' checked={!sec_reservation} onClick={this.secReservationChange.bind(this)}/>{'否'}
+						<input {...sec_order} type='radio' checked={sec_order.value == 1} value={1}/>{'是　'}
+						<input {...sec_order} type='radio' checked={sec_order.value == 0} value={0}/>{'否'}
 					</div>,
-        		sec_reservation ?
-	        		<fieldset className='box-wrapper' style={{'border':'1px solid #ddd', marginBottom:5}}>
+        		sec_order.value == 1 ?
+	        		<fieldset className={`box-wrapper ${sec_open_regions.error}`} style={{'border':'1px solid #ddd', marginBottom:5}}>
 	        			<legend  style={{'padding':'5px 10px','fontSize':'14','width':'auto','border':'0'}}>{'提前预约二'}</legend>
 	        			<div>
 							 	<div className='form-group form-inline'>
 							 		<label className='control-label'>{'　　　　开通区域：'}</label>
 							 		<div className='inline-block'>
-							 		<CheckBoxGroup {...sec_open_regions} checkboxs={districts_letter} value={sec_open_regions.value || districts_letter.filter( m => m.is_open)}/>
+							 		<CheckBoxGroup {...sec_open_regions} checkboxs={first_open_regions.value || []} value={sec_open_regions.value || []}/>
 							 		</div>
 							 	</div>
 							 	<div className='form-group form-inline'>
 							 		<label className='control-label'>{'　　提前预约时间：'}</label>
-							 		<Select {...sec_order_time} options={reservationList} className={`form-control ${order_time.error}`} />
+							 		<Select {...sec_order_time} options={reservationList} className={`form-control ${sec_order_time.error}`} />
 							 	</div>      				
 	        			</div>
 	        		</fieldset>
@@ -217,7 +233,7 @@ class AddCityForm extends Component{
 					  className={`form-control input-xs time-input ${online_time_min.error}`} />
 				</div>				
 					<div className='form-group form-inline'>
-						{!county?
+						{ is_county.value == 0?
 							<label className='control-label'>{'　是否县级市订单：'}</label>
 							:
 							<label className='control-label'>{'　是否地级市订单：'}</label>
@@ -276,21 +292,11 @@ class AddCityForm extends Component{
 	      }
 	  },0);
 	}
-	countyChange(){
-		this.setState({
-			county: !this.state.county
-		})
-	}
 	onlineTimeChange(begin_time, end_time){
 		var begin_str = dateFormat(begin_time, 'yyyy-MM-dd hh:mm:ss');
 		var end_str = dateFormat(end_time, 'yyyy-MM-dd hh:mm:ss');
 		var {fields:{online_time}} = this.props;
 		online_time.value = begin_str + ' ~ ' + end_str;
-	}
-	secReservationChange(){
-		this.setState({
-			sec_reservation: !this.state.sec_reservation
-		})
 	}
 	handleCreateCity(form_data){
 		form_data.sec_reservation = this.state.sec_reservation;

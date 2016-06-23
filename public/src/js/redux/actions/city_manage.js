@@ -186,7 +186,14 @@ function _getFormData(form_data, getState){
 	if(first_open_regions && first_open_regions.length > 0)
 		first_open_regions.map( m => regionalismList.push({regionalism_id:m.id}));
 	if(sec_reservation && sec_open_regions && sec_open_regions.length > 0) {
-		sec_open_regions.map( m => regionalismList.push({regionalism_id: m.id, order_time: accessibleCity.sec_order_time * 60}));
+		sec_open_regions.forEach( m => {
+			regionalismList= regionalismList.map( n => {
+				if(n.regionalism_id == m.id){
+					n.order_time = accessibleCity.sec_order_time * 60;
+				}
+				return n;
+			})
+		})
 	}
 	accessibleCity.open_regionalisms = regionalismList;
 	delete accessibleCity.sec_order_time;

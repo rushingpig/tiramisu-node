@@ -43,6 +43,8 @@ export default {
     'en_delivery',
   ],
   add_city:[
+    'is_county',
+    'sec_order',
     'city_id',
     'order_time',
     'delivery_time_range',

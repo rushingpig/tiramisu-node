@@ -100,8 +100,8 @@ function main(state = initail_state, action){
 		case Actions.SAVE_USER_INFO_FAIL:
 		  return {...state, save_success: false, save_ing: false }
 		case Actions.DELETE_ACCESSIBLE_CITY:
-			var {city_id} = action.data;
-			var list = state.accessible_cities.filter( m => m.city_id != city_id)
+			var {id} = action;
+			var list = state.accessible_cities.filter( m => m.city_id != id)
 			var total_count = state.total_count -1;
 			return {...state, accessible_cities: list, total_count: total_count}
 		default:

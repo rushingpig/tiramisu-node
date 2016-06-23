@@ -315,6 +315,8 @@ class ViewModal extends Component{
 
 	render(){
 		var info = this.props.accessible_city_info;
+		info.manager_name = info.manager_name == null ? '' : info.manager_name;
+		info.manager_mobile = info.manager_mobile == null ? '' : info.manager_mobile;
 		var has_sec_order_time = info && info.second_order_regionalisms && info.second_order_regionalisms.length > 0 ? true : false;
 		var regionalisms_name = '';
 		var sec_regionalisms_name = '';
@@ -338,10 +340,10 @@ class ViewModal extends Component{
 					<label className='control-form'>{'　　　　　城市级别：'}</label>
 					<span className='gray'>{info.is_county ? '县级市': '区级市'}</span>
 				</div>				
-				<div className='form-inline'>
+				{info.is_county == 0 && <div className='form-inline'>
 					<label className='control-form'>{'　　　　　开通区域：'}</label>
 					<span className='gray'>{regionalisms_name}</span>
-				</div>
+				</div>}
 				<div className='form-inline'>
 					<label className='control-form'>{'　　　　配送时间段：'}</label>
 					<span className='gray'>{info.delivery_time_range}</span>

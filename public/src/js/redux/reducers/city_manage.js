@@ -45,7 +45,7 @@ function main(state = initail_state, action){
 			data.online_time_hour = time2[0];
 			data.online_time_min = time2[1];
 			var regionalisms =[];
-			if(!data.is_county){
+			if(data.is_county != undefined && data.is_county == 0){
 				    regionalisms = data.regionalisms.map( m => {
 					var p ={};
 					p.id = m.regionalism_id;
@@ -59,7 +59,7 @@ function main(state = initail_state, action){
 					data.sec_order = 1;
 					var sec_regionalisms = data.second_order_regionalisms;
 					data.sec_open_regions = regionalisms.filter( m => 
-						sec_regionalisms.some( n => n.regionalism_id == m.id))
+						sec_regionalisms.some( n => n == m.id))
 				}else{
 					data.sec_order = 0;
 				}				

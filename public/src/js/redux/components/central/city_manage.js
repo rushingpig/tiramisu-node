@@ -322,10 +322,9 @@ class ViewModal extends Component{
 		var sec_regionalisms_name = '';
 		var {regionalisms} = info;
 		if(regionalisms != undefined){
-			regionalisms.forEach( m => {
+			regionalisms.filter( m => m.is_open == 1).forEach( m => {
+				regionalisms_name = m.regionalism_name + ' ' + regionalisms_name
 				if( m.order_time == undefined){
-					regionalisms_name = m.regionalism_name + ' ' + regionalisms_name
-				}else{
 					sec_regionalisms_name = m.regionalism_name + ' ' + sec_regionalisms_name;
 				}
 			})

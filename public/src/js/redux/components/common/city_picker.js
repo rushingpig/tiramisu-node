@@ -82,7 +82,7 @@ class CityPicker extends Component{
 									onClick={this.changeCurrentTabSelect.bind(this,'province')}>省份</a>
 								<a className ={currentSelect == 'city' ?'active':''} data-count='city'
 									onClick={this.changeCurrentTabSelect.bind(this,'city')}>城市</a>
-								{is_county && <a className={currentSelect == 'district' ? 'active': ''} data-count='district'
+								{is_county ==1 && <a className={currentSelect == 'district' ? 'active': ''} data-count='district'
 									onClick={this.changeCurrentTabSelect.bind(this,'district')}>区县</a>}
 							</div>
 							<div className='city-select-content'>

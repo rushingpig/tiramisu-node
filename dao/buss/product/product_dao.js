@@ -188,24 +188,13 @@ ProductDao.prototype.insertProductWithSku = function (req, data) {
                         presell_end: sku.presell_end,
                         send_start: sku.send_start,
                         send_end: sku.send_end,
-                        expire_flag: EXPIRE.valid,
+                        activity_price: sku.activity_price,
+                        activity_start: sku.activity_start,
+                        activity_end: sku.activity_end,
                         del_flag: del_flag.SHOW,
                         secondary_booktimes: sku.secondary_booktimes
                     };
-                    let promise = self.insertSku(req, sku_data, connection);
-                    // 如果是活动sku，需要同时存储关联的非活动sku
-                    if(sku.activity_price){
-                        promise.then(skuId => {
-                            sku_data.ref = skuId;
-                            sku_data.activity_price = sku.activity_price;
-                            sku_data.activity_start = sku.activity_start;
-                            sku_data.activity_end = sku.activity_end;
-                            sku_data.expire_flag = EXPIRE.valid;
-                            sku_data.del_flag = del_flag.SHOW;
-                            return self.insertSku(req, sku_data, connection);
-                        });
-                    }
-                    return promise;
+                    return self.insertSku(req, sku_data, connection);
                 });
                 return Promise.all(promises);
             }).then(() => {

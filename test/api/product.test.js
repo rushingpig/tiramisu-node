@@ -124,7 +124,7 @@ module.exports = function() {
                         let product_id = result[0].id;
                         let sku_sql = 'select product_id,size,website,regionalism_id,book_time from buss_product_sku where product_id = ' + product_id;
                         pool.query(sku_sql, function(err, result) {
-                            assert.equal(result.length, 4);
+                            assert.equal(result.length, 3);
                             let sku_booktime_sql = 'select count(1) as count from buss_product_sku a join buss_product_sku_booktime b on a.id = b.sku_id where a.product_id = ' + product_id + ' and a.size = \'约1磅\'';
                             pool.query(sku_booktime_sql, function(err, result) {
                                 assert.equal(result[0].count, 2);

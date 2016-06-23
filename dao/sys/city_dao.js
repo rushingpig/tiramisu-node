@@ -47,7 +47,7 @@ CityDao.prototype.findRegionalisms = function (query) {
 };
 
 CityDao.prototype.count = function (query) {
-    let sql = `SELECT sc.regionalism_id FROM ?? sc `;
+    let sql = `SELECT DISTINCT sc.regionalism_id FROM ?? sc `;
     let params = [tables.sys_city];
     sql += `INNER JOIN ?? dr ON dr.id = sc.regionalism_id `;
     params.push(tables.dict_regionalism);
@@ -55,9 +55,9 @@ CityDao.prototype.count = function (query) {
     params.push(tables.dict_regionalism);
 
     sql += `WHERE sc.is_city IS NOT NULL `;
-    if (query.name) {
-        sql += `AND dr.name LINK ? `;
-        params.push(`%${query.name}%`);
+    if (query.city_name) {
+        sql += `AND dr.name LIKE ? `;
+        params.push(`%${query.city_name}%`);
     }
     if (query.is_county !== undefined) {
         sql += `AND dr.level_type = ? `;
@@ -69,6 +69,19 @@ CityDao.prototype.count = function (query) {
         sql += `) `;
         params.push(query.province_id);
         params.push(query.province_id);
+    }
+    if (query.exist_second_order_time !== undefined) {
+        sql += `AND dr.id `;
+        if (query.exist_second_order_time) {
+            sql += `IN `;
+        } else {
+            sql += `NOT IN `;
+        }
+        sql += `(SELECT DISTINCT dr3.parent_id FROM ?? sc2 `;
+        params.push(tables.sys_city);
+        sql += `INNER JOIN ?? dr3 ON dr3.id = sc2.regionalism_id AND dr3.level_type = ${LEVEL_COUNTY} `;
+        params.push(tables.dict_regionalism);
+        sql += `WHERE sc2.is_city IS NULL AND sc2.order_time IS NOT NULL ) `;
     }
 
     return baseDao.select(sql, params).then(result=> {
@@ -100,7 +113,7 @@ CityDao.prototype.findAllCity = function (query) {
     let page_no = query.page_no || 0;
     let page_size = query.page_size || 10;
     return co(function *() {
-        let sql = `SELECT sc.regionalism_id FROM ?? sc `;
+        let sql = `SELECT DISTINCT sc.regionalism_id FROM ?? sc `;
         let params = [tables.sys_city];
         sql += `INNER JOIN ?? dr ON dr.id = sc.regionalism_id `;
         params.push(tables.dict_regionalism);
@@ -108,9 +121,9 @@ CityDao.prototype.findAllCity = function (query) {
         params.push(tables.dict_regionalism);
 
         sql += `WHERE sc.is_city IS NOT NULL `;
-        if (query.name) {
-            sql += `AND dr.name LINK ? `;
-            params.push(`%${query.name}%`);
+        if (query.city_name) {
+            sql += `AND dr.name LIKE ? `;
+            params.push(`%${query.city_name}%`);
         }
         if (query.is_county !== undefined) {
             sql += `AND dr.level_type = ? `;
@@ -123,8 +136,22 @@ CityDao.prototype.findAllCity = function (query) {
             params.push(query.province_id);
             params.push(query.province_id);
         }
+        if (query.exist_second_order_time !== undefined) {
+            sql += `AND dr.id `;
+            if (query.exist_second_order_time) {
+                sql += `IN `;
+            } else {
+                sql += `NOT IN `;
+            }
+            sql += `(SELECT DISTINCT dr3.parent_id FROM ?? sc2 `;
+            params.push(tables.sys_city);
+            sql += `INNER JOIN ?? dr3 ON dr3.id = sc2.regionalism_id AND dr3.level_type = ${LEVEL_COUNTY} `;
+            params.push(tables.dict_regionalism);
+            sql += `WHERE sc2.is_city IS NULL AND sc2.order_time IS NOT NULL ) `;
+        }
         sql += `LIMIT ${page_no * page_size},${page_size}  `;
 
+        console.log(require('mysql').format(sql, params));
         let city_ids = yield baseDao.select(sql, params);
         let ids = [];
         city_ids.forEach(curr=> {

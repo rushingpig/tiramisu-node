@@ -347,8 +347,14 @@ var SalaryRow = React.createClass({
 					{ DELIVERY_MAP[props.delivery_type] }
 				</td>
 				<td>
-					{props.order_status == SIGN_STATUS_EXCEPTION ? 
-						[<span>未签收</span>,<br/>,<a href='javascript:;' onClick={this.showCredential}>[未签收凭证]</a>]
+					{ props.delivery_count >= 2 ? 
+						[
+						<span key='sec_signin'>第二次配送:正常签收</span>, <br key='sec_signin_br'/>,
+						<span key='first_unsign'>第一次配送:未签收</span>,<br key='first_signin_br'/>,
+						<a key='unSignCredential' href='javascript:;' onClick={this.showCredential}>[未签收凭证]</a>]
+						:
+						props.order_status == SIGN_STATUS_EXCEPTION ? 
+						[<span key='span_unsign'>未签收</span>,<br key='unsign_br'/>,<a href='javascript:;' onClick={this.showCredential} key='unSign_Credential'>[未签收凭证]</a>]
 						:<span>正常签收</span>
 					}
 				</td>

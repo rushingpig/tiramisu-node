@@ -118,6 +118,7 @@ a.put('/product/category/secondary', categoryService.modifySecondaryCategory);  
 a.put('/product/categories/sort', categoryService.rankCategoris);  // 二级分类排序
 
 a.put('/product/skus', productService.deleteSku);  // 批量删除sku
+a.put('/product/sku', productService.modifyProductWithSku);  // 编辑产品&sku
 
 //************************
 //******** DELETE ********

@@ -140,6 +140,11 @@ CREATE TABLE `buss_product_sku_booktime` (
   `sku_id` int(10) NOT NULL COMMENT 'skuid',
   `book_time` int(4) NOT NULL COMMENT '预约时间',
   `regionalism_id` int(10) NOT NULL COMMENT '区域id',
+  `created_by` INT(255) NULL DEFAULT NULL COMMENT '创建人',
+  `created_time` DATETIME NULL DEFAULT NULL,
+	`updated_by` INT(255) NULL DEFAULT NULL COMMENT '更新人',
+	`updated_time` DATETIME NULL DEFAULT NULL,
+	`del_flag` TINYINT(1) NULL DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='sku第二预约时间';
 

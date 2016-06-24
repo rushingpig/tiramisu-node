@@ -484,4 +484,157 @@ ProductDao.prototype.getSkuByProductWithRegion = function (productId) {
     params.push(productId);
     return baseDao.select(sql, params);
 }
+ProductDao.prototype.insertSecondaryBookTime = function (req, data, connection) {
+    return baseDao.execWithConnection(connection, this.base_insert_sql, [config.tables.buss_product_sku_booktime, systemUtils.assembleInsertObj(req, data, true)]);
+}
+ProductDao.prototype.updateProductById = function (req, data, id, connection) {
+    let sql = this.base_update_sql + ' where id = ?';
+    return baseDao.execWithConnection(connection, sql, [this.base_table, systemUtils.assembleUpdateObj(req, data, true), id]);
+}
+ProductDao.prototype.updateSkuById = function (req, data, id, connection) {
+    let sql = this.base_update_sql + ' where id = ?';
+    return baseDao.execWithConnection(connection, sql, [this.base_table, systemUtils.assembleUpdateObj(req, data, true), id]);
+}
+ProductDao.prototype.updateSecondaryBooktimeBySkuId = function (req, data, id, connection) {
+    let sql = this.base_update_sql + ' where id = ?';
+    return baseDao.execWithConnection(connection, sql, [config.tables.buss_product_sku_booktime, systemUtils.assembleUpdateObj(req, data, true), id]);
+}
+ProductDao.prototype.getSecondaryBooktime = function (sku_id, regionalism_id) {
+    let columns = ['id'];
+    let sql = this.base_select_sql + ' and sku_id = ? and regionalism_id + ?';
+    return baseDao.select(sql, [columns, config.tables.buss_product_sku_booktime, del_flag.SHOW, sku_id, regionalism_id]);
+}
+ProductDao.prototype.updateSkuWithSecondaryBooktime = function (req, data, id, connection) {
+    let self = this;
+    let secondary_booktimes = data.secondary_booktimes;
+    delete data.secondary_booktimes;
+    return self.updateSkuById(req, data, id, connection)
+        .then(() => {
+            return Promise.all(secondary_booktimes.map(secondary_booktime => {
+                return self.getSecondaryBooktime(id, regionalism_id)
+                    .then(booktime_data => {
+                        // 已存在第二预约时间，则更新
+                        if (booktime_data.length > 0) {
+                            let booktime_id = booktime_data[0].id;
+                            return self.updateSkuById(req, secondary_booktime, booktime_id, connection);
+                        }
+                        // 不存在第二预约时间，则新增
+                        secondary_booktime.sku_id = id;
+                        return self.insertSecondaryBookTime(req, secondary_booktime, connection);
+                    });
+            }));
+        });
+}
+ProductDao.prototype.getProductById = function (id) {
+    let sql = 'select * from ?? where id = ? and del_flag = ?';
+    return baseDao.select(sql, [config.tables.buss_product, id, del_flag.SHOW]);
+}
+ProductDao.prototype.getSkuById = function (id) {
+    let sql = 'select * from ?? where id = ? and del_flag = ?';
+    return baseDao.select(sql, [config.tables.buss_product_sku, id, del_flag.SHOW]);
+}
+ProductDao.prototype.modifyProductAndSku = function (req, data) {
+    let self = this;
+    return baseDao.trans().then(connection => {
+        let productId = data.product.id;
+        let promise = Promise.resolve();
+        // 修改product
+        if (data.product) {
+            promise.then(() => {
+                let product_data = {
+                    category_id: data.product.category_id,
+                    name: data.product.name
+                };
+                return self.updateProductById(req, product_data, productId, connection);
+            });
+        }
+        // 修改sku
+        if (data.sku) {
+            let promises = data.sku.map(sku => {
+                let sku_id = sku.id;
+                let sku_data = {
+                    product_id: productId,
+                    size: sku.size,
+                    website: sku.website,
+                    original_price: sku.original_price,
+                    price: sku.price,
+                    regionalism_id: sku.regionalism_id,
+                    book_time: sku.book_time,
+                    presell_start: sku.presell_start,
+                    presell_end: sku.presell_end,
+                    send_start: sku.send_start,
+                    send_end: sku.send_end,
+                    activity_price: sku.activity_price,
+                    activity_start: sku.activity_start,
+                    activity_end: sku.activity_end,
+                    del_flag: del_flag.SHOW,
+                    secondary_booktimes: sku.secondary_booktimes
+                };
+                return self.updateSkuWithSecondaryBooktime(req, sku_data, sku_id, connection);
+            });
+            promise.then(() => {
+                return Promise.all(promises);
+            });
+        }
+        // 新增sku
+        if (data.new_sku) {
+            promise.then(() => {
+                let promises = data.new_sku.map(sku => {
+                    let sku_data = {
+                        product_id: productId,
+                        size: sku.size,
+                        website: sku.website,
+                        original_price: sku.original_price,
+                        price: sku.price,
+                        regionalism_id: sku.regionalism_id,
+                        book_time: sku.book_time,
+                        presell_start: sku.presell_start,
+                        presell_end: sku.presell_end,
+                        send_start: sku.send_start,
+                        send_end: sku.send_end,
+                        activity_price: sku.activity_price,
+                        activity_start: sku.activity_start,
+                        activity_end: sku.activity_end,
+                        del_flag: del_flag.SHOW,
+                        secondary_booktimes: sku.secondary_booktimes
+                    };
+                    return self.insertSku(req, sku_data, connection);
+                });
+                return Promise.all(promises);
+            });
+        }
+        // 删除sku
+        if (data.deleted_sku) {
+            promise.then(() => {
+                let promises = data.deleted_sku.map(skuId => {
+                    // 删除sku
+                    return self.updateSkuById(req, {del_flag: del_flag.HIDE}, skuId, connection)
+                        .then(() => {
+                            // 删除第二预约时间
+                            return self.updateSecondaryBooktimeBySkuId(req, {del_flag: del_flag.HIDE}, , skuId, connection);
+                        });
+                });
+                return Promise.all(promises);
+            });
+        }
+        return promise.then(() => {
+                return new Promise((resolve, reject) => {
+                    connection.commit(err => {
+                        connection.release();
+                        if (err) return reject(err);
+                        resolve();
+                    });
+                });
+            }).catch(err => {
+                return new Promise((resolve, reject) => {
+                    connection.rollback(rollbackErr => {
+                        connection.release();
+                        if (rollbackErr) return reject(rollbackErr);
+                        reject(err);
+                    });
+                });
+            });
+    });
+
+}
 module.exports = ProductDao;

@@ -437,7 +437,12 @@ ProductService.prototype.getProductAndSkuWithRegions = (req, res, next)=> {
                 });
         }).then(result => {
             res.api(result);
-        });;
+        });
     systemUtils.wrapService(res, next, promise);
 };
+productDao.prototype.modifyProductWithSku = (req, res, next) => {
+    // TODO:记录操作日志
+    let promise = ProductDao.modifyProductAndSku(req, req.body);
+    systemUtils.wrapService(res, next, promise);
+}
 module.exports = new ProductService();

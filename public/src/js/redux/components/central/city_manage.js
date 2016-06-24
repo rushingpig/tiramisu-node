@@ -362,7 +362,11 @@ class ViewModal extends Component{
 						<span className='gray'>{sec_regionalisms_name + ' ' + info.second_order_time / 60}</span>
 					</div>:
 					null
-				}				
+				}
+				<div className='form-inline'>
+					<label className='control-form'>{'　　　官网上线时间：'}</label>
+					<span className='gray'>{info.online_time}</span>
+				</div>				
 				<div className='form-inline'>
 					<label className='control-form'>{info.is_county? '是否支持县级市选择订单：': '是否支持区级市选择订单：'}</label>
 					<span className='gray'>{info.is_diversion? '是':'否'}</span>

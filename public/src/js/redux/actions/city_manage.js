@@ -234,3 +234,10 @@ export function DeleteAccessibleCity(city_id){
 	});*/
 
 }
+
+export const RESET_DISTRICTS_LETTER = 'RESET_DISTRICTS_LETTER';
+export function ResetDistrictsLetter(){
+	return {
+		type: RESET_DISTRICTS_LETTER,
+	}
+}

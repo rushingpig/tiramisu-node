@@ -871,7 +871,7 @@ var SignedModal = React.createClass({
     var signData = {
       late_minutes: late_minutes,
       payfor_type: refund_method,
-      payfor_amount: refund_money,
+      payfor_amount: refund_money * 100,
       payfor_reason: refund_reson,
       signin_time: signin_date + ' ' + signin_hour,
       updated_time: updated_time,

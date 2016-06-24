@@ -324,7 +324,7 @@ class ViewModal extends Component{
 		if(regionalisms != undefined){
 			regionalisms.filter( m => m.is_open == 1).forEach( m => {
 				regionalisms_name = m.regionalism_name + ' ' + regionalisms_name
-				if( m.order_time == undefined){
+				if( m.order_time != undefined){
 					sec_regionalisms_name = m.regionalism_name + ' ' + sec_regionalisms_name;
 				}
 			})
@@ -368,7 +368,7 @@ class ViewModal extends Component{
 					<span className='gray'>{info.online_time}</span>
 				</div>				
 				<div className='form-inline'>
-					<label className='control-form'>{info.is_county? '是否支持县级市选择订单：': '是否支持区级市选择订单：'}</label>
+					<label className='control-form'>{info.is_county? '是否支持地级市选择订单：': '是否支持县级市选择订单：'}</label>
 					<span className='gray'>{info.is_diversion? '是':'否'}</span>
 				</div>				
 				<div className='form-inline'>

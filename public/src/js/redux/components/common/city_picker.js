@@ -24,7 +24,8 @@ class CityPicker extends Component{
 		provincesLS = provinces.filter( p => p.ascii_value >= 'L'.charCodeAt() && p.ascii_value <= 'S'.charCodeAt() );
 		provincesTZ = provinces.filter( p => p.ascii_value >= 'T'.charCodeAt() && p.ascii_value <= 'Z'.charCodeAt() );
 		var areatext = currentSelectPro +  (currentSelectCity ? '/':'') + currentSelectCity + (currentSelectDistrict ? '/':'') + currentSelectDistrict ;
-	    areatext = areatext ? areatext:'请选择省/市/区';
+		var defaultAreatext = is_county ? '请选择省/市/区':'请选择省/市'
+	    areatext = areatext ? areatext:defaultAreatext;
 		var _this = this;
 		var provinceList = [];
 		if(provincesAG.length >0) provinceList.push ({
@@ -43,8 +44,8 @@ class CityPicker extends Component{
 				'first_letters':'T-Z',
 				'provinces':provincesTZ,
 			});
-		var cityList = cities.filter( m => !m.is_open);
-		var districtList = districts.filter( m => !m.is_open);
+		var cityList = is_county ? cities : cities.filter( m => !m.is_open);
+		var districtList = is_county ? districts.filter( m => !m.is_open) : [];
 		var provinceContent = provinceList.map( m => {
 			return (
 					<dl className='clearfix'>
@@ -121,12 +122,13 @@ class CityPicker extends Component{
 	}
 	selectCity(id, text){
 		this.props.getRegionalism({parent_id: id, type: 'district'});
-		if(this.props.is_county){}
+		if(this.props.is_county == 1){
+			this.setState({currentSelectCity:text, currentSelect:'district'});
+		}
 		else {
-			this.setState({citymenuDown: !this.state.citymenuDown});
+			this.setState({citymenuDown: !this.state.citymenuDown,currentSelectCity:text});
 			this.props.onChange(id);
 		}
-		this.setState({currentSelectCity:text, currentSelect:'district'});
 	}
 	selectDistrict(id, text){
 		if(this.props.is_county) this.props.onChange(id);

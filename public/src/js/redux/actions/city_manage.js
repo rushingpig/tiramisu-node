@@ -187,11 +187,11 @@ function _getFormData(form_data, getState){
 	delete accessibleCity.online_time_hour;
 	delete accessibleCity.online_time_min;
 
-	var {first_open_regions, sec_open_regions, sec_order} = accessibleCity;
+	var {first_open_regions, sec_open_regions, sec_order, is_county} = accessibleCity;
 	var regionalismList = [];
-	if(first_open_regions && first_open_regions.length > 0)
+	if(is_county == 0 && first_open_regions && first_open_regions.length > 0)
 		first_open_regions.map( m => regionalismList.push({regionalism_id:m.id}));
-	if(sec_order && sec_open_regions && sec_open_regions.length > 0) {
+	if(is_county == 0 && sec_order && sec_open_regions && sec_open_regions.length > 0) {
 		sec_open_regions.forEach( m => {
 			regionalismList= regionalismList.map( n => {
 				if(n.regionalism_id == m.id){

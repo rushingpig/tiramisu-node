@@ -12,11 +12,6 @@ var baseDao = require('../../base_dao'),
     dbHelper = require('../../../common/DBHelper'),
     systemUtils = require('../../../common/SystemUtils'),
     config = require('../../../config');
-    
-const EXPIRE = {
-    valid: 1,
-    invalid: 0
-};
 
 function ProductDao(){
     this.base_table = config.tables.buss_product;
@@ -493,7 +488,7 @@ ProductDao.prototype.updateProductById = function (req, data, id, connection) {
 }
 ProductDao.prototype.updateSkuById = function (req, data, id, connection) {
     let sql = this.base_update_sql + ' where id = ?';
-    return baseDao.execWithConnection(connection, sql, [this.base_table, systemUtils.assembleUpdateObj(req, data, true), id]);
+    return baseDao.execWithConnection(connection, sql, [config.tables.buss_product_sku, systemUtils.assembleUpdateObj(req, data, true), id]);
 }
 ProductDao.prototype.updateSecondaryBooktimeBySkuId = function (req, data, id, connection) {
     let sql = this.base_update_sql + ' where id = ?';
@@ -501,8 +496,13 @@ ProductDao.prototype.updateSecondaryBooktimeBySkuId = function (req, data, id, c
 }
 ProductDao.prototype.getSecondaryBooktime = function (sku_id, regionalism_id) {
     let columns = ['id'];
-    let sql = this.base_select_sql + ' and sku_id = ? and regionalism_id + ?';
+    let sql = this.base_select_sql + ' and sku_id = ? and regionalism_id = ?';
     return baseDao.select(sql, [columns, config.tables.buss_product_sku_booktime, del_flag.SHOW, sku_id, regionalism_id]);
+}
+ProductDao.prototype.getSecondaryBooktimeBySkuId = function (sku_id) {
+    let columns = ['id', 'book_time', 'regionalism_id'];
+    let sql = this.base_select_sql + ' and sku_id = ? and del_flag = 1';
+    return baseDao.select(sql, [columns, config.tables.buss_product_sku_booktime, del_flag.SHOW, sku_id]);
 }
 ProductDao.prototype.updateSkuWithSecondaryBooktime = function (req, data, id, connection) {
     let self = this;
@@ -510,19 +510,32 @@ ProductDao.prototype.updateSkuWithSecondaryBooktime = function (req, data, id, c
     delete data.secondary_booktimes;
     return self.updateSkuById(req, data, id, connection)
         .then(() => {
-            return Promise.all(secondary_booktimes.map(secondary_booktime => {
-                return self.getSecondaryBooktime(id, regionalism_id)
-                    .then(booktime_data => {
-                        // 已存在第二预约时间，则更新
-                        if (booktime_data.length > 0) {
-                            let booktime_id = booktime_data[0].id;
-                            return self.updateSkuById(req, secondary_booktime, booktime_id, connection);
+            return self.getSecondaryBooktimeBySkuId(id)
+                .then(results => {
+                    // 只要不是已存在第二预约时间，则删除
+                    let deleted_booktimes = [];
+                    results.forEach(result => {
+                        let need_delete = true;
+                        secondary_booktimes.forEach(secondary_booktime => {
+                            if (secondary_booktime.book_time == result.book_time && secondary_booktime.regionalism_id == result.regionalism_id) {
+                                need_delete = false;
+                            }
+                        });
+                        if (need_delete) {
+                            deleted_booktimes.push(result.id);
                         }
-                        // 不存在第二预约时间，则新增
+                    });
+                    // 删除不存在的第二预约时间
+                    let deleted_promises = deleted_booktimes.map(deleted_booktime_id => {
+                        return self.updateSecondaryBooktimeBySkuId(req, {del_flag: del_flag.HIDE}, deleted_booktime_id, connection);
+                    });
+                    // 生成新的第二预约时间
+                    let added_promises = secondary_booktimes.map(secondary_booktime => {
                         secondary_booktime.sku_id = id;
                         return self.insertSecondaryBookTime(req, secondary_booktime, connection);
                     });
-            }));
+                    return Promise.all(deleted_promises.concat(added_promises));
+                });
         });
 }
 ProductDao.prototype.getProductById = function (id) {
@@ -611,7 +624,7 @@ ProductDao.prototype.modifyProductAndSku = function (req, data) {
                     return self.updateSkuById(req, {del_flag: del_flag.HIDE}, skuId, connection)
                         .then(() => {
                             // 删除第二预约时间
-                            return self.updateSecondaryBooktimeBySkuId(req, {del_flag: del_flag.HIDE}, , skuId, connection);
+                            return self.updateSecondaryBooktimeBySkuId(req, {del_flag: del_flag.HIDE}, skuId, connection);
                         });
                 });
                 return Promise.all(promises);

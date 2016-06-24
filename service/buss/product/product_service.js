@@ -440,9 +440,12 @@ ProductService.prototype.getProductAndSkuWithRegions = (req, res, next)=> {
         });
     systemUtils.wrapService(res, next, promise);
 };
-productDao.prototype.modifyProductWithSku = (req, res, next) => {
+ProductService.prototype.modifyProductWithSku = (req, res, next) => {
     // TODO:记录操作日志
-    let promise = ProductDao.modifyProductAndSku(req, req.body);
+    let promise = productDao.modifyProductAndSku(req, req.body)
+        .then(() => {
+            res.api();
+        });
     systemUtils.wrapService(res, next, promise);
 }
 module.exports = new ProductService();

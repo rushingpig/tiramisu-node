@@ -66,7 +66,7 @@ var TimeSpan = React.createClass({
 		let {begin_h, begin_min, end_h, end_min} = this.state;
 		let timespan = begin_h + ':' + begin_min + '~' + end_h + ':' + end_min;
 		return(
-      		<div className={"btn-group" + (this.state.showMenu ? ' open' : '')}>
+      		<div onClick={this.handleClickInside} className={"btn-group" + (this.state.showMenu ? ' open' : '')}>
 	      		<button type="button" className="btn btn-default btn-xs dropdown-toggle" onClick={this.handleToggleShowState}>
 	      		  {timespan }
 	      		  {' '}
@@ -154,9 +154,15 @@ var TimeSpan = React.createClass({
 
 			)
 	},
-/*	componentWillUnmount() {
+	componentDidMount() {
+	  this.clickInSide = false;
+	  window.addEventListener('click', this.handleClickOutSide);
+	  window.addEventListener('mousedown', this._mousedown);
+	},
+	componentWillUnmount() {
 	  window.removeEventListener('click', this.handleClickOutSide);
-	}*/
+	  window.removeEventListener('mousedown', this._mousedown);
+	},
 	handleToggleShowState() {
 	  this.clickInSide = true;
 
@@ -173,6 +179,9 @@ var TimeSpan = React.createClass({
 	  this.setState({
 	    showMenu: false
 	  });
+	},
+	handleClickInside(){
+		this.clickInSide = true
 	},
 	timeOpt(code, opt){
 		var re = /^0\d$/g;
@@ -236,6 +245,9 @@ var TimeSpan = React.createClass({
 		
 		this.props.onChange(timespan)
 	},
+	_mousedown(){
+		this.clickInSide = false;
+	}
 })
 
 export default TimeSpan;

@@ -169,8 +169,8 @@ class AddCityForm extends Component{
 					}
 					
 				</div>
-				<fieldset className={`box-wrapper ${first_open_regions.error}`} style={{'border':'1px solid #ddd', 'marginBottom' :5 , 'padding': '0px 5px'}}>
-        			<legend  style={{'padding':'5px 10px','fontSize':'14','width':'auto','border':'0'}}>{'提前预约'}</legend>
+				<fieldset className={`box-wrapper ${first_open_regions.error}`} style={{'border':'1px solid #ddd', 'marginBottom' :15}}>
+        			<legend  style={{'padding':'5px 10px','fontSize':'14','width':'auto','border':'0', 'marginBottom': 5}}>{'提前预约'}</legend>
         			<div>
 	        			{ is_county.value == 0 && 
 	        			<div className='form-group form-inline'>
@@ -196,8 +196,8 @@ class AddCityForm extends Component{
 						<input {...sec_order} type='radio' checked={sec_order.value == 0} value={0}/>{'否'}
 					</div>,
         		sec_order.value == 1 ?
-	        		<fieldset className={`box-wrapper ${sec_open_regions.error}`} style={{'border':'1px solid #ddd', marginBottom:5}}>
-	        			<legend  style={{'padding':'5px 10px','fontSize':'14','width':'auto','border':'0'}}>{'提前预约二'}</legend>
+	        		<fieldset className={`box-wrapper ${sec_open_regions.error}`} style={{'border':'1px solid #ddd', marginBottom:15}}>
+	        			<legend  style={{'padding':'5px 10px','fontSize':'14','width':'auto','border':'0', 'marginBottom' :5}}>{'提前预约二'}</legend>
 	        			<div>
 							 	<div className='form-group form-inline'>
 							 		<label className='control-label'>{'　　　　开通区域：'}</label>
@@ -261,7 +261,7 @@ class AddCityForm extends Component{
 				</div>
 				<div className='form-inline form-group'>
 					<label className='control-label'>{'　　　　　　备注：'}</label>
-					<input {...remarks} className ='form-control' type='textarea' />
+					<input {...remarks} className ='form-control ' style={{width: 280, height: 100}} type='textarea' />
 				</div>
 				<div className="form-group" >
 				{'　　　　　　　　　'}

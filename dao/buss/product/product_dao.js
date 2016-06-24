@@ -469,8 +469,7 @@ ProductDao.prototype.getSkuByProductWithRegion = function (productId) {
         'sku.send_end as send_end',
         'sku.activity_price as activity_price',
         'sku.activity_start as activity_start',
-        'sku.activity_end as activity_end',
-        'sku.ref as ref'
+        'sku.activity_end as activity_end'
     ];
     let sql = 'select ' + columns.join(',') + ' from ?? sku left join ?? secondary_booktime on sku.id = secondary_booktime.sku_id where sku.product_id = ? and sku.del_flag = 1';
     let params = [];

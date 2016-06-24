@@ -72,7 +72,7 @@ module.exports = function() {
             });
         });
 
-        describe('test for get product sku', function() {
+        describe('test for post product sku', function() {
             it('POST /v1/a/product/sku', function(done) {
                 let sku_1 = {
                     "size": "约1磅",
@@ -366,6 +366,12 @@ module.exports = function() {
             });
         });
 
+        describe('test for get product', function () {
+        });
+
+        describe('test for get product & sku price', function () {
+        });
+
         describe('test for modify product & sku', function() {
             let primary_cate_id, secondary_cate_id_1, secondary_cate_id_2, product_id, skus = [];
             before(function(done) {
@@ -464,6 +470,24 @@ module.exports = function() {
                     done(err);
                 });
             });
+            it('GET /v1/a/product/skus', function(done) {
+                agent.get('/v1/a/product/skus?productId=' + product_id + '&cityId=' + 440400)
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end(err(done));
+            });
+            it('GET /product/skus/price', function(done) {
+                agent.get('/v1/a/product/skus/price?productId=' + product_id + '&cityId=' + 440400)
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end(err(done));
+            });
+            it('GET /product/skus/details', function(done) {
+                agent.get('/v1/a/product/skus/details?productId=' + product_id)
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end(err(done));
+            });
             it('PUT /v1/a/product/sku', function(done) {
                 let body = {
                     "product": {
@@ -497,7 +521,6 @@ module.exports = function() {
                     }],
                     "deleted_sku": [skus[1]]
                 };
-                console.log(JSON.stringify(body));
                 agent.put('/v1/a/product/sku')
                     .expect('Content-Type', /json/)
                     .send(body)

@@ -9,6 +9,7 @@ const initialState = {
     addMode: true,  // false: 编辑模式
     deletedSku: [], // 被删除的sku id，编辑模式下用
 
+    productId: 0,
     productName: '', // 商品名称
     buyEntry: 0,     // 购买方式 0:商城可购买 1:外部渠道可购买
 
@@ -57,6 +58,8 @@ const transformPositionData = obj => [
         disabled: false
     }
 ];
+
+const isOfficialShopSource = sku => sku.website === "1";
 
 const tempOptionsValidator = state => {
     let vaild = true;
@@ -194,6 +197,7 @@ const switchType = {
     },
 
     [ActionTypes.LOADED_PRODUCT_DATA]: (state, {
+        productId,
         categoriesData,
         orderSourceData,
         citiesSelectorState,
@@ -201,6 +205,8 @@ const switchType = {
         isSelectedAllCity,
         districtsDataGroup
     }) => {
+
+        state = clone(initialState);
 
         const now = new Date();
         const orderSource = getOrderSourcesMap(orderSourceData);
@@ -236,11 +242,12 @@ const switchType = {
 
         state = {
             ...state,
+            productId: Number(productId),
             basicDataLoadStatus: 'success',
             addMode: false,
 
             productName: productData.product.product_name,
-            buyEntry: productData.sku.some(sku => sku.website === "1") ? 0 : 1,
+            buyEntry: productData.sku.some(isOfficialShopSource) ? 0 : 1,
 
             primaryCategories: primaryCategoriesMap,
             secondaryCategories: secondaryCategoriesMap,
@@ -261,26 +268,30 @@ const switchType = {
             cityOptionSaved: true
         }
 
+        const setShopSpecification = sku => ({
+            id: sku.id,
+            spec: sku.size,
+            originalCost: sku.original_price/100,
+            cost: sku.price/100,
+            hasEvent: sku.activity_price !== null,
+            eventCost: sku.activity_price !== null ? sku.activity_price/100 : 0.01,
+            eventTime: sku.activity_price !== null ? [new Date(sku.activity_start), new Date(sku.activity_end)] : [now, new Date(getDate(now, 7))]
+        });
+
+        const setSourceSpecification = sku => ({
+            id: sku.id,
+            spec: sku.size,
+            cost: sku.price
+        });
+
         productData.sku.forEach(sku => {
             if (state.citiesOptions.has(sku.regionalism_id)) {
                 const cityOpt = state.citiesOptions.get(sku.regionalism_id);
 
-                if (sku.website === "1") {
-                    cityOpt.shopSpecifications.push({
-                        id: sku.id,
-                        spec: sku.size,
-                        originalCost: sku.original_price/100,
-                        cost: sku.price/100,
-                        hasEvent: sku.activity_price !== null,
-                        eventCost: sku.activity_price !== null ? sku.activity_price : 0.01,
-                        eventTime: sku.activity_price !== null ? [new Date(sku.activity_start), new Date(sku.activity_end)] : [now, new Date(getDate(now, 7))]
-                    })
+                if (isOfficialShopSource(sku)) {
+                    cityOpt.shopSpecifications.push(setShopSpecification(sku))
                 } else {
-                    cityOpt.sourceSpecifications.set(Number(sku.website), [{
-                        id: sku.id,
-                        spec: sku.size,
-                        cost: sku.price
-                    }]);
+                    cityOpt.sourceSpecifications.set(Number(sku.website), [setSourceSpecification(sku)]);
                 }
             } else {
                 let tempOptions = clone(initialState.tempOptions);
@@ -288,30 +299,18 @@ const switchType = {
                 tempOptions.isPreSale = sku.presell_start !== null;
                 tempOptions = {
                     ...tempOptions,
-                    onSaleTime: tempOptions.isPreSale ? [] : [iNow, new Date(getDate(iNow, 7))],
-                    delivery: tempOptions.isPreSale ? [] : [iNow, new Date(getDate(iNow, 7))],
+                    onSaleTime: tempOptions.isPreSale ? [new Date(sku.presell_start), new Date(sku.presell_end)] : [iNow, new Date(getDate(iNow, 7))],
+                    delivery: tempOptions.isPreSale ? [new Date(sku.send_start), new Date(sku.send_end)] : [iNow, new Date(getDate(iNow, 7))],
                     bookingTime: sku.book_time,
                     hasSecondaryBookingTime: sku.secondary_book_time.time !== null,
                     applyDistrict: new Set(sku.secondary_book_time.regions)
                 }
                 tempOptions.secondaryBookingTime = tempOptions.hasSecondaryBookingTime ? sku.secondary_book_time.time : "";
 
-                tempOptions.shopSpecifications = sku.website !== "1" ? [] : [{
-                    id: sku.id,
-                    spec: sku.size,
-                    originalCost: sku.original_price/100,
-                    cost: sku.price/100,
-                    hasEvent: sku.activity_price !== null,
-                    eventCost: sku.activity_price !== null ? sku.activity_price : 0.01,
-                    eventTime: sku.activity_price !== null ? [new Date(sku.activity_start), new Date(sku.activity_end)] : [now, new Date(getDate(now, 7))]
-                }];
+                tempOptions.shopSpecifications = sku.website !== "1" ? [] : [setShopSpecification(sku)];
 
-                tempOptions.sourceSpecifications = sku.website === "1" ? new Map() : new Map([[
-                    Number(sku.website), [{
-                        id: sku.id,
-                        spec: sku.size,
-                        cost: sku.price
-                    }]
+                tempOptions.sourceSpecifications = isOfficialShopSource(sku) ? new Map() : new Map([[
+                    Number(sku.website), [setSourceSpecification(sku)]
                 ]]);
 
                 state.citiesOptions.set(sku.regionalism_id, clone(tempOptions));
@@ -670,9 +669,6 @@ const switchType = {
 
         state.cityOptionSaved = false;
 
-        if (!state.addMode && shopSpecifications.id !== 0)
-            state.deletedSku.push(shopSpecifications.id);
-
         return tempOptionsValidator(state);
     },
 
@@ -682,7 +678,7 @@ const switchType = {
 
             if (state.buyEntry === 0) {
                 sourceSpec = state.tempOptions.shopSpecifications.map(
-                    ({ spec, cost }) => ({ spec, cost })
+                    ({ spec, cost }) => ({ id: 0, spec, cost })
                 );
             }
 
@@ -731,9 +727,6 @@ const switchType = {
 
         state.tempOptions.sourceSpecifications.set(state.tempOptions.selectedSource, sourceSpecifications);
 
-        if (!state.addMode && deletedSkuID !== 0)
-            state.deletedSku.push(deletedSkuID);
-
         state.cityOptionSaved = false;
         return state;
     },
@@ -753,6 +746,49 @@ const switchType = {
     },
 
     [ActionTypes.SAVE_CITIY_OPTION]: state => {
+
+        const returnID = opt => opt.id;
+
+        if (!state.addMode) {
+            let deletedSku = [];
+            let newShopSpecifications = new Set(state.tempOptions.shopSpecifications.map(returnID));
+            let newSourceSpecifications = new Set();
+
+            [...state.tempOptions.sourceSpecifications.values()].forEach(ssArr => {
+                ssArr.forEach(opt => {
+                    if (opt.id !== 0) {
+                        newSourceSpecifications.add(opt.id);
+                    }
+                });
+            });
+
+            let originCityOption = state.citiesOptions.get(state.selectedCity);
+            let originShopSpecifications = new Set(originCityOption.shopSpecifications.map(returnID));
+            let originSourceSpecifications = new Set();
+
+            [...originCityOption.sourceSpecifications.values()].forEach(ssArr => {
+                ssArr.forEach(opt => {
+                    if (opt.id !== 0) {
+                        originSourceSpecifications.add(opt.id);
+                    }
+                });
+            });
+
+            [...originShopSpecifications].forEach(id => {
+                if (!newShopSpecifications.has(id)) {
+                    deletedSku.push(id);
+                }
+            });
+
+            [...originSourceSpecifications].forEach(id => {
+                if (!newSourceSpecifications.has(id)) {
+                    deletedSku.push(id);
+                }
+            });
+
+            state.deletedSku = [...deletedSku, ...state.deletedSku];
+        }
+
         state.citiesOptions.set(state.selectedCity, clone(state.tempOptions));
         state.cityOptionSaved = true;
         state.citiesData.get(state.selectedCity).checked = true;

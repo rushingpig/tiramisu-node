@@ -61,6 +61,7 @@ const es6promisify = function(func) {
 
 const get = es6promisify(Req.get);
 const post = es6promisify(Req.post);
+const put = es6promisify(Req.put);
 
 const loadCategories         = () => get(Url.categories.toString());
 const loadAllGeographiesData = () => get(Url.allGeographies.toString());
@@ -69,6 +70,7 @@ const loadEnableCities       = id => get(Url.activatedCity.toString(id));
 const loadDistricts          = id => get(Url.districts.toString(id));
 const addSku                 = postData => post(Url.addSku.toString(), postData);
 const getSku                 = id => get(Url.getSku.toString(), { productId: id });
+const saveEditSku            = putData => put(Url.saveEditSku.toString(), putData);
 
 const transformPrice = num => {
     let money = Number(num) || 0.01
@@ -78,6 +80,8 @@ const transformPrice = num => {
 
     return Math.trunc(money * 100) / 100
 }
+
+const returnRegionalismID = obj => obj.regionalism_id;
 
 const loadBasicData = (productId = 0) => (
     (dispatch, getState) => {
@@ -129,9 +133,7 @@ const loadBasicData = (productId = 0) => (
             const hasSecondaryBookingTimeCities = new Set(
                 productData.sku.filter(
                     sku => sku.secondary_book_time.time !== null
-                ).map(
-                    sku => sku.regionalism_id
-                )
+                ).map(returnRegionalismID)
             );
 
             return Promise.all(
@@ -142,12 +144,12 @@ const loadBasicData = (productId = 0) => (
                         dispatch({
                             type: CitiesSelectorActionTypes.LOAD_DATA,
                             geographiesData,
-                            chekcedData: productData.sku.map(x => x.regionalism_id),
+                            chekcedData: productData.sku.map(returnRegionalismID),
                             enableList
                         });
 
                         const enableListSet = new Set(enableList.filter(x => x.city_id));
-                        const citesListSet = new Set(productData.sku.filter(x => x.regionalism_id));
+                        const citesListSet = new Set(productData.sku.map(returnRegionalismID));
                         const hasDifference = [...enableList].filter(x => !citesListSet.has(x)).length > 0;
                         const districtsData = {};
 
@@ -159,12 +161,13 @@ const loadBasicData = (productId = 0) => (
 
                         dispatch({
                             type: ActionTypes.LOADED_PRODUCT_DATA,
+                            productId,
                             orderSourceData,
                             categoriesData,
                             citiesSelectorState: clone(getState().citiesSelector),
                             productData,
                             districtsDataGroup: districtsData,
-                            isSelectedAllCity: hasDifference
+                            isSelectedAllCity: !hasDifference
                         });
                     }
                 )
@@ -470,14 +473,17 @@ const saveOption = () => (
 
         const { productSKUManagement, citiesSelector } = getState();
         const state = productSKUManagement;
-        const citiesSelectorState = citiesSelector
+        const citiesSelectorState = citiesSelector;
+        const { addMode } = state;
 
         let postData = {
             category_id: state.selectSecondaryCategory,
             name: state.productName.trim()
         };
 
-        let sku = [];
+        let newSku = [];
+        let editSku = [];
+        let deletedSku = state.deletedSku;
 
         const transformShangjiaOption = option => {
             let transformedOption = {};
@@ -516,6 +522,8 @@ const saveOption = () => (
                 website: 1 // 商城商品，渠道固定为1
             };
 
+            transformedOption.id = option.id;
+
             if (option.hasEvent) {
                 transformedOption = {
                     ...transformedOption,
@@ -533,6 +541,7 @@ const saveOption = () => (
 
         const transformSourceSpecificationOption = ([ sourceId, options ]) => options.map(
             opt => ({
+                id: opt.id,
                 website: sourceId,
                 size: opt.spec.trim(),
                 price: parseInt(opt.cost)
@@ -562,8 +571,8 @@ const saveOption = () => (
                 .map( opt => ({ ...shangjiaOpt, ...opt }) );
 
             [...citiesSelectorState.checkedCities].forEach(cityId => {
-                sku = [
-                    ...sku,
+                newSku = [
+                    ...newSku,
                     ...[...shopSpecifications, ...sourceSpecifications].map(
                         opt => ({
                             regionalism_id: cityId,
@@ -573,6 +582,21 @@ const saveOption = () => (
                     )
                 ];
             });
+
+            const getDeletedSkuId = opt => {
+                if (opt.id && opt.id !== 0) {
+                    deletedSku.push(opt.id);
+                }
+            }
+
+            Array.from(state.citiesOptions.values()).forEach(cityOpt => {
+                cityOpt.shopSpecifications.forEach(getDeletedSkuId);
+
+                [...cityOpt.sourceSpecifications.values()].forEach(ssArr => {
+                    ssArr.forEach(getDeletedSkuId);
+                });
+            });
+
         } else { // state.citiesOptionApplyRange === 1
             [...state.citiesOptions].forEach(([cityId, cityOption]) => {
                 if (cityId === 'all')
@@ -598,25 +622,37 @@ const saveOption = () => (
                     .map(transformShopSpecificationOption)
                     .map( opt => ({ ...shangjiaOpt, ...opt }) );
 
-                sku = [
-                    ...sku,
-                    ...[...shopSpecifications, ...sourceSpecifications].map(
-                        opt => ({
-                            regionalism_id: cityId,
-                            book_time: cityOption.bookingTime,
-                            ...opt
-                        })
-                    )
-                ];
+                const addCityOption = opt => ({
+                    regionalism_id: cityId,
+                    book_time: cityOption.bookingTime,
+                    ...opt
+                });
+
+                const specifications = [...shopSpecifications, ...sourceSpecifications];
+
+                editSku = [...specifications.filter(opt => opt.id !== 0).map(addCityOption), ...editSku];
+                newSku = [...specifications.filter(opt => opt.id === 0).map(addCityOption), ...newSku];
             });
         }
 
-        postData = {
-            ...postData,
-            sku
+        if (addMode) {
+            postData = {
+                ...postData,
+                sku: newSku
+            }
+        } else {
+            postData = {
+                product: {
+                    id: state.productId,
+                    ...postData
+                },
+                sku: editSku,
+                new_sku: newSku,
+                deleted_sku: deletedSku
+            }
         }
 
-        return addSku(postData).then(
+        return (addMode ? addSku(postData) : saveEditSku(postData)).then(
             () => {
                 dispatch({
                     type: ActionTypes.SAVE_OPTION,

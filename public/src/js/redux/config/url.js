@@ -74,6 +74,7 @@ const URL = (function() {
     sortCategories:           '/product/categories/sort',
     activatedCity:            '/product/category/:id/regions/pc',
     addSku:                   '/product/sku',
+    saveEditSku:              '/product/sku',
     getSku:                   '/product/skus/details',
     searchSku:                '/product/details',
     viewSku:                  '/product/skus',

@@ -60,10 +60,12 @@ export function resetDeliveryStations(){
 export function exportExcel(){
   return (dispatch, getState) => {
     var data = getValues( getState().form.order_manage_filter ) || {};
+    data = Utils.formCompile(data);
     if(!data.begin_time && !data.end_time){
       Utils.Noty('warning', '请选定时间');return;
     }
-    window.open(Url.orders_export + '?' + Utils.url.toParams({...data, entrance: 'LIST'}));
+    var export_url = Url.orders_export + '?' + Utils.url.toParams({...data, entrance: 'LIST'});
+    window.open(export_url);
   }
 }
 

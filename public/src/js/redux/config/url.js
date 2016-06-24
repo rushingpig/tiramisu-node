@@ -154,6 +154,14 @@ const URL = (function() {
     module_edit: '/module/:moduleId', //编辑模块
     module_list:'/privileges/modules',
 
+    //城市管理
+    open_city_add : '/city',  //添加开通城市
+    open_city_update: '/city/:cityId/info', //修改开通城市
+    open_city_delete: '/city/:cityId',
+    open_city_list: '/citys', //获取开通城市列表
+    regionalism_list: '/regionalisms', //获取地区列表
+    open_city_detail: '/city/:cityId/info',
+
     //用户管理
     alter_psd: '/user/:username/password', //修改密码
   };

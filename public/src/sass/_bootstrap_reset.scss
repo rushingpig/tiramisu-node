@@ -309,7 +309,7 @@ input {
 .input-xs, .input-group-xs > .form-control, .input-group-xs > .input-group-addon, .input-group-xs > .input-group-btn > .btn{
   height: 27px;
   padding: 5px;
-  line-height: initial;
+  line-height: 1;
 }
 .input-group-addon{
   font-size: 12px;

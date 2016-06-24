@@ -330,7 +330,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
     if(order_obj.payfor_amount == 0){
         order_sign_history_obj.option = '用户签收时间:{'+order_obj.signin_time+'}\n准点送达';
     }else if(order_obj.payfor_type === Constant.PFT.CASH){
-        order_sign_history_obj.option = '用户签收时间:{'+order_obj.signin_time+'}\n{现金赔偿}:{'+order_obj.payfor_amount+'}\n{迟到时长}:{'+order_obj.late_minutes+'分钟}';
+        order_sign_history_obj.option = '用户签收时间:{'+order_obj.signin_time+'}\n{现金赔偿}:{'+ (order_obj.payfor_amount / 100) +'}\n{迟到时长}:{'+order_obj.late_minutes+'分钟}';
     }else if(order_obj.payfor_type === Constant.PFT.FULL_REFUND){
         order_sign_history_obj.option = '用户签收时间:{'+order_obj.signin_time+'}\n{全额退款--原因}:{'+order_obj.payfor_reason+'}';
     }
@@ -373,6 +373,12 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                     if (products[i].sku_id == _res[j].sku_id) {
                         isAdd = false;
                         let curr = products[i];
+                        let change = products[i].num - _res[j].num;
+                        if (change > 0) {
+                            option += '增加{' + curr.name + '}数量{' + change + '}\n';
+                        } else if (change < 0) {
+                            option += '减少{' + curr.name + '}数量{' + (-change) + '}\n';
+                        }
                         let order_sku_obj = {
                             order_id: orderId,
                             sku_id: curr.sku_id,
@@ -390,7 +396,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                 }
                 if (isAdd) {
                     let curr = products[i];
-                    option += '增加{' + curr.name + '}\n';
+                    option += '增加{' + curr.name + '}数量{' + curr.num + '}\n';
                     let order_sku_obj = {
                         order_id: orderId,
                         sku_id: curr.sku_id,
@@ -415,7 +421,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                 }
                 if (isDelete && _res[i].sku_id) {
                     let curr = _res[i];
-                    option += '删除{' + curr.name + '}\n';
+                    option += '删除{' + curr.product_name + '}数量{' + curr.num + '}\n';
                     delete_skuIds.push(curr.sku_id);
                 }
             }

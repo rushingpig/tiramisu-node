@@ -571,6 +571,7 @@ UPDATE tiramisu.sys_menu SET parent_ids = '';
 # 用户权限增加是否仅仅只有管理该用户的权限
 ALTER TABLE tiramisu.sys_user_role ADD only_admin tinyint(1) unsigned DEFAULT '0' COMMENT '是否仅仅只有管理该类型用户的权限';
 
+<<<<<<< HEAD
 -- ----------------------------
 --  Table structure for `sys_history`
 -- ----------------------------
@@ -600,3 +601,21 @@ CREATE TABLE `sys_history_type` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统操作记录类型';
 
 INSERT INTO `tiramisu`.`sys_history_type` (`name`, `created_by`, `created_time`) VALUES ('编辑产品', '1', '2016-06-20 12:00:00');
+
+# 2016-06-15 Wei Zhao
+# 创建开通城市表
+CREATE TABLE `sys_city` (
+    `regionalism_id` int(11) NOT NULL COMMENT '区域id',
+    `is_city` int(11) NOT NULL COMMENT '不为NULL时表示是开通的地级市/县级市',
+    `online_time` datetime DEFAULT NULL COMMENT '上线时间',
+    `is_diversion` tinyint(1) DEFAULT NULL COMMENT '是否导流订单',
+    `delivery_time_range` varchar(16) DEFAULT NULL COMMENT '配送时间段',
+    `order_time` int(11) DEFAULT NULL COMMENT '预约时间',
+    `remarks` varchar(255) DEFAULT NULL COMMENT '备注',
+    `SEO` varchar(1024) DEFAULT NULL COMMENT 'SEO',
+    `created_by` int(11) NOT NULL COMMENT '创建人id',
+    `created_time` datetime NOT NULL COMMENT '创建时间',
+    `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+    `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+    PRIMARY KEY `IDX_UNQ_UID` (`regionalism_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='开通城市表';

@@ -139,13 +139,13 @@ class FilterHeader extends Component{
 					 {
 					 	V('DeliveryManSalaryManageCityFilter')
 					 	?[
-					 		<Select ref='province' name='province' options = {provinces} 
+					 		<Select className='space-right' ref='province' name='province' options = {provinces} 
 					 			onChange = {this.onProvinceChange.bind(this)}
 					 			default-text = '请选择省份'/>,
-					 		<Select ref='city' name='city' options = { cities} 
+					 		<Select className='space-right' ref='city' name='city' options = { cities} 
 					 			onChange= {this.onCityChange.bind(this)}
 					 			default-text = '请选择城市'/>,
-					 		<Select ref='station' name = 'station' options = { stations }
+					 		<Select className='space-right' ref='station' name = 'station' options = { stations }
 					 			default-text = '请选择配送站' />
 					 	]:null
 					 }
@@ -153,17 +153,17 @@ class FilterHeader extends Component{
 					<div className="input-group input-group-sm" style={{height:'27px'}}>
 						<span  style={{height:'27px',lineHeight:1}} className="input-group-addon"><i className="fa fa-search"></i></span>
 						<input type="text"  style={{height:'27px', width:'120px'}} 
-						  className="form-control" placeholder="配送员拼音首字母或手机号" 
+						  className="form-control space-right" placeholder="配送员拼音首字母或手机号" 
 						  onChange = {this.filterHandler.bind(this)} />
 					</div>
-					<select name= 'deliveryman' ref='deliveryman' className="form-control input-sm"  style={{height:'27px',minWidth:100}}>
+					<select name= 'deliveryman' ref='deliveryman' className="form-control input-sm space-right"  style={{height:'27px',minWidth:100}}>
 						{
 							content.length
 							? content
 							: <option>无</option>
 						}
 					</select>
-					<select ref='COD' default-text = '是否货到付款' className='form-control input-xs'>
+					<select ref='COD' default-text = '是否货到付款' className='form-control input-xs space-right'>
 						<option value='-1'>是否货到付款</option>
 						<option value='1'>是</option>
 						<option value='2'>否</option>
@@ -333,9 +333,9 @@ var SalaryRow = React.createClass({
 		var {main, is_POS} = props;
 		var {active_order_id} = main;
 		var str = '';
-		if(is_POS != null && props.pay_status == 'COD'){
-			if(is_POS) str = '(POS机)';
-			else str = '(现金)'
+		if(is_POS != null && props.total_amount > 0){
+			if(is_POS) str = '签收收款: POS机';
+			else str = '签收收款: 现金'
 		}
 		return(
 			<tr className={active_order_id == props.order_id ? 'active' : ''} onClick={this.ClickHandler}>
@@ -347,8 +347,14 @@ var SalaryRow = React.createClass({
 					{ DELIVERY_MAP[props.delivery_type] }
 				</td>
 				<td>
-					{props.order_status == SIGN_STATUS_EXCEPTION ? 
-						[<span>未签收</span>,<br/>,<a href='javascript:;' onClick={this.showCredential}>[未签收凭证]</a>]
+					{ props.delivery_count >= 2 ? 
+						[
+						<span key='sec_signin'>第二次配送:正常签收</span>, <br key='sec_signin_br'/>,
+						<span key='first_unsign'>第一次配送:未签收</span>,<br key='first_signin_br'/>,
+						<a key='unSignCredential' href='javascript:;' onClick={this.showCredential}>[未签收凭证]</a>]
+						:
+						props.order_status == SIGN_STATUS_EXCEPTION ? 
+						[<span key='span_unsign'>未签收</span>,<br key='unsign_br'/>,<a href='javascript:;' onClick={this.showCredential} key='unSign_Credential'>[未签收凭证]</a>]
 						:<span>正常签收</span>
 					}
 				</td>

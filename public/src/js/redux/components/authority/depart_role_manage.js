@@ -153,8 +153,8 @@ class DeptManagePanel extends Component{
                 {/*<TreeNav data={this.props.accessManage.data} onToggle={this.onToggleDept.bind(this)} />*/}
               </div>
                 <div className="panel panel-body" style={{marginLeft: '225px'}}>
-                  <div className="table-responsive main-list">
-                    <table className="table table-hove text-center table-bordered"  style={{border:'1px solid #ddd'}}>
+                  <div className="main-list">
+                    <table className="table table-hover text-center table-bordered"  style={{border:'1px solid #ddd'}}>
                       <thead>
                         <tr>
                           <th>职位(角色名称)</th>

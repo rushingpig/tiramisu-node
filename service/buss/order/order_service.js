@@ -605,6 +605,7 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
         src_id: req.query.src_id,
         status: req.query.status,
         city_id: req.query.city_id,
+        province_id : req.query.province_id,
         owner_mobile: req.query.owner_mobile,
         delivery_id: req.query.delivery_id,
         deliveryman_id: req.query.deliveryman_id,

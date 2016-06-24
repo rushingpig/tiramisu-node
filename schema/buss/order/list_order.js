@@ -38,6 +38,10 @@ module.exports = {
         optional : true,
         isInt : true
     },
+    'province_id': {
+        optional : true,
+        isInt : true
+    },
     'page_no' : {
         isInt : true
     },

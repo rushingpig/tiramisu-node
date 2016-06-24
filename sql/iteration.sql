@@ -571,7 +571,6 @@ UPDATE tiramisu.sys_menu SET parent_ids = '';
 # 用户权限增加是否仅仅只有管理该用户的权限
 ALTER TABLE tiramisu.sys_user_role ADD only_admin tinyint(1) unsigned DEFAULT '0' COMMENT '是否仅仅只有管理该类型用户的权限';
 
-<<<<<<< HEAD
 -- ----------------------------
 --  Table structure for `sys_history`
 -- ----------------------------

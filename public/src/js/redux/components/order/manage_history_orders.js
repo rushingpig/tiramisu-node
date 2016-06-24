@@ -28,7 +28,7 @@ class OrderRow extends Component {
         {/*订单来源*/}
         <td className="nowrap">
           {src_name[0]}
-          {src_name[1] ? [<br />, <span className="bordered bg-warning">{src_name[1]}</span>] : null}
+          {src_name[1] ? [<br key="br" />, <span key="src_name" className="bordered bg-warning">{src_name[1]}</span>] : null}
         </td>
         {/*订单状态*/}
         <td><div style={{color: _order_status.color || 'inherit'}}>{_order_status.value}</div></td>
@@ -49,6 +49,8 @@ class HistoryOrders extends Component {
     this.search = this.search.bind(this);
     this.show = this.show.bind(this);
     this.hideCallback = this.hideCallback.bind(this);
+    this.onPhoneNumKeyDown = this.onPhoneNumKeyDown.bind(this);
+    this.onPageChange = this.onPageChange.bind(this);
     this.state = {
       page_size: 3,
       phone_num: this.props.phone_num
@@ -67,10 +69,10 @@ class HistoryOrders extends Component {
       <div className="form-group form-inline">
         <label>
           {'手机号码 '}
-          <input value={this.state.phone_num} onChange={this.onPhonenumChange.bind(this)} className="form-control input-xs" />
+          <input ref="phone_num" value={this.state.phone_num} onKeyDown={this.onPhoneNumKeyDown} onChange={this.onPhonenumChange.bind(this)} className="form-control input-xs" />
         </label>
         {'　'}
-        <button onClick={this.search} className="btn btn-default btn-xs">查询</button>
+        <button onClick={this.search.bind(this, 0)} className="btn btn-default btn-xs">查询</button>
         {'　'}
         <button onClick={this.copyOrder.bind(this)} className="btn btn-default btn-xs">复制订单</button>
         <span className="pull-right theme">{ window.xfxb.user.name }</span>
@@ -119,21 +121,30 @@ class HistoryOrders extends Component {
   onPhonenumChange(e){
     this.setState({ phone_num: e.target.value })
   }
+  onPhoneNumKeyDown(e){
+    if(e.which == 13){
+      this.search(0);
+    }
+  }
   componentWillReceiveProps(nextProps){
     if(nextProps.phone_num != this.props.phone_num){
       this.setState({ phone_num: nextProps.phone_num })
     }
   }
   onPageChange(page){
-    this.setState({page_no: page});
+    this.search(page);
   }
   componentDidMount() {
 
   }
-  search(){
-    var { getHistoryOrders, data: {page_no} } = this.props;
+  search(page_no){
+    var { getHistoryOrders, data } = this.props;
+    if(page_no === undefined){
+      page_no = data.page_no;
+    }
     var { phone_num, page_size } = this.state;
     if(!phone_num){
+      this.refs.phone_num.focus();
       return;
     }else if(form.isMobile(phone_num)){
       getHistoryOrders({owner_mobile: phone_num, page_no, page_size});

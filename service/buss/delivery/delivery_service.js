@@ -330,7 +330,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
     if(order_obj.payfor_amount == 0){
         order_sign_history_obj.option = '用户签收时间:{'+order_obj.signin_time+'}\n准点送达';
     }else if(order_obj.payfor_type === Constant.PFT.CASH){
-        order_sign_history_obj.option = '用户签收时间:{'+order_obj.signin_time+'}\n{现金赔偿}:{'+order_obj.payfor_amount+'}\n{迟到时长}:{'+order_obj.late_minutes+'分钟}';
+        order_sign_history_obj.option = '用户签收时间:{'+order_obj.signin_time+'}\n{现金赔偿}:{'+ (order_obj.payfor_amount / 100) +'}\n{迟到时长}:{'+order_obj.late_minutes+'分钟}';
     }else if(order_obj.payfor_type === Constant.PFT.FULL_REFUND){
         order_sign_history_obj.option = '用户签收时间:{'+order_obj.signin_time+'}\n{全额退款--原因}:{'+order_obj.payfor_reason+'}';
     }

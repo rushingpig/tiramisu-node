@@ -21,6 +21,7 @@ module.exports = {
         optional : true
     },
     'signin_time' : {
+        isDate: true,
         notEmpty : true
     },
     'updated_time': {

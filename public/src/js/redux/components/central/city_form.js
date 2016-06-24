@@ -176,7 +176,11 @@ class AddCityForm extends Component{
 	        			<div className='form-group form-inline'>
 	        				<label className='control-label'>{'　　　　开通区域：'}</label>
 	        				<div className='inline-block'>
-	        					<CheckBoxGroup {...first_open_regions} checkboxs={districts_letter || []} value ={first_open_regions.value || districts_letter.filter( m => m.is_open)}/>
+	        					{!editable ?
+	        						<CheckBoxGroup {...first_open_regions} checkboxs={districts_letter || []} value ={first_open_regions.value || districts_letter.filter( m => m.is_open)}/>
+	        						:
+	        						<CheckBoxGroup {...first_open_regions} checkboxs={districts_letter || []} value ={first_open_regions.value || districts_letter}/>
+	        					}
 	        				</div>
 	        			</div>}
 	        			<div className='form-group form-inline'>

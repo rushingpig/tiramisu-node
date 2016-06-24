@@ -167,6 +167,15 @@ export default formReducer.plugin({
     }
     return state;  //required!
   },
+  add_city:(state, action) => {
+    if(action && action.form == 'add_user'){
+      if(action.field == 'city_id'){
+        if(action.type == actionTypes.CHANGE){
+          var districts_letter = getGlobalState().accessibleCityManage.districts_letter;
+        }
+      }
+    }
+  }
 });
 
   // order_manage_filter: (state, action) => {

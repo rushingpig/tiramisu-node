@@ -104,6 +104,8 @@ function main(state = initail_state, action){
 			var list = state.accessible_cities.filter( m => m.city_id != id)
 			var total_count = state.total_count -1;
 			return {...state, accessible_cities: list, total_count: total_count}
+		case Actions.RESET_DISTRICTS_LETTER:
+			return {...state, districts_letter: []}
 		default:
 			return state;
 	}

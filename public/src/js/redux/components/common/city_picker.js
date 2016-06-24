@@ -10,7 +10,10 @@ class CityPicker extends Component{
 	  	currentSelectPro_id: -1,
 	  	currentSelectCity:'',
 	  	currentSelectDistrict:'',
+	  	clickInside: false,
 	  }
+	  this.outsideClick=this.outsideClick.bind(this);
+	  this._mousedown = this._mousedown.bind(this);
 	}
 	render(){
 		var {currentSelect, citymenuDown, currentSelectDistrict, currentSelectCity,currentSelectPro} = this.state;
@@ -68,7 +71,7 @@ class CityPicker extends Component{
 				)
 		})
 		return(
-			<div className='form-group'>
+			<div className='form-group' onClick={this.insideClick.bind(this)}>
 				<div  className={"btn-group" + (citymenuDown ? ' open' : '')}>
 					{/*<input ref='city_picker3' className='form-control city-picker-input' readOnly type='text' />*/}
 						<button type="button" className={className} onClick={this.handleToggleShowState.bind(this)}>
@@ -110,6 +113,16 @@ class CityPicker extends Component{
 			</div>
 			)
 	}
+	componentDidMount() {
+	  this.setState({clickInside: false});
+	  window.addEventListener('click', this.outsideClick);
+	  window.addEventListener('mousedown', this._mousedown);
+	}
+
+	componentWillUnmount() {
+	  window.removeEventListener('click', this.outsideClick);
+	  window.removeEventListener('mousedown', this._mousedown);
+	}
 	handleToggleShowState(){
 		this.setState({citymenuDown:!this.state.citymenuDown});		
 	}
@@ -134,6 +147,17 @@ class CityPicker extends Component{
 		if(this.props.is_county) this.props.onChange(id);
 		this.setState({currentSelectDistrict: text,citymenuDown:!this.state.citymenuDown});
 	}
+	insideClick(){
+		this.setState({clickInside: true});
+	}
+	_mousedown(){
+		this.setState({clickInside:false});
+	}
+	outsideClick(){
+		if(!this.state.clickInside && this.state.citymenuDown)
+			this.setState({citymenuDown: !this.state.citymenuDown, clickInside:false});
+	}
+
 }
 
 export default CityPicker;

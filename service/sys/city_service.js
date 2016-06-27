@@ -37,7 +37,7 @@ module.exports.getRegionalisms = function (req, res, next) {
                 is_open: 0
             };
             tmp.first_letter = curr.pinyin[0];
-            if (curr.is_city) {
+            if (curr.regionalism_id) {
                 tmp.is_open = 1;
             }
             result.list.push(tmp);

@@ -26,6 +26,7 @@ CityDao.prototype.findRegionalisms = function (query) {
         'dr.level_type',
         'dr.parent_id',
         'dr.pinying AS pinyin',
+        'sc.regionalism_id',
         'sc.is_city'
     ];
     let sql = `SELECT ${columns.join()} FROM ?? dr `;

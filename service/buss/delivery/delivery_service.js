@@ -1176,29 +1176,32 @@ DeliveryService.prototype.exportRecordExcel = (req, res)=> {
         res.api(res_obj.INVALID_PARAMS, errors);
         return;
     }
-    let begin_time = req.query.begin_time;
-    let end_time = req.query.end_time;
-    let city_id = req.query.city_id;
-    let deliveryman_id = req.query.deliveryman_id;
+    let query = Object.assign({user: req.session.user}, req.query);
     let is_COD = req.query.is_COD;
+    let sql;
+    let uri = config.excel_export_host;
 
-    let fileName = '配送记录列表_' + dateUtils.format(new Date()) + '.xlsx';
-    let data = [];
-    co(function *() {
+    if (query.deliveryman_id == 0) delete query.deliveryman_id;
 
-    }).then(()=>{
-        let buffer = xlsx.build([{name: "配送记录列表", data: data}]);
-        res.set({
-            'Content-Type': 'application/vnd.ms-excel',
-            'Content-Disposition':  "attachment;filename="+encodeURIComponent(fileName) ,
-            'Pragma':'no-cache',
-            'Expires': 0
-        });
-        res.send(buffer);
-    }).catch((err)=>{
-        console.error(err);
-        res.render('error',{err:'该条件下没有可选配送记录,请重新筛选...'});
-    });
+    if (is_COD) {
+        uri += 'COD';
+        sql = deliveryDao.joinCODSQL(query);
+    } else {
+        uri += 'salary';
+        sql = deliveryDao.joinPaySQL(query);
+    }
+
+    console.log(sql);
+    // 请求导出excel服务
+    request({
+        uri: uri,
+        method: 'post',
+        timeout: 120000, // 30s超时
+        json: true,
+        body: {sql: sql}
+    }).on('error', (err) => {
+        return res.api(res_obj.FAIL, err);
+    }).pipe(res || null);
 };
 DeliveryService.prototype.signRecord = (req, res, next)=> {
     req.checkParams('orderId').notEmpty().isOrderId();

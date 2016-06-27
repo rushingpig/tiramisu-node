@@ -63,19 +63,12 @@ const switchType = {
                 )
             }
 
-            const selectedPrimaryCategory = categoriesList.filter(
-                c => c.parent_id === 0
-            )[0].id;
-
             return {
                 ...state,
                 basicDataLoadStatus: 'success',
                 categoriesList,
                 provincesList,
-                citiesList,
-                selectedPrimaryCategory,
-                selectedSecondaryCategory: 0,
-                selectedProvince: provincesList[0].id
+                citiesList
             }
         }
 
@@ -206,25 +199,35 @@ const switchType = {
     },
 
     [ActionTypes.SELECT_ALL_ROW]: state => {
-
-        if (state.checkedRow.size === state.searchResult.length) {
+        if (state.checkedRow.size > 0 && (state.checkedRow.size === state.searchResult.length)) {
             state.checkedRow = new Set();
         } else {
-            state.searchResult.forEach(row => {
-                state.checkedRow.add(row.spu + row.city_name);
+            state.searchResult.forEach((r, i) => {
+                state.checkedRow.add(i);
             });
         }
 
         return state;
     },
 
-    [ActionTypes.DELETE_SELECTED_ROW]: (state, { status = 'normal' }) => {
-        if (status === 'success') {
-            state.searchResult = state.searchResult.filter(
-                (x, index) => !state.checkedRow.has(index)
-            );
+    [ActionTypes.DESELECT_ALL_ROW]: state => {
+        state.checkedRow = new Set();
 
-            state.checkedRow = new Set();
+        return state;
+    },
+
+    [ActionTypes.DELETE_ROW]: (state, { status = 'normal', deletedIndex = -1 }) => {
+
+        if (status === 'success') {
+
+            if (deletedIndex >= 0) {
+                state.searchResult.splice(deletedIndex, 1);
+            } else {
+                state.searchResult = state.searchResult.filter(
+                    (x, index) => !state.checkedRow.has(index)
+                );
+                state.checkedRow = new Set();
+            }
 
             return state;
         }

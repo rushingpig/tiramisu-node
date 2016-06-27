@@ -19,8 +19,9 @@ const ActionTypes = {
 
     SELECT_SEARCH_RESULT_ROW: Symbol('SELECT_SEARCH_RESULT_ROW'),
     SELECT_ALL_ROW: Symbol('SELECT_ALL_ROW'),
+    DESELECT_ALL_ROW: Symbol('DESELECT_ALL_ROW'),
 
-    DELETE_SELECTED_ROW: Symbol("DELETE_SELECTED_ROW"),
+    DELETE_ROW: Symbol("DELETE_ROW"),
 }
 
 const es6promisify = function(func) {
@@ -199,10 +200,10 @@ const searchWithFilter = (pageNum = 0, isPageChange = false) => (
             ...filterSrc.noEndTimeLimit ? {} : {
                 presell_end: filterSrc.searchEndTime + ' 23:59:59'
             },
-            province: filterSrc.selectedProvince,
-            ...filterSrc.selectedCity ? {city: filterSrc.selectedCity} : {},
-            primary_cate: filterSrc.selectedPrimaryCategory,
-            ...filterSrc.selectedSecondaryCategory ? {secondary_cate: filterSrc.selectedSecondaryCategory} : {},
+            ...filterSrc.selectedProvince === 0 ? {} : {province: filterSrc.selectedProvince},
+            ...filterSrc.selectedCity === 0 ? {} : {city: filterSrc.selectedCity},
+            ...filterSrc.selectedPrimaryCategory === 0 ? {} : {primary_cate: filterSrc.selectedPrimaryCategory},
+            ...filterSrc.selectedSecondaryCategory === 0 ? {} : {secondary_cate: filterSrc.selectedSecondaryCategory},
             isActivity: filterSrc.searchIsEvent ? 1 : 0,
             isMall: filterSrc.searchHasActive ? 1 : 0,
             pageno: pageNum,
@@ -230,48 +231,58 @@ const selectRow = index => {
     }
 }
 
+const deselectAllRow = () => {
+    return {
+        type: ActionTypes.DESELECT_ALL_ROW
+    }
+}
+
 const selectAllRow = () => {
     return {
         type: ActionTypes.SELECT_ALL_ROW
     }
 }
 
-const deleteSelectedRow = (reset = false) => (
+const deleteRow = (reset = false, isMultiRow = false, deleteIndex = 0) => (
     (dispatch, getState) => {
         if (reset) {
             return dispatch({
-                type: ActionTypes.DELETE_SELECTED_ROW,
+                type: ActionTypes.DELETE_ROW,
                 status: 'normal'
             });
         }
 
         dispatch({
-            type: ActionTypes.DELETE_SELECTED_ROW,
+            type: ActionTypes.DELETE_ROW,
             status: 'pending'
         });
 
         const { searchResult, checkedRow } = getState().productSKUSearch;
 
-        const deleteList = [...checkedRow].map(
+        const deleteList = isMultiRow ? [...checkedRow].map(
             index => ({
                 city: searchResult[index].city_id || 0,
                 spu: searchResult[index].spu
             })
-        )
+        ) : [{
+            city: searchResult[deleteIndex].city_id || 0,
+            spu: searchResult[deleteIndex].spu
+        }];
 
         return deleteProduct(deleteList).then(
             () => dispatch({
-                type: ActionTypes.DELETE_SELECTED_ROW,
-                status: 'success'
+                type: ActionTypes.DELETE_ROW,
+                status: 'success',
+                deletedIndex: isMultiRow ? -1 : deleteIndex
             })
         ).catch(
             e => dispatch({
-                type: ActionTypes.DELETE_SELECTED_ROW,
+                type: ActionTypes.DELETE_ROW,
                 status: 'failed',
             })
         );
     }
-)
+);
 
 export { ActionTypes }
 
@@ -291,5 +302,6 @@ export default {
     searchWithFilter,
     selectRow,
     selectAllRow,
-    deleteSelectedRow
+    deselectAllRow,
+    deleteRow
 }

@@ -16,6 +16,12 @@ var config = {
   },
   datetimerangepicker: {
     css: '/node_modules/react-bootstrap-datetimerange-picker/dist/react-bootstrap-datetime-range-picker.css'
+  },
+  fileupload: {
+    js: '/plugins/upload/jquery.fileupload.min.js'
+  },
+  dropzone: {
+    js: '/plugins/upload/dropzone.min.js'
   }
 };
 var load_map = {};

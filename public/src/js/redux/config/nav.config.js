@@ -86,6 +86,11 @@ export default [{
     "name": "订单来源渠道",
     "icon": "",
     "link": "/cm/src"
+  }, {
+    "key": "ImageManageAccess",
+    "name": "图片文件管理",
+    "icon": "",
+    "link": "/cm/img"
   }]
 }, {
   "key": "ProductionManageAccess",

@@ -163,6 +163,12 @@ function map(target, cb) {
   });
   return res;
 }
+function del(target, cb){
+  if(core_isArray(target)){
+    var index = target.findIndex(cb);
+    target.splice(index, 1);
+  }
+}
 
 
 function toFixed(target, digit){
@@ -337,6 +343,7 @@ export default {
   mapValues,
   each,
   map,
+  del,
 
   clone,
 

@@ -325,6 +325,10 @@ ProductService.prototype.getProductAndSku = (req, res, next)=> {
                         if(item.secondary_book_time && item.secondary_book_time_region){
                             product.secondary_book_time[item.secondary_book_time_region] = item.secondary_book_time;
                         }
+                        //产品省份、城市为sku省份、城市
+                        product.city_id = item.city_id;
+                        product.city_name = item.city_name;
+                        product.province_id = item.province_id;
                         if(sku_ids.indexOf(item.id) > -1){
                             return;
                         }

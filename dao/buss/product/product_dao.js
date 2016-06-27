@@ -409,7 +409,9 @@ ProductDao.prototype.getSkuWithBooktimeByProductAndCity = function (data) {
         'sku.price as price',
         'sku.book_time as book_time',
         'secondary_booktime.book_time as secondary_book_time',
-        'dict.name as secondary_book_time_region',
+        'dict.id as city_id',
+        'dict.name as city_name',
+        'dict.parent_id as province_id',
         'sku.presell_start as presell_start',
         'sku.presell_end as presell_end',
         'sku.activity_price as activity_price',
@@ -431,9 +433,12 @@ ProductDao.prototype.getSkuByProductAndCity = function (data) {
         'sku.website as website',
         'sku.size as size',
         'sku.original_price as original_price',
-        'sku.price as price'
+        'sku.price as price',
+        'dict.id as city_id',
+        'dict.name as city_name',
+        'dict.parent_id as province_id'
     ];
-    let sql = 'select ' + columns.join(',') + ' from ?? sku where sku.product_id = ? and sku.regionalism_id = ? and sku.del_flag = 1';
+    let sql = 'select ' + columns.join(',') + ' from ?? sku join ?? dict on sku.regionalism_id = dict.id where sku.product_id = ? and sku.regionalism_id = ? and sku.del_flag = 1';
     let params = [];
     params.push(config.tables.buss_product_sku);
     params.push(data.productId);

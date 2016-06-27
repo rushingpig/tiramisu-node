@@ -113,7 +113,6 @@ class AddCityForm extends Component{
 			cities_letter,
 			districts_letter,
 			accessible_city_info,
-			errors,
 		} = this.props;
 		var { gotRegionalismLetter } = this.props.actions;
 		var {county, sec_reservation} = this.state;

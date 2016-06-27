@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { getGlobalStore, getGlobalState } from 'stores/getter';
 
 class CityPicker extends Component{
 	constructor(props){

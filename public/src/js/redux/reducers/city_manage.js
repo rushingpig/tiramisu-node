@@ -2,7 +2,6 @@ import { combineReducers } from 'redux';
 import * as Actions from 'actions/city_manage';
 import { getGlobalStore, getGlobalState } from 'stores/getter';
 import { map, getDate } from 'utils/index';
-import { triggerFormUpdate } from 'actions/form';
 
 import { area } from './area_select';
 

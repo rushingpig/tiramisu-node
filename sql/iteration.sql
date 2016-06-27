@@ -603,6 +603,7 @@ INSERT INTO `tiramisu`.`sys_history_type` (`name`, `created_by`, `created_time`)
 
 # 2016-06-15 Wei Zhao
 # 创建开通城市表
+DROP TABLE IF EXISTS `sys_city`;
 CREATE TABLE `sys_city` (
     `regionalism_id` int(11) NOT NULL COMMENT '区域id',
     `is_city` int(11) NOT NULL COMMENT '不为NULL时表示是开通的地级市/县级市',

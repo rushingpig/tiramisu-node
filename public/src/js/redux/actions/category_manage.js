@@ -61,7 +61,7 @@ const loadBasicData = (level, isEdit, id) => (
                     dispatch({
                         type: SelectorActionTypes.LOAD_DATA,
                         geographiesData,
-                        chekcedData: categoryData.map.filter(x => x.city_id),
+                        chekcedData: categoryData.regions.map(x => x.city_id),
                         enableList
                     });
 

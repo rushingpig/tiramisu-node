@@ -368,10 +368,25 @@ ProductService.prototype.listSkuPrice = (req, res, next)=> {
         .then(product_result => {
             return productDao.getSkuByProductAndCity(req.query)
                 .then(sku_result => {
+                    let product = product_result[0];
+                    let skus = [];
+                    sku_result.page_result.forEach(item => {
+                        product.city_id = item.city_id;
+                        product.city_name = item.city_name;
+                        product.province_id = item.province_id;
+                        let sku = {
+                            id: item.id,
+                            website: item.website,
+                            size: item.size,
+                            original_price: item.original_price,
+                            price: item.price
+                        };
+                        skus.push(sku);
+                    });
                     let result = {
                         total: sku_result.count_result[0].total,
-                        product: product_result[0],
-                        skus: sku_result.page_result
+                        product: product,
+                        skus: skus
                     };
                     return Promise.resolve(result);
                 });

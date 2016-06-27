@@ -441,6 +441,7 @@ ProductDao.prototype.getSkuByProductAndCity = function (data) {
     let sql = 'select ' + columns.join(',') + ' from ?? sku join ?? dict on sku.regionalism_id = dict.id where sku.product_id = ? and sku.regionalism_id = ? and sku.del_flag = 1';
     let params = [];
     params.push(config.tables.buss_product_sku);
+    params.push(config.tables.dict_regionalism);
     params.push(data.productId);
     params.push(data.cityId);
     // 分页

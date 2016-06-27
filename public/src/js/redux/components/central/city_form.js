@@ -113,6 +113,7 @@ class AddCityForm extends Component{
 			cities_letter,
 			districts_letter,
 			accessible_city_info,
+			errors,
 		} = this.props;
 		var { gotRegionalismLetter } = this.props.actions;
 		var {county, sec_reservation} = this.state;
@@ -176,11 +177,7 @@ class AddCityForm extends Component{
 	        			<div className='form-group form-inline'>
 	        				<label className='control-label'>{'　　　　开通区域：'}</label>
 	        				<div className='inline-block'>
-	        					{editable ?
 	        						<CheckBoxGroup {...first_open_regions} checkboxs={districts_letter || []} value ={first_open_regions.value || districts_letter.filter( m => m.is_open)}/>
-	        						:
-	        						<CheckBoxGroup {...first_open_regions} checkboxs={districts_letter || []} value ={first_open_regions.value.length > 0 ? first_open_regions.value : districts_letter} />
-	        					}
 	        				</div>
 	        			</div>}
 	        			<div className='form-group form-inline'>

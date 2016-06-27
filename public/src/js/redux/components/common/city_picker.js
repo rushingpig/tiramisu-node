@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { getGlobalStore, getGlobalState } from 'stores/getter';
 
 class CityPicker extends Component{
 	constructor(props){
@@ -140,7 +141,7 @@ class CityPicker extends Component{
 		}
 		else {
 			this.setState({citymenuDown: !this.state.citymenuDown,currentSelectCity:text});
-			this.props.onChange(id);
+			this.props.onChange(id);			
 		}
 	}
 	selectDistrict(id, text){

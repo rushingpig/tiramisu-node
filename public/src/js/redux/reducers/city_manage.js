@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import * as Actions from 'actions/city_manage';
 import { getGlobalStore, getGlobalState } from 'stores/getter';
 import { map, getDate } from 'utils/index';
+import { triggerFormUpdate } from 'actions/form';
 
 import { area } from './area_select';
 
@@ -86,9 +87,6 @@ function main(state = initail_state, action){
 					return {...state, cities_letter: regionalisms}
 					break;
 				case 'district':
-					var store = getGlobalStore();
-          			var first_open_regions = store.getState().form.add_city.first_open_regions;
-          			first_open_regions.value =  regionalisms; 
 					return {...state, districts_letter: regionalisms}
 				default:;
 			}
@@ -108,7 +106,7 @@ function main(state = initail_state, action){
 			var list = state.accessible_cities.filter( m => m.city_id != id)
 			var total_count = state.total_count -1;
 			return {...state, accessible_cities: list, total_count: total_count}
-		case Actions.RESET_DISTRICTS_LETTER:
+		case Actions.RESET_DISTRICTS_LETTER:		
 			return {...state, districts_letter: []}
 		default:
 			return state;

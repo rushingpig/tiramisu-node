@@ -1177,15 +1177,14 @@ DeliveryService.prototype.exportRecordExcel = (req, res)=> {
         return;
     }
     let query = Object.assign({user: req.session.user}, req.query);
-    let is_COD = req.query.is_COD;
     let sql;
     let uri = config.excel_export_host;
 
     if (query.deliveryman_id == 0) delete query.deliveryman_id;
 
-    if (!is_COD) {
-        query.is_COD = 1;
+    if (req.query.isCOD == '1') {
         uri += 'COD';
+        query.is_COD = true;
         sql = deliveryDao.joinCODSQL(query);
     } else {
         uri += 'salary';

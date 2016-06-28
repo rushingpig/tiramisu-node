@@ -41,5 +41,22 @@ export default {
     'roles_in',
     'is_national',
     'en_delivery',
+  ],
+  add_city:[
+    'is_county',
+    'sec_order',
+    'city_id',
+    'order_time',
+    'delivery_time_range',
+    'is_diversion',
+    'manager_mobile',
+    'manager_name',
+    'remarks',
+    'online_time_date',
+    'online_time_hour',
+    'online_time_min',
+    'first_open_regions',
+    'sec_open_regions',
+    'sec_order_time',
   ]
 }

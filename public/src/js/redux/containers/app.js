@@ -41,7 +41,9 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
       require.ensure([], require => {
         components = {...components,
           SrcChannelPannel:        require('../components/central/src_channel_manage'),
-          AlterUserPasswordPannel: require('../components/central/alter_user_password_pannel')
+          AlterUserPasswordPannel: require('../components/central/alter_user_password_pannel'),
+          CityPanel:               require('../components/central/city_manage.js'),
+          CityDetailPannel:        require('../components/central/city_form_detail_pannel'),
         };
         callback();
       })
@@ -127,6 +129,11 @@ const App = () => (
       <Route path="cm" onEnter={getComponents('cm')}>
         <Route path="src" onEnter={onEnter('SrcChannelManageAccess')}  getComponent={get('SrcChannelPannel')}   />
         <Route path="account" getComponent={get('AlterUserPasswordPannel')}   />
+        <Route path="city" onEnter ={onEnter('CityManageAccess')}>
+          <IndexRoute  getComponent={get('CityPanel')} />
+          <Route path="add" onEnter={onEnter('CityManageAddCity')} getComponent = {get('CityDetailPannel')} />
+          <Route path=":id" onEnter={onEnter('CityManageEdit')} getComponent = {get('CityDetailPannel')} />       
+        </Route>
       </Route>
 
       <Route path="am" onEnter={getComponents('am')}>

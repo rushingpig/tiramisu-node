@@ -86,6 +86,11 @@ export default [{
     "name": "订单来源渠道",
     "icon": "",
     "link": "/cm/src"
+  }, {
+    "key": "CityManageAccess",
+    "name": "城市管理",
+    "icon": "",
+    "link": "/cm/city",    
   }]
 }, {
   "key": "ProductionManageAccess",
@@ -129,5 +134,5 @@ export default [{
     "name": "系统权限管理",
     "icon": "",
     "link": "/am/systemauthority"
-  }]
+  },]
 }];

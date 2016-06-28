@@ -409,7 +409,7 @@ ProductDao.prototype.getSkuWithBooktimeByProductAndCity = function (data) {
         'sku.price as price',
         'sku.book_time as book_time',
         'secondary_booktime.book_time as secondary_book_time',
-        'secondary_booktime.regionalism_id as secondary_book_time_region',
+        'secondary_dict.name as secondary_book_time_region',
         'dict.id as city_id',
         'dict.name as city_name',
         'dict.parent_id as province_id',
@@ -419,10 +419,11 @@ ProductDao.prototype.getSkuWithBooktimeByProductAndCity = function (data) {
         'sku.activity_start as activity_start',
         'sku.activity_end as activity_end'
     ];
-    let sql = 'select ' + columns.join(',') + ' from ?? sku left join ?? secondary_booktime on sku.id = secondary_booktime.sku_id and secondary_booktime.del_flag = 1 join ?? dict on sku.regionalism_id = dict.id where sku.product_id = ? and sku.regionalism_id = ? and sku.del_flag = 1';
+    let sql = 'select ' + columns.join(',') + ' from ?? sku left join ?? secondary_booktime on sku.id = secondary_booktime.sku_id and secondary_booktime.del_flag = 1 join ?? dict on sku.regionalism_id = dict.id join ?? secondary_dict on secondary_booktime.regionalism_id = secondary_dict.id where sku.product_id = ? and sku.regionalism_id = ? and sku.del_flag = 1';
     let params = [];
     params.push(config.tables.buss_product_sku);
     params.push(config.tables.buss_product_sku_booktime);
+    params.push(config.tables.dict_regionalism);
     params.push(config.tables.dict_regionalism);
     params.push(data.productId);
     params.push(data.cityId);

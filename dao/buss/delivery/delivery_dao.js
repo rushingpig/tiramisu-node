@@ -426,7 +426,7 @@ DeliveryDao.prototype.joinPaySQL = function (query) {
         'bo.created_time',
         'bo.delivery_time',
         'bo.total_amount',
-        'bo.COD_amount',
+        'if(bo.COD_amount IS NULL, bo.total_amount, bo.COD_amount) AS COD_amount',
         'bo.owner_name',
         'bo.owner_mobile',
         'bo.signin_time',
@@ -445,8 +445,9 @@ DeliveryDao.prototype.joinPaySQL = function (query) {
         'bdr.delivery_pay',
         'bdr.is_review',
 
+        'bps.num AS num',
         'bp.name AS product_name',
-        'bps.size AS product_size'
+        'bps.size AS size'
     ];
     let sql = `SELECT ${columns.join(',')} FROM ?? bo `;
     let params = [tables.buss_order];
@@ -528,7 +529,7 @@ DeliveryDao.prototype.joinCODSQL = function (query) {
         'bo.created_time',
         'bo.delivery_time',
         'bo.total_amount',
-        'bo.COD_amount',
+        'if(bo.COD_amount IS NULL, bo.total_amount, bo.COD_amount) AS COD_amount',
         'bo.is_pos_pay AS pay_modes_name',
         'bo.remarks AS remark',
 

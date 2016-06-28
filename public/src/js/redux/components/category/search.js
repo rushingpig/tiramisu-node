@@ -132,13 +132,14 @@ class Main extends Component {
             type="text"
             className="form-control input-xs"
             placeholder="类型名称"
+            onChange={e => this.forceUpdate()}
             onKeyPress={this.handleNameSearchKeyPress}
           />
           {'　'}
           {
             (state.searchState === "success" || state.searchState === "failed")
             ? (
-              <Button className="btn btn-theme btn-xs" onClick={this.handleClickNameSearch}>
+              <Button disabled={this.refs.categoryName.value.trim() === ''} className="btn btn-theme btn-xs" onClick={this.handleClickNameSearch}>
                 <Icon icon="search" />{' 搜索'}
               </Button>
             ) : (

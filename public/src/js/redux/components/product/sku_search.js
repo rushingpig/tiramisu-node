@@ -69,7 +69,13 @@ class Main extends Component {
                         value={state.searchProductName}
                     />
                     &nbsp;
-                    <button className="btn btn-theme btn-xs" onClick={e => Action.searchWithProductName(0)}>搜索</button>
+                    <button
+                        className="btn btn-theme btn-xs"
+                        onClick={e => Action.searchWithProductName(0)}
+                        disabled={this.props.state.searchProductName.trim() === ''}
+                    >
+                        搜索
+                    </button>
                     {'　'}
                     <span className="text-muted">条件搜索会包含产品名称</span>
                 </div>
@@ -330,7 +336,7 @@ class Main extends Component {
     }
 
     handleKeyPress(event) {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && this.props.state.searchProductName.trim() !== '') {
             this.props.Action.searchWithProductName(0)
         }
     }

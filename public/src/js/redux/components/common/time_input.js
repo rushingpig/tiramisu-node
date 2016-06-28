@@ -9,7 +9,8 @@ export default class TimeInput extends Component {
       minute: '',
       hour_error: '',
       minute_error: '',
-    }
+    };
+    this.preventNotNumInput = this.preventNotNumInput.bind(this);
   }
   render(){
     var {hour, minute, hour_error, minute_error} = this.state;
@@ -17,12 +18,14 @@ export default class TimeInput extends Component {
       <div className="form-inline inline-block">
         <input 
           value={this.state.hour} 
+          onKeyDown={this.preventNotNumInput}
           onChange={this.onHourChange.bind(this)} 
           className={`form-control input-xs time-input ${hour_error}`} />
         <span className="gray">{' : '}</span>
         <input 
           ref="minute"
           value={this.state.minute} 
+          onKeyDown={this.preventNotNumInput}
           onChange={this.onMinuteChange.bind(this)} 
           className={`form-control input-xs time-input ${minute_error}`} />
       </div>
@@ -62,6 +65,11 @@ export default class TimeInput extends Component {
       minute_error = 'error';
     }
     this.setState({ minute: e.target.value, minute_error }, this.checkTime.bind(this));
+  }
+  preventNotNumInput(e){
+    if(form.isNotNumberInput(e.which)){
+      e.preventDefault();
+    }
   }
   checkTime(){
     var time = this.val();

@@ -47,7 +47,7 @@ export default class TimeInput extends Component {
   }
   onHourChange(e){
     var {value} = e.target, hour_error;
-    if(form.isNumber(value) && value >= 0 && value < 24){
+    if(form.isNumber(value) && value >= 0 && value < 24 && value.length <= 2){
       hour_error = '';
     }else{
       hour_error = 'error';
@@ -59,7 +59,7 @@ export default class TimeInput extends Component {
   }
   onMinuteChange(e){
     var {value} = e.target, minute_error;
-    if(form.isNumber(value) && value >= 0 && value < 60){
+    if(form.isNumber(value) && value >= 0 && value < 60 && value.length <= 2){
       minute_error = '';
     }else{
       minute_error = 'error';

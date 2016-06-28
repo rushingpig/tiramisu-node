@@ -102,6 +102,9 @@ module.exports.getList = function (req, res, next) {
         list.forEach(curr=> {
             curr.second_order_regionalisms = curr.second_order_regionalisms.join('/');
         });
+        list.sort((a, b)=> {
+            return a.city_id - b.city_id;
+        });
 
         return {list: _.values(map), total_count: total_count};
     }).then(result=> {

@@ -710,6 +710,12 @@ class Main extends Component {
         let enableSaveButton = true;
 
         if (
+            state.productName.trim() === ''
+        ) {
+            enableSaveButton = false;
+        }
+
+        if (
             state.citiesOptionApplyRange === 1
             && [...state.citiesOptions.keys()].filter(x => x !== 'all').length === 0
         ) {
@@ -801,6 +807,5 @@ class Main extends Component {
 
 export default connect(
   ({ productSKUManagement, citiesSelector }) => ({ state: productSKUManagement, citiesSelector }),
-  // dispatch => ({ Action: bindActionCreators({...SkuAction, ...CitiesSelectorAction} ,dispatch) }),
   dispatch => ({ Action: bindActionCreators(SkuAction ,dispatch), CitiesSelectorAction: bindActionCreators(CitiesSelectorAction, dispatch) }),
 )(Main);

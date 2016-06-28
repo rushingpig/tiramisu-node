@@ -445,7 +445,7 @@ DeliveryDao.prototype.joinPaySQL = function (query) {
         'bdr.delivery_pay',
         'bdr.is_review',
 
-        'bps.num AS num',
+        'bos.num AS num',
         'bp.name AS product_name',
         'bps.size AS size'
     ];

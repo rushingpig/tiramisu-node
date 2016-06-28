@@ -100,8 +100,8 @@ class Main extends Component {
                 </Row>
                 <Row>
                     <Col xs="4">
-                        <label>所属城市：</label>
-                        <span className="text-muted">广东省&nbsp;广州市&nbsp;花都</span>
+                        <label>所属地区：</label>
+                        <span className="text-muted">{state.position}</span>
                     </Col>
                     <Col xs="4">
                         <label>产品编码：</label>

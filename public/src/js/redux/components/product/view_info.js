@@ -67,7 +67,7 @@ class Main extends Component {
                 </Row>
                 <Row>
                     <Col xs="4"><label>所属分类：</label><span className="text-muted">{state.productCategory.join(' / ')}</span></Col>
-                    <Col xs="4"><label>{'　　'}所属城市：</label><span className="text-muted">-</span></Col>
+                    <Col xs="4"><label>{'　　'}所属地区：</label><span className="text-muted">{state.position}</span></Col>
                 </Row>
                 <Row>
                     <Col xs="4"><label>是否预售：</label><span className="text-muted">{state.isPreSale ? "是" : "否"}</span></Col>

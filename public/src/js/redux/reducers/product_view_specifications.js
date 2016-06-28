@@ -8,6 +8,7 @@ const initialState = {
 
     productId: 0,
     productName: '',
+    position: '',
     canBuyInOfficialSite: false,
     specifications: [],
     orderSource: new Map(),
@@ -26,12 +27,13 @@ const mapSku = sku => ({
 })
 
 const switchType = {
-    [ActionTypes.LOAD_BASIC_DATA]: (state, { status, orderSourceData, productSpecData, pageNum, reason }) => {
+    [ActionTypes.LOAD_BASIC_DATA]: (state, { status, orderSourceData, productSpecData, provincesData, pageNum, reason }) => {
         switch(status) {
             case 'success':
                 state = {
-                    ...state,
+                    ...initialState,
                     basicDataLoadStatus: 'success',
+                    position: provincesData[productSpecData.product.province_id] + ' ' + productSpecData.product.city_name,
                     productId: productSpecData.product.id,
                     productName: productSpecData.product.product_name,
                     canBuyInOfficialSite: productSpecData.skus.some(sku => sku.website === '1'),

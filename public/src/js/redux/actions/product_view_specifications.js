@@ -19,6 +19,7 @@ const es6promisify = function(func) {
 const get = es6promisify(Req.get);
 
 const loadOrderSource = () => get(Url.order_srcs.toString());
+const loadProvinces  = () => get(Url.provinces.toString());
 const getBasicData = (cityId, productId, pageNum, pageSize) => get(
     Url.viewSkuSpec.toString(), {
         cityId,
@@ -39,14 +40,17 @@ const loadBasicData = (cityId, productId, pageNum) => (
         if (pageNum === 0) {
             return Promise.all([
                 loadOrderSource(),
+                loadProvinces(),
                 getBasicData(cityId, productId, pageNum, pageSize)
             ]).then(([
                 orderSourceData,
+                provincesData,
                 productSpecData
             ]) => dispatch({
                 type: ActionTypes.LOAD_BASIC_DATA,
                 status: 'success',
                 orderSourceData,
+                provincesData,
                 productSpecData,
                 pageNum
             })).catch(

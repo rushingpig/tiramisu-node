@@ -6,6 +6,7 @@ const initialState = {
     failedMsg: '',
 
     productName: '',
+    position: '',
     canBuyInOfficialSite: false,
     productCategory: [],
     isPreSale: false,
@@ -19,11 +20,12 @@ const initialState = {
 };
 
 const switchType = {
-    [ActionTypes.LOAD_BASIC_DATA]: (state, { status, productData, orderSourceData, reason }) => {
+    [ActionTypes.LOAD_BASIC_DATA]: (state, { status, productData, orderSourceData, provincesData, reason }) => {
         switch(status) {
             case 'success':
                 state = {
-                    ...state,
+                    ...initialState,
+                    position: provincesData[productData.product.province_id] + ' ' + productData.product.city_name,
                     basicDataLoadStatus: 'success',
                     productName: productData.product.product_name,
                     canBuyInOfficialSite: productData.skus.some(sku => sku.website === "1"), // 编号1代表官方商城购买渠道

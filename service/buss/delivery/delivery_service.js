@@ -1183,7 +1183,8 @@ DeliveryService.prototype.exportRecordExcel = (req, res)=> {
 
     if (query.deliveryman_id == 0) delete query.deliveryman_id;
 
-    if (is_COD) {
+    if (!is_COD) {
+        query.is_COD = 1;
         uri += 'COD';
         sql = deliveryDao.joinCODSQL(query);
     } else {

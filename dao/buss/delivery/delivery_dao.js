@@ -600,6 +600,12 @@ DeliveryDao.prototype.joinCODSQL = function (query) {
         sql += `AND bo.deliveryman_id = ? `;
         params.push(query.deliveryman_id);
     }
+    if (query.is_COD !== undefined && query.is_COD !== null) {
+        if (query.is_COD)
+            sql += `AND bo.total_amount > 0 `;
+        else
+            sql += `AND bo.total_amount = 0 `;
+    }
 
     return mysql.format(sql, params);
 };

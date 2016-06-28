@@ -530,7 +530,7 @@ DeliveryDao.prototype.joinCODSQL = function (query) {
         'bo.delivery_time',
         'bo.total_amount',
         'if(bo.COD_amount IS NULL, bo.total_amount, bo.COD_amount) AS COD_amount',
-        'bo.is_pos_pay AS pay_modes_name',
+        'if(bo.is_pos_pay = 1, "POS", "现金") AS pay_modes_name',
         'bo.remarks AS remark',
 
         'dr2.name AS city_name',

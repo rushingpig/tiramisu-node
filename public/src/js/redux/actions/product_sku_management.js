@@ -416,12 +416,18 @@ const removeSource = sourceId => {
     }
 }
 
-const changeSelectedSource = sourceId => {
-    return {
-        type: ActionTypes.CHANGE_SELECTED_SOURCE,
-        sourceId: Number(sourceId),
+const changeSelectedSource = sourceId => (
+    (dispatch, getState) => {
+        const { sourceSpecifications } = getState().productSKUManagement.tempOptions;
+
+        if (sourceSpecifications.has(sourceId)) {
+            dispatch({
+                type: ActionTypes.CHANGE_SELECTED_SOURCE,
+                sourceId: Number(sourceId),
+            });
+        }
     }
-}
+)
 
 const addSourceSpec = () => {
     return {

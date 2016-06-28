@@ -740,19 +740,19 @@ class Main extends Component {
                 <div className="panel" style={tabContentBoxStyle}>
                     <div className="panel-body">
                         <h3>{'　'}基本信息</h3>
-                        <hr/>
+                        <hr style={{borderTop: 'solid 2px #9E6D24'}}/>
                         <BasicOptions state={state} citiesSelectorState={citiesSelector} Action={Action} />
                         <p />
                         <h3>{'　'}城市配置<small className="text-primary">{'　'}城市一致操作，则默认所有城市该商品的价格规格全部一致。独立城市编辑，则城市的规格配置均不同</small></h3>
-                        <hr/>
+                        <hr style={{borderTop: 'solid 2px #9E6D24'}}/>
                         {
                             state.selectedProvince === 0
                             ? <Row><Col offset="1" xs="11"><span className="text-danger">你还未选择上线城市，无法设置商品信息！</span></Col></Row>
                             : <CitiesOptions state={state} Action={Action} />
                         }
-                        <hr/>
+                        <hr style={{borderTop: 'solid 2px #9E6D24'}}/>
                         <div className="row">
-                            <div className="col-xs-4 col-xs-offset-2">
+                            <div className="col-xs-10 col-xs-offset-2">
                             {
                                 enableSaveButton ? (
                                     <button className="btn btn-theme" onClick={Action.saveOption}>
@@ -763,6 +763,12 @@ class Main extends Component {
                                         保存商品设置
                                     </button>
                                 )
+                            }
+                            {'　'}
+                            {
+                                state.citiesOptionApplyRange === 1 && (state.cityOptionSavable && !state.cityOptionSaved)
+                                ? (<small className="text-danger">当前所选城市的配置信息尚未保存</small>)
+                                : null
                             }
                             </div>
                         </div>

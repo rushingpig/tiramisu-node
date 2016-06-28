@@ -185,7 +185,7 @@ class Main extends Component {
                             <span className="pull-right">
                                 {
                                     V("ProductionManageAdd") ? (
-                                        <Link to="/pm/sku_manage/add" className="btn btn-xs btn-success">
+                                        <Link to="/pm/sku_manage/add" className="btn btn-xs btn-theme">
                                             <i className="fa fa-plus fa-fw" />
                                             {' '}
                                             新建商品

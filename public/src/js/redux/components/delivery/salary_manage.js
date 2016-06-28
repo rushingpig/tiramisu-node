@@ -204,10 +204,12 @@ class FilterHeader extends Component{
 		}
 		data.deliveryman_id = deliveryman_id;
 		var cod = this.refs.COD;
-		if(cod == 1){
-			data.isCOD = 1;
-		}else if(cod == 2){
-			data.isCOD = 0;
+		if(cod != undefined){
+			if(cod.value == 1){
+				data.isCOD = 1;
+			}else if(cod.value == 2){
+				data.isCOD = 0;
+			}
 		}
 		this.props.actions.exportExcel(data);
 	}

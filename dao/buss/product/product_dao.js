@@ -409,6 +409,7 @@ ProductDao.prototype.getSkuWithBooktimeByProductAndCity = function (data) {
         'sku.price as price',
         'sku.book_time as book_time',
         'secondary_booktime.book_time as secondary_book_time',
+        'secondary_booktime.regionalism_id as secondary_book_time_region',
         'dict.id as city_id',
         'dict.name as city_name',
         'dict.parent_id as province_id',

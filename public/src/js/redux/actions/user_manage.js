@@ -47,20 +47,12 @@ export function getDeptList(){
   }*/
 
 export const GET_USER_LIST = 'GET_USER_LIST';
-export function getUserList(org_id,uname_or_name,page_no,page_size){
-  var data = {page_size:page_size,page_no:page_no};
-  if(org_id != 0){
-    data={...data,org_id:org_id};
-  }else if(uname_or_name != ""){
-    data = {...data,uname_or_name:uname_or_name};
-  }
+export function getUserList(filterdata){
   return (dispatch) => {
-    return get(Url.user_list_info.toString(), data,GET_USER_LIST)
+    return get(Url.user_list_info.toString(), filterdata,GET_USER_LIST)
       .done((data)=>{
         dispatch({
-          dept_id:org_id,
-          uname_or_name:uname_or_name,
-          page_no:page_no,
+          filterdata: filterdata,
           data:data,
           type: 'GET_USER_LIST',
         });        

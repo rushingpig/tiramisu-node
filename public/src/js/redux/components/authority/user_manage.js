@@ -1,10 +1,10 @@
 import React,{Component,PropTypes} from 'react';
-import { render } from 'react-dom';
+import { render, findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { bindActionCreators } from 'redux'
 
-import { AreaActionTypes2 } from 'actions/action_types';
+import { AreaActionTypes1 } from 'actions/action_types';
 
 import AreaActions from 'actions/area';
 import * as UserManageActions from 'actions/user_manage';
@@ -16,8 +16,11 @@ import V from 'utils/acl';
 import StdModal from 'common/std_modal';
 import TreeNav from 'common/tree_nav';
 import Pagination from 'common/pagination';
+import Select from 'common/select';
+
 import { tableLoader, get_table_empty } from 'common/loading';
 import history from 'history_instance';
+import { SELECT_DEFAULT_VALUE} from 'config/app.config';
 
 class FilterHeader extends Component {
   constructor(props){
@@ -26,34 +29,43 @@ class FilterHeader extends Component {
   }
   render(){
     var {search_ing} = this.state;
-
+    var {area } = this.props;
+    var {provinces, cities} = area;
     return (
         <div className="panel search">
           <div className="panel-body form-inline">
-            {
+          {
+            V('UserManageSearch')?
+            [
               V('UserManageUnameOrNameFilter')
-                  ?
-                  <div  style={{float:'left',}}>
-                    <span className="">{' 用戶名/姓名:'}</span>
-                    <input ref='name'  className="form-control input-xs v-mg" />
-                    <button disabled={search_ing} data-submitting={search_ing}  className="btn btn-theme btn-xs space-left" onClick={this.search.bind(this)}>
-                      <i className="fa fa-search"></i>{' 查詢'}
-                    </button>
-                  </div>
-                  :
-                  null
-            }
-            {
-              V('UserManageAddUser')
-                  ?
-                  <div style={{float:'right',}}>
-                    <button onClick={this.addUser.bind(this)} className="btn btn-sm btn-theme pull-right">
-                      <i className=""></i>{' 添加用戶'}
-                    </button>
-                  </div>
-                  :
-                  null
-            }
+              &&
+              <input ref='name' key='input-username'  className="form-control input-xs v-mg space-right" placeholder='用戶名/姓名'/>,
+              V('UserManageProvinceFilter')
+              &&
+              <Select ref='province' key='province' 
+                onChange = {this.onProvinceChange.bind(this)}
+                options={provinces} 
+                default-text='--请选择省份--' 
+                className='form-control space-right'/>,
+              V('UserManageProvinceFilter')&&V('UserManageCityFilter')&&
+              <Select ref='city' key='city' options={cities} default-text='--请选择城市--' className='form-control space-right' />, 
+              <button key='searchBtn' disabled={search_ing} data-submitting={search_ing}  className="btn btn-theme btn-xs space-left" onClick={this.search.bind(this)}>
+                <i className="fa fa-search"></i>{' 查詢'}
+              </button>            
+            ]:null
+
+          }                                   
+          {
+            V('UserManageAddUser')
+                ?
+                <div style={{float:'right',}}>
+                  <button onClick={this.addUser.bind(this)} className="btn btn-sm btn-theme pull-right">
+                    <i className=""></i>{' 添加用戶'}
+                  </button>
+                </div>
+                :
+                null
+          }
           </div>
         </div>
     )
@@ -63,11 +75,37 @@ class FilterHeader extends Component {
     //console.log("hahahah");
     history.push('/am/user/add');
   }
+  onProvinceChange(e){
+    var {value} = e.target;
+    if(value != this.refs.province.props['default-value'])
+      var $city = $(findDOMNode(this.refs.city));
 
+      this.props.getCitiesSignal(value, 'authority').done(() => {
+        $city.trigger('focus'); //聚焦已使city_id的值更新
+      });
+  }
   search(){
     this.setState({search_ing: true});
-    var name = this.refs.name.value;
-    this.props.getUserList(0,name,0, this.props.page_size)
+    var data ={ page_no:0, page_size: this.props.page_size}
+    if(this.refs.name){
+      var name = this.refs.name.value;
+      if (name != '')
+        data.uname_or_name = name;
+    }
+    if(this.refs.province != undefined)
+    {
+      var $province = $(findDOMNode(this.refs.province));
+      if($province[0].value != SELECT_DEFAULT_VALUE){
+        data.province_id = $province[0].value;
+      }
+    }
+    if(this.refs.city != undefined){
+      var $city = $(findDOMNode(this.refs.city));
+      if($city[0].value != SELECT_DEFAULT_VALUE){
+        data.city_id = $city[0].value;
+      }
+    }
+    this.props.getUserList(data)
         .always(()=>{
           this.setState({search_ing: false});
         });
@@ -165,8 +203,8 @@ class UserManagePannel extends Component{
     // var { loading ,refresh } = this.props;
     // console.log(this.props.deptListManage.list);
     var {page_no,dept_id,uname_or_name,total,loading,refresh,list}= this.props.UserListManage;
-    var {dept_role} = this.props;
-    var {userDelete,usableAlter} = this.props.actions;
+    var {dept_role, area, } = this.props;
+    var {userDelete,usableAlter, getCitiesSignal} = this.props.actions;
     var {depts} = dept_role;
 
     var depts_active = depts.map(e => {
@@ -181,7 +219,9 @@ class UserManagePannel extends Component{
     })
     return (
         <div className="">
-          <FilterHeader page_size={this.state.page_size} getUserList={this.props.actions.getUserList}/>
+          <FilterHeader area = {area} page_size={this.state.page_size} 
+            getUserList={this.props.actions.getUserList}
+            getCitiesSignal = {getCitiesSignal}/>
 
           <div className="authority-manage">
             <div className="panel pull-left navbar" style={{paddingTop:'15px',paddingLeft:'15px',paddingBottom:'15px'}}>
@@ -234,9 +274,10 @@ class UserManagePannel extends Component{
 
   search(page){
     //搜索数据，无需loading图
-    var {dept_id,page_no,uname_or_name} = this.props.UserListManage;
+    var {filterdata} = this.props.UserListManage;
+    var {page_no} = filterdata;
     page = typeof page == 'undefined' ? page_no : page;
-    this.props.actions.getUserList(dept_id,uname_or_name,page,this.state.page_size);
+    this.props.actions.getUserList(filterdata);
   }
 
   viewDeleteUserModal(id){
@@ -250,10 +291,11 @@ class UserManagePannel extends Component{
   componentDidMount(){
     LazyLoad('noty');
     setTimeout(()=>{
-      var {getUserList,getDepts} = this.props.actions;
+      var {getUserList,getDepts, getProvincesSignal} = this.props.actions;
       var {page_no,uname_or_name} = this.props.UserListManage;
       var dept_id=0;
       getDepts();
+      getProvincesSignal('authority');
       getUserList(dept_id,uname_or_name,0,this.state.page_size);
       //this.search();
     },0)
@@ -261,8 +303,9 @@ class UserManagePannel extends Component{
 
   onToggleDept(dept_id){
     //this.props.actions.getDepts(dept_id);
-    var {page_no,uname_or_name} = this.props.UserListManage;
-    this.props.actions.getUserList(dept_id,uname_or_name,0,this.state.page_size);
+    var {filterdata} = this.props.UserListManage;
+    filterdata.page_no = 0;
+    this.props.actions.getUserList(filterdata);
   }
 }
 
@@ -338,7 +381,7 @@ function mapDispatchToProps(dispatch){
     actions:bindActionCreators({
       ...UserManageActions,
       ...DeptRoleActions(),
-      ...AreaActions(AreaActionTypes2)
+      ...AreaActions(AreaActionTypes1)
     },dispatch)};
   /*return bindActionCreators({...UserManageActions, ...AreaActions(AreaActionTypes2)},dispatch);*/
 }

@@ -8,7 +8,7 @@ import clone from 'clone';
 import { REQUEST } from 'config/app.config';
 
 import {dept_role} from './dept_role';
-
+import { area } from './area_select';
 
 /*var initial_deptstate = {
   data: [{
@@ -28,9 +28,7 @@ import {dept_role} from './dept_role';
 
 var initial_state = {
   total:0,
-  page_no:0,
-  uname_or_name:'',
-  dept_id:0,
+  filterdata:{},
   list:[],
 }
 
@@ -114,8 +112,7 @@ function UserListManage(state = initial_state,action){
   switch( action.type ){
     case UserActions.GET_USER_LIST:
       return {...state,total:clone(action.data.total),list:clone(action.data.list),
-        uname_or_name:clone(action.uname_or_name),dept_id:clone(action.dept_id),
-        page_no:clone(action.page_no)};
+        filterdata:clone(action.filterdata)};
     case UserActions.USER_DELETE:
       var list = state.list.filter((n)=>{
         return n.id !== action.id;
@@ -163,7 +160,7 @@ var main_state={
 }
 
 export default combineReducers({
-  /*area:area(),*/
+  area:area(),
   accessManage,
   UserListManage,
   RoleListManage,

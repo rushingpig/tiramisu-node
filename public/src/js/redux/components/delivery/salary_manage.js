@@ -195,23 +195,42 @@ class FilterHeader extends Component{
 	  this.setState({ filter_deliveryman_results: results, selected_deliveryman_id: results.length && results[0].deliveryman_id });
 	}
 	onExportExcel(){
-		var data = {};
-		var deliveryman_id = this.refs.deliveryman.value;
-		data.begin_time=this.state.begin_time;
-		data.end_time = this.state.end_time;
-		if(deliveryman_id == -1){
-			Noty('warning', '请选择配送员'); return; 
+		var filterdata =  {};
+		if(this.refs.searchKeywords){
+			var keywords = this.refs.searchKeywords.refs.input.value;
+			if(keywords != '')
+				filterdata.keywords = keywords;
 		}
-		data.deliveryman_id = deliveryman_id;
+		filterdata.begin_time = this.state.begin_time;
+		filterdata.end_time = this.state.end_time;
+		if(this.refs.station){
+			var station_id = parseInt($(findDOMNode(this.refs.station))[0].value);
+			if(station_id != this.refs.station.props['default-value'])
+				filterdata.station_id = station_id;			
+		}
+		if(this.refs.province){
+			var province_id = parseInt($(findDOMNode(this.refs.province))[0].value);
+			if(province_id != this.refs.province.props['default-value'])
+				filterdata.province_id = province_id;
+		}
+		if(this.refs.city){
+			var city_id = parseInt($(findDOMNode(this.refs.city))[0].value);
+			if(city_id != this.refs.city.props['default-value'])
+				filterdata.city_id = city_id;
+		}
+		var deliveryman_id = this.refs.deliveryman.value;
+		if(deliveryman_id != 0){
+			filterdata.deliveryman_id = deliveryman_id;			 
+		}
 		var cod = this.refs.COD;
 		if(cod != undefined){
 			if(cod.value == 1){
-				data.isCOD = 1;
+				filterdata.isCOD = 1;
 			}else if(cod.value == 2){
-				data.isCOD = 0;
-			}
+				filterdata.isCOD = 0;
+			}			
 		}
-		this.props.actions.exportExcel(data);
+		this.props.actions.exportExcel(filterdata);
 	}
 	onBegintimeChange(time){
 		this.setState({begin_time:time});

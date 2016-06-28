@@ -472,12 +472,14 @@ const switchType = {
         let selectedCity;
         let tempOptions;
 
-        for (let cid in state.provincesData.get(id).list) {
+        [...state.provincesData.get(id).list].some(cid => {
             if (state.citiesData.has(cid)) {
                 selectedCity = cid;
-                break;
+                return true;
             }
-        }
+
+            return false;
+        });
 
         if (state.citiesOptions.has(selectedCity)) {
             tempOptions = clone(state.citiesOptions.get(selectedCity));

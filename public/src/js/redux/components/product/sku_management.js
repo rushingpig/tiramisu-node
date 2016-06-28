@@ -70,7 +70,7 @@ class BasicOptions extends Component {
 
     render() {
 
-        const { state, Action, citiesSelectorState } = this.props;
+        const { state, Action, CitiesSelectorAction, citiesSelectorState } = this.props;
 
         return (
             <FormHorizontal>
@@ -177,7 +177,7 @@ class BasicOptions extends Component {
                     (state.activeCitiesOption === 1 && this.state.showCitiesSelector) ? (
                         <FormGroup>
                             <Col xs="8" offset='2'>
-                                <CitiesSelector citiesSelector={citiesSelectorState} {...Action} />
+                                <CitiesSelector citiesSelector={citiesSelectorState} {...CitiesSelectorAction} />
                             </Col>
                         </FormGroup>
                     ) : undefined
@@ -801,5 +801,6 @@ class Main extends Component {
 
 export default connect(
   ({ productSKUManagement, citiesSelector }) => ({ state: productSKUManagement, citiesSelector }),
-  dispatch => ({ Action: bindActionCreators({...SkuAction, ...CitiesSelectorAction} ,dispatch) }),
+  // dispatch => ({ Action: bindActionCreators({...SkuAction, ...CitiesSelectorAction} ,dispatch) }),
+  dispatch => ({ Action: bindActionCreators(SkuAction ,dispatch), CitiesSelectorAction: bindActionCreators(CitiesSelectorAction, dispatch) }),
 )(Main);

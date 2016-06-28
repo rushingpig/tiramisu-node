@@ -1191,7 +1191,6 @@ DeliveryService.prototype.exportRecordExcel = (req, res)=> {
         sql = deliveryDao.joinPaySQL(query);
     }
 
-    console.log(sql);
     // 请求导出excel服务
     request({
         uri: uri,

@@ -531,7 +531,7 @@ DeliveryDao.prototype.joinCODSQL = function (query) {
         'bo.total_amount',
         'if(bo.COD_amount IS NULL, bo.total_amount, bo.COD_amount) AS COD_amount',
         'if(bo.is_pos_pay = 1, "POS", "现金") AS pay_modes_name',
-        'bo.remarks AS remark',
+        'bdr.remark',
 
         'dr2.name AS city_name',
         'bds.name AS delivery_name',
@@ -558,6 +558,8 @@ DeliveryDao.prototype.joinCODSQL = function (query) {
     // 配送员
     sql += `INNER JOIN ?? su ON su.id = bo.deliveryman_id `;
     params.push(tables.sys_user);
+    sql += `LEFT JOIN ?? bdr ON bdr.order_id = bo.id `;
+    params.push(tables.buss_delivery_record);
 
     sql += `WHERE bo.status IN ('${constant.OS.COMPLETED}', '${constant.OS.EXCEPTION}') `;
     if (!query.user.is_admin) {

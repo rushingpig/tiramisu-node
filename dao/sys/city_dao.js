@@ -277,7 +277,7 @@ CityDao.prototype.deleteCityInfo = function (city_id) {
         params.push(tables.dict_regionalism);
         sql += `SET dr.del_flag = ${del_flag.HIDE} `;
         sql += `WHERE dr2.id = ? AND sc.is_city IS NULL `;
-        params.push(city_id, city_id);
+        params.push(city_id);
         yield trans.query(sql, params);
         yield delRegionalism(trans, city_id);
 
@@ -332,8 +332,12 @@ function delRegionalism(connection, id, reg_ids) {
         let params = [tables.dict_regionalism, id];
         sql += `AND dr.id NOT REGEXP '[0-9]{4}99' `;
         sql += `AND dr.del_flag = ${del_flag.SHOW} `;
-        sql += `AND dr.id NOT IN ( ? )`;
-        params.push(reg_ids.join());
+        if (reg_ids.length > 0) {
+            reg_ids.forEach(curr=> {
+                sql += `AND dr.id != ? `;
+                params.push(curr);
+            });
+        }
         let info = yield connection.query(sql, params);
         if (!info) return Promise.reject(`NOT FOUND regionalism_id = ${id}`);
 

@@ -61,12 +61,12 @@ var FilterHeader = React.createClass({
             </button>
             <ul ref="dropDownMenu" className="dropdown-menu">
               <li>
-                <a ref="uploadFileCon" onClick={this.uploadFileHandler} href="javascript:void(0)" >
+                <a id="uploadFileBtn" onClick={this.uploadFileHandler} href="javascript:void(0)" >
                   上传文件
                 </a>
               </li>
               <li>
-                <a ref="uploadDirCon" onClick={this.uploadFileHandler} href="javascript:void(0)" >
+                <a ref="uploadDirBtn" onClick={this.uploadFileHandler} href="javascript:void(0)" >
                   上传文件夹
                 </a>
               </li>
@@ -91,45 +91,54 @@ var FilterHeader = React.createClass({
       </div>
     )
   },
-  mixins: [LinkedStateMixin],
   componentDidMount(){
-    LazyLoad('fileupload', () => {
-      $('<input type="file" class="hidden" />')
-        .appendTo($(this.refs.uploadFileCon).parent())
-        .fileupload({
-          url: '/upload/img',
-          paramName: 'file',
-          add: (e, data) => {
-            data.uploadName = data.files[0].name;
-            data.submit();
-          },
-          ...this.fileUploadOptions()
-        });
-
-      $('<input type="file" webkitdirectory class="hidden" />')
-        .appendTo($(this.refs.uploadDirCon).parent())
-        .fileupload({
-          url: '/upload/imgs',
-          paramName: 'files[]',
-          singleFileUploads: false,
-          sequentialUploads: true,
-          add: function(e, data){
-            data.files = data.files.filter( n => {
-              if(!data.uploadName){
-                try{
-                  data.uploadName = n.webkitRelativePath.match(/^(.)+\//)[0];
-                }catch(e){
-                  console.log(e);
-                  data.uploadName = '未知路径/';
-                }
-              }
-              return !/^\./.test(n.name);
+    LazyLoad('qiniu_dev', () => {
+      var fileUploader = Qiniu.uploader({
+        runtimes: 'html5',
+        browse_button: 'uploadFileBtn',
+        // get_new_uptoken: true,
+        // unique_names: true, //文件名将变为hash值
+        // auto_start: true,
+        uptoken_url: '/upload/token', //服务器端可以
+        domain: 'o8wbe9riz.bkt.clouddn.com',
+        init: {
+          'FilesAdded': (up, files) => {
+            plupload.each(files, (file) => {
+              // 文件添加进队列后,处理相关的事情
             });
-            data.uploadName += ` (共${data.files.length}个文件)`;
-            data.submit();
+            fileUploader.start();
           },
-          ...this.fileUploadOptions()
-        })
+          // 'key': (up, file) => {
+          //   debugger;
+          //   return file.name;
+          // },
+          'BeforeUpload': (up, file) => {
+            // 每个文件上传前,处理相关的事情
+          },
+          'UploadProgress': (up, file) => {
+            // 每个文件上传时,处理相关的事情
+          },
+          'FileUploaded': (up, file, info) => {
+            // 每个文件上传成功后,处理相关的事情
+            // 其中 info 是文件上传成功后，服务端返回的json，形式如
+            // {
+            //    "hash": "Fh8xVqod2MQ1mocfI4S4KpRL6D98",
+            //    "key": "gogopher.jpg"
+            //  }
+            // 参考http://developer.qiniu.com/docs/v6/api/overview/up/response/simple-response.html
+ 
+            // var domain = up.getOption('domain');
+            // var res = parseJSON(info);
+            // var sourceLink = domain + res.key; 获取上传成功后的文件的Url
+          },
+          'UploadComplete': () => {
+            //队列文件处理完毕后,处理相关的 =>事情
+          },
+          'Error': (up, err, errTip) => {
+            //上传出错时,处理相关的事情
+          },
+        }
+      })
     });
   },
   fileUploadOptions: function(){
@@ -172,7 +181,6 @@ var FilterHeader = React.createClass({
   },
   uploadFileHandler(e){
     $(this.refs.dropDownMenu).hide();
-    $(e.target).parent().find('input:last').trigger('click');
     $('body').off('click', this.hideDropDownMenu);
   },
   showDropDownMenu: function(){
@@ -332,7 +340,7 @@ class ImageManagePannel extends Component {
   }
   componentDidMount() {
     this.props.getImageFileList();
-    LazyLoad('noty');
+    // LazyLoad('noty');
   }
   onBreadcrumbClicked(node){
     var index = this.state.breadcrumb.findIndex( b => b.id == node.id );

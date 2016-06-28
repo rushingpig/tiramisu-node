@@ -469,7 +469,7 @@ ProductDao.prototype.getSkuByProductWithRegion = function (productId) {
         'sku.price as price',
         'sku.book_time as book_time',
         'secondary_booktime.book_time as secondary_book_time',
-        'secondary_booktime.regionalism_id as secondary_book_time_region',
+        'dict.name as secondary_book_time_region',
         'sku.presell_start as presell_start',
         'sku.presell_end as presell_end',
         'sku.send_start as send_start',
@@ -478,10 +478,11 @@ ProductDao.prototype.getSkuByProductWithRegion = function (productId) {
         'sku.activity_start as activity_start',
         'sku.activity_end as activity_end'
     ];
-    let sql = 'select ' + columns.join(',') + ' from ?? sku left join ?? secondary_booktime on sku.id = secondary_booktime.sku_id and secondary_booktime.del_flag = 1 where sku.product_id = ? and sku.del_flag = 1';
+    let sql = 'select ' + columns.join(',') + ' from ?? sku left join ?? secondary_booktime on sku.id = secondary_booktime.sku_id and secondary_booktime.del_flag = 1 join ?? dict on secondary_booktime.regionalism_id = dict.id where sku.product_id = ? and sku.del_flag = 1';
     let params = [];
     params.push(config.tables.buss_product_sku);
     params.push(config.tables.buss_product_sku_booktime);
+    params.push(config.tables.dict_regionalism);
     params.push(productId);
     return baseDao.select(sql, params);
 }

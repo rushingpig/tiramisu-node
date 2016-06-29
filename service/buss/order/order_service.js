@@ -1161,6 +1161,7 @@ OrderService.prototype.editOrderRemarks = (req,res,next) => {
   order_obj = {
     remarks : remarks
   };
+  systemUtils.addLastOptCs(order_obj, req);
 
   let order_history_obj = {
     order_id: orderId,

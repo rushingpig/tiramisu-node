@@ -1191,6 +1191,7 @@ DeliveryService.prototype.exportRecordExcel = (req, res)=> {
         sql = deliveryDao.joinCODSQL(query);
     } else {
         uri += 'salary';
+        if(req.query.isCOD == '0') query.is_COD = false;
         sql = deliveryDao.joinPaySQL(query);
     }
 

@@ -699,7 +699,7 @@ class CitiesOptions extends Component {
 class Main extends Component {
     render() {
 
-        const { state, Action, citiesSelector } = this.props;
+        const { state, Action, citiesSelector, CitiesSelectorAction } = this.props;
 
         if (state.basicDataLoadStatus === 'pending') {
             return (
@@ -741,7 +741,7 @@ class Main extends Component {
                     <div className="panel-body">
                         <h3>{'　'}基本信息</h3>
                         <hr style={{borderTop: 'solid 2px #9E6D24'}}/>
-                        <BasicOptions state={state} citiesSelectorState={citiesSelector} Action={Action} />
+                        <BasicOptions state={state} citiesSelectorState={citiesSelector} Action={Action} CitiesSelectorAction={CitiesSelectorAction} />
                         <p />
                         <h3>{'　'}城市配置<small className="text-primary">{'　'}城市一致操作，则默认所有城市该商品的价格规格全部一致。独立城市编辑，则城市的规格配置均不同</small></h3>
                         <hr style={{borderTop: 'solid 2px #9E6D24'}}/>

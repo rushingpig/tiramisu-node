@@ -1030,10 +1030,12 @@ DeliveryService.prototype.getRecord = (req, res, next)=>{
     if (query.isCOD !== undefined) query.is_COD = (query.isCOD == '1');
     let promise = co(function *() {
         let count = yield deliveryDao.findDeliveryRecordCount(query);
-        if (!_.isArray(count.order_ids) || count.order_ids.length == 0) {
-            throw new TiramisuError(res_obj.NO_MORE_RESULTS);
-        }
         let result = Object.assign({}, _.omit(count, ['order_ids']));
+        if (result.total == null) result.total = 0;
+        if (result.total_amount == null) result.total_amount = 0;
+        if (result.COD_amount == null) result.COD_amount = 0;
+        if (result.POS_amount == null) result.POS_amount = 0;
+        if (result.delivery_pay == null) result.delivery_pay = 0;
         result.cash_amount = result.COD_amount - result.POS_amount;
         let list = yield deliveryDao.findDeliveryRecordById(count.order_ids);
         list.sort((a, b)=> {

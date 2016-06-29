@@ -354,9 +354,9 @@ DeliveryDao.prototype.findDeliveryRecordCount = function (query) {
         else
             sql += `AND bo.total_amount = 0 `;
     }
-    if (query.keywords) {
-        sql += `AND bo.id LIKE ? `;
-        params.push(`%${query.keywords}%`);
+    if (query.keywords) {  // TODO:
+        // sql += `AND bo.id LIKE ? `;
+        // params.push(`%${query.keywords}%`);
     }
 
     return co(function *() {

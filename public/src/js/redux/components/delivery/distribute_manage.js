@@ -576,7 +576,7 @@ var PartRow = React.createClass({
         <button 
           className='btn btn-sm btn-default' 
           style={{borderRadius:'10px 10px',width:'20px',height:'20px',lineHeight:'0.5',padding:'5px 5px'}}
-          onClick = { this.onIncrement}><i>+</i></button>
+          onClick = { this.onIncrement}>+</button>
         </td>
         <td>
           <input type = "text" value = { props.greeting_card } onChange= { this.onRemarksChange}/>
@@ -667,9 +667,9 @@ class SparePartsGroup extends Component{
           ]:*/
           <div style={{paddingBottom:'10px'}}>
             {
-              this.props.list.map( n => 
+              this.props.list.map( (n, i) => 
                 {
-                  return (<PartNode data = {n} onChange= {this.onPartChange.bind(this)}/> )             
+                  return (<PartNode key={n.sku_id || i} data = {n} onChange= {this.onPartChange.bind(this)}/> )             
                 }
               )
             }
@@ -712,8 +712,8 @@ var SignedModal = React.createClass({
     
     var { spareparts } =  D_ ;
     /*var { deliverymanAtSameStation } =  D_ ;*/
-    var content = this.state.orderSpareparts.map(n => {
-      return <PartRow key = {n.sku_id} 
+    var content = this.state.orderSpareparts.map( (n, i) => {
+      return <PartRow key = {n.sku_id + i} 
                 {...n} 
                 onRemarksChange = { this.onRemarksChange }
                 onIncrement = {this.onIncrement}
@@ -847,15 +847,18 @@ var SignedModal = React.createClass({
       Noty('warning', '迟到时间输入有误');return;
     }
     if(!signin_date || !signin_hour){
-      Noty('warning', '请填写签收时间');return;
+      Noty('warning', '请填写正确的签收时间');return;
     }
+    // 去掉迟到赔付必填
     if(late_minutes > 0){
-      if(!refund_method){
+/*      if(!refund_method){
         Noty('warning', '请选择赔偿方式');return;
-      }
+      }*/
       if(refund_method == CASH){
         if(!form.isNumber(refund_money)){
           Noty('warning', '请输入现金赔偿金额');return;
+        }else if(refund_money > 29){
+          Noty('warning', '现金赔偿金额不应大于29元');return;         
         }
       }else{
         if(!refund_reson){
@@ -871,7 +874,7 @@ var SignedModal = React.createClass({
     var signData = {
       late_minutes: late_minutes,
       payfor_type: refund_method,
-      payfor_amount: refund_money,
+      payfor_amount: refund_money * 100,
       payfor_reason: refund_reson,
       signin_time: signin_date + ' ' + signin_hour,
       updated_time: updated_time,
@@ -1219,35 +1222,33 @@ class EditModal extends Component{
     return(
       <StdModal ref='modal' title='编辑订单完成页面' onConfirm={this.submitHandler.bind(this)}>
         <div className='form-group mg-15 form-inline'>
-          <div className='row'>
-            <div className='col-xs-7'>
-              <div className="input-group input-group-sm" style={{height:'27px'}}>
-                <span  style={{height:'27px',lineHeight:1}} className="input-group-addon"><i className="fa fa-search"></i></span>
-                <input type="text"  style={{height:'27px', width:'100px'}} 
-                  className="form-control" placeholder="配送员拼音首字母或手机号" 
-                  onChange = {this.filterHandler.bind(this)} />
-              </div>
-              <select name= 'deliveryman' value={deliveryman_id} ref='deliveryman' className="form-control input-sm"  style={{height:'27px',minWidth:100}}>
-                {
-                  content.length
-                  ? content
-                  : <option>无</option>
-                }
-              </select>
-              {/*<Select options={deliverymanAtSameStation} value={deliveryman_id} onChange={this.deliveryManChange.bind(this)}/>*/}
+          <div className="mg-15">
+            <div className="input-group input-group-xs" style={{height:'27px'}}>
+              <span  style={{height:'27px',lineHeight:1}} className="input-group-addon"><i className="fa fa-search"></i></span>
+              <input type="text"  style={{height:'27px'}} 
+                className="form-control" placeholder="配送员拼音首字母或手机号" 
+                onChange = {this.filterHandler.bind(this)} />
             </div>
-            <div className='col-xs-5'>
-              <label>货到付款金额：￥</label>
-              <input value={total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+            <select name= 'deliveryman' value={deliveryman_id} ref='deliveryman' className="form-control input-sm space-left"  style={{height:'27px',minWidth:100}}>
               {
-                total_amount != 0 ?
-                <select value={pay_way} ref='pay_way' name='pay_way' value={pay_way} className='form-control input-xs' onChange={this.onPayWayChange.bind(this)}>
-                  <option value='1'>现金</option>
-                  <option value='2'>POS机</option>
-                </select>
-                :null
-              }               
-            </div>
+                content.length
+                ? content
+                : <option>无</option>
+              }
+            </select>
+            {/*<Select options={deliverymanAtSameStation} value={deliveryman_id} onChange={this.deliveryManChange.bind(this)}/>*/}
+          </div>
+          <div className="">
+            <label>货到付款金额：￥</label>
+            <input value={total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+            {
+              total_amount != 0 ?
+              <select value={pay_way} ref='pay_way' name='pay_way' value={pay_way} className='form-control input-xs space-left' onChange={this.onPayWayChange.bind(this)}>
+                <option value='1'>现金</option>
+                <option value='2'>POS机</option>
+              </select>
+              :null
+            }               
           </div>
         </div>
       </StdModal>

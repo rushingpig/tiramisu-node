@@ -172,6 +172,7 @@ Constant.BUSS_ORDER_ERROR = {
  * @type {number}
  */
 Constant.DELIVERYMAN_ID = 34;
+Constant.CS_MAN_ID = 33;
 
 Constant.PRODUCT = {
     ACCESSORY_ID: 15

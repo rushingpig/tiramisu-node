@@ -11,6 +11,8 @@ import { tableLoader, get_table_empty } from 'common/loading';
 import StdModal from 'common/std_modal';
 import OperationRecordModal from 'common/operation_record_modal.js';
 import RecipientInfo from 'common/recipient_info';
+import SearchInput from 'common/search_input';
+import Pagination from 'common/pagination';
 
 
 import AreaActions from 'actions/area';
@@ -58,7 +60,8 @@ class FilterHeader extends Component{
 			deliveryman_id:-1,
 			COD:1,
 			search_txt:'',
-			search_ing:false,			
+			search_ing:false,
+			search_by_keywords_ing: false,			
 		}
 	}
 	componentWillReceiveProps(nextProps){
@@ -104,7 +107,7 @@ class FilterHeader extends Component{
 			area,stations
 		} = this.props;
 		var {provinces , cities} = area ;
-		var { filter_deliveryman_results, search_ing } = this.state;
+		var { filter_deliveryman_results, search_ing, search_by_keywords_ing } = this.state;
 		var content = filter_deliveryman_results.map( n => {
       		return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
 		})
@@ -123,6 +126,7 @@ class FilterHeader extends Component{
 			<div className='panel search' >
 
 				<div className='panel-body form-inline'>
+          			<SearchInput ref='searchKeywords' searchHandler={this.FilterDeliveyRecord.bind(this, 'search_by_keywords_ing')} searching={search_by_keywords_ing} className="form-inline v-mg space-right" placeholder="关键字" />
 					{'开始时间'}
 					<DatePicker editable 
 						upperLimit = {this.state.end_time}
@@ -142,10 +146,10 @@ class FilterHeader extends Component{
 					 		<Select ref='province' name='province' options = {provinces} 
 					 			onChange = {this.onProvinceChange.bind(this)}
 					 			default-text = '请选择省份'/>,
-					 		<Select ref='city' name='city' options = { cities} 
+					 		<Select className='space-right' ref='city' name='city' options = { cities} 
 					 			onChange= {this.onCityChange.bind(this)}
 					 			default-text = '请选择城市'/>,
-					 		<Select ref='station' name = 'station' options = { stations }
+					 		<Select className='space-right' ref='station' name = 'station' options = { stations }
 					 			default-text = '请选择配送站' />
 					 	]:null
 					 }
@@ -156,19 +160,19 @@ class FilterHeader extends Component{
 						  className="form-control" placeholder="配送员拼音首字母或手机号" 
 						  onChange = {this.filterHandler.bind(this)} />
 					</div>
-					<select name= 'deliveryman' ref='deliveryman' className="form-control input-sm"  style={{height:'27px',minWidth:100}}>
+					<select name= 'deliveryman' ref='deliveryman' className="form-control input-sm space-right"  style={{height:'27px',minWidth:100}}>
 						{
 							content.length
 							? content
 							: <option>无</option>
 						}
 					</select>
-					<select ref='COD' default-text = '是否货到付款' className='form-control input-xs'>
+					<select ref='COD' default-text = '是否货到付款' className='form-control input-xs space-right'>
 						<option value='-1'>是否货到付款</option>
 						<option value='1'>是</option>
 						<option value='2'>否</option>
 					</select>
-					<button disabled={search_ing} data-submitting = {search_ing} className="btn btn-theme btn-xs" onClick={this.FilterDeliveyRecord.bind(this)}>
+					<button disabled={search_ing} data-submitting = {search_ing} className="btn btn-theme btn-xs" onClick={this.FilterDeliveyRecord.bind(this, 'search_ing')}>
 					  <i className="fa fa-search"></i>{' 搜索'}
 					</button>
 				</div>
@@ -195,60 +199,12 @@ class FilterHeader extends Component{
 	  this.setState({ filter_deliveryman_results: results, selected_deliveryman_id: results.length && results[0].deliveryman_id });
 	}
 	onExportExcel(){
-		var data = {};
-		var deliveryman_id = this.refs.deliveryman.value;
-		data.begin_time=this.state.begin_time;
-		data.end_time = this.state.end_time;
-		if(deliveryman_id == -1){
-			Noty('warning', '请选择配送员'); return; 
-		}
-		data.deliveryman_id = deliveryman_id;
-		var cod = this.refs.COD;
-		if(cod == 1){
-			data.isCOD = 1;
-		}else if(cod == 2){
-			data.isCOD = 0;
-		}
-		this.props.actions.exportExcel(data);
-	}
-	onBegintimeChange(time){
-		this.setState({begin_time:time});
-	}
-	onEndtimeChange(time){
-		this.setState({end_time:time});
-	}
-	onProvinceChange(e){
-	  var {value} = e.target;
-	  this.props.actions.resetCities();
-	  if(value != this.refs.province.props['default-value'])
-	    var $city = $(findDOMNode(this.refs.city));
-		//this.props.actions.getCities(value);
-	    this.props.actions.getCitiesSignal(value, 'authority').done(() => {
-	      $city.trigger('focus'); //聚焦已使city_id的值更新
-	      this.props.getStationListByScopeSignal({signal:'authority', province_id: value});
-	    });
-	}
-	onCityChange(e){
-		this.setState({ _hasInitial: false});
-		var {value} = e.target;
-		/*this.props.actions.getCityStations(value);*/
-		var $deliveryman = $(findDOMNode(this.refs.deliveryman));
-		if(value == SELECT_DEFAULT_VALUE){
-			this.props.actions.getAllDeliveryman().done(() => {
-				$deliveryman.trigger('focus');
-			});
-		}else{
-			this.props.actions.getCityDeliveryman(value).done(() => {
-				$deliveryman.trigger('focus');
-				//this.props.actions.getCityStations(value);
-				this.props.getStationListByScopeSignal({signal:'authority', city_id: value})
-			});			
-		}
-
-	}
-	FilterDeliveyRecord(){
-		this.setState({search_ing:true});
 		var filterdata =  {};
+		if(this.refs.searchKeywords){
+			var keywords = this.refs.searchKeywords.refs.input.value;
+			if(keywords != '')
+				filterdata.keywords = keywords;
+		}
 		filterdata.begin_time = this.state.begin_time;
 		filterdata.end_time = this.state.end_time;
 		if(this.refs.station){
@@ -270,15 +226,95 @@ class FilterHeader extends Component{
 		if(deliveryman_id != 0){
 			filterdata.deliveryman_id = deliveryman_id;			 
 		}
-		var cod = this.refs.COD.value;
-		if(cod == 1){
-			filterdata.isCOD = 1;
-		}else if(cod == 2){
-			filterdata.isCOD = 0;
+		var cod = this.refs.COD;
+		if(cod != undefined){
+			if(cod.value == 1){
+				filterdata.isCOD = 1;
+			}else if(cod.value == 2){
+				filterdata.isCOD = 0;
+			}			
 		}
+		this.props.actions.exportExcel(filterdata);
+	}
+	onBegintimeChange(time){
+		this.setState({begin_time:time});
+	}
+	onEndtimeChange(time){
+		this.setState({end_time:time});
+	}
+	onProvinceChange(e){
+	  var {value} = e.target;
+	  this.props.actions.resetCities();
+	  if(value != this.refs.province.props['default-value'])
+	    var $city = $(findDOMNode(this.refs.city));
+		//this.props.actions.getCities(value);
+	    this.props.actions.getCitiesSignal(value, 'authority').done(() => {
+	      this.props.getStationListByScopeSignal({signal:'authority', province_id: value});
+	      $city.trigger('focus'); //聚焦已使city_id的值更新
+
+	    });
+	}
+	onCityChange(e){
+		this.setState({ _hasInitial: false});
+		var {value} = e.target;
+		/*this.props.actions.getCityStations(value);*/
+		var $deliveryman = $(findDOMNode(this.refs.deliveryman));
+		if(value == SELECT_DEFAULT_VALUE){
+			this.props.actions.getAllDeliveryman().done(() => {
+				$deliveryman.trigger('focus');
+			});
+		}else{
+			this.props.actions.getCityDeliveryman(value).done(() => {
+				//this.props.actions.getCityStations(value);
+				this.props.getStationListByScopeSignal({signal:'authority', city_id: value})
+				$deliveryman.trigger('focus');
+				
+			});			
+		}
+
+	}
+	FilterDeliveyRecord(search_in_state){
+		this.setState({[search_in_state]:true});
+		var filterdata =  {};
+		if(this.refs.searchKeywords){
+			var keywords = this.refs.searchKeywords.refs.input.value;
+			if(keywords != '')
+				filterdata.keywords = keywords;
+		}
+		filterdata.begin_time = this.state.begin_time;
+		filterdata.end_time = this.state.end_time;
+		if(this.refs.station){
+			var station_id = parseInt($(findDOMNode(this.refs.station))[0].value);
+			if(station_id != this.refs.station.props['default-value'])
+				filterdata.station_id = station_id;			
+		}
+		if(this.refs.province){
+			var province_id = parseInt($(findDOMNode(this.refs.province))[0].value);
+			if(province_id != this.refs.province.props['default-value'])
+				filterdata.province_id = province_id;
+		}
+		if(this.refs.city){
+			var city_id = parseInt($(findDOMNode(this.refs.city))[0].value);
+			if(city_id != this.refs.city.props['default-value'])
+				filterdata.city_id = city_id;
+		}
+		var deliveryman_id = this.refs.deliveryman.value;
+		if(deliveryman_id != 0){
+			filterdata.deliveryman_id = deliveryman_id;			 
+		}
+		var cod = this.refs.COD;
+		if(cod != undefined){
+			if(cod.value == 1){
+				filterdata.isCOD = 1;
+			}else if(cod.value == 2){
+				filterdata.isCOD = 0;
+			}			
+		}
+		filterdata.page_no = 0;
+		filterdata.page_size = this.props.page_size;
 		this.props.actions.getDeliveryRecord(filterdata)
 			.always(() => {
-				this.setState({search_ing:false});
+				this.setState({[search_in_state]:false});
 			});
 	}
 	componentDidMount(){
@@ -333,9 +369,9 @@ var SalaryRow = React.createClass({
 		var {main, is_POS} = props;
 		var {active_order_id} = main;
 		var str = '';
-		if(is_POS != null && props.pay_status == 'COD'){
-			if(is_POS) str = '(POS机)';
-			else str = '(现金)'
+		if(is_POS != null && props.total_amount > 0){
+			if(is_POS) str = '签收收款: POS机';
+			else str = '签收收款: 现金'
 		}
 		return(
 			<tr className={active_order_id == props.order_id ? 'active' : ''} onClick={this.ClickHandler}>
@@ -343,12 +379,19 @@ var SalaryRow = React.createClass({
 				<td><div style={{width:80}}>{props.signin_time}</div></td>
 				<td>{props.order_id}</td>
 				<RecipientInfo data={props} />
+				<td>{props.deliveryman_name}<br/>{props.deliveryman_mobile}</td>
 				<td>
 					{ DELIVERY_MAP[props.delivery_type] }
 				</td>
 				<td>
-					{props.order_status == SIGN_STATUS_EXCEPTION ? 
-						[<span>未签收</span>,<br/>,<a href='javascript:;' onClick={this.showCredential}>[未签收凭证]</a>]
+					{ props.delivery_count >= 2 ? 
+						[
+						<span key='sec_signin'>第二次配送:正常签收</span>, <br key='sec_signin_br'/>,
+						<span key='first_unsign'>第一次配送:未签收</span>,<br key='first_signin_br'/>,
+						<a key='unSignCredential' href='javascript:;' onClick={this.showCredential}>[未签收凭证]</a>]
+						:
+						props.order_status == SIGN_STATUS_EXCEPTION ? 
+						[<span key='span_unsign'>未签收</span>,<br key='unsign_br'/>,<a href='javascript:;' onClick={this.showCredential} key='unSign_Credential'>[未签收凭证]</a>]
 						:<span>正常签收</span>
 					}
 				</td>
@@ -373,7 +416,7 @@ var SalaryRow = React.createClass({
 						ref = 'COD_amount'
 						value ={this.state.COD_amount }
 						onChange = {this.onReceiveAmountChange}
-						style={{height:27,width:50, marginLeft:'auto', marginRight:'auto', 
+						style={{height:27,width:70, marginLeft:'auto', marginRight:'auto', 
 								backgroundColor: this.state.is_review? '#dac7a7':''}}/></td>
 				<td><input type='text' readOnly className='form-control' style={{height:27,
 						backgroundColor: this.state.is_review? '#dac7a7':''}}
@@ -488,33 +531,25 @@ class DeliveryManSalaryManagePannel extends Component{
 		super(props);
 		this.viewCredentialModal = this.viewCredentialModal.bind(this);
 		this.viewOperationRecordModal = this.viewOperationRecordModal.bind(this);
+		this.state = {
+			page_size: 10,
+		}
 	}
 	render(){
 		var {area, dispatch, deliveryman, main, loading, refresh, stations} = this.props;
 		var {exportExcel , getDeliveryProof, getOrderOptRecord, resetOrderOptRecord, getStationListByScopeSignal, resetStationListWhenScopeChange} = this.props.actions;
-		var {deliveryRecord, check_order_info, active_order_id, proof, operationRecord} = main;
+		var {deliveryRecord, check_order_info, active_order_id, proof, operationRecord, filter_data, total, COD_amount, POS_amount, cash_amount, delivery_pay, total_amount } = main;
+		var page_no = filter_data == undefined ? 0 : filter_data.page_no;
 		var { viewCredentialModal ,viewOperationRecordModal} = this;
 		var {provinces, cities } = area;
-		var amount_total = 0;
-		var receive_total = 0;
-		var salary_total = 0;
-		var cash = 0, pos = 0;
 		var content = deliveryRecord.map((n,i) => {
-			amount_total += n.total_amount;
-			receive_total += n.COD_amount;
-			salary_total += n.delivery_pay;
-			if( n.is_POS != null) {
-				if(n.is_POS) {pos += n.COD_amount}
-				else {cash += n.COD_amount}
-
-			}
 			return <SalaryRow key={n.order_id}
 						{...{...n, ...this.props, viewCredentialModal, viewOperationRecordModal}} />;
 		});
 		return (
 				<div className=''>
 					{/*<TopHeader {...{exportExcel}}/>*/}
-					<FilterHeader  {...{area,deliveryman,stations: stations.station_list}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, 
+					<FilterHeader  {...{area,deliveryman,stations: stations.station_list, page_size: this.state.page_size}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, 
 											...stationSalaryActions, exportExcel, 
 											resetStationListWhenScopeChange},dispatch) }}
 									getStationListByScopeSignal = { getStationListByScopeSignal }/>
@@ -523,13 +558,14 @@ class DeliveryManSalaryManagePannel extends Component{
 						<div className="panel-body">
 						  <div ref="table-container" className="table-responsive ">
 						  	<div ref='box' id='box'  style={{maxHeight:434, overflowY:'auto', position:'relative'}} onscroll = {this.onTbScroll.bind(this)}>
-							    <table id='tab' className="table table-hover text-center " ref='tab' style={{width:1644}}>
+							    <table id='tab' className="table table-hover text-center " ref='tab' style={{width:1784}}>
 							      <thead >
 							      <tr>
 							        <th><div style={{width:80}}>配送时间</div></th>
 							        <th><div style={{width:80}}>签收时间</div></th>
 							        <th><div style={{width:120}}>订单号</div></th>
 							        <th><div style={{width:220}}>收货人信息</div></th>
+							        <th><div style={{width:140}}>配送员</div></th>
 							        <th><div style={{width:80}}>配送方式</div></th>
 							        <th><div style={{width:80}}>签收状态</div></th>
 							        <th><div style={{width:100}}>是否第二次配送</div></th>
@@ -549,26 +585,33 @@ class DeliveryManSalaryManagePannel extends Component{
 							      </tbody>
 							    </table>
 						    </div>
-						    <div className='form-inline' style={{marginTop:20,float:'left'}}>
-						    	<span style={{marginRight:10}}><i style={{color:'#ccc',}} className='fa fa-square'></i><span style={{fontSize:10}}>待审核</span></span>
-						    	<span ><i style={{color:'#dac7a7'}} className='fa fa-square'></i><span style={{fontSize:10}}>审核完成</span></span>
-						    	<span>{'　　　'}共{deliveryRecord.length}项</span>
+						    <Pagination
+						        page_no={page_no}
+						        total_count={total}
+						        page_size={this.state.page_size} 
+						        onPageChange = {this.onPageChange.bind(this)}/>
+						    <div className='form-inline'>
+							    <div style={{marginTop:20,float:'left'}}>
+							    	<span style={{marginRight:10}}><i style={{color:'#ccc',}} className='fa fa-square'></i><span style={{fontSize:10}}>待审核</span></span>
+							    	<span ><i style={{color:'#dac7a7'}} className='fa fa-square'></i><span style={{fontSize:10}}>审核完成</span></span>
+							    </div>
+							    <div style={{marginTop:20,float:'right'}}>
+							    	<span style={{fontWeight:'bold'}}>{'应收金额总计：'}</span>
+							    	<input readOnly type='text' style={{width:100}} 
+							    		value = {total_amount / 100}
+							    		className="form-control input-xs short-input"/>
+							    	<span style={{fontWeight:'bold'}}>{'　工资总计：'}</span>
+							    	<input readOnly type='text' style={{width:100}} 
+							    		value ={delivery_pay / 100}
+							    		className="form-control input-xs short-input"/>
+							    	<span style={{fontWeight:'bold'}}>{'　实收金额总计：'}</span>
+							    	<input readOnly type='text' style={{width:100}} 
+							    		value = {COD_amount / 100}
+							    		className="form-control input-xs short-input"/>
+							    	{'　(现金:￥' + cash_amount / 100 }{',POS机:￥' + POS_amount / 100}{')　'}
+							    </div>
 						    </div>
-						    <div className='form-inline' style={{marginTop:20,float:'right'}}>
-						    	<span style={{fontWeight:'bold'}}>{'应收金额总计：'}</span>
-						    	<input readOnly type='text' style={{width:50}} 
-						    		value = {amount_total / 100}
-						    		className="form-control input-xs short-input"/>
-						    	<span style={{fontWeight:'bold'}}>{'　工资总计：'}</span>
-						    	<input readOnly type='text' style={{width:50}} 
-						    		value ={salary_total / 100}
-						    		className="form-control input-xs short-input"/>
-						    	<span style={{fontWeight:'bold'}}>{'　实收金额总计：'}</span>
-						    	<input readOnly type='text' style={{width:50}} 
-						    		value = {receive_total / 100}
-						    		className="form-control input-xs short-input"/>
-						    	{'　(现金:￥' + cash / 100 }{',POS机:￥' + pos / 100}{')　'}
-						    </div>
+						    <div className='clearfix'></div>
 						  </div>
 						</div>
 					</div>
@@ -596,6 +639,16 @@ class DeliveryManSalaryManagePannel extends Component{
 /*		window.onload = function (){
 			
 		}*/		
+	}
+	onPageChange(page){
+		this.search(page);
+	}
+	search(page){
+		var {filter_data} = this.props.main;
+		var {page_no} = filter_data;
+    	page = typeof page == 'undefined' ? page_no : page;
+    	filter_data.page_no = page;
+    	this.props.actions.getDeliveryRecord(filter_data);
 	}
 	viewCredentialModal(order_id){
 		this.refs.viewCredential.show(order_id);

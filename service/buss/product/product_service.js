@@ -16,7 +16,8 @@ var res_obj = require('../../../util/res_obj'),
     OrderDao = dao.order,
     orderDao = new OrderDao(),
     ProductDao = dao.product,
-    productDao = new ProductDao();
+    productDao = new ProductDao(),
+    xlsx = require('node-xlsx');
 
 function ProductService() {
 
@@ -463,6 +464,96 @@ ProductService.prototype.modifyProductWithSku = (req, res, next) => {
     let promise = productDao.modifyProductAndSku(req, req.body)
         .then(() => {
             res.api();
+        });
+    systemUtils.wrapService(res, next, promise);
+}
+ProductService.prototype.exportSku = (req, res, next) => {
+    let order_srcs = {};
+    let promise = orderDao.findAllOrderSrc()
+        .then(order_src_results => {
+            order_src_results.forEach(item => {
+                order_srcs[item.id] = item.name;
+            });
+            return productDao.getSkuByMultipleCondition(req, req.query);
+        }).then(sku_results => {
+            
+            // 用于判断是否商城上线
+            let is_malls = [];
+            sku_results.forEach(result => {
+                if (result.website == 1) {
+                    is_malls.push(result.product_id);
+                }
+            });
+
+            let data = [];
+            data.push([
+                '上线城市',
+                '产品编码（spu）',
+                '名称',
+                '一级分类',
+                '二级分类',
+                '上线时间',
+                '下线时间',
+                '商城上线',
+                '预约时间',
+                'sku编码',
+                '渠道',
+                '规格',
+                '原价',
+                '渠道价格',
+                '是否促销',
+                '活动价格',
+                '活动时间',
+            ]);
+            sku_results.forEach(result => {
+                let sku = {
+                    city_name: result.city_name,
+                    product_id: result.product_id,
+                    product: result.product_name,
+                    primary_cate_name: result.primary_cate_name,
+                    secondary_cate_name: result.secondary_cate_name,
+                    start_time: null,
+                    end_time: null,
+                    isMall: '否',
+                    book_time: result.book_time,
+                    sku_id: result.sku_id,
+                    website: null,
+                    size: result.size,
+                    original_price: result.original_price,
+                    price: result.price,
+                    isActivity: '否',
+                    activity_price: '/',
+                    activity_time: '/',
+                };
+                sku.start_time = result.presell_start || result.created_time;
+                sku.end_time = result.presell_end || '';
+                sku.website = order_srcs[result.website] || '未知渠道';
+                if (result.activity_price) {
+                    sku.isActivity = '是';
+                    sku.activity_price = result.activity_price;
+                }
+                if (result.activity_start && result.activity_end) {
+                    sku.activity_time = result.activity_start + '~' + result.activity_end;
+                }
+                // 商城是否上线
+                if (is_malls.indexOf(result.product_id) > -1) {
+                    sku.isMall = '是';
+                }
+                data.push(
+                    Object.keys(sku).map(key => {
+                        return sku[key];
+                    })
+                );
+            });
+            let filename = '产品导出报表.xlsx';
+            let buffer = xlsx.build([{name: filename, data: data}]);
+            res.set({
+                'Content-Type': 'application/vnd.ms-excel',
+                'Content-Disposition':  "attachment;filename=" + encodeURIComponent(filename) ,
+                'Pragma':'no-cache',
+                'Expires': 0
+            });
+            res.send(buffer);
         });
     systemUtils.wrapService(res, next, promise);
 }

@@ -77,6 +77,7 @@ a.get('/product/details', productService.getProductDetails); // 根据多个条�
 a.get('/product/skus', productService.getProductAndSku); // 查看产品信息
 a.get('/product/skus/price', productService.listSkuPrice); // 查看产品规格价格列表
 a.get('/product/skus/details', productService.getProductAndSkuWithRegions); // 获取产品信息(用于产品&sku编辑)
+a.get('/product/skus/xlsx', productService.exportSku); // 导出sku
 
 //**********************
 //******** POST ********

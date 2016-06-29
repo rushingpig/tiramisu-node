@@ -658,4 +658,94 @@ ProductDao.prototype.modifyProductAndSku = function (req, data) {
     });
 
 }
+ProductDao.prototype.getSkuByMultipleCondition = function (req, data) {
+    let params = [];
+    let columns = [
+        'sku.id as sku_id',
+        'sku.size as size',
+        'sku.original_price as original_price',
+        'sku.price as price',
+        'sku.website as website',
+        'sku.book_time as book_time',
+        'sku.presell_start as presell_start',
+        'sku.created_time as created_time',
+        'sku.presell_end as presell_end',
+        'sku.activity_price as activity_price',
+        'sku.activity_start as activity_start',
+        'sku.activity_end as activity_end',
+        'product.id as product_id',
+        'product.name as product_name',
+        'city.name as city_name',
+        'primary_cate.name as primary_cate_name',
+        'secondary_cate.name as secondary_cate_name',
+    ];
+    let query_sql = 'select ' + columns.join(',') + ' from ?? sku join ?? product on sku.product_id = product.id';
+    params.push(config.tables.buss_product_sku);
+    params.push(config.tables.buss_product);
+
+    query_sql += ' join ?? city on sku.regionalism_id = city.id';
+    params.push(config.tables.dict_regionalism);
+
+    query_sql += ' join ?? province on city.parent_id = province.id';
+    params.push(config.tables.dict_regionalism);
+
+    query_sql += ' join ?? secondary_cate on product.category_id = secondary_cate.id ';
+    params.push(config.tables.buss_product_category);
+
+    query_sql += ' join ?? primary_cate on secondary_cate.parent_id = primary_cate.id ';
+    params.push(config.tables.buss_product_category);
+
+    let where_sql = ' where 1 = 1 ';
+    // 产品名称
+    if (data.name) {
+        where_sql += ' and product.name like \'%' + data.name + '%\'';
+    }
+    // 如果是预售商品，presell_start大于上线时间
+    if (data.presell_start) {
+        where_sql += ' and (sku.presell_start > ? or (sku.created_time > ? and sku.presell_start is null)) ';
+        params.push(data.presell_start);
+        params.push(data.presell_start);
+    }
+    // 如果是预售商品，presell_end小于下线时间
+    if (data.presell_end) {
+        where_sql += ' and (sku.presell_end < ? or sku.presell_end is null) ';
+        params.push(data.presell_end);
+    }
+    // 一级分类id
+    if (data.primary_cate) {
+        where_sql += ' and primary_cate.id = ? ';
+        params.push(data.primary_cate);
+    }
+    // 二级分类id
+    if (data.secondary_cate) {
+        where_sql += ' and secondary_cate.id = ? ';
+        params.push(data.secondary_cate);
+    }
+    // 商城是否上线
+    if (data.isMall == 1) {
+        where_sql += ' and sku.website = 1 ';
+    }
+    // 是否促销(活动)
+    if (data.isActivity == 1) {
+        if (data.presell_start) {
+            where_sql += ' and sku.activity_start > ? ';
+        }
+        if (data.presell_end) {
+            where_sql += ' and sku.activity_end < ? ';
+        }
+    }
+    // 省id
+    if (data.province) {
+        where_sql += ' and province.id = ? ';
+        params.push(data.province);
+    }
+    // 市id
+    if (data.city) {
+        where_sql += ' and city.id = ? ';
+        params.push(data.city);
+    }
+
+    let sql = query_sql + where_sql;
+    return baseDao.select(sql, params);
+}
 module.exports = ProductDao;

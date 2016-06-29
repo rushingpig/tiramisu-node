@@ -78,6 +78,23 @@ class Main extends Component {
                     </button>
                     {'　'}
                     <span className="text-muted">条件搜索会包含产品名称</span>
+                    <span className="pull-right">
+                        <Link to="javascript:;" className="btn btn-xs btn-default">
+                            <i className="fa fa-fw fa-download" />
+                            {' '}
+                            导出报表
+                        </Link>
+                        &nbsp;
+                        {
+                            V("ProductionManageAdd") ? (
+                                <Link to="/pm/sku_manage/add" className="btn btn-xs btn-theme">
+                                    <i className="fa fa-plus fa-fw" />
+                                    {' '}
+                                    新建商品
+                                </Link>
+                            ) : null
+                        }
+                    </span>
                 </div>
                 <p />
                 <div className="form-inline">
@@ -182,17 +199,6 @@ class Main extends Component {
                     <div className="panel-heading">
                         <p>
                             搜索结果：
-                            <span className="pull-right">
-                                {
-                                    V("ProductionManageAdd") ? (
-                                        <Link to="/pm/sku_manage/add" className="btn btn-xs btn-theme">
-                                            <i className="fa fa-plus fa-fw" />
-                                            {' '}
-                                            新建商品
-                                        </Link>
-                                    ) : null
-                                }
-                            </span>
                         </p>
                     </div>
                     <table className="table table-bordered">
@@ -318,7 +324,7 @@ class Main extends Component {
 
     componentDidMount() {
         if (this.props.state.basicDataLoadStatus === 'success')
-            return;
+            return this.props.Action.searchWithLastSearchFilter();
 
         this.props.Action.loadBasicData()
     }

@@ -55,7 +55,7 @@ const switchType = {
                 })
             );
             const citiesList = {
-                [provincesList[0].id]: Object.keys(citiesData).map(
+                [440000]: Object.keys(citiesData).map(
                     cid => ({
                         id: cid,
                         name: citiesData[cid]
@@ -66,6 +66,9 @@ const switchType = {
             return {
                 ...state,
                 basicDataLoadStatus: 'success',
+                // 默认选择广东省、深圳市
+                selectedProvince: 440000,
+                selectedCity: 440300,
                 categoriesList,
                 provincesList,
                 citiesList
@@ -172,7 +175,8 @@ const switchType = {
                 selectedProvince: state.selectedProvince,
                 selectedCity: state.selectedCity,
                 searchIsEvent: state.searchIsEvent,
-                searchHasActive: state.searchHasActive
+                searchHasActive: state.searchHasActive,
+                pageNum
             }
 
             return {

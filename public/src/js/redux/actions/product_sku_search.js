@@ -43,7 +43,7 @@ const search         = filter => get(Url.searchSku.toString(), filter);
 const deleteProduct  = list => put(Url.deleteSku.toString(), list);
 
 const loadBasicData = () => (
-    dispatch => {
+    (dispatch, getState) => {
         dispatch({
             type: ActionTypes.LOAD_BASIC_DATA,
             status: 'pending'
@@ -56,18 +56,24 @@ const loadBasicData = () => (
             categoriesData,
             provincesData
         ]) => {
-            return loadCitiesData(Object.keys(provincesData)[0]).then(
-                citiesData => dispatch({
-                    type: ActionTypes.LOAD_BASIC_DATA,
-                    status: 'success',
-                    categoriesData,
-                    provincesData,
-                    citiesData
-                })
+            // 默认加载广东省的城市
+            return loadCitiesData(440000).then(
+                citiesData => {
+                    dispatch({
+                        type: ActionTypes.LOAD_BASIC_DATA,
+                        status: 'success',
+                        categoriesData,
+                        provincesData,
+                        citiesData
+                    });
+
+                    searchWithFilter()(dispatch, getState);
+                }
             )
         }).catch(e => dispatch({
             type: ActionTypes.LOAD_BASIC_DATA,
-            status: 'failed'
+            status: 'failed',
+            e
         }));
     }
 )
@@ -195,7 +201,7 @@ const searchWithFilter = (pageNum = 0, isPageChange = false) => (
         const filterSrc = isPageChange ? state.lastSearchFilter : state;
 
         const filter = {
-            name: filterSrc.searchProductName,
+            ...filterSrc.searchProductName.trim() === '' ? {} : {name: filterSrc.searchProductName},
             presell_start: filterSrc.searchBeginTime + ' 00:00:00',
             ...filterSrc.noEndTimeLimit ? {} : {
                 presell_end: filterSrc.searchEndTime + ' 23:59:59'
@@ -217,6 +223,47 @@ const searchWithFilter = (pageNum = 0, isPageChange = false) => (
             result,
             pageNum,
             isPageChange
+        })).catch(e => dispatch({
+            type: ActionTypes.SEARCH_PRODCUT,
+            status: 'failed'
+        }));
+    }
+)
+
+const searchWithLastSearchFilter = () => (
+    (dispatch, getState) => {
+        console.log('searchWithLastSearchFilter');
+        dispatch({
+            type: ActionTypes.SEARCH_PRODCUT,
+            status: 'pending'
+        });
+
+        const state = getState().productSKUSearch;
+        const filterSrc = state.lastSearchFilter;
+
+        const filter = state.searchWithProductName ? { name: filterSrc.searchProductName } : {
+            ...filterSrc.searchProductName.trim() === '' ? {} : {name: filterSrc.searchProductName},
+            presell_start: filterSrc.searchBeginTime + ' 00:00:00',
+            ...filterSrc.noEndTimeLimit ? {} : {
+                presell_end: filterSrc.searchEndTime + ' 23:59:59'
+            },
+            ...filterSrc.selectedProvince === 0 ? {} : {province: filterSrc.selectedProvince},
+            ...filterSrc.selectedCity === 0 ? {} : {city: filterSrc.selectedCity},
+            ...filterSrc.selectedPrimaryCategory === 0 ? {} : {primary_cate: filterSrc.selectedPrimaryCategory},
+            ...filterSrc.selectedSecondaryCategory === 0 ? {} : {secondary_cate: filterSrc.selectedSecondaryCategory},
+            isActivity: filterSrc.searchIsEvent ? 1 : 0,
+            isMall: filterSrc.searchHasActive ? 1 : 0,
+            pageno: filterSrc.pageNum,
+            pagesize: state.pageSize
+        }
+
+        return search(filter).then(result => dispatch({
+            type: ActionTypes.SEARCH_PRODCUT,
+            status: 'success',
+            searchWithProductName: state.searchWithProductName,
+            result,
+            pageNum: filterSrc.pageNum,
+            isPageChange: false
         })).catch(e => dispatch({
             type: ActionTypes.SEARCH_PRODCUT,
             status: 'failed'
@@ -300,6 +347,7 @@ export default {
     changeSearchIsEventStatus,
     searchWithProductName,
     searchWithFilter,
+    searchWithLastSearchFilter,
     selectRow,
     selectAllRow,
     deselectAllRow,

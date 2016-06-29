@@ -139,7 +139,7 @@ class Main extends Component {
           {
             (state.searchState === "success" || state.searchState === "failed")
             ? (
-              <Button disabled={this.refs.categoryName.value.trim() === ''} className="btn btn-theme btn-xs" onClick={this.handleClickNameSearch}>
+              <Button disabled={this.refs.categoryName ? this.refs.categoryName.value.trim() === '' : false} className="btn btn-theme btn-xs" onClick={this.handleClickNameSearch}>
                 <Icon icon="search" />{' 搜索'}
               </Button>
             ) : (

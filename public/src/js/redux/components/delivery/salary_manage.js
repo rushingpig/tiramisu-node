@@ -249,8 +249,9 @@ class FilterHeader extends Component{
 	    var $city = $(findDOMNode(this.refs.city));
 		//this.props.actions.getCities(value);
 	    this.props.actions.getCitiesSignal(value, 'authority').done(() => {
-	      $city.trigger('focus'); //聚焦已使city_id的值更新
 	      this.props.getStationListByScopeSignal({signal:'authority', province_id: value});
+	      $city.trigger('focus'); //聚焦已使city_id的值更新
+
 	    });
 	}
 	onCityChange(e){
@@ -264,9 +265,10 @@ class FilterHeader extends Component{
 			});
 		}else{
 			this.props.actions.getCityDeliveryman(value).done(() => {
-				$deliveryman.trigger('focus');
 				//this.props.actions.getCityStations(value);
 				this.props.getStationListByScopeSignal({signal:'authority', city_id: value})
+				$deliveryman.trigger('focus');
+				
 			});			
 		}
 

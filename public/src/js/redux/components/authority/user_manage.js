@@ -34,7 +34,7 @@ class FilterHeader extends Component {
     return (
         <div className="panel search">
           <div className="panel-body form-inline">
-          {
+{/*          {
             V('UserManageSearch')?
             [
               V('UserManageUnameOrNameFilter')
@@ -54,7 +54,20 @@ class FilterHeader extends Component {
               </button>            
             ]:null
 
-          }                                   
+          }*/}  
+          {
+            V('UserManageUnameOrNameFilter')
+                ?
+                <div  style={{float:'left',}}>
+                  <span className="">{' 用戶名/姓名:'}</span>
+                  <input ref='name'  className="form-control input-xs v-mg" />
+                  <button disabled={search_ing} data-submitting={search_ing}  className="btn btn-theme btn-xs space-left" onClick={this.search.bind(this)}>
+                    <i className="fa fa-search"></i>{' 查詢'}
+                  </button>
+                </div>
+                :
+                null
+          }                                 
           {
             V('UserManageAddUser')
                 ?
@@ -203,7 +216,7 @@ class UserManagePannel extends Component{
     // var { loading ,refresh } = this.props;
     // console.log(this.props.deptListManage.list);
     var {filterdata,dept_id,uname_or_name,total,loading,refresh,list}= this.props.UserListManage;
-    var {page_no} = filterdata;
+    var page_no = filterdata == undefined ? 0 : filterdata.page_no;
     var {dept_role, area, } = this.props;
     var {userDelete,usableAlter, getCitiesSignal} = this.props.actions;
     var {depts} = dept_role;
@@ -309,6 +322,7 @@ class UserManagePannel extends Component{
     //this.props.actions.getDepts(dept_id);
     var {filterdata} = this.props.UserListManage;
     filterdata.page_no = 0;
+    filterdata.org_id = dept_id;
     this.props.actions.getUserList(filterdata);
   }
 }

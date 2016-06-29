@@ -356,10 +356,10 @@ DeliveryDao.prototype.findDeliveryRecordCount = function (query) {
     }
 
     return co(function *() {
-        let page_no = query.page_no || 1;
+        let page_no = query.page_no || 0;
         let page_size = query.page_size || 10;
         let count_sql = `SELECT ${count_columns.join()} ` + sql;
-        let id_sql = `SELECT bo.id ` + sql + `LIMIT ${(page_no - 1) * page_size},${page_size} `;
+        let id_sql = `SELECT bo.id ` + sql + `LIMIT ${page_no * page_size},${page_size} `;
         let count = yield baseDao.select(count_sql, params);
         let result = Object.assign({}, count[0]);
 

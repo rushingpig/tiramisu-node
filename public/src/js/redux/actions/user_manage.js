@@ -49,7 +49,7 @@ export function getDeptList(){
 export const GET_USER_LIST = 'GET_USER_LIST';
 export function getUserList(filterdata){
   return (dispatch) => {
-    return get(Url.user_list_info.toString(), filterdata,GET_USER_LIST)
+    return get(Url.user_list_info.toString(), filterdata)
       .done((data)=>{
         dispatch({
           filterdata: filterdata,

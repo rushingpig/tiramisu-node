@@ -309,6 +309,7 @@ class UserManagePannel extends Component{
     //this.props.actions.getDepts(dept_id);
     var {filterdata} = this.props.UserListManage;
     filterdata.page_no = 0;
+    filterdata.org_id = dept_id;
     this.props.actions.getUserList(filterdata);
   }
 }

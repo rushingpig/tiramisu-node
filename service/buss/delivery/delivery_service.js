@@ -362,11 +362,9 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
         let option = '';
         if(deliveryman && deliveryman.id && deliveryman.id != current_order.deliveryman_id){
             order_obj.deliveryman_id = deliveryman.id;
-            order_obj.last_opt_cs = req.session.user.id;
             option += '修改{配送员}为{' + deliveryman.name + '('+deliveryman.mobile+')}\n';
         }
         if(order) {
-            order_obj.last_opt_cs = req.session.user.id;
             for (let i = 0; i < products.length; i++) {
                 let isAdd = true;
                 for (let j = 0; j < _res.length; j++) {
@@ -423,6 +421,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
         order_history_obj.option = option;
         //===========for history end=============
 
+        systemUtils.addLastOptCs(order_obj, req);
         let user_id = req.session.user.id;
         return co(function*() {
             let delivery_pay_obj = {

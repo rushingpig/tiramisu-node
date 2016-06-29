@@ -530,22 +530,11 @@ class DeliveryManSalaryManagePannel extends Component{
 	render(){
 		var {area, dispatch, deliveryman, main, loading, refresh, stations} = this.props;
 		var {exportExcel , getDeliveryProof, getOrderOptRecord, resetOrderOptRecord, getStationListByScopeSignal, resetStationListWhenScopeChange} = this.props.actions;
-		var {deliveryRecord, check_order_info, active_order_id, proof, operationRecord, page_no, total} = main;
+		var {deliveryRecord, check_order_info, active_order_id, proof, operationRecord, filterdata, total, COD_amount, POS_amount, cash_amount, delivery_pay, total_amount } = main;
+		var page_no = filterdata == undefined ? 0 : filterdata.page_no;
 		var { viewCredentialModal ,viewOperationRecordModal} = this;
 		var {provinces, cities } = area;
-		var amount_total = 0;
-		var receive_total = 0;
-		var salary_total = 0;
-		var cash = 0, pos = 0;
 		var content = deliveryRecord.map((n,i) => {
-			amount_total += n.total_amount;
-			receive_total += n.COD_amount;
-			salary_total += n.delivery_pay;
-			if( n.is_POS != null) {
-				if(n.is_POS) {pos += n.COD_amount}
-				else {cash += n.COD_amount}
-
-			}
 			return <SalaryRow key={n.order_id}
 						{...{...n, ...this.props, viewCredentialModal, viewOperationRecordModal}} />;
 		});
@@ -591,7 +580,8 @@ class DeliveryManSalaryManagePannel extends Component{
 						    <Pagination
 						        page_no={page_no}
 						        total_count={total}
-						        page_size={this.state.page_size} />
+						        page_size={this.state.page_size} 
+						        onPageChange = {this.onPageChange.bind(this)}/>
 						    <div className='form-inline'>
 							    <div style={{marginTop:20,float:'left'}}>
 							    	<span style={{marginRight:10}}><i style={{color:'#ccc',}} className='fa fa-square'></i><span style={{fontSize:10}}>待审核</span></span>
@@ -599,18 +589,18 @@ class DeliveryManSalaryManagePannel extends Component{
 							    </div>
 							    <div style={{marginTop:20,float:'right'}}>
 							    	<span style={{fontWeight:'bold'}}>{'应收金额总计：'}</span>
-							    	<input readOnly type='text' style={{width:50}} 
-							    		value = {amount_total / 100}
+							    	<input readOnly type='text' style={{width:100}} 
+							    		value = {total_amount / 100}
 							    		className="form-control input-xs short-input"/>
 							    	<span style={{fontWeight:'bold'}}>{'　工资总计：'}</span>
-							    	<input readOnly type='text' style={{width:50}} 
-							    		value ={salary_total / 100}
+							    	<input readOnly type='text' style={{width:100}} 
+							    		value ={delivery_pay / 100}
 							    		className="form-control input-xs short-input"/>
 							    	<span style={{fontWeight:'bold'}}>{'　实收金额总计：'}</span>
-							    	<input readOnly type='text' style={{width:50}} 
-							    		value = {receive_total / 100}
+							    	<input readOnly type='text' style={{width:100}} 
+							    		value = {COD_amount / 100}
 							    		className="form-control input-xs short-input"/>
-							    	{'　(现金:￥' + cash / 100 }{',POS机:￥' + pos / 100}{')　'}
+							    	{'　(现金:￥' + cash_amount / 100 }{',POS机:￥' + POS_amount / 100}{')　'}
 							    </div>
 						    </div>
 						    <div className='clearfix'></div>
@@ -641,6 +631,15 @@ class DeliveryManSalaryManagePannel extends Component{
 /*		window.onload = function (){
 			
 		}*/		
+	}
+	onPageChange(page){
+		this.search(page);
+	}
+	search(page){
+		var {filter_data} = this.props.main;
+		var {page_no} = filter_data;
+    	page = typeof page == 'undefined' ? page_no : page;
+    	this.props.actions.getDeliveryRecord(filter_data);
 	}
 	viewCredentialModal(order_id){
 		this.refs.viewCredential.show(order_id);

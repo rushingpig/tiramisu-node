@@ -12,6 +12,7 @@ import StdModal from 'common/std_modal';
 import OperationRecordModal from 'common/operation_record_modal.js';
 import RecipientInfo from 'common/recipient_info';
 import SearchInput from 'common/search_input';
+import Pagination from 'common/pagination';
 
 
 import AreaActions from 'actions/area';
@@ -602,6 +603,12 @@ class DeliveryManSalaryManagePannel extends Component{
 						    		className="form-control input-xs short-input"/>
 						    	{'　(现金:￥' + cash / 100 }{',POS机:￥' + pos / 100}{')　'}
 						    </div>
+						    <Pagination
+						        page_no={page_no}
+						        total_count={total}
+						        page_size={this.state.page_size}
+						        onPageChange={this.onPageChange.bind(this)}
+						    />
 						  </div>
 						</div>
 					</div>

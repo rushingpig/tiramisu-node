@@ -202,7 +202,8 @@ class UserManagePannel extends Component{
   render(){
     // var { loading ,refresh } = this.props;
     // console.log(this.props.deptListManage.list);
-    var {page_no,dept_id,uname_or_name,total,loading,refresh,list}= this.props.UserListManage;
+    var {filterdata,dept_id,uname_or_name,total,loading,refresh,list}= this.props.UserListManage;
+    var {page_no} = filterdata;
     var {dept_role, area, } = this.props;
     var {userDelete,usableAlter, getCitiesSignal} = this.props.actions;
     var {depts} = dept_role;
@@ -277,6 +278,7 @@ class UserManagePannel extends Component{
     var {filterdata} = this.props.UserListManage;
     var {page_no} = filterdata;
     page = typeof page == 'undefined' ? page_no : page;
+    filterdata.page_no = page;
     this.props.actions.getUserList(filterdata);
   }
 
@@ -292,11 +294,13 @@ class UserManagePannel extends Component{
     LazyLoad('noty');
     setTimeout(()=>{
       var {getUserList,getDepts, getProvincesSignal} = this.props.actions;
-      var {page_no,uname_or_name} = this.props.UserListManage;
+      var {filterdata} = this.props.UserListManage;
+      filterdata.page_no = 0;
+      filterdata.page_size = this.state.page_size;
       var dept_id=0;
       getDepts();
       getProvincesSignal('authority');
-      getUserList(dept_id,uname_or_name,0,this.state.page_size);
+      getUserList(filterdata);
       //this.search();
     },0)
   }

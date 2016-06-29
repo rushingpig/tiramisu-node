@@ -530,8 +530,8 @@ class DeliveryManSalaryManagePannel extends Component{
 	render(){
 		var {area, dispatch, deliveryman, main, loading, refresh, stations} = this.props;
 		var {exportExcel , getDeliveryProof, getOrderOptRecord, resetOrderOptRecord, getStationListByScopeSignal, resetStationListWhenScopeChange} = this.props.actions;
-		var {deliveryRecord, check_order_info, active_order_id, proof, operationRecord, filterdata, total, COD_amount, POS_amount, cash_amount, delivery_pay, total_amount } = main;
-		var page_no = filterdata == undefined ? 0 : filterdata.page_no;
+		var {deliveryRecord, check_order_info, active_order_id, proof, operationRecord, filter_data, total, COD_amount, POS_amount, cash_amount, delivery_pay, total_amount } = main;
+		var page_no = filter_data == undefined ? 0 : filter_data.page_no;
 		var { viewCredentialModal ,viewOperationRecordModal} = this;
 		var {provinces, cities } = area;
 		var content = deliveryRecord.map((n,i) => {
@@ -639,6 +639,7 @@ class DeliveryManSalaryManagePannel extends Component{
 		var {filter_data} = this.props.main;
 		var {page_no} = filter_data;
     	page = typeof page == 'undefined' ? page_no : page;
+    	filter_data.page_no = page;
     	this.props.actions.getDeliveryRecord(filter_data);
 	}
 	viewCredentialModal(order_id){

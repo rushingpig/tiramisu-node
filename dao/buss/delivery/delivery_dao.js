@@ -508,7 +508,7 @@ DeliveryDao.prototype.joinPaySQL = function (query) {
         params.push(query.end_time + ' 24:00~24:00');
     }
     if (query.city_id) {
-        sql += `AND dr1.parent_id = `;
+        sql += `AND dr1.parent_id = ? `;
         params.push(query.city_id);
     }
     if (query.delivery_id) {
@@ -591,7 +591,7 @@ DeliveryDao.prototype.joinCODSQL = function (query) {
         params.push(query.end_time + ' 24:00~24:00');
     }
     if (query.city_id) {
-        sql += `AND dr1.parent_id = `;
+        sql += `AND dr1.parent_id = ? `;
         params.push(query.city_id);
     }
     if (query.delivery_id) {

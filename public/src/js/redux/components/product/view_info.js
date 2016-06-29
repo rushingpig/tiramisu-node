@@ -59,36 +59,29 @@ class Main extends Component {
                 </Row>
                 <hr/>
                 <Row>
-                    <Col xs="4"><label>产品名称：</label><span className="text-muted">{state.productName}</span></Col>
+                    <Col xs="4"><label>{'　　'}产品名称：</label><span className="text-muted">{state.productName}</span></Col>
                     <Col xs="4">
                         <label>{'　　'}商城购买：</label>
                         <span className="text-muted">{state.canBuyInOfficialSite ? "是" : "否"}</span>
                     </Col>
                 </Row>
                 <Row>
-                    <Col xs="4"><label>所属分类：</label><span className="text-muted">{state.productCategory.join(' / ')}</span></Col>
+                    <Col xs="4"><label>{'　　'}所属分类：</label><span className="text-muted">{state.productCategory.join(' / ')}</span></Col>
                     <Col xs="4"><label>{'　　'}所属地区：</label><span className="text-muted">{state.position}</span></Col>
                 </Row>
                 <Row>
-                    <Col xs="4"><label>是否预售：</label><span className="text-muted">{state.isPreSale ? "是" : "否"}</span></Col>
+                    <Col xs="4"><label>{'　　'}是否预售：</label><span className="text-muted">{state.isPreSale ? "是" : "否"}</span></Col>
                 </Row>
                 <Row>
-                    <Col xs="4"><label>预约时间：</label><span className="text-muted">{state.bookingTime + ' 小时'}</span></Col>
+                    <Col xs="4"><label>{'　　'}预约时间：</label><span className="text-muted">{state.bookingTime + ' 小时'}</span></Col>
                 </Row>
                 <Row>
                     {
                         state.hasSecondaryBookingTime ? (
                             <Col xs="12">
                                 <label>第二预约时间：</label>
-                                {
-                                    state.secondaryBookingTime.map(opt => ([(
-                                        <div key="label" className="label label-default">
-                                            {opt.districtName + ': ' + opt.time + ' 小时'}
-                                        </div>
-                                    ), (
-                                        <span key="space">&nbsp;</span>
-                                    )]))
-                                }
+                                <span className="text-muted">{state.secondaryBookingTime + ' 小时'}</span>
+                                <i className="text-muted">{'（' + state.secondaryBookingTimeDistricts.join(',') + '）'}</i>
                             </Col>
                         ) : undefined
                     }

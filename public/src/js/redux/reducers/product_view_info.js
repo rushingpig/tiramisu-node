@@ -20,26 +20,26 @@ const initialState = {
 };
 
 const switchType = {
-    [ActionTypes.LOAD_BASIC_DATA]: (state, { status, productData, orderSourceData, provincesData, reason }) => {
+    [ActionTypes.LOAD_BASIC_DATA]: (state, { status, spu, orderSourceData, provincesData, reason }) => {
         switch(status) {
             case 'success':
+                const secondaryBookingTimeKeys = Object.keys(spu.product.secondary_book_time);
+
                 state = {
-                    ...initialState,
-                    position: provincesData[productData.product.province_id] + ' ' + productData.product.city_name,
+                    ...state,
+                    position: provincesData[spu.product.province_id] + ' ' + spu.product.city_name,
                     basicDataLoadStatus: 'success',
-                    productName: productData.product.product_name,
-                    canBuyInOfficialSite: productData.skus.some(sku => sku.website === "1"), // 编号1代表官方商城购买渠道
-                    productCategory: [productData.product.primary_cate_name, productData.product.secondary_cate_name],
-                    isPreSale: productData.product.isPresell,
-                    bookingTime: productData.product.book_time,
-                    hasSecondaryBookingTime: Object.keys(productData.product.secondary_book_time).length > 0,
-                    secondaryBookingTime: Object.keys(productData.product.secondary_book_time).map(districtName => ({
-                        districtName,
-                        time: productData.product.secondary_book_time[districtName]
-                    })),
+                    productName: spu.product.product_name,
+                    canBuyInOfficialSite: spu.skus.some(sku => sku.website === "1"), // 编号1代表官方商城购买渠道
+                    productCategory: [spu.product.primary_cate_name, spu.product.secondary_cate_name],
+                    isPreSale: spu.product.isPresell,
+                    bookingTime: spu.product.book_time,
+                    hasSecondaryBookingTime: Object.keys(spu.product.secondary_book_time).length > 0,
+                    secondaryBookingTime: Number(spu.product.secondary_book_time[secondaryBookingTimeKeys[0]]),
+                    secondaryBookingTimeDistricts: secondaryBookingTimeKeys,
                 };
 
-                productData.skus.forEach(sku => {
+                spu.skus.forEach(sku => {
                     if (sku.website === "1") {
                         state.shopSpecifications.push({
                             spec: sku.size,
@@ -93,10 +93,10 @@ const switchType = {
     }
 }
 
-const productSKUViewInfo = (state = initialState, action) => {
+const productViewInfo = (state = initialState, action) => {
     return action.type in switchType
     ? switchType[action.type](Util.clone(state), action)
     : state;
 }
 
-export default productSKUViewInfo;
+export default productViewInfo;

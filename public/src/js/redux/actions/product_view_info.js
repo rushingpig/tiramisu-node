@@ -40,7 +40,7 @@ const loadBasicData = (cityId, productId) => (
         ]) => dispatch({
             type: ActionTypes.LOAD_BASIC_DATA,
             status: 'success',
-            productData,
+            spu: productData,
             orderSourceData,
             provincesData
         })).catch(

@@ -216,7 +216,7 @@ class UserManagePannel extends Component{
     // var { loading ,refresh } = this.props;
     // console.log(this.props.deptListManage.list);
     var {filterdata,dept_id,uname_or_name,total,loading,refresh,list}= this.props.UserListManage;
-    var {page_no} = filterdata;
+    var page_no = filterdata == undefined ? 0 : filterdata.page_no;
     var {dept_role, area, } = this.props;
     var {userDelete,usableAlter, getCitiesSignal} = this.props.actions;
     var {depts} = dept_role;

@@ -1025,20 +1025,21 @@ DeliveryService.prototype.getRecord = (req, res, next)=>{
         res.api(res_obj.INVALID_PARAMS, errors);
         return;
     }
-    let begin_time = req.query.begin_time;
-    let end_time = req.query.end_time;
-    let city_id = req.query.city_id;
-    let station_id = req.query.station_id;
-    let deliveryman_id = req.query.deliveryman_id;
-    let isCOD = req.query.isCOD;
-    let promise = deliveryDao.findDeliveryRecord(begin_time, end_time, city_id, station_id, deliveryman_id, isCOD).then((result)=> {
-        if (!_.isArray(result)) {
+
+    let query = Object.assign({user: req.session.user}, req.query);
+    if (query.isCOD !== undefined) query.is_COD = (query.isCOD == '1');
+    let promise = co(function *() {
+        let count = yield deliveryDao.findDeliveryRecordCount(query);
+        if (!_.isArray(count.order_ids) || count.order_ids.length == 0) {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }
-        result.sort((a, b)=> {
+        let result = Object.assign({}, _.omit(count, ['order_ids']));
+        result.cash_amount = result.COD_amount - result.POS_amount;
+        let list = yield deliveryDao.findDeliveryRecordById(count.order_ids);
+        list.sort((a, b)=> {
             return (a.delivery_time <= b.delivery_time) ? -1 : 1;
         });
-        result.map(r=> {
+        list.map(r=> {
             r.order_id = systemUtils.getShowOrderId(r.order_id, r.created_time);
             if (r.COD_amount === null) r.COD_amount = r.total_amount;
             if (r.delivery_count === null) r.delivery_count = 1;
@@ -1051,7 +1052,7 @@ DeliveryService.prototype.getRecord = (req, res, next)=>{
             r.city = city_name;
             r.recipient_address = delivery_adds.join(',') + '  ' + r.address;
         });
-
+        result.list = list;
         res.api(result);
     });
     systemUtils.wrapService(res, next, promise);

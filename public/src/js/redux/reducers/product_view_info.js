@@ -72,6 +72,14 @@ const switchType = {
                     state.selectedSource = [...state.sourceSpecifications.keys()][0];
                 }
 
+                if (state.shopSpecifications.length === 0 && state.sourceSpecifications.size === 0) {
+                    state = {
+                        ...initialState,
+                        basicDataLoadStatus: 'failed',
+                        failedMsg: '数据异常，请直接联系开发人员处理'
+                    }
+                }
+
                 break;
 
             case 'failed':

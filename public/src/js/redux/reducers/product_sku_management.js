@@ -41,7 +41,7 @@ const initialState = {
         delivery: [iNow, new Date(getDate(iNow, 7))],
         bookingTime: 0.5,
         hasSecondaryBookingTime: false,
-        secondaryBookingTime: "",
+        secondaryBookingTime: 1,
         applyDistrict: new Set(),
         shopSpecifications: [],
         sourceSpecifications: new Map(),

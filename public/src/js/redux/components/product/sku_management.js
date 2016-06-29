@@ -51,7 +51,8 @@ const tabContentBoxStyle = {
 }
 const pickerStyle = { width: 260, textAlign: 'center' }
 const inputStyle = { width: 70 }
-const warningInputStyle = { width: 70, borderColor: "#f00" }
+const redBorder = { borderColor: "#f00" }
+const warningInputStyle = { width: 70, ...redBorder }
 const pointCursor = { cursor: 'pointer' }
 
 const getDOMValue = func => (event, ...args) => func.apply(undefined, [event.currentTarget.value, ...args]);
@@ -261,7 +262,14 @@ class PreSaleOptions extends Component {
                                 <Col xs="10" offset="2">
                                     <div className="form-inline">
                                         {'　　　　'}时间：
-                                        <Input value={state.tempOptions.secondaryBookingTime} onChange={getDOMValue(Action.changeSecondaryBookingTime)} />
+                                        <Input
+                                            style={Number(state.tempOptions.secondaryBookingTime) <= 0 ? redBorder : {} }
+                                            value={state.tempOptions.secondaryBookingTime}
+                                            onChange={getDOMValue(Action.changeSecondaryBookingTime)}
+                                            step="0.5"
+                                            min="0"
+                                        />
+                                        <small className='text-muted'>（小时）</small>
                                     </div>
                                 </Col>
                             </Row>
@@ -642,15 +650,13 @@ class CitiesOptions extends Component {
                     <Col xs="6">
                         <div className="form-inline">
                             <Input
-                                style={Number(state.tempOptions.bookingTime) <= 0 ? { borderColor: "#f00" } : {} }
+                                style={Number(state.tempOptions.bookingTime) <= 0 ? redBorder : {} }
                                 min="0"
-                                step="0.1"
+                                step="0.5"
                                 value={state.tempOptions.bookingTime}
                                 onChange={getDOMValue(Action.changeBookingTime)}
                             />
-                            <small className='text-muted'>
-                                （单位：小时）
-                            </small>
+                            <small className='text-muted'>（小时）</small>
                         </div>
                     </Col>
                 </FormGroup>

@@ -550,7 +550,7 @@ const saveOption = () => (
                 id: opt.id,
                 website: sourceId,
                 size: opt.spec.trim(),
-                price: parseInt(opt.cost)
+                price: parseInt(opt.cost * 100)
             })
         );
 

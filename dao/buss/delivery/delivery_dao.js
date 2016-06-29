@@ -354,6 +354,10 @@ DeliveryDao.prototype.findDeliveryRecordCount = function (query) {
         else
             sql += `AND bo.total_amount = 0 `;
     }
+    if (query.keywords) {
+        sql += `AND bo.id LIKE ? `;
+        params.push(`%${query.keywords}%`);
+    }
 
     return co(function *() {
         let page_no = query.page_no || 0;
@@ -400,6 +404,9 @@ DeliveryDao.prototype.findDeliveryRecordById = function (order_ids) {
         'br.address',
         'br.landmark',
 
+        'su.name AS deliveryman_name',
+        'su.mobile AS deliveryman_mobile',
+
         'bdr.delivery_pay',
         'bdr.delivery_count',
         'bdr.is_review',
@@ -409,6 +416,8 @@ DeliveryDao.prototype.findDeliveryRecordById = function (order_ids) {
     let params = [tables.buss_order];
     sql += `INNER JOIN ?? br ON bo.recipient_id = br.id `;
     params.push(tables.buss_recipient);
+    sql += `INNER JOIN ?? su ON su.id = bo.deliveryman_id `;
+    params.push(tables.sys_user);
     sql += `INNER JOIN ?? bdr ON bo.id = bdr.order_id `;
     params.push(tables.buss_delivery_record);
     sql += `LEFT JOIN ?? bpm ON bo.pay_modes_id = bpm.id `;

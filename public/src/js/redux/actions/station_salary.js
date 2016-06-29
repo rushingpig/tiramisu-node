@@ -43,8 +43,17 @@ export function activeOrder(id){
 }
 
 export const GET_DELIVERY_RECORD = 'GET_DELIVERY_RECORD';
-export function getDeliveryRecord(data){
-  return GET(Url.delivery_record.toString(),data, GET_DELIVERY_RECORD);
+export function getDeliveryRecord(filter_data){
+  return (dispatch) => {
+    return get(Url.delivery_record.toString(),filter_data )
+            .done((data) => {
+              dispatch({
+                type:GET_DELIVERY_RECORD,
+                data:data,
+                filter_data:filter_data,
+              })
+            })
+  }
 /*  return TEST([{
     'delivery_pay':20,
     'delivery_time':'2015-05-03 15:30~16:30',

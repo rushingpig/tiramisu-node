@@ -3,7 +3,7 @@ import {findDOMNode} from 'react-dom';
 import {connect} from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { AreaActionType2 } from 'actions/action_types';
+import { AreaActionTypes1 } from 'actions/action_types';
 
 import DeptRoleActions from 'actions/dept_role';
 import * as FormActions from 'actions/form';
@@ -103,7 +103,7 @@ function mapDispatchToProps(dispatch){
    return {
     actions: bindActionCreators({
       ...DeptRoleActions(),
-      ...AreaActions(AreaActionType2),
+      ...AreaActions(AreaActionTypes1),
       ...FormActions,
       ...UserFormActions
     }, dispatch)

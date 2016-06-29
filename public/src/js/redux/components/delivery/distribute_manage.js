@@ -849,13 +849,16 @@ var SignedModal = React.createClass({
     if(!signin_date || !signin_hour){
       Noty('warning', '请填写正确的签收时间');return;
     }
+    // 去掉迟到赔付必填
     if(late_minutes > 0){
-      if(!refund_method){
+/*      if(!refund_method){
         Noty('warning', '请选择赔偿方式');return;
-      }
+      }*/
       if(refund_method == CASH){
         if(!form.isNumber(refund_money)){
           Noty('warning', '请输入现金赔偿金额');return;
+        }else if(refund_money > 29){
+          Noty('warning', '现金赔偿金额不应大于29元');return;         
         }
       }else{
         if(!refund_reson){

@@ -34,7 +34,7 @@ class FilterHeader extends Component {
     return (
         <div className="panel search">
           <div className="panel-body form-inline">
-          {
+{/*          {
             V('UserManageSearch')?
             [
               V('UserManageUnameOrNameFilter')
@@ -54,7 +54,20 @@ class FilterHeader extends Component {
               </button>            
             ]:null
 
-          }                                   
+          }*/}  
+          {
+            V('UserManageUnameOrNameFilter')
+                ?
+                <div  style={{float:'left',}}>
+                  <span className="">{' 用戶名/姓名:'}</span>
+                  <input ref='name'  className="form-control input-xs v-mg" />
+                  <button disabled={search_ing} data-submitting={search_ing}  className="btn btn-theme btn-xs space-left" onClick={this.search.bind(this)}>
+                    <i className="fa fa-search"></i>{' 查詢'}
+                  </button>
+                </div>
+                :
+                null
+          }                                 
           {
             V('UserManageAddUser')
                 ?

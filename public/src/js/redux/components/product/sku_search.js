@@ -16,9 +16,11 @@ const Select = props => (<select className="form-control input-xs" {...props} />
 const Input = props => (<input type="text" className="form-control input-xs" {...props}/>);
 
 const getDOMValue = func => (event, ...args) => func.apply(undefined, [event.currentTarget.value, ...args]);
-const Anchor = props => (<a style={{textDecoration:'underline'}} href="javascript:;" {...props} />);
+const underlineStyle = { textDecoration:'underline' };
+const Anchor = props => (<a style={underlineStyle} href="javascript:;" {...props} />);
 
 const TopHeader = getTopHeader([{name: '产品管理', link: ''}, {name: '搜索商品', link: '/pm/sku_manage'}]);
+
 
 const showDeleteConfirm = () => MessageBox({
     title: "确认删除",
@@ -26,6 +28,28 @@ const showDeleteConfirm = () => MessageBox({
     icon: MessageBoxIcon.Warning,
     text: "请确认是否删除当前商品，其类目下的其它相对应的渠道的 SKU 也将一并删除下线"
 });
+
+/**
+ * 权限:
+ *
+ * ProductionManageExportSKU  导出报表
+ * ProductionManageAddAccess  添加spu
+ * ProductionManageEditAccess 编辑spu
+ * ProductionViewInfoAccess   查看spu详情
+ * ProductionViewSpecAccess   查看sku详情
+ * DeleteSPU                  删除sku
+ *
+**/
+
+const alternate = (arr, obj) => {
+    let newArr = [];
+    arr.forEach((ele, i) => {
+        i > 0 && newArr.push(obj);
+        newArr.push(ele);
+    });
+
+    return newArr;
+}
 
 class Main extends Component {
     constructor(props) {
@@ -79,20 +103,24 @@ class Main extends Component {
                     {'　'}
                     <span className="text-muted">条件搜索会包含产品名称</span>
                     <span className="pull-right">
-                        <Link to="javascript:;" className="btn btn-xs btn-default">
-                            <i className="fa fa-fw fa-download" />
-                            {' '}
-                            导出报表
-                        </Link>
+                        {
+                            V("ProductionManageExportSKU") ? (
+                                <Link to="javascript:;" className="btn btn-xs btn-default">
+                                    <i className="fa fa-fw fa-download" />
+                                    {' '}
+                                    导出报表
+                                </Link>
+                            ) : undefined
+                        }
                         &nbsp;
                         {
-                            V("ProductionManageAdd") ? (
+                            V("ProductionManageAddAccess") ? (
                                 <Link to="/pm/sku_manage/add" className="btn btn-xs btn-theme">
                                     <i className="fa fa-plus fa-fw" />
                                     {' '}
                                     新建商品
                                 </Link>
-                            ) : null
+                            ) : undefined
                         }
                     </span>
                 </div>
@@ -110,14 +138,14 @@ class Main extends Component {
                         state.noEndTimeLimit ? (
                             <div style={{display:'inline'}}>
                                 下线时间&nbsp;
-                                <Input value='∞' disabled={true} style={{width: 74}} />
+                                <Input value='∞' disabled={true} style={{width: 80}} />
                                 &nbsp;
                             </div>
                         ) : (
                             <div style={{display:'inline'}}>
                                 下线时间&nbsp;
                                 <DatePicker
-                                    style={{width: 74}}
+                                    style={{width: 80}}
                                     value={state.searchEndTime}
                                     lowerLimit={state.searchBeginTime}
                                     onChange={Action.changeSearchEndTime}
@@ -186,10 +214,10 @@ class Main extends Component {
                         }
                     </Select>
                     &nbsp;
-                    已上线：
+                    促销：
                     <CheckBox checked={state.searchIsEvent} onChange={Action.changeSearchActiveStatus} />
                     &nbsp;
-                    促销：
+                    商城上线：
                     <CheckBox checked={state.searchHasActive} onChange={Action.changeSearchIsEventStatus} />
                     &nbsp;
                     <button className="btn btn-theme btn-xs" onClick={e => Action.searchWithFilter(0)}>搜索</button>
@@ -221,6 +249,58 @@ class Main extends Component {
                         <tbody> 
                             {
                                 state.searchResult.map((row, i) => {
+                                    let handleAccess = [];
+
+                                    if (V('ProductionViewInfoAccess')) {
+                                        handleAccess.push(
+                                            <Link
+                                                key="ProductionViewInfoAccess"
+                                                style={underlineStyle}
+                                                to={"/pm/sku_manage/view/info/" + row.city_id + '/' + row.spu}
+                                            >
+                                                [查看]
+                                            </Link>
+                                        );
+                                    }
+
+                                    if (V('ProductionViewSpecAccess')) {
+                                        handleAccess.push(
+                                            <Link
+                                                key="ProductionViewSpecAccess"
+                                                style={underlineStyle}
+                                                to={"/pm/sku_manage/view/specfications/" + row.city_id + '/' + row.spu}
+                                            >
+                                                [规格&价格]
+                                            </Link>
+                                        );
+                                    }
+
+                                    if (V('ProductionManageEditAccess')) {
+                                        handleAccess.push(
+                                            <Link
+                                                key="ProductionManageEditAccess"
+                                                style={underlineStyle}
+                                                to={"/pm/sku_manage/edit/" + row.spu}
+                                            >
+                                                [编辑]
+                                            </Link>
+                                        );
+                                    }
+
+                                    if (V('DeleteSPU')) {
+                                        handleAccess.push(
+                                            <Anchor
+                                                key="DeleteSPU"
+                                                data-index={i}
+                                                onClick={this.handleDeleteSingleRow}
+                                            >
+                                                [删除]
+                                            </Anchor>
+                                        );
+                                    }
+
+                                    handleAccess = alternate(handleAccess, ' ');
+
                                     return (
                                         <tr key={i}>
                                             <td><CheckBox checked={state.checkedRow.has(i)} onChange={e => Action.selectRow(i)} /></td>
@@ -260,15 +340,7 @@ class Main extends Component {
                                                 <br/>
                                                 {row.city_name}
                                             </td>
-                                            <td>
-                                                <Link style={{textDecoration:'underline'}} to={"/pm/sku_manage/view/info/" + row.city_id + '/' + row.spu}>[查看]</Link>
-                                                {'　'}
-                                                <Link style={{textDecoration:'underline'}} to={"/pm/sku_manage/view/specfications/" + row.city_id + '/' + row.spu}>[规格&价格]</Link>
-                                                {'　'}
-                                                <Link style={{textDecoration:'underline'}} to={"/pm/sku_manage/edit/" + row.spu}>[编辑]</Link>
-                                                {'　'}
-                                                <Anchor data-index={i} onClick={this.handleDeleteSingleRow}>[删除]</Anchor>
-                                            </td>
+                                            <td>{handleAccess}</td>
                                         </tr>
                                     )
                                 })

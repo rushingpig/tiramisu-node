@@ -80,6 +80,7 @@ const URL = (function() {
     viewSku:                  '/product/skus',
     viewSkuSpec:              '/product/skus/price',
     deleteSku:                '/product/skus',
+    exportSkuDetail:          '/product/skus/details',
 
     //送货管理
     order_exchange:     '/orders/exchange', //订单转送单列表

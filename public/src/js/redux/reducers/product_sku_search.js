@@ -11,7 +11,7 @@ const initialState = {
     citiesList: [],
 
     searchProductName: '',
-    searchBeginTime: Util.getDate(),
+    searchBeginTime: "2016-01-01",
     searchEndTime: Util.getDate(30),
     selectedPrimaryCategory: 0,
     selectedSecondaryCategory: 0,
@@ -23,7 +23,7 @@ const initialState = {
 
     pageNum: 0,
     totalItem: 0,
-    pageSize: 30,
+    pageSize: 10,
 
     lastSearchFilter: {},
     searching: false,
@@ -118,7 +118,8 @@ const switchType = {
         if (pid in state.citiesList) {
             return {
                 ...state,
-                selectedProvince: pid
+                selectedProvince: pid,
+                selectedCity: 0
             };
         }
 

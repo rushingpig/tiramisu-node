@@ -308,6 +308,8 @@ class FilterHeader extends Component{
 				filterdata.isCOD = 0;
 			}			
 		}
+		filterdata.page_no = 0;
+		filterdata.page_size = this.props.page_size;
 		this.props.actions.getDeliveryRecord(filterdata)
 			.always(() => {
 				this.setState({[search_in_state]:false});
@@ -521,11 +523,14 @@ class DeliveryManSalaryManagePannel extends Component{
 		super(props);
 		this.viewCredentialModal = this.viewCredentialModal.bind(this);
 		this.viewOperationRecordModal = this.viewOperationRecordModal.bind(this);
+		this.state = {
+			page_size: 10,
+		}
 	}
 	render(){
 		var {area, dispatch, deliveryman, main, loading, refresh, stations} = this.props;
 		var {exportExcel , getDeliveryProof, getOrderOptRecord, resetOrderOptRecord, getStationListByScopeSignal, resetStationListWhenScopeChange} = this.props.actions;
-		var {deliveryRecord, check_order_info, active_order_id, proof, operationRecord} = main;
+		var {deliveryRecord, check_order_info, active_order_id, proof, operationRecord, page_no, total} = main;
 		var { viewCredentialModal ,viewOperationRecordModal} = this;
 		var {provinces, cities } = area;
 		var amount_total = 0;
@@ -547,7 +552,7 @@ class DeliveryManSalaryManagePannel extends Component{
 		return (
 				<div className=''>
 					{/*<TopHeader {...{exportExcel}}/>*/}
-					<FilterHeader  {...{area,deliveryman,stations: stations.station_list}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, 
+					<FilterHeader  {...{area,deliveryman,stations: stations.station_list, page_size: this.state.page_size}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, 
 											...stationSalaryActions, exportExcel, 
 											resetStationListWhenScopeChange},dispatch) }}
 									getStationListByScopeSignal = { getStationListByScopeSignal }/>
@@ -583,32 +588,32 @@ class DeliveryManSalaryManagePannel extends Component{
 							      </tbody>
 							    </table>
 						    </div>
-						    <div className='form-inline' style={{marginTop:20,float:'left'}}>
-						    	<span style={{marginRight:10}}><i style={{color:'#ccc',}} className='fa fa-square'></i><span style={{fontSize:10}}>待审核</span></span>
-						    	<span ><i style={{color:'#dac7a7'}} className='fa fa-square'></i><span style={{fontSize:10}}>审核完成</span></span>
-						    	<span>{'　　　'}共{deliveryRecord.length}项</span>
-						    </div>
-						    <div className='form-inline' style={{marginTop:20,float:'right'}}>
-						    	<span style={{fontWeight:'bold'}}>{'应收金额总计：'}</span>
-						    	<input readOnly type='text' style={{width:50}} 
-						    		value = {amount_total / 100}
-						    		className="form-control input-xs short-input"/>
-						    	<span style={{fontWeight:'bold'}}>{'　工资总计：'}</span>
-						    	<input readOnly type='text' style={{width:50}} 
-						    		value ={salary_total / 100}
-						    		className="form-control input-xs short-input"/>
-						    	<span style={{fontWeight:'bold'}}>{'　实收金额总计：'}</span>
-						    	<input readOnly type='text' style={{width:50}} 
-						    		value = {receive_total / 100}
-						    		className="form-control input-xs short-input"/>
-						    	{'　(现金:￥' + cash / 100 }{',POS机:￥' + pos / 100}{')　'}
-						    </div>
 						    <Pagination
 						        page_no={page_no}
 						        total_count={total}
-						        page_size={this.state.page_size}
-						        onPageChange={this.onPageChange.bind(this)}
-						    />
+						        page_size={this.state.page_size} />
+						    <div className='form-inline'>
+							    <div style={{marginTop:20,float:'left'}}>
+							    	<span style={{marginRight:10}}><i style={{color:'#ccc',}} className='fa fa-square'></i><span style={{fontSize:10}}>待审核</span></span>
+							    	<span ><i style={{color:'#dac7a7'}} className='fa fa-square'></i><span style={{fontSize:10}}>审核完成</span></span>
+							    </div>
+							    <div style={{marginTop:20,float:'right'}}>
+							    	<span style={{fontWeight:'bold'}}>{'应收金额总计：'}</span>
+							    	<input readOnly type='text' style={{width:50}} 
+							    		value = {amount_total / 100}
+							    		className="form-control input-xs short-input"/>
+							    	<span style={{fontWeight:'bold'}}>{'　工资总计：'}</span>
+							    	<input readOnly type='text' style={{width:50}} 
+							    		value ={salary_total / 100}
+							    		className="form-control input-xs short-input"/>
+							    	<span style={{fontWeight:'bold'}}>{'　实收金额总计：'}</span>
+							    	<input readOnly type='text' style={{width:50}} 
+							    		value = {receive_total / 100}
+							    		className="form-control input-xs short-input"/>
+							    	{'　(现金:￥' + cash / 100 }{',POS机:￥' + pos / 100}{')　'}
+							    </div>
+						    </div>
+						    <div className='clearfix'></div>
 						  </div>
 						</div>
 					</div>

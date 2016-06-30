@@ -144,10 +144,7 @@ const getCategoriesMap = categoriesData => {
         obj => obj.parent_id !== 0
     ).forEach(secondaryCategory => {
         if (secondaryCategoriesMap.has(secondaryCategory.parent_id)) {
-            secondaryCategoriesMap.get(secondaryCategory.parent_id).push({
-                id: secondaryCategory.id,
-                name: secondaryCategory.name
-            });
+            secondaryCategoriesMap.get(secondaryCategory.parent_id).push({...secondaryCategory});
         }
     });
 
@@ -465,6 +462,8 @@ const switchType = {
             state.cityOptionSaved = false;
         }
 
+        state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0] || "";
+
         return {
             ...state,
             citiesData,
@@ -509,6 +508,8 @@ const switchType = {
             state.tempOptions = clone(initialState.tempOptions);
             state.cityOptionSavable = false;
         }
+
+        state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0] || "";
 
         return {
             ...state,
@@ -755,17 +756,16 @@ const switchType = {
     [ActionTypes.SAVE_CITIY_OPTION]: state => {
 
         const returnID = opt => opt.id;
+        const returnNonZeroID = opt => opt.id !== 0;
 
-        if (!state.addMode) {
+        if (!state.addMode && state.citiesOptions.get(state.selectedCity)) {
             let deletedSku = [];
             let newShopSpecifications = new Set(state.tempOptions.shopSpecifications.map(returnID));
             let newSourceSpecifications = new Set();
 
             [...state.tempOptions.sourceSpecifications.values()].forEach(ssArr => {
-                ssArr.forEach(opt => {
-                    if (opt.id !== 0) {
-                        newSourceSpecifications.add(opt.id);
-                    }
+                ssArr.filter(returnNonZeroID).forEach(opt => {
+                    newSourceSpecifications.add(opt.id);
                 });
             });
 
@@ -774,10 +774,8 @@ const switchType = {
             let originSourceSpecifications = new Set();
 
             [...originCityOption.sourceSpecifications.values()].forEach(ssArr => {
-                ssArr.forEach(opt => {
-                    if (opt.id !== 0) {
-                        originSourceSpecifications.add(opt.id);
-                    }
+                ssArr.filter(returnNonZeroID).forEach(opt => {
+                    originSourceSpecifications.add(opt.id);
                 });
             });
 

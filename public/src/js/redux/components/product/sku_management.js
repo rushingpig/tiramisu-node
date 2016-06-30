@@ -818,6 +818,15 @@ class Main extends Component {
 }
 
 export default connect(
-  ({ productSKUManagement, citiesSelector }) => ({ state: productSKUManagement, citiesSelector }),
-  dispatch => ({ Action: bindActionCreators(SkuAction ,dispatch), CitiesSelectorAction: bindActionCreators(CitiesSelectorAction, dispatch) }),
+    ({
+        productSKUManagement,
+        citiesSelector
+    }) => ({
+        state: productSKUManagement,
+        citiesSelector
+    }),
+    dispatch => ({
+        Action: bindActionCreators(SkuAction, dispatch),
+        CitiesSelectorAction: bindActionCreators(CitiesSelectorAction, dispatch)
+    }),
 )(Main);

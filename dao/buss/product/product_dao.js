@@ -419,7 +419,7 @@ ProductDao.prototype.getSkuWithBooktimeByProductAndCity = function (data) {
         'sku.activity_start as activity_start',
         'sku.activity_end as activity_end'
     ];
-    let sql = 'select ' + columns.join(',') + ' from ?? sku left join ?? secondary_booktime on sku.id = secondary_booktime.sku_id and secondary_booktime.del_flag = 1 join ?? dict on sku.regionalism_id = dict.id join ?? secondary_dict on secondary_booktime.regionalism_id = secondary_dict.id where sku.product_id = ? and sku.regionalism_id = ? and sku.del_flag = 1';
+    let sql = 'select ' + columns.join(',') + ' from ?? sku left join ?? secondary_booktime on sku.id = secondary_booktime.sku_id and secondary_booktime.del_flag = 1 join ?? dict on sku.regionalism_id = dict.id left join ?? secondary_dict on secondary_booktime.regionalism_id = secondary_dict.id where sku.product_id = ? and sku.regionalism_id = ? and sku.del_flag = 1';
     let params = [];
     params.push(config.tables.buss_product_sku);
     params.push(config.tables.buss_product_sku_booktime);

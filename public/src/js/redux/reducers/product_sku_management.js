@@ -271,17 +271,17 @@ const switchType = {
         const setShopSpecification = sku => ({
             id: sku.id,
             spec: sku.size,
-            originalCost: sku.original_price/100,
-            cost: sku.price/100,
+            originalCost: Number(sku.original_price)/100,
+            cost: Number(sku.price)/100,
             hasEvent: sku.activity_price !== null,
-            eventCost: sku.activity_price !== null ? sku.activity_price/100 : 0.01,
+            eventCost: sku.activity_price !== null ? Number(sku.activity_price)/100 : 0.01,
             eventTime: sku.activity_price !== null ? [new Date(sku.activity_start), new Date(sku.activity_end)] : [now, new Date(getDate(now, 7))]
         });
 
         const setSourceSpecification = sku => ({
             id: sku.id,
             spec: sku.size,
-            cost: sku.price
+            cost: Number(sku.price)/100
         });
 
         productData.sku.forEach(sku => {
@@ -291,7 +291,13 @@ const switchType = {
                 if (isOfficialShopSource(sku)) {
                     cityOpt.shopSpecifications.push(setShopSpecification(sku))
                 } else {
-                    cityOpt.sourceSpecifications.set(Number(sku.website), [setSourceSpecification(sku)]);
+                    let arr = cityOpt.sourceSpecifications.get(Number(sku.website));
+
+                    if (arr) {
+                        arr.push(setSourceSpecification(sku));
+                    } else {
+                        cityOpt.sourceSpecifications.set(Number(sku.website), [setSourceSpecification(sku)]);
+                    }
                 }
             } else {
                 let tempOptions = clone(initialState.tempOptions);
@@ -704,7 +710,6 @@ const switchType = {
     [ActionTypes.CHANGE_SELECTED_SOURCE]: (state, { sourceId }) => {
         state.tempOptions.selectedSource = sourceId;
 
-        state.cityOptionSaved = false;
         return state;
     },
 

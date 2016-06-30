@@ -120,21 +120,6 @@ class Main extends Component {
                                                     </tr>
                                                 ))
                                             }
-                                            {
-                                                [...state.sourceSpecifications.values()].map((ssArr, i) => (
-                                                    ssArr.map((ss, j) => (
-                                                        <tr key={i + '' + j}>
-                                                            <td>{ss.spec}</td>
-                                                            <td>-</td>
-                                                            <td>-</td>
-                                                            <td>{(ss.cost/100).toFixed(2)}</td>
-                                                            <td>-</td>
-                                                            <td>-</td>
-                                                            <td>-</td>
-                                                        </tr>
-                                                    ))
-                                                ))
-                                            }
                                         </tbody>
                                     </table>
                                 </div>

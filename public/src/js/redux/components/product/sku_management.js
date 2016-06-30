@@ -466,7 +466,7 @@ class SourceOptions extends Component {
                                             <span className="pull-right">
                                                 <i
                                                     style={pointCursor}
-                                                    className="fa fa-times"
+                                                    className={"fa fa-times" + (tempOptions.selectedSource === sid ? '' : ' text-danger')}
                                                     onClick={Action.removeSource.bind(undefined, sid)}
                                                 />
                                             </span>

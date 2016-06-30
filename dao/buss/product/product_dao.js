@@ -259,9 +259,11 @@ ProductDao.prototype.getProductDetailByParams = function (data) {
     if (data.isActivity == 1) {
         if (data.presell_start) {
             sql += ' and sku.activity_start > ? ';
+            params.push(data.presell_start);
         }
         if (data.presell_end) {
             sql += ' and sku.activity_end < ? ';
+            params.push(data.presell_end);
         }
     }
     

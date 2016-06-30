@@ -208,6 +208,7 @@ const switchType = {
         const now = new Date();
         const orderSource = getOrderSourcesMap(orderSourceData);
         const { primaryCategoriesMap, secondaryCategoriesMap } = getCategoriesMap(categoriesData);
+        const defaultSelectedCity = Number(location.hash.slice(1)) || 0;
 
         const citiesData = new Map(
             [...citiesSelectorState.citiesData.values()].filter(
@@ -320,9 +321,16 @@ const switchType = {
             }
         });
 
-        state.tempOptions = clone([...state.citiesOptions.values()][0]);
-        state.selectedCity = [...state.citiesOptions.keys()][0];
-        state.selectedProvince = state.citiesData.get(state.selectedCity).province || 0;
+        if (state.citiesOptions.has(defaultSelectedCity)) {
+            state.tempOptions = clone(state.citiesOptions.get(defaultSelectedCity));
+            state.selectedCity = defaultSelectedCity;
+            state.selectedProvince = state.citiesData.get(defaultSelectedCity).province;
+        } else {
+            state.tempOptions = clone([...state.citiesOptions.values()][0]);
+            state.selectedCity = [...state.citiesOptions.keys()][0];
+            state.selectedProvince = state.citiesData.get(state.selectedCity).province || 0;
+        }
+
 
         if (state.tempOptions.sourceSpecifications.size) {
             state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0];

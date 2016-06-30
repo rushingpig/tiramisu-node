@@ -280,7 +280,7 @@ class Main extends Component {
                                             <Link
                                                 key="ProductionManageEditAccess"
                                                 style={underlineStyle}
-                                                to={"/pm/sku_manage/edit/" + row.spu}
+                                                to={"/pm/sku_manage/edit/" + row.spu + '#' + row.city_id}
                                             >
                                                 [编辑]
                                             </Link>

@@ -321,7 +321,7 @@ DeliveryDao.prototype.findDeliveryRecordCount = function (query) {
                 tmp_sql += `OR bo.src_id in ${dbHelper.genInSql(query.user.src_ids)} `;
             }
         });
-        sql += tmp_sql.replace(/^ OR/, '');
+        sql += tmp_sql.replace(/^OR/, '');
         sql += `) `;
     }
     if (query.begin_time) {

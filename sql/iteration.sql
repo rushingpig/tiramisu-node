@@ -600,3 +600,9 @@ UPDATE tiramisu.sys_menu SET parent_ids = '';
 # 2016-06-02 Wei Zhao
 # 用户权限增加是否仅仅只有管理该用户的权限
 ALTER TABLE tiramisu.sys_user_role ADD only_admin tinyint(1) unsigned DEFAULT '0' COMMENT '是否仅仅只有管理该类型用户的权限';
+
+# 修改区域信息to匹配有赞
+BEGIN;
+insert into `dict_regionalism` VALUES
+('440119','萝岗区',440100,'萝岗','3','020','','中国,广东省,广州市,增城区','','','Luogang','1',null,null);
+COMMIT;

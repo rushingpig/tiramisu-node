@@ -22,6 +22,7 @@ const Input = props => (<input type="number" className="form-control input-xs" {
 const CheckBox = props => (<input type="checkbox" {...props} />);
 const Radio = props => (<input type="radio" {...props} />);
 const Row = props => (<div className="row" {...props} />);
+const letTheTipsLower = { display: 'flex', alignItems: 'baseline' };
 
 const Col = props => {
     let className = '';
@@ -84,7 +85,7 @@ class BasicOptions extends Component {
                 <FormGroup>
                     <label className="col-xs-2 control-label">购买方式：</label>
                     <Col xs="10">
-                        <p>
+                        <p style={letTheTipsLower}>
                             <label className="radio-inline">
                                 <Radio
                                     name="inlineRadioOptions"
@@ -142,7 +143,7 @@ class BasicOptions extends Component {
                 <FormGroup>
                     <label className="col-xs-2 control-label">上线城市：</label>
                     <Col xs="10">
-                        <p>
+                        <p style={letTheTipsLower}>
                             <label className="radio-inline">
                                 <Radio
                                     name="aaa"

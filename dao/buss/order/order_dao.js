@@ -677,7 +677,7 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
         temp_sql += " or bo.delivery_id in " + dbHelper.genInSql(query_data.user.station_ids);
       } else if (curr == constant.DS.CITY.id) {
         if (query_data.user.is_headquarters) {
-          temp_sql += "";
+          temp_sql += " 1 = 1";
         } else {
           temp_sql += " or dr3.parent_id in " + dbHelper.genInSql(query_data.user.city_ids);
         }

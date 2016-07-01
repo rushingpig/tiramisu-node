@@ -860,11 +860,13 @@ var SignedModal = React.createClass({
         }else if(refund_money > 29){
           Noty('warning', '现金赔偿金额不应大于29元');return;         
         }
-      }else{
+      }
+      //去掉必须的全额退款
+/*      else{
         if(!refund_reson){
           Noty('warning', '请勾选全额退款原因');return;
         }
-      }
+      }*/
     }
     var { orderSpareparts } = this.props.D_;
     var products = currentOrderSpareparts;

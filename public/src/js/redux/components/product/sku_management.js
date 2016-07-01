@@ -587,23 +587,27 @@ class CitiesOptions extends Component {
                     <label className="col-xs-2 control-label">应用范围：</label>
                     <Col xs='10'>
                         <p>
+                            {
+                                state.addMode ? [(
+                                    <label className="radio-inline" key="radio">
+                                        <Radio
+                                            disabled={!state.addMode}
+                                            name="citiesOptionApplyRange"
+                                            value="0"
+                                            onChange={getDOMValue(Action.changeCitiesOptionApplyRange)}
+                                            checked={state.citiesOptionApplyRange === 0}
+                                        />
+                                        {' 全部一致'}
+                                    </label>
+                                ), <span key="span">{'　　'}</span>] : null
+                            }
                             <label className="radio-inline">
-                            <Radio
-                                name="citiesOptionApplyRange"
-                                value="0"
-                                onChange={getDOMValue(Action.changeCitiesOptionApplyRange)}
-                                checked={state.citiesOptionApplyRange === 0}
-                            />
-                                {' 全部一致'}
-                            </label>
-                            {'　　'}
-                            <label className="radio-inline">
-                            <Radio
-                                name="citiesOptionApplyRange"
-                                value="1"
-                                onChange={getDOMValue(Action.changeCitiesOptionApplyRange)}
-                                checked={state.citiesOptionApplyRange === 1}
-                            />
+                                <Radio
+                                    name="citiesOptionApplyRange"
+                                    value="1"
+                                    onChange={getDOMValue(Action.changeCitiesOptionApplyRange)}
+                                    checked={state.citiesOptionApplyRange === 1}
+                                />
                                 {' 独立配置'}
                             </label>
                         </p>

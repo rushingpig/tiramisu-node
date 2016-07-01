@@ -429,9 +429,12 @@ ProductService.prototype.getProductAndSkuWithRegions = (req, res, next)=> {
                     }
                 };
             }
-            if(item.secondary_book_time && item.secondary_book_time_region){
+            if(item.secondary_book_time && item.secondary_book_time_region_id && item.secondary_book_time_region_name){
                 format_data[item.id].secondary_book_time.time = item.secondary_book_time;
-                format_data[item.id].secondary_book_time.regions.push(item.secondary_book_time_region);
+                format_data[item.id].secondary_book_time.regions.push({
+                    id: item.secondary_book_time_region_id,
+                    name: item.secondary_book_time_region_name
+                });
             }
         });
         return Object.keys(format_data).map(key => {

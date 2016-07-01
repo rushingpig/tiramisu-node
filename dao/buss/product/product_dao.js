@@ -39,7 +39,7 @@ ProductDao.prototype.findProductsCount = function(product_name,category_id,regio
     sql += "select bp.id,bps.size,bp.name,bpc.name as category_name,bpc.isAddition,bps.regionalism_id ";
     sql += " from ?? bp";
     sql += " inner join ?? bpc on bp.category_id = bpc.id";
-    sql += " inner join ?? bps on bp.id = bps.product_id where 1=1";
+    sql += " inner join ?? bps on bp.id = bps.product_id where 1=1 and bps.del_flag = 1";
     params.push(tables.buss_product);
     params.push(tables.buss_product_category);
     params.push(tables.buss_product_sku);

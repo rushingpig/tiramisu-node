@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import DateTimeRangePicker from 'react-bootstrap-datetimerange-picker';
-import MessageBox, { MessageBoxIcon } from 'common/message_box';
+import MessageBox, { MessageBoxIcon, MessageBoxType } from 'common/message_box';
 import CitiesSelector from 'common/cities_selector';
 import DropDownMenu from 'common/dropdown';
 import getTopHeader from '../top_header';
@@ -704,6 +704,12 @@ class CitiesOptions extends Component {
 }
 
 class Main extends Component {
+    constructor(props) {
+        super(props);
+
+        this.handleSaveOption = this.handleSaveOption.bind(this);
+    }
+
     render() {
 
         const { state, Action, citiesSelector, CitiesSelectorAction } = this.props;
@@ -762,7 +768,7 @@ class Main extends Component {
                             <div className="col-xs-10 col-xs-offset-2">
                             {
                                 enableSaveButton ? (
-                                    <button className="btn btn-theme" onClick={Action.saveOption}>
+                                    <button className="btn btn-theme" onClick={this.handleSaveOption}>
                                         保存商品设置
                                     </button>
                                 ) : (
@@ -773,7 +779,10 @@ class Main extends Component {
                             }
                             {'　'}
                             {
-                                state.citiesOptionApplyRange === 1 && (state.cityOptionSavable && !state.cityOptionSaved)
+                                state.citiesOptionApplyRange === 1 && (
+                                    (state.cityOptionSavable && !state.cityOptionSaved)
+                                    || (state.citiesOptions.has(state.selectedCity) && !state.cityOptionSaved)
+                                )
                                 ? (<small className="text-danger">当前所选城市的配置信息尚未保存</small>)
                                 : null
                             }
@@ -815,6 +824,20 @@ class Main extends Component {
                 history.push('/pm/sku_manage');
             });
         }
+    }
+
+    handleSaveOption() {
+        const { state, Action } = this.props;
+
+        if (!state.cityOptionSaved && state.citiesOptionApplyRange === 1) {
+            return MessageBox({
+                icon: MessageBoxIcon.Warning,
+                text: '您还有尚未暂存城市配置的信息。如果继续保存，这些信息将会丢失。请问是否继续？',
+                btnType: MessageBoxType.YesNo
+            }).then(Action.saveOption);
+        }
+
+        Action.saveOption();
     }
 }
 

@@ -51,6 +51,8 @@ const initialState = {
     saveStatus: 'normal', // normal, padding, success, failed
 };
 
+const returnID = opt => opt.id;
+
 const transformPositionData = obj => [
     obj.id, {
         ...obj,
@@ -307,7 +309,7 @@ const switchType = {
                     delivery: tempOptions.isPreSale ? [new Date(sku.send_start), new Date(sku.send_end)] : [iNow, new Date(getDate(iNow, 7))],
                     bookingTime: sku.book_time,
                     hasSecondaryBookingTime: sku.secondary_book_time.time !== null,
-                    applyDistrict: new Set(sku.secondary_book_time.regions)
+                    applyDistrict: new Set(sku.secondary_book_time.regions.map(returnID))
                 }
                 tempOptions.secondaryBookingTime = tempOptions.hasSecondaryBookingTime ? sku.secondary_book_time.time : "";
 
@@ -763,7 +765,6 @@ const switchType = {
 
     [ActionTypes.SAVE_CITIY_OPTION]: state => {
 
-        const returnID = opt => opt.id;
         const returnNonZeroID = opt => opt.id !== 0;
 
         if (!state.addMode && state.citiesOptions.get(state.selectedCity)) {

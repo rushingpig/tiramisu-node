@@ -868,13 +868,19 @@ var SignedModal = React.createClass({
      if(!refund_method){
         Noty('warning', '请选择赔偿方式');return;
       }*/
-      if(refund_method == CASH){
-        if(!form.isNumber(refund_money)){
-          Noty('warning', '请输入现金赔偿金额');return;
-        }else if(refund_money > 29){
-          Noty('warning', '现金赔偿金额不应大于29元');return;         
-        }
-      }
+    if(this.state.is_refund){
+      if(!refund_method){
+         Noty('warning', '请选择赔偿方式');return;
+       }
+       if(refund_method == CASH){
+         if(!form.isNumber(refund_money)){
+           Noty('warning', '请输入现金赔偿金额');return;
+         }else if(refund_money > 29){
+           Noty('warning', '现金赔偿金额不应大于29元');return;         
+         }
+       }
+    }
+
       //去掉必须的全额退款
 /*      else{
         if(!refund_reson){

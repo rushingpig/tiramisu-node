@@ -12,8 +12,6 @@ import LazyLoad from 'utils/lazy_load';
 import SkuAction from 'actions/product_sku_management';
 import CitiesSelectorAction from 'actions/cities_selector';
 
-const TopHeader = getTopHeader([{name: '产品管理', link: '/pm/sku_manage'}, {name: '添加商品', link: '/pm/sku_manage/add'}]);
-
 LazyLoad('datetimerangepicker');
 
 const FormHorizontal = props => (<div className="form-horizontal" {...props} />)
@@ -42,6 +40,17 @@ const Anchor = props => {
 
   return (<a key='enable' href="javascript:;" {...props} />);
 }
+
+const switchTopHeader = addMode => getTopHeader([{
+    name: '产品管理',
+    link: ''
+}, {
+    name: '搜索商品',
+    link: '/pm/sku_manage'
+}, {
+    name: addMode ? '新建商品' : '编辑商品',
+    link: ''
+}]);
 
 const tabContentBoxStyle = {
     borderTopLeftRadius: 0,
@@ -745,6 +754,8 @@ class Main extends Component {
         ) {
             enableSaveButton = false;
         }
+
+        const TopHeader = switchTopHeader(state.addMode);
 
         return (
             <div className="wrapper">

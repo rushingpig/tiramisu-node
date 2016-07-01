@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+import getTopHeader from '../top_header';
 import Tooltip from 'common/tooltip2';
 import Pagination from 'common/pagination';
 
@@ -19,6 +20,17 @@ const Col = props => {
 
     return (<div className={className.trim()} {...props} />);
 }
+
+const TopHeader = getTopHeader([{
+    name: '产品管理',
+    link: ''
+}, {
+    name: '搜索商品',
+    link: '/pm/sku_manage'
+}, {
+    name: '查看SKU',
+    link: ''
+}]);
 
 class Main extends Component {
     constructor(props) {
@@ -82,11 +94,7 @@ class Main extends Component {
         return (
             // 类名svs不能去掉
             <div className="svs">
-                <Row>
-                    <Col xs="12">
-                        <Link to="/pm/sku_manage"><i className="fa fa-chevron-left"></i>&nbsp;返回搜索列表</Link>
-                    </Col>
-                </Row>
+                <TopHeader />
                 <hr/>
                 <Row>
                     <Col xs="4">

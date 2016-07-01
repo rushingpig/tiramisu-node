@@ -3,6 +3,8 @@ import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+import getTopHeader from '../top_header';
+
 import actions from 'actions/product_view_info';
 
 const Row = props => (<div className="row" {...props} />);
@@ -16,6 +18,17 @@ const Col = props => {
 
     return (<div className={className.trim()} {...props} />);
 }
+
+const TopHeader = getTopHeader([{
+    name: '产品管理',
+    link: ''
+}, {
+    name: '搜索商品',
+    link: '/pm/sku_manage'
+}, {
+    name: '查看商品详情',
+    link: ''
+}]);
 
 class Main extends Component {
     constructor(props) {
@@ -52,12 +65,7 @@ class Main extends Component {
 
         return (
             <div>
-                <Row>
-                    <Col xs="12">
-                        <Link to="/pm/sku_manage"><i className="fa fa-chevron-left"></i>&nbsp;返回搜索列表</Link>
-                    </Col>
-                </Row>
-                <hr/>
+                <TopHeader />
                 <Row>
                     <Col xs="4"><label>{'　　'}产品名称：</label><span className="text-muted">{state.productName}</span></Col>
                     <Col xs="4">

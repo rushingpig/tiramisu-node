@@ -229,7 +229,7 @@ class Main extends Component {
                             搜索结果：
                         </p>
                     </div>
-                    <table className="table table-bordered">
+                    <table className="table table-bordered table-striped table-hover">
                         <thead>
                             <tr>
                                 <th>

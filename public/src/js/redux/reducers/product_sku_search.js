@@ -12,6 +12,7 @@ const initialState = {
 
     searchProductName: '',
     searchBeginTime: "2016-01-01",
+    noEndTimeLimit: false,
     searchEndTime: Util.getDate(30),
     selectedPrimaryCategory: 0,
     selectedSecondaryCategory: 0,
@@ -168,6 +169,7 @@ const switchType = {
             const lastSearchFilter = searchWithProductName ? {
                 searchProductName: state.searchProductName
             } : {
+                noEndTimeLimit: state.noEndTimeLimit,
                 searchProductName: state.searchProductName,
                 searchBeginTime: state.searchBeginTime,
                 searchEndTime: state.searchEndTime,

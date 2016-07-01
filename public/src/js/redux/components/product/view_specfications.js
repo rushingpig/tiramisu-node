@@ -107,14 +107,18 @@ class Main extends Component {
                         <label>产品编码：</label>
                         <span id="product-id" className="text-muted">22179</span>
                         {'　'}
-                        <Tooltip msg={this.state.copyResult === 0 ? '复制' : this.state.copyResult === 1 ? '复制成功! ' : '复制失败'}>
-                            <a
-                                href="javascript:;"
-                                className="fa fa-clipboard copy-product-id"
-                                onClick={this.copyID}
-                                onMouseLeave={this.mouseLeaveHandler}
-                            />
-                        </Tooltip>
+                        {
+                            navigator.userAgent.search(/Chrome\/\d\d/) > -1 && (Number(navigator.userAgent.replace(/^.+Chrome\/(\d\d).+$/, "$1")) > 45) ? (
+                                <Tooltip msg={this.state.copyResult === 0 ? '复制' : this.state.copyResult === 1 ? '复制成功! ' : '复制失败'}>
+                                    <a
+                                        href="javascript:;"
+                                        className="fa fa-clipboard copy-product-id"
+                                        onClick={this.copyID}
+                                        onMouseLeave={this.mouseLeaveHandler}
+                                    />
+                                </Tooltip>
+                            ) : null
+                        }
                     </Col>
                 </Row>
                 <hr/>

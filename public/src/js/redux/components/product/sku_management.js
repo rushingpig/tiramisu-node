@@ -20,7 +20,8 @@ const Input = props => (<input type="number" className="form-control input-xs" {
 const CheckBox = props => (<input type="checkbox" {...props} />);
 const Radio = props => (<input type="radio" {...props} />);
 const Row = props => (<div className="row" {...props} />);
-const letTheTipsLower = { display: 'flex', alignItems: 'baseline' };
+const RadioInline = props => (<div className="radio-inline" {...props} />);
+const ControlLabel = props => (<label className={"control-label" + (props.xs ? (" col-xs-" + props.xs) : "")}  />);
 
 const Col = props => {
     let className = '';
@@ -64,6 +65,7 @@ const inputStyle = { width: 70 }
 const redBorder = { borderColor: "#f00" }
 const warningInputStyle = { width: 70, ...redBorder }
 const pointCursor = { cursor: 'pointer' }
+const letTheTipsLower = { display: 'flex', alignItems: 'baseline' }
 
 const getDOMValue = func => (event, ...args) => func.apply(undefined, [event.currentTarget.value, ...args]);
 const getSpecInputValue = (i, func) => (event, ...args) => func.apply(undefined, [i, event.currentTarget.value, ...args]);
@@ -86,16 +88,16 @@ class BasicOptions extends Component {
         return (
             <FormHorizontal>
                 <FormGroup>
-                    <label className="col-xs-2 control-label">商品名称：</label>
+                    <ControlLabel xs='2'>商品名称：</ControlLabel>
                     <Col xs="4">
                         <Input type="text" autoFocus={true} onChange={getDOMValue(Action.changeProductName)} value={state.productName} />
                     </Col>
                 </FormGroup>
                 <FormGroup>
-                    <label className="col-xs-2 control-label">购买方式：</label>
+                    <ControlLabel xs='2'>购买方式：</ControlLabel>
                     <Col xs="10">
                         <p style={letTheTipsLower}>
-                            <label className="radio-inline">
+                            <RadioInline>
                                 <Radio
                                     name="inlineRadioOptions"
                                     value="0"
@@ -103,9 +105,9 @@ class BasicOptions extends Component {
                                     checked={state.buyEntry === 0}
                                 />
                               {' 商城可购买'}
-                            </label>
+                            </RadioInline>
                             {'　　'}
-                            <label className="radio-inline">
+                            <RadioInline>
                                 <Radio
                                     name="inlineRadioOptions"
                                     value="1"
@@ -113,13 +115,13 @@ class BasicOptions extends Component {
                                     checked={state.buyEntry === 1}
                                 />
                               {' 外部渠道可购买'}
-                            </label>
+                            </RadioInline>
                             <small className="text-muted">（外部渠道购买则代表此商品不直接展示在商城中）</small>
                         </p>
                     </Col>
                 </FormGroup>
                 <FormGroup>
-                    <label className="col-xs-2 control-label">商品分类：</label>
+                    <ControlLabel xs='2'>商品分类：</ControlLabel>
                     <Col xs="10">
                         <div className="form-inline">
                             <select
@@ -150,10 +152,10 @@ class BasicOptions extends Component {
                     </Col>
                 </FormGroup>
                 <FormGroup>
-                    <label className="col-xs-2 control-label">上线城市：</label>
+                    <ControlLabel xs='2'>上线城市：</ControlLabel>
                     <Col xs="10">
                         <p style={letTheTipsLower}>
-                            <label className="radio-inline">
+                            <RadioInline>
                                 <Radio
                                     name="aaa"
                                     value="0"
@@ -161,9 +163,9 @@ class BasicOptions extends Component {
                                     checked={state.activeCitiesOption === 0}
                                 />
                                 {' 所有已开通城市'}
-                            </label>
+                            </RadioInline>
                             {'　　'}
-                            <label className="radio-inline">
+                            <RadioInline>
                             <Radio
                                 name="aaa"
                                 value="1"
@@ -171,15 +173,15 @@ class BasicOptions extends Component {
                                 checked={state.activeCitiesOption === 1}
                             />
                                 {' 部分城市'}
-                            </label>
-                            <label className="radio-inline">
+                            </RadioInline>
+                            <RadioInline>
                                 <Anchor
                                     disabled={state.activeCitiesOption === 0}
                                     onClick={this.handleToggleCitiesSelector}
                                 >
                                     {this.state.showCitiesSelector ? '收起' : '展开'}
                                 </Anchor>
-                            </label>
+                            </RadioInline>
                             <small className="text-muted">（当前可选择城市或默认已开通城市均为该分类上线范围内）</small>
                         </p>
                     </Col>
@@ -323,11 +325,11 @@ class ShopSpecificationsOptions extends Component {
 
         return (
             <FormGroup>
-                <label className="col-xs-2 control-label">
+                <ControlLabel xs='2'>
                     商城规格：
                     <br/>
                     <small className="text-muted">原价为商城详情页显示价格，价格栏为商城实际销售价格</small>
-                </label>
+                </ControlLabel>
                 <Col xs="9">
                     <table className="table table-bordered table-striped">
                         <thead>
@@ -459,7 +461,7 @@ class SourceOptions extends Component {
 
         return (
             <FormGroup>
-                <label className="col-xs-2 control-label">渠道设置：</label>
+                <ControlLabel xs='2'>渠道设置：</ControlLabel>
                 <Col xs="2">
                     <div className="list-group">
                         {
@@ -593,12 +595,12 @@ class CitiesOptions extends Component {
         return (
             <FormHorizontal>
                 <FormGroup>
-                    <label className="col-xs-2 control-label">应用范围：</label>
+                    <ControlLabel xs='2'>应用范围：</ControlLabel>
                     <Col xs='10'>
                         <p>
                             {
                                 state.addMode ? [(
-                                    <label className="radio-inline" key="radio">
+                                    <RadioInline key="radio">
                                         <Radio
                                             disabled={!state.addMode}
                                             name="citiesOptionApplyRange"
@@ -607,10 +609,10 @@ class CitiesOptions extends Component {
                                             checked={state.citiesOptionApplyRange === 0}
                                         />
                                         {' 全部一致'}
-                                    </label>
+                                    </RadioInline>
                                 ), <span key="span">{'　　'}</span>] : null
                             }
-                            <label className="radio-inline">
+                            <RadioInline>
                                 <Radio
                                     name="citiesOptionApplyRange"
                                     value="1"
@@ -618,14 +620,14 @@ class CitiesOptions extends Component {
                                     checked={state.citiesOptionApplyRange === 1}
                                 />
                                 {' 独立配置'}
-                            </label>
+                            </RadioInline>
                         </p>
                     </Col>
                 </FormGroup>
                 {
                     state.citiesOptionApplyRange === 0 ? null : (
                         <FormGroup>
-                            <label className="col-xs-2 control-label">配置城市：</label>
+                            <ControlLabel xs='2'>配置城市：</ControlLabel>
                             <Col xs='10'>
                                 <DropDownMenu
                                     list={ [...state.provincesData.values()].map(this.transformToDropDownList) }
@@ -660,7 +662,7 @@ class CitiesOptions extends Component {
                 }
                 <Row><Col xs='10' offset='1'><hr/></Col></Row>
                 <FormGroup>
-                    <label className="col-xs-2 control-label">预约时间：</label>
+                    <ControlLabel xs='2'>预约时间：</ControlLabel>
                     <Col xs="6">
                         <div className="form-inline">
                             <Input
@@ -676,7 +678,7 @@ class CitiesOptions extends Component {
                 </FormGroup>
                 <Row><Col xs='10' offset='1'><hr/></Col></Row>
                 <FormGroup>
-                    <label className="col-xs-2 control-label">上架设置：</label>
+                    <ControlLabel xs='2'>上架设置：</ControlLabel>
                     <Col xs="6">
                         <div className="form-inline">
                             <div className="checkbox">

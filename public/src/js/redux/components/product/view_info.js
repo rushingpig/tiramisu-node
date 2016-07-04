@@ -152,12 +152,16 @@ class Main extends Component {
                     sourceSpecificationsKeys.map(sid => {
                       const isSelected = state.selectedSource === sid;
                       return (
-                        <div className={"list-group-item" + (isSelected ? ' active' : '')} key={sid}>
+                        <div
+                          className={"list-group-item" + (isSelected ? ' active' : '')}
+                          onClick={e => Action.changeSelectSource(sid)}
+                          key={sid}
+                        >
                           {
                             isSelected ? (
                               state.orderSource.get(sid)
                             ) : (
-                              <a href="javascript:;" onClick={e => Action.changeSelectSource(sid)}>
+                              <a href="javascript:;">
                                 {state.orderSource.get(sid)}
                               </a>
                             )

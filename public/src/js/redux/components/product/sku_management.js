@@ -20,8 +20,8 @@ const Input = props => (<input type="number" className="form-control input-xs" {
 const CheckBox = props => (<input type="checkbox" {...props} />);
 const Radio = props => (<input type="radio" {...props} />);
 const Row = props => (<div className="row" {...props} />);
-const RadioInline = props => (<div className="radio-inline" {...props} />);
-const ControlLabel = props => (<label className={"control-label" + (props.xs ? (" col-xs-" + props.xs) : "")}  />);
+const RadioInline = props => (<label className="radio-inline" {...props} />);
+const ControlLabel = props => (<label className={"control-label" + (props.xs ? (" col-xs-" + props.xs) : "")} {...props} />);
 
 const Col = props => {
   let className = '';
@@ -468,11 +468,12 @@ class SourceOptions extends Component {
               [...tempOptions.sourceSpecifications].map(
                 ([sid, detail]) => {
                   return (
-                    <li key={sid} className={"list-group-item" + (tempOptions.selectedSource === sid ? ' active' : '')}>
-                      <span
-                        style={pointCursor}
-                        onClick={e => Action.changeSelectedSource(sid)}
-                      >
+                    <li
+                      key={sid}
+                      className={"list-group-item" + (tempOptions.selectedSource === sid ? ' active' : '')}
+                      onClick={e => Action.changeSelectedSource(sid)}
+                    >
+                      <span style={pointCursor}>
                         {state.orderSource.get(sid)}
                       </span>
                       <span className="pull-right">

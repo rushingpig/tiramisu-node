@@ -56,20 +56,30 @@ const fillSearchResult = source => {
   });
 
   let sortedPrimaryCategoriesMap = {};
+  let plus1 = 0;
 
   Object.keys(primaryCategoriesMap).forEach(key => {
 
     const primaryCategory = primaryCategoriesMap[key];
     let sortedSecondaryCategoriesMap = {};
+    let plus2 = 0;
 
     primaryCategory.list.forEach(secondaryCategory => {
-      sortedSecondaryCategoriesMap[secondaryCategory.index] = secondaryCategory;
+      if (secondaryCategory.index in sortedSecondaryCategoriesMap) {
+        sortedSecondaryCategoriesMap[String(secondaryCategory.index) + String(++plus2)] = secondaryCategory;
+      } else {
+        sortedSecondaryCategoriesMap[String(secondaryCategory.index)] = secondaryCategory;
+      }
     });
     primaryCategory.list = Object.keys(sortedSecondaryCategoriesMap).map(
       index => sortedSecondaryCategoriesMap[index]
     );
 
-    sortedPrimaryCategoriesMap[primaryCategory.index] = primaryCategory;
+    if (primaryCategory.index in sortedPrimaryCategoriesMap) {
+      sortedPrimaryCategoriesMap[String(primaryCategory.index) + String(++plus1)] = primaryCategory;      
+    } else {
+      sortedPrimaryCategoriesMap[String(primaryCategory.index)] = primaryCategory;
+    }
   });
 
   sortedPrimaryCategoriesMap = Object.keys(sortedPrimaryCategoriesMap).map(index => sortedPrimaryCategoriesMap[index]);

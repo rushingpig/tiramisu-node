@@ -32,12 +32,12 @@ const loadBasicData = (cityId, productId, pageNum) => (
   (dispatch, getState) => {
     const { pageSize } = getState().productViewSpecifications;
 
-    dispatch({
-      type: ActionTypes.LOAD_BASIC_DATA,
-      status: 'pending'
-    });
-
     if (pageNum === 0) {
+      dispatch({
+        type: ActionTypes.LOAD_BASIC_DATA,
+        status: 'pending'
+      });
+
       return Promise.all([
         loadOrderSource(),
         loadProvinces(),
@@ -72,6 +72,7 @@ const loadBasicData = (cityId, productId, pageNum) => (
         productSpecData => dispatch({
           type: ActionTypes.LOAD_NEXT_PAGE_DATA,
           status: 'success',
+          productSpecData,
           pageNum
         })
       ).catch(

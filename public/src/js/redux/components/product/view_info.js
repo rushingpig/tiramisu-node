@@ -7,6 +7,7 @@ import getTopHeader from '../top_header';
 
 import actions from 'actions/product_view_info';
 
+const TextMuted = props => (<span className="text-muted" {...props} />);
 const Row = props => (<div className="row" {...props} />);
 const Col = props => {
   let className = '';
@@ -67,28 +68,33 @@ class Main extends Component {
       <div>
         <TopHeader />
         <Row>
-          <Col xs="4"><label>{'　　'}产品名称：</label><span className="text-muted">{state.productName}</span></Col>
+          <Col xs="4"><label>{'　　'}产品名称：</label><TextMuted>{state.productName}</TextMuted></Col>
           <Col xs="4">
             <label>{'　　'}商城购买：</label>
-            <span className="text-muted">{state.canBuyInOfficialSite ? "是" : "否"}</span>
+            <TextMuted>{state.canBuyInOfficialSite ? "是" : "否"}</TextMuted>
           </Col>
         </Row>
         <Row>
-          <Col xs="4"><label>{'　　'}所属分类：</label><span className="text-muted">{state.productCategory.join(' / ')}</span></Col>
-          <Col xs="4"><label>{'　　'}所属地区：</label><span className="text-muted">{state.position}</span></Col>
+          <Col xs="4"><label>{'　　'}所属分类：</label><TextMuted>{state.productCategory.join(' / ')}</TextMuted></Col>
+          <Col xs="4"><label>{'　　'}所属地区：</label><TextMuted>{state.position}</TextMuted></Col>
         </Row>
         <Row>
-          <Col xs="4"><label>{'　　'}是否预售：</label><span className="text-muted">{state.isPreSale ? "是" : "否"}</span></Col>
+          <Col xs="4">
+            <label>{'　　'}是否预售：</label>
+            <TextMuted>
+              {state.isPreSale ? ("是  ( " + state.onSaleTime[0] + ' ~ ' + state.onSaleTime[1] + ' )') : "否"}
+            </TextMuted>
+          </Col>
         </Row>
         <Row>
-          <Col xs="4"><label>{'　　'}预约时间：</label><span className="text-muted">{state.bookingTime + ' 小时'}</span></Col>
+          <Col xs="4"><label>{'　　'}预约时间：</label><TextMuted>{state.bookingTime + ' 小时'}</TextMuted></Col>
         </Row>
         <Row>
           {
             state.hasSecondaryBookingTime ? (
               <Col xs="12">
                 <label>第二预约时间：</label>
-                <span className="text-muted">{state.secondaryBookingTime + ' 小时'}</span>
+                <TextMuted>{state.secondaryBookingTime + ' 小时'}</TextMuted>
                 <i className="text-muted">{'（' + state.secondaryBookingTimeDistricts.join(',') + '）'}</i>
               </Col>
             ) : undefined

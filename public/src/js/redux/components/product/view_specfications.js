@@ -99,7 +99,7 @@ class Main extends Component {
         <Row>
           <Col xs="4">
             <label>产品名称：</label>
-            <span className="text-muted">芒果千层心蛋糕</span>
+            <span className="text-muted">{state.productName}</span>
           </Col>
           <Col xs="4">
             <label>商城购买：</label>

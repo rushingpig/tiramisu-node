@@ -10,6 +10,7 @@ const initialState = {
   canBuyInOfficialSite: false,
   productCategory: [],
   isPreSale: false,
+  onSaleTime: [],
   bookingTime: 0.5,
   hasSecondaryBookingTime: false,
   secondaryBookingTime: [],
@@ -33,6 +34,7 @@ const switchType = {
           canBuyInOfficialSite: spu.skus.some(sku => sku.website === "1"), // 编号1代表官方商城购买渠道
           productCategory: [spu.product.primary_cate_name, spu.product.secondary_cate_name],
           isPreSale: spu.product.isPresell,
+          onSaleTime: [spu.product.presell_start, spu.product.presell_end],
           bookingTime: spu.product.book_time,
           hasSecondaryBookingTime: Object.keys(spu.product.secondary_book_time).length > 0,
           secondaryBookingTime: Number(spu.product.secondary_book_time[secondaryBookingTimeKeys[0]]),

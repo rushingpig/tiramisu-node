@@ -750,7 +750,7 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
   }
 
   //  刚进入订单列表页面,不带筛选条件,用explain来优化获取记录总数
-  if (/^.*(where 1=1 and)[\s\w\W]+/.test(sql) || query_data.keywords) {
+  if (/^.*(where 1=1 and)[\s\w\W]+/.test(sql)  || /^.* inner join [\S\s\w]+ on [\w\W]+ and .*/.test(sql) || query_data.keywords) {
     countSql = dbHelper.countSql(sql);
     promise = baseDao.select(countSql, params).then(results => {
       if (!toolUtils.isEmptyArray(results)) {

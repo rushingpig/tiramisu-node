@@ -605,11 +605,13 @@ ALTER TABLE tiramisu.sys_user_role ADD only_admin tinyint(1) unsigned DEFAULT '0
 # 创建开通城市表
 CREATE TABLE `sys_city` (
     `regionalism_id` int(11) NOT NULL COMMENT '区域id',
-    `is_city` int(11) NOT NULL COMMENT '不为NULL时表示是开通的地级市/县级市',
+    `is_city` int(11) DEFAULT '0' COMMENT '不为0时表示是开通的地级市/县级市',
     `online_time` datetime DEFAULT NULL COMMENT '上线时间',
     `is_diversion` tinyint(1) DEFAULT NULL COMMENT '是否导流订单',
     `delivery_time_range` varchar(16) DEFAULT NULL COMMENT '配送时间段',
     `order_time` int(11) DEFAULT NULL COMMENT '预约时间',
+    `manager_name` varchar(32) DEFAULT NULL COMMENT '城市经理姓名',
+    `manager_mobile` varchar(32) DEFAULT NULL COMMENT '城市经理电话',
     `remarks` varchar(255) DEFAULT NULL COMMENT '备注',
     `SEO` varchar(1024) DEFAULT NULL COMMENT 'SEO',
     `created_by` int(11) NOT NULL COMMENT '创建人id',

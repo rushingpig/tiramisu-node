@@ -3,6 +3,7 @@
 var _ = require('lodash');
 var co = require('co');
 
+var Constant = require('../../common/Constant');
 var dao = require('../../dao');
 var cityDao = dao.city;
 
@@ -11,6 +12,8 @@ var systemUtils = require('../../common/SystemUtils');
 var toolUtils = require('../../common/ToolUtils');
 var TiramisuError = require('../../error/tiramisu_error');
 const res_obj = require('../../util/res_obj');
+
+let LEVEL = Constant.REGIONALISM_LEVEL;
 
 module.exports.getRegionalisms = function (req, res, next) {
     let promise = co(function *() {
@@ -75,7 +78,7 @@ module.exports.getList = function (req, res, next) {
                 tmp.city_name = curr.name;
                 tmp.is_county = 0;
                 tmp.province_name = curr.parent_name;
-                if (curr.level_type == 3) {
+                if (curr.level_type == LEVEL.DISTRICT) {
                     tmp.is_county = 1;
                     tmp.province_name = curr.parent_parent_name;
                 }
@@ -139,7 +142,7 @@ module.exports.getCityInfo = function (req, res, next) {
                 result.province_id = curr.parent_id;
                 area.unshift(curr.name);
                 area.unshift(curr.parent_name);
-                if (curr.level_type == 3) {
+                if (curr.level_type == LEVEL.DISTRICT) {
                     result.is_county = 1;
                     result.parent_city_id = curr.parent_id;
                     result.province_id = curr.parent_parent_id;
@@ -194,7 +197,9 @@ module.exports.editCityInfo = function (req, res, next) {
         city_obj = Object.assign(city_obj, _.pick(b, ['online_time', 'is_diversion', 'delivery_time_range', 'order_time', 'remarks', 'SEO', 'manager_name', 'manager_mobile']));
         if (b.open_regionalisms) {
             areas = [];
+            let id_top4 = city_id.toString().substr(0, 4);
             b.open_regionalisms.forEach(curr_r=> {
+                if (id_top4 !== curr_r.regionalism_id.toString().substr(0, 4)) return;
                 let a = {
                     regionalism_id: curr_r.regionalism_id,
                     order_time: curr_r.order_time
@@ -231,7 +236,9 @@ module.exports.addCity = function (req, res, next) {
         };
         city_obj = Object.assign(city_obj, _.pick(b, ['online_time', 'is_diversion', 'delivery_time_range', 'order_time', 'remarks', 'manager_name', 'manager_mobile']));
         if (b.open_regionalisms) {
+            let id_top4 = city_id.toString().substr(0, 4);
             b.open_regionalisms.forEach(curr_r=> {
+                if (id_top4 !== curr_r.regionalism_id.toString().substr(0, 4)) return;
                 let a = {
                     regionalism_id: curr_r.regionalism_id,
                     order_time: curr_r.order_time

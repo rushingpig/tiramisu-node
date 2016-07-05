@@ -524,7 +524,9 @@ const switchType = {
     if (state.citiesOptions.has(selectedCity)) {
       tempOptions = clone(state.citiesOptions.get(selectedCity));
     } else {
-      tempOptions = clone(initialState.tempOptions);
+      tempOptions = clone(state.citiesOptions.size === 0 ? initialState.tempOptions : [...state.citiesOptions.values()][0]);
+      state.cityOptionSaved = false;
+      state.cityOptionSavable = state.citiesOptions.size > 0;
     }
 
     return {
@@ -539,16 +541,17 @@ const switchType = {
   [ActionTypes.CHANGE_SELECTED_CITY]: (state, { id }) => {
     if (state.citiesOptions.has(id)) {
       state.tempOptions = clone(state.citiesOptions.get(id));
+      state.cityOptionSaved = true;
     } else {
-      state.tempOptions = clone(initialState.tempOptions);
-      state.cityOptionSavable = false;
+      state.tempOptions = clone(state.citiesOptions.size === 0 ? initialState.tempOptions : [...state.citiesOptions.values()][0]);
+      state.cityOptionSaved = false;
+      state.cityOptionSavable = state.citiesOptions.size > 0;
     }
 
     state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0] || "";
 
     return {
       ...state,
-      cityOptionSaved: state.citiesOptions.has(id),
       selectedCity: id
     };
   },

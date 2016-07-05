@@ -619,3 +619,91 @@ CREATE TABLE `sys_city` (
     `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
     PRIMARY KEY `IDX_UNQ_UID` (`regionalism_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='开通城市表';
+
+# 触发器：删除sku下的二级配送时间
+DROP TRIGGER IF EXISTS `cascade_delete_sku_booktime`;
+CREATE TRIGGER cascade_delete_sku_booktime after UPDATE ON buss_product_sku
+for each row 
+begin 
+if new.del_flag = 0 
+then
+UPDATE buss_product_sku_booktime 
+SET 
+    del_flag = 0
+WHERE
+    sku_id = new.id;
+end if;
+end;
+
+# 触发器：删除产品下的sku
+# 后续触发cascade_delete_sku_booktime
+DROP TRIGGER IF EXISTS `cascade_delete_sku`;
+CREATE TRIGGER cascade_delete_sku after UPDATE ON buss_product
+for each row 
+begin 
+if new.del_flag = 0 
+then
+UPDATE buss_product_sku 
+SET 
+    del_flag = 0
+WHERE
+    product_id = new.id;
+end if;
+end;
+
+# 触发器：删除分类下的产品
+# 后续触发cascade_delete_sku、cascade_delete_sku_booktime
+DROP TRIGGER IF EXISTS `cascade_delete_category_product_sku`;
+CREATE TRIGGER cascade_delete_category_product_sku after UPDATE ON buss_product_category
+for each row 
+begin 
+if new.del_flag = 0
+then
+# 删除一级分类，则删除该分类下的二级分类
+# 后续触发自身
+if old.parent_id = 0
+then 
+update buss_product_category set del_flag = 0 where parent_id = old.id;
+end if;
+update buss_product_category_regionalism set del_flag = 0 where category_id = old.id;
+UPDATE buss_product 
+SET 
+    del_flag = 0
+WHERE
+    category_id = old.id;
+end if;
+end;
+
+# 触发器：删除分类区域
+DROP TRIGGER IF EXISTS `cascade_delete_product_sku_about_region`;
+CREATE TRIGGER cascade_delete_product_sku_about_region after UPDATE ON buss_product_category_regionalism
+for each row 
+begin 
+DECLARE x INT;
+if new.del_flag = 0
+then
+SET x = (select parent_id from buss_product_category where id = old.category_id);
+# 删除一级分类区域
+if x = 0
+then 
+    update buss_product_category_regionalism 
+    set del_flag = 0 
+    where category_id in (
+        select id from buss_product_category where parent_id = old.category_id
+    );
+else 
+# 删除二级分类
+    update buss_product_sku 
+    set del_flag = 0 
+    where product_id in (
+        select product.id as id 
+        from buss_product_category category join buss_product product 
+        on category.id = product.category_id and category.id = old.id
+    );
+end if;
+end if;
+end;
+
+
+
+

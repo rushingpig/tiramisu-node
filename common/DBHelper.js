@@ -18,7 +18,13 @@ DBHelper.countSql = function(sql){
     if(!(sql && typeof sql === 'string')){
         return '';
     }
-    let idx = /[Ff][Rr][Oo][Mm]/.exec(sql);
+    return 'select count(1) as total from (' + DBHelper.removeOrders(sql) + ')temp';
+};
+DBHelper.replaceCountSql = function(sql){
+    if(!(sql && typeof sql === 'string')){
+        return '';
+    }
+    let idx = /from/i.exec(sql);
     if (!idx) {
         return '';
     }

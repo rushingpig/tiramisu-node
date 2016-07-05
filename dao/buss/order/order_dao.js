@@ -558,6 +558,13 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
     params.push(tables.dict_regionalism);
     params.push(query_data.city_id);
   }
+  if (query_data.province_id && !query_data.city_id) {
+    sql += " inner join ?? dr2 on dr2.id = br.regionalism_id";
+    sql += " inner join ?? dr3 on dr2.parent_id = dr3.id and dr3.id = ?";
+    params.push(tables.dict_regionalism);
+    params.push(tables.dict_regionalism);
+    params.push(query_data.province_id);
+  }
   sql += " left join ?? bds2 on bo.delivery_id = bds2.id";
   params.push(tables.buss_delivery_station);
   if (data_scopes.indexOf(constant.DS.CITY.id) !== -1 && !query_data.user.is_headquarters) {

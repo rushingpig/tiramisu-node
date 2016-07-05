@@ -20,6 +20,17 @@ DBHelper.countSql = function(sql){
     }
     return 'select count(1) as total from (' + DBHelper.removeOrders(sql) + ')temp';
 };
+DBHelper.replaceCountSql = function(sql){
+    if(!(sql && typeof sql === 'string')){
+        return '';
+    }
+    let idx = /from/i.exec(sql);
+    if (!idx) {
+        return '';
+    }
+    let tmp_sql = sql.substring(idx.index);
+    return 'select count(*) as total ' + DBHelper.removeOrders(tmp_sql);
+};
 
 DBHelper.approximateCountSql = function(sql){
     if(!(sql && typeof sql === 'string')){

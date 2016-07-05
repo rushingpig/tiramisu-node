@@ -353,6 +353,9 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
         } else if (_res[0].status === Constant.OS.EXCEPTION) {
             throw new TiramisuError(res_obj.ORDER_EXCEPTION);
         }
+        if (!systemUtils.isOrderCanUpdateStatus(_res[0].status, order_obj.status)) {
+            throw new TiramisuError(res_obj.OPTION_EXPIRED);
+        }
         //===========for history begin=============
         let current_order = _res[0],
             order_history_obj = {
@@ -494,6 +497,9 @@ DeliveryService.prototype.unsigninOrder = (req,res,next) => {
             throw new TiramisuError(res_obj.ORDER_COMPLETED);
         }else if(_res[0].status === Constant.OS.EXCEPTION){
             throw new TiramisuError(res_obj.ORDER_EXCEPTION);
+        }
+        if (!systemUtils.isOrderCanUpdateStatus(_res[0].status, update_obj.status)) {
+            throw new TiramisuError(res_obj.OPTION_EXPIRED);
         }
         return orderDao.updateOrder(systemUtils.assembleUpdateObj(req,update_obj),order_id);
     }).then((result)=>{

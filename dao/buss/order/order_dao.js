@@ -560,7 +560,7 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
   }
   if (query_data.province_id && !query_data.city_id) {
     sql += " inner join ?? dr2 on dr2.id = br.regionalism_id";
-    sql += " inner join ?? dr3 on dr2.parent_id = dr3.id and dr3.id = ?";
+    sql += " inner join ?? dr3 on dr2.parent_id = dr3.id and dr3.parent_id = ?";
     params.push(tables.dict_regionalism);
     params.push(tables.dict_regionalism);
     params.push(query_data.province_id);

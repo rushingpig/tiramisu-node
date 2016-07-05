@@ -45,6 +45,8 @@ const ActionTypes = {
   CHANGE_SOURCE_SPEC:      Symbol('CHANGE_SOURCE_SPEC'),
   CHANGE_SOURCE_SPEC_COST: Symbol('CHANGE_SOURCE_SPEC_COST'),
 
+  RESET_SPEC_SET: Symbol('RESET_SPEC_SET'),
+
   SAVE_CITIY_OPTION: Symbol('SAVE_CITIY_OPTION'),
   SAVE_OPTION:       Symbol('SAVE_OPTION'),
   RESET_SAVE_STATUS: Symbol('RESET_SAVE_STATUS')
@@ -458,6 +460,12 @@ const changeSourceSpecCost = (index, money) => {
   }
 }
 
+const resetSpecSet = () => {
+  return {
+    type: ActionTypes.RESET_SPEC_SET
+  }
+}
+
 const saveCityOption = () => {
   return {
     type: ActionTypes.SAVE_CITIY_OPTION
@@ -713,6 +721,8 @@ export default {
   removeSourceSpec,
   changeSourceSpec,
   changeSourceSpecCost,
+
+  resetSpecSet,
 
   saveCityOption,
   resetSaveStatus,

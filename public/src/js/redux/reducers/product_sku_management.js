@@ -6,12 +6,12 @@ const iNow = new Date();
 
 const initialState = {
   basicDataLoadStatus: 'pending',
-  addMode:             true,  // false: 编辑模式
-  deletedSku:          [], // 被删除的sku id，编辑模式下用
+  addMode:             true, // false: 编辑模式
+  deletedSku:          [],   // 被删除的sku id，编辑模式下用
 
   productId:   0,
   productName: '', // 商品名称
-  buyEntry:    0,   // 购买方式 0:商城可购买 1:外部渠道可购买
+  buyEntry:    0,  // 购买方式 0:商城可购买 1:外部渠道可购买
 
   primaryCategories:   new Map(), // 一级分类
   secondaryCategories: new Map(), // 二级分类
@@ -21,13 +21,15 @@ const initialState = {
 
   activeCitiesOption: 0, // 上线城市范围 0:所有已开通的二级分类 1:二级分类里选中的城市
 
-  citiesOptionApplyRange: 0, // 城市配置应用范围
+  citiesOptionApplyRange: 0,          // 城市配置应用范围
   citiesOptions:          new Map(),  // 城市配置缓存表
 
   orderSource:   new Map([[0, 'PC商城'], [1, '手机APP'], [2, '美团外卖']]),
   provincesData: new Map(),
   citiesData:    new Map(),
   districtsData: new Map(),
+
+  specSet: new Set(),
 
   selectedProvince: 0,
   selectedCity:     0,
@@ -174,6 +176,29 @@ const getOrderSourcesMap = orderSourceData => {
   });
 
   return orderSource;
+}
+
+const resetSpecSet = state => {
+  let dataSet = new Set();
+  let getSpec = opt => dataSet.add(opt.spec);
+
+  state.tempOptions.shopSpecifications.forEach(getSpec);
+
+  [...state.tempOptions.sourceSpecifications.values()].forEach(arr => {
+    arr.forEach(getSpec);
+  });
+
+  [...state.citiesOptions.values()].forEach(cityOpt => {
+    cityOpt.shopSpecifications.forEach(getSpec);
+
+    [...cityOpt.sourceSpecifications.values()].forEach(arr => {
+      arr.forEach(getSpec);
+    });
+  });
+
+  state.specSet = dataSet;
+
+  return state;
 }
 
 const switchType = {
@@ -338,7 +363,7 @@ const switchType = {
       state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0];
     }
 
-    return state;
+    return resetSpecSet(state);
   },
 
   [ActionTypes.CHANGE_PRODUCT_NAME]: (state, { name }) => {
@@ -763,9 +788,11 @@ const switchType = {
     return tempOptionsValidator(state);
   },
 
+  [ActionTypes.RESET_SPEC_SET]: resetSpecSet,
+
   [ActionTypes.SAVE_CITIY_OPTION]: state => {
 
-    const returnNonZeroID = opt => opt.id !== 0;
+    const returnNotZeroID = opt => opt.id !== 0;
 
     if (!state.addMode && state.citiesOptions.get(state.selectedCity)) {
       let deletedSku = [];
@@ -773,7 +800,7 @@ const switchType = {
       let newSourceSpecifications = new Set();
 
       [...state.tempOptions.sourceSpecifications.values()].forEach(ssArr => {
-        ssArr.filter(returnNonZeroID).forEach(opt => {
+        ssArr.filter(returnNotZeroID).forEach(opt => {
           newSourceSpecifications.add(opt.id);
         });
       });
@@ -783,7 +810,7 @@ const switchType = {
       let originSourceSpecifications = new Set();
 
       [...originCityOption.sourceSpecifications.values()].forEach(ssArr => {
-        ssArr.filter(returnNonZeroID).forEach(opt => {
+        ssArr.filter(returnNotZeroID).forEach(opt => {
           originSourceSpecifications.add(opt.id);
         });
       });

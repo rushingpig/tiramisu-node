@@ -355,6 +355,8 @@ class ShopSpecificationsOptions extends Component {
                           <Input
                             type="text"
                             style={detail.spec.trim() === "" ? warningInputStyle : inputStyle}
+                            list="spec"
+                            onBlur={Action.resetSpecSet}
                             value={detail.spec}
                             onChange={getSpecInputValue(index, Action.changeShopSpecifications)}
                           />
@@ -539,10 +541,10 @@ class SourceOptions extends Component {
                       <tr key={index}>
                         <td>
                           <Input
-                            step="0.01"
-                            min="0.01"
                             type='text'
                             value={detail.spec}
+                            list="spec"
+                            onBlur={Action.resetSpecSet}
                             onChange={this.handleChangeSourceSpec.bind(this, index)}
                           />
                         </td>
@@ -808,6 +810,11 @@ class Main extends Component {
             </div>
           </div>
         </div>
+        <datalist id="spec">
+          {
+            [...state.specSet].map(name => (<option key={name} value={name} />))
+          }
+        </datalist>
       </div>
     );
   }

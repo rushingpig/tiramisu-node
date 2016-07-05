@@ -582,7 +582,7 @@ DeliveryDao.prototype.joinPaySQL = function (query) {
                 tmp_sql += `OR bo.src_id in ${dbHelper.genInSql(query.user.src_ids)} `;
             }
         });
-        sql += tmp_sql.replace(/^ OR/, '');
+        sql += tmp_sql.replace(/^OR/, '');
         sql += `) `;
     }
     if (query.begin_time) {
@@ -671,7 +671,7 @@ DeliveryDao.prototype.joinCODSQL = function (query) {
                 tmp_sql += `OR bo.src_id in ${dbHelper.genInSql(query.user.src_ids)} `;
             }
         });
-        sql += tmp_sql.replace(/^ OR/, '');
+        sql += tmp_sql.replace(/^OR/, '');
         sql += `) `;
     }
     if (query.begin_time) {

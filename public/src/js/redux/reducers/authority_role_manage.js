@@ -50,6 +50,13 @@ export function roleAccessManage( state = initial_state, action){
         }
       })
       return {...state, department_list: clone(action.data.list)};
+    case Actions.GOT_DEPARTMENT_LIST_SIGNAL:
+      action.data.list.map(n => {
+        if(!n.children){
+          n.children = [];
+        }
+      })
+      return {...state, department_list: clone(action.data.list)};
     case Actions.GOT_ROLE_LIST:
       state.department_list.map(n => {
         if(n.id === action.id) {

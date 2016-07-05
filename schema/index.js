@@ -32,5 +32,6 @@ module.exports = {
   addPrimaryCategory: require('./buss/product/add_primary_category'),
   addSecondaryCategory: require('./buss/product/add_secondary_category'),
   listCategory: require('./buss/product/list_category'),
-  addProductSku: require('./buss/product/add_product_sku')
+  addProductSku: require('./buss/product/add_product_sku'),
+  addCity: require('./sys/add_city')
 };

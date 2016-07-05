@@ -693,7 +693,7 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
         params.push(query_data.user.id);
       } else if (curr == constant.DS.ALLCOMPANY.id) {
         temp_sql += " or 1 = 1";
-      } else if (curr == constant.DS.SELF_CHANNEL.id) {
+      } else if (curr == constant.DS.SELF_CHANNEL.id && !query_data.user.is_headquarters) {
         temp_sql += " or bo.src_id in " + dbHelper.genInSql(query_data.user.src_ids);
       }
     });

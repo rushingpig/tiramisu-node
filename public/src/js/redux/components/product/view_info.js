@@ -147,29 +147,32 @@ class Main extends Component {
           ), (
             <Row key="Row">
               <Col xs="3">
-                <div className="list-group">
-                  {
-                    sourceSpecificationsKeys.map(sid => {
-                      const isSelected = state.selectedSource === sid;
-                      return (
-                        <div
-                          className={"list-group-item" + (isSelected ? ' active' : '')}
-                          onClick={e => Action.changeSelectSource(sid)}
-                          key={sid}
-                        >
-                          {
-                            isSelected ? (
-                              state.orderSource.get(sid)
-                            ) : (
-                              <a href="javascript:;">
-                                {state.orderSource.get(sid)}
-                              </a>
-                            )
-                          }
-                        </div>
-                      )
-                    })
-                  }
+                <div className="panel">
+                  <div className="panel-heading">选择渠道：</div>
+                  <div className="list-group">
+                    {
+                      sourceSpecificationsKeys.map(sid => {
+                        const isSelected = state.selectedSource === sid;
+                        return (
+                          <div
+                            className={"list-group-item" + (isSelected ? ' active' : '')}
+                            onClick={e => Action.changeSelectSource(sid)}
+                            key={sid}
+                          >
+                            {
+                              isSelected ? (
+                                state.orderSource.get(sid)
+                              ) : (
+                                <a href="javascript:;">
+                                  {state.orderSource.get(sid)}
+                                </a>
+                              )
+                            }
+                          </div>
+                        )
+                      })
+                    }
+                  </div>
                 </div>
               </Col>
               <Col xs="6">

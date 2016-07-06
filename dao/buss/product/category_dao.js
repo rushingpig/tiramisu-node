@@ -491,13 +491,13 @@ CategoryDao.prototype.findCategoriesList = function(data) {
         columns.push('cate_regions_secondary.sort as secondary_sort');
     }
     if (data.province_id) {
-        select_sql += ' join ?? cate_regions on cate_secondary.id = cate_regions.category_id and cate_regions.regionalism_id = ? and cate_regions.del_flag = ? ';
+        select_sql += ' join ?? cate_regions on cate_secondary.id = cate_regions.category_id and cate_regions.del_flag = ? ';
         select_params.push('buss_product_category_regionalism');
-        select_params.push(data.province_id);
         select_params.push(del_flag.SHOW);
-        select_sql += 'join ?? dict on cate_regions.regionalism_id = dict.id and dict.del_flag = ? ';
+        select_sql += 'join ?? dict on cate_regions.regionalism_id = dict.id and dict.del_flag = ? and dict.parent_id = ? ';
         select_params.push('dict_regionalism');
         select_params.push(del_flag.SHOW);
+        select_params.push(data.province_id);
     }
 
     let sql = 'select ' + columns.join(',') + select_sql + where_sql + group_sql;

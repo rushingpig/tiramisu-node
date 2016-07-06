@@ -168,7 +168,7 @@ class CityPanel extends Component{
 	constructor(props){
 		super(props);
 		this.state ={
-			page_size: 8
+			page_size: 10
 		}
 	}
 	render(){
@@ -349,7 +349,7 @@ class ViewModal extends Component{
 				</div>
 				<div className='form-inline'>
 					<label className='control-form'>{'　　　　　预约时间：'}</label>
-					<span className='gray'>{info.order_time}</span>
+					<span className='gray'>{info.order_time + '小时'}</span>
 				</div>
 				{
 					has_sec_order_time ?
@@ -359,7 +359,7 @@ class ViewModal extends Component{
 					</div>*/
 					<div className='form-inline'>
 						<label className='control-form'>{'第二次预约区域/时间：'}</label>
-						<span className='gray'>{sec_regionalisms_name + ' ' + info.second_order_time / 60}</span>
+						<span className='gray'>{sec_regionalisms_name + '　' + info.second_order_time / 60 + '小时'}</span>
 					</div>:
 					null
 				}

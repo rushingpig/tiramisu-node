@@ -8,12 +8,12 @@ import { ActionTypes as SelectorActionTypes } from './cities_selector';
 import manageActions from 'actions/category_manage';
 
 const es6promisify = function(func) {
-    return function(...args) {
-        let ctx = this;
-        return new Promise((resolve, reject) => {
-            func.apply(ctx, args).done(resolve).fail(reject);
-        });
-    };
+  return function(...args) {
+    let ctx = this;
+    return new Promise((resolve, reject) => {
+      func.apply(ctx, args).done(resolve).fail(reject);
+    });
+  };
 };
 
 const get = es6promisify(Req.get);

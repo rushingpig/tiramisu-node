@@ -74,6 +74,10 @@ a.get('/product/category/:id/secondary', categoryService.getSecondaryCategoriesB
 a.get('/product/category/:id/details', categoryService.getCategoryDetailsById); // 查询分类详情
 a.get('/product/sku/size', productService.getAllSize); // 规格提示
 a.get('/product/details', productService.getProductDetails); // 根据多个条件搜索产品详情
+a.get('/product/skus', productService.getProductAndSku); // 查看产品信息
+a.get('/product/skus/price', productService.listSkuPrice); // 查看产品规格价格列表
+a.get('/product/skus/details', productService.getProductAndSkuWithRegions); // 获取产品信息(用于产品&sku编辑)
+a.get('/product/skus/xlsx', productService.exportSku); // 导出sku
 
 //**********************
 //******** POST ********
@@ -115,6 +119,7 @@ a.put('/product/category/secondary', categoryService.modifySecondaryCategory);  
 a.put('/product/categories/sort', categoryService.rankCategoris);  // 二级分类排序
 
 a.put('/product/skus', productService.deleteSku);  // 批量删除sku
+a.put('/product/sku', productService.modifyProductWithSku);  // 编辑产品&sku
 
 //************************
 //******** DELETE ********

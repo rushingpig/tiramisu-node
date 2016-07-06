@@ -227,14 +227,19 @@ const switchType = {
 
     if (status === 'success') {
 
+      let deleteCount = 1;
+
       if (deletedIndex >= 0) {
         state.searchResult.splice(deletedIndex, 1);
       } else {
         state.searchResult = state.searchResult.filter(
           (x, index) => !state.checkedRow.has(index)
         );
+        deleteCount = state.checkedRow.size;
         state.checkedRow = new Set();
       }
+
+      state.totalItem = state.totalItem - deleteCount;
 
       return state;
     }

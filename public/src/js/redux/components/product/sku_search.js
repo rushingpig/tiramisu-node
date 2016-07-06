@@ -105,11 +105,11 @@ class Main extends Component {
           <span className="pull-right">
             {
               V("ProductionManageExportSKU") ? (
-                <Link to="javascript:;" className="btn btn-xs btn-default">
+                <button className="btn btn-xs btn-default" disabled={true}>
                   <i className="fa fa-fw fa-download" />
                   {' '}
                   导出报表
-                </Link>
+                </button>
               ) : undefined
             }
             &nbsp;

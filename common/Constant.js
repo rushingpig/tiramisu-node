@@ -198,4 +198,11 @@ Constant.PAY_RULE = {
 
 Constant.HK_PROVINCE_ID = 810000;
 
+// 区域等级
+Constant.REGIONALISM_LEVEL = {
+    PROVINCE: 1,
+    CITY: 2,
+    DISTRICT: 3
+};
+
 module.exports = Constant;

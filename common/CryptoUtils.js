@@ -84,5 +84,3 @@ CryptoUtils.prototype.unBase64 = function(base64){
     return this.instance.enc.Base64.parse(base64).toString(this.instance.enc.Utf8);
 };
 module.exports = new CryptoUtils();
-
-//console.log(new CryptoUtils().md5('123') === '202cb962ac59075b964b07152d234b70');

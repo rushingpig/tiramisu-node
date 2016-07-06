@@ -659,10 +659,11 @@ const switchType = {
       eventTime: [now, new Date(getDate(now, 7))]
     }
 
-    shopSpecifications.push(newShopSpecifications);
+    if (shopSpecifications.length > 0) {
+      newShopSpecifications = clone(shopSpecifications[shopSpecifications.length - 1]);
+    }
 
-    state.cityOptionSaved = false;
-    state.cityOptionSavable = false;
+    shopSpecifications.push(newShopSpecifications);
 
     return state;
   },
@@ -753,14 +754,18 @@ const switchType = {
   },
 
   [ActionTypes.ADD_SOURCE_SPEC]: state => {
-    state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource).push({
+    let source = state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource);
+    let sourceSpec = {
       id: 0,
       spec: '',
       cost: 0.01
-    });
+    };
 
-    state.cityOptionSaved = false;
-    state.cityOptionSavable = false;
+    if (source.length > 0) {
+      sourceSpec = clone(source[source.length - 1]);
+    }
+
+    source.push(sourceSpec);
 
     return state;
   },

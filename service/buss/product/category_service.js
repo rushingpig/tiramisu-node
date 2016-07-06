@@ -332,14 +332,15 @@ CategoryService.prototype.rankCategoris = (req,res,next)=>{
  * @param next
  */
 CategoryService.prototype.deleteCategory = (req, res, next)=>{
-    req.checkQuery('new_category').notEmpty();
+    req.checkBody('new_category').notEmpty();
+    req.checkQuery('id').notEmpty();
     let errors = req.validationErrors();
     if (errors) {
         res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
-    let new_category = req.query.new_category;
-    let delete_category = req.params.id;
+    let new_category = req.body.new_category;
+    let delete_category = req.query.id;
     let promise = categoryDao.deleteCategoryById(req, delete_category, new_category)
         .then(() => {
             res.api();

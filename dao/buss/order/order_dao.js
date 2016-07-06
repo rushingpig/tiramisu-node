@@ -712,16 +712,17 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
 
   // 如果是导出excel,直接返回要执行的sql和参数列表
   if(!isExcelExport){
+    countSql = sql + ds_sql;
     //  刚进入订单列表页面,不带筛选条件,用explain来优化获取记录总数
-    if (/^.*(where 1=1 and)[\s\w\W]+/.test(sql) || /^.* inner join [\S\s\w]+ on [\w\W]+ and .*/.test(sql) || query_data.keywords) {
-      countSql = dbHelper.replaceCountSql(sql);
+    if (/^.*(where 1=1 and)[\s\w\W]+/.test(countSql) || /^.* inner join [\S\s\w]+ on [\w\W]+ and .*/.test(countSql) || query_data.keywords) {
+      countSql = dbHelper.replaceCountSql(countSql);
       promise = baseDao.select(countSql, params).then(results => {
         if (!toolUtils.isEmptyArray(results)) {
           result = results[0].total;
         }
       });
     } else {
-      countSql = dbHelper.approximateCountSql(sql);
+      countSql = dbHelper.approximateCountSql(countSql);
       promise = baseDao.select(countSql, params).then((results) => {
         if (!toolUtils.isEmptyArray(results)) {
           results.forEach(curr => {

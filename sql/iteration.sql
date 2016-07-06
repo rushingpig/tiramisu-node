@@ -636,11 +636,13 @@ end if;
 end;
 
 # 触发器：删除产品下的sku
+# 触发器：修改产品所属分类，则删除产品下不属于二级分类区域的sku
 # 后续触发cascade_delete_sku_booktime
 DROP TRIGGER IF EXISTS `cascade_delete_sku`;
 CREATE TRIGGER cascade_delete_sku after UPDATE ON buss_product
 for each row 
 begin 
+# 触发器：删除产品下的sku
 if new.del_flag = 0 
 then
 UPDATE buss_product_sku 
@@ -648,6 +650,16 @@ SET
     del_flag = 0
 WHERE
     product_id = new.id;
+end if;
+# 触发器：修改产品所属分类，则删除产品下不属于二级分类区域的sku
+if new.category_id <> old.category_id
+then
+    update buss_product_sku
+    set del_flag = 0 
+    where regionalism_id not in (
+        select regionalism_id from buss_product_category_regionalism region
+        where region.id = new.category_id
+    );
 end if;
 end;
 
@@ -691,7 +703,3 @@ then
 end if;
 end if;
 end;
-
-
-
-

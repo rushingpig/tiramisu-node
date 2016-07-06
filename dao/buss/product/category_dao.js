@@ -568,4 +568,38 @@ CategoryDao.prototype.updateSort = function(req, data) {
     });
 }
 
+/*
+ * 根据delete_category删除分类，并移动分类下产品到new_category分类下
+ */
+CategoryDao.prototype.deleteCategoryById = function(req, delete_category, new_category) {
+    return baseDao.trans().then(connection => {
+        // 移动sku到new_category分类下
+        let sql = this.base_update_sql + ' where category_id = ?';
+        let params = [config.tables.buss_product, systemUtils.assembleUpdateObj(req, {category_id: new_category}, true), delete_category];
+        return baseDao.execWithConnection(connection, sql, params)
+            .then(() => {
+                let sql = this.base_update_sql + ' where id = ?';
+                let params = [config.tables.buss_product_category, systemUtils.assembleUpdateObj(req, {del_flag: del_flag.HIDE}, true), delete_category];
+                return baseDao.execWithConnection(connection, sql, params)
+            })
+            .then(() => {
+                return new Promise((resolve, reject) => {
+                    connection.commit(err => {
+                        connection.release();
+                        if (err) return reject(err);
+                        resolve();
+                    });
+                });
+            }).catch(err => {
+                return new Promise((resolve, reject) => {
+                    connection.rollback(rollbackErr => {
+                        connection.release();
+                        if (rollbackErr) return reject(rollbackErr);
+                        reject(err);
+                    });
+                });
+            });
+    });
+}
+
 module.exports = CategoryDao;

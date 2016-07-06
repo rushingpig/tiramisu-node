@@ -130,6 +130,7 @@ a.delete('/order/src/:srcId', orderService.delOrderSrc); // 删除来源渠道
 a.delete('/station/:stationId', addressService.deleteStation);
 
 a.delete('/product/:productId', productService.deleteProduct);  // 删除产品及其sku
+a.delete('/product/categories/:id', categoryService.deleteCategory); // 删除分类(移动分类下产品到指定分类)
 
 //=====================router for business end======================
 

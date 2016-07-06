@@ -137,8 +137,8 @@ class AddCityForm extends Component{
 					<div className='form-group form-inline'>
 						<label className='control-label'>{'　　　　城市级别：'}</label>
 						<label>
-							<input {...is_county} type='radio' value={1} checked={is_county.value == 1} />{'县级市　'}
-							<input {...is_county} type='radio' value={0} checked={is_county.value == 0}/>{'地级市'}
+							<input {...is_county} type='radio' value={1} checked={is_county.value == 1} onClick={this.areaClear.bind(this)}/>{'县级市　'}
+							<input {...is_county} type='radio' value={0} checked={is_county.value == 0} onClick={this.areaClear.bind(this)}/>{'地级市'}
 						</label>
 					</div>
 					:
@@ -176,7 +176,13 @@ class AddCityForm extends Component{
 	        			<div className='form-group form-inline'>
 	        				<label className='control-label'>{'　　　　开通区域：'}</label>
 	        				<div className='inline-block'>
-	        						<CheckBoxGroup {...first_open_regions} checkboxs={districts_letter || []} value ={first_open_regions.value || districts_letter.filter( m => m.is_open)}/>
+	        					{
+	        						editable 
+	        						?
+	        						<CheckBoxGroup {...first_open_regions} checkboxs={districts_letter || []} value ={first_open_regions.value || districts_letter.filter( m => m.is_open == 1)}/>
+	        						:
+	        						<CheckBoxGroup {...first_open_regions} checkboxs={districts_letter.filter( m => m.is_open == 0) || []} value ={first_open_regions.value || districts_letter.filter( m => m.is_open == 1)}/>
+	        					}
 	        				</div>
 	        			</div>}
 	        			<div className='form-group form-inline'>
@@ -291,6 +297,9 @@ class AddCityForm extends Component{
 	        Noty('warning','请填写完整');
 	      }
 	  },0);
+	}
+	areaClear(){
+		this.props.actions.ResetDistrictsLetter();
 	}
 	onlineTimeChange(begin_time, end_time){
 		var begin_str = dateFormat(begin_time, 'yyyy-MM-dd hh:mm:ss');

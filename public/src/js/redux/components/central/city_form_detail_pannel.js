@@ -15,11 +15,20 @@ import AreaActions from 'actions/area';
 
 class TopHeader extends Component{
 	render(){
+		var { editable } = this.props;
 		return(
 			<div className = 'clearfix top-header'>
+			{
+				editable
+				?
+				<LineRouter 
+					routes={[{name:'城市列表',link:'/cm/city'},{name: '编辑城市', link: ''}]} 
+					className="pull-right"/>
+				:
 				<LineRouter 
 					routes={[{name:'城市列表',link:'/cm/city'},{name: '添加城市', link: ''}]} 
 					className="pull-right"/>
+			}
 			</div>
 			)
 	}
@@ -31,7 +40,7 @@ class CityDetailPannel extends Component{
 		var editable = !!(params && params.id);
 		return(
 			<div className='city-manage'>
-				<TopHeader />
+				<TopHeader editable={editable}/>
 				<div className='panel'>
 					<header className='panel-heading'>城市详情</header>
 					<div className='panel-body'>

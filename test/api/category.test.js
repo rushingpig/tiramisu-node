@@ -390,7 +390,7 @@ module.exports = function() {
         
         describe('PUT /v1/a/product/category/primary', function () {
             
-            let id;
+            let id,secondary_id,product_id;
             before(function (done) {
                 new Promise(function (resolve, reject) {
                     let sql = 'insert into buss_product_category(parent_id,name,remarks) values(0,\'修改一级分类测试\',\'备注\')';
@@ -401,7 +401,18 @@ module.exports = function() {
                         id = result.insertId;
                         return resolve(result.insertId);
                     });
-                }).then(function (id) {
+                }).then(() => {
+                    return new Promise(function (resolve, reject) {
+                        let sql = 'insert into buss_product_category(parent_id,name,remarks) values(' + id + ',\'修改一级分类测试子分类1\',\'备注\')';
+                        pool.query(sql, function (err, result) {
+                            if (err) {
+                                return reject(err);
+                            }
+                            secondary_id = result.insertId;
+                            return resolve(result.insertId);
+                        });
+                    });
+                }).then(() => {
                     var promises = ['440300','441300'].map(function (city_id) {
                         return new Promise(function (resolve, reject) {
                             let sql = 'insert into buss_product_category_regionalism(category_id,regionalism_id) values(' + id + ',' + city_id + ')';
@@ -414,6 +425,40 @@ module.exports = function() {
                         });
                     });
                     return Promise.all(promises);
+                }).then(() => {
+                    var promises = ['441300'].map(function (city_id) {
+                        return new Promise(function (resolve, reject) {
+                            let sql = 'insert into buss_product_category_regionalism(category_id,regionalism_id) values(' + secondary_id + ',' + city_id + ')';
+                            pool.query(sql, function (err, result) {
+                                if (err) {
+                                    return reject(err);
+                                }
+                                return resolve(result.insertId);
+                            });
+                        });
+                    });
+                    return Promise.all(promises);
+                }).then(() => {
+                    return new Promise(function (resolve, reject) {
+                        let sql = 'insert into buss_product(name,category_id) values(\'修改一级分类产品1\',' + secondary_id + ')';
+                        pool.query(sql, function (err, result) {
+                            if (err) {
+                                return reject(err);
+                            }
+                            product_id = result.insertId;
+                            return resolve(result.insertId);
+                        });
+                    });
+                }).then(() => {
+                    return new Promise((resolve, reject) => {
+                        let sql = 'insert into buss_product_sku(product_id,size,website,regionalism_id,price,original_price,book_time) ' + 'values(' + product_id + ',\'修改一级分类sku\',1,441300,200,100,3)';
+                        pool.query(sql, function(err, result) {
+                            if (err) {
+                                return reject(err);
+                            }
+                            resolve(result.insertId);
+                        });
+                    });
                 }).then(function () {
                     done();
                 }).catch(function (err) {
@@ -467,7 +512,14 @@ module.exports = function() {
                             }
                             assert.equal(result.length, 3);
                             assert.deepEqual(result, [{regionalism_id:440300},{regionalism_id:440100},{regionalism_id:441900}]);
-                            done();
+                            let sql = 'select count(1) as num from buss_product_sku where product_id = ' + product_id + ' and regionalism_id = 441300 and del_flag = 0';
+                            pool.query(sql, function (err, result) {
+                                if (err) {
+                                    done(err);
+                                }
+                                assert.equal(result[0].num, 1);
+                                done();
+                            });
                         });
                     });
             });
@@ -475,7 +527,7 @@ module.exports = function() {
         
         describe('PUT /v1/a/product/category/secondary', function () {
             
-            let id;
+            let id,product_id;
             before(function (done) {
                 new Promise(function (resolve, reject) {
                     let sql = 'insert into buss_product_category(parent_id,name,remarks) values(1,\'修改二级分类测试\',\'备注\')';
@@ -487,7 +539,7 @@ module.exports = function() {
                         return resolve(result.insertId);
                     });
                 }).then(function (id) {
-                    var promises = ['440300','441300'].map(function (city_id) {
+                    var promises = ['340300','341300'].map(function (city_id) {
                         return new Promise(function (resolve, reject) {
                             let sql = 'insert into buss_product_category_regionalism(category_id,regionalism_id) values(' + id + ',' + city_id + ')';
                             pool.query(sql, function (err, result) {
@@ -499,6 +551,27 @@ module.exports = function() {
                         });
                     });
                     return Promise.all(promises);
+                }).then(() => {
+                    return new Promise(function (resolve, reject) {
+                        let sql = 'insert into buss_product(name,category_id) values(\'修改一级分类产品1\',' + id + ')';
+                        pool.query(sql, function (err, result) {
+                            if (err) {
+                                return reject(err);
+                            }
+                            product_id = result.insertId;
+                            return resolve(result.insertId);
+                        });
+                    });
+                }).then(() => {
+                    return new Promise((resolve, reject) => {
+                        let sql = 'insert into buss_product_sku(product_id,size,website,regionalism_id,price,original_price,book_time) ' + 'values(' + product_id + ',\'修改一级分类sku\',1,341300,200,100,3)';
+                        pool.query(sql, function(err, result) {
+                            if (err) {
+                                return reject(err);
+                            }
+                            resolve(result.insertId);
+                        });
+                    });
                 }).then(function () {
                     done();
                 }).catch(function (err) {
@@ -535,8 +608,8 @@ module.exports = function() {
             it('modify secondary category region relationship by category id', function (done) {
                 let req_body = {
                     id: id,
-                    cities_add: [440100,441900],
-                    cities_delete: [441300]
+                    cities_add: [340100,341900],
+                    cities_delete: [341300]
                 };
                 agent
                     .put('/v1/a/product/category/primary')
@@ -551,8 +624,15 @@ module.exports = function() {
                                 done(err);
                             }
                             assert.equal(result.length, 3);
-                            assert.deepEqual(result, [{regionalism_id:440300},{regionalism_id:440100},{regionalism_id:441900}]);
-                            done();
+                            assert.deepEqual(result, [{regionalism_id:340300},{regionalism_id:340100},{regionalism_id:341900}]);
+                            let sql = 'select count(1) as num from buss_product_sku where product_id = ' + product_id + ' and regionalism_id = 341300 and del_flag = 0';
+                            pool.query(sql, function (err, result) {
+                                if (err) {
+                                    done(err);
+                                }
+                                assert.equal(result[0].num, 1);
+                                done();
+                            });
                         });
                     });
             });

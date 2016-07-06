@@ -659,12 +659,6 @@ for each row
 begin 
 if new.del_flag = 0
 then
-# 删除一级分类，则删除该分类下的二级分类
-# 后续触发自身
-if old.parent_id = 0
-then 
-update buss_product_category set del_flag = 0 where parent_id = old.id;
-end if;
 update buss_product_category_regionalism set del_flag = 0 where category_id = old.id;
 UPDATE buss_product 
 SET 
@@ -674,7 +668,8 @@ WHERE
 end if;
 end;
 
-# 触发器：删除分类区域
+# 触发器：删除二级分类下的产品关联区域
+# 删除一级分类区域，会先删除二级分类区域，因为触发器不能使用递归，所以在代码层面实现删除
 DROP TRIGGER IF EXISTS `cascade_delete_product_sku_about_region`;
 CREATE TRIGGER cascade_delete_product_sku_about_region after UPDATE ON buss_product_category_regionalism
 for each row 
@@ -683,22 +678,15 @@ DECLARE x INT;
 if new.del_flag = 0
 then
 SET x = (select parent_id from buss_product_category where id = old.category_id);
-# 删除一级分类区域
-if x = 0
+if x <> 0
 then 
-    update buss_product_category_regionalism 
-    set del_flag = 0 
-    where category_id in (
-        select id from buss_product_category where parent_id = old.category_id
-    );
-else 
-# 删除二级分类
+    # 删除二级分类
     update buss_product_sku 
     set del_flag = 0 
     where product_id in (
         select product.id as id 
         from buss_product_category category join buss_product product 
-        on category.id = product.category_id and category.id = old.id
+        on category.id = product.category_id and category.id = old.category_id
     );
 end if;
 end if;

@@ -229,7 +229,27 @@ CategoryDao.prototype.updatePrimaryCategory = function(req, data) {
                             return resolve();
                         }
                     );
-                })
+                }).then(() => {
+                    // 删除一级分类后，需要关联删除二级分类相关的区域，继而触发器删除sku区域
+                    return new Promise((resolve, reject) => {
+                        let sql = 'update ?? set ? where category_id = (select id from ?? where parent_id = ?) and regionalism_id = ?';
+                        let params = [
+                            config.tables.buss_product_category_regionalism,
+                            systemUtils.assembleUpdateObj(req, {
+                                del_flag: del_flag.HIDE
+                            }, true),
+                            config.tables.buss_product_category,
+                            data.id,
+                            cityId
+                        ];
+                        connection.query(sql, params, err => {
+                            if (err) {
+                                return reject(err);
+                            }
+                            return resolve();
+                        });
+                    });
+                });
             });
             return Promise.all(relations);
         }).then(() => {

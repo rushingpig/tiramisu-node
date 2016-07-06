@@ -18,6 +18,14 @@ const es6promisify = function(func) {
 
 const get = es6promisify(Req.get);
 const put = es6promisify(Req.put);
+const del = es6promisify(Req.del);
+
+const deleteSecondaryCategory = (
+  deleteSecondCategoryID,
+  newSecondaryCategoryID
+) => del(Url.deleteSecondaryCategory.toString(deleteSecondCategoryID), {
+  new_category: newSecondaryCategoryID
+});
 
 // 伪fetch请求
 const fakeFetch = returnData => new Promise((resolve, reject) => {
@@ -327,10 +335,10 @@ const deleteSecondCategory = id => (
       type: SearchActionTypes.DELETE_SECOND_CATEGORY_WAITING
     });
 
-    console.log('即将删除的ID', id);
-    console.log('即将转移到的分类ID', getState().categorySearch.toJS().willTranslateSecondCategory);
-
-    fakeFetch({}).then(
+    return deleteSecondaryCategory(
+      id, 
+      getState().categorySearch.toJS().willTranslateSecondCategory
+    ).then(
       data => dispatch({
         type: SearchActionTypes.DELETE_SECOND_CATEGORY_SUCCESS,
         deletedId: id

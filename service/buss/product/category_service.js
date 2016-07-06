@@ -325,4 +325,27 @@ CategoryService.prototype.rankCategoris = (req,res,next)=>{
     systemUtils.wrapService(res,next,promise);
 };
 
+/**
+ * 删除指定分类，并移动分类下产品到指定分类
+ * @param req
+ * @param res
+ * @param next
+ */
+CategoryService.prototype.deleteCategory = (req, res, next)=>{
+    req.checkQuery('new_category').notEmpty();
+    req.checkParams('id').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let new_category = req.query.new_category;
+    let delete_category = req.params.id;
+    let promise = categoryDao.deleteCategoryById(req, delete_category, new_category)
+        .then(() => {
+            res.api();
+        });
+    systemUtils.wrapService(res, next, promise);
+};
+
 module.exports = new CategoryService();

@@ -70,6 +70,7 @@ const URL = (function() {
     editPrimaryCategory:      '/product/category/primary',
     addSecondaryCategory:     '/product/categories/secondary',
     editSecondaryCategory:    '/product/category/secondary',
+    deleteSecondaryCategory:  '/product/categories/:id',
     getCategoryDetail:        '/product/category/:id/details',
     sortCategories:           '/product/categories/sort',
     activatedCity:            '/product/category/:id/regions/pc',

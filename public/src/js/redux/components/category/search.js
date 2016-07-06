@@ -389,7 +389,7 @@ class Main extends Component {
                         >
                           PC端上线城市
                         </Anchor>
-                        );
+                      );
                     }
 
                     if (V("CategoryManageCheckPrimaryCategoryComment")) {
@@ -403,7 +403,7 @@ class Main extends Component {
                         >
                           备注
                         </Anchor>
-                        );
+                      );
                     }
 
                     if (V("CategoryManageEditPrimaryCategory")) {
@@ -417,7 +417,7 @@ class Main extends Component {
                         >
                           编辑
                         </Link>
-                        );
+                      );
                     }
 
                     if (V("CategoryManageDeletePrimaryCategory")) {
@@ -431,7 +431,7 @@ class Main extends Component {
                         >
                           删除
                         </Anchor>
-                        );
+                      );
                     }
 
                     if (editAuth.length === 0) {

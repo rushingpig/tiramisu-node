@@ -232,7 +232,6 @@ const searchWithFilter = (pageNum = 0, isPageChange = false) => (
 
 const searchWithLastSearchFilter = () => (
   (dispatch, getState) => {
-    console.log('searchWithLastSearchFilter');
     dispatch({
       type: ActionTypes.SEARCH_PRODCUT,
       status: 'pending'

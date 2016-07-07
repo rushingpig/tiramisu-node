@@ -187,10 +187,10 @@ CityDao.prototype.findCityById = function (city_id, only_open) {
     sql += `LEFT JOIN ?? sc2 ON sc2.regionalism_id = dr2.id AND dr2.level_type = ${LEVEL.CITY} `;
     params.push(tables.sys_city);
     if (_.isArray(city_id)) {
-        sql += `WHERE FIND_IN_SET(dr.id, ? ) OR (FIND_IN_SET(dr2.id, ? ) AND sc.is_city = 0 ) `;
+        sql += `WHERE FIND_IN_SET(dr.id, ? ) OR (FIND_IN_SET(dr2.id, ? ) AND (sc.is_city = 0 OR sc.is_city IS NULL) ) `;
         params.push(city_id.join(), city_id.join());
     } else {
-        sql += `WHERE dr.id = ? OR ( dr2.id = ? AND dr.id NOT REGEXP '[0-9]{4}99' AND sc.is_city = 0 ) `;
+        sql += `WHERE dr.id = ? OR ( dr2.id = ? AND dr.id NOT REGEXP '[0-9]{4}99' AND (sc.is_city = 0 OR sc.is_city IS NULL) ) `;
         params.push(city_id, city_id);
     }
 

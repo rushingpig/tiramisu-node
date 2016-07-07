@@ -71,10 +71,10 @@ class CityDetailPannel extends Component{
 		/*if(params && params.id){
 
 		}*/
-		this.props.actions.gotRegionalismLetter({type:'province'});
 		if(params && params.id){
 			this.props.actions.getAccessibleCityDetail(params.id);
 		}else{
+			this.props.actions.gotRegionalismLetter({type:'province'});
 			this.props.actions.ResetDistrictsLetter();
 		}
 	}

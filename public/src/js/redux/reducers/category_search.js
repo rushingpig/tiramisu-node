@@ -29,6 +29,9 @@ const initialState = Immutable.fromJS({
   willTranslateSecondCategory: 0,
 
   deleteCategoryState: 'normal',
+
+  searchWithName: false,
+  lastSearchFilter: undefined
 });
 
 const allProvinceOption = { id: 0, name: '所有省份' };
@@ -243,8 +246,15 @@ const switchType = {
     const newData = Immutable.fromJS({
       searchResult,
       searchState: 'success',
-      searchCity:  selectedCity !== 0 ? selectedCity : 0,
-      sortable:  selectedCity !== 0 // 必须要按照城市搜索，才允许修改排序
+      searchCity: selectedCity !== 0 ? selectedCity : 0,
+      sortable: selectedCity !== 0, // 必须要按照城市搜索，才允许修改排序
+      lastSearchFilter: {
+        selectedCity:           state.get('selectedCity'),
+        selectedFirstCategory:  state.get('selectedFirstCategory'),
+        selectedProvince:       state.get('selectedProvince'),
+        selectedSecondCategory: state.get('selectedSecondCategory')
+      },
+      searchWithName: false
     });
 
     return state.merge(newData);
@@ -257,7 +267,7 @@ const switchType = {
   [ActionTypes.SEARCH_CATEGORY_WITH_NAME_WAITING]: state => {
     return state.set('searchState', 'pending');
   },
-  [ActionTypes.SEARCH_CATEGORY_WITH_NAME_SUCCESS]: (state, { data = [] }) => {
+  [ActionTypes.SEARCH_CATEGORY_WITH_NAME_SUCCESS]: (state, { data = [], name }) => {
 
     const searchResult = fillSearchResult(data);
 
@@ -265,7 +275,9 @@ const switchType = {
       searchResult,
       searchState: 'success',
       searchCity:  0,
-      sortable:  false
+      sortable:  false,
+      lastSearchFilter: { name },
+      searchWithName: true
     });
 
     return state.merge(newData);

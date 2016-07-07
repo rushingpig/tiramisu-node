@@ -270,6 +270,7 @@ module.exports = function() {
 
             let primary_id;
             let secondary_ids = [];
+            let product_id;
             before(function(done) {
                 new Promise(function(resolve, reject) {
                     let sql = 'insert into buss_product_category(parent_id,name) values(0,\'搜索测试一级分类1\')';
@@ -304,6 +305,7 @@ module.exports = function() {
                             if (err) {
                                 return reject(err);
                             }
+                            product_id = result.insertId;
                             return resolve();
                         });
                     });
@@ -330,7 +332,18 @@ module.exports = function() {
                         });
                     });
                     return Promise.all(promises);
-                }).then(function() {
+                }).then(function (){
+                    return new Promise((resolve, reject) => {
+                        let sql = 'insert into buss_product_sku(product_id,size,website,regionalism_id,price,original_price,book_time) ' + 'values(' + product_id + ',\'搜索测试sku\',1,440300,200,100,3)';
+                        pool.query(sql, function(err, result) {
+                            if (err) {
+                                return reject(err);
+                            }
+                            resolve(result.insertId);
+                        });
+                    });
+                })
+                .then(function() {
                     done();
                 }).catch(function(err) {
                     done(err);
@@ -821,8 +834,11 @@ module.exports = function() {
             
             it('delete one category and remove its products to another category', function (done) {
                 agent
-                    .delete('/v1/a/product/categories/' + secondary_ids[0] + '?new_category=' + secondary_ids[1])
+                    .delete('/v1/a/product/categories/' + secondary_ids[0])
                     .type('application/json')
+                    .send({
+                        new_category: secondary_ids[1]
+                    })
                     .end((err, res) => {
                         console.log(res.body)
                         assert.strictEqual(res.body.code, '0000');

@@ -664,7 +664,7 @@ if new.category_id <> old.category_id
 then
     update buss_product_sku
     set del_flag = 0 
-    where regionalism_id not in (
+    where product_id = old.id and regionalism_id not in (
         select regionalism_id from buss_product_category_regionalism region
         where region.id = new.category_id
     );

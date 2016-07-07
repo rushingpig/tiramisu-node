@@ -504,11 +504,13 @@ class Main extends Component {
                     {
                       state.secondCategoriesList.filter(
                         ({ id, parentId }) => (
-                          id !== state.willDeleteCategory
-                          && id !== 0
-                          && parentId !== 0
-                          && parentId === state.willTranslateFirstCategory
-                          || (state.willTranslateFirstCategory === 0 && id !== 0)
+                          id !== Number(componentState.readyToDeleteCategory)
+                          && (
+                            id !== 0
+                            && parentId !== 0
+                            && parentId === state.willTranslateFirstCategory
+                            || (state.willTranslateFirstCategory === 0 && id !== 0)
+                          )
                         )
                       ).map(renderOption)
                     }
@@ -530,10 +532,17 @@ class Main extends Component {
   }
 
   componentDidMount() {
-    if (this.props.state.toJS().basicDataLoadStatus === 'success')
-      return;
+    const { props } = this;
+    const state = props.state.toJS();
+    const { lastSearchFilter } = state;
 
-    this.handleLoadData();
+    if (state.basicDataLoadStatus === 'success') {
+      return state.searchWithName
+      ? props.searchCategoriesWithName(lastSearchFilter.name)
+      : props.searchCategories(true)
+    }
+
+    return this.handleLoadData();
   }
 
   componentWillReceiveProps(nextProps) {

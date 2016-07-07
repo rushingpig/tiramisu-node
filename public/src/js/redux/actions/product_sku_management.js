@@ -28,7 +28,7 @@ const ActionTypes = {
   CHANGE_SECONDARY_BOOKINGTIME:        Symbol('CHANGE_SECONDARY_BOOKINGTIME'),
   CHANGE_SECONDARY_BOOKINGTIME_RANGE:  Symbol('CHANGE_SECONDARY_BOOKINGTIME_RANGE'),
 
-  CREATE_SHOP_SPECIFICATIONS:               Symbol('CREATE_SHOP_SPECIFICATIONS'),
+  ADD_SHOP_SPECIFICATIONS:                  Symbol('ADD_SHOP_SPECIFICATIONS'),
   CHANGE_SHOP_SPECIFICATIONS:               Symbol('CHANGE_SHOP_SPECIFICATIONS'),
   CHANGE_SHOP_SPECIFICATIONS_ORIGINAL_COST: Symbol('CHANGE_SHOP_SPECIFICATIONS_ORIGINAL_COST'),
   CHANGE_SHOP_SPECIFICATIONS_COST:          Symbol('CHANGE_SHOP_SPECIFICATIONS_COST'),
@@ -70,6 +70,7 @@ const loadAllGeographiesData = () => get(Url.allGeographies.toString());
 const loadOrderSource        = () => get(Url.order_srcs.toString());
 const loadEnableCities       = id => get(Url.activatedCity.toString(id));
 const loadDistricts          = id => get(Url.districts.toString(id));
+const loadAllSkuSize         = () => get(Url.getAllSkuSize.toString());
 const addSku                 = postData => post(Url.addSku.toString(), postData);
 const getSku                 = id => get(Url.getSku.toString(), { productId: id });
 const saveEditSku            = putData => put(Url.saveEditSku.toString(), putData);
@@ -93,11 +94,13 @@ const loadBasicData = (productId = 0) => (
       return Promise.all([
         loadCategories(),
         loadAllGeographiesData(),
-        loadOrderSource()
+        loadOrderSource(),
+        loadAllSkuSize()
       ]).then(([
         categoriesData,
         geographiesData,
-        orderSourceData
+        orderSourceData,
+        skuSizeData
       ]) => {
         return loadEnableCities(categoriesData[0].id).then(
           enableList => {
@@ -110,7 +113,8 @@ const loadBasicData = (productId = 0) => (
             dispatch({
               type: ActionTypes.LOADED_BASIC_DATA,
               categoriesData,
-              orderSourceData
+              orderSourceData,
+              skuSizeData
             });
 
             const sid = getState().productSKUManagement.selectSecondaryCategory;
@@ -125,12 +129,14 @@ const loadBasicData = (productId = 0) => (
       loadCategories(),
       loadAllGeographiesData(),
       loadOrderSource(),
-      getSku(productId)
+      getSku(productId),
+      loadAllSkuSize()
     ]).then(([
       categoriesData,
       geographiesData,
       orderSourceData,
-      productData
+      productData,
+      skuSizeData
     ]) => {
       const hasSecondaryBookingTimeCities = new Set(
         productData.sku.filter(
@@ -169,7 +175,8 @@ const loadBasicData = (productId = 0) => (
               citiesSelectorState: clone(getState().citiesSelector),
               productData,
               districtsDataGroup: districtsData,
-              isSelectedAllCity: !hasDifference
+              isSelectedAllCity: !hasDifference,
+              skuSizeData
             });
           }
         )
@@ -345,7 +352,7 @@ const changeSecondaryBookingTimeRange = districtCode => {
 
 const createShopSpecifications = () => {
   return {
-    type: ActionTypes.CREATE_SHOP_SPECIFICATIONS
+    type: ActionTypes.ADD_SHOP_SPECIFICATIONS
   }
 }
 

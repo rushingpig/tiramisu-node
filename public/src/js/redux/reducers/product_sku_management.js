@@ -196,13 +196,15 @@ const resetSpecSet = state => {
     });
   });
 
-  state.specSet = dataSet;
+  state.specSet = new Set([...state.specSet, ...dataSet]);
 
   return state;
 }
 
+const getSizeArr = data => data.map(obj => obj.size);
+
 const switchType = {
-  [ActionTypes.LOADED_BASIC_DATA]: (state, { categoriesData, orderSourceData }) => {
+  [ActionTypes.LOADED_BASIC_DATA]: (state, { categoriesData, orderSourceData, skuSizeData }) => {
     let orderSource = getOrderSourcesMap(orderSourceData);
     let { primaryCategoriesMap, secondaryCategoriesMap } = getCategoriesMap(categoriesData);
     let firstID = 0;
@@ -216,7 +218,8 @@ const switchType = {
       primaryCategories: primaryCategoriesMap,
       secondaryCategories: secondaryCategoriesMap,
       selectPrimaryCategory: firstID,
-      selectSecondaryCategory: secondaryCategoriesMap.get(firstID)[0].id
+      selectSecondaryCategory: secondaryCategoriesMap.get(firstID)[0].id,
+      specSet: new Set(getSizeArr(skuSizeData))
     };
   },
 
@@ -227,7 +230,8 @@ const switchType = {
     citiesSelectorState,
     productData,
     isSelectedAllCity,
-    districtsDataGroup
+    districtsDataGroup,
+    skuSizeData
   }) => {
 
     state = clone(initialState);
@@ -290,7 +294,9 @@ const switchType = {
       districtsData,
 
       cityOptionSavable: true,
-      cityOptionSaved: true
+      cityOptionSaved: true,
+
+      specSet: new Set(getSizeArr(skuSizeData))
     }
 
     const setShopSpecification = sku => ({
@@ -644,7 +650,7 @@ const switchType = {
     });
   },
 
-  [ActionTypes.CREATE_SHOP_SPECIFICATIONS]: (state, { index }) => {
+  [ActionTypes.ADD_SHOP_SPECIFICATIONS]: (state, { index }) => {
     let { shopSpecifications } = state.tempOptions;
 
     const now = new Date();
@@ -661,9 +667,12 @@ const switchType = {
 
     if (shopSpecifications.length > 0) {
       newShopSpecifications = clone(shopSpecifications[shopSpecifications.length - 1]);
+      newShopSpecifications.id = 0;
     }
 
     shopSpecifications.push(newShopSpecifications);
+
+    state.cityOptionSaved = false;
 
     return state;
   },
@@ -763,9 +772,11 @@ const switchType = {
 
     if (source.length > 0) {
       sourceSpec = clone(source[source.length - 1]);
+      sourceSpec.id = 0;
     }
 
     source.push(sourceSpec);
+    state.cityOptionSaved = false;
 
     return state;
   },

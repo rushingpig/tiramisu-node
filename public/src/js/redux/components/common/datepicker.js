@@ -14,7 +14,7 @@ var DatePicker = React.createClass({
   getInitialState: function() {
     var redux_form = this.props['redux-form'];
     return {
-      date: redux_form ? redux_form.value : this.props.value,
+      date: redux_form ? (redux_form.value || '') : this.props.value,
     }
   },
   componentWillReceiveProps: function(nextProps) {

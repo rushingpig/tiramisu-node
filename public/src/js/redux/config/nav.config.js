@@ -93,12 +93,12 @@ export default [{
     "link": "/cm/city",    
   }]
 }, {
-  "key": "ProductionManageAccess",
+  "key": "ProductionManage",
   "name": "产品管理",
   "short_name": "产品",
   "icon": "",
   "link": [{
-    "key": "ProductionManage",
+    "key": "ProductionManageAccess",
     "name": "商品管理",
     "icon": "",
     "link": "/pm/sku_manage"

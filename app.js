@@ -45,6 +45,7 @@ var hbs = require('./common/HandlebarsUtils').instance(exphbs);
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var validator = require('express-validator');
+var compression = require('compression');
 var res_obj = require('./util/res_obj');
 var systemUtils = require('./common/SystemUtils');
 var toolUtils = require('./common/ToolUtils');
@@ -67,6 +68,7 @@ app.set('view engine', '.hbs');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 app.use(log4js.connectLogger(logger, { level: 'auto' ,format:':method :status ✪ :url ✪  [:response-time ms]'}));
+app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(validator(toolUtils.exp_validator_custom));

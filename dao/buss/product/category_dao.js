@@ -441,7 +441,7 @@ CategoryDao.prototype.getCategoryRegionsById = function(data) {
 CategoryDao.prototype.findCategoriesList = function(data) {
 
     let columns = [
-        'count(product.id) as count',
+        'count(distinct product.id) as count',
         'cate_primary.id as primary_id',
         'cate_primary.name as primary_name',
         'cate_secondary.id as secondary_id',
@@ -449,13 +449,15 @@ CategoryDao.prototype.findCategoriesList = function(data) {
     ];
 
     let select_sql = ' from ?? cate_primary join ?? cate_secondary on cate_primary.id = cate_secondary.parent_id and cate_primary.del_flag = ? and cate_secondary.del_flag = ? ' +
-        ' left join ?? product on cate_secondary.id = product.category_id and product.del_flag = ? ';
+        ' left join ?? product on cate_secondary.id = product.category_id and product.del_flag = ? join ?? sku on product.id = sku.product_id and sku.del_flag = ? ';
     let select_params = [
         'buss_product_category',
         'buss_product_category',
         del_flag.SHOW,
         del_flag.SHOW,
         'buss_product',
+        del_flag.SHOW,
+        'buss_product_sku',
         del_flag.SHOW
     ];
 
@@ -483,6 +485,9 @@ CategoryDao.prototype.findCategoriesList = function(data) {
         select_params.push(data.city_id);
         select_params.push(del_flag.SHOW);
         columns.push('cate_regions_primary.sort as primary_sort');
+
+        where_sql += ' and sku.regionalism_id = ? ';
+        where_params.push(data.city_id);
         // 需要根据二级分类进行排序
         select_sql += ' join ?? cate_regions_secondary on cate_secondary.id = cate_regions_secondary.category_id and cate_regions_secondary.regionalism_id = ? and cate_regions_secondary.del_flag = ? ';
         select_params.push('buss_product_category_regionalism');
@@ -491,10 +496,7 @@ CategoryDao.prototype.findCategoriesList = function(data) {
         columns.push('cate_regions_secondary.sort as secondary_sort');
     }
     if (data.province_id) {
-        select_sql += ' join ?? cate_regions on cate_secondary.id = cate_regions.category_id and cate_regions.del_flag = ? ';
-        select_params.push('buss_product_category_regionalism');
-        select_params.push(del_flag.SHOW);
-        select_sql += 'join ?? dict on cate_regions.regionalism_id = dict.id and dict.del_flag = ? and dict.parent_id = ? ';
+        select_sql += 'join ?? dict on sku.regionalism_id = dict.id and dict.del_flag = ? and dict.parent_id = ? ';
         select_params.push('dict_regionalism');
         select_params.push(del_flag.SHOW);
         select_params.push(data.province_id);

@@ -3,7 +3,7 @@ import {findDOMNode} from 'react-dom';
 import {connect} from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { AreaActionType2 } from 'actions/action_types';
+import { AreaActionTypes1 } from 'actions/action_types';
 
 import DeptRoleActions from 'actions/dept_role';
 import * as FormActions from 'actions/form';
@@ -19,10 +19,12 @@ import ManageUserFormEdit from './manage_user_form_edit';
 
 class TopHeader extends Component{
   render(){
+    var {editable} = this.props;
+    var titleStr = editable ? '编辑用户' : '添加用户';
     return (
       <div className="clearfix top-header">
         <LineRouter 
-          routes={[{name:'用户页面',link:'/am/user'},{name: '添加用户', link: ''}]} 
+          routes={[{name:'用户页面',link:'/am/user'},{name: titleStr, link: ''}]} 
           className="pull-right"/>
       </div>
       )
@@ -103,7 +105,7 @@ function mapDispatchToProps(dispatch){
    return {
     actions: bindActionCreators({
       ...DeptRoleActions(),
-      ...AreaActions(AreaActionType2),
+      ...AreaActions(AreaActionTypes1),
       ...FormActions,
       ...UserFormActions
     }, dispatch)

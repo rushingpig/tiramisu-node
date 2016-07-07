@@ -64,7 +64,7 @@ var TimeSpan = React.createClass({
 	},
 	render(){
 		let {begin_h, begin_min, end_h, end_min} = this.state;
-		let timespan = begin_h + ':' + begin_min + '~' + end_h + ':' + end_min;
+		let timespan = begin_h + ':' + begin_min + ' ~ ' + end_h + ':' + end_min;
 		return(
       		<div onClick={this.handleClickInside} className={"btn-group" + (this.state.showMenu ? ' open' : '')}>
 	      		<button type="button" className="btn btn-default btn-xs dropdown-toggle" onClick={this.handleToggleShowState}>
@@ -210,35 +210,39 @@ var TimeSpan = React.createClass({
 		else if(opt =='minus')
 			num --;
 		var {begin_h, begin_min, end_h, end_min} = this.state;
-		var  timespan = begin_h + ':' + begin_min + '~' + end_h + ':' + end_min;
+		begin_h = begin_h.replace(' ', '');
+		begin_min = begin_min.replace(' ','');
+		end_h = end_h.replace(' ','');
+		end_min = end_min.replace(' ', '');
+		var  timespan = begin_h + ':' + begin_min + ' ~ ' + end_h + ':' + end_min;
 		switch(code){
 			case 'begin_h':
 				num = num % 24;
 				if(num < 0) num = 0;
 				if(num < 10) numstr = '0' + num;
 				else numstr = num;
-				timespan = numstr + ':' + begin_min + '~' + end_h + ':' + end_min
+				timespan = numstr + ':' + begin_min + ' ~ ' + end_h + ':' + end_min
 				this.setState({begin_h: numstr});break;
 			case 'begin_min':
 				num = num % 60;
 				if(num < 0) num = 0;
 				if(num < 10) numstr = '0' + num;
 				else numstr = num;
-				timespan = begin_h + ':' + numstr + '~' + end_h + ':' + end_min
+				timespan = begin_h + ':' + numstr + ' ~ ' + end_h + ':' + end_min
 				this.setState({begin_min:numstr});break;
 			case 'end_h':
 				num = num % 24;
 				if(num < 0) num = 0;
 				if(num < 10) numstr = '0' + num;
 				else numstr = num;
-				timespan = begin_h + ':' + begin_min + '~' + numstr + ':' + end_min
+				timespan = begin_h + ':' + begin_min + ' ~ ' + numstr + ':' + end_min
 				this.setState({end_h: numstr});break;
 			case 'end_min':
 				num = num % 60;
 				if(num < 0) num = 0;
 				if(num < 10) numstr = '0' + num;
 				else numstr = num;
-				timespan = begin_h + ':' + begin_min + '~' + end_h + ':' + numstr
+				timespan = begin_h + ':' + begin_min + ' ~ ' + end_h + ':' + numstr
 				this.setState({end_min: numstr});break;
 			default:;
 		}

@@ -359,9 +359,9 @@ OrderService.prototype.editOrder = function (is_submit) {
       total_discount_price: total_discount_price,
       is_deal: 1,
       greeting_card: greeting_card,
-      coupon : coupon,
-      last_opt_cs : req.session.user.id
+      coupon : coupon
     };
+    systemUtils.addLastOptCs(order_obj, req);
     if (is_submit) {
       order_obj.is_submit = 1;
       order_obj.status = Constant.OS.STATION;
@@ -771,9 +771,12 @@ OrderService.prototype.cancelOrder = (req, res, next) => {
 
     let order_update_obj = {
       status: Constant.OS.CANCEL,
-      cancel_reason: req.body.cancel_reason,
-      last_opt_cs : req.session.user.id
+      cancel_reason: req.body.cancel_reason
     };
+    if (!systemUtils.isOrderCanUpdateStatus(_res[0].status, order_update_obj.status)) {
+      throw new TiramisuError(res_obj.OPTION_EXPIRED);
+    }
+    systemUtils.addLastOptCs(order_update_obj, req);
     return orderDao.updateOrder(systemUtils.assembleUpdateObj(req, order_update_obj), orderId);
   }).then((result) => {
     if (parseInt(result) <= 0) {
@@ -808,10 +811,10 @@ OrderService.prototype.allocateStation = (req,res,next)=>{
     let order_id = systemUtils.getDBOrderId(req.params.orderId),
         delivery_id = req.body.delivery_id,
         delivery_name = req.body.delivery_name,
-        updated_time = req.body.updated_time,
-        last_opt_cs = req.session.user.id;
+        updated_time = req.body.updated_time;
 
-    let order_obj = {delivery_id,last_opt_cs};
+    let order_obj = {delivery_id};
+    systemUtils.addLastOptCs(order_obj, req);
     let promise = orderDao.findOrderById(order_id).then((_res)=> {
         if (toolUtils.isEmptyArray(_res)) {
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
@@ -863,16 +866,19 @@ OrderService.prototype.changeDelivery = (req,res,next)=>{
         address = req.body.recipient_address,
         prefix_address = req.body.prefix_address,
         updated_time = req.body.updated_time,
-        last_opt_cs = req.session.user.id,
         status = Constant.OS.STATION;
 
     let recipient_obj = {regionalism_id, delivery_type,address};
-    let order_obj = {delivery_id, delivery_time,last_opt_cs,status};
+    let order_obj = {delivery_id, delivery_time,status};
+    systemUtils.addLastOptCs(order_obj, req);
     let promise = orderDao.findOrderById(order_id).then((_res)=> {
         if (toolUtils.isEmptyArray(_res)) {
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
         } else if (updated_time !== _res[0].updated_time) {
             throw new TiramisuError(res_obj.OPTION_EXPIRED);
+        }
+        if (!systemUtils.isOrderCanUpdateStatus(_res[0].status, order_obj.status)) {
+          throw new TiramisuError(res_obj.OPTION_EXPIRED);
         }
         //===========for history begin=============
         let current_order = _res[0],
@@ -951,9 +957,12 @@ OrderService.prototype.exceptionOrder = (req,res,next)=>{
     let order_update_obj = {
       status: Constant.OS.EXCEPTION,
       deliveryman_id: 0,
-      cancel_reason: req.body.cancel_reason,
-      last_opt_cs : req.session.user.id
+      cancel_reason: req.body.cancel_reason
     };
+    if (!systemUtils.isOrderCanUpdateStatus(_res[0].status, order_update_obj.status)) {
+      throw new TiramisuError(res_obj.OPTION_EXPIRED);
+    }
+    systemUtils.addLastOptCs(order_update_obj, req);
     return orderDao.updateOrder(systemUtils.assembleUpdateObj(req, order_update_obj), orderId);
   }).then((result) => {
     if (parseInt(result) <= 0) {
@@ -995,6 +1004,7 @@ OrderService.prototype.exportExcel = (req,res,next) => {
     src_id: req.query.src_id,
     status: req.query.status,
     city_id: req.query.city_id,
+    province_id : req.query.province_id,
     owner_mobile: req.query.owner_mobile,
     delivery_id: req.query.delivery_id,
     deliveryman_id: req.query.deliveryman_id,
@@ -1162,6 +1172,7 @@ OrderService.prototype.editOrderRemarks = (req,res,next) => {
   order_obj = {
     remarks : remarks
   };
+  systemUtils.addLastOptCs(order_obj, req);
 
   let order_history_obj = {
     order_id: orderId,

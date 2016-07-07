@@ -571,6 +571,12 @@ UPDATE tiramisu.sys_menu SET parent_ids = '';
 # 用户权限增加是否仅仅只有管理该用户的权限
 ALTER TABLE tiramisu.sys_user_role ADD only_admin tinyint(1) unsigned DEFAULT '0' COMMENT '是否仅仅只有管理该类型用户的权限';
 
+# 修改区域信息to匹配有赞
+BEGIN;
+insert into `dict_regionalism` VALUES
+('440119','萝岗区',440100,'萝岗','3','020','','中国,广东省,广州市,增城区','','','Luogang','1',null,null);
+COMMIT;
+
 -- ----------------------------
 --  Table structure for `sys_history`
 -- ----------------------------
@@ -606,11 +612,13 @@ INSERT INTO `tiramisu`.`sys_history_type` (`name`, `created_by`, `created_time`)
 DROP TABLE IF EXISTS `sys_city`;
 CREATE TABLE `sys_city` (
     `regionalism_id` int(11) NOT NULL COMMENT '区域id',
-    `is_city` int(11) NOT NULL COMMENT '不为NULL时表示是开通的地级市/县级市',
+    `is_city` int(11) DEFAULT '0' COMMENT '不为0时表示是开通的地级市/县级市',
     `online_time` datetime DEFAULT NULL COMMENT '上线时间',
     `is_diversion` tinyint(1) DEFAULT NULL COMMENT '是否导流订单',
     `delivery_time_range` varchar(16) DEFAULT NULL COMMENT '配送时间段',
     `order_time` int(11) DEFAULT NULL COMMENT '预约时间',
+    `manager_name` varchar(32) DEFAULT NULL COMMENT '城市经理姓名',
+    `manager_mobile` varchar(32) DEFAULT NULL COMMENT '城市经理电话',
     `remarks` varchar(255) DEFAULT NULL COMMENT '备注',
     `SEO` varchar(1024) DEFAULT NULL COMMENT 'SEO',
     `created_by` int(11) NOT NULL COMMENT '创建人id',

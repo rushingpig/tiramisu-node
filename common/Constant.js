@@ -172,6 +172,7 @@ Constant.BUSS_ORDER_ERROR = {
  * @type {number}
  */
 Constant.DELIVERYMAN_ID = 34;
+Constant.CS_MAN_ID = 33;
 
 Constant.PRODUCT = {
     ACCESSORY_ID: 15
@@ -196,5 +197,12 @@ Constant.PAY_RULE = {
 };
 
 Constant.HK_PROVINCE_ID = 810000;
+
+// 区域等级
+Constant.REGIONALISM_LEVEL = {
+    PROVINCE: 1,
+    CITY: 2,
+    DISTRICT: 3
+};
 
 module.exports = Constant;

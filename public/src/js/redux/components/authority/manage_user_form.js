@@ -259,9 +259,10 @@ class ManageAddForm extends Component{
 /*    var {getDepts} = this.props.actions;
     getDepts();*/
     LazyLoad('noty');
-    var {getProvincesSignal,getDeptsSignal, resetRoles } = this.props.actions;
+    var {getProvincesSignal,getDeptsSignal, resetRoles, resetStations } = this.props.actions;
     var {params} = this.props;
     resetRoles();
+    resetStations();
     getProvincesSignal("authority");
     getDeptsSignal("authority");
   }

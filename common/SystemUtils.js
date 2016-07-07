@@ -174,6 +174,11 @@ module.exports = {
   isDoDataFilter : (query_data) => {
     return query_data && !(query_data.user.is_admin || query_data.user.data_scopes.indexOf(Constant.DS.ALLCOMPANY.id) != -1);
   },
+  addLastOptCs: (order_obj, req)=> {
+    if(req.session.user.role_ids.indexOf(constant.CS_MAN_ID) != -1){
+      order_obj.last_opt_cs = req.session.user.id;
+    }
+  },
   isOrderCanUpdateStatus: (curr_status, new_status)=> {
     let result;
     switch (curr_status) {

@@ -27,7 +27,7 @@ class CityPicker extends Component{
 		provincesLS = provinces.filter( p => p.ascii_value >= 'L'.charCodeAt() && p.ascii_value <= 'S'.charCodeAt() );
 		provincesTZ = provinces.filter( p => p.ascii_value >= 'T'.charCodeAt() && p.ascii_value <= 'Z'.charCodeAt() );
 		var areatext = currentSelectPro +  (currentSelectCity ? '/':'') + currentSelectCity + (currentSelectDistrict ? '/':'') + currentSelectDistrict ;
-		var defaultAreatext = is_county ? '请选择省/市/区':'请选择省/市'
+		var defaultAreatext = is_county == 1 ? '请选择省/市/区':'请选择省/市'
 	    areatext = areatext ? areatext:defaultAreatext;
 		var _this = this;
 		var provinceList = [];
@@ -47,8 +47,8 @@ class CityPicker extends Component{
 				'first_letters':'T-Z',
 				'provinces':provincesTZ,
 			});
-		var cityList = is_county ? cities : cities.filter( m => !m.is_open);
-		var districtList = is_county ? districts.filter( m => !m.is_open) : [];
+		var cityList = is_county == 1 ? cities : cities.filter( m => m.is_open == 0);
+		var districtList = is_county == 1 ? districts.filter( m => m.is_open == 0) : [];
 		var provinceContent = provinceList.map( m => {
 			return (
 					<dl className='clearfix'>
@@ -74,7 +74,7 @@ class CityPicker extends Component{
 			<div className='form-group' onClick={this.insideClick.bind(this)}>
 				<div  className={"btn-group" + (citymenuDown ? ' open' : '')}>
 					{/*<input ref='city_picker3' className='form-control city-picker-input' readOnly type='text' />*/}
-						<button type="button" className={className} onClick={this.handleToggleShowState.bind(this)}>
+						<button type="button" className={className} onClick={this.handleToggleShowState.bind(this)} style={{borderRadius:'3px 3px'}}>
 						  {areatext }
 						  {' '}
 						  <span className="caret"></span>
@@ -118,7 +118,20 @@ class CityPicker extends Component{
 	  window.addEventListener('click', this.outsideClick);
 	  window.addEventListener('mousedown', this._mousedown);
 	}
-
+	componentWillReceiveProps(nextProps){
+		if(this.props.is_county != nextProps.is_county){
+			this.setState({
+				currentSelect:'province',
+				citymenuDown:false,
+				currentSelectPro:'',
+				currentSelectPro_id: -1,
+				currentSelectCity:'',
+				currentSelectDistrict:'',
+				clickInside: false,				
+			})
+			this.props.onChange(undefined);
+		}
+	}
 	componentWillUnmount() {
 	  window.removeEventListener('click', this.outsideClick);
 	  window.removeEventListener('mousedown', this._mousedown);
@@ -136,11 +149,12 @@ class CityPicker extends Component{
 	selectCity(id, text){
 		this.props.getRegionalism({parent_id: id, type: 'district'});
 		if(this.props.is_county == 1){
-			this.setState({currentSelectCity:text, currentSelect:'district'});
+			this.setState({currentSelectCity:text, currentSelect:'district', currentSelectDistrict:''});
+			this.props.onChange(undefined);
 		}
 		else {
 			this.setState({citymenuDown: !this.state.citymenuDown,currentSelectCity:text});
-			this.props.onChange(id);
+			this.props.onChange(id);			
 		}
 	}
 	selectDistrict(id, text){

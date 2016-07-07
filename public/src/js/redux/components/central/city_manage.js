@@ -168,7 +168,7 @@ class CityPanel extends Component{
 	constructor(props){
 		super(props);
 		this.state ={
-			page_size: 8
+			page_size: 10
 		}
 	}
 	render(){
@@ -244,6 +244,10 @@ class CityPanel extends Component{
 						/>
 				<DeleteModal ref='delete' 
 						DeleteAccessibleCity = {DeleteAccessibleCity}
+						page_size = {this.state.page_size}
+						page_no = {page_no}
+						total_count = {total_count}
+						getAccessibleCityList = {getAccessibleCityList}
 				   		/>
 			</div>
 			)
@@ -349,7 +353,7 @@ class ViewModal extends Component{
 				</div>
 				<div className='form-inline'>
 					<label className='control-form'>{'　　　　　预约时间：'}</label>
-					<span className='gray'>{info.order_time}</span>
+					<span className='gray'>{info.order_time + '小时'}</span>
 				</div>
 				{
 					has_sec_order_time ?
@@ -359,7 +363,7 @@ class ViewModal extends Component{
 					</div>*/
 					<div className='form-inline'>
 						<label className='control-form'>{'第二次预约区域/时间：'}</label>
-						<span className='gray'>{sec_regionalisms_name + ' ' + info.second_order_time / 60}</span>
+						<span className='gray'>{sec_regionalisms_name + '　' + info.second_order_time / 60 + '小时'}</span>
 					</div>:
 					null
 				}
@@ -423,6 +427,11 @@ class DeleteModal extends Component{
 		this.props.DeleteAccessibleCity(this.state.city_id);
 		setTimeout(() => {
 		  this.refs.deleteModal.hide();
+		  var {page_no, page_size,total_count, getAccessibleCityList} = this.props;
+		  if( total_count % page_size == 0) {
+		  	page_no -= 1;
+		  	getAccessibleCityList({page_no: page_no, page_size: page_size});
+		  }
 		},500);
 	}
 }

@@ -17,6 +17,13 @@ function _f(obj){
 
 var main_state = {
 	deliveryRecord:[],
+	COD_amount:0,
+	POS_amount:0,
+	cash_amount:0,
+	delivery_pay:0,
+	total: 0,
+	filter_data:{},
+	total_amount:0,
 	check_order_info: null,
 	active_order_id:-1,
 	proof: {},
@@ -31,9 +38,21 @@ function main(state = main_state, action){
 		case Actions.ACTIVE_ORDER:
 			return {...state,active_order_id: action.active_order_id}
 		case Actions.GET_DELIVERY_RECORD:
-			return {...state,deliveryRecord:action.data}
+			return {...state,deliveryRecord:action.data.list, 
+				COD_amount:action.data.COD_amount, 
+				POS_amount:action.data.POS_amount,
+				delivery_pay:action.data.delivery_pay,
+				cash_amount: action.data.cash_amount,
+				total_amount: action.data.total_amount,
+				total: action.data.total,
+				filter_data: action.filter_data,
+			}
 		case Actions.RESET_DELIVERY_RECORD:
-			return {...state,deliveryRecord:[], active_order_id: -1, check_order_info: null}
+			return {...state,deliveryRecord:[], active_order_id: -1,
+					 check_order_info: null, COD_amount: 0, POS_amount: 0,
+					 cash_amount : 0, delivery_pay: 0, total: 0, filter_data: {},
+					 total_amount: 0
+					}
 		case Actions.GET_ORDER_DETAIL_PRODUCTS:
 			return {...state, check_order_info:action.data }
 		case Actions.GET_DELIVERY_PROOF:

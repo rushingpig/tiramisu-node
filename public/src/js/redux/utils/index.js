@@ -89,6 +89,13 @@ function form_isMobile(input){
 function form_isCoupon( input ){
   return /(^\d{10}$)|(^\d{12}$)/g.test( input );
 }
+
+function form_isNotNumberInput( keyCode ){
+  //            删除             左方向键       右方向键
+  if((keyCode != 8 && keyCode != 37 && keyCode !=39 && keyCode < 48) || (keyCode > 57 && keyCode < 96) || keyCode > 105){
+    return true
+  }
+}
 /**
 *
 * 描述：日期格式化
@@ -322,6 +329,7 @@ export default {
     isTime: form_isTime, //HH:mm:ss 或 HH:mm
     isMobile: form_isMobile, //简单版
     isCoupon: form_isCoupon, //验券  
+    isNotNumberInput: form_isNotNumberInput, //只能输入数字或者删除键或者左右键
   },
   url: {
     parse: url_parse,       //将一个url的参数取出来（与以下过程正好相反）

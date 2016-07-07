@@ -167,6 +167,16 @@ export default formReducer.plugin({
     }
     return state;  //required!
   },
+  add_city:(state,action) => {
+    if(action && action.form == 'add_city'){
+      if(action.field == 'city_id'){
+        if(action.type == actionTypes.CHANGE){
+          state.first_open_regions = {value:[]};
+        }
+      }
+    }
+    return state;
+  }
 });
 
   // order_manage_filter: (state, action) => {

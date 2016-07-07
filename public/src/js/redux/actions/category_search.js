@@ -23,7 +23,9 @@ const del = es6promisify(Req.del);
 const deleteSecondaryCategory = (
   deleteSecondCategoryID,
   newSecondaryCategoryID
-) => del(Url.deleteSecondaryCategory.toString(deleteSecondCategoryID, newSecondaryCategoryID));
+) => del(Url.deleteSecondaryCategory.toString(deleteSecondCategoryID), {
+  new_category: newSecondaryCategoryID
+});
 
 // 伪fetch请求
 const fakeFetch = returnData => new Promise((resolve, reject) => {

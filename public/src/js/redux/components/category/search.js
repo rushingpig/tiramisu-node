@@ -185,7 +185,7 @@ class Main extends Component {
           {
             (state.searchState === "success" || state.searchState === "failed")
             ? (
-              <Button className="btn btn-theme btn-xs" onClick={props.searchCategories}>
+              <Button className="btn btn-theme btn-xs" onClick={e => props.searchCategories()}>
                 <Icon icon="search" />{' 搜索'}
               </Button>
             ) : (

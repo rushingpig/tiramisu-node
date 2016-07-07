@@ -54,6 +54,7 @@ const initialState = {
 };
 
 const returnID = opt => opt.id;
+const setZeroID = opt => { opt.id = 0 }
 
 const transformPositionData = obj => [
   obj.id, {
@@ -424,6 +425,10 @@ const switchType = {
     if (option === 1) {
       if (state.citiesOptions.has(state.selectedCity)) {
         state.tempOptions = clone(state.citiesOptions.get(state.selectedCity));
+        state.tempOptions.shopSpecifications.forEach(setZeroID);
+        [...state.tempOptions.sourceSpecifications.values()].forEach(
+          arr => arr.forEach(setZeroID)
+        );
       } else {
         state.tempOptions = clone(initialState.tempOptions);
         state.cityOptionSavable = false;
@@ -532,6 +537,10 @@ const switchType = {
       state.cityOptionSaved = true;
     } else {
       tempOptions = clone(state.citiesOptions.size === 0 ? initialState.tempOptions : [...state.citiesOptions.values()][0]);
+      tempOptions.shopSpecifications.forEach(setZeroID);
+      [...tempOptions.sourceSpecifications.values()].forEach(
+        arr => arr.forEach(setZeroID)
+      );
       state.cityOptionSaved = false;
     }
 
@@ -549,6 +558,10 @@ const switchType = {
       state.cityOptionSaved = true;
     } else {
       state.tempOptions = clone(state.citiesOptions.size === 0 ? initialState.tempOptions : [...state.citiesOptions.values()][0]);
+      state.tempOptions.shopSpecifications.forEach(setZeroID);
+      [...state.tempOptions.sourceSpecifications.values()].forEach(
+        arr => arr.forEach(setZeroID)
+      );
       state.cityOptionSaved = false;
       state.cityOptionSavable = state.citiesOptions.size > 0;
     }

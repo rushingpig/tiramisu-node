@@ -449,7 +449,7 @@ CategoryDao.prototype.findCategoriesList = function(data) {
     ];
 
     let select_sql = ' from ?? cate_primary join ?? cate_secondary on cate_primary.id = cate_secondary.parent_id and cate_primary.del_flag = ? and cate_secondary.del_flag = ? ' +
-        ' left join ?? product on cate_secondary.id = product.category_id and product.del_flag = ? left join ?? sku on product.id = sku.product_id and sku.del_flag = ? ';
+        ' left join ?? product on cate_secondary.id = product.category_id and product.del_flag = ? join ?? sku on product.id = sku.product_id and sku.del_flag = ? ';
     let select_params = [
         'buss_product_category',
         'buss_product_category',

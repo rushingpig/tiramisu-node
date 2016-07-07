@@ -666,7 +666,7 @@ then
     set del_flag = 0 
     where product_id = old.id and regionalism_id not in (
         select regionalism_id from buss_product_category_regionalism region
-        where region.id = new.category_id
+        where region.category_id = new.category_id
     );
 end if;
 end;

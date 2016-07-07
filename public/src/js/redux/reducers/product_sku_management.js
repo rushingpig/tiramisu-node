@@ -529,19 +529,18 @@ const switchType = {
 
     if (state.citiesOptions.has(selectedCity)) {
       tempOptions = clone(state.citiesOptions.get(selectedCity));
+      state.cityOptionSaved = true;
     } else {
       tempOptions = clone(state.citiesOptions.size === 0 ? initialState.tempOptions : [...state.citiesOptions.values()][0]);
       state.cityOptionSaved = false;
-      state.cityOptionSavable = state.citiesOptions.size > 0;
     }
 
-    return {
+    return tempOptionsValidator({
       ...state,
-      cityOptionSaved: state.citiesOptions.has(selectedCity),
       selectedCity,
       selectedProvince: id,
       tempOptions
-    };
+    });
   },
 
   [ActionTypes.CHANGE_SELECTED_CITY]: (state, { id }) => {
@@ -790,7 +789,7 @@ const switchType = {
     state.tempOptions.sourceSpecifications.set(state.tempOptions.selectedSource, sourceSpecifications);
 
     state.cityOptionSaved = false;
-    return state;
+    return tempOptionsValidator(state);
   },
 
   [ActionTypes.CHANGE_SOURCE_SPEC]: (state, { index, spec }) => {

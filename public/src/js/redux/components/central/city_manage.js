@@ -428,7 +428,7 @@ class DeleteModal extends Component{
 		setTimeout(() => {
 		  this.refs.deleteModal.hide();
 		  var {page_no, page_size,total_count, getAccessibleCityList} = this.props;
-		  if( total_count % page_size == 0) {
+		  if( total_count % page_size == 0 && total_count != 0) {
 		  	page_no -= 1;
 		  	getAccessibleCityList({page_no: page_no, page_size: page_size});
 		  }

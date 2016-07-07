@@ -504,11 +504,13 @@ class Main extends Component {
                     {
                       state.secondCategoriesList.filter(
                         ({ id, parentId }) => (
-                          id !== state.willDeleteCategory
-                          && id !== 0
-                          && parentId !== 0
-                          && parentId === state.willTranslateFirstCategory
-                          || (state.willTranslateFirstCategory === 0 && id !== 0)
+                          id !== Number(componentState.readyToDeleteCategory)
+                          && (
+                            id !== 0
+                            && parentId !== 0
+                            && parentId === state.willTranslateFirstCategory
+                            || (state.willTranslateFirstCategory === 0 && id !== 0)
+                          )
                         )
                       ).map(renderOption)
                     }

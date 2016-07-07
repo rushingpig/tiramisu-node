@@ -14,6 +14,9 @@ var dao = require('../../dao'),
     TiramisuError = require('../../error/tiramisu_error'),
     res_obj = require('../../util/res_obj');
 
+var Constant = require('../../common/Constant');
+let LEVEL = Constant.REGIONALISM_LEVEL;
+
 function AddressService() {
 
 }
@@ -61,7 +64,10 @@ AddressService.prototype.getCities = (req, res, next) => {
             return;
         }
         results.forEach((curr, index, arra) => {
-            data[curr.id] = curr.name;
+            if (curr.level_type == LEVEL.CITY)
+                data[curr.id] = curr.name;
+            else
+                data[curr.id] = `${curr.parent_name}:${curr.name}`;
         });
         res.api(data);
     }));

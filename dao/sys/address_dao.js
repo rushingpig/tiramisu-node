@@ -16,6 +16,8 @@ var dbHelper = require('../../common/DBHelper'),
 var baseDao = require('../base_dao'),
     del_flag = baseDao.del_flag;
 
+let LEVEL = constant.REGIONALISM_LEVEL;
+
 function AddressDao(table) {
     this.table = table || tables.dict_regionalism;
     this.baseSql = util.format('select ?? from %s where 1=1 and level_type = ? and del_flag = ?', this.table);
@@ -26,84 +28,145 @@ function AddressDao(table) {
 }
 // if you want to use 'this'(object) in the statement ,don not use '=>'
 AddressDao.prototype.findAllProvinces = function(query_data) {
-
-    if (query_data && query_data.signal && query_data.user && !query_data.user.is_headquarters) {
-        let ds = query_data.user.data_scopes;
-        let sql = "select id,name from ?? where id in (select parent_id from ?? where 1=1 and level_type = 2 and del_flag = ?";
-        // data filter start
-        if (!toolUtils.isEmptyArray(ds)) {
-            if (!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1) {
-                sql += " and id in " + dbHelper.genInSql(query_data.user.city_ids);
-                // ds.forEach(curr => {
-                //     if (curr == constant.DS.OFFICEANDCHILD.id && query_data.user.role_ids) {
-                //         sql += " and id in " + dbHelper.genInSql(query_data.user.city_ids);
-                //     }
-                // });
-            }
+    let columns = [
+        'DISTINCT dr.id',
+        'dr.name'
+    ];
+    let ds = query_data.user.data_scopes;
+    let sql = `SELECT ${columns.join()} FROM ?? dr `;
+    let params = [tables.dict_regionalism];
+    sql += `INNER JOIN ?? dr2 ON dr2.parent_id = dr.id `;
+    params.push(tables.dict_regionalism);
+    sql += `INNER JOIN ?? dr3 ON dr3.parent_id = dr2.id `;
+    params.push(tables.dict_regionalism);
+    sql += `INNER JOIN ?? sc ON sc.regionalism_id = dr2.id OR sc.regionalism_id = dr3.id `;
+    params.push(tables.sys_city);
+    sql += `WHERE dr.level_type = ${LEVEL.PROVINCE} `;
+    sql += `AND sc.is_city = 1 `;
+    if (!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1 && !query_data.user.is_headquarters) {
+        if (query_data.signal) {
+            sql += `AND sc.regionalism_id IN ` + dbHelper.genInSql(query_data.user.city_ids);
         }
-        // data filter end
-        sql += ") and level_type = 1 and del_flag = ?";
-        let params = [this.table, this.table, del_flag.SHOW, del_flag.SHOW];
-        return baseDao.select(sql, params);
-    } else {
-        return baseDao.select(this.baseSql, [this.baseColumns, 1, del_flag.SHOW]);
     }
+
+    return baseDao.select(sql, params);
 };
 AddressDao.prototype.findCitiesByProvinceId = function(provinceId, query_data) {
-    let sql = this.baseSql + ' and parent_id = ?';
+    let columns = [
+        'dr.id',
+        'dr.name',
+        'dr.level_type',
+        'dr2.name AS parent_name'
+    ];
     let ds = query_data.user.data_scopes;
-    // data filter start
-    if (query_data.signal && !toolUtils.isEmptyArray(ds)) {
-        if (!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1 && !query_data.user.is_headquarters) {
-            sql += " and id in " + dbHelper.genInSql(query_data.user.city_ids);
-            // ds.forEach(curr => {
-            //     if (curr == constant.DS.OFFICEANDCHILD.id && query_data.user.role_ids) {
-            //         sql += " and id in " + dbHelper.genInSql(query_data.user.city_ids);
-            //     }
-            // });
+    let sql = `SELECT ${columns.join()} FROM ?? dr `;
+    let params = [tables.dict_regionalism];
+    sql += `INNER JOIN ?? dr2 ON dr2.id = dr.parent_id `;
+    params.push(tables.dict_regionalism);
+    if (query_data.is_standard_area) {
+        sql += `LEFT JOIN ?? dr3 ON dr3.parent_id = dr.id `;
+        params.push(tables.dict_regionalism);
+        sql += `INNER JOIN ?? sc ON sc.regionalism_id = dr.id OR sc.regionalism_id = dr3.id `;
+        params.push(tables.sys_city);
+        sql += `WHERE dr2.id = ? `;
+        params.push(provinceId);
+    } else {
+        sql += `INNER JOIN ?? sc ON sc.regionalism_id = dr.id AND sc.is_city = 1 `;
+        params.push(tables.sys_city);
+        sql += `WHERE dr2.id = ? `;
+        params.push(provinceId);
+        sql += `OR (dr2.parent_id = ? AND dr2.level_type = ${LEVEL.CITY} ) `;
+        params.push(provinceId);
+    }
+    if (!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1 && !query_data.user.is_headquarters) {
+        if (query_data.signal) {
+            sql += `AND sc.regionalism_id IN ` + dbHelper.genInSql(query_data.user.city_ids);
         }
     }
-    // data filter end
-    return baseDao.select(sql, [this.baseColumns, 2, del_flag.SHOW, provinceId]);
+
+    return baseDao.select(sql, params);
 };
-AddressDao.prototype.findDistrictsByCityId = function(cityId) {
-    let sql = this.baseSql + ' and parent_id = ?';
-    return baseDao.select(sql, [this.baseColumns, 3, del_flag.SHOW, cityId]);
+AddressDao.prototype.findDistrictsByCityId = function(cityId, query) {
+    if (!query) query = {};
+    let columns = [
+        'dr.id',
+        'dr.name'
+    ];
+    let sql = `SELECT ${columns.join()} FROM ?? dr `;
+    let params = [tables.dict_regionalism];
+    sql += `INNER JOIN ?? sc ON sc.regionalism_id = dr.id `;
+    params.push(tables.sys_city);
+    sql += `WHERE dr.parent_id = ? `;
+    params.push(cityId);
+    if (!query.is_standard_area) {
+        sql += `AND sc.is_city = 0 `;
+    }
+
+    return baseDao.select(sql, params);
 };
 AddressDao.prototype.findStationsByMultipleCondition = function(query_obj) {
-    let query = "select b.id 'station_id',b.name 'name',b.address 'address',b.coords 'coords'," +
-        "b.remarks 'remarks',b.capacity 'capacity',b.phone 'phone'," +
-        "a.id 'regionalism_id',a.name 'regionalism_name'," +
-        "c.id 'city_id',c.name 'city_name'," +
-        "d.id 'province_id',d.name 'province_name' " +
-        "from %s a join %s c on a.parent_id = c.id " +
-        "join %s d on c.parent_id = d.id " +
-        "join %s b on a.id = b.regionalism_id " +
-        "where b.del_flag = ? ";
-    let params = [del_flag.SHOW];
+    let columns = [
+        'bds.id AS station_id',
+        'bds.name',
+        'bds.address',
+        'bds.coords',
+        'bds.remarks',
+        'bds.capacity',
+        'bds.phone',
+        'dr.id AS regionalism_id',
+        'dr.name AS regionalism_name',
+        'dr2.id AS city_id',
+        'dr2.name AS city_name',
+        'dr3.id AS province_id',
+        'dr3.name AS province_name'
+    ];
+    let sql = `SELECT ${columns.join()} FROM ?? bds `;
+    let params = [tables.buss_delivery_station];
+    sql += `INNER JOIN ?? dr ON dr.id = bds.regionalism_id `;
+    params.push(tables.dict_regionalism);
+    sql += `INNER JOIN ?? dr2 ON dr2.id = dr.parent_id `;
+    params.push(tables.dict_regionalism);
+    sql += `INNER JOIN ?? dr3 ON dr3.id = dr2.parent_id `;
+    params.push(tables.dict_regionalism);
+
+    sql += `INNER JOIN ?? sc ON sc.regionalism_id = dr.id `;
+    params.push(tables.sys_city);
+
+    sql += `WHERE dr.del_flag = ? `;
+    params.push(del_flag.SHOW);
     if (query_obj.station_name) {
-        query += ' and b.name like ? ';
-        params.push('%' + query_obj.station_name + '%');
+        sql += `AND bds.name LIKE ? `;
+        params.push(`%${query_obj.station_name}%`);
     }
     if (query_obj.regionalism_id) {
-        query += ' and a.id = ? ';
+        sql += `AND dr.id = ? `;
         params.push(query_obj.regionalism_id);
     }
     if (query_obj.city_id) {
-        query += ' and c.id = ? ';
-        params.push(query_obj.city_id);
+        if (query_obj.is_standard_area) {
+            sql += `AND dr.parent_id = ?  `;
+            params.push(query_obj.city_id);
+        } else {
+            sql += `AND ( (dr.id = ? AND sc.is_city = 1 ) OR (dr.parent_id = ? AND sc.is_city = 0 ) ) `;
+            params.push(query_obj.city_id);
+            params.push(query_obj.city_id);
+        }
     }
     if (query_obj.province_id) {
-        query += ' and d.id = ? ';
+        sql += `AND dr3.id = ? `;
         params.push(query_obj.province_id);
     }
     let ds = (query_obj.user) ? query_obj.user.data_scopes : [];
-    if (query_obj.signal && !toolUtils.isEmptyArray(ds)) {
-        if (!query_obj.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1 && !query_obj.user.is_headquarters) {
-            query += ' and c.id in ' + dbHelper.genInSql(query_obj.user.city_ids);
+    if (!query_obj.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1 && !query_obj.user.is_headquarters) {
+        if (query_obj.signal) {
+            let tmp_city_str = dbHelper.genInSql(query_obj.user.city_ids);
+            sql += `AND id IN ` + dbHelper.genInSql(query_obj.user.city_ids);
+            sql += `AND ( `;
+            sql += `(sc.is_city = 1 AND dr.id IN ${tmp_city_str} ) `;
+            sql += `OR (sc.is_city = 0 AND dr.parent_id IN ${tmp_city_str} ) `;
+            sql += `) `;
         }
     }
-    let sql = util.format(query, this.table, this.table, this.table, tables.buss_delivery_station);
     // return paging result if isPage
     // 兼容
     if (query_obj.isPage == 1 || query_obj.isPage == 'true') {

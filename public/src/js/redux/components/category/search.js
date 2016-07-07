@@ -530,10 +530,17 @@ class Main extends Component {
   }
 
   componentDidMount() {
-    if (this.props.state.toJS().basicDataLoadStatus === 'success')
-      return;
+    const { props } = this;
+    const state = props.state.toJS();
+    const { lastSearchFilter } = state;
 
-    this.handleLoadData();
+    if (state.basicDataLoadStatus === 'success') {
+      return state.searchWithName
+      ? props.searchCategoriesWithName(lastSearchFilter.name)
+      : props.searchCategories(true)
+    }
+
+    return this.handleLoadData();
   }
 
   componentWillReceiveProps(nextProps) {

@@ -114,10 +114,11 @@ const searchCategoriesWithName = name => (
 
     const searchRequest = name => get(Url.searchCategoriesWithName.toString(), { name });
 
-    searchRequest(name).then(
+    return searchRequest(name).then(
       data => dispatch({
         type: SearchActionTypes.SEARCH_CATEGORY_WITH_NAME_SUCCESS,
-        data
+        data,
+        name
       })
     ).catch(
       err => {
@@ -130,7 +131,7 @@ const searchCategoriesWithName = name => (
   }
 )
 
-const searchCategories = () => (
+const searchCategories = (useLastSearchFilter = false) => (
   (dispatch, getState) => {
     dispatch({
       type: SearchActionTypes.SEARCH_CATEGORY_WAITING
@@ -143,7 +144,7 @@ const searchCategories = () => (
       selectedFirstCategory,
       selectedProvince,
       selectedSecondCategory
-    } = state;
+    } = useLastSearchFilter ? state.lastSearchFilter : state;
 
     const params = {};
 
@@ -159,7 +160,7 @@ const searchCategories = () => (
 
     const searchRequest = get(Url.searchCategories.toString(), params);
 
-    searchRequest.then(
+    return searchRequest.then(
       data => dispatch({
         type: SearchActionTypes.SEARCH_CATEGORY_SUCCESS,
         data,
@@ -339,7 +340,7 @@ const deleteSecondCategory = id => (
     ).then(
       data => dispatch({
         type: SearchActionTypes.DELETE_SECOND_CATEGORY_SUCCESS,
-        deletedId: id
+        deletedId: Number(id)
       })
     ).catch(
       err => {

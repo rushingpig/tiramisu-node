@@ -196,13 +196,15 @@ const resetSpecSet = state => {
     });
   });
 
-  state.specSet = dataSet;
+  state.specSet = new Set([...state.specSet, ...dataSet]);
 
   return state;
 }
 
+const getSizeArr = data => data.map(obj => obj.size);
+
 const switchType = {
-  [ActionTypes.LOADED_BASIC_DATA]: (state, { categoriesData, orderSourceData }) => {
+  [ActionTypes.LOADED_BASIC_DATA]: (state, { categoriesData, orderSourceData, skuSizeData }) => {
     let orderSource = getOrderSourcesMap(orderSourceData);
     let { primaryCategoriesMap, secondaryCategoriesMap } = getCategoriesMap(categoriesData);
     let firstID = 0;
@@ -216,7 +218,8 @@ const switchType = {
       primaryCategories: primaryCategoriesMap,
       secondaryCategories: secondaryCategoriesMap,
       selectPrimaryCategory: firstID,
-      selectSecondaryCategory: secondaryCategoriesMap.get(firstID)[0].id
+      selectSecondaryCategory: secondaryCategoriesMap.get(firstID)[0].id,
+      specSet: new Set(getSizeArr(skuSizeData))
     };
   },
 
@@ -227,7 +230,8 @@ const switchType = {
     citiesSelectorState,
     productData,
     isSelectedAllCity,
-    districtsDataGroup
+    districtsDataGroup,
+    skuSizeData
   }) => {
 
     state = clone(initialState);
@@ -290,7 +294,9 @@ const switchType = {
       districtsData,
 
       cityOptionSavable: true,
-      cityOptionSaved: true
+      cityOptionSaved: true,
+
+      specSet: new Set(getSizeArr(skuSizeData))
     }
 
     const setShopSpecification = sku => ({

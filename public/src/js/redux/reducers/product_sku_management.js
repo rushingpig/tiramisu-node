@@ -644,7 +644,7 @@ const switchType = {
     });
   },
 
-  [ActionTypes.CREATE_SHOP_SPECIFICATIONS]: (state, { index }) => {
+  [ActionTypes.ADD_SHOP_SPECIFICATIONS]: (state, { index }) => {
     let { shopSpecifications } = state.tempOptions;
 
     const now = new Date();
@@ -661,9 +661,12 @@ const switchType = {
 
     if (shopSpecifications.length > 0) {
       newShopSpecifications = clone(shopSpecifications[shopSpecifications.length - 1]);
+      newShopSpecifications.id = 0;
     }
 
     shopSpecifications.push(newShopSpecifications);
+
+    state.cityOptionSaved = false;
 
     return state;
   },
@@ -763,9 +766,11 @@ const switchType = {
 
     if (source.length > 0) {
       sourceSpec = clone(source[source.length - 1]);
+      sourceSpec.id = 0;
     }
 
     source.push(sourceSpec);
+    state.cityOptionSaved = false;
 
     return state;
   },

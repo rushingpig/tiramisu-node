@@ -51,7 +51,7 @@ AddressDao.prototype.findAllProvinces = function(query_data) {
 
     return baseDao.select(sql, params);
 };
-AddressDao.prototype.findCitiesByProvinceId = function(provinceId, query_data) {
+AddressDao.prototype.findCities = function(query_data) {
     let columns = [
         'dr.id',
         'dr.name',
@@ -63,20 +63,35 @@ AddressDao.prototype.findCitiesByProvinceId = function(provinceId, query_data) {
     let params = [tables.dict_regionalism];
     sql += `INNER JOIN ?? dr2 ON dr2.id = dr.parent_id `;
     params.push(tables.dict_regionalism);
-    if (query_data.is_standard_area) {
+    console.log(query_data);
+    if (query_data.is_standard_area == '1') {
         sql += `LEFT JOIN ?? dr3 ON dr3.parent_id = dr.id `;
         params.push(tables.dict_regionalism);
         sql += `INNER JOIN ?? sc ON sc.regionalism_id = dr.id OR sc.regionalism_id = dr3.id `;
         params.push(tables.sys_city);
-        sql += `WHERE dr2.id = ? `;
-        params.push(provinceId);
+        sql += `WHERE 1 = 1 `;
+        if (query_data.province_id) {
+            sql += `AND dr2.id = ? `;
+            params.push(query_data.province_id);
+        }
+        if(query_data.city_id){
+            sql += `AND dr.id = ? `;
+            params.push(query_data.city_id);
+        }
     } else {
         sql += `INNER JOIN ?? sc ON sc.regionalism_id = dr.id AND sc.is_city = 1 `;
         params.push(tables.sys_city);
-        sql += `WHERE dr2.id = ? `;
-        params.push(provinceId);
-        sql += `OR (dr2.parent_id = ? AND dr2.level_type = ${LEVEL.CITY} ) `;
-        params.push(provinceId);
+        sql += `WHERE 1 = 1 `;
+        if (query_data.province_id) {
+            sql += `AND ( dr2.id = ? OR (dr2.parent_id = ? AND dr2.level_type = ${LEVEL.CITY} ) )`;
+            params.push(query_data.province_id);
+            params.push(query_data.province_id);
+        }
+        if (query_data.city_id) {
+            sql += `AND ( dr.id = ? OR (dr.parent_id = ? AND dr2.level_type = ${LEVEL.CITY} ) )`;
+            params.push(query_data.city_id);
+            params.push(query_data.city_id);
+        }
     }
     if (!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1 && !query_data.user.is_headquarters) {
         if (query_data.signal) {
@@ -98,7 +113,7 @@ AddressDao.prototype.findDistrictsByCityId = function(cityId, query) {
     params.push(tables.sys_city);
     sql += `WHERE dr.parent_id = ? `;
     params.push(cityId);
-    if (!query.is_standard_area) {
+    if (query.is_standard_area != '1') {
         sql += `AND sc.is_city = 0 `;
     }
 
@@ -143,7 +158,7 @@ AddressDao.prototype.findStationsByMultipleCondition = function(query_obj) {
         params.push(query_obj.regionalism_id);
     }
     if (query_obj.city_id) {
-        if (query_obj.is_standard_area) {
+        if (query_obj.is_standard_area == '1') {
             sql += `AND dr.parent_id = ?  `;
             params.push(query_obj.city_id);
         } else {

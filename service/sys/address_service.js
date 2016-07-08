@@ -51,23 +51,22 @@ AddressService.prototype.getProvinces = (req, res, next) => {
  * @param next
  */
 AddressService.prototype.getCities = (req, res, next) => {
-    let provinceId = req.params.provinceId;
     let signal = req.query.signal;
     let query_data = {
+        province_id: req.params.provinceId,
+        city_id: req.params.cityId,
+        is_standard_area: req.query.is_standard_area,
         signal: signal,
         user: req.session.user
     };
-    systemUtils.wrapService(res, next, addressDao.findCitiesByProvinceId(provinceId, query_data).then((results) => {
+    systemUtils.wrapService(res, next, addressDao.findCities(query_data).then((results) => {
         let data = {};
         if (!results || results.length == 0) {
             res.api(res_obj.NO_MORE_RESULTS, null);
             return;
         }
         results.forEach((curr, index, arra) => {
-            if (curr.level_type == LEVEL.CITY)
-                data[curr.id] = curr.name;
-            else
-                data[curr.id] = `${curr.parent_name}:${curr.name}`;
+            data[curr.id] = curr.name;
         });
         res.api(data);
     }));
@@ -86,7 +85,10 @@ AddressService.prototype.getDistricts = (req, res, next) => {
         return;
     }
     let cityId = req.params.cityId;
-    systemUtils.wrapService(res, next, addressDao.findDistrictsByCityId(cityId).then((results) => {
+    let query = {
+        is_standard_area: req.query.is_standard_area
+    };
+    systemUtils.wrapService(res, next, addressDao.findDistrictsByCityId(cityId, query).then((results) => {
         let data = {};
         if (!results || results.length == 0) {
             res.api(res_obj.NO_MORE_RESULTS, null);

@@ -69,7 +69,7 @@ ProductService.prototype.listProducts = (req, res, next) => {
         }
         let preSql = data.sql, preParams = data.params;
         res_data.total = data.results[0].total;
-        return productDao.findProducts(preSql, preParams,page_no,page_size);
+        return productDao.findProducts(preSql, preParams, page_no, page_size, regionalism_id);
     }).then((_re)=> {
         if (toolUtils.isEmptyArray(_re)) {
             throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);

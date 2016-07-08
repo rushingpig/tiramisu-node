@@ -167,7 +167,8 @@ const switchType = {
   [ActionTypes.SEARCH_PRODCUT]: (state, { status = 'pending', searchWithProductName, result = [], pageNum = 0, isPageChange = false }) => {
     if (status === 'success') {
       const lastSearchFilter = searchWithProductName ? {
-        searchProductName: state.searchProductName
+        searchProductName: state.searchProductName,
+        pageNum
       } : {
         noEndTimeLimit: state.noEndTimeLimit,
         searchProductName: state.searchProductName,
@@ -184,7 +185,7 @@ const switchType = {
 
       return {
         ...state,
-        ...isPageChange ? {} : {lastSearchFilter: Util.clone(lastSearchFilter)},
+        lastSearchFilter: Util.clone(lastSearchFilter),
         searching: false,
         searchWithProductName,
         searchResult: result.products,

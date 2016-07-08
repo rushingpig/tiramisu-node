@@ -36,7 +36,7 @@ ProductDao.prototype.findAllCatetories = function(){
  */
 ProductDao.prototype.findProductsCount = function(product_name,category_id,regionalism_id, isAddition){
     let sql = "",params = [];
-    sql += "select bp.id,bps.id as sku_id,bps.size,bp.name,bpc.name as category_name,bpc.isAddition,bps.regionalism_id ";
+    sql += "select bp.id,bp.name,count(bps.id) as num,bpc.name as category_name,bpc.isAddition";
     sql += " from ?? bp";
     sql += " inner join ?? bpc on bp.category_id = bpc.id";
     sql += " inner join ?? bps on bp.id = bps.product_id where 1=1 and bps.del_flag = 1";
@@ -60,7 +60,7 @@ ProductDao.prototype.findProductsCount = function(product_name,category_id,regio
         sql += " and bpc.isAddition = ?";
         params.push(isAddition);
     }
-    sql += ' group by bp.id,bps.id';
+    sql += ' group by bp.id having num > 0 ';
     return baseDao.select(dbHelper.countSql(sql),params).then((results)=>{
             let data = {
                 results : results,
@@ -76,12 +76,17 @@ ProductDao.prototype.findProductsCount = function(product_name,category_id,regio
  * @param preSql
  * @param preParams
  */
-ProductDao.prototype.findProducts = function(preSql,preParams,page_no,page_size){
+ProductDao.prototype.findProducts = function(preSql, preParams, page_no, page_size, regionalism_id){
+    let params = [];
     let sql = "select t.name,t.category_name,bps2.*,dr.name as regionalism_name from (";
     sql += dbHelper.paginate(preSql,page_no,page_size);
-    sql += ")t left join  buss_product_sku bps2 on t.id = bps2.product_id and t.size = bps2.size and t.regionalism_id = bps2.regionalism_id";
+    sql += ")t left join  buss_product_sku bps2 on t.id = bps2.product_id ";
+    if (regionalism_id) {
+        sql += 'and bps2.regionalism_id = ? ';
+        params.push(regionalism_id);
+    }
     sql += " left join dict_regionalism dr on dr.id = bps2.regionalism_id order by bps2.sort asc";
-    return baseDao.select(sql,preParams);
+    return baseDao.select(sql,preParams.concat(params));
 };
 //TODO: check sql after table confirmed
 /**

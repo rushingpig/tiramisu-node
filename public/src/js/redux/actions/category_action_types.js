@@ -56,9 +56,6 @@ const Manage = {
   CHECK_CITY:               Symbol('CATEGORY_MANAGE_CHECK_CITY'),               // 选中城市
   UNCHECK_CITY:             Symbol('CATEGORY_MANAGE_UNCHECK_CITY'),             // 取消选中城市
 
-  REDO: Symbol('REDO'), // 重做
-  UNDO: Symbol('UNDO'), // 撤销
-
   SAVE_DATA: Symbol('SAVE_DATA') // 保存
 };
 

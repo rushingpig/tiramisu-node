@@ -269,19 +269,60 @@ const changeCitiesOptionApplyRange = option => {
   };
 }
 
-const changeSelectedProvince = pid => {
-  return {
-    type: ActionTypes.CHANGE_SELECTED_PROVINCE,
-    id: pid
-  };
-}
+const changeSelectedProvince = pid => (
+  (dispatch, getState) => {
+    debugger;
+    const state = getState().productSKUManagement;
+    let selectedCity;
 
-const changeSelectedCity = cid => {
-  return {
-    type: ActionTypes.CHANGE_SELECTED_CITY,
-    id: cid
-  };
-}
+    [...state.provincesData.get(pid).list].some(cid => {
+      if (state.citiesData.has(cid)) {
+        selectedCity = cid;
+        return true;
+      }
+
+      return false;
+    });
+
+    if (state.citiesOptions.has(selectedCity) || ![...state.citiesOptions.values()][0].hasSecondaryBookingTime) {
+      return dispatch({
+        type: ActionTypes.CHANGE_SELECTED_PROVINCE,
+        pid,
+        cid: selectedCity
+      });
+    }
+
+    return loadDistricts(selectedCity).then(
+      districtsData => dispatch({
+        type: ActionTypes.CHANGE_SELECTED_PROVINCE,
+        pid,
+        cid: selectedCity,
+        districtsData
+      })
+    );
+  }
+);
+
+const changeSelectedCity = id => (
+  (dispatch, getState) => {
+    const state = getState().productSKUManagement;
+
+    if (state.citiesOptions.has(id)) {
+      return dispatch({
+        type: ActionTypes.CHANGE_SELECTED_CITY,
+        id
+      });
+    }
+
+    return loadDistricts(id).then(
+      districtsData => dispatch({
+        type: ActionTypes.CHANGE_SELECTED_CITY,
+        id,
+        districtsData
+      })
+    );
+  }
+);
 
 // City options
 

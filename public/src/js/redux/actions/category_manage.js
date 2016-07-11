@@ -18,8 +18,6 @@ const post = es6promisify(Req.post);
 const put  = es6promisify(Req.put);
 
 const loadCategoryData       = id => get(Url.getCategoryDetail.toString(id));
-const loadProvincesData      = () => get(Url.provinces.toString());
-const loadCitiesData         = id => get(Url.cities.toString(id));
 const loadEnableCities       = id => get(Url.activatedCity.toString(id));
 const loadAllGeographiesData = () => get(Url.allGeographies.toString());
 
@@ -160,9 +158,6 @@ const resetSaveDataStatus = () => ({
   type: ManageActionTypes.SAVE_DATA,
   status: 'normal'
 });
-
-const undo = () => ({ type: ManageActionTypes.UNDO });
-const redo = () => ({ type: ManageActionTypes.REDO });
 
 const saveData = level => (
   (dispatch, getState) => {

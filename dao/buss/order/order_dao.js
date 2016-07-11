@@ -709,7 +709,7 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
         params.push(query_data.user.id);
       } else if (curr == constant.DS.ALLCOMPANY.id) {
         temp_sql += " or 1 = 1";
-      } else if (curr == constant.DS.SELF_CHANNEL.id) {
+      } else if (curr == constant.DS.SELF_CHANNEL.id && !query_data.user.is_headquarters) {
         temp_sql += " or bo.src_id in " + dbHelper.genInSql(query_data.user.src_ids);
       }
     });
@@ -721,6 +721,37 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
     ds_sql = "";
   }
   // data filter end
+
+  let promise = null,
+      countSql = "",
+      result = 0;
+
+  // 如果是导出excel,直接返回要执行的sql和参数列表
+  if(!isExcelExport){
+    countSql = sql + ds_sql;
+    //  刚进入订单列表页面,不带筛选条件,用explain来优化获取记录总数
+    if (/^.*(where 1=1 and)[\s\w\W]+/.test(countSql) || /^.* inner join [\S\s\w]+ on [\w\W]+ and .*/.test(countSql) || query_data.keywords) {
+      countSql = dbHelper.replaceCountSql(countSql);
+      promise = baseDao.select(countSql, params).then(results => {
+        if (!toolUtils.isEmptyArray(results)) {
+          result = results[0].total;
+        }
+      });
+    } else {
+      countSql = dbHelper.approximateCountSql(countSql);
+      promise = baseDao.select(countSql, params).then((results) => {
+        if (!toolUtils.isEmptyArray(results)) {
+          results.forEach(curr => {
+            if (curr.table === 'bo') {
+              result = curr.rows;
+              return; // out of the loop
+            }
+          });
+        }
+      });
+    }
+  }
+
   switch (query_data.order_sorted_rules) {
     case constant.OSR.LIST:
       sql += ds_sql;
@@ -755,36 +786,12 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
     default:
       // do nothing && order by with the db self
   }
-  let promise = null,
-    countSql = "",
-    result = 0;
-  // 如果是导出excel,直接返回要执行的sql和参数列表
   if(isExcelExport){
     return new Promise((resolve,reject)=>{
       resolve({sql,params});
     });
   }
-  //  刚进入订单列表页面,不带筛选条件,用explain来优化获取记录总数
-  if (/^.*(where 1=1 and)[\s\w\W]+/.test(sql)  || /^.* inner join [\S\s\w]+ on [\w\W]+ and .*/.test(sql) || query_data.keywords) {
-    countSql = dbHelper.countSql(sql);
-    promise = baseDao.select(countSql, params).then(results => {
-      if (!toolUtils.isEmptyArray(results)) {
-        result = results[0].total;
-      }
-    });
-  } else {
-    countSql = dbHelper.approximateCountSql(sql);
-    promise = baseDao.select(countSql, params).then((results) => {
-      if (!toolUtils.isEmptyArray(results)) {
-        results.forEach(curr => {
-          if (curr.table === 'bo') {
-            result = curr.rows;
-            return; // out of the loop
-          }
-        });
-      }
-    });
-  }
+
   return promise.then(() => {
     return baseDao.select(dbHelper.paginate(sql, query_data.page_no, query_data.page_size), params).then((_result) => {
       return {

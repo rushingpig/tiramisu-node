@@ -9,7 +9,7 @@ export default [{
     "icon": "",
     "link": "/om/index"
   }, {
-    "key": "OrderRefund",
+    "key": "OrderRefundAccess",
     "name": "退款管理",
     "icon": "",
     "link": "/om/refund",

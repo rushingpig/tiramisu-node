@@ -91,6 +91,12 @@ export default {
     'AUDITING': '是',
     'REPRINTABLE': '否',
   },
+  REFUND_STATUS: {
+    'UNAUDIT': '未审核',
+    'AUDITED': '已审核',
+    'REFUNDED': '退款完成',
+    'REFUNDCANCEL': '退款取消',
+  },
   SRC: {
     group_site: 3, //团购网站
     youzan: 29, //有赞微商城

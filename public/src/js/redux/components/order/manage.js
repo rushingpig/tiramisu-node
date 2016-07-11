@@ -37,6 +37,8 @@ import AlterDeliveryModal from './manage_alter_delivery_modal';
 import OrderSrcsSelects from 'common/order_srcs_selects';
 import OperationRecordModal from 'common/operation_record_modal.js';
 
+import RefundModal from './refund_modal.js';
+
 class TopHeader extends Component {
   render(){
     return (
@@ -237,8 +239,9 @@ var OrderRow = React.createClass({
             [<a onClick={this.alterOrderRemarks} key="OrderManageAlterRemarks" href="javascript:;" className="nowrap">[修改备注]</a>, <br key="3" />],
             [<a onClick={this.alterDelivery} key="OrderManageAlterDelivery" href="javascript:;" className="nowrap">[修改配送]</a>, <br key="4" />],
             [<a onClick={this.alterStation} key="OrderManageAlterStation" href="javascript:;" className="nowrap">[分配配送站]</a>, <br key="5" />],
-            [<a onClick={this.cancelOrder} key="OrderManageCancel" href="javascript:;" className="nowrap">[订单取消]</a>],
-            [<a onClick={this.orderException} key="OrderManageException" href="javascript:;" className="nowrap">[订单异常]</a>]
+            [<a onClick={this.cancelOrder} key="OrderManageCancel" href="javascript:;" className="nowrap">[订单取消]</a>, <br key="6" />],
+            [<a onClick={this.orderException} key="OrderManageException" href="javascript:;" className="nowrap">[订单异常]</a>, <br key="7" />],
+            [<a onClick={this.applyRefund} key='OrderManageRefundApply' href='javascript:;' className='nowrap'>[申请退款]</a>],
           )
         }
         </td>
@@ -334,6 +337,7 @@ var OrderRow = React.createClass({
         roles = []; break;
     }
     roles.push('OrderManageView');
+    roles.push('OrderManageRefundApply');
     var results = []
     for(var i=0,len=arguments.length; i<len; i++){
       var ele = arguments[i][0];
@@ -401,6 +405,10 @@ var OrderRow = React.createClass({
     this.activeOrder();
     e.stopPropagation();
   },
+  applyRefund(e){
+    this.props.showRefund(this.props);
+    e.stopPropagation();
+  },
   orderException(e){
     this.props.showOrderException(this.props);
     this.activeOrder();
@@ -417,6 +425,7 @@ class ManagePannel extends Component {
     this.showAlterRemarks = this.showAlterRemarks.bind(this);
     this.showCancelOrder = this.showCancelOrder.bind(this);
     this.showOrderException = this.showOrderException.bind(this);
+    this.showRefund = this.showRefund.bind(this);
     this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
     this.search = this.search.bind(this);
     this.refreshDataList = this.refreshDataList.bind(this);
@@ -430,11 +439,11 @@ class ManagePannel extends Component {
       activeOrder, showProductsDetail, operationRecord, dispatch, getOrderList, exportExcel, getOrderOptRecord, resetOrderOptRecord, cancelOrder, orderException, alterOrderRemarks, 
       getStationListByScopeSignal, resetStationListWhenScopeChange } = this.props;
     var { loading, refresh, page_no, total, list, check_order_info, active_order_id, show_products_detail, get_products_detail_ing } = this.props.orders;
-    var { viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, refreshDataList, showAlterRemarks } = this;
+    var { viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, showRefund, viewOrderOperationRecord, refreshDataList, showAlterRemarks } = this;
 
     var content = list.map((n, i) => {
       return <OrderRow key={n.order_id} 
-        {...{...n, active_order_id, ...this.props, viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, showAlterRemarks}} />;
+        {...{...n, active_order_id, ...this.props, viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException,showRefund, viewOrderOperationRecord, showAlterRemarks}} />;
     })
     return (
       <div className="order-manage">
@@ -511,6 +520,7 @@ class ManagePannel extends Component {
         <AlterDeliveryModal ref="AlterDeliveryModal" 
           {...{submitting, ...delivery_stations, order: check_order_info, active_order_id, show_products_detail, loading: !prepare_delivery_data_ok,
             ...alter_delivery_area, actions: this.props, callback: refreshDataList}} />
+        <RefundModal ref='RefundModal' editable={false} />
       </div>
     )
   }
@@ -548,6 +558,9 @@ class ManagePannel extends Component {
   }
   showOrderException(order){
     this.refs.OrderExceptionModal.show(order);
+  }
+  showRefund(order){
+    this.refs.RefundModal.show(order);
   }
   viewOrderOperationRecord(order){
     this.refs.OperationRecordModal.show(order);
@@ -781,7 +794,7 @@ var AlterStationModal = React.createClass({
         Noty('error', msg || '网络繁忙，请稍后再试')
       })
   },
-  show(){
+  show(order){
     this.refs.modal.show();
   },
   hideCallback(){
@@ -854,3 +867,4 @@ var OrderExceptionModal = React.createClass({
     this.setState(this.getInitialState());
   }
 });
+

@@ -27,14 +27,6 @@ const deleteSecondaryCategory = (
   new_category: newSecondaryCategoryID
 });
 
-// 伪fetch请求
-const fakeFetch = returnData => new Promise((resolve, reject) => {
-  setTimeout(() => {
-    // Math.trunc(Math.random() * 10) > 2 ? resolve(returnData) : reject()
-    Math.trunc(Math.random() * 10) > 2 ? resolve(returnData) : resolve(returnData)
-  }, 700);
-});
-
 const loadBasicData = () => (
   dispatch => {
     dispatch({

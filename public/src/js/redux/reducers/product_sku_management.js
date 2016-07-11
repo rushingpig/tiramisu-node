@@ -429,6 +429,7 @@ const switchType = {
         [...state.tempOptions.sourceSpecifications.values()].forEach(
           arr => arr.forEach(setZeroID)
         );
+        state.tempOptions.applyDistrict = new Set();
       } else {
         state.tempOptions = clone(initialState.tempOptions);
         state.cityOptionSavable = false;
@@ -541,6 +542,7 @@ const switchType = {
       [...tempOptions.sourceSpecifications.values()].forEach(
         arr => arr.forEach(setZeroID)
       );
+      state.tempOptions.applyDistrict = new Set();
     }
 
     return tempOptionsValidator({
@@ -571,6 +573,7 @@ const switchType = {
       [...state.tempOptions.sourceSpecifications.values()].forEach(
         arr => arr.forEach(setZeroID)
       );
+      state.tempOptions.applyDistrict = new Set();
     }
 
     state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0] || "";

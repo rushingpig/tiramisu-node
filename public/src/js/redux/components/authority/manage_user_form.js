@@ -260,17 +260,17 @@ class ManageAddForm extends Component{
     var {getProvincesSignal,getDeptsSignal, resetRoles } = this.props.actions;
     var {params} = this.props;
     resetRoles();
-    getProvincesSignal("authority");
+    getProvincesSignal();
     getDeptsSignal("authority");
   }
   onProvinceChange(callback,e){
     var {value} = e.target;
     this.props.actions.resetCities();
     if(value == 999)
-      this.props.actions.getAllCities("authority");
+      this.props.actions.getAllCities();
     else
       if(value != this.refs.province.props['default-value'])
-        this.props.actions.getCitiesSignal(value,"authority");
+        this.props.actions.getCitiesSignal({ province_id: value });
     callback(e);
   }
 

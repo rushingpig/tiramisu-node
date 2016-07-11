@@ -18,6 +18,7 @@ import { tableLoader } from 'common/loading';
 import SearchInput from 'common/search_input';
 import RecipientInfo from 'common/recipient_info';
 import ToolTip from 'common/tooltip';
+import AddressSelector from 'common/address_selector';
 
 import { order_status, YES_OR_NO, DELIVERY_MAP, PRINT_STATUS } from 'config/app.config';
 import history from 'history_instance';
@@ -53,7 +54,8 @@ class FilterHeader extends Component {
       search_by_keywords_ing: false,
       all_print_status: YES_OR_NO,
       delivery_types: map(DELIVERY_MAP, (text, id) => ({id, text})),
-    }
+    };
+    this.AddressSelectorHook = this.AddressSelectorHook.bind(this);
   }
   render(){
     var { 
@@ -66,10 +68,12 @@ class FilterHeader extends Component {
         is_greeting_card,
         province_id,
         city_id,
+        district_id,
         delivery_id
       },
       provinces,
       cities,
+      districts,
       stations: { station_list },
       change_submitting,
     } = this.props;
@@ -88,10 +92,8 @@ class FilterHeader extends Component {
             <Select {...is_greeting_card} options={YES_OR_NO} default-text="是否有祝福贺卡" className="space-right"/>
             { 
               V( 'DeliveryManageDeliveryAddressFilter' )
-              ? [
-                  <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" key="province" default-text="选择省份" className="space-right"/>,
-                  <Select {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>
-                ]
+              ? <AddressSelector
+                  {...{ province_id, city_id, district_id, provinces, cities, districts, actions: this.props, AddressSelectorHook: this.AddressSelectorHook }} />
               : null
             }
             {
@@ -124,33 +126,14 @@ class FilterHeader extends Component {
   componentDidMount(){
     setTimeout(function(){
       var { getProvincesSignal, getStationListByScopeSignal } = this.props;
-      getProvincesSignal('authority');
-      getStationListByScopeSignal({signal: 'authority'});
+      getProvincesSignal();
+      getStationListByScopeSignal();
       LazyLoad('noty');
     }.bind(this),0)
   }
-  onProvinceChange(callback, e){
-    var {value} = e.target;
-    this.props.resetCities();
-    if(value != this.refs.province.props['default-value']){
-      var $city = $(findDOMNode(this.refs.city));
-      this.props.getCitiesSignal(value, 'authority').done(() => {
-        $city.trigger('focus'); //聚焦已使city_id的值更新
-      });
-      this.props.getStationListByScopeSignal({ province_id: value, signal: 'authority' });
-    }else{
-      this.props.resetStationListWhenScopeChange();
-    }
-    callback(e);
-  }
-  onCityChange(callback, e){
-    var {value} = e.target;
-    if(value != this.refs.city.props['default-value']){ 
-      this.props.getStationListByScopeSignal({ city_id: value, signal: 'authority' });
-    }else{
-      this.props.resetStationListWhenScopeChange();
-    }
-    callback(e);
+  AddressSelectorHook(e, data){
+    this.props.resetStationListWhenScopeChange();
+    this.props.getStationListByScopeSignal({ ...data });
   }
   search(search_in_state){
     this.setState({[search_in_state]: true});
@@ -187,6 +170,7 @@ FilterHeader = reduxForm({
     'is_greeting_card',
     'province_id',
     'city_id',
+    'district_id',
     'delivery_id',
 
     'order_ids' //扫描结果

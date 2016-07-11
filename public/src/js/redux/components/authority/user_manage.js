@@ -91,11 +91,7 @@ class FilterHeader extends Component {
   onProvinceChange(e){
     var {value} = e.target;
     if(value != this.refs.province.props['default-value'])
-      var $city = $(findDOMNode(this.refs.city));
-
-      this.props.getCitiesSignal(value, 'authority').done(() => {
-        $city.trigger('focus'); //聚焦已使city_id的值更新
-      });
+      this.props.getCitiesSignal({ province_id: value });
   }
   search(){
     this.setState({search_ing: true});
@@ -312,7 +308,7 @@ class UserManagePannel extends Component{
       filterdata.page_size = this.state.page_size;
       var dept_id=0;
       getDepts();
-      getProvincesSignal('authority');
+      getProvincesSignal();
       getUserList(filterdata);
       //this.search();
     },0)

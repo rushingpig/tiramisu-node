@@ -207,7 +207,7 @@ class CityPanel extends Component{
 				<div className='panel'>
           			<header className="panel-heading">开通城市列表</header>
           			<div className='panel-body'>
-          				<div ref='table-container' className='table-responsive main-list'>
+          				<div ref='table-container' className='main-list'>
           					<table className='table table-hover text-center'>
           						<thead>
           							<tr>

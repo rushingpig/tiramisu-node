@@ -519,59 +519,66 @@ const switchType = {
     };
   },
 
-  [ActionTypes.CHANGE_SELECTED_PROVINCE]: (state, { id }) => {
-    let selectedCity;
+  [ActionTypes.CHANGE_SELECTED_PROVINCE]: (state, { pid, cid, districtsData = false }) => {
     let tempOptions;
 
-    [...state.provincesData.get(id).list].some(cid => {
-      if (state.citiesData.has(cid)) {
-        selectedCity = cid;
-        return true;
-      }
+    if (districtsData) {
+      const dd = Object.keys(districtsData).map(
+        id => ({
+          id,
+          name: districtsData[id]
+        })
+      );
 
-      return false;
-    });
+      state.districtsData.set(cid, dd);
+    }
 
-    if (state.citiesOptions.has(selectedCity)) {
-      tempOptions = clone(state.citiesOptions.get(selectedCity));
-      state.cityOptionSaved = true;
+    if (state.citiesOptions.has(cid)) {
+      tempOptions = clone(state.citiesOptions.get(cid));
     } else {
       tempOptions = clone(state.citiesOptions.size === 0 ? initialState.tempOptions : [...state.citiesOptions.values()][0]);
       tempOptions.shopSpecifications.forEach(setZeroID);
       [...tempOptions.sourceSpecifications.values()].forEach(
         arr => arr.forEach(setZeroID)
       );
-      state.cityOptionSaved = false;
     }
 
     return tempOptionsValidator({
       ...state,
-      selectedCity,
-      selectedProvince: id,
+      selectedProvince: pid,
+      selectedCity: cid,
       tempOptions
     });
   },
 
-  [ActionTypes.CHANGE_SELECTED_CITY]: (state, { id }) => {
+  [ActionTypes.CHANGE_SELECTED_CITY]: (state, { id, districtsData = false }) => {
+    if (districtsData) {
+      const dd = Object.keys(districtsData).map(
+        id => ({
+          id,
+          name: districtsData[id]
+        })
+      );
+
+      state.districtsData.set(cid, dd);
+    }
+
     if (state.citiesOptions.has(id)) {
       state.tempOptions = clone(state.citiesOptions.get(id));
-      state.cityOptionSaved = true;
     } else {
       state.tempOptions = clone(state.citiesOptions.size === 0 ? initialState.tempOptions : [...state.citiesOptions.values()][0]);
       state.tempOptions.shopSpecifications.forEach(setZeroID);
       [...state.tempOptions.sourceSpecifications.values()].forEach(
         arr => arr.forEach(setZeroID)
       );
-      state.cityOptionSaved = false;
-      state.cityOptionSavable = state.citiesOptions.size > 0;
     }
 
     state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0] || "";
 
-    return {
+    return tempOptionsValidator({
       ...state,
       selectedCity: id
-    };
+    });
   },
 
   [ActionTypes.CHANGE_PRESALE_STATUS]: state => {

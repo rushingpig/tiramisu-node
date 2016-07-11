@@ -271,9 +271,12 @@ const changeCitiesOptionApplyRange = option => {
 
 const changeSelectedProvince = pid => (
   (dispatch, getState) => {
-    debugger;
     const state = getState().productSKUManagement;
     let selectedCity;
+
+    if (state.selectedProvince === pid) {
+      return;
+    }
 
     [...state.provincesData.get(pid).list].some(cid => {
       if (state.citiesData.has(cid)) {
@@ -306,6 +309,10 @@ const changeSelectedProvince = pid => (
 const changeSelectedCity = id => (
   (dispatch, getState) => {
     const state = getState().productSKUManagement;
+
+    if (state.selectedCity === id) {
+      return;
+    }
 
     if (state.citiesOptions.has(id)) {
       return dispatch({

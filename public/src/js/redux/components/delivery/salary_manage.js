@@ -143,7 +143,7 @@ class FilterHeader extends Component{
 					 {
 					 	V('DeliveryManSalaryManageCityFilter')
 					 	?[
-					 		<Select ref='province' name='province' options = {provinces} 
+					 		<Select className='space-right' ref='province' name='province' options = {provinces} 
 					 			onChange = {this.onProvinceChange.bind(this)}
 					 			default-text = '请选择省份'/>,
 					 		<Select className='space-right' ref='city' name='city' options = { cities} 
@@ -157,7 +157,7 @@ class FilterHeader extends Component{
 					<div className="input-group input-group-sm" style={{height:'27px'}}>
 						<span  style={{height:'27px',lineHeight:1}} className="input-group-addon"><i className="fa fa-search"></i></span>
 						<input type="text"  style={{height:'27px', width:'120px'}} 
-						  className="form-control" placeholder="配送员拼音首字母或手机号" 
+						  className="form-control space-right" placeholder="配送员拼音首字母或手机号" 
 						  onChange = {this.filterHandler.bind(this)} />
 					</div>
 					<select name= 'deliveryman' ref='deliveryman' className="form-control input-sm space-right"  style={{height:'27px',minWidth:100}}>

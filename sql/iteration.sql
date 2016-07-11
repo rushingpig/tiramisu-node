@@ -125,58 +125,28 @@ DROP COLUMN `is_local_site`,
 DROP COLUMN `is_delivery`,
 CHANGE COLUMN `del_flag` `del_flag` TINYINT(1) NULL DEFAULT 1,
 ADD COLUMN `original_price` INT(8) NULL DEFAULT '0' COMMENT '产品原价（单位：分）' AFTER `price`,
-ADD COLUMN `book_time` INT(4) NOT NULL DEFAULT '0' COMMENT '第一预约时间' AFTER `original_price`,
+ADD COLUMN `book_time` DOUBLE NOT NULL DEFAULT '0' COMMENT '第一预约时间' AFTER `original_price`,
 ADD COLUMN `presell_start` DATETIME NULL DEFAULT NULL COMMENT '预售上架开始时间' AFTER `book_time`,
 ADD COLUMN `presell_end` DATETIME NULL DEFAULT NULL COMMENT '预售上架结束时间' AFTER `presell_start`,
 ADD COLUMN `send_start` DATETIME NULL DEFAULT NULL COMMENT '预售发货开始时间' AFTER `presell_end`,
 ADD COLUMN `send_end` DATETIME NULL DEFAULT NULL COMMENT '预售发货结束时间' AFTER `send_start`,
 ADD COLUMN `activity_price` INT(8) NULL DEFAULT NULL COMMENT '活动价格' AFTER `send_end`,
-ADD COLUMN `ref` INT(10) NULL DEFAULT NULL COMMENT '活动前原skuid' AFTER `activity_price`,
-ADD COLUMN `activity_start` DATETIME NULL DEFAULT NULL COMMENT '活动开始时间' AFTER `ref`,
-ADD COLUMN `activity_end` DATETIME NULL DEFAULT NULL COMMENT '活动结束时间' AFTER `activity_start`,
-ADD COLUMN `expire_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '过期标记，1为当前有效，0为过期失效' AFTER `activity_end`;
+ADD COLUMN `activity_start` DATETIME NULL DEFAULT NULL COMMENT '活动开始时间' AFTER `activity_price`,
+ADD COLUMN `activity_end` DATETIME NULL DEFAULT NULL COMMENT '活动结束时间' AFTER `activity_start`;
 
 DROP TABLE IF EXISTS `buss_product_sku_booktime`;
 CREATE TABLE `buss_product_sku_booktime` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sku_id` int(10) NOT NULL COMMENT 'skuid',
-  `book_time` int(4) NOT NULL COMMENT '预约时间',
+  `book_time` DOUBLE NOT NULL COMMENT '预约时间',
   `regionalism_id` int(10) NOT NULL COMMENT '区域id',
+  `created_by` INT(255) NULL DEFAULT NULL COMMENT '创建人',
+  `created_time` DATETIME NULL DEFAULT NULL,
+	`updated_by` INT(255) NULL DEFAULT NULL COMMENT '更新人',
+	`updated_time` DATETIME NULL DEFAULT NULL,
+	`del_flag` TINYINT(1) NULL DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='sku第二预约时间';
-
-SET GLOBAL event_scheduler = ON;
-
-DROP EVENT IF EXISTS Expire_Activity_Time;
-CREATE EVENT Expire_Activity_Time
-On SCHEDULE EVERY 1 MINUTE
-COMMENT '定时结束活动sku，开启原有sku'
-DO
-BEGIN
-  DECLARE done INT DEFAULT FALSE;
-  DECLARE sku_id,ref_id INT;
-  DECLARE cur CURSOR FOR SELECT id,ref FROM buss_product_sku where activity_start > now() or activity_end < now() and expire_flag = 1 and del_flag = 1;
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-  OPEN cur;
-  read_loop: LOOP
-    FETCH cur into sku_id,ref_id;
-    IF done THEN
-      LEAVE read_loop;
-    END IF;
-    update buss_product_sku set expire_flag = 0 where id = sku_id;
-    update buss_product_sku set expire_flag = 1 where id = ref_id;
-  END LOOP;
-  CLOSE cur;
-END;
-
-DROP EVENT IF EXISTS Expire_Presell_Time;
-CREATE EVENT Expire_Presell_Time
-On SCHEDULE EVERY 1 MINUTE
-COMMENT '定时结束预售sku'
-DO
-BEGIN
-  update buss_product_sku set expire_flag = 0 where presell_start > now() or presell_end < now() and expire_flag = 1 and del_flag = 1;
-END;
 
 DROP TABLE IF EXISTS `buss_product_pic`;
 CREATE TABLE `buss_product_pic` (
@@ -607,8 +577,39 @@ insert into `dict_regionalism` VALUES
 ('440119','萝岗区',440100,'萝岗','3','020','','中国,广东省,广州市,增城区','','','Luogang','1',null,null);
 COMMIT;
 
+-- ----------------------------
+--  Table structure for `sys_history`
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_history`;
+CREATE TABLE `sys_history` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `type` int(10) NOT NULL COMMENT '记录类型id',
+  `option` varchar(2000) NOT NULL COMMENT '操作记录',
+  `remarks` varchar(255) NOT NULL COMMENT '备注',
+  `created_by` varchar(255) NOT NULL COMMENT '创建人',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
+  `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统操作记录';
+
+-- ----------------------------
+--  Table structure for `sys_history_type`
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_history_type`;
+CREATE TABLE `sys_history_type` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `name` varchar(255) NOT NULL COMMENT '操作名称',
+  `created_by` varchar(255) NOT NULL COMMENT '创建人',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
+  `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统操作记录类型';
+
+INSERT INTO `tiramisu`.`sys_history_type` (`name`, `created_by`, `created_time`) VALUES ('编辑产品', '1', '2016-06-20 12:00:00');
+
 # 2016-06-15 Wei Zhao
 # 创建开通城市表
+DROP TABLE IF EXISTS `sys_city`;
 CREATE TABLE `sys_city` (
     `regionalism_id` int(11) NOT NULL COMMENT '区域id',
     `is_city` int(11) DEFAULT '0' COMMENT '不为0时表示是开通的地级市/县级市',
@@ -626,3 +627,87 @@ CREATE TABLE `sys_city` (
     `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
     PRIMARY KEY `IDX_UNQ_UID` (`regionalism_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='开通城市表';
+
+# 触发器：删除sku下的二级配送时间
+DROP TRIGGER IF EXISTS `cascade_delete_sku_booktime`;
+CREATE TRIGGER cascade_delete_sku_booktime after UPDATE ON buss_product_sku
+for each row 
+begin 
+if new.del_flag = 0 
+then
+UPDATE buss_product_sku_booktime 
+SET 
+    del_flag = 0
+WHERE
+    sku_id = new.id;
+end if;
+end;
+
+# 触发器：删除产品下的sku
+# 触发器：修改产品所属分类，则删除产品下不属于二级分类区域的sku
+# 后续触发cascade_delete_sku_booktime
+DROP TRIGGER IF EXISTS `cascade_delete_sku`;
+CREATE TRIGGER cascade_delete_sku after UPDATE ON buss_product
+for each row 
+begin 
+# 触发器：删除产品下的sku
+if new.del_flag = 0 
+then
+UPDATE buss_product_sku 
+SET 
+    del_flag = 0
+WHERE
+    product_id = new.id;
+end if;
+# 触发器：修改产品所属分类，则删除产品下不属于二级分类区域的sku
+if new.category_id <> old.category_id
+then
+    update buss_product_sku
+    set del_flag = 0 
+    where product_id = old.id and regionalism_id not in (
+        select regionalism_id from buss_product_category_regionalism region
+        where region.category_id = new.category_id
+    );
+end if;
+end;
+
+# 触发器：删除分类下的产品
+# 后续触发cascade_delete_sku、cascade_delete_sku_booktime
+DROP TRIGGER IF EXISTS `cascade_delete_category_product_sku`;
+CREATE TRIGGER cascade_delete_category_product_sku after UPDATE ON buss_product_category
+for each row 
+begin 
+if new.del_flag = 0
+then
+update buss_product_category_regionalism set del_flag = 0 where category_id = old.id;
+UPDATE buss_product 
+SET 
+    del_flag = 0
+WHERE
+    category_id = old.id;
+end if;
+end;
+
+# 触发器：删除二级分类下的产品关联区域
+# 删除一级分类区域，会先删除二级分类区域，因为触发器不能使用递归，所以在代码层面实现删除
+DROP TRIGGER IF EXISTS `cascade_delete_product_sku_about_region`;
+CREATE TRIGGER cascade_delete_product_sku_about_region after UPDATE ON buss_product_category_regionalism
+for each row 
+begin 
+DECLARE x INT;
+if new.del_flag = 0
+then
+SET x = (select parent_id from buss_product_category where id = old.category_id);
+if x <> 0
+then 
+    # 删除二级分类
+    update buss_product_sku 
+    set del_flag = 0 
+    where product_id in (
+        select product.id as id 
+        from buss_product_category category join buss_product product 
+        on category.id = product.category_id and category.id = old.category_id
+    );
+end if;
+end if;
+end;

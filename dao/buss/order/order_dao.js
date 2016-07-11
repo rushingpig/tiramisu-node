@@ -574,6 +574,13 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
     params.push(tables.dict_regionalism);
     params.push(query_data.province_id);
   }
+  if (query_data.province_id) {
+    sql += " inner join ?? dr2 on dr2.id = br.regionalism_id";
+    sql += " inner join ?? dr3 on dr2.parent_id = dr3.id and dr3.id = ?";
+    params.push(tables.dict_regionalism);
+    params.push(tables.dict_regionalism);
+    params.push(query_data.province_id);
+  }
   sql += " left join ?? bds2 on bo.delivery_id = bds2.id";
   params.push(tables.buss_delivery_station);
   if (data_scopes.indexOf(constant.DS.CITY.id) !== -1 && !query_data.user.is_headquarters) {
@@ -757,7 +764,6 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
       resolve({sql,params});
     });
   }
-
   //  刚进入订单列表页面,不带筛选条件,用explain来优化获取记录总数
   if (/^.*(where 1=1 and)[\s\w\W]+/.test(sql)  || /^.* inner join [\S\s\w]+ on [\w\W]+ and .*/.test(sql) || query_data.keywords) {
     countSql = dbHelper.countSql(sql);

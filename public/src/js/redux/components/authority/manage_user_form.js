@@ -111,11 +111,13 @@ class ManageAddForm extends Component{
     <div>
       <div className="form-group form-inline">
         <label>{'　　用户名：'}</label>
-        <input {...username} className={`form-control input-xs ${username.error}`} ref='username'  type='text' />
+        <input {...username} style={{display:'none'}}/>
+        <input {...username} className={`form-control input-xs ${username.error}`} ref='username'  type='text' autoComplete='off'/>
       </div>
       <div className="form-group form-inline">
         <label>{'　　　密码：'}</label>
-        <input {...pwd} className={`form-control input-xs ${pwd.error}`} ref='pwd'  type='password' id="pwd"/>
+        {/*<input {...pwd_invisible} type='password' style={{display:'none'}} />*/}
+        <input {...pwd} className={`form-control input-xs ${pwd.error}`} ref='pwd' autoComplete="off" type='password' id="pwd"/>
         <span id="togglePwdStatus" onClick={this.onPwdToggle.bind(this)} style={{marginLeft:10,color:'blue',textDecoration:'underline',cursor:'Default'}}>{'密码可视'}</span>
       </div>
       <div className="form-group form-inline">

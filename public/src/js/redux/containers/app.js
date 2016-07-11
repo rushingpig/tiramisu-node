@@ -52,8 +52,10 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
       require.ensure([], require => {
         components = {
           ...components,
-          SkuSearch: require('../components/product/sku_search'),
-          SkuManage: require('../components/product/sku_management')
+          SkuSearch:         require('../components/product/sku_search'),
+          SkuManage:         require('../components/product/sku_management'),
+          ViewInfo:          require('../components/product/view_info'),
+          ViewSpecfications: require('../components/product/view_specfications'),
         }
         callback();
       });
@@ -159,7 +161,12 @@ const App = () => (
       <Route path="pm" onEnter={getComponents('pm')}>
         <Route path="sku_manage">
           <IndexRoute onEnter={onEnter('ProductionManageAccess')} getComponent={get('SkuSearch')} />
-          <Route path="add" onEnter={onEnter('ProductionManageAdd')} getComponent={get('SkuManage')} />
+          <Route path="add" onEnter={onEnter('ProductionManageAddAccess')} getComponent={get('SkuManage')} />
+          <Route path="edit/:productId" onEnter={onEnter('ProductionManageEditAccess')} getComponent={get('SkuManage')} />
+          <Route path="view">
+            <Route path="info/:cityId/:productId" onEnter={onEnter('ProductionViewInfoAccess')} getComponent={get('ViewInfo')} />
+            <Route path="specfications/:cityId/:productId" onEnter={onEnter('ProductionViewSpecAccess')} getComponent={get('ViewSpecfications')} />
+          </Route>
         </Route>
         <Route path="cam" onEnter={getComponents('cam', onEnter('CategoryManageAccess'))}>
           <IndexRoute getComponent={get('CategoryManage')} />

@@ -8,16 +8,24 @@ import { ActionTypes as SelectorActionTypes } from './cities_selector';
 import manageActions from 'actions/category_manage';
 
 const es6promisify = function(func) {
-    return function(...args) {
-        let ctx = this;
-        return new Promise((resolve, reject) => {
-            func.apply(ctx, args).done(resolve).fail(reject);
-        });
-    };
+  return function(...args) {
+    let ctx = this;
+    return new Promise((resolve, reject) => {
+      func.apply(ctx, args).done(resolve).fail(reject);
+    });
+  };
 };
 
 const get = es6promisify(Req.get);
 const put = es6promisify(Req.put);
+const del = es6promisify(Req.del);
+
+const deleteSecondaryCategory = (
+  deleteSecondCategoryID,
+  newSecondaryCategoryID
+) => del(Url.deleteSecondaryCategory.toString(deleteSecondCategoryID), {
+  new_category: newSecondaryCategoryID
+});
 
 // 伪fetch请求
 const fakeFetch = returnData => new Promise((resolve, reject) => {
@@ -108,10 +116,11 @@ const searchCategoriesWithName = name => (
 
     const searchRequest = name => get(Url.searchCategoriesWithName.toString(), { name });
 
-    searchRequest(name).then(
+    return searchRequest(name).then(
       data => dispatch({
         type: SearchActionTypes.SEARCH_CATEGORY_WITH_NAME_SUCCESS,
-        data
+        data,
+        name
       })
     ).catch(
       err => {
@@ -124,7 +133,7 @@ const searchCategoriesWithName = name => (
   }
 )
 
-const searchCategories = () => (
+const searchCategories = (useLastSearchFilter = false) => (
   (dispatch, getState) => {
     dispatch({
       type: SearchActionTypes.SEARCH_CATEGORY_WAITING
@@ -137,7 +146,7 @@ const searchCategories = () => (
       selectedFirstCategory,
       selectedProvince,
       selectedSecondCategory
-    } = state;
+    } = useLastSearchFilter ? state.lastSearchFilter : state;
 
     const params = {};
 
@@ -153,7 +162,7 @@ const searchCategories = () => (
 
     const searchRequest = get(Url.searchCategories.toString(), params);
 
-    searchRequest.then(
+    return searchRequest.then(
       data => dispatch({
         type: SearchActionTypes.SEARCH_CATEGORY_SUCCESS,
         data,
@@ -327,13 +336,13 @@ const deleteSecondCategory = id => (
       type: SearchActionTypes.DELETE_SECOND_CATEGORY_WAITING
     });
 
-    console.log('即将删除的ID', id);
-    console.log('即将转移到的分类ID', getState().categorySearch.toJS().willTranslateSecondCategory);
-
-    fakeFetch({}).then(
+    return deleteSecondaryCategory(
+      id, 
+      getState().categorySearch.toJS().willTranslateSecondCategory
+    ).then(
       data => dispatch({
         type: SearchActionTypes.DELETE_SECOND_CATEGORY_SUCCESS,
-        deletedId: id
+        deletedId: Number(id)
       })
     ).catch(
       err => {

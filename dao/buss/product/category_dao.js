@@ -229,7 +229,27 @@ CategoryDao.prototype.updatePrimaryCategory = function(req, data) {
                             return resolve();
                         }
                     );
-                })
+                }).then(() => {
+                    // 删除一级分类后，需要关联删除二级分类相关的区域，继而触发器删除sku区域
+                    return new Promise((resolve, reject) => {
+                        let sql = 'update ?? set ? where category_id in (select id from ?? where parent_id = ?) and regionalism_id = ?';
+                        let params = [
+                            config.tables.buss_product_category_regionalism,
+                            systemUtils.assembleUpdateObj(req, {
+                                del_flag: del_flag.HIDE
+                            }, true),
+                            config.tables.buss_product_category,
+                            data.id,
+                            cityId
+                        ];
+                        connection.query(sql, params, err => {
+                            if (err) {
+                                return reject(err);
+                            }
+                            return resolve();
+                        });
+                    });
+                });
             });
             return Promise.all(relations);
         }).then(() => {
@@ -421,7 +441,7 @@ CategoryDao.prototype.getCategoryRegionsById = function(data) {
 CategoryDao.prototype.findCategoriesList = function(data) {
 
     let columns = [
-        'count(product.id) as count',
+        'count(distinct tab.id) as count',
         'cate_primary.id as primary_id',
         'cate_primary.name as primary_name',
         'cate_secondary.id as secondary_id',
@@ -429,13 +449,16 @@ CategoryDao.prototype.findCategoriesList = function(data) {
     ];
 
     let select_sql = ' from ?? cate_primary join ?? cate_secondary on cate_primary.id = cate_secondary.parent_id and cate_primary.del_flag = ? and cate_secondary.del_flag = ? ' +
-        ' left join ?? product on cate_secondary.id = product.category_id and product.del_flag = ? ';
+        ' left join (select product.id as id,product.category_id as category_id,sku.regionalism_id as regionalism_id from ?? product join ?? sku on product.id = sku.product_id and product.del_flag = ? and sku.del_flag = ?) tab ' + 
+        ' on cate_secondary.id = tab.category_id ';
     let select_params = [
         'buss_product_category',
         'buss_product_category',
         del_flag.SHOW,
         del_flag.SHOW,
         'buss_product',
+        'buss_product_sku',
+        del_flag.SHOW,
         del_flag.SHOW
     ];
 
@@ -463,6 +486,9 @@ CategoryDao.prototype.findCategoriesList = function(data) {
         select_params.push(data.city_id);
         select_params.push(del_flag.SHOW);
         columns.push('cate_regions_primary.sort as primary_sort');
+
+        where_sql += ' and tab.regionalism_id = ? ';
+        where_params.push(data.city_id);
         // 需要根据二级分类进行排序
         select_sql += ' join ?? cate_regions_secondary on cate_secondary.id = cate_regions_secondary.category_id and cate_regions_secondary.regionalism_id = ? and cate_regions_secondary.del_flag = ? ';
         select_params.push('buss_product_category_regionalism');
@@ -471,13 +497,10 @@ CategoryDao.prototype.findCategoriesList = function(data) {
         columns.push('cate_regions_secondary.sort as secondary_sort');
     }
     if (data.province_id) {
-        select_sql += ' join ?? cate_regions on cate_secondary.id = cate_regions.category_id and cate_regions.regionalism_id = ? and cate_regions.del_flag = ? ';
-        select_params.push('buss_product_category_regionalism');
-        select_params.push(data.province_id);
-        select_params.push(del_flag.SHOW);
-        select_sql += 'join ?? dict on cate_regions.regionalism_id = dict.id and dict.del_flag = ? ';
+        select_sql += 'join ?? dict on tab.regionalism_id = dict.id and dict.del_flag = ? and dict.parent_id = ? ';
         select_params.push('dict_regionalism');
         select_params.push(del_flag.SHOW);
+        select_params.push(data.province_id);
     }
 
     let sql = 'select ' + columns.join(',') + select_sql + where_sql + group_sql;
@@ -528,6 +551,40 @@ CategoryDao.prototype.updateSort = function(req, data) {
             return baseDao.select(sql, params);
         });
         return Promise.all(promises)
+            .then(() => {
+                return new Promise((resolve, reject) => {
+                    connection.commit(err => {
+                        connection.release();
+                        if (err) return reject(err);
+                        resolve();
+                    });
+                });
+            }).catch(err => {
+                return new Promise((resolve, reject) => {
+                    connection.rollback(rollbackErr => {
+                        connection.release();
+                        if (rollbackErr) return reject(rollbackErr);
+                        reject(err);
+                    });
+                });
+            });
+    });
+}
+
+/*
+ * 根据delete_category删除分类，并移动分类下产品到new_category分类下
+ */
+CategoryDao.prototype.deleteCategoryById = function(req, delete_category, new_category) {
+    return baseDao.trans().then(connection => {
+        // 移动sku到new_category分类下
+        let sql = this.base_update_sql + ' where category_id = ?';
+        let params = [config.tables.buss_product, systemUtils.assembleUpdateObj(req, {category_id: new_category}, true), delete_category];
+        return baseDao.execWithConnection(connection, sql, params)
+            .then(() => {
+                let sql = this.base_update_sql + ' where id = ?';
+                let params = [config.tables.buss_product_category, systemUtils.assembleUpdateObj(req, {del_flag: del_flag.HIDE}, true), delete_category];
+                return baseDao.execWithConnection(connection, sql, params)
+            })
             .then(() => {
                 return new Promise((resolve, reject) => {
                     connection.commit(err => {

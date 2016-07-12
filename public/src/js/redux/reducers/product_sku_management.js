@@ -442,7 +442,7 @@ const switchType = {
     };
   },
 
-  [CitiesSelectorActionTypes.CHANGED_CHECK_CITIES]: (state, { citiesSelectorState }) => {
+  [CitiesSelectorActionTypes.CHANGED_CHECK_CITIES]: (state, { citiesSelectorState, isSelectedAllCity = false }) => {
     const { checkedCities } = citiesSelectorState;
 
     const transformPositionData = obj => [
@@ -474,42 +474,45 @@ const switchType = {
       selectedCity = [...citiesData.keys()][0] || 0;
 
     const citiesOptionsKeySet = new Set([...state.citiesOptions.keys()]);
-    const citiesDataKeySet = new Set([...citiesData.keys()]);
-    const diff = [...citiesOptionsKeySet].filter(x => !citiesDataKeySet.has(x) && x !== 'all');
 
-    diff.forEach(deleteId => {
-      const deletedOption = clone(state.citiesOptions.get(deleteId));
-      let deletedSku = [];
+    if (!isSelectedAllCity) {
+      const citiesDataKeySet = new Set([...citiesData.keys()]);
+      const diff = [...citiesOptionsKeySet].filter(x => !citiesDataKeySet.has(x) && x !== 'all');
 
-      const getSkuID = data => {
-        if (data.id !== 0) {
-          deletedSku.push(data.id);
+      diff.forEach(deleteId => {
+        const deletedOption = clone(state.citiesOptions.get(deleteId));
+        let deletedSku = [];
+
+        const getSkuID = data => {
+          if (data.id !== 0) {
+            deletedSku.push(data.id);
+          }
         }
+
+        deletedOption.shopSpecifications.forEach(getSkuID);
+        [...deletedOption.sourceSpecifications.values()].forEach(
+          data => data.forEach(getSkuID)
+        );
+
+        state.deletedSku = [...state.deletedSku, ...deletedSku];
+        state.citiesOptions.delete(deleteId);
+      });
+
+      if (state.citiesOptions.has(selectedCity)) {
+        state.tempOptions = clone(state.citiesOptions.get(selectedCity));
+        state.cityOptionSaved = true;
+      } else {
+        state.tempOptions = clone(initialState.tempOptions);
+        state.cityOptionSavable = false;
+        state.cityOptionSaved = false;
       }
 
-      deletedOption.shopSpecifications.forEach(getSkuID);
-      [...deletedOption.sourceSpecifications.values()].forEach(
-        data => data.forEach(getSkuID)
-      );
-
-      state.deletedSku = [...state.deletedSku, ...deletedSku];
-      state.citiesOptions.delete(deleteId);
-    });
+      state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0] || "";
+    }
 
     [...citiesData.values()].forEach(cityData => {
       cityData.checked = citiesOptionsKeySet.has(cityData.id);
     });
-
-    if (state.citiesOptions.has(selectedCity)) {
-      state.tempOptions = clone(state.citiesOptions.get(selectedCity));
-      state.cityOptionSaved = true;
-    } else {
-      state.tempOptions = clone(initialState.tempOptions);
-      state.cityOptionSavable = false;
-      state.cityOptionSaved = false;
-    }
-
-    state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0] || "";
 
     return {
       ...state,
@@ -562,7 +565,7 @@ const switchType = {
         })
       );
 
-      state.districtsData.set(cid, dd);
+      state.districtsData.set(id, dd);
     }
 
     if (state.citiesOptions.has(id)) {

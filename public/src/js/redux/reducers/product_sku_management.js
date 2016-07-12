@@ -514,6 +514,10 @@ const switchType = {
       state.tempOptions = clone(state.citiesOptions.get(selectedCity));
       state.cityOptionSaved = true;
     } else {
+      state.tempOptions.shopSpecifications.forEach(setZeroID);
+      [...state.tempOptions.sourceSpecifications.values()].forEach(
+        arr => arr.forEach(setZeroID)
+      );
       state.cityOptionSaved = false;
     }
 

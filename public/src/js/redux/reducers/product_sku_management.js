@@ -330,6 +330,10 @@ const switchType = {
           } else {
             cityOpt.sourceSpecifications.set(Number(sku.website), [setSourceSpecification(sku)]);
           }
+
+          if (cityOpt.selectedSource === "") {
+            cityOpt.selectedSource = Number(sku.website);
+          }
         }
       } else {
         let tempOptions = clone(initialState.tempOptions);
@@ -471,6 +475,7 @@ const switchType = {
       selectedProvince = [...provincesData.keys()][0] || 0;
 
     if (!citiesData.has(selectedCity)) {
+      selectedCity = 0;
       [...citiesData.values()].some(cityData => {
         if (cityData.province === selectedProvince) {
           selectedCity = cityData.id;
@@ -518,6 +523,12 @@ const switchType = {
       cityData.checked = citiesOptionsKeySet.has(cityData.id);
     });
 
+    if (!state.districtsData.has(selectedCity)) {
+      state.tempOptions.hasSecondaryBookingTime = false;
+      state.tempOptions.secondaryBookingTime = 1;
+      state.tempOptions.applyDistrict = new Set();
+    }
+
     return {
       ...state,
       citiesData,
@@ -549,7 +560,7 @@ const switchType = {
       [...tempOptions.sourceSpecifications.values()].forEach(
         arr => arr.forEach(setZeroID)
       );
-      state.tempOptions.applyDistrict = new Set();
+      tempOptions.applyDistrict = new Set();
       state.cityOptionSaved = false;
     }
 

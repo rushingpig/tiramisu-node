@@ -288,7 +288,11 @@ const changeSelectedProvince = pid => (
       return false;
     });
 
-    if (state.citiesOptions.has(selectedCity) || ![...state.citiesOptions.values()][0].hasSecondaryBookingTime) {
+    const cityDataHasStash = state.citiesOptions.has(selectedCity);
+    const hasDistrictData = state.districtsData.has(selectedCity);
+    const firstCityOptionHasSecondaryBookingTime = state.citiesOptions.size > 0 && [...state.citiesOptions.values()][0].hasSecondaryBookingTime;
+
+    if (cityDataHasStash || hasDistrictData || !firstCityOptionHasSecondaryBookingTime) {
       return dispatch({
         type: ActionTypes.CHANGE_SELECTED_PROVINCE,
         pid,

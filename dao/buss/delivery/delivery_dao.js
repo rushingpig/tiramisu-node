@@ -369,11 +369,9 @@ DeliveryDao.prototype.findDeliveryRecordCount = function (query) {
         let page_size = query.page_size || 10;
         let count_sql = `SELECT ${count_columns.join()} ` + sql;
         let id_sql = `SELECT bo.id ` + sql + `LIMIT ${page_no * page_size},${page_size} `;
-        console.log(mysql.format(count_sql, params));
         let count = yield baseDao.select(count_sql, params);
         let result = Object.assign({}, count[0]);
 
-        console.log(mysql.format(id_sql, params));
         let order_ids = yield baseDao.select(id_sql, params);
         result.order_ids = [];
         order_ids.forEach(curr=> {

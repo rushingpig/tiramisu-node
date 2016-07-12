@@ -470,45 +470,49 @@ const switchType = {
     if (!provincesData.has(selectedProvince))
       selectedProvince = [...provincesData.keys()][0] || 0;
 
-    if (!citiesData.has(selectedCity))
-      selectedCity = [...citiesData.keys()][0] || 0;
+    if (!citiesData.has(selectedCity)) {
+      [...citiesData.values()].some(cityData => {
+        if (cityData.province === selectedProvince) {
+          selectedCity = cityData.id;
+          return true;
+        }
+
+        return false;
+      });
+    }
 
     const citiesOptionsKeySet = new Set([...state.citiesOptions.keys()]);
 
-    if (!isSelectedAllCity) {
-      const citiesDataKeySet = new Set([...citiesData.keys()]);
-      const diff = [...citiesOptionsKeySet].filter(x => !citiesDataKeySet.has(x) && x !== 'all');
+    const citiesDataKeySet = new Set([...citiesData.keys()]);
+    const diff = [...citiesOptionsKeySet].filter(x => !citiesDataKeySet.has(x) && x !== 'all');
 
-      diff.forEach(deleteId => {
-        const deletedOption = clone(state.citiesOptions.get(deleteId));
-        let deletedSku = [];
+    diff.forEach(deleteId => {
+      const deletedOption = clone(state.citiesOptions.get(deleteId));
+      let deletedSku = [];
 
-        const getSkuID = data => {
-          if (data.id !== 0) {
-            deletedSku.push(data.id);
-          }
+      const getSkuID = data => {
+        if (data.id !== 0) {
+          deletedSku.push(data.id);
         }
-
-        deletedOption.shopSpecifications.forEach(getSkuID);
-        [...deletedOption.sourceSpecifications.values()].forEach(
-          data => data.forEach(getSkuID)
-        );
-
-        state.deletedSku = [...state.deletedSku, ...deletedSku];
-        state.citiesOptions.delete(deleteId);
-      });
-
-      if (state.citiesOptions.has(selectedCity)) {
-        state.tempOptions = clone(state.citiesOptions.get(selectedCity));
-        state.cityOptionSaved = true;
-      } else {
-        state.tempOptions = clone(initialState.tempOptions);
-        state.cityOptionSavable = false;
-        state.cityOptionSaved = false;
       }
 
-      state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0] || "";
+      deletedOption.shopSpecifications.forEach(getSkuID);
+      [...deletedOption.sourceSpecifications.values()].forEach(
+        data => data.forEach(getSkuID)
+      );
+
+      state.deletedSku = [...state.deletedSku, ...deletedSku];
+      state.citiesOptions.delete(deleteId);
+    });
+
+    if (state.citiesOptions.has(selectedCity)) {
+      state.tempOptions = clone(state.citiesOptions.get(selectedCity));
+      state.cityOptionSaved = true;
+    } else {
+      state.cityOptionSaved = false;
     }
+
+    state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0] || "";
 
     [...citiesData.values()].forEach(cityData => {
       cityData.checked = citiesOptionsKeySet.has(cityData.id);
@@ -546,6 +550,7 @@ const switchType = {
         arr => arr.forEach(setZeroID)
       );
       state.tempOptions.applyDistrict = new Set();
+      state.cityOptionSaved = false;
     }
 
     return tempOptionsValidator({
@@ -577,6 +582,7 @@ const switchType = {
         arr => arr.forEach(setZeroID)
       );
       state.tempOptions.applyDistrict = new Set();
+      state.cityOptionSaved = false;
     }
 
     state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0] || "";

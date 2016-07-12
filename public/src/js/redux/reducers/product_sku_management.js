@@ -565,7 +565,7 @@ const switchType = {
         })
       );
 
-      state.districtsData.set(cid, dd);
+      state.districtsData.set(id, dd);
     }
 
     if (state.citiesOptions.has(id)) {

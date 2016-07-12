@@ -60,7 +60,7 @@ ProductDao.prototype.findProductsCount = function(product_name,category_id,regio
         sql += " and bpc.isAddition = ?";
         params.push(isAddition);
     }
-    sql += ' group by bp.id having num > 0 ';
+    sql += ' group by bp.id,bps.size having num > 0 ';
     return baseDao.select(dbHelper.countSql(sql),params).then((results)=>{
             let data = {
                 results : results,

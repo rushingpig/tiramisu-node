@@ -256,7 +256,8 @@ const changeActiveCitiesOption = option => (
 
       dispatch({
         type: CitiesSelectorActionTypes.CHANGED_CHECK_CITIES,
-        citiesSelectorState: clone(getState().citiesSelector)
+        citiesSelectorState: clone(getState().citiesSelector),
+        isSelectedAllCity: true
       });
     }
   }

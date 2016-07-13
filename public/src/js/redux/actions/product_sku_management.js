@@ -576,15 +576,6 @@ const saveOption = () => (
         transformedOption.send_end = dateFormat(delivery[1], 'yyyy-MM-dd hh:mm:ss')
       }
 
-      if (state.citiesOptionApplyRange === 1 && option.hasSecondaryBookingTime) {
-        transformedOption.secondary_booktimes = [...option.applyDistrict].map(
-          districtCode => ({
-            book_time: option.secondaryBookingTime,
-            regionalism_id: Number(districtCode)
-          })
-        );
-      }
-
       return transformedOption;
     };
 
@@ -677,6 +668,16 @@ const saveOption = () => (
           return;
 
         const shangjiaOpt = cityOption.isPreSale ? transformShangjiaOption(cityOption) : {};
+
+        if (state.citiesOptionApplyRange === 1 && cityOption.hasSecondaryBookingTime) {
+          shangjiaOpt.secondary_booktimes = [...cityOption.applyDistrict].map(
+            districtCode => ({
+              book_time: cityOption.secondaryBookingTime,
+              regionalism_id: Number(districtCode)
+            })
+          );
+        }
+
         let sourceSpecifications = [];
 
         [...cityOption.sourceSpecifications]

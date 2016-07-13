@@ -244,7 +244,7 @@ ProductService.prototype.getProductDetails = (req, res, next)=> {
             };
         });
     }
-    let promise = productDao.getProductDetailByParams(req.query)
+    let promise = productDao.getProductDetailByParams(req, req.query)
         .then((results) => {
             if(toolUtils.isEmptyArray(results)){
                 throw new TiramisuError(res_obj.NO_MORE_RESULTS);

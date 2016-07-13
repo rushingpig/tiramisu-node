@@ -66,7 +66,7 @@ CategoryService.prototype.listCategoriesByName = (req,res,next)=>{
     let data = {
         name : req.query.name
     };
-    let promise = categoryDao.findCategoriesByName(data).then((results)=>{
+    let promise = categoryDao.findCategoriesByName(req, data).then((results)=>{
         if(toolUtils.isEmptyArray(results)){
             throw new TiramisuError(res_obj.NO_MORE_RESULTS_ARR);
         }

@@ -388,26 +388,44 @@ CategoryDao.prototype.updateSecondaryCategory = function(req, data) {
 /**
  * find categories by name
  */
-CategoryDao.prototype.findCategoriesByName = function(data) {
+CategoryDao.prototype.findCategoriesByName = function(req, data) {
     let columns = [
         'cate_a.id as primary_id',
         'cate_a.name as primary_name',
         'cate_b.id as secondary_id',
         'cate_b.name as secondary_name',
-        'count(product.id) as count'
+        'count(distinct product.id) as count'
     ];
     let sql = 'select ' + columns.join(',') +
-        ' from ?? cate_a join ?? cate_b on cate_a.id = cate_b.parent_id and cate_a.del_flag = ? and cate_b.del_flag = ? ' +
-        ' join ?? product on cate_b.id = product.category_id and product.del_flag = ? ' +
-        ' where cate_a.name like ? or cate_b.name like ? group by cate_a.id,cate_b.id';
-    let table_product = config.tables.buss_product;
+        ' from ?? cate_a join ?? cate_b on cate_a.id = cate_b.parent_id and cate_a.del_flag = ? and cate_b.del_flag = ? ';
+    sql += ' join ?? cate_a_region on cate_a.id = cate_a_region.category_id and cate_a_region.del_flag = ? ';
+    if (!req.session.user.is_headquarters) {
+        sql += ' and cate_a_region.regionalism_id in ' + dbHelper.genInSql(req.session.user.city_ids);
+    }
+    sql += ' join ?? cate_b_region on cate_b.id = cate_b_region.category_id and cate_b_region.del_flag = ? ';
+    if (!req.session.user.is_headquarters) {
+        sql += ' and cate_b_region.regionalism_id in ' + dbHelper.genInSql(req.session.user.city_ids);
+    }
+    sql += ' left join ?? product on cate_b.id = product.category_id and product.del_flag = ? ';
+    // 权限控制：限制查询用户所属区域产品
+    sql += ' left join ?? sku on product.id = sku.product_id and sku.del_flag = ? ';
+    if (!req.session.user.is_headquarters) {
+        sql += ' and sku.regionalism_id in ' + dbHelper.genInSql(req.session.user.city_ids);
+    }
+    sql += ' where cate_a.name like ? or cate_b.name like ? group by cate_a.id,cate_b.id';
     let like_name = '%' + data.name + '%';
     let params = [
         this.base_table,
         this.base_table,
         del_flag.SHOW,
         del_flag.SHOW,
-        table_product,
+        config.tables.buss_product_category_regionalism,
+        del_flag.SHOW,
+        config.tables.buss_product_category_regionalism,
+        del_flag.SHOW,
+        config.tables.buss_product,
+        del_flag.SHOW,
+        config.tables.buss_product_sku,
         del_flag.SHOW,
         like_name,
         like_name

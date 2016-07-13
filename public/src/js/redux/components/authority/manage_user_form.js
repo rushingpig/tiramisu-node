@@ -103,7 +103,8 @@ class ManageAddForm extends Component{
       roles_in_test,
     } = this.props;
     /*var {depts} = this.props.roleinfo;*/
-    var {dept_role,area} = this.props;
+    var {dept_role,area, mainForm} = this.props;
+    var { cities_standard } = mainForm;
     var {provinces,cities}= area;
     var {depts,roles,stations} = dept_role;
 
@@ -169,6 +170,7 @@ class ManageAddForm extends Component{
             <div className="form-group form-inline" style={{clear:'both',}}>
               <label>{'　　　省份：'}</label>
               <Select ref='province' className={`input-xs ${province_id.error}`} options={[{'id':999,'text':'全部城市'},...provinces]} {...province_id} onChange={this.onProvinceChange.bind(this,province_id.onChange)} />
+              <Select ref='city_standard' options = {cities_standard} className='input-xs' default-text = '请选择城市' onChange={this.onStandardCityChange.bind(this)}/>
               <div style={{'marginLeft':60,}}>
                 <CheckBoxGroup name="城市" {...tmp_cities} value={cities_in.value || []}  checkboxs={[{'id':999,'text':'总部'},...cities]} onChange={this.onCityChange.bind(this,tmp_cities.onChange)}/>
               </div>
@@ -270,10 +272,18 @@ class ManageAddForm extends Component{
       this.props.actions.getAllCities();
     else
       if(value != this.refs.province.props['default-value'])
-        this.props.actions.getCitiesSignal({ province_id: value });
+        {
+          this.props.actions.getCitiesSignal({ province_id: value });
+          this.props.actions.getCitiesSignalStandard({province_id: value, is_standard_area: 1});
+        }
     callback(e);
   }
-
+  onStandardCityChange(e){
+    var {value} = e.target;
+    if(value != SELECT_DEFAULT_VALUE){
+      this.props.actions.getDistrictsAndCity(value);
+    }
+  }
   onCityChange(callback,e){
 
     //this.props.actions.

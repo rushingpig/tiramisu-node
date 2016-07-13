@@ -141,6 +141,11 @@ export function submitUser(form_data){
   // ], 2000);
 }
 
+export const GET_CITIES_SIGNAL_STANDARD = 'GET_CITIES_SIGNAL_STANDARD';
+export function getCitiesSignalStandard({ province_id, is_standard_area, signal = 'authority' }){
+      return GET(Url.cities.toString(province_id), {is_standard_area, signal}, GET_CITIES_SIGNAL_STANDARD);  
+}
+
 /*export const GOT_DELIVERY_STATIONS_BY_CITYIDS =  'GOT_DELIVERY_STATIONS_BY_CITY_ID'
 export function getDeliveryStationsByCityId(city_ids){
 	return TEST({

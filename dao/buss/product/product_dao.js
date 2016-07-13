@@ -36,7 +36,7 @@ ProductDao.prototype.findAllCatetories = function(){
  */
 ProductDao.prototype.findProductsCount = function(product_name,category_id,regionalism_id, isAddition){
     let sql = "",params = [];
-    sql += "select bp.id,bp.name,count(bps.id) as num,bpc.name as category_name,bpc.isAddition";
+    sql += "select bp.id,bps.size as size,bp.name,count(bps.id) as num,bpc.name as category_name,bpc.isAddition";
     sql += " from ?? bp";
     sql += " inner join ?? bpc on bp.category_id = bpc.id";
     sql += " inner join ?? bps on bp.id = bps.product_id where 1=1 and bps.del_flag = 1";
@@ -60,7 +60,7 @@ ProductDao.prototype.findProductsCount = function(product_name,category_id,regio
         sql += " and bpc.isAddition = ?";
         params.push(isAddition);
     }
-    sql += ' group by bp.id having num > 0 ';
+    sql += ' group by bp.id,bps.size having num > 0 ';
     return baseDao.select(dbHelper.countSql(sql),params).then((results)=>{
             let data = {
                 results : results,
@@ -80,7 +80,7 @@ ProductDao.prototype.findProducts = function(preSql, preParams, page_no, page_si
     let params = [];
     let sql = "select t.name,t.category_name,bps2.*,dr.name as regionalism_name from (";
     sql += dbHelper.paginate(preSql,page_no,page_size);
-    sql += ")t left join  buss_product_sku bps2 on t.id = bps2.product_id ";
+    sql += ")t left join  buss_product_sku bps2 on t.id = bps2.product_id and t.size = bps2.size ";
     if (regionalism_id) {
         sql += 'and bps2.regionalism_id = ? ';
         params.push(regionalism_id);
@@ -220,7 +220,7 @@ ProductDao.prototype.getAllSkuByParams = function(params){
     let sql = 'select ' + params.join(',') + ' from ?? where 1=1';
     return baseDao.select(sql, [config.tables.buss_product_sku]);
 };
-ProductDao.prototype.getProductDetailByParams = function (data) {
+ProductDao.prototype.getProductDetailByParams = function (req, data) {
     let columns = [
         'product.id as spu',
         'product.name as name',
@@ -288,6 +288,10 @@ ProductDao.prototype.getProductDetailByParams = function (data) {
     
     // 城市
     sql += ' join dict_regionalism city on city.del_flag = 1 and sku.regionalism_id = city.id ';
+    // 权限控制：限制查询用户所属区域产品
+    if (!req.session.user.is_headquarters) {
+        sql += ' and city.id in ' + dbHelper.genInSql(req.session.user.city_ids);
+    }
     if (data.city) {
         sql += ' and city.id = ? ';
         params.push(data.city);

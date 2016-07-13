@@ -330,6 +330,10 @@ const switchType = {
           } else {
             cityOpt.sourceSpecifications.set(Number(sku.website), [setSourceSpecification(sku)]);
           }
+
+          if (cityOpt.selectedSource === "") {
+            cityOpt.selectedSource = Number(sku.website);
+          }
         }
       } else {
         let tempOptions = clone(initialState.tempOptions);
@@ -441,7 +445,7 @@ const switchType = {
     };
   },
 
-  [CitiesSelectorActionTypes.CHANGED_CHECK_CITIES]: (state, { citiesSelectorState }) => {
+  [CitiesSelectorActionTypes.CHANGED_CHECK_CITIES]: (state, { citiesSelectorState, isSelectedAllCity = false }) => {
     const { checkedCities } = citiesSelectorState;
 
     const transformPositionData = obj => [
@@ -469,10 +473,20 @@ const switchType = {
     if (!provincesData.has(selectedProvince))
       selectedProvince = [...provincesData.keys()][0] || 0;
 
-    if (!citiesData.has(selectedCity))
-      selectedCity = [...citiesData.keys()][0] || 0;
+    if (!citiesData.has(selectedCity)) {
+      selectedCity = 0;
+      [...citiesData.values()].some(cityData => {
+        if (cityData.province === selectedProvince) {
+          selectedCity = cityData.id;
+          return true;
+        }
+
+        return false;
+      });
+    }
 
     const citiesOptionsKeySet = new Set([...state.citiesOptions.keys()]);
+
     const citiesDataKeySet = new Set([...citiesData.keys()]);
     const diff = [...citiesOptionsKeySet].filter(x => !citiesDataKeySet.has(x) && x !== 'all');
 
@@ -495,20 +509,28 @@ const switchType = {
       state.citiesOptions.delete(deleteId);
     });
 
-    [...citiesData.values()].forEach(cityData => {
-      cityData.checked = citiesOptionsKeySet.has(cityData.id);
-    });
-
     if (state.citiesOptions.has(selectedCity)) {
       state.tempOptions = clone(state.citiesOptions.get(selectedCity));
       state.cityOptionSaved = true;
     } else {
-      state.tempOptions = clone(initialState.tempOptions);
-      state.cityOptionSavable = false;
+      state.tempOptions.shopSpecifications.forEach(setZeroID);
+      [...state.tempOptions.sourceSpecifications.values()].forEach(
+        arr => arr.forEach(setZeroID)
+      );
       state.cityOptionSaved = false;
     }
 
     state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0] || "";
+
+    [...citiesData.values()].forEach(cityData => {
+      cityData.checked = citiesOptionsKeySet.has(cityData.id);
+    });
+
+    if (!state.districtsData.has(selectedCity)) {
+      state.tempOptions.hasSecondaryBookingTime = false;
+      state.tempOptions.secondaryBookingTime = 1;
+      state.tempOptions.applyDistrict = new Set();
+    }
 
     return {
       ...state,
@@ -519,21 +541,22 @@ const switchType = {
     };
   },
 
-  [ActionTypes.CHANGE_SELECTED_PROVINCE]: (state, { id }) => {
-    let selectedCity;
+  [ActionTypes.CHANGE_SELECTED_PROVINCE]: (state, { pid, cid, districtsData = false }) => {
     let tempOptions;
 
-    [...state.provincesData.get(id).list].some(cid => {
-      if (state.citiesData.has(cid)) {
-        selectedCity = cid;
-        return true;
-      }
+    if (districtsData) {
+      const dd = Object.keys(districtsData).map(
+        id => ({
+          id,
+          name: districtsData[id]
+        })
+      );
 
-      return false;
-    });
+      state.districtsData.set(cid, dd);
+    }
 
-    if (state.citiesOptions.has(selectedCity)) {
-      tempOptions = clone(state.citiesOptions.get(selectedCity));
+    if (state.citiesOptions.has(cid)) {
+      tempOptions = clone(state.citiesOptions.get(cid));
       state.cityOptionSaved = true;
     } else {
       tempOptions = clone(state.citiesOptions.size === 0 ? initialState.tempOptions : [...state.citiesOptions.values()][0]);
@@ -541,37 +564,48 @@ const switchType = {
       [...tempOptions.sourceSpecifications.values()].forEach(
         arr => arr.forEach(setZeroID)
       );
+      tempOptions.applyDistrict = new Set();
       state.cityOptionSaved = false;
     }
 
     return tempOptionsValidator({
       ...state,
-      selectedCity,
-      selectedProvince: id,
+      selectedProvince: pid,
+      selectedCity: cid,
       tempOptions
     });
   },
 
-  [ActionTypes.CHANGE_SELECTED_CITY]: (state, { id }) => {
+  [ActionTypes.CHANGE_SELECTED_CITY]: (state, { id, districtsData = false }) => {
+    if (districtsData) {
+      const dd = Object.keys(districtsData).map(
+        id => ({
+          id,
+          name: districtsData[id]
+        })
+      );
+
+      state.districtsData.set(id, dd);
+    }
+
     if (state.citiesOptions.has(id)) {
       state.tempOptions = clone(state.citiesOptions.get(id));
-      state.cityOptionSaved = true;
     } else {
       state.tempOptions = clone(state.citiesOptions.size === 0 ? initialState.tempOptions : [...state.citiesOptions.values()][0]);
       state.tempOptions.shopSpecifications.forEach(setZeroID);
       [...state.tempOptions.sourceSpecifications.values()].forEach(
         arr => arr.forEach(setZeroID)
       );
+      state.tempOptions.applyDistrict = new Set();
       state.cityOptionSaved = false;
-      state.cityOptionSavable = state.citiesOptions.size > 0;
     }
 
     state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0] || "";
 
-    return {
+    return tempOptionsValidator({
       ...state,
       selectedCity: id
-    };
+    });
   },
 
   [ActionTypes.CHANGE_PRESALE_STATUS]: state => {

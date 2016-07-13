@@ -16,6 +16,7 @@ LazyLoad('datetimerangepicker');
 
 const FormHorizontal = props => (<div className="form-horizontal" {...props} />)
 const FormGroup = props => (<div className="form-group" {...props} />);
+const FormInline = props => (<div className="form-inline" {...props} />);
 const Input = props => (<input type="number" className="form-control input-xs" {...props} />);
 const CheckBox = props => (<input type="checkbox" {...props} />);
 const Radio = props => (<input type="radio" {...props} />);
@@ -123,7 +124,7 @@ class BasicOptions extends Component {
         <FormGroup>
           <ControlLabel xs='2'>商品分类：</ControlLabel>
           <Col xs="10">
-            <div className="form-inline">
+            <FormInline>
               <select
                 className="form-control input-xs"
                 onChange={getDOMValue(Action.changeSelectedPrimaryCategory)}
@@ -148,7 +149,7 @@ class BasicOptions extends Component {
                 }
               </select>
               <small className="text-muted">（商品所在城市默认为分类设置的城市）</small>
-            </div>
+            </FormInline>
           </Col>
         </FormGroup>
         <FormGroup>
@@ -219,7 +220,7 @@ class PreSaleOptions extends Component {
       <div>
         <Row>
           <Col xs="10" offset="2">
-            <div className="form-inline">
+            <FormInline>
               预售上架时间：
               <DateTimeRangePicker
                 className="form-control input-xs"
@@ -228,13 +229,13 @@ class PreSaleOptions extends Component {
                 endTime={tempOptions.onSaleTime[1]}
                 onChange={Action.changePreSaleTime}
               />
-            </div>
+            </FormInline>
           </Col>
         </Row>
         <p />
         <Row>
           <Col xs="10" offset="2">
-            <div className="form-inline">
+            <FormInline>
               预售发货时间：
               <DateTimeRangePicker
                 className="form-control input-xs"
@@ -243,73 +244,9 @@ class PreSaleOptions extends Component {
                 endTime={tempOptions.delivery[1]}
                 onChange={Action.changeDeliveryTime}
               />
-            </div>
+            </FormInline>
           </Col>
         </Row>
-        {
-          state.citiesOptionApplyRange === 0 ? null : (
-            <div>
-              <p />
-              <Row><Col xs="8" offset="2"><hr/></Col></Row>
-              <Row>
-                <Col xs="10" offset="2">
-                  <div className="form-inline">
-                    <div className="checkbox">
-                      <label>
-                        {'第二预约时间：'}
-                        <CheckBox checked={tempOptions.hasSecondaryBookingTime} onChange={Action.changeSecondaryBookingTimeStatus} />
-                      </label>
-                    </div>
-                  </div>
-                </Col>
-              </Row>
-            </div>
-          )
-        }
-        {
-          tempOptions.hasSecondaryBookingTime ? (
-            <div>
-              <p />
-              <Row>
-                <Col xs="10" offset="2">
-                  <div className="form-inline">
-                    {'　　　　'}时间：
-                    <Input
-                      style={Number(state.tempOptions.secondaryBookingTime) <= 0 ? redBorder : {} }
-                      value={state.tempOptions.secondaryBookingTime}
-                      onChange={getDOMValue(Action.changeSecondaryBookingTime)}
-                      step="0.5"
-                      min="0"
-                    />
-                    <small className='text-muted'>（小时）</small>
-                  </div>
-                </Col>
-              </Row>
-              <p />
-              <Row>
-                <Col xs="10" offset="2">
-                  <div className="form-inline">
-                    {'　　　　'}
-                    区域：
-                    {
-                      [...state.districtsData.get(state.selectedCity)].map(
-                        ({ id, name }) => (
-                          <label key={id}>
-                            <CheckBox
-                              checked={tempOptions.applyDistrict.has(id)}
-                              onChange={e => Action.changeSecondaryBookingTimeRange(id)}
-                            />
-                            {' ' + name + '　'}
-                          </label>
-                        )
-                      )
-                    }
-                  </div>
-                </Col>
-              </Row>
-            </div>
-          ) : null
-        }
       </div>
     );
   }
@@ -587,6 +524,73 @@ class SourceOptions extends Component {
   }
 }
 
+class SecondaryBookingTimeOptions extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    const { state, Action } = this.props;
+
+    return (
+      <div>
+        <p key="p" />
+        <Row key="row">
+          <Col xs="10" offset='2'>
+            {'第二预约时间：'}
+            <CheckBox checked={state.tempOptions.hasSecondaryBookingTime} onChange={Action.changeSecondaryBookingTimeStatus} />
+          </Col>
+        </Row>
+        {
+          !state.tempOptions.hasSecondaryBookingTime ? null : [(
+            <p key="p1" />
+          ), (
+            <Row key="row1">
+              <Col xs="10" offset='2'>
+                <FormInline>
+                  {'　　　　时间：'}
+                  <Input
+                    style={Number(state.tempOptions.secondaryBookingTime) <= 0 ? redBorder : {} }
+                    value={state.tempOptions.secondaryBookingTime}
+                    onChange={getDOMValue(Action.changeSecondaryBookingTime)}
+                    step="0.5"
+                    min="0"
+                  />
+                  <small className='text-muted'>（小时）</small>
+                </FormInline>
+              </Col>
+            </Row>
+          ), (
+            <p key="p2" />
+          ), (
+            <Row key="row2">
+              <Col xs="10" offset="2">
+                <FormInline>
+                  {'　　　　'}
+                  区域：
+                  {
+                    [...state.districtsData.get(state.selectedCity)].map(
+                      ({ id, name }) => (
+                        <label key={id}>
+                          <CheckBox
+                            checked={state.tempOptions.applyDistrict.has(id)}
+                            onChange={e => Action.changeSecondaryBookingTimeRange(id)}
+                          />
+                          {' ' + name + '　'}
+                        </label>
+                      )
+                    )
+                  }
+                </FormInline>
+              </Col>
+            </Row>
+          )]
+        }
+      </div>
+    );
+  }
+}
+
 class CitiesOptions extends Component {
   constructor(props) {
     super(props);
@@ -601,26 +605,25 @@ class CitiesOptions extends Component {
           <ControlLabel xs='2'>应用范围：</ControlLabel>
           <Col xs='10'>
             <p>
-              {
-                state.addMode ? [(
-                  <RadioInline key="radio">
-                    <Radio
-                      disabled={!state.addMode}
-                      name="citiesOptionApplyRange"
-                      value="0"
-                      onChange={getDOMValue(Action.changeCitiesOptionApplyRange)}
-                      checked={state.citiesOptionApplyRange === 0}
-                    />
-                    {' 全部一致'}
-                  </RadioInline>
-                ), <span key="span">{'　　'}</span>] : null
-              }
+              <RadioInline key="radio">
+                <Radio
+                  disabled={!state.addMode}
+                  name="citiesOptionApplyRange"
+                  value="0"
+                  checked={state.citiesOptionApplyRange === 0}
+                  readOnly={state.citiesOptionApplyRange === 0}
+                  {...state.citiesOptionApplyRange === 0 ? {} : {onChange: getDOMValue(Action.changeCitiesOptionApplyRange)}}
+                />
+                {' 全部一致'}
+              </RadioInline>
               <RadioInline>
                 <Radio
+                  disabled={!state.addMode}
                   name="citiesOptionApplyRange"
                   value="1"
-                  onChange={getDOMValue(Action.changeCitiesOptionApplyRange)}
                   checked={state.citiesOptionApplyRange === 1}
+                  readOnly={state.citiesOptionApplyRange === 1}
+                  {...state.citiesOptionApplyRange === 1 ? {} : {onChange: getDOMValue(Action.changeCitiesOptionApplyRange)}}
                 />
                 {' 独立配置'}
               </RadioInline>
@@ -665,9 +668,28 @@ class CitiesOptions extends Component {
         }
         <Row><Col xs='10' offset='1'><hr/></Col></Row>
         <FormGroup>
-          <ControlLabel xs='2'>预约时间：</ControlLabel>
+          <ControlLabel xs='2'>上架设置：</ControlLabel>
           <Col xs="6">
-            <div className="form-inline">
+            <FormInline>
+              <div className="checkbox">
+                <label>
+                  {'　　预售商品：'}
+                  <CheckBox checked={state.tempOptions.isPreSale} onChange={Action.changePreSaleStatus} />
+                </label>
+              </div>
+            </FormInline>
+          </Col>
+        </FormGroup>
+        {
+          state.tempOptions.isPreSale
+          ? (<PreSaleOptions state={state} Action={Action} />)
+          : null
+        }
+        <p />
+        <Row>
+          <Col xs="10" offset='2'>
+            <FormInline>
+              {'　　预约时间：'}
               <Input
                 style={Number(state.tempOptions.bookingTime) <= 0 ? redBorder : {} }
                 min="0"
@@ -676,27 +698,13 @@ class CitiesOptions extends Component {
                 onChange={getDOMValue(Action.changeBookingTime)}
               />
               <small className='text-muted'>（小时）</small>
-            </div>
+            </FormInline>
           </Col>
-        </FormGroup>
-        <Row><Col xs='10' offset='1'><hr/></Col></Row>
-        <FormGroup>
-          <ControlLabel xs='2'>上架设置：</ControlLabel>
-          <Col xs="6">
-            <div className="form-inline">
-              <div className="checkbox">
-                <label>
-                  {'　　预售商品：'}
-                  <CheckBox checked={state.tempOptions.isPreSale} onChange={Action.changePreSaleStatus} />
-                </label>
-              </div>
-            </div>
-          </Col>
-        </FormGroup>
+        </Row>
         {
-          state.tempOptions.isPreSale
-          ? (<PreSaleOptions state={state} Action={Action} />)
-          : null
+          state.citiesOptionApplyRange === 0 ? null : (
+            <SecondaryBookingTimeOptions state={state} Action={Action} />
+          )
         }
         {
           state.buyEntry === 0 ? [(
@@ -799,10 +807,7 @@ class Main extends Component {
               }
               {'　'}
               {
-                state.citiesOptionApplyRange === 1 && (
-                  (state.cityOptionSavable && !state.cityOptionSaved)
-                  || (state.citiesOptions.has(state.selectedCity) && !state.cityOptionSaved)
-                )
+                state.citiesOptionApplyRange === 1 && !state.cityOptionSaved
                 ? (<small className="text-danger">当前所选城市的配置信息尚未保存</small>)
                 : null
               }

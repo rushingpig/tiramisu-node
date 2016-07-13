@@ -256,7 +256,8 @@ const changeActiveCitiesOption = option => (
 
       dispatch({
         type: CitiesSelectorActionTypes.CHANGED_CHECK_CITIES,
-        citiesSelectorState: clone(getState().citiesSelector)
+        citiesSelectorState: clone(getState().citiesSelector),
+        isSelectedAllCity: true
       });
     }
   }
@@ -269,19 +270,71 @@ const changeCitiesOptionApplyRange = option => {
   };
 }
 
-const changeSelectedProvince = pid => {
-  return {
-    type: ActionTypes.CHANGE_SELECTED_PROVINCE,
-    id: pid
-  };
-}
+const changeSelectedProvince = pid => (
+  (dispatch, getState) => {
+    const state = getState().productSKUManagement;
+    let selectedCity;
 
-const changeSelectedCity = cid => {
-  return {
-    type: ActionTypes.CHANGE_SELECTED_CITY,
-    id: cid
-  };
-}
+    if (state.selectedProvince === pid) {
+      return;
+    }
+
+    [...state.provincesData.get(pid).list].some(cid => {
+      if (state.citiesData.has(cid)) {
+        selectedCity = cid;
+        return true;
+      }
+
+      return false;
+    });
+
+    const cityDataHasStash = state.citiesOptions.has(selectedCity);
+    const hasDistrictData = state.districtsData.has(selectedCity);
+    const firstCityOptionHasSecondaryBookingTime = state.citiesOptions.size > 0 && [...state.citiesOptions.values()][0].hasSecondaryBookingTime;
+
+    if (cityDataHasStash || hasDistrictData || !firstCityOptionHasSecondaryBookingTime) {
+      return dispatch({
+        type: ActionTypes.CHANGE_SELECTED_PROVINCE,
+        pid,
+        cid: selectedCity
+      });
+    }
+
+    return loadDistricts(selectedCity).then(
+      districtsData => dispatch({
+        type: ActionTypes.CHANGE_SELECTED_PROVINCE,
+        pid,
+        cid: selectedCity,
+        districtsData
+      })
+    );
+  }
+);
+
+const changeSelectedCity = id => (
+  (dispatch, getState) => {
+    const state = getState().productSKUManagement;
+
+    if (state.selectedCity === id) {
+      return;
+    }
+
+    if (state.citiesOptions.has(id)) {
+      return dispatch({
+        type: ActionTypes.CHANGE_SELECTED_CITY,
+        id
+      });
+    }
+
+    return loadDistricts(id).then(
+      districtsData => dispatch({
+        type: ActionTypes.CHANGE_SELECTED_CITY,
+        id,
+        districtsData
+      })
+    );
+  }
+);
 
 // City options
 
@@ -523,15 +576,6 @@ const saveOption = () => (
         transformedOption.send_end = dateFormat(delivery[1], 'yyyy-MM-dd hh:mm:ss')
       }
 
-      if (state.citiesOptionApplyRange === 1 && option.hasSecondaryBookingTime) {
-        transformedOption.secondary_booktimes = [...option.applyDistrict].map(
-          districtCode => ({
-            book_time: option.secondaryBookingTime,
-            regionalism_id: Number(districtCode)
-          })
-        );
-      }
-
       return transformedOption;
     };
 
@@ -624,6 +668,16 @@ const saveOption = () => (
           return;
 
         const shangjiaOpt = cityOption.isPreSale ? transformShangjiaOption(cityOption) : {};
+
+        if (state.citiesOptionApplyRange === 1 && cityOption.hasSecondaryBookingTime) {
+          shangjiaOpt.secondary_booktimes = [...cityOption.applyDistrict].map(
+            districtCode => ({
+              book_time: cityOption.secondaryBookingTime,
+              regionalism_id: Number(districtCode)
+            })
+          );
+        }
+
         let sourceSpecifications = [];
 
         [...cityOption.sourceSpecifications]

@@ -1,6 +1,7 @@
 'use strict';
 var baseDao = require('../../base_dao'),
   util = require('util'),
+  _ = require('lodash'),
   co = require('co'),
   toolUtils = require('../../../common/ToolUtils'),
   systemUtils = require('../../../common/SystemUtils'),
@@ -532,6 +533,7 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
   let columns = columns_arr.join(',');
   let params = [],
     data_scopes = query_data.user.data_scopes;
+  let need_ds_flag = !(query_data.user.is_admin || (query_data.user.is_headquarters && data_scopes.indexOf(constant.DS.CITY.id) !== -1));
   let doFt = doFullText(query_data);
   let sql = "select " + columns + " from ?? bo ";
   // 当使用配送时间作为查询过滤条件时,强制使用相关索引
@@ -553,41 +555,21 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
   }
   sql += " inner join ?? br on bo.recipient_id = br.id";
   params.push(tables.buss_recipient);
-  if (query_data.city_id) {
+  if (query_data.province_id || query_data.city_id || need_ds_flag) {
     sql += " inner join ?? dr2 on dr2.id = br.regionalism_id";
     params.push(tables.dict_regionalism);
-    if (query_data.is_standard_area) {
-      sql += " and dr2.parent_id = ?";
-      params.push(query_data.city_id);
-    }else{
-      sql += " inner join ?? sc on sc.regionalism_id = dr2.id";
+    if (query_data.city_id || need_ds_flag) {
+      sql += " left join ?? sc on sc.regionalism_id = dr2.id";
       params.push(tables.sys_city);
-      sql += " and ((sc.regionalism_id = ? and sc.is_city = 1) or (dr2.parent_id = ? and sc.is_city = 0))";
-      params.push(query_data.city_id);
-      params.push(query_data.city_id);
     }
   }
-  if (query_data.province_id && !query_data.city_id) {
-    sql += " inner join ?? dr2 on dr2.id = br.regionalism_id";
-    sql += " inner join ?? dr3 on dr2.parent_id = dr3.id and dr3.parent_id = ?";
-    params.push(tables.dict_regionalism);
-    params.push(tables.dict_regionalism);
-    params.push(query_data.province_id);
-  }
   if (query_data.province_id) {
-    sql += " inner join ?? dr2 on dr2.id = br.regionalism_id";
-    sql += " inner join ?? dr3 on dr2.parent_id = dr3.id and dr3.id = ?";
-    params.push(tables.dict_regionalism);
+    sql += " inner join ?? dr3 on dr3.id = dr2.parent_id and dr3.parent_id = ?";
     params.push(tables.dict_regionalism);
     params.push(query_data.province_id);
   }
   sql += " left join ?? bds2 on bo.delivery_id = bds2.id";
   params.push(tables.buss_delivery_station);
-  if (data_scopes.indexOf(constant.DS.CITY.id) !== -1 && !query_data.user.is_headquarters) {
-    sql += " inner join ?? dr3 on dr3.id = br.regionalism_id";
-    params.push(tables.dict_regionalism);
-
-  }
   if (query_data.list_products) {
     sql += " left join ?? bosku on bo.id = bosku.order_id and bosku.del_flag = ?";
     params.push(tables.buss_order_sku);
@@ -634,6 +616,17 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
     sql += " and bo.is_submit = 0";
   } else if (query_data.is_submit == 1) {
     sql += " and bo.is_submit = 1";
+  }
+  if (query_data.city_id) {
+    if (query_data.is_standard_area == '1') {
+      sql += " and dr2.parent_id = ?";
+      params.push(query_data.city_id);
+    }else {
+      sql += " and ((sc.is_city = 1 and dr2.id = ? ) or (sc.is_city = 0 and dr2.parent_id = ? ) or (dr2.id = ? ))";
+      params.push(query_data.city_id);
+      params.push(query_data.city_id);
+      params.push(query_data.city_id.toString().replace(/\d{2}$/, '99'));
+    }
   }
   if (query_data.src_id) {
     sql += " and (src_id = ? or bos.parent_id = ?)";
@@ -690,35 +683,40 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
     params.push('%' + query_data.keywords + '%');
   }
   // data filter begin
-  let ds_sql = "",
-    temp_sql = "";
-  if (!toolUtils.isEmptyArray(data_scopes)) {
-    ds_sql += " and (";
-    data_scopes.forEach((curr) => {
-
-      if (curr == constant.DS.STATION.id) {
-        temp_sql += " or bo.delivery_id in " + dbHelper.genInSql(query_data.user.station_ids);
-      } else if (curr == constant.DS.CITY.id) {
-        if (query_data.user.is_headquarters) {
-          temp_sql += "";
-        } else {
-          temp_sql += " or dr3.parent_id in " + dbHelper.genInSql(query_data.user.city_ids);
+  let ds_sql = "";
+  if (need_ds_flag) {
+    let temp_sql = '';
+    let temp_city_ids;
+    if (!toolUtils.isEmptyArray(data_scopes)) {
+      data_scopes.forEach((curr) => {
+        if (curr == constant.DS.STATION.id) {
+          temp_sql += " or bo.delivery_id in " + dbHelper.genInSql(query_data.user.station_ids);
+        } else if (curr == constant.DS.CITY.id) {
+          if (query_data.user.is_headquarters) {
+            temp_sql += " or 1 = 1";
+          } else {
+            if (!temp_city_ids) {
+              temp_city_ids = _.isArray(query_data.user.city_ids) ? query_data.user.city_ids : [];
+              temp_city_ids = temp_city_ids.map(id=> id.toString().replace(/\d{2}$/, '99'));
+            }
+            temp_sql += " or sc.regionalism_id in " + dbHelper.genInSql(query_data.user.city_ids);
+            temp_sql += " or dr2.id in " + dbHelper.genInSql(temp_city_ids);
+          }
+        } else if (curr == constant.DS.SELF_DELIVERY.id) {
+          temp_sql += " or bo.deliveryman_id = ?";
+          params.push(query_data.user.id);
+        } else if (curr == constant.DS.ALLCOMPANY.id) {
+          temp_sql += " or 1 = 1";
+        } else if (curr == constant.DS.SELF_CHANNEL.id && !query_data.user.is_headquarters) {
+          temp_sql += " or bo.src_id in " + dbHelper.genInSql(query_data.user.src_ids);
         }
-      } else if (curr == constant.DS.SELF_DELIVERY.id) {
-        temp_sql += " or bo.deliveryman_id = ?";
-        params.push(query_data.user.id);
-      } else if (curr == constant.DS.ALLCOMPANY.id) {
-        temp_sql += " or 1 = 1";
-      } else if (curr == constant.DS.SELF_CHANNEL.id && !query_data.user.is_headquarters) {
-        temp_sql += " or bo.src_id in " + dbHelper.genInSql(query_data.user.src_ids);
-      }
-    });
-    ds_sql += temp_sql.replace(/^ or/, '');
-    ds_sql += ")";
-
-  }
-  if (temp_sql.trim() === "" || query_data.user && (query_data.user.is_admin)) {
-    ds_sql = "";
+      });
+    }
+    if(temp_sql !== ''){
+      ds_sql = ' and (' + temp_sql.replace(/^ or/, '') + ')';
+    }else{
+      ds_sql = ' and 1 = 0';
+    }
   }
   // data filter end
 

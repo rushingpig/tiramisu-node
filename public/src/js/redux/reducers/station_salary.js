@@ -48,7 +48,11 @@ function main(state = main_state, action){
 				filter_data: action.filter_data,
 			}
 		case Actions.RESET_DELIVERY_RECORD:
-			return {...state,deliveryRecord:[], active_order_id: -1, check_order_info: null}
+			return {...state,deliveryRecord:[], active_order_id: -1,
+					 check_order_info: null, COD_amount: 0, POS_amount: 0,
+					 cash_amount : 0, delivery_pay: 0, total: 0, filter_data: {},
+					 total_amount: 0
+					}
 		case Actions.GET_ORDER_DETAIL_PRODUCTS:
 			return {...state, check_order_info:action.data }
 		case Actions.GET_DELIVERY_PROOF:

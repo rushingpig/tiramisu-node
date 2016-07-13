@@ -27,6 +27,7 @@ var tables = {
     sys_role_menu : 'sys_role_menu',
     sys_organization : 'sys_organization',
     sys_role_org : 'sys_role_org',
+    sys_city: 'sys_city',
 //=================Buss=================
     buss_city : 'buss_city',
     buss_delivery_station : 'buss_delivery_station',

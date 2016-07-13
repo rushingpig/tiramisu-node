@@ -256,8 +256,8 @@ class RoleAuthorityPannel extends Component{
     )
   }
   componentWillMount() {
-    const { gotDepartmentList, gotModuleSrcs } = this.props;
-    gotDepartmentList();
+    const { gotDepartmentListSignal, gotModuleSrcs } = this.props;
+    gotDepartmentListSignal('authority');
     gotModuleSrcs();
   }
   componentDidMount() {

@@ -74,8 +74,13 @@ const URL = (function() {
     sortCategories:           '/product/categories/sort',
     activatedCity:            '/product/category/:id/regions/pc',
     addSku:                   '/product/sku',
+    saveEditSku:              '/product/sku',
+    getSku:                   '/product/skus/details',
     searchSku:                '/product/details',
+    viewSku:                  '/product/skus',
+    viewSkuSpec:              '/product/skus/price',
     deleteSku:                '/product/skus',
+    exportSkuDetail:          '/product/skus/details',
 
     //送货管理
     order_exchange:     '/orders/exchange', //订单转送单列表

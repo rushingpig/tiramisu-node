@@ -606,3 +606,23 @@ BEGIN;
 insert into `dict_regionalism` VALUES
 ('440119','萝岗区',440100,'萝岗','3','020','','中国,广东省,广州市,增城区','','','Luogang','1',null,null);
 COMMIT;
+
+# 2016-06-15 Wei Zhao
+# 创建开通城市表
+CREATE TABLE `sys_city` (
+    `regionalism_id` int(11) NOT NULL COMMENT '区域id',
+    `is_city` int(11) DEFAULT '0' COMMENT '不为0时表示是开通的地级市/县级市',
+    `online_time` datetime DEFAULT NULL COMMENT '上线时间',
+    `is_diversion` tinyint(1) DEFAULT NULL COMMENT '是否导流订单',
+    `delivery_time_range` varchar(16) DEFAULT NULL COMMENT '配送时间段',
+    `order_time` int(11) DEFAULT NULL COMMENT '预约时间',
+    `manager_name` varchar(32) DEFAULT NULL COMMENT '城市经理姓名',
+    `manager_mobile` varchar(32) DEFAULT NULL COMMENT '城市经理电话',
+    `remarks` varchar(255) DEFAULT NULL COMMENT '备注',
+    `SEO` varchar(1024) DEFAULT NULL COMMENT 'SEO',
+    `created_by` int(11) NOT NULL COMMENT '创建人id',
+    `created_time` datetime NOT NULL COMMENT '创建时间',
+    `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+    `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+    PRIMARY KEY `IDX_UNQ_UID` (`regionalism_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='开通城市表';

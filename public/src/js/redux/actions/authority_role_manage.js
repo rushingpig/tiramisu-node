@@ -7,6 +7,11 @@ export function gotDepartmentList(){
   return GET(Url.dept_list_info.toString(), null, GOT_DEPARTMENT_LIST);
 }
 
+export const GOT_DEPARTMENT_LIST_SIGNAL = 'GOT_DEPARTMENT_LIST_SIGNAL';
+export function gotDepartmentListSignal(signal){
+  return GET(Url.dept_list_info.toString(), {signal: signal}, GOT_DEPARTMENT_LIST_SIGNAL);
+}
+
 export const GOT_ROLE_LIST = 'GOT_ROLE_LIST';
 export function gotRoletList(org_id){
   return (dispatch) => {

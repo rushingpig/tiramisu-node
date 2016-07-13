@@ -170,7 +170,7 @@ class DeptManagePanel extends Component{
                 </div>
             </div>
           </div>
-          <AddDeptModal ref='addDept' addDept={addDept} reset={reset} getDepts={this.props.actions.getDepts}/>
+          <AddDeptModal ref='addDept' addDept={addDept} reset={reset} getDeptsSignal={this.props.actions.getDeptsSignal}/>
           <AddRoleModal {...{filter}} ref='addRole' depts={depts} dataaccess={dataaccess} 
             getRoleInfoList={this.props.actions.getRoleInfoList} reset = {reset} addRole={addRole}
             getOrderSrcs={getOrderSrcs} triggerFormUpdate={triggerFormUpdate}  resetRole={resetRole}/>
@@ -192,8 +192,8 @@ class DeptManagePanel extends Component{
   }
 
   componentDidMount(){
-    var {getDepts,getRoleInfoList,getDataAccess} = this.props.actions;
-    getDepts();
+    var {getDeptsSignal,getRoleInfoList,getDataAccess} = this.props.actions;
+    getDeptsSignal('authority');
     getRoleInfoList();
     getDataAccess();
   }
@@ -284,7 +284,7 @@ class AddDeptModal extends Component{
           Noty('success', '保存成功');
           setTimeout(()=>{
             this.refs.viewDeptAdd.hide();
-            this.props.getDepts();
+            this.props.getDeptsSignal('authority');
             this.refs.submit_btn.disabled = false;
           },500);
         }.bind(this))

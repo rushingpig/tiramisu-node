@@ -139,7 +139,7 @@ CategoryService.prototype.listCategoriesByMultipleCondition = (req,res,next)=>{
         res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
-    let promise = categoryDao.findCategoriesList(req.query).then(results => {
+    let promise = categoryDao.findCategoriesList(req, req.query).then(results => {
         if(toolUtils.isEmptyArray(results)){
             throw new TiramisuError(res_obj.NO_MORE_RESULTS_ARR);
         }

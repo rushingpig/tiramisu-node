@@ -21,10 +21,11 @@ var RefundModal = React.createClass({
     }
   },
   render(){
-    var reasonOptions = [{id:1,text:'客户要求取消订单'},
-                          {id:2,text: '用户地址不配送'},
-                          {id:3, text: '客户更改产品(款式或磅数)'},
-                          {id:4, text: '用户取消蛋糕配件'},
+    var reasonOptions = [
+                          {id:1, text: '用户取消蛋糕配件'},
+                          {id:2,text:'客户要求取消订单'},
+                          {id:3,text: '用户地址不配送'},
+                          {id:4, text: '客户更改产品(款式或磅数)'},
                           {id:5, text: '其他'},
                          ]
     var {relate_order_id, other_reason, initiator_active, refund_type, refund_way, is_alipay,
@@ -48,7 +49,7 @@ var RefundModal = React.createClass({
         </div>
         <div className='form-group form-inline'>
           <label>退款原因：</label>
-          <Select default-text='请选择退款原因' options={reasonOptions} onChange={this.reasonChange}/>
+          <Select options={reasonOptions} onChange={this.reasonChange}/>
           {
             (relate_order_id || other_reason )&& 
             [<label key='relate_order_id_lbl'>{'　关联订单号：'}</label>,

@@ -220,7 +220,7 @@ ProductDao.prototype.getAllSkuByParams = function(params){
     let sql = 'select ' + params.join(',') + ' from ?? where 1=1';
     return baseDao.select(sql, [config.tables.buss_product_sku]);
 };
-ProductDao.prototype.getProductDetailByParams = function (data) {
+ProductDao.prototype.getProductDetailByParams = function (req, data) {
     let columns = [
         'product.id as spu',
         'product.name as name',
@@ -288,6 +288,10 @@ ProductDao.prototype.getProductDetailByParams = function (data) {
     
     // 城市
     sql += ' join dict_regionalism city on city.del_flag = 1 and sku.regionalism_id = city.id ';
+    // 权限控制：限制查询用户所属区域产品
+    if (!req.session.user.is_headquarters) {
+        sql += ' and city.id in ' + dbHelper.genInSql(req.session.user.city_ids);
+    }
     if (data.city) {
         sql += ' and city.id = ? ';
         params.push(data.city);

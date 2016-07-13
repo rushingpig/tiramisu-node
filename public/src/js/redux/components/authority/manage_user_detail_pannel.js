@@ -19,10 +19,12 @@ import ManageUserFormEdit from './manage_user_form_edit';
 
 class TopHeader extends Component{
   render(){
+    var {editable} = this.props;
+    var titleStr = editable ? '编辑用户' : '添加用户';
     return (
       <div className="clearfix top-header">
         <LineRouter 
-          routes={[{name:'用户页面',link:'/am/user'},{name: '添加用户', link: ''}]} 
+          routes={[{name:'用户页面',link:'/am/user'},{name: titleStr, link: ''}]} 
           className="pull-right"/>
       </div>
       )

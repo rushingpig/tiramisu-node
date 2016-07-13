@@ -112,7 +112,8 @@ class ManageAddForm extends Component{
     <div>
       <div className="form-group form-inline">
         <label>{'　　用户名：'}</label>
-        <input {...username} className={`form-control input-xs ${username.error}`} ref='username'  type='text' />
+        <input {...username} style={{display:'none'}}/>
+        <input {...username} className={`form-control input-xs ${username.error}`} ref='username'  type='text' autoComplete='off'/>
       </div>
       <div className="form-group form-inline">
         <label>{'　　　密码：'}</label>
@@ -259,10 +260,11 @@ class ManageAddForm extends Component{
 /*    var {getDepts} = this.props.actions;
     getDepts();*/
     LazyLoad('noty');
-    var {getProvincesSignal,getDeptsSignal, resetRoles } = this.props.actions;
+    var {getProvincesSignal,getDeptsSignal, resetRoles, resetStations } = this.props.actions;
     var {params} = this.props;
     resetRoles();
     getProvincesSignal();
+    resetStations();
     getDeptsSignal("authority");
   }
   onProvinceChange(callback,e){

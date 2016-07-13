@@ -65,6 +65,7 @@ UserService.prototype.getUserInfo = (username, password)=> {
                     user.role_ids.push(curr.role_id);
                     roles_set.add(curr.role_id);
                     org_ids_set.add(curr.org_id);
+                    if (curr.src_id == 0) user.is_all_src = 1;  // src_id为0时 将具有所有渠道权限
                     if(curr.src_id){
                         user.src_ids.push(curr.src_id);
                     }

@@ -533,7 +533,7 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
   let columns = columns_arr.join(',');
   let params = [],
     data_scopes = query_data.user.data_scopes;
-  let need_ds_flag = !(query_data.user.is_admin || (query_data.user.is_headquarters && data_scopes.indexOf(constant.DS.CITY.id) !== -1));
+  let need_ds_flag = systemUtils.isDoOrderDataFilter(query_data);
   let doFt = doFullText(query_data);
   let sql = "select " + columns + " from ?? bo ";
   // 当使用配送时间作为查询过滤条件时,强制使用相关索引
@@ -692,22 +692,16 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
         if (curr == constant.DS.STATION.id) {
           temp_sql += " or bo.delivery_id in " + dbHelper.genInSql(query_data.user.station_ids);
         } else if (curr == constant.DS.CITY.id) {
-          if (query_data.user.is_headquarters) {
-            temp_sql += " or 1 = 1";
-          } else {
-            if (!temp_city_ids) {
-              temp_city_ids = _.isArray(query_data.user.city_ids) ? query_data.user.city_ids : [];
-              temp_city_ids = temp_city_ids.map(id=> id.toString().replace(/\d{2}$/, '99'));
-            }
-            temp_sql += " or sc.regionalism_id in " + dbHelper.genInSql(query_data.user.city_ids);
-            temp_sql += " or dr2.id in " + dbHelper.genInSql(temp_city_ids);
+          if (!temp_city_ids) {
+            temp_city_ids = _.isArray(query_data.user.city_ids) ? query_data.user.city_ids : [];
+            temp_city_ids = temp_city_ids.map(id=> id.toString().replace(/\d{2}$/, '99'));
           }
+          temp_sql += " or sc.regionalism_id in " + dbHelper.genInSql(query_data.user.city_ids);
+          temp_sql += " or dr2.id in " + dbHelper.genInSql(temp_city_ids);
         } else if (curr == constant.DS.SELF_DELIVERY.id) {
           temp_sql += " or bo.deliveryman_id = ?";
           params.push(query_data.user.id);
-        } else if (curr == constant.DS.ALLCOMPANY.id) {
-          temp_sql += " or 1 = 1";
-        } else if (curr == constant.DS.SELF_CHANNEL.id && !query_data.user.is_headquarters) {
+        } else if (curr == constant.DS.SELF_CHANNEL.id) {
           temp_sql += " or bo.src_id in " + dbHelper.genInSql(query_data.user.src_ids);
         }
       });

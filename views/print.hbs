@@ -270,7 +270,7 @@
                             <%= lan.warm_tips %><br/>
 
                             <% for(var t_index=0; t_index < lan.tips.length; t_index++){ %>
-                                &nbsp;<%= (t_index + 1) %>.<span style="margin:2px;"><%= lan.tips[t_index] %></span>
+                                &nbsp;<%= (t_index + 1) %>.<span style="margin:2px;"><%=#lan.tips[t_index] %></span>
                                 <% if(t_index < lan.tips.length - 1){ %>
                                     <br />
                                 <% } %>
@@ -357,7 +357,7 @@
                 '就敢退：实物不对版，退款不退货！',
                 '就敢减：约定时间，迟到一分钟减一元！',
                 '就敢送：迟到30分钟免费赠送！',
-                '微信扫描右方二维码评价或反馈！'
+                '<strong>幸福承诺</strong>受理期限：签收当日起7天内反馈有效，微信扫描右方二维码可评价或反馈；'
             ],
             footer_info: '&nbsp;幸福热线：400-999-6666&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;官网订购：www.xfxb.net&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;微信订购：扫描右上方二维码或添加xfxbsz',
             right_side_info: '生产︵白︶客户︵红︶财务︵蓝︶物流︵黄︶'

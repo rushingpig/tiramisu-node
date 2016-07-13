@@ -807,10 +807,7 @@ class Main extends Component {
               }
               {'　'}
               {
-                state.citiesOptionApplyRange === 1 && (
-                  (state.cityOptionSavable && !state.cityOptionSaved)
-                  || (state.citiesOptions.has(state.selectedCity) && !state.cityOptionSaved)
-                )
+                state.citiesOptionApplyRange === 1 && !state.cityOptionSaved
                 ? (<small className="text-danger">当前所选城市的配置信息尚未保存</small>)
                 : null
               }

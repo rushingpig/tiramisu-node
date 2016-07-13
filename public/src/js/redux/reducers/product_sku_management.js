@@ -433,7 +433,6 @@ const switchType = {
         [...state.tempOptions.sourceSpecifications.values()].forEach(
           arr => arr.forEach(setZeroID)
         );
-        state.tempOptions.applyDistrict = new Set();
       } else {
         state.tempOptions = clone(initialState.tempOptions);
         state.cityOptionSavable = false;
@@ -558,6 +557,7 @@ const switchType = {
 
     if (state.citiesOptions.has(cid)) {
       tempOptions = clone(state.citiesOptions.get(cid));
+      state.cityOptionSaved = true;
     } else {
       tempOptions = clone(state.citiesOptions.size === 0 ? initialState.tempOptions : [...state.citiesOptions.values()][0]);
       tempOptions.shopSpecifications.forEach(setZeroID);

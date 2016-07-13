@@ -605,26 +605,25 @@ class CitiesOptions extends Component {
           <ControlLabel xs='2'>应用范围：</ControlLabel>
           <Col xs='10'>
             <p>
-              {
-                state.addMode ? [(
-                  <RadioInline key="radio">
-                    <Radio
-                      disabled={!state.addMode}
-                      name="citiesOptionApplyRange"
-                      value="0"
-                      onChange={getDOMValue(Action.changeCitiesOptionApplyRange)}
-                      checked={state.citiesOptionApplyRange === 0}
-                    />
-                    {' 全部一致'}
-                  </RadioInline>
-                ), <span key="span">{'　　'}</span>] : null
-              }
+              <RadioInline key="radio">
+                <Radio
+                  disabled={!state.addMode}
+                  name="citiesOptionApplyRange"
+                  value="0"
+                  checked={state.citiesOptionApplyRange === 0}
+                  readOnly={state.citiesOptionApplyRange === 0}
+                  {...state.citiesOptionApplyRange === 0 ? {} : {onChange: getDOMValue(Action.changeCitiesOptionApplyRange)}}
+                />
+                {' 全部一致'}
+              </RadioInline>
               <RadioInline>
                 <Radio
+                  disabled={!state.addMode}
                   name="citiesOptionApplyRange"
                   value="1"
-                  onChange={getDOMValue(Action.changeCitiesOptionApplyRange)}
                   checked={state.citiesOptionApplyRange === 1}
+                  readOnly={state.citiesOptionApplyRange === 1}
+                  {...state.citiesOptionApplyRange === 1 ? {} : {onChange: getDOMValue(Action.changeCitiesOptionApplyRange)}}
                 />
                 {' 独立配置'}
               </RadioInline>

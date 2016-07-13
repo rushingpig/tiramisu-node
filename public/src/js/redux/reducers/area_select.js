@@ -38,6 +38,8 @@ export function area(Actions = AreaActionTypes1){
       case Actions.GOT_DISTRICTS:
       case Actions.GOT_DISTRICTS_AND_CITY:
         return {...state, districts: _t(action.data) };
+      case Actions.GOT_CITY_AND_DISTRICTS:
+        return {...state, cities: _t(action.data)};
       case Actions.GOT_DELIVERY_SHOPS:
         return {...state, delivery_shops: map(action.data, text => ({id: text, text})) };
       case Actions.RESET_SHOPS:

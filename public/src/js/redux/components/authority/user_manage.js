@@ -298,7 +298,7 @@ class UserManagePannel extends Component{
   componentDidMount(){
     LazyLoad('noty');
     setTimeout(()=>{
-      var {getUserList,getDeptsSignal} = this.props.actions;
+      var {getUserList,getDeptsSignal} = this.props;
       var {filterdata} = this.props.UserListManage;
       filterdata.page_no = 0;
       filterdata.page_size = this.state.page_size;

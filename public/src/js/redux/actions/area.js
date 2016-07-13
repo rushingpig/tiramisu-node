@@ -49,11 +49,14 @@ export default function Area(ActionTypes = AreaActionTypes1){
     getStandardDistricts: function (city_id){
       return GET(Url.districts.toString(city_id), {is_standard_area: 1}, ActionTypes.GOT_DISTRICTS);
     },
-    //获取开通的城市(地级市、开通的区县)
+    //获取开通的城市(地级市、开通的区县) 归类到区
     getDistrictsAndCity: function(city_id){
       return GET(Url.districts_and_city.toString(city_id), null, ActionTypes.GOT_DISTRICTS_AND_CITY);
     },
-
+    //获取开通的城市(地级市、开通的区县) 归类到市
+    getCityAndDistricts: function(city_id){
+      return GET(Url.districts_and_city.toString(city_id), null, ActionTypes.GOT_CITY_AND_DISTRICTS);
+    },
 
     getDeliveryShops: function (district_id) {
       return GET(Url.shops.toString(district_id), null, ActionTypes.GOT_DELIVERY_SHOPS);

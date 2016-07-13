@@ -146,6 +146,11 @@ export function getCitiesSignalStandard({ province_id, is_standard_area, signal 
       return GET(Url.cities.toString(province_id), {is_standard_area, signal}, GET_CITIES_SIGNAL_STANDARD);  
 }
 
+export const RESET_CITIES_SIGNAL_STANDARD = 'RESET_CITIES_SIGNAL_STANDARD';
+export function resetCitiesSignalStandard(){
+  return {type: RESET_CITIES_SIGNAL_STANDARD};
+}
+
 /*export const GOT_DELIVERY_STATIONS_BY_CITYIDS =  'GOT_DELIVERY_STATIONS_BY_CITY_ID'
 export function getDeliveryStationsByCityId(city_ids){
 	return TEST({

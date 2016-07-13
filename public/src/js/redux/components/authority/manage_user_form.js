@@ -260,9 +260,10 @@ class ManageAddForm extends Component{
 /*    var {getDepts} = this.props.actions;
     getDepts();*/
     LazyLoad('noty');
-    var {getProvincesSignal,getDeptsSignal, resetRoles, resetStations } = this.props.actions;
+    var {getProvincesSignal,getDeptsSignal, resetRoles, resetStations, resetCitiesSignalStandard } = this.props.actions;
     var {params} = this.props;
     resetRoles();
+    resetCitiesSignalStandard();
     getProvincesSignal();
     resetStations();
     getDeptsSignal("authority");
@@ -283,7 +284,7 @@ class ManageAddForm extends Component{
   onStandardCityChange(e){
     var {value} = e.target;
     if(value != SELECT_DEFAULT_VALUE){
-      this.props.actions.getDistrictsAndCity(value);
+      this.props.actions.getCityAndDistricts(value);
     }
   }
   onCityChange(callback,e){

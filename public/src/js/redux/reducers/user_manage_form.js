@@ -74,6 +74,8 @@ function mainForm(state=initial_state,action){
 			})();
 		case FormActions.GET_CITIES_SIGNAL_STANDARD:
 		  return {...state, cities_standard: _t(action.data)}
+		case FormActions.RESET_CITIES_SIGNAL_STANDARD:
+		  return {...state, cities_standard: []}
 		case FormActions.SAVE_USER_INFO_ING:
 		  return {...state, save_ing: true }
 		case FormActions.SAVE_USER_INFO_SUCCESS:

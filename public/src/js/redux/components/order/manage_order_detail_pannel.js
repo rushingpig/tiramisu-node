@@ -86,7 +86,14 @@ class ManageOrderDetailPannel extends Component {
     //有params则表示是编辑订单
     var { params } = this.props;
     if(params && params.id){
-      this.props.getOrderById(params.id);
+      this.orderRequest = this.props.getOrderById(params.id);
+    }
+  }
+  componentWillUnmount(){
+    try{
+      this.orderRequest && this.orderRequest.abort();
+    }catch(e){
+      console.log(e);
     }
   }
 }

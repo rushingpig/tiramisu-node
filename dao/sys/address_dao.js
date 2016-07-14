@@ -63,7 +63,6 @@ AddressDao.prototype.findCities = function(query_data) {
     let params = [tables.dict_regionalism];
     sql += `INNER JOIN ?? dr2 ON dr2.id = dr.parent_id `;
     params.push(tables.dict_regionalism);
-    console.log(query_data);
     if (query_data.is_standard_area == '1') {
         sql += `LEFT JOIN ?? dr3 ON dr3.parent_id = dr.id `;
         params.push(tables.dict_regionalism);
@@ -250,23 +249,6 @@ AddressDao.prototype.modifyStationCoordsInTransaction = function(req, arr) {
 AddressDao.prototype.findCitiesByIds = function(city_ids) {
     let sql = "select * from ?? where id in " + dbHelper.genInSql(city_ids) + " and level_type = 2 and del_flag = ?";
     let params = [tables.dict_regionalism, del_flag.SHOW];
-    return baseDao.select(sql, params);
-};
-AddressDao.prototype.findAllCities = function(query_data) {
-    let ds = query_data.user.data_scopes;
-    let sql = "select * from ?? where level_type = 2 and del_flag = ?";
-    let params = [tables.dict_regionalism, del_flag.SHOW];
-    // data filter start
-    if (!toolUtils.isEmptyArray(ds) && !query_data.user.is_headquarters) {
-        if (!query_data.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1) {
-            ds.forEach(curr => {
-                if (curr == constant.DS.OFFICEANDCHILD.id && query_data.user.role_ids) {
-                    sql += " and id in " + dbHelper.genInSql(query_data.user.city_ids);
-                }
-            });
-        }
-    }
-    // data filter end
     return baseDao.select(sql, params);
 };
 AddressDao.prototype.getProvincesAndCites = function(){

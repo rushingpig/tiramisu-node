@@ -211,7 +211,7 @@ AddressService.prototype.getAllCities = (req, res, next) => {
         signal: signal,
         user: req.session.user
     };
-    let promise = addressDao.findAllCities(query_data).then(result => {
+    let promise = addressDao.findCities(query_data).then(result => {
         if (toolUtils.isEmptyArray(result)) {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }

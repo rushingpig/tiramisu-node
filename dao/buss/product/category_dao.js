@@ -470,6 +470,9 @@ CategoryDao.prototype.findCategoriesList = function(req, data) {
     if (data.city_id) {
         inner_table_sql += ' and sku.regionalism_id = ' + data.city_id;
     }
+    if (data.province_id) {
+        inner_table_sql += ' join dict_regionalism dict on sku.regionalism_id = dict.id and dict.del_flag = 1 and dict.parent_id = ' + data.province_id;
+    }
 
     let select_sql = ' from ?? cate_primary join ?? cate_secondary on cate_primary.id = cate_secondary.parent_id and cate_primary.del_flag = ? and cate_secondary.del_flag = ? ' +
         ' left join (' + inner_table_sql + ') tab on cate_secondary.id = tab.category_id ';
@@ -526,14 +529,6 @@ CategoryDao.prototype.findCategoriesList = function(req, data) {
     if (data.city_id) {
         // 需要根据二级分类进行排序
         columns.push('cate_regions_secondary.sort as secondary_sort');
-    }
-
-    if (data.province_id) {
-        select_sql += 'left join ?? dict on tab.regionalism_id = dict.id and dict.del_flag = ? ';
-        select_params.push('dict_regionalism');
-        select_params.push(del_flag.SHOW);
-        select_sql += ' and dict.parent_id = ? ';
-        select_params.push(data.province_id);
     }
 
     let sql = 'select ' + columns.join(',') + select_sql + where_sql + group_sql;

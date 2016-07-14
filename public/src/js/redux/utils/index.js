@@ -278,7 +278,6 @@ function dom_lock( dom ){
   if( $dom.css('position') == 'static' ){
     $dom.css('position', 'relative');
   }
-  console.log(scrollTop, scrollLeft);
   var $layer = $dom.data('_lock_layer') || $('<div><i class="fa fa-spin fa-lg fa-spinner"></i></div>');
   $layer.css({
     position: 'absolute',

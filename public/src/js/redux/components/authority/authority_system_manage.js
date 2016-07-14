@@ -126,7 +126,6 @@ class FilterHeader extends Component{
     if(value != this.refs.secmodules.props['default-value']){
       let selected = $(findDOMNode(this.refs.secmodules)).find(':selected').text();
       this.props.gotAuthorityListByModuleName(selected);
-      this.props.scrollTop(selected);
     }else{
       this.props.gotAuthorityListByModuleName('');
     }
@@ -176,7 +175,6 @@ class SystemAuthorityPannel extends Component{
         <div className="authority-manage">
           <TopHeader className="pull-right"/>
           <FilterHeader list={list}
-                        scrollTop = {this.scrollTop.bind(this)}
                         module_srcs={module_srcs} ViewAddModal={this.ViewAddModal}
                         gotAuthorityListByModuleName = {gotAuthorityListByModuleName}/>
           <div className="panel">
@@ -224,12 +222,6 @@ class SystemAuthorityPannel extends Component{
   componentWillMount() {
     const { gotAuthorityList } = this.props;
     gotAuthorityList();
-  }
-  scrollTop(selected){
-    let container = $(findDOMNode(this.refs.authoritys_container));
-    let onSelected = $(findDOMNode(this.refs.authoritys)).find('.' + selected).first();
-    var top = onSelected.position().top;
-    container.scrollTop(top);
   }
   ViewAddModal(){
     this.refs.viewAdd.show();

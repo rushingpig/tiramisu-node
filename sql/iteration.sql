@@ -577,7 +577,6 @@ insert into `dict_regionalism` VALUES
 ('440119','萝岗区',440100,'萝岗','3','020','','中国,广东省,广州市,增城区','','','Luogang','1',null,null);
 COMMIT;
 
-<<<<<<< HEAD
 -- ----------------------------
 --  Table structure for `sys_history`
 -- ----------------------------
@@ -608,8 +607,6 @@ CREATE TABLE `sys_history_type` (
 
 INSERT INTO `tiramisu`.`sys_history_type` (`name`, `created_by`, `created_time`) VALUES ('编辑产品', '1', '2016-06-20 12:00:00');
 
-=======
->>>>>>> origin/fix_pemission_trim
 # 2016-06-15 Wei Zhao
 # 创建开通城市表
 DROP TABLE IF EXISTS `sys_city`;

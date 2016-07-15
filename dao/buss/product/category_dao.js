@@ -470,6 +470,9 @@ CategoryDao.prototype.findCategoriesList = function(req, data) {
     if (data.city_id) {
         inner_table_sql += ' and sku.regionalism_id = ' + data.city_id;
     }
+    if (data.province_id) {
+        inner_table_sql += ' join dict_regionalism dict on sku.regionalism_id = dict.id and dict.del_flag = 1 and dict.parent_id = ' + data.province_id;
+    }
 
     let select_sql = ' from ?? cate_primary join ?? cate_secondary on cate_primary.id = cate_secondary.parent_id and cate_primary.del_flag = ? and cate_secondary.del_flag = ? ' +
         ' left join (' + inner_table_sql + ') tab on cate_secondary.id = tab.category_id ';
@@ -500,12 +503,21 @@ CategoryDao.prototype.findCategoriesList = function(req, data) {
     }
 
     // join buss_product_category_regionalism
-    select_sql += ' join ?? cate_regions_primary on cate_primary.id = cate_regions_primary.category_id and cate_regions_primary.del_flag = ? ';
+    select_sql += ' left join ?? cate_regions_primary on cate_primary.id = cate_regions_primary.category_id and cate_regions_primary.del_flag = ? ';
     select_params.push('buss_product_category_regionalism');
     select_params.push(del_flag.SHOW);
     // 权限控制：限制查询用户所属区域分类
     if (!req.session.user.is_headquarters) {
         select_sql += ' and cate_regions_primary.regionalism_id in ' + dbHelper.genInSql(req.session.user.city_ids);
+    }
+    if (data.city_id) {
+        where_sql += ' and cate_regions_primary.regionalism_id = ?';
+        where_params.push(data.city_id);
+    }
+    if (data.province_id) {
+        select_sql += ' join dict_regionalism dict_primary on cate_regions_primary.regionalism_id = dict_primary.id and dict_primary.del_flag = 1 ';
+        where_sql += ' and dict_primary.parent_id = ?';
+        where_params.push(data.province_id);
     }
 
     // province_id、city_id两个参数，要求只能传一个或者都不传
@@ -515,25 +527,26 @@ CategoryDao.prototype.findCategoriesList = function(req, data) {
         columns.push('cate_regions_primary.sort as primary_sort');
     }
 
-    select_sql += ' join ?? cate_regions_secondary on cate_secondary.id = cate_regions_secondary.category_id and cate_regions_secondary.del_flag = ? ';
+    select_sql += ' left join ?? cate_regions_secondary on cate_secondary.id = cate_regions_secondary.category_id and cate_regions_secondary.del_flag = ? ';
     select_params.push('buss_product_category_regionalism');
     select_params.push(del_flag.SHOW);
     // 权限控制：限制查询用户所属区域分类
     if (!req.session.user.is_headquarters) {
         select_sql += ' and cate_regions_secondary.regionalism_id in ' + dbHelper.genInSql(req.session.user.city_ids);
     }
+    if (data.city_id) {
+        where_sql += ' and cate_regions_secondary.regionalism_id = ?';
+        where_params.push(data.city_id);
+    }
+    if (data.province_id) {
+        select_sql += ' join dict_regionalism dict_secondary on cate_regions_secondary.regionalism_id = dict_secondary.id and dict_secondary.del_flag = 1 ';
+        where_sql += ' and dict_secondary.parent_id = ?';
+        where_params.push(data.province_id);
+    }
 
     if (data.city_id) {
         // 需要根据二级分类进行排序
         columns.push('cate_regions_secondary.sort as secondary_sort');
-    }
-
-    if (data.province_id) {
-        select_sql += 'left join ?? dict on tab.regionalism_id = dict.id and dict.del_flag = ? ';
-        select_params.push('dict_regionalism');
-        select_params.push(del_flag.SHOW);
-        select_sql += ' and dict.parent_id = ? ';
-        select_params.push(data.province_id);
     }
 
     let sql = 'select ' + columns.join(',') + select_sql + where_sql + group_sql;

@@ -9,6 +9,7 @@ function SystemMiddleware(type) {
 
 const tiramisu_env = process.env.NODE_ENV;
 const debug_arr = ['dev', 'development','qa','test'];
+const always_debug_req = true;
 
 SystemMiddleware.prototype = {
   // intercept and wrap the ServerResponse instance
@@ -37,7 +38,9 @@ SystemMiddleware.prototype = {
   },
   debugReqAndResParams: function (req, res, next) {
 
-    if (!tiramisu_env || debug_arr.indexOf(tiramisu_env) !== -1) {
+    if (always_debug_req || !tiramisu_env || debug_arr.indexOf(tiramisu_env) !== -1) {
+      let user_id = (req.session && req.session.user && req.session.user.id) ? req.session.user.id : 0;
+      console.log('[%s] %s %s', user_id, req.method.toUpperCase(), req.originalUrl);
       console.log('******************** 请༗求༗参༗数༗ **********************');
       if ('get' === req.method.toLowerCase()) {
         if (!toolUtils.isEmptyObject(req.params)) {

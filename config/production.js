@@ -133,7 +133,7 @@ var white_ips = [
 
 var log4js_options = {
     reloadSecs: 3000 ,   // the interval to reload the log4js config file
-    cwd : './log/'
+    cwd : '/xfxb/logs/tiramisu'
 };
 
 var ping_xx = {

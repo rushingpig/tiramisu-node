@@ -2,6 +2,7 @@
 var clone = require('clone');
 var res_obj = require('../../util/res_obj');
 var toolUtils = require('../../common/ToolUtils');
+var logger = require('../../common/LogHelper').systemLog();
 
 function SystemMiddleware(type) {
   this.type = type;
@@ -40,19 +41,19 @@ SystemMiddleware.prototype = {
 
     if (always_debug_req || !tiramisu_env || debug_arr.indexOf(tiramisu_env) !== -1) {
       let user_id = (req.session && req.session.user && req.session.user.id) ? req.session.user.id : 0;
-      console.log('[%s] %s %s', user_id, req.method.toUpperCase(), req.originalUrl);
-      console.log('******************** 请༗求༗参༗数༗ **********************');
+      logger.info('[%s] %s %s', user_id, req.method.toUpperCase(), req.originalUrl);
+      logger.info('******************** 请༗求༗参༗数༗ **********************');
       if ('get' === req.method.toLowerCase()) {
         if (!toolUtils.isEmptyObject(req.params)) {
-          console.log('params -> \n', req.params);
+          logger.info('params -> \n', req.params);
         }
         if (!toolUtils.isEmptyObject(req.query)) {
-          console.log('query -> \n', req.query);
+          logger.info('query -> \n', req.query);
         }
       } else {
-        console.log('body -> \n', JSON.stringify(req.body, null, 2));
+        logger.info('body -> \n', JSON.stringify(req.body, null, 2));
       }
-      console.log('********************************************************\n');
+      logger.info('********************************************************\n');
     }
     next();
   }
@@ -92,9 +93,9 @@ function api(res) {
         temp.err = err || '';
       }
       if (!tiramisu_env || debug_arr.indexOf(tiramisu_env) !== -1) {
-        console.log('******************** 返༗回༗参༗数༗ **********************');
-        console.log(JSON.stringify(temp,null,2));
-        console.log('********************************************************\n');
+        logger.info('******************** 返༗回༗参༗数༗ **********************');
+        logger.info(JSON.stringify(temp,null,2));
+        logger.info('********************************************************\n');
       }
       return res.json(temp);
     } catch (err) {

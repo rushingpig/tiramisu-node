@@ -41,19 +41,21 @@ SystemMiddleware.prototype = {
 
     if (always_debug_req || !tiramisu_env || debug_arr.indexOf(tiramisu_env) !== -1) {
       let user_id = (req.session && req.session.user && req.session.user.id) ? req.session.user.id : 0;
-      logger.info('[%s] %s %s', user_id, req.method.toUpperCase(), req.originalUrl);
-      logger.info('******************** 请༗求༗参༗数༗ **********************');
+      let log_str = '';
+      log_str += `[${user_id}] ${req.method.toUpperCase()} ${req.originalUrl}\n`;
+      log_str += `******************** 请༗求༗参༗数༗ **********************\n`;
       if ('get' === req.method.toLowerCase()) {
         if (!toolUtils.isEmptyObject(req.params)) {
-          logger.info('params -> \n', req.params);
+          log_str += `params = ${JSON.stringify(req.params, null, 2)}\n`;
         }
         if (!toolUtils.isEmptyObject(req.query)) {
-          logger.info('query -> \n', req.query);
+          log_str += `query = ${JSON.stringify(req.query, null, 2)}\n`;
         }
       } else {
-        logger.info('body -> \n', JSON.stringify(req.body, null, 2));
+        log_str += `body = ${JSON.stringify(req.body, null, 2)}\n`;
       }
-      logger.info('********************************************************\n');
+      log_str += `********************************************************\n`;
+      logger.info(log_str);
     }
     next();
   }

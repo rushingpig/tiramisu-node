@@ -249,13 +249,7 @@ UserService.prototype.listUsers = (req,res,next) => {
         return;
     }
     let q = req.query;
-    let query_data = {
-        org_id : q.org_id,
-        uname_or_name : q.uname_or_name,
-        page_no : q.page_no,
-        page_size : q.page_size,
-        user : req.session.user
-    };
+    let query_data = Object.assign({user: req.session.user}, req.query);
     let promise = userDao.findUsers(query_data).then(_res => {
         if(toolUtils.isEmptyArray(_res._result) || toolUtils.isEmptyArray(_res.result)){
             throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS,null);

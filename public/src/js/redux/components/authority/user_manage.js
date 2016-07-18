@@ -105,9 +105,16 @@ class FilterHeader extends Component {
     }*/
     var {fields: {uname_or_name, province_id, city_id, district_id}} = this.props;
     data.uname_or_name = uname_or_name.value;
-    data.province_id = province_id.value;
-    data.city_id = city_id.value;
-    data.district_id = district_id.value;
+    if(district_id && district_id.value && district_id.value != SELECT_DEFAULT_VALUE){
+      data.city_id = district_id.value;
+      delete data.is_standard_area;
+    }else if(city_id && city_id.value && city_id.value != SELECT_DEFAULT_VALUE){
+      data.city_id = city_id.value;
+      data.is_standard_area = 1;
+    }else if(province_id && province_id.value && province_id.value != SELECT_DEFAULT_VALUE){
+      data.city_id = province_id.value;
+      delete data.is_standard_area;
+    }
     this.props.actions.getUserList(data)
         .always(()=>{
           this.setState({search_ing: false});
@@ -284,7 +291,7 @@ class UserManagePannel extends Component{
     var {page_no} = filterdata;
     page = typeof page == 'undefined' ? page_no : page;
     filterdata.page_no = page;
-    this.props.actions.getUserList(filterdata);
+    this.props.getUserList(filterdata);
   }
 
   viewDeleteUserModal(id){

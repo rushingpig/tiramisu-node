@@ -54,8 +54,14 @@ class FilterHeader extends Component {
               &&
               <AddressSelector key='address-selector'
                                 {...{ province_id, city_id, district_id, provinces, cities, districts, actions, AddressSelectorHook:this.AddressSelectorHook }} />,
+              V('UserManageHeadquarterFilter')
+              &&
+              <label>
+                <input ref='is_headquarters' type='checkbox' />
+                <label style={{fontWeight:'normal', fontSize: '12px', marginRight: '5px'}}>{'不包括总部'}</label>
+              </label>,
               V('UserManageUnameOrNameFilter') && V('UserManageAddressFilter') && 
-              <button key='searchBtn' disabled={search_ing} data-submitting={search_ing}  className="btn btn-theme btn-xs space-left" onClick={this.search.bind(this)}>
+              <button key='searchBtn' disabled={search_ing} data-submitting={search_ing}  className="btn btn-theme btn-xs space-left " onClick={this.search.bind(this)}>
                 <i className="fa fa-search"></i>{' 查詢'}
               </button>            
             ]
@@ -111,9 +117,18 @@ class FilterHeader extends Component {
     }else if(city_id && city_id.value && city_id.value != SELECT_DEFAULT_VALUE){
       data.city_id = city_id.value;
       data.is_standard_area = 1;
-    }else if(province_id && province_id.value && province_id.value != SELECT_DEFAULT_VALUE){
-      data.city_id = province_id.value;
-      delete data.is_standard_area;
+    }
+    if(province_id && province_id.value && province_id.value != SELECT_DEFAULT_VALUE){
+      data.province_id = province_id.value;
+    }
+    if(this.refs.is_headquarters){
+      if(this.refs.is_headquarters.checked){
+        data.is_headquarters = 0;
+      }else{
+        data.is_headquarters = 1;
+      }
+    }else{
+      data.is_headquarters = 0;
     }
     this.props.actions.getUserList(data)
         .always(()=>{
@@ -301,7 +316,7 @@ class UserManagePannel extends Component{
   viewUsableAlterModal(id,is_usable){
     this.refs.usableAlter.show(id,is_usable);
   }
-
+  
   componentDidMount(){
     LazyLoad('noty');
     setTimeout(()=>{

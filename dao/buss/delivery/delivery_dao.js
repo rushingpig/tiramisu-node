@@ -27,26 +27,39 @@ function DeliveryDao(){
  * query for stations
  */
 DeliveryDao.prototype.findAllStations = function(query_data){
-    let sql = "select bds.* from ?? bds";
+    let sql = `SELECT bds.* FROM ?? bds `;
     let params = [];
     params.push(tables.buss_delivery_station);
+    sql += `INNER JOIN ?? dr ON dr.id = bds.regionalism_id `;  // 区
+    params.push(tables.dict_regionalism);
+    sql += `INNER JOIN ?? sc ON sc.regionalism_id = dr.id `;
+    params.push(tables.sys_city);
     if(query_data && query_data.city_id){
-        sql += " inner join ?? dr on dr.id = bds.regionalism_id and (dr.parent_id = ? or bds.is_national > 0)";
-        params.push(tables.dict_regionalism);
-        params.push(query_data.city_id);
+        if (query_data.is_standard_area == '1') {
+            sql += `AND (dr.parent_id = ? OR bds.is_national > 0) `;
+            params.push(query_data.city_id);
+        } else {
+            sql += `AND ( (dr.id = ? AND sc.is_city = 1 ) OR (dr.parent_id = ? AND sc.is_city = 0 ) OR bds.is_national > 0 ) `;
+            params.push(query_data.city_id);
+            params.push(query_data.city_id);
+        }
     }
     if(query_data && query_data.city_ids){
-        sql += " inner join ?? dr on dr.id = bds.regionalism_id and (dr.parent_id in "+dbHelper.genInSql(query_data.city_ids)+"  or bds.is_national > 0)";
-        params.push(tables.dict_regionalism);
+        let city_ids_str = dbHelper.genInSql(query_data.city_ids);
+        if (query_data.is_standard_area == '1') {
+            sql += `AND (dr.parent_id IN ${city_ids_str} OR bds.is_national > 0) `;
+        } else {
+            sql += `AND ( (dr.id IN ${city_ids_str} AND sc.is_city = 1 ) OR (dr.parent_id IN ${city_ids_str} AND sc.is_city = 0 ) OR bds.is_national > 0 ) `;
+        }
     }
-    sql += " where bds.del_flag = ?";
+    sql += `WHERE bds.del_flag = ? `;
+    params.push(del_flag.SHOW);
     // data filter begin
     // 添加用户时只展示该用户所属的配送站供选择
     if(query_data && query_data.signal && query_data.user.is_national == 0){
         sql += " and bds.id in " + dbHelper.genInSql(query_data.user.station_ids);
     }
     // data filter end
-    params.push(del_flag.SHOW);
     if(query_data && query_data.station_ids){
         sql += " and bds.id in"+dbHelper.genInSql(query_data.station_ids);
     }

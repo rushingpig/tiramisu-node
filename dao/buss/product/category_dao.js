@@ -458,6 +458,8 @@ CategoryDao.prototype.getCategoryRegionsById = function(data) {
  */
 CategoryDao.prototype.findCategoriesList = function(req, data) {
 
+    // primary_id、secondary_id两个参数，要求只能传一个或者都不传
+    // province_id、city_id两个参数，要求只能传一个或者都不传
     let columns = [
         'count(distinct tab.id) as count',
         'cate_primary.id as primary_id',
@@ -466,12 +468,14 @@ CategoryDao.prototype.findCategoriesList = function(req, data) {
         'cate_secondary.name as secondary_name',
     ];
 
+    // inner sql: product join sku join regionalism
     let inner_table_sql = 'select product.id as id,product.category_id as category_id,sku.regionalism_id as regionalism_id from ?? product join ?? sku on product.id = sku.product_id and product.del_flag = ? and sku.del_flag = ? ';
     if (data.city_id) {
-        inner_table_sql += ' and sku.regionalism_id = ' + data.city_id;
+        inner_table_sql += ' where sku.regionalism_id = ' + data.city_id;
     }
     if (data.province_id) {
-        inner_table_sql += ' join dict_regionalism dict on sku.regionalism_id = dict.id and dict.del_flag = 1 and dict.parent_id = ' + data.province_id;
+        inner_table_sql += ' join dict_regionalism dict_low on sku.regionalism_id = dict_low.id and dict_low.del_flag = 1 join dict_regionalism dict_high on dict_low.parent_id = dict_high.id and dict_high.del_flag = 1 ' + 
+            ' where (dict_low.level_type = 3 and dict_high.parent_id = ' + data.province_id + ') or (dict_low.level_type = 2 and dict_high.id = ' + data.province_id + ')';
     }
 
     let select_sql = ' from ?? cate_primary join ?? cate_secondary on cate_primary.id = cate_secondary.parent_id and cate_primary.del_flag = ? and cate_secondary.del_flag = ? ' +
@@ -492,7 +496,6 @@ CategoryDao.prototype.findCategoriesList = function(req, data) {
 
     let group_sql = ' group by cate_primary.id,cate_secondary.id ';
 
-    // primary_id、secondary_id两个参数，要求只能传一个或者都不传
     if (data.primary_id) {
         where_sql += ' and cate_primary.id = ? ';
         where_params.push(data.primary_id);
@@ -503,50 +506,76 @@ CategoryDao.prototype.findCategoriesList = function(req, data) {
     }
 
     // join buss_product_category_regionalism
-    select_sql += ' left join ?? cate_regions_primary on cate_primary.id = cate_regions_primary.category_id and cate_regions_primary.del_flag = ? ';
-    select_params.push('buss_product_category_regionalism');
-    select_params.push(del_flag.SHOW);
+    let inner_primary_columns = [
+        'cate_regions_primary.category_id as category_id',
+        'cate_regions_primary.regionalism_id as regionalism_id',
+        'cate_regions_primary.sort as sort'
+    ];
+    let inner_primary_join = '';
+    if (data.city_id) {
+        inner_primary_join += ' join dict_regionalism dict_low ON cate_regions_primary.regionalism_id = dict_low.id AND dict_low.del_flag = 1 ' +
+            ' join dict_regionalism dict_high on dict_low.parent_id = dict_high.id AND dict_high.del_flag = 1 ' +
+            ' where dict_low.id = ' + data.city_id;
+        inner_primary_columns.push('dict_low.id as city_id');
+        inner_primary_columns.push('case dict_low.level_type when 3 then dict_high.parent_id when 2 then dict_high.id end as province_id');
+    }
+    if (data.province_id) {
+        inner_primary_join += ' join dict_regionalism dict_low ON cate_regions_primary.regionalism_id = dict_low.id AND dict_low.del_flag = 1 ' +
+            ' join dict_regionalism dict_high on dict_low.parent_id = dict_high.id AND dict_high.del_flag = 1 ' +
+            ' where (dict_low.level_type = 2 and dict_high.id = ' + data.province_id + ') or (dict_low.level_type = 3 and dict_high.parent_id = ' + data.province_id + ')';
+        inner_primary_columns.push('dict_low.id as city_id');
+        inner_primary_columns.push('case dict_low.level_type when 3 then dict_high.parent_id when 2 then dict_high.id end as province_id');
+    }
+    let inner_primary_sql = 'select ' +  inner_primary_columns.join(',') + ' from buss_product_category_regionalism cate_regions_primary ' + inner_primary_join;
+    select_sql += ' left join (' + inner_primary_sql + ') cate_regions_primary on cate_secondary.id = cate_regions_primary.category_id ';
     // 权限控制：限制查询用户所属区域分类
     if (!req.session.user.is_headquarters) {
         select_sql += ' and cate_regions_primary.regionalism_id in ' + dbHelper.genInSql(req.session.user.city_ids);
     }
+
+    // join buss_product_category_regionalism
+    let inner_secondary_columns = [
+        'cate_regions_secondary.category_id as category_id',
+        'cate_regions_secondary.regionalism_id as regionalism_id',
+        'cate_regions_secondary.sort as sort'
+    ];
+    let inner_secondary_join = '';
     if (data.city_id) {
-        where_sql += ' and cate_regions_primary.regionalism_id = ?';
-        where_params.push(data.city_id);
+        inner_secondary_join += ' join dict_regionalism dict_low ON cate_regions_secondary.regionalism_id = dict_low.id AND dict_low.del_flag = 1 ' +
+            ' join dict_regionalism dict_high on dict_low.parent_id = dict_high.id AND dict_high.del_flag = 1 ' +
+            ' where dict_low.id = ' + data.city_id;
+        inner_secondary_columns.push('dict_low.id as city_id');
+        inner_secondary_columns.push('case dict_low.level_type when 3 then dict_high.parent_id when 2 then dict_high.id end as province_id');
     }
     if (data.province_id) {
-        select_sql += ' join dict_regionalism dict_primary on cate_regions_primary.regionalism_id = dict_primary.id and dict_primary.del_flag = 1 ';
-        where_sql += ' and dict_primary.parent_id = ?';
-        where_params.push(data.province_id);
+        inner_secondary_join += ' join dict_regionalism dict_low ON cate_regions_secondary.regionalism_id = dict_low.id AND dict_low.del_flag = 1 ' +
+            ' join dict_regionalism dict_high on dict_low.parent_id = dict_high.id AND dict_high.del_flag = 1 ' +
+            ' where (dict_low.level_type = 2 and dict_high.id = ' + data.province_id + ') or (dict_low.level_type = 3 and dict_high.parent_id = ' + data.province_id + ')';
+        inner_secondary_columns.push('dict_low.id as city_id');
+        inner_secondary_columns.push('case dict_low.level_type when 3 then dict_high.parent_id when 2 then dict_high.id end as province_id');
     }
-
-    // province_id、city_id两个参数，要求只能传一个或者都不传
-    if (data.city_id) {
-        // 当存在city_id，需要对结果进行排序
-        // 需要根据一级分类进行排序
-        columns.push('cate_regions_primary.sort as primary_sort');
-    }
-
-    select_sql += ' left join ?? cate_regions_secondary on cate_secondary.id = cate_regions_secondary.category_id and cate_regions_secondary.del_flag = ? ';
-    select_params.push('buss_product_category_regionalism');
-    select_params.push(del_flag.SHOW);
+    let inner_secondary_sql = 'select ' +  inner_secondary_columns.join(',') + ' from buss_product_category_regionalism cate_regions_secondary ' + inner_secondary_join;
+    select_sql += ' left join (' + inner_secondary_sql + ') cate_regions_secondary on cate_secondary.id = cate_regions_secondary.category_id ';
     // 权限控制：限制查询用户所属区域分类
     if (!req.session.user.is_headquarters) {
         select_sql += ' and cate_regions_secondary.regionalism_id in ' + dbHelper.genInSql(req.session.user.city_ids);
     }
+
+    // 当存在city_id，需要对结果进行排序
     if (data.city_id) {
-        where_sql += ' and cate_regions_secondary.regionalism_id = ?';
-        where_params.push(data.city_id);
-    }
-    if (data.province_id) {
-        select_sql += ' join dict_regionalism dict_secondary on cate_regions_secondary.regionalism_id = dict_secondary.id and dict_secondary.del_flag = 1 ';
-        where_sql += ' and dict_secondary.parent_id = ?';
-        where_params.push(data.province_id);
+        // 需要根据一级分类进行排序
+        columns.push('cate_regions_primary.sort as primary_sort');
+        // 需要根据二级分类进行排序
+        columns.push('cate_regions_secondary.sort as secondary_sort');
     }
 
     if (data.city_id) {
-        // 需要根据二级分类进行排序
-        columns.push('cate_regions_secondary.sort as secondary_sort');
+        where_sql += ' and cate_regions_primary.city_id = ' + data.city_id;
+        where_sql += ' and cate_regions_secondary.city_id = ' + data.city_id;
+    }
+    if (data.province_id) {
+        where_sql += ' and cate_regions_primary.province_id = ' + data.province_id;
+        where_sql += ' and cate_regions_secondary.province_id = ' + data.province_id;
     }
 
     let sql = 'select ' + columns.join(',') + select_sql + where_sql + group_sql;

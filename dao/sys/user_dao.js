@@ -176,6 +176,25 @@ UserDao.prototype.findUsers = function(query_data){
     sql += " inner join ?? sr on sr.id = sur.role_id";
     params.push(tables.sys_role);
     sql += " where 1=1";
+    if (query_data.province_id) {
+        let province_id_str = query_data.province_id.toString();
+        sql += " and (su.city_ids REGEXP ? or su.is_headquarters = 1) ";
+        params.push(province_id_str.substr(0, 2) + '[0-9]{4}');
+    }
+    if (query_data.city_id) {
+        let city_id_str = query_data.city_id.toString();
+        if (query_data.is_standard_area == '1') {
+            sql += " and (su.city_ids REGEXP ? or su.is_headquarters = 1)";
+            params.push(city_id_str.substr(0, 4) + '[0-9]{2}');
+        } else {
+            sql += " and (FIND_IN_SET( ? , su.city_ids) or su.is_headquarters = 1) ";
+            params.push(query_data.city_id);
+        }
+    }
+    if (query_data.is_headquarters) {
+        sql += ` and su.is_headquarters = ? `;
+        params.push(query_data.is_headquarters);
+    }
     // data filter begin
     let ds_sql = "",temp_sql = "";
     if(!toolUtils.isEmptyArray(ds)){
@@ -228,6 +247,7 @@ UserDao.prototype.findUsers = function(query_data){
     let count_sql = dbHelper.countSql(sql);
     return baseDao.select(count_sql,params).then(result=>{
         let pagination_sql = prefix_sql + dbHelper.paginate(sql,query_data.page_no,query_data.page_size) + suffix_sql;
+        console.log(require('mysql').format(pagination_sql,params));
         return baseDao.select(pagination_sql,params).then(_result => {
             return {result,_result};
         });

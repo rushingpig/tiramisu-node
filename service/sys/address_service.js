@@ -14,6 +14,9 @@ var dao = require('../../dao'),
     TiramisuError = require('../../error/tiramisu_error'),
     res_obj = require('../../util/res_obj');
 
+var Constant = require('../../common/Constant');
+let LEVEL = Constant.REGIONALISM_LEVEL;
+
 function AddressService() {
 
 }
@@ -48,13 +51,15 @@ AddressService.prototype.getProvinces = (req, res, next) => {
  * @param next
  */
 AddressService.prototype.getCities = (req, res, next) => {
-    let provinceId = req.params.provinceId;
     let signal = req.query.signal;
     let query_data = {
+        province_id: req.params.provinceId,
+        city_id: req.params.cityId,
+        is_standard_area: req.query.is_standard_area,
         signal: signal,
         user: req.session.user
     };
-    systemUtils.wrapService(res, next, addressDao.findCitiesByProvinceId(provinceId, query_data).then((results) => {
+    systemUtils.wrapService(res, next, addressDao.findCities(query_data).then((results) => {
         let data = {};
         if (!results || results.length == 0) {
             res.api(res_obj.NO_MORE_RESULTS, null);
@@ -80,7 +85,10 @@ AddressService.prototype.getDistricts = (req, res, next) => {
         return;
     }
     let cityId = req.params.cityId;
-    systemUtils.wrapService(res, next, addressDao.findDistrictsByCityId(cityId).then((results) => {
+    let query = {
+        is_standard_area: req.query.is_standard_area
+    };
+    systemUtils.wrapService(res, next, addressDao.findDistrictsByCityId(cityId, query).then((results) => {
         let data = {};
         if (!results || results.length == 0) {
             res.api(res_obj.NO_MORE_RESULTS, null);
@@ -203,7 +211,7 @@ AddressService.prototype.getAllCities = (req, res, next) => {
         signal: signal,
         user: req.session.user
     };
-    let promise = addressDao.findAllCities(query_data).then(result => {
+    let promise = addressDao.findCities(query_data).then(result => {
         if (toolUtils.isEmptyArray(result)) {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }

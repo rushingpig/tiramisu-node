@@ -43,6 +43,7 @@ routerI.put('/order/error', orderService.editOrderError);
 //*********************
 a.get('/provinces',addressService.getProvinces);    // 获取所有省份信息
 a.get('/province/:provinceId/cities',addressService.getCities); // 获取指定省份下的所有城市信息
+a.get('/city/:cityId/cities', addressService.getCities); // 获取指定城市下的所有开通城市
 a.get('/provinces/cities', addressService.getProvincesAndCites); // 获取所有省份与城市信息
 //a.get(/^\/city\/(\d+)\/districts$/,addressService.getDistricts);
 a.get('/city/:cityId/districts', addressService.getDistricts); // 获取指定城市下的所有行政区域信息

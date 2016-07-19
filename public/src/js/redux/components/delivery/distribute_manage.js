@@ -703,6 +703,7 @@ var SignedModal = React.createClass({
       current_id: -1,
       deliverymanAtSameStation: [],
       pay_way:1,
+      is_refund: false,
     };
   },
   mixins: [ LinkedStateMixin ],
@@ -760,43 +761,53 @@ var SignedModal = React.createClass({
           </div>
         </div>
         <div className="form-group mg-15">
-          <label className="">
-            <input value={this.state.CASH} onClick={this.checkMethod} checked={this.state.CASH == refund_method} type="radio" name="method" />
-            {' 现金赔偿（迟到30mins以内）'}
+          <label>
+            <input checked = {this.state.is_refund} type = 'checkbox' onClick={this.isRefundChange}/>
+            {' 使用幸福承诺'}
           </label>
-          {
-            this.state.refund_method == this.state.CASH
-            ? <div className="form-group form-inline">
-                <div className="input-group input-group-xs pl-20">
-                  <input valueLink={this.linkState('refund_money')} className="form-control input-xs" style={{'width': 50}} />
-                  <span className="input-group-addon">RMB</span>
+        </div>
+        {
+          this.state.is_refund && 
+          [<div className="form-group mg-15">
+            <label className="">
+              <input value={this.state.CASH} onClick={this.checkMethod} checked={this.state.CASH == refund_method} type="radio" name="method" />
+              {' 现金赔偿（迟到30mins以内）'}
+            </label>
+            {
+              this.state.refund_method == this.state.CASH
+              ? <div className="form-group form-inline">
+                  <div className="input-group input-group-xs pl-20">
+                    <input valueLink={this.linkState('refund_money')} className="form-control input-xs" style={{'width': 50}} />
+                    <span className="input-group-addon">RMB</span>
+                  </div>
                 </div>
-              </div>
-            : null
-          }
-        </div>
-        <div className="form-group mg-15">
-          <label className="">
-            <input value={this.state.REFUND} onClick={this.checkMethod} checked={this.state.REFUND == refund_method} type="radio" name="method" />
-            {' 全额退款（迟到时间>=30mins）'}
-          </label>
-          {
-            this.state.refund_method == this.state.REFUND
-            ? <div className="form-group pl-20">
-                <RadioGroup 
-                  value={refund_reson} 
-                  vertical={true}
-                  name="refund_reson"
-                  radios={[
-                    {value: '迟到30mins以上', text: '迟到30mins以上'}, 
-                    {value: '款式不符', text: '款式不符'}, 
-                    {value: '尺寸、规格不符', text: '尺寸、规格不符'}]}
-                  onChange={this.checkReason}
-                />
-              </div>
-            : null
-          }
-        </div>
+              : null
+            }
+          </div>,
+          <div className="form-group mg-15">
+            <label className="">
+              <input value={this.state.REFUND} onClick={this.checkMethod} checked={this.state.REFUND == refund_method} type="radio" name="method" />
+              {' 全额退款（迟到时间>=30mins）'}
+            </label>
+            {
+              this.state.refund_method == this.state.REFUND
+              ? <div className="form-group pl-20">
+                  <RadioGroup 
+                    value={refund_reson} 
+                    vertical={true}
+                    name="refund_reson"
+                    radios={[
+                      {value: '迟到30mins以上', text: '迟到30mins以上'}, 
+                      {value: '款式不符', text: '款式不符'}, 
+                      {value: '尺寸、规格不符', text: '尺寸、规格不符'}]}
+                    onChange={this.checkReason}
+                  />
+                </div>
+              : null
+            }
+          </div>]          
+        }
+
         <div className="form-group mg-15">
           <label>已购配件：</label>
           <table className="table table-hove text-center table-bordered">
@@ -822,6 +833,9 @@ var SignedModal = React.createClass({
         </div>
       </StdModal>
     )
+  },
+  isRefundChange(){
+    this.setState({is_refund: !this.state.is_refund});
   },
   submitHandler(){
     var { order, CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date, current_id, deliverymanAtSameStation, pay_way } = this.state;
@@ -850,22 +864,30 @@ var SignedModal = React.createClass({
       Noty('warning', '请填写正确的签收时间');return;
     }
     // 去掉迟到赔付必填
-    if(late_minutes > 0){
-/*      if(!refund_method){
+ /*    if(late_minutes > 0){
+     if(!refund_method){
         Noty('warning', '请选择赔偿方式');return;
       }*/
-      if(refund_method == CASH){
-        if(!form.isNumber(refund_money)){
-          Noty('warning', '请输入现金赔偿金额');return;
-        }else if(refund_money > 29){
-          Noty('warning', '现金赔偿金额不应大于29元');return;         
-        }
-      }else{
+    if(this.state.is_refund){
+      if(!refund_method){
+         Noty('warning', '请选择赔偿方式');return;
+       }
+       if(refund_method == CASH){
+         if(!form.isNumber(refund_money)){
+           Noty('warning', '请输入现金赔偿金额');return;
+         }else if(refund_money > 29){
+           Noty('warning', '现金赔偿金额不应大于29元');return;         
+         }
+       }
+    }
+
+      //去掉必须的全额退款
+/*      else{
         if(!refund_reson){
           Noty('warning', '请勾选全额退款原因');return;
         }
       }
-    }
+    }*/
     var { orderSpareparts } = this.props.D_;
     var products = currentOrderSpareparts;
     var orderProducts = this.props.D_.orderDetail.products.filter( m =>  m.category_id != ACCESSORY_CATE_ID );

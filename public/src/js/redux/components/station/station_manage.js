@@ -105,10 +105,10 @@ class FilterHeader extends Component {
     )
   }
   componentDidMount(){
-    var { getProvincesSignal, getCitiesSignal, getDistricts, getAllStationsName, getStationList} = this.props;
-    getProvincesSignal('authority');
-    getCitiesSignal(ADDRESS.GUANG_ZHOU, 'authority');
-    getDistricts(ADDRESS.SHEN_ZHENG);
+    var { getProvincesSignal, getCitiesSignal, getDistrictsAndCity, getAllStationsName, getStationList} = this.props;
+    getProvincesSignal();
+    getCitiesSignal({ province_id: ADDRESS.GUANG_ZHOU, is_standard_area: 1 });
+    getDistrictsAndCity(ADDRESS.SHEN_ZHENG);
     getStationList({isPage: true, page_no: 0, page_size: 10}, 'station_manage_filter')
     getAllStationsName();
     LazyLoad('noty');
@@ -121,7 +121,7 @@ class FilterHeader extends Component {
     this.props.resetCities();
     if(value != this.refs.province.props['default-value'])
       var $city = $(findDOMNode(this.refs.city));
-      this.props.getCitiesSignal(value, 'authority').done(() => {
+      this.props.getCitiesSignal({ province_id: value, is_standard_area: 1 }).done(() => {
         $city.trigger('focus'); //聚焦已使city_id的值更新
       });
     callback(e);
@@ -131,7 +131,7 @@ class FilterHeader extends Component {
     this.props.resetDistricts();
     if(value != this.refs.city.props['default-value'])
       var $district = $(findDOMNode(this.refs.district));
-      this.props.getDistricts(value).done(() => {
+      this.props.getDistrictsAndCity(value).done(() => {
         $district.trigger('focus'); //聚焦已使city_id的值更新
       });
     callback(e);

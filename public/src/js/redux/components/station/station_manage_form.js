@@ -163,7 +163,7 @@ class StationManageForm extends Component {
   }
   componentDidMount(){
     var { getProvincesSignal } = this.props.actions;
-    getProvincesSignal('authority');
+    getProvincesSignal();
     var city = this.findSelectedOptionText('city');
     this.setState({ city });
     LazyLoad('noty');
@@ -172,7 +172,7 @@ class StationManageForm extends Component {
     var {value} = e.target;
     this.props.actions.resetCities();
     if(value != this.refs.province.props['default-value'])
-      this.props.actions.getCitiesSignal(value, 'authority');
+      this.props.actions.getCitiesSignal({ province_id: value });
     callback(e);
   }
   onCityChange(callback, e) {

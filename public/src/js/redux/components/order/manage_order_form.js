@@ -407,7 +407,7 @@ class ManageAddForm extends Component {
   }
   componentDidMount(){
     var {getProvincesSignal, getOrderSrcs, getDeliveryStations, getPayModes} = this.props.actions;
-    getProvincesSignal('authority');
+    getProvincesSignal();
     getOrderSrcs();
     getPayModes();
     // getDeliveryStations();
@@ -443,8 +443,9 @@ class ManageAddForm extends Component {
   onProvinceChange(callback, e){
     var {value} = e.target;
     this.props.actions.resetCities();
-    if(value != this.refs.province.props['default-value'])
-      this.props.actions.getCitiesSignal(value, 'authority');
+    if(value != this.refs.province.props['default-value']){
+      this.props.actions.getCitiesSignal({ province_id: value, is_standard_area: 1 });
+    }
     callback(e);
     this.props.actions.getDeliveryStations({city_id: SELECT_DEFAULT_VALUE}); //等同于clear stations数据
     this.props.actions.triggerFormUpdate('add_order', 'delivery_id', SELECT_DEFAULT_VALUE)
@@ -454,7 +455,7 @@ class ManageAddForm extends Component {
     this.props.actions.resetDistricts();
     this.props.actions.getDeliveryStations({city_id: value});
     if(value != this.refs.city.props['default-value'])
-      this.props.actions.getDistricts(value);
+      this.props.actions.getStandardDistricts(value);
     callback(e);
     this.props.actions.triggerFormUpdate('add_order', 'delivery_id', SELECT_DEFAULT_VALUE)
   }

@@ -97,7 +97,7 @@ class FilterHeader extends Component{
 	}
 
 	componentDidMount(){
-		this.props.getProvincesSignal('authority');
+		this.props.getProvincesSignal();
 	}
 	search(search_in_state){
 		this.setState({[search_in_state]: true});

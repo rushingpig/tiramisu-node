@@ -48,6 +48,7 @@ class ManageOrderDetailPannel extends Component {
         area={area} //传入provinces, cities（默认）
         actions={{...bindActionCreators(AreaActions(ProductsModalActionTypes), dispatch)}}
         cities={products_area_filter.cities}
+        districts={products_area_filter.districts}
       />
     );
     return (

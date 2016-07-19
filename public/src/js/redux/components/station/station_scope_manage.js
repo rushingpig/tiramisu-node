@@ -96,7 +96,9 @@ class FilterHeader extends Component {
         <div className="panel-body form-inline">
           <Autocomplete value={this.state.station_name} ref="autocomplete" placeholder={'请输入配送站名称'} onChange={this.stationInputHandler.bind(this)} list={name_list} className='pull-left space-right'/>
           <AddressSelector
-            {...{ province_id, city_id, district_id, provinces, cities, districts, actions: this.props, AddressSelectorHook: this.AddressSelectorHook }} />
+            {...{ province_id, city_id, district_id, provinces, cities, districts, actions: this.props,
+             AddressSelectorHook: this.AddressSelectorHook, form: 'station_scope_manage_filter' }}
+          />
           <button disabled={this.state.search_ing} data-submitting={this.state.search_ing} onClick={handleSubmit(this.search)} className="btn btn-theme btn-xs">
             <i className="fa fa-search" style={{'padding': '0 5px'}}></i>
             查询

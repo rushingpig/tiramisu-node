@@ -140,7 +140,9 @@ class FilterHeader extends Component {
           {
             V( 'OrderManageAddressFilter' )
               ? <AddressSelector
-                  {...{ province_id, city_id, district_id, provinces, cities, districts, actions, AddressSelectorHook: this.AddressSelectorHook }} />
+                  {...{ province_id, city_id, district_id, provinces, cities, districts, actions,
+                   AddressSelectorHook: this.AddressSelectorHook, form: 'order_manage_filter' }}
+                />
               : null
           }
           { 
@@ -174,7 +176,7 @@ class FilterHeader extends Component {
     }, 0);
   }
   AddressSelectorHook(e, data){
-    this.props.resetStationListWhenScopeChange();
+    this.props.resetStationListWhenScopeChange('order_manage_filter');
     this.props.getStationListByScopeSignal({ ...data });
   }
   search(search_in_state){

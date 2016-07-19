@@ -1,6 +1,8 @@
 import {get, post, GET} from 'utils/request'; //Promise
 import Url from 'config/url';
 import { AreaActionTypes1 } from 'actions/action_types';
+import { triggerFormUpdate } from 'actions/form';
+import { SELECT_DEFAULT_VALUE } from 'config/app.config';
 
 // signal ==> 已开通
 
@@ -19,9 +21,15 @@ export default function Area(ActionTypes = AreaActionTypes1){
     },
 
 
-    resetCities: function (){
-      return {
-        type: ActionTypes.RESET_CITIES,
+    resetCities: function (form_name){
+      return dispatch => {
+        if(form_name){
+          dispatch( triggerFormUpdate(form_name, 'city_id', SELECT_DEFAULT_VALUE) );
+          dispatch( triggerFormUpdate(form_name, 'district_id', SELECT_DEFAULT_VALUE) );
+        }
+        dispatch({
+          type: ActionTypes.RESET_CITIES,
+        });
       }
     },
     getAllCities:function(signal = 'authority'){
@@ -36,9 +44,12 @@ export default function Area(ActionTypes = AreaActionTypes1){
     },
 
 
-    resetDistricts: function (){
-      return {
-        type: ActionTypes.RESET_DISTRICTS,
+    resetDistricts: function (form_name){
+      return dispatch => {
+        form_name && dispatch( triggerFormUpdate(form_name, 'district_id', SELECT_DEFAULT_VALUE) );
+        dispatch({
+          type: ActionTypes.RESET_DISTRICTS,
+        });
       }
     },
     //获取区县(未单独开通)

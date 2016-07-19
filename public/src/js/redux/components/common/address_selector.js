@@ -51,16 +51,16 @@ export default class AddressSelector extends Component {
   }
   onProvinceChange(callback, e){
     var {value} = e.target;
-    this.props.actions.resetCities();
+    this.props.actions.resetCities(this.props.form);
     if(value != this.refs.province.props['default-value']){
       this.props.actions.getCitiesSignal({ province_id: value, is_standard_area: 1 });
     }
     callback(e);
-    this.props.AddressSelectorHook(e, { province_id: value });
+    this.props.AddressSelectorHook(e, { province_id: value != SELECT_DEFAULT_VALUE ? value : undefined });
   }
   onCityChange(callback, e){
     var {value} = e.target;
-    this.props.actions.resetDistricts();
+    this.props.actions.resetDistricts(this.props.form);
     if(value != this.refs.province.props['default-value']){
       this.props.actions.getDistrictsAndCity(value);
     }

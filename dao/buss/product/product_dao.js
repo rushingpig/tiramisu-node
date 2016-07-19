@@ -300,7 +300,8 @@ ProductDao.prototype.getProductDetailByParams = function (req, data) {
     // 省份
     sql += ' join dict_regionalism province on province.del_flag = 1 and city.parent_id = province.id';
     if (data.province) {
-        sql += ' and province.id = ? ';
+        sql += ' and ((city.level_type = 2 and province.id = ?) or (city.level_type = 3 and province.parent_id = ?))';
+        params.push(data.province);
         params.push(data.province);
     }
     
@@ -316,7 +317,7 @@ ProductDao.prototype.getProductDetailByParams = function (req, data) {
     // 分页
     let pageNo = data.pageno || 0;
     let pageSize = data.pagesize || 10;
-    
+
     let count_sql = dbHelper.countSql(sql);
     return baseDao.select(count_sql, params).then(result => {
         return baseDao.select(dbHelper.paginate(sql, pageNo, pageSize), params).then(_result => {

@@ -125,15 +125,16 @@ export default class ProductsModal extends Component {
   onProvinceChange(e){
     var {value} = e.target;
     this.props.actions.resetCities();
-    this.setState({ province_id: value, city_id: SELECT_DEFAULT_VALUE });
+    this.setState({ province_id: value, city_id: SELECT_DEFAULT_VALUE, district_id: SELECT_DEFAULT_VALUE });
     if(value != this.refs.province.props['default-value'])
       this.props.actions.getCitiesSignal({ province_id: value, is_standard_area: 1 });
   }
   onCityChange(e){
     var {value} = e.target;
-    this.setState({city_id: value})
+    this.setState({city_id: value, district_id: SELECT_DEFAULT_VALUE });
+    this.props.actions.resetDistricts();
     if(value != this.refs.city.props['default-value'])
-      this.props.actions.getDistrictsAndCity({ city_id: value });
+      this.props.actions.getDistrictsAndCity( value );
   }
   onDistrictChange(e){
     var {value} = e.target;
@@ -145,7 +146,7 @@ export default class ProductsModal extends Component {
     }
   }
   search(page){
-    var { sku_name, category_id, city_id, page_size } = this.state;
+    var { sku_name, category_id, city_id, district_id, page_size } = this.state;
     var unlock = dom.lock( this.refs.tableWrapper );
     this.props.dispatch(
       OrderProductsActions.searchProducts({
@@ -153,8 +154,8 @@ export default class ProductsModal extends Component {
         page_no: page,
         page_size,
         category_id: category_id == SELECT_DEFAULT_VALUE ? undefined : category_id,
-        city_id: this.refs.district
-                  ? this.refs.district.props.value
+        city_id: this.refs.district && district_id != SELECT_DEFAULT_VALUE
+                  ? district_id
                   : ( city_id == SELECT_DEFAULT_VALUE ? undefined : city_id )
       })
     ).always(unlock);

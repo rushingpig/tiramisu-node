@@ -3,6 +3,8 @@ import { clone } from 'clone';
 import {get, put, del, post, GET, POST, TEST} from 'utils/request';
 import Url from 'config/url';
 import { Noty, formCompile } from 'utils/index';
+import { triggerFormUpdate } from 'actions/form';
+import { SELECT_DEFAULT_VALUE } from 'config/app.config';
 
 export const GET_ALL_STATIONS_NAME = 'GET_ALL_STATIONS_NAME';
 export const GET_STATION_LIST = 'GET_STATION_LIST';
@@ -23,7 +25,6 @@ export const PUT_MULTIPLE_SCOPE_FAILURE = 'PUT_MULTIPLE_SCOPE_FAILURE';
 
 export function getStationList(data = {}){
   return (dispatch, getState) => {
-    debugger
     if(!data.province_id && !data.city_id){
       //TODO
       data.province_id = 440000;
@@ -49,9 +50,12 @@ export function getStationListByScopeSignal({ province_id, city_id, district_id,
   );
 }
 
-export function resetStationListWhenScopeChange(){
-  return {
-    type: RESET_STATION_LSIT_WHEN_SCOPE_CHANGE
+export function resetStationListWhenScopeChange(form_name){
+  return dispatch => {
+    form_name && dispatch( triggerFormUpdate(form_name, 'delivery_id', SELECT_DEFAULT_VALUE) );
+    dispatch({
+      type: RESET_STATION_LSIT_WHEN_SCOPE_CHANGE
+    });
   }
 }
 

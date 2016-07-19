@@ -40,8 +40,6 @@ class TopHeader extends Component{
 			</div>
 		)
 	}
-
-
 }
 
 class FilterHeader extends Component{
@@ -250,6 +248,7 @@ class FilterHeader extends Component{
 	onProvinceChange(e){
 	  var {value} = e.target;
 	  this.props.actions.resetCities();
+    this.props.resetStationListWhenScopeChange();
 	  if(value != this.refs.province.props['default-value']){
 	    var $city = $(findDOMNode(this.refs.city));
 	    this.props.actions.getCitiesSignal({ province_id: value, is_standard_area: 1  }).done(() => {
@@ -262,6 +261,7 @@ class FilterHeader extends Component{
 		this.setState({ _hasInitial: false});
 		var {value} = e.target;
 		this.props.actions.resetDistricts();
+    this.props.resetStationListWhenScopeChange();
     if(value != this.refs.province.props['default-value']){
       this.props.actions.getDistrictsAndCity(value);
     }
@@ -278,6 +278,7 @@ class FilterHeader extends Component{
 	onDistrictChange(e){
 		var {value} = e.target;
 		var { city_id } = this.state;
+    this.props.resetStationListWhenScopeChange();
 		if(value != SELECT_DEFAULT_VALUE){
 			city_id = value;
 		}
@@ -404,7 +405,7 @@ var SalaryRow = React.createClass({
 						:
 						props.order_status == SIGN_STATUS_EXCEPTION ? 
 						[<span key='span_unsign'>未签收</span>,<br key='unsign_br'/>,<a href='javascript:;' onClick={this.showCredential} key='unSign_Credential'>[未签收凭证]</a>]
-						:<span>正常签收</span>
+						:<span key="normal_sign">正常签收</span>
 					}
 				</td>
 				<td>{props.delivery_count >= 2
@@ -439,8 +440,8 @@ var SalaryRow = React.createClass({
 					{
 						V('DeliveryManSalaryManageEdit')
 							?this.state.Edit_ing
-								?[<a href='javascript:;' onClick = {this.onCancel}>[取消]</a>,<br/>]
-								:[<a href='javascript:;' onClick = {this.onEdit}>[编辑]</a>,<br/>]
+								?[<a key="a1" href='javascript:;' onClick = {this.onCancel}>[取消]</a>,<br key="br1"/>]
+								:[<a key="a2" href='javascript:;' onClick = {this.onEdit}>[编辑]</a>,<br key="br2" />]
 							:null
 					}
 					
@@ -563,7 +564,8 @@ class DeliveryManSalaryManagePannel extends Component{
 					{/*<TopHeader {...{exportExcel}}/>*/}
 					<FilterHeader  {...{area,deliveryman,stations: stations.station_list, page_size: this.state.page_size}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, 
 											...stationSalaryActions, exportExcel, 
-											resetStationListWhenScopeChange},dispatch) }}
+											},dispatch) }}
+									resetStationListWhenScopeChange = { resetStationListWhenScopeChange }
 									getStationListByScopeSignal = { getStationListByScopeSignal }/>
 					<div className='panel' >
 						<header className="panel-heading">工资信息列表</header>

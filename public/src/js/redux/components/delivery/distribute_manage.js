@@ -150,7 +150,9 @@ class FilterHeader extends Component {
             {
               V( 'DeliveryManageDistributeAddressFilter' )
               ? <AddressSelector
-                  {...{ province_id, city_id, district_id, provinces, cities, districts, actions: this.props, AddressSelectorHook: this.AddressSelectorHook }} />
+                  {...{ province_id, city_id, district_id, provinces, cities, districts, actions: this.props,
+                   AddressSelectorHook: this.AddressSelectorHook, form: 'order_distribute_filter' }}
+                />
               : null
             }
             {
@@ -198,7 +200,7 @@ class FilterHeader extends Component {
     }.bind(this),0)
   }
   AddressSelectorHook(e, data){
-    this.props.resetStationListWhenScopeChange();
+    this.props.resetStationListWhenScopeChange('order_distribute_filter');
     this.props.getStationListByScopeSignal({ ...data });
   }
   filterHandler(e){

@@ -74,7 +74,9 @@ class FilterHeader extends Component {
           {
             V( 'DeliveryManageChangeAddressFilter' )
               ? <AddressSelector
-                  {...{ province_id, city_id, district_id, provinces, cities, districts, actions: this.props, AddressSelectorHook: this.AddressSelectorHook }} />
+                  {...{ province_id, city_id, district_id, provinces, cities, districts, actions: this.props,
+                    AddressSelectorHook: this.AddressSelectorHook, form: 'order_exchange_filter'}}
+                />
               : null
           }
           { 
@@ -107,7 +109,7 @@ class FilterHeader extends Component {
     }.bind(this),0)
   }
   AddressSelectorHook(e, data){
-    this.props.resetStationListWhenScopeChange();
+    this.props.resetStationListWhenScopeChange('order_exchange_filter');
     this.props.getStationListByScopeSignal({ ...data });
   }
   search(search_in_state){

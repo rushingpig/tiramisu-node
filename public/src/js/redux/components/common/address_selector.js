@@ -56,6 +56,7 @@ export default class AddressSelector extends Component {
       this.props.actions.getCitiesSignal({ province_id: value, is_standard_area: 1 });
     }
     callback(e);
+    this.props.AddressSelectorHook &&
     this.props.AddressSelectorHook(e, { province_id: value != SELECT_DEFAULT_VALUE ? value : undefined });
   }
   onCityChange(callback, e){
@@ -65,18 +66,22 @@ export default class AddressSelector extends Component {
       this.props.actions.getDistrictsAndCity(value);
     }
     callback(e);
+    this.props.AddressSelectorHook &&
     this.props.AddressSelectorHook(e,
       value != SELECT_DEFAULT_VALUE
-        ? { city_id: value }
+        ? { city_id: value, is_standard_area: 1 }
         : { province_id: this.props.province_id.value }
     );
   }
   onDistrictChange(callback, e){
     var {value} = e.target;
     callback(e);
-    this.props.AddressSelectorHook(e, {
-      city_id: value != SELECT_DEFAULT_VALUE ? value : this.props.city_id.value
-    });
+    this.props.AddressSelectorHook &&
+    this.props.AddressSelectorHook(e,
+      value != SELECT_DEFAULT_VALUE
+        ? {city_id: value, is_standard_area: 0}
+        : {city_id: this.props.city_id.value}
+    );
   }
 }
 

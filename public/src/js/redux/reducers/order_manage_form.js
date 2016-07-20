@@ -87,9 +87,9 @@ function mainForm(state = initial_state, action) {
         }
 
         //
-        var {getCities, getDistricts, getDeliveryShops} = AreaActions();
-        store.dispatch(getCities(data.province_id));
-        store.dispatch(getDistricts(data.city_id));
+        var {getStandardCities, getStandardDistricts, getDeliveryShops} = AreaActions();
+        store.dispatch(getStandardCities(data.province_id));
+        store.dispatch(getStandardDistricts(data.city_id));
         store.dispatch(getDeliveryShops(data.regionalism_id));
         store.dispatch(FormActions.getDeliveryStations({city_id: data.city_id}));
         

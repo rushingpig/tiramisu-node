@@ -23,10 +23,13 @@ export function stations(state = get_state, action){
     case STATIONACTION.GET_ALL_STATIONS_NAME:
       return {...state, name_list: map(action.data, n => n)};
     case STATIONACTION.GET_STATION_LIST:
+    case STATIONACTION.GET_STATION_LIST_BY_SCOPE_SIGNAL:
       return {...state, 
-        total: typeof action.data.total == 'undefined' ? action.data.list.length : action.data.total,
+        total: typeof action.data.total == 'undefined'
+            ? (action.data.list ? action.data.list.length : 0)
+            : action.data.total,
         loading: false,
-        list: action.data.list
+        list: action.data.list || []
       }
     case STATIONACTION.GET_STATION_LIST_BY_ID:
       return {...state, total:action.data.length, loading: false, list: action.data}

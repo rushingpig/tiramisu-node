@@ -68,9 +68,9 @@ class FilterHeader extends Component {
     this.state = {
       search_ing :false,
       station_name: '',
-      address_data: {},
+      // address_data: {},
     };
-    this.AddressSelectorHook = this.AddressSelectorHook.bind(this);
+    // this.AddressSelectorHook = this.AddressSelectorHook.bind(this);
   }
   render(){
     var {
@@ -108,11 +108,11 @@ class FilterHeader extends Component {
     )
   }
   componentDidMount(){
-    var { getAllStationsName, getStationList, params ,getStationListById} = this.props;
+    var { getAllStationsName, getStationListByScopeSignal, params ,getStationListById } = this.props;
     if(params && params.id){
       getStationListById(params.id);
     }else{
-      getStationList({isPage: false});
+      this.search();
     }
     getAllStationsName();
     LazyLoad('noty');
@@ -120,22 +120,32 @@ class FilterHeader extends Component {
   stationInputHandler(station_name){
     this.setState({ station_name })
   }
-  AddressSelectorHook(e, data){
-    this.setState({ address_data: data });
-  }
+  // AddressSelectorHook(e, data){
+  //   this.setState({ address_data: data });
+  // }
   search(){
     setTimeout(() => {
-      var { errors } = this.props;
+      var { station_name } = this.state;
+      var { errors, fields: {province_id, city_id, district_id} } = this.props;
       if(Object.keys(errors).length){
         Noty('warning', '请选择城市');
         return;
       }
       this.setState({search_ing: true});
-      this.props.getStationList({
+      var data = {
         isPage: false,
-        station_name: this.state.station_name || undefined,
-        ...this.state.address_data
-      }).always(()=>{
+        station_name: station_name || undefined,
+        province_id: province_id.value == SELECT_DEFAULT_VALUE ? undefined : province_id.value,
+        city_id: city_id.value == SELECT_DEFAULT_VALUE ? undefined : city_id.value,
+        is_standard_area: 1
+      };
+      if(district_id.value && district_id.value != SELECT_DEFAULT_VALUE){
+        data.city_id = district_id.value;
+        // delete data.is_standard_area; 禁止用删除
+        data.is_standard_area = 0;
+      }
+
+      this.props.getStationListByScopeSignal(data).always(()=>{
         this.setState({search_ing: false});
       });
     }, 0);

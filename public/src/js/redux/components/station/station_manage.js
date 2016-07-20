@@ -105,11 +105,11 @@ class FilterHeader extends Component {
     )
   }
   componentDidMount(){
-    var { getProvincesSignal, getCitiesSignal, getDistrictsAndCity, getAllStationsName, getStationList} = this.props;
+    var { getProvincesSignal, getStandardCitiesSignal, getStandardDistricts, getAllStationsName } = this.props;
     getProvincesSignal();
-    getCitiesSignal({ province_id: ADDRESS.GUANG_ZHOU, is_standard_area: 1 });
-    getDistrictsAndCity(ADDRESS.SHEN_ZHENG);
-    getStationList({isPage: true, page_no: 0, page_size: 10}, 'station_manage_filter')
+    getStandardCitiesSignal({ province_id: ADDRESS.GUANG_ZHOU });
+    getStandardDistricts(ADDRESS.SHEN_ZHENG);
+    this.search();
     getAllStationsName();
     LazyLoad('noty');
   }
@@ -118,22 +118,25 @@ class FilterHeader extends Component {
   }
   onProvinceChange(callback, e){
     var {value} = e.target;
-    this.props.resetCities();
-    if(value != this.refs.province.props['default-value'])
+    this.props.resetCities('station_manage_filter');
+    this.props.resetDistricts('station_manage_filter');
+    if(value != this.refs.province.props['default-value']){
       var $city = $(findDOMNode(this.refs.city));
-      this.props.getCitiesSignal({ province_id: value, is_standard_area: 1 }).done(() => {
+      this.props.getStandardCitiesSignal({ province_id: value }).done(() => {
         $city.trigger('focus'); //聚焦已使city_id的值更新
       });
+    }
     callback(e);
   }
   onCityChange(callback, e){
     var {value} = e.target;
-    this.props.resetDistricts();
-    if(value != this.refs.city.props['default-value'])
+    this.props.resetDistricts('station_manage_filter');
+    if(value != this.refs.city.props['default-value']){
       var $district = $(findDOMNode(this.refs.district));
-      this.props.getDistrictsAndCity(value).done(() => {
+      this.props.getStandardDistricts(value).done(() => {
         $district.trigger('focus'); //聚焦已使city_id的值更新
       });
+    }
     callback(e);
   }
   addStation(){
@@ -141,16 +144,22 @@ class FilterHeader extends Component {
   }
   search(){
     setTimeout(() => {
-      var { errors } = this.props;
+      var { errors, fields: {station_name, province_id, city_id, regionalism_id} } = this.props;
       if(Object.keys(errors).length){
         Noty('warning', '请选择省份');
         return;
       }
+      var data = {
+        page_no: 0,
+        station_name: station_name.value || undefined,
+        province_id: province_id.value == SELECT_DEFAULT_VALUE ? undefined : province_id.value,
+        city_id: city_id.value == SELECT_DEFAULT_VALUE ? undefined : city_id.value,
+        regionalism_id: regionalism_id.value == SELECT_DEFAULT_VALUE ? undefined : regionalism_id.value,
+      };
       this.setState({search_ing: true});
-      this.props.search({isPage: true, page_no: 0})
-        .always(()=>{
-          this.setState({search_ing: false});
-        });
+      this.props.search(data).always(()=>{
+        this.setState({search_ing: false});
+      });
     }, 0);
   }
 }
@@ -293,11 +302,11 @@ class StationManagePannel extends Component {
     this.search({ page_no: page });
   }
   search(opts){
-    var { getStationList, stations } = this.props;
+    var { getStationListByScopeSignal } = this.props;
     var { page_no, page_size } = this.state;
     //还有省市区数据实在redux-form中
     opts && typeof opts.page_no != undefined && this.setState({ page_no: opts.page_no });
-    return getStationList({isPage: true, page_no, page_size, ...opts}, 'station_manage_filter');
+    return getStationListByScopeSignal({isPage: true, page_no, page_size, ...opts});
   }
   viewStationDetail(station){
     this.refs.detail_station.show(station);

@@ -270,7 +270,7 @@ class FilterHeader extends Component{
 			this.props.actions.getAllDeliveryman();
 		}else{
 			this.props.actions.getCityDeliveryman(value).done(() => {
-				this.props.getStationListByScopeSignal({ city_id: value })
+				this.props.getStationListByScopeSignal({ city_id: value, is_standard_area: 1 })
 			});
 		}
 
@@ -279,11 +279,13 @@ class FilterHeader extends Component{
 		var {value} = e.target;
 		var { city_id } = this.state;
     this.props.resetStationListWhenScopeChange();
+    var data = { city_id, is_standard_area: 1 };
 		if(value != SELECT_DEFAULT_VALUE){
-			city_id = value;
+			data.city_id = value;
+			data.is_standard_area = 0;
 		}
 		this.props.actions.getCityDeliveryman(city_id).done(() => {
-			this.props.getStationListByScopeSignal({ city_id: value })
+			this.props.getStationListByScopeSignal(data)
 		});
 	}
 	FilterDeliveyRecord(search_in_state){
@@ -308,8 +310,17 @@ class FilterHeader extends Component{
 		}
 		if(this.refs.city){
 			var city_id = parseInt($(findDOMNode(this.refs.city))[0].value);
-			if(city_id != this.refs.city.props['default-value'])
+			if(city_id != this.refs.city.props['default-value']){
 				filterdata.city_id = city_id;
+				filterdata.is_standard_area = 1;
+			}
+		}
+		if(this.refs.district){
+			var city_id = parseInt($(findDOMNode(this.refs.district))[0].value);
+			if(city_id != this.refs.district.props['default-value']){
+				filterdata.city_id = city_id;
+				delete filterdata.is_standard_area;
+			}
 		}
 		var deliveryman_id = this.refs.deliveryman.value;
 		if(deliveryman_id != 0){

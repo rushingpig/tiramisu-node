@@ -146,7 +146,7 @@ AddressDao.prototype.findStationsByMultipleCondition = function(query_obj) {
     sql += `INNER JOIN ?? sc ON sc.regionalism_id = dr.id `;
     params.push(tables.sys_city);
 
-    sql += `WHERE dr.del_flag = ? `;
+    sql += `WHERE bds.del_flag = ? `;
     params.push(del_flag.SHOW);
     if (query_obj.station_name) {
         sql += `AND bds.name LIKE ? `;
@@ -255,12 +255,13 @@ AddressDao.prototype.getProvincesAndCites = function(){
     let columns = [
         'province.id as province_id',
         'province.name as province_name',
-        'case syscity.is_city when 1 then district.id when 0 then city.id end as city_id',
-        'case syscity.is_city when 1 then district.name when 0 then city.name end as city_name'
+        'case syscity.regionalism_id when district.id then district.id when city.id then city.id end as city_id',
+        'case syscity.regionalism_id when district.id then district.name when city.id then city.name end as city_name',
+        'case syscity.regionalism_id when district.id then district.level_type when city.id then city.level_type end as level_type'
     ];
     let sql = 'select ' + columns.join(',') + ' from ?? province join ?? city on province.id = city.parent_id and province.level_type = 1 and province.del_flag = ? and city.level_type = 2 and city.del_flag = ? ' + 
-        ' join ?? district on city.id = district.parent_id and district.del_flag = ? ' +
-        ' join ?? syscity on district.id = syscity.regionalism_id';
+        ' join ?? district on city.id = district.parent_id and district.level_type = 3 and district.del_flag = ? ' +
+        ' join ?? syscity on district.id = syscity.regionalism_id or city.id = syscity.regionalism_id ';
     let params = [this.table, this.table, del_flag.SHOW, del_flag.SHOW, this.table, del_flag.SHOW, tables.sys_city];
     return baseDao.select(sql, params);
 };

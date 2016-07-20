@@ -611,6 +611,7 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
         deliveryman_id: req.query.deliveryman_id,
         print_status: req.query.print_status,
         is_greeting_card: req.query.is_greeting_card,
+        is_standard_area: req.query.is_standard_area,
         user : req.session.user,
         order_by : req.query.order_by || 'created_time'
       };

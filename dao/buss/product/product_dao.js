@@ -25,10 +25,14 @@ function ProductDao(){
  * query for product category list
  */
 ProductDao.prototype.findAllCatetories = function(){
-    let columns = Array.prototype.slice.apply(this.baseColumns);
-    columns.push('parent_id');
-    let params = [columns,tables.buss_product_category,del_flag.SHOW];
-    return baseDao.select(this.base_select_sql,params);
+    let columns = [
+        'primary_cate.id as id',
+        'primary_cate.name as name',
+        'primary_cate.parent_id as parent_id'
+    ];
+    let sql = 'select ' + columns.join(',') + ' from ?? primary_cate join ?? secondary_cate on (primary_cate.id = secondary_cate.parent_id and primary_cate.del_flag = ? and secondary_cate.del_flag = ?) or (primary_cate.parent_id <> 0 and primary_cate.del_flag = ?)';
+    let params = [tables.buss_product_category,tables.buss_product_category,del_flag.SHOW,del_flag.SHOW,del_flag.SHOW];
+    return baseDao.select(sql, params);
 };
 //TODO: check sql after table confirmed
 /**

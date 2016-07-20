@@ -699,6 +699,9 @@ var SignedModal = React.createClass({
       refund_method: '',
       refund_money: 0,
       refund_reson: '',
+      order_refund_money: 0,
+      plus_amount: 0,
+      minus_amount: 0,
       orderSpareparts:[],
       current_id: -1,
       deliverymanAtSameStation: [],
@@ -708,10 +711,10 @@ var SignedModal = React.createClass({
   },
   mixins: [ LinkedStateMixin ],
   render: function(){
-    var { signin_date, late_minutes, refund_method, refund_money, refund_reson,current_id, deliverymanAtSameStation , POS_terminal_id} = this.state;
+    var { signin_date, late_minutes, refund_method, refund_money, refund_reson,current_id, deliverymanAtSameStation , POS_terminal_id, plus_amount, minus_amount, order_refund_money} = this.state;
     var { D_ ,loading, refresh } = this.props;
     
-    var { spareparts } =  D_ ;
+    var { spareparts, orderDetail } =  D_ ;
     /*var { deliverymanAtSameStation } =  D_ ;*/
     var content = this.state.orderSpareparts.map( (n, i) => {
       return <PartRow key = {n.sku_id + i} 
@@ -725,7 +728,7 @@ var SignedModal = React.createClass({
         <div className="form-group mg-15 form-inline">
           <div className = "row">
             <div className="col-xs-6">
-              <label>签收时间：</label>
+              <label>{'签收时间：'}</label>
               <DatePicker value={signin_date} onChange={this.onSignInDateChange} className="short-input" />
               {'　'}
               <TimeInput onChange={this.onTimeChange} onOK={this.onTimeOK} ref="timeinput" />
@@ -738,28 +741,13 @@ var SignedModal = React.createClass({
 
         </div>
         <div className="form-group form-inline mg-15">
-          <div className="row">
-            <div className="col-xs-6">
-              <label>迟到时长：</label>
+              <label>{'迟到时长：'}</label>
               <div className="inline-block input-group input-group-xs">
                 <input value={late_minutes} onChange={this.onLateTimeChange} type="text" className="form-control" style={{'width': 50}} />
                 <span className="input-group-addon">Min</span>
               </div>
-            </div>
-            <div className="col-xs-6">
-              <label>货到付款金额：￥</label>
-              <input value={this.state.order.total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
-              {
-                this.state.order.total_amount != 0 ?
-                <select ref='pay_way' name='pay_way' value={this.state.pay_way} className='form-control input-xs' onChange={this.onPayWayChange}>
-                  <option value='1'>现金</option>
-                  <option value='2'>POS机</option>
-                </select>
-                :null
-              }            
-            </div>
-          </div>
         </div>
+
         <div className="form-group mg-15">
           <label>
             <input checked = {this.state.is_refund} type = 'checkbox' onClick={this.isRefundChange}/>
@@ -807,7 +795,34 @@ var SignedModal = React.createClass({
             }
           </div>]          
         }
-
+        <div className = 'form-group form-inline mg-15'>
+          <label>{'初始应收金额：￥'}</label>
+          <input value={orderDetail.total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+          <label>{'　减：￥'}</label>
+          <input value={minus_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+          <label>{'　加：￥'}</label>
+          <input value={plus_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />         
+        </div>
+        <div className='form-group form-inline mg-15'>
+          <div className='row'>
+            <div className='col-xs-6'>
+              <label>货到付款金额：￥</label>
+              <input value={this.state.order.total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+              {
+                this.state.order.total_amount != 0 ?
+                <select ref='pay_way' name='pay_way' value={this.state.pay_way} className='form-control input-xs' onChange={this.onPayWayChange}>
+                  <option value='1'>现金</option>
+                  <option value='2'>POS机</option>
+                </select>
+                :null
+              } 
+            </div>
+            <div className='col-xs-6'>
+              <label>系统退款金额：￥</label>
+              <input value={this.state.order.refund_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+            </div>
+          </div>
+        </div>
         <div className="form-group mg-15">
           <label>已购配件：</label>
           <table className="table table-hove text-center table-bordered">
@@ -889,8 +904,9 @@ var SignedModal = React.createClass({
       }
     }*/
     var { orderSpareparts } = this.props.D_;
+    var currentOrderDetail = this.state.order;
     var products = currentOrderSpareparts;
-    var orderProducts = this.props.D_.orderDetail.products.filter( m =>  m.category_id != ACCESSORY_CATE_ID );
+    var orderProducts = this.props.D_.orderDetail.products.filter( m =>  m.isAddition == 0 );
     products = products.filter( m =>  m.num != 0 );
     products = [...products, ...orderProducts];
     var signData = {
@@ -967,14 +983,24 @@ var SignedModal = React.createClass({
   },
   onDecrement: function(id){
      var old_orderSpareparts = this.state.orderSpareparts ;
+    var  initial_orderSpareparts = this.props.D_.orderSpareparts;
+
      old_orderSpareparts = old_orderSpareparts.map( m => {
        if( m.sku_id == id){
         if(m.num>0){
          m.num --;
          m.amount -= m.unit_price;
+         if( initial_orderSpareparts.some( h => h.sku_id == m.sku_id && h.num > m.num)){
+          this.setState({minus_amount: this.state.minus_amount + m.unit_price})
+         }else if(initial_orderSpareparts.some( h => h.sku_id == m.sku_id && h.num <= m.num)){
+          this.setState({plus_amount: this.state.plus_amount - m.unit_price})
+         }else if(initial_orderSpareparts.every( h => h.sku_id != m.sku_id)){
+          this.setState({plus_amount: this.state.plus_amount - m.unit_price})
+         }         
         }
        }
        m.amount = m.amount > 0 ? m.amount : 0;
+
        return m;
      });
      old_orderSpareparts = old_orderSpareparts.filter( m =>  m.num != 0 );
@@ -983,11 +1009,21 @@ var SignedModal = React.createClass({
   },
   onIncrement: function(id){
      var old_orderSpareparts = this.state.orderSpareparts;
+    var  initial_orderSpareparts = this.props.D_.orderSpareparts;
+
       old_orderSpareparts = old_orderSpareparts.map( m => {
        if( m.sku_id == id){
          m.num ++;
          m.amount += m.unit_price;
+         if(initial_orderSpareparts.every( h => h.sku_id != m.sku_id )){
+          this.setState({plus_amount: this.state.plus_amount + m.unit_price});
+         }else if( initial_orderSpareparts.some(h => h.sku_id == m.sku_id && h.num < m.num)){
+          this.setState({plus_amount: this.state.plus_amount + m.unit_price});
+         }else if( initial_orderSpareparts.some(h => h.sku_id == m.sku_id && h.num >= m.num)){
+          this.setState({minus_amount: this.state.minus_amount - m.unit_price});
+         }
        }
+
        return m;
      });
      this.setState({orderSpareparts:old_orderSpareparts});  
@@ -1028,10 +1064,19 @@ var SignedModal = React.createClass({
           var newvalue = { id: e.parent_id, name: e.parent_name ,price: e.price ,sub: e.name, remarks:'',num:1, skus: e.skus }           
         }       
       }else{
+        var  initial_orderSpareparts = this.props.D_.orderSpareparts;
         if(old_orderSpareparts.some( m => m.sku_id == e.sku_id )){
           old_orderSpareparts.map( m => {
             if(m.sku_id == e.sku_id){
               m.num ++;
+              if(initial_orderSpareparts.every( h => h.sku_id != m.sku_id )){
+               this.setState({plus_amount: this.state.plus_amount + m.unit_price});
+              }else if( initial_orderSpareparts.some(h => h.sku_id == m.sku_id && h.num < m.num)){
+               this.setState({plus_amount: this.state.plus_amount + m.unit_price});
+              }else if( initial_orderSpareparts.some(h => h.sku_id == m.sku_id && h.num >= m.num)){
+               this.setState({minus_amount: this.state.minus_amount - m.unit_price});
+              }
+
             }
             return m;
           })
@@ -1041,9 +1086,8 @@ var SignedModal = React.createClass({
           newvalue.unit_price = newvalue.discount_price;
           newvalue.amount = newvalue.discount_price;
           old_orderSpareparts.push(newvalue);
-        }
-
-        
+          this.setState({plus_amount: newvalue.discount_price});
+        }       
       }
       /*if( 'id' in newvalue){
         old_orderSpareparts.push(newvalue);
@@ -1074,7 +1118,7 @@ var SignedModal = React.createClass({
     }
     var order = clone( this.state.order ) ;
     order.total_amount = total_amount;
-    if(refund_amount != 0) order.refund_amount = refund_amount;
+    if(refund_amount >= 0) order.refund_amount = refund_amount;
     this.setState( {order} );
   },
 /*  componentDidMount() {
@@ -1085,7 +1129,7 @@ var SignedModal = React.createClass({
   componentWillReceiveProps(nextProps){
     var { D_ } = nextProps;
     var  products  = D_.orderDetail.products || [];
-    products = products.filter( m => m.category_id == ACCESSORY_CATE_ID);
+    products = products.filter( m => m.isAddition == 1);
     var orderSpareparts = clone(products);
     orderSpareparts = orderSpareparts.map( m => {
        m.unit_price = m.discount_price / m.num;

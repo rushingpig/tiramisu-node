@@ -23,29 +23,31 @@ export const PUT_MULTIPLE_SCOPE_ING = 'PUT_MULTIPLE_SCOPE_ING';
 export const PUT_MULTIPLE_SCOPE_SUCCESS = 'PUT_MULTIPLE_SCOPE_SUCCESS';
 export const PUT_MULTIPLE_SCOPE_FAILURE = 'PUT_MULTIPLE_SCOPE_FAILURE';
 
-export function getStationList(data = {}){
-  return (dispatch, getState) => {
-    if(!data.province_id && !data.city_id){
-      //TODO
-      data.province_id = 440000;
-      data.city_id = 440300;
-    }
-    return GET(Url.station_list.toString(), data, GET_STATION_LIST)(dispatch)
-  }
-}
+//废弃。。。
+// export function getStationList(data = {}){
+//   return (dispatch, getState) => {
+//     if(!data.province_id && !data.city_id){
+//       //TODO
+//       data.province_id = 440000;
+//       data.city_id = 440300;
+//     }
+//     return GET(Url.station_list.toString(), data, GET_STATION_LIST)(dispatch)
+//   }
+// }
 
-export function getStationListByScope({ province_id, city_id, regionalism_id, district_id } = {}){
+//废弃。。。
+// export function getStationListByScope({ province_id, city_id, regionalism_id, district_id } = {}){
+//   return GET(
+//     Url.station_list.toString(),
+//     { province_id, city_id: city_id || district_id, isPage: 0 },
+//     GET_STATION_LIST_BY_SCOPE_SIGNAL
+//   );
+// }
+
+export function getStationListByScopeSignal(data){
   return GET(
     Url.station_list.toString(),
-    { province_id, city_id: city_id || district_id, isPage: 0 },
-    GET_STATION_LIST_BY_SCOPE_SIGNAL
-  );
-}
-
-export function getStationListByScopeSignal({ province_id, city_id, district_id, signal = 'authority' } = {}){
-  return GET(
-    Url.station_list.toString(),
-    { province_id, city_id: city_id || district_id, isPage: 0, signal },
+    {is_standard_area: 1, signal: 'authority', isPage: false, ...data},
     GET_STATION_LIST_BY_SCOPE_SIGNAL
   );
 }

@@ -38,15 +38,25 @@ export default function Area(ActionTypes = AreaActionTypes1){
     getCities: function (province_id){
       return GET(Url.cities.toString(province_id), null, ActionTypes.GOT_CITIES);
     },
+    getStandardCities:function(province_id){
+      return GET(Url.cities.toString(province_id), {is_standard_area: 1}, ActionTypes.GOT_CITIES);
+    },
     //添加标志获取城市
     getCitiesSignal:function({ province_id, is_standard_area, signal = 'authority' }){
       return GET(Url.cities.toString(province_id), {is_standard_area, signal}, ActionTypes.GOT_CITIES_SIGNAL);
+    },
+    getStandardCitiesSignal:function({ province_id, signal = 'authority' }){
+      return GET(Url.cities.toString(province_id), {is_standard_area: 1, signal}, ActionTypes.GOT_CITIES_SIGNAL);
     },
 
 
     resetDistricts: function (form_name){
       return dispatch => {
-        form_name && dispatch( triggerFormUpdate(form_name, 'district_id', SELECT_DEFAULT_VALUE) );
+        if(form_name){
+          //兼容两种命名
+          dispatch( triggerFormUpdate(form_name, 'district_id', SELECT_DEFAULT_VALUE) );
+          dispatch( triggerFormUpdate(form_name, 'regionalism_id', SELECT_DEFAULT_VALUE) );
+        }
         dispatch({
           type: ActionTypes.RESET_DISTRICTS,
         });

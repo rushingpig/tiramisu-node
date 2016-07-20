@@ -148,17 +148,19 @@ export default class ProductsModal extends Component {
   search(page){
     var { sku_name, category_id, city_id, district_id, page_size } = this.state;
     var unlock = dom.lock( this.refs.tableWrapper );
-    this.props.dispatch(
-      OrderProductsActions.searchProducts({
-        name: sku_name.trim() || undefined, 
-        page_no: page,
-        page_size,
-        category_id: category_id == SELECT_DEFAULT_VALUE ? undefined : category_id,
-        city_id: this.refs.district && district_id != SELECT_DEFAULT_VALUE
-                  ? district_id
-                  : ( city_id == SELECT_DEFAULT_VALUE ? undefined : city_id )
-      })
-    ).always(unlock);
+    var data = {
+      name: sku_name.trim() || undefined, 
+      page_no: page,
+      page_size,
+      category_id: category_id == SELECT_DEFAULT_VALUE ? undefined : category_id,
+    };
+    if(this.refs.district && district_id != SELECT_DEFAULT_VALUE){
+      data.city_id = district_id;
+    }else{
+      data.city_id = ( city_id == SELECT_DEFAULT_VALUE ? undefined : city_id );
+      data.is_standard_area = 1;
+    }
+    this.props.dispatch( OrderProductsActions.searchProducts(data) ).always(unlock);
   }
   onPageChange(page){
     this.search.call(this, page);

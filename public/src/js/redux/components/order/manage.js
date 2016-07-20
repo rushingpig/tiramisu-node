@@ -333,7 +333,7 @@ var OrderRow = React.createClass({
   activeOrder(){
     var { 
       order_id, active_order_id, activeOrder, prepareDeliveryDataOK,
-      getProvincesSignal, getCitiesSignal, getDistricts, getDeliveryShops, getDeliveryStations
+      getProvincesSignal, getStandardCitiesSignal, getStandardDistricts, getDeliveryShops, getDeliveryStations
     } = this.props;
     if(order_id != active_order_id){
       activeOrder(order_id).done(function(data){
@@ -341,8 +341,8 @@ var OrderRow = React.createClass({
         setTimeout(function(){
           $.when(
             getProvincesSignal(),
-            getCitiesSignal({ province_id: data.province_id }),
-            getDistricts(data.city_id),
+            getStandardCitiesSignal({ province_id: data.province_id }),
+            getStandardDistricts(data.city_id),
             getDeliveryShops(data.regionalism_id),
             getDeliveryStations({city_id: data.city_id})
           ).done(prepareDeliveryDataOK)

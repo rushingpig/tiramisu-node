@@ -908,6 +908,17 @@ var SignedModal = React.createClass({
     var products = currentOrderSpareparts;
     var orderProducts = this.props.D_.orderDetail.products.filter( m =>  m.isAddition == 0 );
     products = products.filter( m =>  m.num != 0 );
+    var { minus_amount } = this.state;
+    if( minus_amount > 0){
+      products = products.map( m => {
+        if(m.amount > 0 && minus_amount >0 ) {
+          m.amount -= minus_amount ;
+          minus_amount -= m.amount;
+          m.amount = m.amount > 0 ? m.amount : 0;
+        }
+        return m;
+      })
+    }
     products = [...products, ...orderProducts];
     var signData = {
       late_minutes: late_minutes,
@@ -998,9 +1009,9 @@ var SignedModal = React.createClass({
           this.setState({plus_amount: this.state.plus_amount - m.unit_price})
          }         
         }
+        m.discount_price = m.unit_price * m.num;
        }
        m.amount = m.amount > 0 ? m.amount : 0;
-
        return m;
      });
      old_orderSpareparts = old_orderSpareparts.filter( m =>  m.num != 0 );
@@ -1022,6 +1033,7 @@ var SignedModal = React.createClass({
          }else if( initial_orderSpareparts.some(h => h.sku_id == m.sku_id && h.num >= m.num)){
           this.setState({minus_amount: this.state.minus_amount - m.unit_price});
          }
+        m.discount_price = m.unit_price * m.num;
        }
 
        return m;
@@ -1069,6 +1081,7 @@ var SignedModal = React.createClass({
           old_orderSpareparts.map( m => {
             if(m.sku_id == e.sku_id){
               m.num ++;
+              m.amount += e.discount_price;
               if(initial_orderSpareparts.every( h => h.sku_id != m.sku_id )){
                this.setState({plus_amount: this.state.plus_amount + m.unit_price});
               }else if( initial_orderSpareparts.some(h => h.sku_id == m.sku_id && h.num < m.num)){
@@ -1076,7 +1089,7 @@ var SignedModal = React.createClass({
               }else if( initial_orderSpareparts.some(h => h.sku_id == m.sku_id && h.num >= m.num)){
                this.setState({minus_amount: this.state.minus_amount - m.unit_price});
               }
-
+            m.discount_price = m.unit_price * m.num;
             }
             return m;
           })
@@ -1103,12 +1116,13 @@ var SignedModal = React.createClass({
     var orderSparepartsAmount = 0 ;
     var currentOrderSparepartsAmount = 0;
     var refund_amount = 0;
+    var order = clone( this.state.order ) ;
 
     orderSpareparts.forEach(function(m){
-      orderSparepartsAmount += m.discount_price;
+      orderSparepartsAmount += m.discount_price;  //此处discount_price 为单价乘以数量
     });
     currentOrderSpareparts.forEach(m => {
-      currentOrderSparepartsAmount += parseInt( m.unit_price ) * m.num;
+      currentOrderSparepartsAmount +=  m.unit_price  * m.num;
     });
     var rest = currentOrderSparepartsAmount - orderSparepartsAmount;
     if(this.state.order.pay_status == pay_status.PAYED && rest < 0){
@@ -1116,7 +1130,6 @@ var SignedModal = React.createClass({
     }else{
       total_amount = total_amount + rest;
     }
-    var order = clone( this.state.order ) ;
     order.total_amount = total_amount;
     if(refund_amount >= 0) order.refund_amount = refund_amount;
     this.setState( {order} );

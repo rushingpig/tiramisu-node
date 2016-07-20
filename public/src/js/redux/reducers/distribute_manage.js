@@ -109,7 +109,7 @@ function D_(state = D_state, action) {
       return {...state,deliverymanAtSameStation: list, load_success: true }
     case Actions.GET_ORDER_DETAIL:
       var orderSpareparts = action.data.products;
-      orderSpareparts = orderSpareparts.filter( m => m.category_id == ACCESSORY_CATE_ID);
+      orderSpareparts = orderSpareparts.filter( m => m.isAddition == 1);
       var current_id = action.data.deliveryman_id;
       var is_POS = action.data.is_POS;
       return { ...state, orderSpareparts: orderSpareparts || [], orderDetail: action.data, current_id, is_POS };

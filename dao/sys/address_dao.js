@@ -146,7 +146,7 @@ AddressDao.prototype.findStationsByMultipleCondition = function(query_obj) {
     sql += `INNER JOIN ?? sc ON sc.regionalism_id = dr.id `;
     params.push(tables.sys_city);
 
-    sql += `WHERE dr.del_flag = ? `;
+    sql += `WHERE bds.del_flag = ? `;
     params.push(del_flag.SHOW);
     if (query_obj.station_name) {
         sql += `AND bds.name LIKE ? `;

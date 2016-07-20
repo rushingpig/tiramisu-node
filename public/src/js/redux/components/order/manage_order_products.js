@@ -4,6 +4,7 @@
 import React, {Component, PropTypes} from 'react';
 import {render} from 'react-dom';
 import ProductsModal from './manage_add_products_modal';
+import {Noty} from 'utils/index';
 import { setSelectProductStatus, deleteConfirmProduct } from 'actions/order_products';
 import * as ProductsActions from 'actions/order_products';
 
@@ -121,14 +122,26 @@ var AddedProductsRow = React.createClass({
     )
   },
   handleChange(attr_name, e){
+    var { value } = e.target;
     if(attr_name == 'discount_price' || attr_name == 'amount'){
       this.props.showTips();
+    }
+    if(attr_name === 'amount' || attr_name === 'discount_price'){
+      value = value.replace(/[^\d\.]/g, '');
+      if(attr_name === 'amount'){
+        if(value > this.props.data.discount_price){
+          Noty('warning', '应收金额不能大于实际售价');
+          value = value.slice(0, -1);
+        }
+      }
     }
     this.props.dispatch(ProductsActions.productAttrChange({
       sku_id: this.props.data.sku_id,
       attr: {
         name: attr_name,
-        value: e.target.getAttribute('type') == 'text' || e.target.nodeName.toLowerCase() == 'textarea' ? e.target.value : e.target.checked
+        value: e.target.getAttribute('type') == 'text' || e.target.nodeName.toLowerCase() == 'textarea'
+          ? value
+          : e.target.checked
       }
     }));
   },

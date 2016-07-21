@@ -57,19 +57,20 @@ ProductService.prototype.listProducts = (req, res, next) => {
         regionalism_id = req.query.city_id,
         page_no = req.query.page_no,
         page_size = req.query.page_size,
-        isAddition = req.query.isAddition;
+        isAddition = req.query.isAddition,
+        is_standard_area = req.query.is_standard_area == "1" ? true : false;
     let res_data = {
         list: [],
         page_no : page_no
     }, temp_obj = {};
     // 要通过子查询进行分页
-    let promise = productDao.findProductsCount(product_name, category_id, regionalism_id, isAddition).then((data)=> {
+    let promise = productDao.findProductsCount(product_name, category_id, regionalism_id, isAddition, is_standard_area).then((data)=> {
         if (toolUtils.isEmptyArray(data.results)) {
             throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);
         }
         let preSql = data.sql, preParams = data.params;
         res_data.total = data.results[0].total;
-        return productDao.findProducts(preSql, preParams, page_no, page_size, regionalism_id);
+        return productDao.findProducts(preSql, preParams, page_no, page_size, regionalism_id, is_standard_area);
     }).then((_re)=> {
         if (toolUtils.isEmptyArray(_re)) {
             throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);

@@ -16,7 +16,7 @@ const transformGeographiesData = source => {
 
     source.forEach(obj => {
 
-        let { province_id, province_name, city_id, city_name } = obj;
+        let { province_id, province_name, city_id, city_name, level_type } = obj;
 
         province_id = Number(province_id);
         city_id     = Number(city_id);
@@ -31,10 +31,11 @@ const transformGeographiesData = source => {
         }
 
         citiesData.set(city_id, {
-            id:       city_id,
-            name:     city_name,
-            province: province_id,
-            enable:   true
+            id:              city_id,
+            name:            city_name,
+            province:        province_id,
+            enable:          true,
+            isThirdlyRegion: level_type === 3
         });
 
         provincesData.get(province_id).list.add(city_id);

@@ -702,7 +702,7 @@ class CitiesOptions extends Component {
           </Col>
         </Row>
         {
-          state.citiesOptionApplyRange === 0 ? null : (
+          state.citiesData.get(state.selectedCity).isThirdlyRegion || (state.citiesOptionApplyRange === 0) ? null : (
             <SecondaryBookingTimeOptions state={state} Action={Action} />
           )
         }

@@ -65,6 +65,7 @@ const get = es6promisify(Req.get);
 const post = es6promisify(Req.post);
 const put = es6promisify(Req.put);
 
+// 接口封装
 const loadCategories         = () => get(Url.categories.toString());
 const loadAllGeographiesData = () => get(Url.allGeographies.toString());
 const loadOrderSource        = () => get(Url.order_srcs.toString());
@@ -74,7 +75,9 @@ const loadAllSkuSize         = () => get(Url.getAllSkuSize.toString());
 const addSku                 = postData => post(Url.addSku.toString(), postData);
 const getSku                 = id => get(Url.getSku.toString(), { productId: id });
 const saveEditSku            = putData => put(Url.saveEditSku.toString(), putData);
+const getCityInfo            = id => get(Url.open_city_detail.toString(id));
 
+// 金额转换
 const transformPrice = num => {
   let money = Number(num) || 0.01
 
@@ -83,6 +86,14 @@ const transformPrice = num => {
 
   return Math.trunc(money * 100) / 100
 }
+
+// 获取默认
+const getDefaultBookingTime = regionID => getCityInfo(regionID).then(
+  info => ({
+    bookingTime: (Number(info.order_time) || 0)/60,
+    secondaryBookingTime: (Number(info.second_order_time) || 0)/60
+  })
+);
 
 const returnRegionalismID = obj => obj.regionalism_id;
 
@@ -185,6 +196,7 @@ const loadBasicData = (productId = 0) => (
   }
 );
 
+// 修改商品名
 const changeProductName = name => {
   return {
     type: ActionTypes.CHANGE_PRODUCT_NAME,
@@ -192,6 +204,7 @@ const changeProductName = name => {
   };
 };
 
+// 切换购买方式
 const changeBuyEntry = entry => {
   return {
     type: ActionTypes.CHANGE_BUY_ENTRY,
@@ -199,6 +212,7 @@ const changeBuyEntry = entry => {
   };
 };
 
+// 修改一级分类
 const changeSelectedPrimaryCategory = id => (
   (dispatch, getState) => {
     const pid = Number(id);
@@ -213,6 +227,7 @@ const changeSelectedPrimaryCategory = id => (
   }
 );
 
+// 修改二级分类
 const changeSelectedSecondaryCategory = id => (
   (dispatch, getState) => {
     return loadEnableCities(id).then(
@@ -242,6 +257,7 @@ const changeSelectedSecondaryCategory = id => (
   }
 );
 
+// 切换上线城市
 const changeActiveCitiesOption = option => (
   (dispatch, getState) => {
     dispatch({
@@ -263,13 +279,37 @@ const changeActiveCitiesOption = option => (
   }
 );
 
-const changeCitiesOptionApplyRange = option => {
-  return {
-    type: ActionTypes.CHANGE_APPLY_RANGE,
-    option: Number(option)
-  };
-}
+// 切换城市配置应用范围
+const changeCitiesOptionApplyRange = option => (
+  (dispatch, getState) => {
 
+    if (option === 0) {
+      return dispatch({
+        type: ActionTypes.CHANGE_APPLY_RANGE,
+        option: Number(option)
+      });
+    }
+
+    const state = getState().productSKUManagement;
+
+    if (state.citiesOptions.has(state.selectedCity)) {
+      return dispatch({
+        type: ActionTypes.CHANGE_APPLY_RANGE,
+        option: Number(option)
+      });
+    }
+
+    return getDefaultBookingTime(state.selectedCity).then(
+      defaultBookingTime => dispatch({
+        type: ActionTypes.CHANGE_APPLY_RANGE,
+        option: Number(option),
+        defaultBookingTime
+      })
+    );
+  }
+)
+
+// 切换选中的省份
 const changeSelectedProvince = pid => (
   (dispatch, getState) => {
     const state = getState().productSKUManagement;
@@ -292,6 +332,29 @@ const changeSelectedProvince = pid => (
     const hasDistrictData = state.districtsData.has(selectedCity);
     const firstCityOptionHasSecondaryBookingTime = state.citiesOptions.size > 0 && [...state.citiesOptions.values()][0].hasSecondaryBookingTime;
 
+    if (!cityDataHasStash) {
+      return getDefaultBookingTime(selectedCity).then(defaultBookingTime => {
+        if (hasDistrictData || !firstCityOptionHasSecondaryBookingTime) {
+          return dispatch({
+            type: ActionTypes.CHANGE_SELECTED_PROVINCE,
+            pid,
+            cid: selectedCity,
+            defaultBookingTime
+          });
+        }
+
+        return loadDistricts(selectedCity).then(
+          districtsData => dispatch({
+            type: ActionTypes.CHANGE_SELECTED_PROVINCE,
+            pid,
+            cid: selectedCity,
+            districtsData,
+            defaultBookingTime
+          })
+        );
+      });
+    }
+
     if (cityDataHasStash || hasDistrictData || !firstCityOptionHasSecondaryBookingTime) {
       return dispatch({
         type: ActionTypes.CHANGE_SELECTED_PROVINCE,
@@ -311,6 +374,7 @@ const changeSelectedProvince = pid => (
   }
 );
 
+// 切换选中的城市
 const changeSelectedCity = id => (
   (dispatch, getState) => {
     const state = getState().productSKUManagement;
@@ -326,13 +390,18 @@ const changeSelectedCity = id => (
       });
     }
 
-    return loadDistricts(id).then(
-      districtsData => dispatch({
-        type: ActionTypes.CHANGE_SELECTED_CITY,
-        id,
-        districtsData
-      })
-    );
+    return Promise.all([
+      getDefaultBookingTime(id),
+      loadDistricts(id)
+    ]).then(([
+      defaultBookingTime,
+      districtsData
+    ]) => dispatch({
+      type: ActionTypes.CHANGE_SELECTED_CITY,
+      id,
+      districtsData,
+      defaultBookingTime
+    }));
   }
 );
 

@@ -412,7 +412,7 @@ const switchType = {
     };
   },
 
-  [ActionTypes.CHANGE_APPLY_RANGE]: (state, { option }) => {
+  [ActionTypes.CHANGE_APPLY_RANGE]: (state, { option, defaultBookingTime = {} }) => {
     if (state.citiesOptionApplyRange === 0) {
       state.citiesOptions.set('all', clone(state.tempOptions));
     }
@@ -435,6 +435,8 @@ const switchType = {
         );
       } else {
         state.tempOptions = clone(initialState.tempOptions);
+        state.tempOptions.bookingTime = defaultBookingTime.bookingTime || 0.5;
+        state.tempOptions.secondaryBookingTime = defaultBookingTime.secondaryBookingTime || 1;
         state.cityOptionSavable = false;
       }
     }
@@ -541,7 +543,7 @@ const switchType = {
     };
   },
 
-  [ActionTypes.CHANGE_SELECTED_PROVINCE]: (state, { pid, cid, districtsData = false }) => {
+  [ActionTypes.CHANGE_SELECTED_PROVINCE]: (state, { pid, cid, districtsData = false, defaultBookingTime = {} }) => {
     let tempOptions;
 
     if (districtsData) {
@@ -565,6 +567,10 @@ const switchType = {
         arr => arr.forEach(setZeroID)
       );
       tempOptions.applyDistrict = new Set();
+      tempOptions = {
+        ...tempOptions,
+        ...defaultBookingTime
+      }
       state.cityOptionSaved = false;
     }
 
@@ -576,7 +582,7 @@ const switchType = {
     });
   },
 
-  [ActionTypes.CHANGE_SELECTED_CITY]: (state, { id, districtsData = false }) => {
+  [ActionTypes.CHANGE_SELECTED_CITY]: (state, { id, districtsData = false, defaultBookingTime = {} }) => {
     if (districtsData) {
       const dd = Object.keys(districtsData).map(
         id => ({
@@ -597,6 +603,10 @@ const switchType = {
         arr => arr.forEach(setZeroID)
       );
       state.tempOptions.applyDistrict = new Set();
+      state.tempOptions = {
+        ...state.tempOptions,
+        ...defaultBookingTime
+      };
       state.cityOptionSaved = false;
     }
 

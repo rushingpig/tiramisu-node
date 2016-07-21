@@ -80,8 +80,8 @@ var RefundRow = React.createClass({
 						[<a key='RefundManageAudit' href='javascript:;'>[审核]</a>, <br key='1' />],
 						[<a key='RefundManageEdit' href='javascript:;' onClick={this.viewRefundModal}>[编辑]</a>, <br key='2' />],
 						[<a key='RefundManageCancel' href='javascript:;'>[取消]</a>, <br key='3' />],
-						[<a key='RefundManageRefunded'  href='javascript:;'>[退款完成]</a>, <br key='4' />],
-						[<a key='RefundManageComment' href='javascript:;'>[添加备注]</a>,<br key='5' />]
+						[<a key='RefundManageRefunded'  href='javascript:;' onClick={this.viewRefundCredential}>[退款完成]</a>, <br key='4' />],
+						[<a key='RefundManageComment' href='javascript:;' onClick={this.viewRemarkModal}>[添加备注]</a>,<br key='5' />]
 						)
 					}
 				</td>
@@ -134,6 +134,12 @@ var RefundRow = React.createClass({
 	},
 	viewRefundModal: function(){
 		this.props.viewRefundModal();
+	},
+	viewRefundCredential: function(){
+		this.props.viewRefundCredential();
+	},
+	viewRemarkModal: function(){
+		this.props.viewRemarkModal();
 	}
 })
 
@@ -145,13 +151,15 @@ class ManagePannel extends Component{
 		}
 		this.viewOperationRecordModal = this.viewOperationRecordModal.bind(this);
 		this.viewRefundModal = this.viewRefundModal.bind(this);
+		this.viewRefundCredential = this.viewRefundCredential.bind(this);
+		this.viewRemarkModal = this.viewRemarkModal.bind(this);
 	}
 	render(){
 		var { RefundManage, getOrderOptRecord, resetOrderOptRecord, } = this.props;
 		var { list, total, loading, refresh, page_no, check_order_info, active_order_id, operationRecord} = RefundManage;
-		var { viewOperationRecordModal, viewRefundModal } = this;
+		var { viewOperationRecordModal, viewRefundModal, viewRefundCredential, viewRemarkModal } = this;
 		var content = list.map((n) => {
-			return <RefundRow  key={n.order_id} {...{...n, ...this.props, viewOperationRecordModal, viewRefundModal }} />
+			return <RefundRow  key={n.order_id} {...{...n, ...this.props, viewOperationRecordModal, viewRefundModal,viewRefundCredential, viewRemarkModal }} />
 		})
 		return (
 			<div>
@@ -164,20 +172,20 @@ class ManagePannel extends Component{
               				<table className="table table-hover text-center">
               					<thead>
               						<tr>
-              							<td>管理操作</td>
-              							<td>退款金额</td>
-              							<td>退款方式</td>
-              							<td>订单来源</td>
-              							<td>退款状态</td>
-              							<td>账号信息</td>
-              							<td>退款原因</td>
-              							<td>是否加急处理</td>
-              							<td>商户订单号</td>
-              							<td>订单号</td>
-              							<td>联系人信息</td>
-              							<td>申请人</td>
-              							<td>操作人</td>
-              							<td>操作时间</td>
+              							<th>管理操作</th>
+              							<th>退款金额</th>
+              							<th>退款方式</th>
+              							<th>订单来源</th>
+              							<th>退款状态</th>
+              							<th>账号信息</th>
+              							<th>退款原因</th>
+              							<th>是否加急处理</th>
+              							<th>商户订单号</th>
+              							<th>订单号</th>
+              							<th>联系人信息</th>
+              							<th>申请人</th>
+              							<th>操作人</th>
+              							<th>操作时间</th>
               						</tr>
               					</thead>
               					<tbody>
@@ -205,6 +213,8 @@ class ManagePannel extends Component{
 
 				<OperationRecordModal ref='viewOperationRecord' {...{getOrderOptRecord, resetOrderOptRecord, list:operationRecord.list || [], page_no:0}}/>
         		<RefundModal ref='RefundModal' editable={true} />
+        		<RefundCredentials ref='viewRefundCredential' />
+        		<RemarkModal ref='viewRemarkModal' />
 			</div>			
 			)
 	}
@@ -224,6 +234,12 @@ class ManagePannel extends Component{
 	viewRefundModal(){
 		this.refs.RefundModal.show();
 	}
+	viewRefundCredential(){
+		this.refs.viewRefundCredential.show();
+	}
+	viewRemarkModal(){
+		this.refs.viewRemarkModal.show();
+	}
 }
 
 function mapStateToProps(state){
@@ -237,6 +253,44 @@ function mapDispatchToProps(dispatch){
 	},dispatch);
 	actions.dispatch = dispatch;
 	return actions;
+}
+
+class RefundCredentials extends Component{
+	render(){
+		return(
+			<StdModal ref='modal' title='客服退款凭证'>
+				<div>
+					<div className='form-group form-inline'>
+						<label>{'支付宝转账交易订单号：'}</label>
+						<input className='form-control input-xs' type='text' style={{width: 300}}/>
+					</div>
+					<div className = 'form-group form-inline'>
+						<label>{'　　　　　商户订单号：'}</label>
+						<input className='form-control input-xs' type='text' style={{width: 300}}/>
+					</div>
+				</div>
+			</StdModal>
+			)
+	}
+	show(){
+		this.refs.modal.show();
+	}
+}
+
+class RemarkModal extends Component{
+	render(){
+		return (
+			<StdModal ref='modal' title='添加退款备注'>
+				<div>
+					<label>{'备注：'}</label>
+					<textarea className='form-control' style={{width: '100%',height:120}} />
+				</div>
+			</StdModal>
+			)
+	}
+	show(){
+		this.refs.modal.show();
+	}
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ManagePannel);

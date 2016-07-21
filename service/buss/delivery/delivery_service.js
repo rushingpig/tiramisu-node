@@ -29,6 +29,7 @@ var dao = require('../../../dao'),
     calculator = require('../../../api/calculator'),
     async = require('async');
 
+const sms = require('../../../api/sms');
 const img_host = config.img_host;
 
 function DeliveryService(){
@@ -311,7 +312,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
     let updated_time = req.body.updated_time;
     let order = req.body.order;
     let deliveryman = req.body.deliveryman;
-    let products, refund_amount;
+    let products, refund_amount = 0, change_amount = 0;
 
     let order_obj = {
         late_minutes : req.body.late_minutes,
@@ -335,14 +336,6 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
         order_sign_history_obj.option = '用户签收时间:{'+order_obj.signin_time+'}\n{全额退款--原因}:{'+order_obj.payfor_reason+'}';
     }
 
-    if(order){
-        products = order.products || [];
-        if(order.refund_amount !== undefined) refund_amount = order.refund_amount;
-        if(order.total_amount !== undefined) order_obj.total_amount = order.total_amount;
-        if(order.total_original_price !== undefined) order_obj.total_original_price = order.total_original_price;
-        if(order.total_discount_price !== undefined) order_obj.total_discount_price = order.total_discount_price;
-    }
-
     let promise = orderDao.findOrderById(orderId).then((_res) => {
         if (toolUtils.isEmptyArray(_res)) {
             throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
@@ -357,6 +350,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
             throw new TiramisuError(res_obj.OPTION_EXPIRED);
         }
         //===========for history begin=============
+        let is_change = false;
         let current_order = _res[0],
             order_history_obj = {
                 order_id: orderId
@@ -368,35 +362,51 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
             option += '修改{配送员}为{' + deliveryman.name + '('+deliveryman.mobile+')}\n';
         }
         if(order) {
+            products = order.products || [];
+            order_obj.total_amount = current_order.total_amount;
+            order_obj.total_original_price = 0;
+            order_obj.total_discount_price = 0;
             for (let i = 0; i < products.length; i++) {
+                order_obj.total_original_price += products[i].original_price * products[i].num;
+                order_obj.total_discount_price += products[i].discount_price;
                 let isAdd = true;
                 for (let j = 0; j < _res.length; j++) {
                     if (products[i].sku_id == _res[j].sku_id) {
                         isAdd = false;
                         let curr = products[i];
                         let change = products[i].num - _res[j].num;
+                        let tmp_one_price = parseInt(_res[j].discount_price / _res[j].num);
+                        let tmp_change_amount = tmp_one_price * change;
                         if (change > 0) {
+                            is_change = true;
                             option += '增加{' + curr.name + '}数量{' + change + '}\n';
                         } else if (change < 0) {
+                            is_change = true;
                             option += '减少{' + curr.name + '}数量{' + (-change) + '}\n';
                         }
                         let order_sku_obj = {
                             order_id: orderId,
                             sku_id: curr.sku_id,
                             num: curr.num,
-                            choco_board: curr.choco_board,
-                            greeting_card: curr.greeting_card,
-                            atlas: curr.atlas,
-                            custom_name: curr.custom_name,
-                            custom_desc: curr.custom_desc,
-                            discount_price: curr.discount_price,
-                            amount: curr.amount
+                            // choco_board: curr.choco_board,
+                            // greeting_card: curr.greeting_card,
+                            // atlas: curr.atlas,
+                            // custom_name: curr.custom_name,
+                            // custom_desc: curr.custom_desc,
+                            discount_price: _res[j].discount_price + tmp_change_amount,
+                            amount: _res[j].amount + tmp_change_amount
                         };
+                        order_obj.total_amount += tmp_change_amount;
+                        if (order_sku_obj.amount < 0) {
+                            change_amount += order_sku_obj.amount;
+                            order_sku_obj.amount = 0;
+                        }
                         update_skus.push(systemUtils.assembleUpdateObj(req, order_sku_obj));
                     }
                 }
                 if (isAdd) {
                     let curr = products[i];
+                    is_change = true;
                     option += '增加{' + curr.name + '}数量{' + curr.num + '}\n';
                     let order_sku_obj = {
                         order_id: orderId,
@@ -408,8 +418,10 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                         custom_name: curr.custom_name,
                         custom_desc: curr.custom_desc,
                         discount_price: curr.discount_price,
-                        amount: curr.amount
+                        amount: 0
                     };
+                    order_obj.total_amount += curr.discount_price;
+                    change_amount += curr.discount_price;
                     add_skus.push(systemUtils.assembleInsertObj(req, order_sku_obj));
                 }
             }
@@ -422,8 +434,51 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                 }
                 if (isDelete && _res[i].sku_id) {
                     let curr = _res[i];
+                    is_change = true;
                     option += '删除{' + curr.product_name + '}数量{' + curr.num + '}\n';
+                    order_obj.total_amount -= _res[i].discount_price;
+                    change_amount += _res[i].amount - _res[i].discount_price;
                     delete_skuIds.push(curr.sku_id);
+                }
+            }
+
+            if (is_change) {
+                if (order_obj.total_amount < 0) {
+                    refund_amount = -order_obj.total_amount;
+                    order_obj.total_amount = 0;
+                    order_obj.refund_amount = refund_amount;
+                }
+                if (change_amount > 0) {
+                    if (add_skus.length > 0) {
+                        add_skus[0].amount += change_amount;
+                    } else if (update_skus.length > 0) {
+                        update_skus[0].amount += change_amount;
+                    }
+                    change_amount = 0;
+                }
+                if (change_amount < 0) {
+                    for (let i = 0; i < add_skus.length; i++) {
+                        if (add_skus[i].amount <= 0) continue;
+                        change_amount += add_skus[i].amount;
+                        if (change_amount < 0) {
+                            add_skus[i].amount = 0;
+                        } else {
+                            add_skus[i].amount = change_amount;
+                            break;
+                        }
+                    }
+                }
+                if (change_amount < 0) {
+                    for (let i = 0; i < update_skus.length; i++) {
+                        if (update_skus[i].amount <= 0) continue;
+                        change_amount += update_skus[i].amount;
+                        if (change_amount < 0) {
+                            update_skus[i].amount = 0;
+                        } else {
+                            update_skus[i].amount = change_amount;
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -441,10 +496,16 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                 order_id: orderId,
                 option: '自动计算{配送工资}为{' + (delivery_pay_obj.delivery_pay / 100) + '}元\n'
             };
-            if (refund_amount > 0) {
-                order_obj.refund_amount = refund_amount;
-            }
 
+            if (!is_change) {
+                add_skus = null;
+                delete_skuIds = null;
+                update_skus = null;
+                delete order_obj.total_amount;
+                delete order_obj.refund_amount;
+                delete order_obj.total_discount_price;
+                delete order_obj.total_original_price;
+            }
             yield orderDao.editOrder(systemUtils.assembleUpdateObj(req, order_obj), orderId, null, null, products, add_skus, delete_skuIds, update_skus);
             yield deliveryDao.updateDeliveryRecord(orderId, null, systemUtils.assembleUpdateObj(req, delivery_pay_obj));
 
@@ -548,7 +609,28 @@ DeliveryService.prototype.allocateDeliveryman = (req,res,next)=>{
         orderIds.push(systemUtils.getDBOrderId(curr));
         let param = [systemUtils.getDBOrderId(curr),'分配配送员:\n'+deliveryman_name + "     "+deliveryman_mobile,req.session.user.id,new Date()];
         order_history_params.push(param);
-
+        co(function *() {
+            let order_id = systemUtils.getDBOrderId(curr);
+            let order_info = yield orderDao.findOrderById(order_id);
+            if (order_info && order_info.length > 0 && order_info[0].status == Constant.OS.INLINE){
+                order_info = order_info[0];
+                let sms_body = {
+                    timestamp: Date.now(),
+                    method: 'order.notify.delivery_man',
+                    phone: order_info.recipient_mobile,
+                    params: {
+                        order_id: curr,
+                        name: deliveryman_name,
+                        phone: deliveryman_mobile
+                    }
+                };
+                sms.send(sms_body).catch(err=> {
+                    logger.error(`[${curr}] 给用户[${sms_body.phone}]发送短信[${sms_body.method}]异常====>[${err}]`);
+                });
+            }
+        }).catch(err=> {
+            // TODO: get order info error
+        });
     });
     let order_promise = deliveryDao.updateOrderWithDeliveryman(orderIds,systemUtils.assembleUpdateObj(req,update_obj)).then((result)=>{
         if(parseInt(result) <= 0){

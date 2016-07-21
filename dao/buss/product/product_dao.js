@@ -38,15 +38,28 @@ ProductDao.prototype.findAllCatetories = function(){
 /**
  * query for the product list
  */
-ProductDao.prototype.findProductsCount = function(product_name,category_id,regionalism_id, isAddition){
+ProductDao.prototype.findProductsCount = function(product_name,category_id,regionalism_id, isAddition, is_standard_area){
     let sql = "",params = [];
     sql += "select bp.id,bps.size as size,bp.name,count(bps.id) as num,bpc.name as category_name,bpc.isAddition";
     sql += " from ?? bp";
     sql += " inner join ?? bpc on bp.category_id = bpc.id";
-    sql += " inner join ?? bps on bp.id = bps.product_id where 1=1 and bps.del_flag = 1";
+    sql += " inner join ?? bps on bp.id = bps.product_id and bps.del_flag = 1";
+    sql += " inner join ?? dict on bps.regionalism_id = dict.id and dict.del_flag = 1";
+    sql += " where 1 = 1 ";
     params.push(tables.buss_product);
     params.push(tables.buss_product_category);
     params.push(tables.buss_product_sku);
+    params.push(tables.dict_regionalism);
+    if (regionalism_id) {
+        if (is_standard_area) {
+            sql += " and (dict.level_type = 3 and dict.parent_id = ?) or (dict.level_type = 2 and dict.id = ?)";
+            params.push(regionalism_id);
+            params.push(regionalism_id);
+        } else {
+            sql += " and dict.id = ?";
+            params.push(regionalism_id);
+        }
+    }
     if(product_name){
         sql += " and bp.name like ?";
         params.push('%'+product_name+'%');
@@ -55,10 +68,6 @@ ProductDao.prototype.findProductsCount = function(product_name,category_id,regio
         sql += " and (bpc.id = ? or bpc.parent_id = ?) ";
         params.push(category_id);
         params.push(category_id);
-    }
-    if(regionalism_id){
-        sql += " and bps.regionalism_id = ?";
-        params.push(regionalism_id);
     }
     if(isAddition){
         sql += " and bpc.isAddition = ?";
@@ -80,16 +89,24 @@ ProductDao.prototype.findProductsCount = function(product_name,category_id,regio
  * @param preSql
  * @param preParams
  */
-ProductDao.prototype.findProducts = function(preSql, preParams, page_no, page_size, regionalism_id){
+ProductDao.prototype.findProducts = function(preSql, preParams, page_no, page_size, regionalism_id, is_standard_area){
     let params = [];
     let sql = "select t.name,t.category_name,bps2.*,dr.name as regionalism_name from (";
     sql += dbHelper.paginate(preSql,page_no,page_size);
     sql += ")t left join  buss_product_sku bps2 on t.id = bps2.product_id and t.size = bps2.size ";
+    sql += " left join dict_regionalism dr on dr.id = bps2.regionalism_id ";
+    sql += " where 1 = 1 ";
     if (regionalism_id) {
-        sql += 'and bps2.regionalism_id = ? ';
-        params.push(regionalism_id);
+        if (is_standard_area) {
+            sql += " and (dr.level_type = 3 and dr.parent_id = ?) or (dr.level_type = 2 and dr.id = ?)";
+            params.push(regionalism_id);
+            params.push(regionalism_id);
+        } else {
+            sql += " and dr.id = ?";
+            params.push(regionalism_id);
+        }
     }
-    sql += " left join dict_regionalism dr on dr.id = bps2.regionalism_id order by bps2.sort asc";
+    sql += " order by bps2.sort asc";
     return baseDao.select(sql,preParams.concat(params));
 };
 //TODO: check sql after table confirmed

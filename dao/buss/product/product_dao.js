@@ -26,7 +26,7 @@ function ProductDao(){
  */
 ProductDao.prototype.findAllCatetories = function(){
     let columns = [
-        'primary_cate.id as id',
+        'distinct primary_cate.id as id',
         'primary_cate.name as name',
         'primary_cate.parent_id as parent_id'
     ];

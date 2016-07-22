@@ -605,14 +605,15 @@ DeliveryService.prototype.allocateDeliveryman = (req,res,next)=>{
         deliveryman_name : systemUtils.encodeForFulltext(deliveryman_name),
         deliveryman_mobile : deliveryman_mobile
     };
-    req.body.order_ids.forEach((curr)=>{
-        co(function *() {
+    let promise = co(function *() {
+        for (let i = 0; i < req.body.order_ids.length; i++) {
+            let curr = req.body.order_ids[i];
             let order_id = systemUtils.getDBOrderId(curr);
             let order_info = yield orderDao.findOrderById(order_id);
-            if (order_info && order_info.length > 0 && order_info[0].status == Constant.OS.INLINE){
+            if (order_info && order_info.length > 0 && order_info[0].status == Constant.OS.INLINE) {
                 order_info = order_info[0];
                 orderIds.push(order_id);
-                let param = [order_id,'分配配送员:\n'+deliveryman_name + "     "+deliveryman_mobile,req.session.user.id,new Date()];
+                let param = [order_id, '分配配送员:\n' + deliveryman_name + "     " + deliveryman_mobile, req.session.user.id, new Date()];
                 order_history_params.push(param);
                 let sms_body = {
                     timestamp: Date.now(),
@@ -627,27 +628,35 @@ DeliveryService.prototype.allocateDeliveryman = (req,res,next)=>{
                 sms.send(sms_body).catch(err=> {
                     logger.error(`[${curr}] 给用户[${sms_body.phone}]发送短信[${sms_body.method}]异常====>[${err}]`);
                 });
+            } else {
+                // return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID, "指定的订单号无效..."));
             }
-        }).catch(err=> {
-            // TODO: get order info error
+        }
+
+        if (orderIds.length == 0) {
+            return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID, "指定的订单号无效..."));
+        }
+
+        yield deliveryDao.updateOrderWithDeliveryman(orderIds, systemUtils.assembleUpdateObj(req, update_obj)).then((result)=> {
+            if (parseInt(result) <= 0) {
+                return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID, "指定的订单号无效..."));
+            }
+            return orderDao.batchInsertOrderHistory(order_history_params);
+        }).then((result)=> {
+            if (parseInt(result) <= 0) {
+                return Promise.reject(new TiramisuError(res_obj.FAIL, '批量记录订单操作历史记录异常...'));
+            }
         });
+        yield orderDao.batchUpdateOrderFulltext(orderIds, order_fulltext_obj).then((result)=> {
+            if (parseInt(result) <= 0) {
+                return Promise.reject(new TiramisuError(res_obj.FAIL, '批量更新订单全文检索配送员信息异常...'));
+            }
+        });
+    }).then(()=> {
+        res.api();
+    }).catch(err=> {
+        throw err;
     });
-    let order_promise = deliveryDao.updateOrderWithDeliveryman(orderIds,systemUtils.assembleUpdateObj(req,update_obj)).then((result)=>{
-        if(parseInt(result) <= 0){
-            throw new TiramisuError(res_obj.INVALID_UPDATE_ID,"指定的订单号无效...");
-        }
-        return orderDao.batchInsertOrderHistory(order_history_params);
-    }).then((result)=>{
-        if(parseInt(result) <= 0){
-            throw new TiramisuError(res_obj.FAIL,'批量记录订单操作历史记录异常...');
-        }
-    });
-    let order_fulltext_promise = orderDao.batchUpdateOrderFulltext(orderIds,order_fulltext_obj).then((result)=>{
-        if(parseInt(result) <= 0){
-            throw new TiramisuError(res_obj.FAIL,'批量更新订单全文检索配送员信息异常...');
-        }
-    });
-    let promise = Promise.all([order_promise,order_fulltext_promise]).then(()=>{res.api()});
     systemUtils.wrapService(res,next,promise);
 };
 /**

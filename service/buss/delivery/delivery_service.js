@@ -813,6 +813,9 @@ DeliveryService.prototype.print = (req,res,next)=>{
             }else if (print_status === Constant.PS.AUDITING){
                 throw new TiramisuError(res_obj.ORDER_AUDITING);
             }
+            if (!systemUtils.isOrderCanUpdateStatus(curr.status, Constant.OS.INLINE)) {
+                throw new TiramisuError(res_obj.OPTION_EXPIRED);
+            }
         });
         let print_status_update_obj = {
             print_status : Constant.PS.UNPRINTABLE,

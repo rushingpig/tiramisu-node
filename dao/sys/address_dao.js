@@ -259,10 +259,11 @@ AddressDao.prototype.getProvincesAndCites = function(){
         'case syscity.regionalism_id when district.id then district.name when city.id then city.name end as city_name',
         'case syscity.regionalism_id when district.id then district.level_type when city.id then city.level_type end as level_type'
     ];
-    let sql = 'select ' + columns.join(',') + ' from ?? province join ?? city on province.id = city.parent_id and province.level_type = 1 and province.del_flag = ? and city.level_type = 2 and city.del_flag = ? ' + 
+    let inner_sql = 'select ' + columns.join(',') + ' from ?? province join ?? city on province.id = city.parent_id and province.level_type = 1 and province.del_flag = ? and city.level_type = 2 and city.del_flag = ? ' + 
         ' join ?? district on city.id = district.parent_id and district.level_type = 3 and district.del_flag = ? ' +
-        ' join ?? syscity on district.id = syscity.regionalism_id or city.id = syscity.regionalism_id ';
+        ' join ?? syscity on syscity.is_city = 1 and (district.id = syscity.regionalism_id or city.id = syscity.regionalism_id) ';
     let params = [this.table, this.table, del_flag.SHOW, del_flag.SHOW, this.table, del_flag.SHOW, tables.sys_city];
+    let sql = 'select distinct * from (' + inner_sql + ') t';
     return baseDao.select(sql, params);
 };
 module.exports = AddressDao;

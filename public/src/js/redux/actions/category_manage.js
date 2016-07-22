@@ -33,7 +33,7 @@ const loadBasicData = (level, isEdit, id) => (
     const isSecondary = level === 'secondary';
 
     if (isSecondary) {
-      loadPrimaryCategories = get(Url.categories.toString()).then(
+      loadPrimaryCategories = get(Url.categories.toString(), { is_include_single_primary: 1 }).then(
         categories => categories.filter(
           obj => obj.parent_id === 0
         )

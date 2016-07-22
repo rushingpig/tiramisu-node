@@ -34,6 +34,12 @@ ProductDao.prototype.findAllCatetories = function(){
     let params = [tables.buss_product_category,tables.buss_product_category,del_flag.SHOW,del_flag.SHOW,del_flag.SHOW];
     return baseDao.select(sql, params);
 };
+ProductDao.prototype.findAllCatetoriesIncludeSingle = function(){
+    let columns = Array.prototype.slice.apply(this.baseColumns);
+    columns.push('parent_id');
+    let params = [columns,tables.buss_product_category,del_flag.SHOW];
+    return baseDao.select(this.base_select_sql,params);
+}
 //TODO: check sql after table confirmed
 /**
  * query for the product list

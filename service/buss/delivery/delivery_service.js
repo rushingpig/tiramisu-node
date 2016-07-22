@@ -627,6 +627,10 @@ DeliveryService.prototype.allocateDeliveryman = (req,res,next)=>{
             }
         }
 
+        if (orderIds.length == 0) {
+            return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID, "指定的订单号无效..."));
+        }
+
         yield deliveryDao.updateOrderWithDeliveryman(orderIds, systemUtils.assembleUpdateObj(req, update_obj)).then((result)=> {
             if (parseInt(result) <= 0) {
                 return Promise.reject(new TiramisuError(res_obj.INVALID_UPDATE_ID, "指定的订单号无效..."));

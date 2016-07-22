@@ -19,6 +19,31 @@ function UserDao(table){
     this.base_insert_sql = "insert into ?? set ?";
     this.base_update_sql = "update ?? set ?";
 }
+
+UserDao.prototype.isExist = function (query, ignore) {
+    if (!query) return Promise.resolve(true);
+    if (!ignore) ignore = {};
+    return new Promise((resolve, reject)=> {
+        let sql = `SELECT id FROM ?? su `;
+        let params = [tables.sys_user];
+        sql += `WHERE 1 = 1 `;
+        sql += `AND su.del_flag = ? `;
+        params.push(del_flag.SHOW);
+        if (query.mobile) {
+            sql += `AND su.mobile = ? `;
+            params.push(query.mobile);
+        }
+
+        if (ignore.user_id) {
+            sql += `AND su.id != ? `;
+            params.push(ignore.user_id);
+        }
+        baseDao.select(sql, params).then(result=> {
+            resolve(result && result.length > 0);
+        }).catch(reject);
+    });
+};
+
 /**
  * find user info and permissions by username and password
  * @param username

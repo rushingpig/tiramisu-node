@@ -600,7 +600,7 @@ DeliveryService.prototype.allocateDeliveryman = (req,res,next)=>{
         deliveryman_mobile : deliveryman_mobile
     };
     let promise = co(function *() {
-        for (let i = 0; i < req.body.order_ids; i++) {
+        for (let i = 0; i < req.body.order_ids.length; i++) {
             let curr = req.body.order_ids[i];
             let order_id = systemUtils.getDBOrderId(curr);
             let order_info = yield orderDao.findOrderById(order_id);

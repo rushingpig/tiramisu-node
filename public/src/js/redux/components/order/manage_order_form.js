@@ -328,6 +328,9 @@ class ManageAddForm extends Component {
           form_data.delivery_name = undefined;
         }else {
           form_data.delivery_name = this.findSelectedOptionText('delivery_center');
+          if(form_data.delivery_name == this.refs.delivery_center.props['default-text']){
+            form_data.delivery_id == SELECT_DEFAULT_VALUE;
+          }
         }
 
         //拼接省市区

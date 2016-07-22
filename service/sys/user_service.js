@@ -21,6 +21,7 @@ var dao = require('../../dao'),
     TiramisuError = require('../../error/tiramisu_error'),
     async = require('async');
 var _ = require('lodash');
+var co = require('co');
 
 function UserService() {
 
@@ -104,39 +105,34 @@ UserService.prototype.addUser = (req,res,next) => {
         is_headquarters : b.is_headquarters,
         is_national : b.is_national
     };
-    async.series([
-        function(cb){
-            if(parseInt(b.is_headquarters) !== 1){
-                addressDao.findCitiesByIds(b.city_ids).then(cities => {
-                    let city_names = [];
-                    cities.forEach(curr => {
-                        city_names.push(curr.name);
-                    });
-                    user_obj.city_names = city_names.join(',');
-                    cb(null);
-                });
-            }else {
-                cb(null);
-            }
-        },
-        function(cb){
-            let role_ids = b.role_ids || [];
-            let only_admin_roles = b.only_admin_roles || [];
-            let promise = userDao.insertUser(systemUtils.assembleInsertObj(req,user_obj), role_ids, only_admin_roles).then(insertId=>{
-                if(!insertId){
-                    throw new TiramisuError(res_obj.FAIL,'新增用户异常...');
-                }
-                res.api();
-                cb(null);
-            }).catch(err => {
-                if(err.code == 'ER_DUP_ENTRY'){
-                    throw new TiramisuError(res_obj.EXIST_USERNAME,err);
-                }
-                throw err;
-            });
-            systemUtils.wrapService(res,next,promise,cb);
+    let promise = co(function *() {
+        if ((yield userDao.isExist(user_obj))) {
+            return Promise.reject(new TiramisuError(res_obj.EXIST_USER_MOBILE));
         }
-    ]);
+        if (parseInt(b.is_headquarters) !== 1) {
+            yield addressDao.findCitiesByIds(b.city_ids).then(cities => {
+                let city_names = [];
+                cities.forEach(curr => {
+                    city_names.push(curr.name);
+                });
+                user_obj.city_names = city_names.join(',');
+            });
+        }
+        let role_ids = b.role_ids || [];
+        let only_admin_roles = b.only_admin_roles || [];
+        return userDao.insertUser(systemUtils.assembleInsertObj(req, user_obj), role_ids, only_admin_roles);
+    }).then(insertId=> {
+        if (!insertId) {
+            throw new TiramisuError(res_obj.FAIL, '新增用户异常...');
+        }
+        res.api();
+    }).catch(err=> {
+        if (err.code == 'ER_DUP_ENTRY') {
+            throw new TiramisuError(res_obj.EXIST_USERNAME, err);
+        }
+        throw err;
+    });
+    systemUtils.wrapService(res, next, promise);
 };
 /**
  * delete user from the list for display
@@ -308,31 +304,31 @@ UserService.prototype.editUser = (req,res,next) => {
     if(b.password){
         user_obj.password = cryptoUtils.md5(b.password);
     }
-    async.series([
-        function(cb){
-            if(parseInt(b.is_headquarters) !== 1){
-                addressDao.findCitiesByIds(b.city_ids).then(cities => {
-                    let city_names = [];
-                    cities.forEach(curr => {
-                        city_names.push(curr.name);
-                    });
-                    user_obj.city_names = city_names.join(',');
-                    cb(null);
-                });
-            }else {
-                cb(null);
-            }
-        },
-        function(cb){
-            let role_ids = b.role_ids || [];
-            let only_admin_roles = b.only_admin_roles || [];
-            let promise = userDao.updateUserById(systemUtils.assembleUpdateObj(req, user_obj), user_id, role_ids, only_admin_roles).then(()=> {
-                res.api();
-                cb(null);
-            });
-            systemUtils.wrapService(res,next,promise,cb);
+    let promise = co(function *() {
+        if ((yield userDao.isExist(user_obj, {user_id: user_id}))) {
+            return Promise.reject(new TiramisuError(res_obj.EXIST_USER_MOBILE));
         }
-    ]);
+        if (parseInt(b.is_headquarters) !== 1) {
+            yield addressDao.findCitiesByIds(b.city_ids).then(cities => {
+                let city_names = [];
+                cities.forEach(curr => {
+                    city_names.push(curr.name);
+                });
+                user_obj.city_names = city_names.join(',');
+            });
+        }
+        let role_ids = b.role_ids || [];
+        let only_admin_roles = b.only_admin_roles || [];
+        return userDao.updateUserById(systemUtils.assembleUpdateObj(req, user_obj), user_id, role_ids, only_admin_roles);
+    }).then(()=> {
+        res.api();
+    }).catch(err=> {
+        if (err.code == 'ER_DUP_ENTRY') {
+            throw new TiramisuError(res_obj.EXIST_USERNAME, err);
+        }
+        throw err;
+    });
+    systemUtils.wrapService(res, next, promise);
 };
 /**
  * change the user password

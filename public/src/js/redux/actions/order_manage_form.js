@@ -3,6 +3,7 @@ import Url from 'config/url';
 import { getValues } from 'redux-form';
 import { initForm } from 'actions/form';
 import clone from 'clone';
+import {Noty} from 'utils/index';
 import * as OrderSupport from 'actions/order_support';
 import { CLEAR_DELIVERY_STATIONS } from 'actions/order_manage';
 import { SELECT_DEFAULT_VALUE } from 'config/app.config';
@@ -88,17 +89,30 @@ function _getFormData(form_data, getState){
   var total_amount = 0, total_original_price = 0, total_discount_price = 0;
   var greeting_card = [];
   products = clone( products );
-  products.forEach(n => {
-    n.discount_price *= 100;
-    n.amount *= 100;
-    n.discount_price = Number(n.discount_price.toFixed(0)); //防止浮点误差
-    n.amount = Number(n.amount.toFixed(0));
+  try{
+    products.forEach(n => {
+      n.discount_price *= 100;
+      n.amount *= 100;
+      n.discount_price = Number(n.discount_price.toFixed(0)); //防止浮点误差
+      n.amount = Number(n.amount.toFixed(0));
 
-    total_amount += n.amount;
-    total_original_price += n.original_price * n.num;
-    total_discount_price += n.discount_price;
-    greeting_card.push(n.greeting_card);
-  })
+      if(n.amount > n.discount_price){
+        Noty('warning', '商品应收金额不能大于实际售价');
+        throw new Error('overlimit');
+      }
+
+      total_amount += n.amount;
+      total_original_price += n.original_price * n.num;
+      total_discount_price += n.discount_price;
+      greeting_card.push(n.greeting_card);
+    })
+  }catch(e){
+    if(e.msg != 'overlimit'){
+      Noty('error', '请填写正确的商品金额数据');
+    }
+    console.error(e);
+    throw e;
+  }
   return {
     ...form_data,
     total_amount,
@@ -235,10 +249,18 @@ export const SUBMIT_ORDER_COMPLETE = 'SUBMIT_ORDER_COMPLETE';
 export function submitOrder(form_data){
   //若是异步的话，那么该函数必须也返回一个函数
   return (dispatch, getState) => {
+    var original_order_data = getState().orderManageForm.mainForm.data;
     var data = _getFormData(form_data, getState);
     dispatch({
       type: SUBMIT_ORDER_ING,
     });
+    if(
+      original_order_data.owner_mobile != data.owner_mobile ||
+      original_order_data.owner_name != data.owner_name
+    ){
+      Noty('warning', '订单关键信息：下单人姓名，下单人手机将被更改！可能是订单信息发生交叉错误，建议关闭此页面，重新编辑该订单！必要时联系系统开发人员！');
+      return;
+    }
     if(!form_data.order_id){
       throw Error('order_id should not be undefined');
     }
@@ -250,11 +272,18 @@ export function submitOrder(form_data){
       })
   }
   // return ( dispatch, getState ) => {
+  //   var original_order_data = getState().orderManageForm.mainForm.data;
   //   var data = _getFormData(form_data, getState);
-  //   debugger;
-  //   dispatch({type: SUBMIT_ORDER_ING});
-  //   setTimeout(function(){
-  //     dispatch({type: SUBMIT_ORDER_COMPLETE});
-  //   }, 2000)
+  //   if(
+  //     original_order_data.owner_mobile != data.owner_mobile ||
+  //     original_order_data.owner_name != data.owner_name
+  //   ){
+  //     Noty('warning', '订单关键信息：下单人姓名，下单人手机将被更改！可能是订单信息发生交叉错误，建议关闭此页面，重新编辑该订单！必要时联系系统开发人员！');
+  //     return;
+  //   }
+  //   return TEST(null, [
+  //     {type: SUBMIT_ORDER_ING},  //立即派发
+  //     {type: SUBMIT_ORDER_COMPLETE}   //2000毫秒后派发
+  //   ], 2000)(dispatch);
   // }
 }

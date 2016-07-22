@@ -606,14 +606,14 @@ DeliveryService.prototype.allocateDeliveryman = (req,res,next)=>{
         deliveryman_mobile : deliveryman_mobile
     };
     req.body.order_ids.forEach((curr)=>{
-        orderIds.push(systemUtils.getDBOrderId(curr));
-        let param = [systemUtils.getDBOrderId(curr),'分配配送员:\n'+deliveryman_name + "     "+deliveryman_mobile,req.session.user.id,new Date()];
-        order_history_params.push(param);
         co(function *() {
             let order_id = systemUtils.getDBOrderId(curr);
             let order_info = yield orderDao.findOrderById(order_id);
             if (order_info && order_info.length > 0 && order_info[0].status == Constant.OS.INLINE){
                 order_info = order_info[0];
+                orderIds.push(order_id);
+                let param = [order_id,'分配配送员:\n'+deliveryman_name + "     "+deliveryman_mobile,req.session.user.id,new Date()];
+                order_history_params.push(param);
                 let sms_body = {
                     timestamp: Date.now(),
                     method: 'order.notify.delivery_man',

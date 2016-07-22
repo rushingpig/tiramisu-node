@@ -38,6 +38,10 @@ module.exports = {
     code : '1007',
     msg : '旧密码输入有误,请重新输入...'
   },
+  EXIST_USER_MOBILE : {
+    code : '1008',
+    msg : '该手机号码已存在,请重新输入...'
+  },
   ORDER_AUDITING: {
     code: '2000',
     msg: '有订单打印正在审核中,请等待审核通过...'

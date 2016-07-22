@@ -29,7 +29,10 @@ function ProductService() {
  * @param next
  */
 ProductService.prototype.getCategories = (req, res, next)=> {
-    let promise = productDao.findAllCatetories().then((results)=> {
+    //是否包含无二级分类的一级分类
+    let is_include_single_primary = req.query.is_include_single_primary;
+    let findCatetories = is_include_single_primary == "1" ?  "findAllCatetoriesIncludeSingle" : "findAllCatetories";
+    let promise = productDao[findCatetories]().then((results)=> {
         if (toolUtils.isEmptyArray(results)) {
             throw new TiramisuError(res_obj.NO_MORE_RESULTS);
         }

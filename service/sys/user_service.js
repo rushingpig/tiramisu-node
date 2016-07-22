@@ -305,7 +305,7 @@ UserService.prototype.editUser = (req,res,next) => {
         user_obj.password = cryptoUtils.md5(b.password);
     }
     let promise = co(function *() {
-        if ((yield userDao.isExist(user_obj))) {
+        if ((yield userDao.isExist(user_obj, {user_id: user_id}))) {
             return Promise.reject(new TiramisuError(res_obj.EXIST_USER_MOBILE));
         }
         if (parseInt(b.is_headquarters) !== 1) {

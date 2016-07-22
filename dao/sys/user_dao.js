@@ -20,8 +20,9 @@ function UserDao(table){
     this.base_update_sql = "update ?? set ?";
 }
 
-UserDao.prototype.isExist = function (query) {
+UserDao.prototype.isExist = function (query, ignore) {
     if (!query) return Promise.resolve(true);
+    if (!ignore) ignore = {};
     return new Promise((resolve, reject)=> {
         let sql = `SELECT id FROM ?? su `;
         let params = [tables.sys_user];
@@ -31,6 +32,11 @@ UserDao.prototype.isExist = function (query) {
         if (query.mobile) {
             sql += `AND su.mobile = ? `;
             params.push(query.mobile);
+        }
+
+        if (ignore.user_id) {
+            sql += `AND su.id != ? `;
+            params.push(ignore.user_id);
         }
         baseDao.select(sql, params).then(result=> {
             resolve(result && result.length > 0);

@@ -1046,28 +1046,28 @@ var SignedModal = React.createClass({
     this.setState(this.getInitialState());
   },
   onSparePartChange(e){
-
+    var e_copy = clone(e);
     var old_orderSpareparts = this.state.orderSpareparts;
-    if( !e.children ||   e.children.length == 0){
+    if( !e_copy.children ||   e_copy.children.length == 0){
       var newvalue = {};
-      if('parent_id' in e){
-        if(old_orderSpareparts.some( m => m.id == e.parent_id && m.sub == e.name)){
+      if('parent_id' in e_copy){
+        if(old_orderSpareparts.some( m => m.id == e_copy.parent_id && m.sub == e_copy.name)){
           old_orderSpareparts.map( m => {
-            if( m.id == e.parent_id && m.sub == e.name){
+            if( m.id == e_copy.parent_id && m.sub == e_copy.name){
               m.num ++ ;
             }
             return m;
           })
         }else{
-          var newvalue = { id: e.parent_id, name: e.parent_name ,price: e.price ,sub: e.name, remarks:'',num:1, skus: e.skus }           
+          var newvalue = { id: e_copy.parent_id, name: e_copy.parent_name ,price: e_copy.price ,sub: e_copy.name, remarks:'',num:1, skus: e_copy.skus }           
         }       
       }else{
         var  initial_orderSpareparts = this.props.D_.orderSpareparts;
-        if(old_orderSpareparts.some( m => m.sku_id == e.sku_id )){
+        if(old_orderSpareparts.some( m => m.sku_id == e_copy.sku_id )){
           old_orderSpareparts.map( m => {
-            if(m.sku_id == e.sku_id){
+            if(m.sku_id == e_copy.sku_id){
               m.num ++;
-              m.amount += e.discount_price;
+              m.amount += e_copy.discount_price;
               if(initial_orderSpareparts.every( h => h.sku_id != m.sku_id )){
                this.setState({plus_amount: this.state.plus_amount + m.unit_price});
               }else if( initial_orderSpareparts.some(h => h.sku_id == m.sku_id && h.num < m.num)){
@@ -1080,8 +1080,8 @@ var SignedModal = React.createClass({
             return m;
           })
         }else{
-          var newvalue = e;
-          e.num = 1;
+          var newvalue = e_copy;
+          e_copy.num = 1;
           newvalue.unit_price = newvalue.discount_price;
           newvalue.amount = newvalue.discount_price;
           old_orderSpareparts.push(newvalue);

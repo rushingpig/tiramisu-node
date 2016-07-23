@@ -192,7 +192,7 @@ module.exports = {
         result = [OS.CANCEL, OS.STATION, OS.CONVERT].indexOf(new_status);
         break;
       case OS.CONVERT:  // 已转换
-        result = [OS.CANCEL, OS.INLINE].indexOf(new_status);
+        result = [OS.CANCEL, OS.INLINE, OS.STATION].indexOf(new_status);
         break;
       case OS.INLINE:  // 生产中
         result = [OS.EXCEPTION, OS.DELIVERY].indexOf(new_status);

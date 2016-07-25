@@ -69,7 +69,7 @@ app.set('view engine', '.hbs');
 
 app.use(log4js.connectLogger(logger, { level: 'auto' ,format:':method :status ✪ :url ✪  [:response-time ms]'}));
 app.use(compression());
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '5mb'}));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(validator(toolUtils.exp_validator_custom));
 app.use(cookieParser());

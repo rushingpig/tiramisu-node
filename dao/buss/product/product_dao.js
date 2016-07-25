@@ -99,7 +99,7 @@ ProductDao.prototype.findProducts = function(preSql, preParams, page_no, page_si
     let params = [];
     let sql = "select t.name,t.category_name,bps2.*,dr.name as regionalism_name from (";
     sql += dbHelper.paginate(preSql,page_no,page_size);
-    sql += ")t left join  buss_product_sku bps2 on t.id = bps2.product_id and t.size = bps2.size ";
+    sql += ")t left join  buss_product_sku bps2 on t.id = bps2.product_id and t.size = bps2.size and bps2.del_flag = 1 ";
     sql += " left join dict_regionalism dr on dr.id = bps2.regionalism_id ";
     sql += " where 1 = 1 ";
     if (regionalism_id) {

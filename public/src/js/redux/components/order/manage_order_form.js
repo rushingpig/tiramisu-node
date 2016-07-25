@@ -399,8 +399,8 @@ class ManageAddForm extends Component {
       Noty('warning', '请选择配送中心'); return;
     }
     this.props.actions.submitOrder(form_data).done(function(){
-      Noty('success', '已成功提交！');
       history.push('/om/index');
+      Noty('success', '已成功提交！');
     }).fail(function(msg){
       Noty('error', msg || '网络繁忙，请稍后再试');
     });

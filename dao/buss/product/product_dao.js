@@ -99,7 +99,7 @@ ProductDao.prototype.findProducts = function(preSql, preParams, page_no, page_si
     let params = [];
     let sql = "select t.name,t.category_name,bps2.*,dr.name as regionalism_name from (";
     sql += dbHelper.paginate(preSql,page_no,page_size);
-    sql += ")t left join  buss_product_sku bps2 on t.id = bps2.product_id and t.size = bps2.size ";
+    sql += ")t left join  buss_product_sku bps2 on t.id = bps2.product_id and t.size = bps2.size and bps2.del_flag = 1 ";
     sql += " left join dict_regionalism dr on dr.id = bps2.regionalism_id ";
     sql += " where 1 = 1 ";
     if (regionalism_id) {
@@ -449,19 +449,23 @@ ProductDao.prototype.getSkuWithBooktimeByProductAndCity = function (data) {
         'sku.book_time as book_time',
         'secondary_booktime.book_time as secondary_book_time',
         'secondary_dict.name as secondary_book_time_region',
-        'dict.id as city_id',
-        'dict.name as city_name',
-        'dict.parent_id as province_id',
+        'dict_city.id as city_id',
+        'dict_city.name as city_name',
+        'case dict_city.level_type when 3 then dict_province.parent_id when 2 then dict_province.id end as province_id',
         'sku.presell_start as presell_start',
         'sku.presell_end as presell_end',
         'sku.activity_price as activity_price',
         'sku.activity_start as activity_start',
         'sku.activity_end as activity_end'
     ];
-    let sql = 'select ' + columns.join(',') + ' from ?? sku left join ?? secondary_booktime on sku.id = secondary_booktime.sku_id and secondary_booktime.del_flag = 1 join ?? dict on sku.regionalism_id = dict.id left join ?? secondary_dict on secondary_booktime.regionalism_id = secondary_dict.id where sku.product_id = ? and sku.regionalism_id = ? and sku.del_flag = 1';
+    let sql = 'select ' + columns.join(',') + ' from ?? sku left join ?? secondary_booktime on sku.id = secondary_booktime.sku_id and secondary_booktime.del_flag = 1 ' + 
+        'join ?? dict_city on sku.regionalism_id = dict_city.id and dict_city.del_flag = 1 join ?? dict_province on dict_city.parent_id = dict_province.id and dict_province.del_flag = 1 ' + 
+        'left join ?? secondary_dict on secondary_booktime.regionalism_id = secondary_dict.id ' + 
+        'where sku.product_id = ? and sku.regionalism_id = ? and sku.del_flag = 1';
     let params = [];
     params.push(config.tables.buss_product_sku);
     params.push(config.tables.buss_product_sku_booktime);
+    params.push(config.tables.dict_regionalism);
     params.push(config.tables.dict_regionalism);
     params.push(config.tables.dict_regionalism);
     params.push(data.productId);

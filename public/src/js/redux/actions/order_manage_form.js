@@ -249,18 +249,10 @@ export const SUBMIT_ORDER_COMPLETE = 'SUBMIT_ORDER_COMPLETE';
 export function submitOrder(form_data){
   //若是异步的话，那么该函数必须也返回一个函数
   return (dispatch, getState) => {
-    var original_order_data = getState().orderManageForm.mainForm.data;
     var data = _getFormData(form_data, getState);
     dispatch({
       type: SUBMIT_ORDER_ING,
     });
-    if(
-      original_order_data.owner_mobile != data.owner_mobile ||
-      original_order_data.owner_name != data.owner_name
-    ){
-      Noty('warning', '订单关键信息：下单人姓名，下单人手机将被更改！可能是订单信息发生交叉错误，建议关闭此页面，重新编辑该订单！必要时联系系统开发人员！');
-      return;
-    }
     if(!form_data.order_id){
       throw Error('order_id should not be undefined');
     }
@@ -271,19 +263,8 @@ export function submitOrder(form_data){
         })
       })
   }
-  // return ( dispatch, getState ) => {
-  //   var original_order_data = getState().orderManageForm.mainForm.data;
-  //   var data = _getFormData(form_data, getState);
-  //   if(
-  //     original_order_data.owner_mobile != data.owner_mobile ||
-  //     original_order_data.owner_name != data.owner_name
-  //   ){
-  //     Noty('warning', '订单关键信息：下单人姓名，下单人手机将被更改！可能是订单信息发生交叉错误，建议关闭此页面，重新编辑该订单！必要时联系系统开发人员！');
-  //     return;
-  //   }
-  //   return TEST(null, [
-  //     {type: SUBMIT_ORDER_ING},  //立即派发
-  //     {type: SUBMIT_ORDER_COMPLETE}   //2000毫秒后派发
-  //   ], 2000)(dispatch);
-  // }
+  // return TEST(null, [
+  //   {type: SUBMIT_ORDER_ING},  //立即派发
+  //   {type: SUBMIT_ORDER_COMPLETE}   //2000毫秒后派发
+  // ], 2000);
 }

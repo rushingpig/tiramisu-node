@@ -689,7 +689,7 @@ var SignedModal = React.createClass({
   getInitialState: function() {
     return {
       CASH: 'CASH', //现金赔偿
-      REFUND: 'REFUND', //全额退款
+      FULL_REFUND: 'FULL_REFUND', //全额退款
 
       order: {},
 
@@ -774,11 +774,11 @@ var SignedModal = React.createClass({
           </div>,
           <div className="form-group mg-15">
             <label className="">
-              <input value={this.state.REFUND} onClick={this.checkMethod} checked={this.state.REFUND == refund_method} type="radio" name="method" />
+              <input value={this.state.FULL_REFUND} onClick={this.checkMethod} checked={this.state.FULL_REFUND == refund_method} type="radio" name="method" />
               {' 全额退款（迟到时间>=30mins）'}
             </label>
             {
-              this.state.refund_method == this.state.REFUND
+              this.state.refund_method == this.state.FULL_REFUND
               ? <div className="form-group pl-20">
                   <RadioGroup 
                     value={refund_reson} 

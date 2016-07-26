@@ -894,6 +894,12 @@ var SignedModal = React.createClass({
            Noty('warning', '现金赔偿金额不应大于29元');return;         
          }
        }
+    }else {
+      this.setState({
+        refund_money: 0,
+        refund_reson: '',
+        refund_method: '',
+      })
     }
 
       //去掉必须的全额退款

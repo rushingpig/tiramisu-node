@@ -330,6 +330,9 @@ var OrderRow = React.createClass({
         roles = ['OrderManageException', 'OrderManageAlterRemarks']; break;
       case 'DELIVERY':
         roles = ['OrderManageException', 'OrderManageAlterRemarks']; break;
+      case 'COMPLETED':
+      case 'EXCEPTION':
+        roles = ['OrderManageAlterRemarks']; break;
       default:
         roles = []; break;
     }

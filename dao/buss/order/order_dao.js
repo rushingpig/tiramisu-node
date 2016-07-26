@@ -398,6 +398,7 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
     'bo.is_pos_pay',
     'bp.`name` as product_name',
     'bp.category_id',
+    'bpc.isAddition',
     'bos.amount',
     'bos.num',
     'bps.size',
@@ -447,6 +448,8 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
   params.push(tables.buss_product_sku);
   sql += " left join ?? bp on bps.product_id = bp.id";
   params.push(tables.buss_product);
+  sql += " left join ?? bpc on bpc.id = bp.category_id";
+  params.push(tables.buss_product_category);
   sql += " left join ?? su1 on bo.created_by = su1.id";
   params.push(tables.sys_user);
   sql += " left join ?? su2 on bo.deliveryman_id = su2.id";

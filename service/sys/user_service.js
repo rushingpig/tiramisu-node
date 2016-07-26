@@ -92,6 +92,7 @@ UserService.prototype.addUser = (req,res,next) => {
         res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
+    let curr_user = req.session.user;
     let b = req.body;
     let user_obj = {
         city_ids : b.city_ids ? b.city_ids.join(',') : '',
@@ -101,10 +102,10 @@ UserService.prototype.addUser = (req,res,next) => {
         station_ids : b.station_ids ? b.station_ids.join(',') : '',
         username : b.username,
         city_names : b.city_names ? b.city_names.join(',') : '',
-        is_usable : is_usable.enable,
-        is_headquarters : b.is_headquarters,
-        is_national : b.is_national
+        is_usable : is_usable.enable
     };
+    if (curr_user.is_headquarters) user_obj = b.is_headquarters;
+    if (curr_user.is_national) user_obj = b.is_national;
     let promise = co(function *() {
         if ((yield userDao.isExist(user_obj))) {
             return Promise.reject(new TiramisuError(res_obj.EXIST_USER_MOBILE));
@@ -290,6 +291,7 @@ UserService.prototype.editUser = (req,res,next) => {
         res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
+    let curr_user = req.session.user;
     let b = req.body,user_id = req.params.userId;
     let user_obj = {
         city_ids : b.city_ids ? b.city_ids.join(',') : '',
@@ -297,10 +299,10 @@ UserService.prototype.editUser = (req,res,next) => {
         name : b.name,
         station_ids : b.station_ids ? b.station_ids.join(',') : '',
         username : b.username,
-        city_names : b.city_names ? b.city_names.join(',') : '',
-        is_headquarters : b.is_headquarters,
-        is_national : b.is_national
+        city_names : b.city_names ? b.city_names.join(',') : ''
     };
+    if (curr_user.is_headquarters) user_obj = b.is_headquarters;
+    if (curr_user.is_national) user_obj = b.is_national;
     if(b.password){
         user_obj.password = cryptoUtils.md5(b.password);
     }

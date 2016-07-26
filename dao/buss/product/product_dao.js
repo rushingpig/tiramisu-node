@@ -479,13 +479,16 @@ ProductDao.prototype.getSkuByProductAndCity = function (data) {
         'sku.size as size',
         'sku.original_price as original_price',
         'sku.price as price',
-        'dict.id as city_id',
-        'dict.name as city_name',
-        'dict.parent_id as province_id'
+        'dict_city.id as city_id',
+        'dict_city.name as city_name',
+        'case dict_city.level_type when 3 then dict_province.parent_id when 2 then dict_province.id end as province_id'
     ];
-    let sql = 'select ' + columns.join(',') + ' from ?? sku join ?? dict on sku.regionalism_id = dict.id where sku.product_id = ? and sku.regionalism_id = ? and sku.del_flag = 1';
+    let sql = 'select ' + columns.join(',') + ' from ?? sku join ?? dict_city on sku.regionalism_id = dict_city.id and dict_city.del_flag = 1 ' +
+        ' join ?? dict_province on dict_city.parent_id = dict_province.id and dict_province.del_flag = 1 ' +
+        ' where sku.product_id = ? and sku.regionalism_id = ? and sku.del_flag = 1';
     let params = [];
     params.push(config.tables.buss_product_sku);
+    params.push(config.tables.dict_regionalism);
     params.push(config.tables.dict_regionalism);
     params.push(data.productId);
     params.push(data.cityId);

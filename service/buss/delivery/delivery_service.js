@@ -327,7 +327,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
     let order_sign_history_obj = {
         order_id: orderId
     };
-    if(order_obj.payfor_amount == 0){
+    if([Constant.PFT.CASH, Constant.PFT.FULL_REFUND].indexOf(order_obj.payfor_type) == -1){
         order_sign_history_obj.option = '用户签收时间:{'+order_obj.signin_time+'}\n准点送达';
     }else if(order_obj.payfor_type === Constant.PFT.CASH){
         order_sign_history_obj.option = '用户签收时间:{'+order_obj.signin_time+'}\n{现金赔偿}:{'+ (order_obj.payfor_amount / 100) +'}\n{迟到时长}:{'+order_obj.late_minutes+'分钟}';

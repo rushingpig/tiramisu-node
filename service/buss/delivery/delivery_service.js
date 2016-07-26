@@ -43,7 +43,8 @@ function DeliveryService(){
  */
 DeliveryService.prototype.getDeliveryStationList = (req,res,next)=>{
     req.checkQuery('city_id').optional().isInt();
-    req.checkQuery('city_ids').optional().notEmpty();
+    if (req.query.is_national === undefined)
+        req.checkQuery('city_ids').optional().notEmpty();
     req.checkQuery('is_national').optional().isInt();
     let errors = req.validationErrors();
     if (errors) {
@@ -53,6 +54,7 @@ DeliveryService.prototype.getDeliveryStationList = (req,res,next)=>{
     let query_data = {
         city_id : req.query.city_id,
         city_ids : req.query.city_ids ? req.query.city_ids.split(',') : null,
+        is_national: req.query.is_national,
         signal : req.query.signal,
         user : req.session.user
     };

@@ -263,9 +263,14 @@ DeliveryDao.prototype.findDeliverymansByOrder = function(order_id){
     sql += " inner join ?? sur on sur.user_id = su.id and sur.role_id = ?";
     params.push(tables.sys_user_role);
     params.push(constant.DELIVERYMAN_ID);
-    sql += " inner join ?? bo on bo.id = ? and FIND_IN_SET(bo.delivery_id, su.station_ids)";
+    sql += " inner join ?? bo on bo.id = ? ";
     params.push(tables.buss_order);
     params.push(order_id);
+    sql += ` INNER JOIN ?? bds on bds.id = bo.delivery_id `;
+    params.push(tables.buss_delivery_station);
+    sql += ` INNER JOIN ?? dr on dr.id = bds.regionalism_id AND FIND_IN_SET(dr.parent_id, su.city_ids) `;
+    params.push(tables.dict_regionalism);
+
     sql += ` WHERE su.del_flag = ? AND sur.only_admin = ? `;
     params.push(del_flag.SHOW);
     params.push(ONLY_ADMIN.NO);

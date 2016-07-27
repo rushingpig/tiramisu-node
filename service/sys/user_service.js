@@ -60,7 +60,7 @@ UserService.prototype.getUserInfo = (username, password)=> {
                 user.is_usable = curr.is_usable;
 
                 if (user.is_admin || user.is_headquarters) {
-                    let all_city = yield addressDao.findAllCities({user: user});
+                    let all_city = yield addressDao.findCities({user: user});
                     all_city.forEach(c=> {
                         if (user.city_ids.indexOf(c.id) == -1)
                             user.city_ids.push(c.id);

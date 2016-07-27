@@ -27,56 +27,70 @@ function UserService() {
 
 }
 UserService.prototype.getUserInfo = (username, password)=> {
-    return userDao.findByUsername(username, password).then((results) => {
-        if (results.length == 0) {
-            return null;
-        } else {
-            let user = {
-                is_admin : false,
-                permissions : [],
-                roles : [],
-                data_scopes : [],
-                org_ids : [],
-                role_ids : [],
-                src_ids : []
-            };
-            //  ###     tips : 当给user属性赋值set类型时,存入session再取出来,属性值为空     ###
-            let roles_set = new Set(),data_scopes_set = new Set(),org_ids_set = new Set();
-            for(let i = 0;i < results.length;i++){
-                let curr = results[i];
-                if(i === 0){
-                    // the admin id is fixed at 1
-                    if(curr.id == 1){
-                        user.is_admin = true;
-                    }
-                    user.id = curr.id;
-                    user.username = curr.username;
-                    user.city_ids = curr.city_ids ? curr.city_ids.split(',') : '';
-                    user.station_ids = curr.station_ids ? curr.station_ids.split(',') : '';
-                    user.user_type = curr.user_type;
-                    user.no = curr.no;
-                    user.name = curr.name;
-                    user.is_headquarters = curr.is_headquarters;
-                    user.is_national = curr.is_national;
-                    user.is_usable = curr.is_usable;
+    return co(function *() {
+        let results = yield userDao.findByUsername(username, password);
+        if(results.length == 0) return null;
+        let user = {
+            is_admin: false,
+            permissions: [],
+            roles: [],
+            data_scopes: [],
+            org_ids: [],
+            role_ids: [],
+            src_ids: []
+        };
+        //  ###     tips : 当给user属性赋值set类型时,存入session再取出来,属性值为空     ###
+        let roles_set = new Set(), data_scopes_set = new Set(), org_ids_set = new Set();
+        for (let i = 0; i < results.length; i++) {
+            let curr = results[i];
+            if (i === 0) {
+                // the admin id is fixed at 1
+                if (curr.id == 1) {
+                    user.is_admin = true;
                 }
-                if(curr.permission) user.permissions.push(curr.permission);
-                if(curr.role_name && !roles_set.has(curr.role_id)){
-                    user.roles.push({id:curr.role_id,name:curr.role_name});
-                    user.role_ids.push(curr.role_id);
-                    roles_set.add(curr.role_id);
-                    org_ids_set.add(curr.org_id);
-                    if(curr.src_id){
-                        user.src_ids.push(curr.src_id);
-                    }
+                user.id = curr.id;
+                user.username = curr.username;
+                user.city_ids = curr.city_ids ? curr.city_ids.split(',') : '';
+                user.station_ids = curr.station_ids ? curr.station_ids.split(',') : '';
+                user.user_type = curr.user_type;
+                user.no = curr.no;
+                user.name = curr.name;
+                user.is_headquarters = curr.is_headquarters;
+                user.is_national = curr.is_national;
+                user.is_usable = curr.is_usable;
+
+                if (user.is_admin || user.is_headquarters) {
+                    let all_city = yield addressDao.findAllCities({user: user});
+                    all_city.forEach(c=> {
+                        if (user.city_ids.indexOf(c.id) == -1)
+                            user.city_ids.push(c.id);
+                    });
                 }
-                if(curr.data_scope)  data_scopes_set.add(curr.data_scope);
+                if (user.is_admin || user.is_national) {
+                    let all_station = yield deliveryDao.findAllStations({city_ids: user.city_ids,user: user});
+                    all_station.forEach(c=> {
+                        if (user.station_ids.indexOf(c.id) == -1)
+                            user.station_ids.push(c.id);
+                    });
+                }
             }
-            user.data_scopes = Array.from(data_scopes_set.values());
-            user.org_ids = Array.from(org_ids_set.values());
-            _.pull(user.station_ids, '999');  // 删除999 当勾选所属城市全部配送站时会出现999
-            return user;
+            if (curr.permission) user.permissions.push(curr.permission);
+            if (curr.role_name && !roles_set.has(curr.role_id)) {
+                user.roles.push({id: curr.role_id, name: curr.role_name});
+                user.role_ids.push(curr.role_id);
+                roles_set.add(curr.role_id);
+                org_ids_set.add(curr.org_id);
+                if (curr.src_id) {
+                    user.src_ids.push(curr.src_id);
+                }
+            }
+            if (curr.data_scope)  data_scopes_set.add(curr.data_scope);
         }
+        user.data_scopes = Array.from(data_scopes_set.values());
+        user.org_ids = Array.from(org_ids_set.values());
+        _.pull(user.city_ids, '999');  // 删除999 当勾选时时会出现999
+        _.pull(user.station_ids, '999');  // 删除999 当勾选所属城市全部配送站时会出现999
+        return user;
     });
 };
 /**

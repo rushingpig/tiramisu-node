@@ -224,6 +224,38 @@ OrderDao.prototype.delOrderSrc = function(orderSrcId) {
   }, orderSrcId, orderSrcId]);
 };
 
+OrderDao.prototype.checkDataScopes = function (user, order) {
+  if (!user || !order) return Promise.resolve(false);
+  return co(function *() {
+    let order_obj = {};
+    if (typeof order == 'Object') {
+      order_obj = order;
+    } else if (typeof order == 'String') {
+      order_obj = yield OrderDao.prototype.findOrderById(order);
+      if (!order_obj || order_obj.length == 0) return Promise.resolve(false);
+      order_obj = order_obj[0];
+    } else {
+      return Promise.resolve(false);
+    }
+    if (user.is_admin)return Promise.resolve(true);
+    if (user.data_scopes.indexOf(Constant.DS.SELF_CHANNEL) != -1) {
+      if (user.src_ids.indexOf(0) != -1 || user.src_ids.indexOf(order_obj.src_id) != -1) return Promise.resolve(true);
+    }
+    if (user.data_scopes.indexOf(Constant.DS.CITY) != -1) {
+      if (user.is_headquarters || user.city_ids.indexOf(order_obj.city_id) != -1) return Promise.resolve(true);
+    }
+    if (user.data_scopes.indexOf(Constant.DS.STATION) != -1) {
+      if (user.station_ids.indexOf(order_obj.delivery_id) != -1)return Promise.resolve(true);
+      if (user.is_national && user.city_ids.indexOf(order_obj.city_id) != -1)return Promise.resolve(true);
+    }
+    if (user.data_scopes.indexOf(Constant.DS.SELF_DELIVERY) != -1) {
+      if (user.id == order_obj.deliveryman_id) return Promise.resolve(true);
+    }
+
+    return Promise.resolve(false);
+  });
+};
+
 /**
  * new order
  */

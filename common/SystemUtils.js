@@ -223,5 +223,24 @@ module.exports = {
         break;
     }
     return (result !== undefined && result !== -1);
+  },
+  checkOrderDataScopes: (user, order_obj)=> {
+    if (!user || !order_obj) return false;
+    if (user.is_admin) return true;
+    if (user.data_scopes.indexOf(Constant.DS.SELF_CHANNEL) != -1) {
+      if (user.src_ids.indexOf(0) != -1 || user.src_ids.indexOf(order_obj.src_id) != -1) return true;
+    }
+    if (user.data_scopes.indexOf(Constant.DS.CITY) != -1) {
+      if (user.is_headquarters || user.city_ids.indexOf(order_obj.city_id) != -1) return true;
+    }
+    if (user.data_scopes.indexOf(Constant.DS.STATION) != -1) {
+      if (user.station_ids.indexOf(order_obj.delivery_id) != -1)return true;
+      if (user.is_national && user.city_ids.indexOf(order_obj.city_id) != -1)return true;
+    }
+    if (user.data_scopes.indexOf(Constant.DS.SELF_DELIVERY) != -1) {
+      if (user.id == order_obj.deliveryman_id) return true;
+    }
+
+    return false;
   }
 };

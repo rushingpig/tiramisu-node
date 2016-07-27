@@ -43,7 +43,8 @@ function DeliveryService(){
  */
 DeliveryService.prototype.getDeliveryStationList = (req,res,next)=>{
     req.checkQuery('city_id').optional().isInt();
-    req.checkQuery('city_ids').optional().notEmpty();
+    if (req.query.is_national === undefined)
+        req.checkQuery('city_ids').optional().notEmpty();
     req.checkQuery('is_national').optional().isInt();
     let errors = req.validationErrors();
     if (errors) {
@@ -53,6 +54,7 @@ DeliveryService.prototype.getDeliveryStationList = (req,res,next)=>{
     let query_data = {
         city_id : req.query.city_id,
         city_ids : req.query.city_ids ? req.query.city_ids.split(',') : null,
+        is_national: req.query.is_national,
         signal : req.query.signal,
         user : req.session.user
     };
@@ -346,7 +348,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
         } else if (_res[0].status === Constant.OS.EXCEPTION) {
             throw new TiramisuError(res_obj.ORDER_EXCEPTION);
         }
-        if (!systemUtils.isOrderCanUpdateStatus(_res[0].status, order_obj.status)) {
+        if (!systemUtils.checkOrderDataScopes(req.session.user, _res[0]) || !systemUtils.isOrderCanUpdateStatus(_res[0].status, order_obj.status)) {
             throw new TiramisuError(res_obj.OPTION_EXPIRED);
         }
         //===========for history begin=============
@@ -565,7 +567,7 @@ DeliveryService.prototype.unsigninOrder = (req,res,next) => {
         }else if(_res[0].status === Constant.OS.EXCEPTION){
             throw new TiramisuError(res_obj.ORDER_EXCEPTION);
         }
-        if (!systemUtils.isOrderCanUpdateStatus(_res[0].status, update_obj.status)) {
+        if (!systemUtils.checkOrderDataScopes(req.session.user, _res[0]) || !systemUtils.isOrderCanUpdateStatus(_res[0].status, update_obj.status)) {
             throw new TiramisuError(res_obj.OPTION_EXPIRED);
         }
         return orderDao.updateOrder(systemUtils.assembleUpdateObj(req,update_obj),order_id);
@@ -910,7 +912,7 @@ DeliveryService.prototype.print = (req,res,next)=>{
             }else if (print_status === Constant.PS.AUDITING){
                 throw new TiramisuError(res_obj.ORDER_AUDITING);
             }
-            if (!systemUtils.isOrderCanUpdateStatus(curr.status, Constant.OS.INLINE)) {
+             if (!systemUtils.checkOrderDataScopes(req.session.user, curr) || !systemUtils.isOrderCanUpdateStatus(curr.status, Constant.OS.INLINE)) {
                 throw new TiramisuError(res_obj.OPTION_EXPIRED);
             }
         });

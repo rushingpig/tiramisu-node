@@ -225,6 +225,23 @@ OrderDao.prototype.delOrderSrc = function(orderSrcId) {
   }, orderSrcId, orderSrcId]);
 };
 
+OrderDao.prototype.checkDataScopes = function (user, order) {
+  if (!user || !order) return Promise.resolve(false);
+  return co(function *() {
+    let order_obj = {};
+    if (typeof order == 'Object') {
+      order_obj = order;
+    } else if (typeof order == 'String') {
+      order_obj = yield OrderDao.prototype.findOrderById(order);
+      if (!order_obj || order_obj.length == 0) return Promise.resolve(false);
+      order_obj = order_obj[0];
+    } else {
+      return Promise.resolve(false);
+    }
+    return Promise.resolve(systemUtils.checkOrderDataScopes(user, order_obj));
+  });
+};
+
 /**
  * new order
  */

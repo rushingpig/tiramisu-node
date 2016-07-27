@@ -39,9 +39,10 @@ DeliveryDao.prototype.findAllStations = function(query_data){
         sql += " inner join ?? dr on dr.id = bds.regionalism_id and (dr.parent_id in "+dbHelper.genInSql(query_data.city_ids)+"  or bds.is_national > 0)";
         params.push(tables.dict_regionalism);
     }
-    sql += " where bds.del_flag = ?";
+    sql += " where bds.del_flag = ? ";
+    params.push(del_flag.SHOW);
     if (query_data.is_national !== undefined) {
-        sql += " bds.is_national = ? ";
+        sql += `AND bds.is_national = ? `;
         params.push(query_data.is_national);
     }
     // data filter begin
@@ -50,7 +51,6 @@ DeliveryDao.prototype.findAllStations = function(query_data){
         sql += " and bds.id in " + dbHelper.genInSql(query_data.user.station_ids);
     }
     // data filter end
-    params.push(del_flag.SHOW);
     if(query_data && query_data.station_ids){
         sql += " and bds.id in"+dbHelper.genInSql(query_data.station_ids);
     }

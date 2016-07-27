@@ -237,22 +237,7 @@ OrderDao.prototype.checkDataScopes = function (user, order) {
     } else {
       return Promise.resolve(false);
     }
-    if (user.is_admin)return Promise.resolve(true);
-    if (user.data_scopes.indexOf(Constant.DS.SELF_CHANNEL) != -1) {
-      if (user.src_ids.indexOf(0) != -1 || user.src_ids.indexOf(order_obj.src_id) != -1) return Promise.resolve(true);
-    }
-    if (user.data_scopes.indexOf(Constant.DS.CITY) != -1) {
-      if (user.is_headquarters || user.city_ids.indexOf(order_obj.city_id) != -1) return Promise.resolve(true);
-    }
-    if (user.data_scopes.indexOf(Constant.DS.STATION) != -1) {
-      if (user.station_ids.indexOf(order_obj.delivery_id) != -1)return Promise.resolve(true);
-      if (user.is_national && user.city_ids.indexOf(order_obj.city_id) != -1)return Promise.resolve(true);
-    }
-    if (user.data_scopes.indexOf(Constant.DS.SELF_DELIVERY) != -1) {
-      if (user.id == order_obj.deliveryman_id) return Promise.resolve(true);
-    }
-
-    return Promise.resolve(false);
+    return Promise.resolve(systemUtils.checkOrderDataScopes(user, order_obj));
   });
 };
 

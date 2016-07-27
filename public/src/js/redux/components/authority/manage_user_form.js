@@ -284,7 +284,7 @@ class ManageAddForm extends Component{
     //this.props.actions.
     /*var {value} = e.target;*/
       this.props.actions.resetStations();
-      if(e != []){
+      if(e && e.length != 0){
         var city_id_str='';
         e.forEach((n)=>{
           city_id_str=n.id + ',' + city_id_str;

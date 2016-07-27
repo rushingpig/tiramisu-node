@@ -52,6 +52,7 @@ const validate = (values,props) => {
   _v_mobile('mobile');
   _v_checkboxgroup('stations_in');
   _v_checkboxgroup('roles_in');
+  _v_checkboxgroup('cities_in');
 
 /*  _v_select('dept_id');
   _v_select('province_id');*/
@@ -93,6 +94,7 @@ class ManageAddForm extends Component{
         tmp_cities,
         city_ids,
         tmp_stations,
+        tmp_stations_national,
         station_ids,
         cities_in,
         stations_in,
@@ -105,7 +107,7 @@ class ManageAddForm extends Component{
     /*var {depts} = this.props.roleinfo;*/
     var {dept_role,area} = this.props;
     var {provinces,cities}= area;
-    var {depts,roles,stations} = dept_role;
+    var {depts,roles,stations, stations_national} = dept_role;
 
     return (
     <div>
@@ -164,7 +166,7 @@ class ManageAddForm extends Component{
       
 
       <div className="form-group form-inline" style={{'clear':'both'}}>
-        <fieldset className={`box-wrapper ${stations_in.error}`} style={{'border':'1px solid #ddd'}}>
+        <fieldset className={`box-wrapper ${stations_in.error || cities_in.error}`} style={{'border':'1px solid #ddd'}}>
           <legend style={{'padding':'5px 10px','fontSize':'14','width':'auto','border':'0'}}>城市及配送站选择</legend>
           <div>
             <div className="form-group form-inline" style={{clear:'both',}}>
@@ -176,14 +178,15 @@ class ManageAddForm extends Component{
               <label >{'　已选城市：'}</label>
               {/*<CheckBoxGroup ref='city' {...city_ids} checkboxs={[{'id':999,'text':'总部'},...cities.filter( n=> city_ids.value.some(m => m== n.id))]} />*/}
               <div style={{'marginLeft':60,}}>
-                <CheckBoxGroup ref='city' {...cities_in} checkboxs={cities_in.value||[]} value={cities_in.value}/>
+                <CheckBoxGroup ref='city' {...cities_in} checkboxs={cities_in.value||[]} value={cities_in.value} onChange={this.onCityChange.bind(this, cities_in.onChange)}/>
               </div>
             </div>  
             <hr/>   
             <div className="form-group form-inline" style={{clear:'both',}}>
               <label className={`input-xs ${station_ids.error}`}>{'所属配送站：'}</label>
                 <div style={{'marginLeft':60}}>
-                  <div style={{color:'#9C6B21'}}><input type='checkbox' {...is_national} checked={is_national.value}/>{'所属城市全部配送站'}</div>
+                  <span style={{color:'#9C6B21'}}><input type='checkbox' {...is_national} checked={is_national.value}/>{'所属城市全部配送站'}</span>
+                  <div style={{display: 'inline-block', marginLeft: 20}}><CheckBoxGroup {...tmp_stations_national} name='全国配送站' checkboxs = {stations_national} value={stations_in.value || []}/></div>
                   <CheckBoxGroup name="配送站" {...tmp_stations} checkboxs={stations} value={stations_in.value || []} />
                 </div>
               <label  className="input-xs">{'已选配送站：'}</label>
@@ -276,7 +279,7 @@ class ManageAddForm extends Component{
     callback(e);
   }
 
-  onCityChange(callback,e){
+  onCityChange(callback, e ){
 
     //this.props.actions.
     /*var {value} = e.target;*/
@@ -287,7 +290,7 @@ class ManageAddForm extends Component{
           city_id_str=n.id + ',' + city_id_str;
         });
         city_id_str=city_id_str.substring(0,city_id_str.length-1);
-        this.props.actions.getStationsByCityIdsSignal(city_id_str,'authority');
+        this.props.actions.getStationsByCityIdsSignal({city_ids:city_id_str,signal:'authority', is_national: 0});
       }
     callback(e);
     //var {value} = e.target;

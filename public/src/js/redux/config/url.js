@@ -95,7 +95,7 @@ const URL = (function() {
     review_print_apply: '/order/reprint/apply/:apply_id', //审核申请
     reprint_validate: '/order/:orderId/validate',
     reprint: '/order/:orderId/reprint', //重新打印
-    order_deliverymans: '/order/:orderId/deliverymans',  //该订单的配送员所属配送站的全部配送员
+    order_deliverymans: '/order/:orderId/deliverymans',  //获取订单可选的的配送员列表
     accessory_list: '/product/accessory/order/:orderId',  //配件列表
     order_accessory_list: '/order/:orderId/products', //订单的配件列表
 

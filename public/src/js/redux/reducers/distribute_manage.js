@@ -62,7 +62,7 @@ function main(state = main_state, action){
 }
 
 var D_state = {
-  deliverymanAtSameStation : [],
+  order_deliveryman : [],
   spareparts: [],
   orderSpareparts: [],
   current_id: -1,
@@ -102,11 +102,11 @@ function D_(state = D_state, action) {
       return {...state, spareparts:spareparts}
     case Actions.GET_ORDER_SPARE_PARTS:
       return { ...state, orderSpareparts: action.data || [] }
-    case Actions.GET_DELIVERYMAN_AT_SAME_STATION:
+    case Actions.GET_DELIVERYMAN_BY_ORDER:
       var {list} = action.data;
       /*var {current_id} = action.data;*/
-      //var  deliverymanAtSameStation = list.map( m => ({id: m.deliveryman_id, text: m.deliveryman_name + ':' + m.deliveryman_mobile}));
-      return {...state,deliverymanAtSameStation: list, load_success: true }
+      //var  order_deliveryman = list.map( m => ({id: m.deliveryman_id, text: m.deliveryman_name + ':' + m.deliveryman_mobile}));
+      return {...state,order_deliveryman: list, load_success: true }
     case Actions.GET_ORDER_DETAIL:
       var orderSpareparts = action.data.products;
       orderSpareparts = orderSpareparts.filter( m => m.isAddition == 1);

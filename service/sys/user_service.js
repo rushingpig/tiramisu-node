@@ -118,8 +118,8 @@ UserService.prototype.addUser = (req,res,next) => {
         city_names : b.city_names ? b.city_names.join(',') : '',
         is_usable : is_usable.enable
     };
-    if (curr_user.is_headquarters) user_obj = b.is_headquarters;
-    if (curr_user.is_national) user_obj = b.is_national;
+    if (curr_user.is_headquarters) user_obj.is_headquarters = b.is_headquarters;
+    if (curr_user.is_national) user_obj.is_national = b.is_national;
     let promise = co(function *() {
         if ((yield userDao.isExist(user_obj))) {
             return Promise.reject(new TiramisuError(res_obj.EXIST_USER_MOBILE));
@@ -315,8 +315,8 @@ UserService.prototype.editUser = (req,res,next) => {
         username : b.username,
         city_names : b.city_names ? b.city_names.join(',') : ''
     };
-    if (curr_user.is_headquarters) user_obj = b.is_headquarters;
-    if (curr_user.is_national) user_obj = b.is_national;
+    if (curr_user.is_headquarters) user_obj.is_headquarters = b.is_headquarters;
+    if (curr_user.is_national) user_obj.is_national = b.is_national;
     if(b.password){
         user_obj.password = cryptoUtils.md5(b.password);
     }

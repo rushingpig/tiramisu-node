@@ -1105,7 +1105,7 @@ var SignedModal = React.createClass({
           newvalue.unit_price = newvalue.discount_price;
           newvalue.amount = newvalue.discount_price;
           old_orderSpareparts.push(newvalue);
-          this.setState({plus_amount: newvalue.discount_price});
+          this.setState({plus_amount: newvalue.discount_price + this.state.plus_amount});
         }       
       }
       /*if( 'id' in newvalue){

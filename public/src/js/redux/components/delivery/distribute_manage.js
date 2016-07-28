@@ -693,11 +693,13 @@ var SignedModal = React.createClass({
       order_deliveryman: [],
       pay_way:1,
       is_refund: false,
+      order_deliveryman: [],
+      filter_deliveryman_results: [],
     };
   },
   mixins: [ LinkedStateMixin ],
   render: function(){
-    var { signin_date, late_minutes, refund_method, refund_money, refund_reson,current_id, order_deliveryman , POS_terminal_id, plus_amount, minus_amount, order_refund_money} = this.state;
+    var { signin_date, late_minutes, refund_method, refund_money, refund_reson,current_id, order_deliveryman , POS_terminal_id, plus_amount, minus_amount, order_refund_money, filter_deliveryman_results} = this.state;
     var { D_ ,loading, refresh } = this.props;
     
     var { spareparts, orderDetail } =  D_ ;
@@ -708,6 +710,9 @@ var SignedModal = React.createClass({
                 onRemarksChange = { this.onRemarksChange }
                 onIncrement = {this.onIncrement}
                 onDecrement = {this.onDecrement}/>
+    });
+    var deliveryman_content = filter_deliveryman_results.map( n => {
+          return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
     })
     return (
       <StdModal submitting={this.props.submitting} onConfirm={this.submitHandler} onCancel={this.hideCallback} title="订单完成页面" ref="modal">
@@ -720,18 +725,30 @@ var SignedModal = React.createClass({
               <TimeInput onChange={this.onTimeChange} onOK={this.onTimeOK} ref="timeinput" />
             </div>
             <div className="col-xs-6">
-              <label>配送员：</label>
-              <Select name = 'deliveryman_id' options = { order_deliveryman } value = { current_id } ref = 'deliveryman_id' onChange= {this.onDeliverymanChange}/>
-            </div>
-          </div>
-
-        </div>
-        <div className="form-group form-inline mg-15">
               <label>{'迟到时长：'}</label>
               <div className="inline-block input-group input-group-xs">
                 <input value={late_minutes} onChange={this.onLateTimeChange} type="text" className="form-control" style={{'width': 50}} />
                 <span className="input-group-addon">Min</span>
               </div>
+            </div>
+          </div>
+        </div>
+        <div className="form-group form-inline mg-15">
+          <label>{'　配送员：'}</label>
+          <div className="input-group input-group-xs" style={{height:'27px'}}>
+            <span  style={{height:'27px',lineHeight:1}} className="input-group-addon"><i className="fa fa-search"></i></span>
+            <input type="text"  style={{height:'27px'}} 
+              className="form-control" placeholder="配送员拼音首字母或手机号" 
+              onChange = {this.filterHandler} />
+          </div>
+          <select name= 'deliveryman' value={current_id} ref='deliveryman' className="form-control input-sm space-left"  style={{height:'27px',minWidth:100}}>
+            {
+              deliveryman_content.length
+              ? deliveryman_content
+              : <option>无</option>
+            }
+          </select>
+          {/*<Select name = 'deliveryman_id' options = { order_deliveryman } value = { current_id } ref = 'deliveryman_id' onChange= {this.onDeliverymanChange}/>*/}
         </div>
 
         <div className="form-group mg-15">
@@ -937,6 +954,24 @@ var SignedModal = React.createClass({
       Noty('error', msg || '提交失败')
     })
   },
+  filterHandler(e){
+    var { value } = e.target;
+    var { order_deliveryman } = this.state;
+    var results = [];
+    value = value.toUpperCase();
+    if(value === ''){
+      results = order_deliveryman;
+    }else if(/^\d+$/i.test(value)){ //电话号码
+        results = order_deliveryman.filter(n => n.deliveryman_mobile.indexOf(value) != -1)
+      }else if(/^\w+$/i.test(value)){ //首字母
+      results = order_deliveryman.filter(n => {
+        return n.py.some(m => m.toUpperCase().indexOf(value) == 0)
+      })
+    }else{ //中文全称
+      results = order_deliveryman.filter(n => n.deliveryman_name.indexOf(value) != -1)
+    }
+    this.setState({ filter_deliveryman_results: results, current_id: results.length && results[0].deliveryman_id });
+  },
   onSignInDateChange: function(value){
     this.setState({ signin_date: value })
   },
@@ -1133,6 +1168,33 @@ var SignedModal = React.createClass({
   },*/
   componentWillReceiveProps(nextProps){
     var { D_ } = nextProps;
+    var {order_deliveryman,current_id, is_POS, load_success} = D_;   
+    if(load_success){
+      var list = order_deliveryman;
+      var build = function(){
+        var new_data = list.map(function(n){
+          n.py = window.makePy(n.deliveryman_name);
+          return n;
+        })
+        this.setState({
+          order_deliveryman: list, filter_deliveryman_results: new_data, deliveryman_id: current_id
+        })
+      }.bind(this);
+
+      if(window.makePy){
+        build();
+      }else{
+        //异步加载的chinese_py库可能还未加载完成，所以需要定时检测
+        this._build_timer = setInterval(() => {
+          if(window.makePy){
+            build();
+            clearInterval(this._build_timer);
+            delete this._build_timer;
+          }
+        }, 100);
+      }
+    }
+
     var  products  = D_.orderDetail.products || [];
     products = products.filter( m => m.isAddition == 1);
     var orderSpareparts = clone(products);
@@ -1160,7 +1222,7 @@ var SignedModal = React.createClass({
       m.unit_price = m.discount_price / m.num;
       return m;
     })
-    this.setState({orderSpareparts ,current_id ,order_deliveryman, pay_way});
+    this.setState({orderSpareparts ,current_id , pay_way});
   },
 });
 

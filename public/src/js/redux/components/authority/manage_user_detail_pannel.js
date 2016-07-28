@@ -80,7 +80,8 @@ class ManageUserDetailPannel extends Component{
         .done(function(){
           var {city_ids} = _this.props.mainForm.data;
           var city_ids_str = city_ids.join(',');
-          _this.props.actions.getStationsByCityIdsSignal({city_ids:city_ids_str, signal:'authority', is_national:0});
+          if(city_ids_str != '')
+            _this.props.actions.getStationsByCityIdsSignal({city_ids:city_ids_str, signal:'authority', is_national:0});
         })
     }else{
       _this.props.actions.resetStations();

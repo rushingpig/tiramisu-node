@@ -213,13 +213,15 @@ UserService.prototype.getUserDetail = (req,res,next) => {
         cities : [],
         stations : []
     };
-    let promise = userDao.findUserById(user_id).then(results => {
-        if(!(results)){
-            throw new TiramisuError(res_obj.USER_NOT_EXIST,'该用户不存在,请确认用户ID...');
+
+    let promise = co(function *() {
+        let user_info = yield userDao.findUserById(user_id);
+        if(!user_info){
+            return Promise.reject(new TiramisuError(res_obj.USER_NOT_EXIST,'该用户不存在,请确认用户ID...'));
         }
 
         let city_ids_str = '',station_ids_str = '';
-        results.forEach((curr,index)=> {
+        user_info.forEach((curr,index)=> {
             if(index === 0){
                 city_ids_str = curr.city_ids || '';
                 res_data.id = curr.id;
@@ -233,21 +235,27 @@ UserService.prototype.getUserDetail = (req,res,next) => {
             res_data.roles.push({role_id: curr.role_id, role_name: curr.role_name, only_admin: curr.only_admin});
         });
         let city_ids = city_ids_str.split(','),station_ids = station_ids_str.split(',');
-        return addressDao.findCitiesByIds(city_ids).then(result => {
-            if(result){
-                result.forEach(curr => {
-                    res_data.cities.push({city_id : curr.id,city_name : curr.name});
-                });
-            }
-            return deliveryDao.findAllStations({station_ids});
-        }).then(result => {
-            if(result){
-                result.forEach(curr => {
-                    res_data.stations.push({station_id : curr.id,station_name : curr.name});
-                });
-            }
-            res.api(res_data);
-        });
+        if (res_data.is_national) {
+            let all_station = yield deliveryDao.findAllStations({city_ids: city_ids,user: res_data});
+            all_station.forEach(c=> {
+                if (station_ids.indexOf(c.id) == -1)
+                    station_ids.push(c.id);
+            });
+        }
+
+        let cities = yield addressDao.findCitiesByIds(city_ids);
+        if(cities){
+            cities.forEach(curr => {
+                res_data.cities.push({city_id : curr.id,city_name : curr.name});
+            });
+        }
+        let stations = yield deliveryDao.findAllStations({station_ids});
+        if(stations){
+            stations.forEach(curr => {
+                res_data.stations.push({station_id : curr.id,station_name : curr.name});
+            });
+        }
+        res.api(res_data);
     });
     systemUtils.wrapService(res,next,promise);
 };

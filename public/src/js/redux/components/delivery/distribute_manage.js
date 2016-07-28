@@ -704,7 +704,6 @@ var SignedModal = React.createClass({
       minus_amount: 0,
       orderSpareparts:[],
       current_id: -1,
-      order_deliveryman: [],
       pay_way:1,
       is_refund: false,
       order_deliveryman: [],
@@ -755,7 +754,7 @@ var SignedModal = React.createClass({
               className="form-control" placeholder="配送员拼音首字母或手机号" 
               onChange = {this.filterHandler} />
           </div>
-          <select name= 'deliveryman' value={current_id} ref='deliveryman' className="form-control input-sm space-left"  style={{height:'27px',minWidth:100}}>
+          <select name= 'deliveryman' onChange = {this.onDeliverymanChange} value={current_id} ref='deliveryman' className="form-control input-sm space-left"  style={{height:'27px',minWidth:100}}>
             {
               deliveryman_content.length
               ? deliveryman_content
@@ -875,17 +874,16 @@ var SignedModal = React.createClass({
     var currentOrderSpareparts = this.state.orderSpareparts;
     var { updated_time } = orderDetail;
     var signin_hour = this.refs.timeinput.val();
-    var deliveryman_tmp = order_deliveryman.filter( m => m.id == current_id);
-    var deliveryman;
-    if( deliveryman_tmp.length > 0 ){
-      var arr = deliveryman_tmp[0].text.split(':');
-      var name = arr.length > 0 ? arr[0]:'';
-      var mobile = arr.length > 1 ? arr[1]: '';
-      deliveryman = { id:current_id , mobile , name };      
+    var deliveryman_tmp = order_deliveryman.filter( m => m.deliveryman_id == current_id);
+    var deliveryman = {};
+    if(deliveryman_tmp.length > 0){
+      deliveryman.id = deliveryman_tmp[0].deliveryman_id;
+      deliveryman.name = deliveryman_tmp[0].deliveryman_name;
+      deliveryman.mobile = deliveryman_tmp[0].deliveryman_mobile;
     }else{
       if (current_id == 0){
         Noty('warning', '请选择配送员'); return;        
-      }
+      }      
     }
     /*deliveryman ={ id: 1, mobile :'18118776535' ,name :'hong'}*/
 
@@ -1376,7 +1374,7 @@ class EditModal extends Component{
                 className="form-control" placeholder="配送员拼音首字母或手机号" 
                 onChange = {this.filterHandler.bind(this)} />
             </div>
-            <select name= 'deliveryman' value={deliveryman_id} ref='deliveryman' className="form-control input-sm space-left"  style={{height:'27px',minWidth:100}}>
+            <select name= 'deliveryman' onChange={this.deliveryManChange.bind(this)} value={deliveryman_id} ref='deliveryman' className="form-control input-sm space-left"  style={{height:'27px',minWidth:100}}>
               {
                 content.length
                 ? content

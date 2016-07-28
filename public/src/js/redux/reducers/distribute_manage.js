@@ -104,6 +104,9 @@ function D_(state = D_state, action) {
       return { ...state, orderSpareparts: action.data || [] }
     case Actions.GET_DELIVERYMAN_BY_ORDER:
       var {list} = action.data;
+      if(!list){
+        list = [];
+      }
       /*var {current_id} = action.data;*/
       //var  order_deliveryman = list.map( m => ({id: m.deliveryman_id, text: m.deliveryman_name + ':' + m.deliveryman_mobile}));
       return {...state,order_deliveryman: list, load_success: true }

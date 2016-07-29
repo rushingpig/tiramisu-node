@@ -115,6 +115,9 @@ DeliveryService.prototype.exchageOrders = (req,res,next)=>{
         }
         for(let i = 0;i < results.length;i++){
             let curr = results[i];
+            if (!systemUtils.checkOrderDataScopes(req.session.user, curr)) {
+                throw new TiramisuError(res_obj.OPTION_EXPIRED, '待转换的订单号[' + curr.id + ']没有权限操作');
+            }
             if(curr.status !== Constant.OS.STATION){
                 throw new TiramisuError(res_obj.ORDER_NO_STATION,'待转换的订单号['+curr.id+']状态为['+curr.status+'],不能被转换...');
             }

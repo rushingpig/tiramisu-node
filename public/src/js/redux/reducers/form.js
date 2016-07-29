@@ -144,13 +144,25 @@ export default formReducer.plugin({
         if(action.type == actionTypes.CHANGE){
           state.roles_in = {...state.roles_in||[],...state.tmp_roles||[]};
         }
+      }else if(action.field == 'roles_in'){
+        if(action.type == actionTypes.CHANGE){
+          state.tmp_roles = {value: state.roles_in.value || []}
+        }
       }else if(action.field == 'tmp_cities'){
         if(action.type == actionTypes.CHANGE){
           state.cities_in = {...state.cities_in||[],...state.tmp_cities||[]};
         }
+      }else if(action.field == 'cities_in'){
+        if(action.type == actionTypes.CHANGE){
+          state.tmp_cities = {value : state.cities_in.value || []}
+        }
       }else if(action.field == 'tmp_stations'){
         if(action.type == actionTypes.CHANGE){
-          state.stations_in = {...state.stations_in||[],...state.tmp_stations||[]};
+          state.stations_in = {...state.stations_in || [], ...state.tmp_stations || []}
+        }
+      }else if(action.field == 'tmp_stations_national'){
+        if(action.type == actionTypes.CHANGE){
+          state.stations_in = {...state.stations_in || [], ...state.tmp_stations_national || []}
         }
       }else if(action.field == 'is_national'){
         if(action.type == actionTypes.CHANGE){

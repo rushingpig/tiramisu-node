@@ -1146,7 +1146,6 @@ var SignedModal = React.createClass({
       }*/
       this.setState({orderSpareparts:old_orderSpareparts});
       this.getCurrentAmount();
-    }
   },
   getCurrentAmount(){
     var { orderSpareparts } = this.props.D_;

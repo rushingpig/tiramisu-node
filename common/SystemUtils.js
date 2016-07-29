@@ -213,6 +213,7 @@ module.exports = {
     if (user.is_admin) return true;
     let src_id = order_obj.src_id || '';
     let city_id = order_obj.city_id || '';
+    let delivery_id = order_obj.delivery_id || '';
     if (user.data_scopes.indexOf(Constant.DS.SELF_CHANNEL.id) != -1) {
       if (user.is_all_src || user.src_ids.indexOf(src_id.toString()) != -1) return true;
     }
@@ -220,7 +221,7 @@ module.exports = {
       if (user.is_headquarters || user.city_ids.indexOf(city_id.toString()) != -1) return true;
     }
     if (user.data_scopes.indexOf(Constant.DS.STATION.id) != -1) {
-      if (user.station_ids.indexOf(order_obj.delivery_id) != -1)return true;
+      if (user.station_ids.indexOf(delivery_id.toString()) != -1)return true;
       if (user.is_national && user.city_ids.indexOf(city_id.toString()) != -1)return true;
     }
     if (user.data_scopes.indexOf(Constant.DS.SELF_DELIVERY.id) != -1) {

@@ -67,7 +67,9 @@ UserService.prototype.getUserInfo = (username, password)=> {
                     });
                 }
                 if (user.is_admin || user.is_national) {
-                    let all_station = yield deliveryDao.findAllStations({city_ids: user.city_ids,user: user});
+                    let query_station = {city_ids: user.city_ids, user: user};
+                    if (!user.is_admin) query_station.is_national = 0;
+                    let all_station = yield deliveryDao.findAllStations(query_station);
                     all_station.forEach(c=> {
                         if (user.station_ids.indexOf(c.id) == -1)
                             user.station_ids.push(c.id);
@@ -236,7 +238,7 @@ UserService.prototype.getUserDetail = (req,res,next) => {
         });
         let city_ids = city_ids_str.split(','),station_ids = station_ids_str.split(',');
         if (res_data.is_national) {
-            let all_station = yield deliveryDao.findAllStations({city_ids: city_ids,user: res_data});
+            let all_station = yield deliveryDao.findAllStations({city_ids: city_ids, user: res_data, is_national: 0});
             all_station.forEach(c=> {
                 if (station_ids.indexOf(c.id) == -1)
                     station_ids.push(c.id);

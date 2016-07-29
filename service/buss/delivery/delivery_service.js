@@ -362,6 +362,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
             option += '修改{配送员}为{' + deliveryman.name + '('+deliveryman.mobile+')}\n';
         }
         if(order) {
+            let remarks = '';
             products = order.products || [];
             order_obj.total_amount = current_order.total_amount;
             order_obj.total_original_price = 0;
@@ -377,13 +378,6 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                         let change = products[i].num - _res[j].num;
                         let tmp_one_price = parseInt(_res[j].discount_price / _res[j].num);
                         let tmp_change_amount = tmp_one_price * change;
-                        if (change > 0) {
-                            is_change = true;
-                            option += '增加{' + curr.name + '}数量{' + change + '}\n';
-                        } else if (change < 0) {
-                            is_change = true;
-                            option += '减少{' + curr.name + '}数量{' + (-change) + '}\n';
-                        }
                         let order_sku_obj = {
                             order_id: orderId,
                             sku_id: curr.sku_id,
@@ -396,6 +390,15 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                             discount_price: _res[j].discount_price + tmp_change_amount,
                             amount: _res[j].amount + tmp_change_amount
                         };
+                        if (change > 0) {
+                            is_change = true;
+                            remarks += '增加{' + curr.name + '}数量{' + change + '},';
+                            remarks += '金额由{' + (_res[j].discount_price / 100) + '}变为{' + (order_sku_obj.discount_price / 100) + '}\n';
+                        } else if (change < 0) {
+                            is_change = true;
+                            remarks += '减少{' + curr.name + '}数量{' + (-change) + '},';
+                            remarks += '金额由{' + (_res[j].discount_price / 100) + '}变为{' + (order_sku_obj.discount_price / 100) + '}\n';
+                        }
                         order_obj.total_amount += tmp_change_amount;
                         if (order_sku_obj.amount < 0) {
                             change_amount += order_sku_obj.amount;
@@ -407,7 +410,6 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                 if (isAdd) {
                     let curr = products[i];
                     is_change = true;
-                    option += '增加{' + curr.name + '}数量{' + curr.num + '}\n';
                     let order_sku_obj = {
                         order_id: orderId,
                         sku_id: curr.sku_id,
@@ -420,6 +422,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                         discount_price: curr.discount_price,
                         amount: 0
                     };
+                    remarks += '增加{' + curr.name + '}数量{' + curr.num + '},金额{' + (order_sku_obj.discount_price / 100) + '}\n';
                     order_obj.total_amount += curr.discount_price;
                     change_amount += curr.discount_price;
                     add_skus.push(systemUtils.assembleInsertObj(req, order_sku_obj));
@@ -435,11 +438,20 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                 if (isDelete && _res[i].sku_id) {
                     let curr = _res[i];
                     is_change = true;
-                    option += '删除{' + curr.product_name + '}数量{' + curr.num + '}\n';
+                    remarks += '删除{' + curr.product_name + '}数量{' + curr.num + '},金额{' + (curr.discount_price / 100) + '}\n';
                     order_obj.total_amount -= _res[i].discount_price;
                     change_amount += _res[i].amount - _res[i].discount_price;
                     delete_skuIds.push(curr.sku_id);
                 }
+            }
+
+            if (remarks != '') {
+                option += remarks;
+                order_obj.remarks = '';
+                if (_res[0].remarks != '') {
+                    order_obj.remarks += _res[0].remarks + '\n';
+                }
+                order_obj.remarks += remarks;
             }
 
             if (is_change) {

@@ -269,6 +269,7 @@ UserService.prototype.listUsers = (req,res,next) => {
     }
     let q = req.query;
     let query_data = Object.assign({user: req.session.user}, req.query);
+    if (query_data.uname_or_name) query_data.uname_or_name = query_data.uname_or_name.replace(/(^\s*)|(\s*$)/g, '');
     let promise = userDao.findUsers(query_data).then(_res => {
         if(toolUtils.isEmptyArray(_res._result) || toolUtils.isEmptyArray(_res.result)){
             throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS,null);

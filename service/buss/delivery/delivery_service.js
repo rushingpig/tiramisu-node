@@ -445,6 +445,10 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                 }
             }
 
+            if (order_obj.total_amount != _res[0].total_amount) {
+                remarks += '订单总应收金额由{' + (_res[0].total_amount / 100) + '}变为{' + (order_obj.total_amount / 100) + '}';
+            }
+
             if (remarks != '') {
                 option += remarks;
                 order_obj.remarks = '';

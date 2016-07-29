@@ -452,7 +452,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
             if (remarks != '') {
                 option += remarks;
                 order_obj.remarks = '';
-                if (_res[0].remarks != '') {
+                if (_res[0].remarks) {
                     order_obj.remarks += _res[0].remarks + '\n';
                 }
                 order_obj.remarks += remarks;

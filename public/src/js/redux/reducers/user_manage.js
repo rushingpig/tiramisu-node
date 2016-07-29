@@ -30,6 +30,7 @@ var initial_state = {
   total:0,
   filterdata:{},
   list:[],
+  active_org_id: 0,
 }
 
 var initial_userlistState = {
@@ -89,7 +90,7 @@ var user_state = {
   'role_name':'',
   'station_id':'',
   'station_name':'',
-  'username':''
+  'username':'',
 }
 
 
@@ -112,7 +113,16 @@ function UserListManage(state = initial_state,action){
   switch( action.type ){
     case UserActions.GET_USER_LIST:
       return {...state,total:clone(action.data.total),list:clone(action.data.list),
-        filterdata:clone(action.filterdata)};
+        filterdata:clone(action.filterdata), active_org_id: 0};
+    case UserActions.TOGGLE_DEPT_U:
+      var filterdata = clone(action.filterdata);
+      var active_org_id = filterdata.org_id;
+      delete filterdata.org_id;
+      return {...state, active_org_id: active_org_id, 
+              total:clone(action.data.total),
+              list:clone(action.data.list),
+              filterdata: filterdata,
+            };
     case UserActions.USER_DELETE:
       var list = state.list.filter((n)=>{
         return n.id !== action.id;

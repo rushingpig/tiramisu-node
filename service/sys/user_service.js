@@ -62,8 +62,9 @@ UserService.prototype.getUserInfo = (username, password)=> {
                 if (user.is_admin || user.is_headquarters) {
                     let all_city = yield addressDao.findAllCities({user: user});
                     all_city.forEach(c=> {
-                        if (user.city_ids.indexOf(c.id) == -1)
-                            user.city_ids.push(c.id);
+                        let tmp_id = c.id.toString();
+                        if (user.city_ids.indexOf(tmp_id) == -1)
+                            user.city_ids.push(tmp_id);
                     });
                 }
                 if (user.is_admin || user.is_national) {
@@ -71,8 +72,9 @@ UserService.prototype.getUserInfo = (username, password)=> {
                     if (!user.is_admin) query_station.is_national = 0;
                     let all_station = yield deliveryDao.findAllStations(query_station);
                     all_station.forEach(c=> {
-                        if (user.station_ids.indexOf(c.id) == -1)
-                            user.station_ids.push(c.id);
+                        let tmp_id = c.id.toString();
+                        if (user.station_ids.indexOf(tmp_id) == -1)
+                            user.station_ids.push(tmp_id);
                     });
                 }
             }
@@ -82,6 +84,7 @@ UserService.prototype.getUserInfo = (username, password)=> {
                 user.role_ids.push(curr.role_id);
                 roles_set.add(curr.role_id);
                 org_ids_set.add(curr.org_id);
+                if (curr.src_id == 0) user.is_all_src = 1;  // src_id为0时 将具有所有渠道权限
                 if (curr.src_id) {
                     user.src_ids.push(curr.src_id);
                 }
@@ -240,8 +243,9 @@ UserService.prototype.getUserDetail = (req,res,next) => {
         if (res_data.is_national) {
             let all_station = yield deliveryDao.findAllStations({city_ids: city_ids, user: res_data, is_national: 0});
             all_station.forEach(c=> {
-                if (station_ids.indexOf(c.id) == -1)
-                    station_ids.push(c.id);
+                let tmp_id = c.id.toString();
+                if (station_ids.indexOf(tmp_id) == -1)
+                    station_ids.push(tmp_id);
             });
         }
 

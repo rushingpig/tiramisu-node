@@ -974,8 +974,18 @@ OrderDao.prototype.findOrderHistory = function(query_data) {
  * @returns {Promise}
  */
 OrderDao.prototype.findOrdersByIds = function(order_ids) {
-  let sql = "select * from ?? where id in" + dbHelper.genInSql(order_ids);
-  return baseDao.select(sql, [tables.buss_order]);
+  let columns = [
+      'bo.*',
+      'dr.parent_id AS city_id'
+  ];
+  let sql = `SELECT ${columns.join()} FROM ?? bo `;
+  let params = [tables.buss_order];
+  sql += `LEFT JOIN ?? br ON br.id = bo.recipient_id `;
+  params.push(tables.buss_recipient);
+  sql += `LEFT JOIN ?? dr ON dr.id = br.regionalism_id `;
+  params.push(tables.dict_regionalism);
+  sql += `WHERE bo.id IN ` + dbHelper.genInSql(order_ids);
+  return baseDao.select(sql, params);
 };
 /**
  * batch update orders by the given order ids

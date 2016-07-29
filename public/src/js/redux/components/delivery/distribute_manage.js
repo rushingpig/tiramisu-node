@@ -1007,11 +1007,12 @@ var SignedModal = React.createClass({
         if(m.num>0){
          m.num --;
          m.amount -= m.unit_price;
+         //减少时，加，减金额的变化情况
+         //当操作的配件已存在订单配件中，且当前该配件的数量大于订单中该配件的数量，加的金额减少，当前该配件的数量小于等于订单中该配件的数量，减得金额增加
+         //当操作的配件不存在订单配件中，加的金额减少
          if( initial_orderSpareparts.some( h => h.sku_id == m.sku_id && h.num > m.num)){
           this.setState({minus_amount: this.state.minus_amount + m.unit_price})
-         }else if(initial_orderSpareparts.some( h => h.sku_id == m.sku_id && h.num <= m.num)){
-          this.setState({plus_amount: this.state.plus_amount - m.unit_price})
-         }else if(initial_orderSpareparts.every( h => h.sku_id != m.sku_id)){
+         }else{
           this.setState({plus_amount: this.state.plus_amount - m.unit_price})
          }         
         }
@@ -1032,12 +1033,13 @@ var SignedModal = React.createClass({
        if( m.sku_id == id){
          m.num ++;
          m.amount += m.unit_price;
-         if(initial_orderSpareparts.every( h => h.sku_id != m.sku_id )){
-          this.setState({plus_amount: this.state.plus_amount + m.unit_price});
-         }else if( initial_orderSpareparts.some(h => h.sku_id == m.sku_id && h.num < m.num)){
-          this.setState({plus_amount: this.state.plus_amount + m.unit_price});
-         }else if( initial_orderSpareparts.some(h => h.sku_id == m.sku_id && h.num >= m.num)){
+         //增加时，加，减金额的变化情况，
+         //1.当操作的配件已存在订单配件中，且当前该配件的数量少于订单中该配件的数量，减得金额减少，
+         //其余情况，加的金额增加
+         if( initial_orderSpareparts.some(h => h.sku_id == m.sku_id && h.num >= m.num)){
           this.setState({minus_amount: this.state.minus_amount - m.unit_price});
+         }else{
+          this.setState({plus_amount: this.state.plus_amount + m.unit_price});
          }
         m.discount_price = m.unit_price * m.num;
        }
@@ -1065,49 +1067,47 @@ var SignedModal = React.createClass({
     this.refs.timeinput.reset();
     this.setState(this.getInitialState());
   },
+  /**
+   * 点击可选配件里的配件时触发
+   * @param  {[type]} e [description]
+   * @return {[type]}   [description]
+   */
   onSparePartChange(e){
-    var e_copy = clone(e);
-    var old_orderSpareparts = this.state.orderSpareparts;
-    if( !e_copy.children ||   e_copy.children.length == 0){
-      var newvalue = {};
-      if('parent_id' in e_copy){
-        if(old_orderSpareparts.some( m => m.id == e_copy.parent_id && m.sub == e_copy.name)){
-          old_orderSpareparts.map( m => {
-            if( m.id == e_copy.parent_id && m.sub == e_copy.name){
-              m.num ++ ;
-            }
-            return m;
-          })
-        }else{
-          var newvalue = { id: e_copy.parent_id, name: e_copy.parent_name ,price: e_copy.price ,sub: e_copy.name, remarks:'',num:1, skus: e_copy.skus }           
-        }       
+    var e_copy = clone(e);   //深沉拷贝，否则在修改e_copy的值时会影响原有配件的值
+    var old_orderSpareparts = this.state.orderSpareparts;  //old_orderSpareparts  当前列表已购配件
+    var  initial_orderSpareparts = this.props.D_.orderSpareparts;  //订单原有配件
+    if(old_orderSpareparts.some( m => m.sku_id == e_copy.sku_id )){
+      //当选择的配件已存在已购配件列表时
+      old_orderSpareparts.map( m => {
+        if(m.sku_id == e_copy.sku_id){
+          m.num ++;
+          m.amount += e_copy.discount_price;   //已购配件中该配件加1，同时amount变化
+          /*加、减金额变化两种情况，‘加’的金额增加，‘减’的金额减少*/
+          if(initial_orderSpareparts.some(h => h.sku_id == e_copy.sku_id && h.num >= m.num)){
+            //选择的配件存在于原订单配件列表中，且目前该配件的数量少于原订单该配件的数量
+            this.setState({minus_amount: this.state.minus_amount - m.unit_price});
+          }else{
+            this.setState({plus_amount: this.state.plus_amount + m.unit_price});            
+          }
+        m.discount_price = m.unit_price * m.num;
+        }
+        return m;
+      })
+    }else{
+      //当选择的配件不存在已购配件列表时
+      var newvalue = e_copy;
+      e_copy.num = 1;
+      newvalue.unit_price = newvalue.discount_price;
+      newvalue.amount = newvalue.discount_price;
+      old_orderSpareparts.push(newvalue);
+
+      //因为选择的配件不存在已购配件中，故加，减金额的变化只讨论该配件是否存在于原订单配件列表中
+      if(initial_orderSpareparts.every( h => h.sku_id != e_copy.sku_id )){
+       this.setState({plus_amount: this.state.plus_amount + e_copy.unit_price});
       }else{
-        var  initial_orderSpareparts = this.props.D_.orderSpareparts;
-        if(old_orderSpareparts.some( m => m.sku_id == e_copy.sku_id )){
-          old_orderSpareparts.map( m => {
-            if(m.sku_id == e_copy.sku_id){
-              m.num ++;
-              m.amount += e_copy.discount_price;
-              if(initial_orderSpareparts.every( h => h.sku_id != m.sku_id )){
-               this.setState({plus_amount: this.state.plus_amount + m.unit_price});
-              }else if( initial_orderSpareparts.some(h => h.sku_id == m.sku_id && h.num < m.num)){
-               this.setState({plus_amount: this.state.plus_amount + m.unit_price});
-              }else if( initial_orderSpareparts.some(h => h.sku_id == m.sku_id && h.num >= m.num)){
-               this.setState({minus_amount: this.state.minus_amount - m.unit_price});
-              }
-            m.discount_price = m.unit_price * m.num;
-            }
-            return m;
-          })
-        }else{
-          var newvalue = e_copy;
-          e_copy.num = 1;
-          newvalue.unit_price = newvalue.discount_price;
-          newvalue.amount = newvalue.discount_price;
-          old_orderSpareparts.push(newvalue);
-          this.setState({plus_amount: newvalue.discount_price + this.state.plus_amount});
-        }       
+       this.setState({minus_amount: this.state.minus_amount - e_copy.unit_price});
       }
+    }       
       /*if( 'id' in newvalue){
         old_orderSpareparts.push(newvalue);
       }*/

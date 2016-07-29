@@ -668,6 +668,9 @@ var EditModal = React.createClass({
   saveHandler: function(){
     var { selected_deliveryman_id, orders } = this.state;
     var selected_deliveryman = this.state.filter_results.filter(n => n.deliveryman_id == selected_deliveryman_id);
+    if(selected_deliveryman_id == 0){
+        Noty('warning', '请选择配送员'); return;        
+    }
     this.props.applyDeliveryman({
       deliveryman_id: selected_deliveryman_id,
       deliveryman_name: selected_deliveryman.length && selected_deliveryman[0].deliveryman_name,

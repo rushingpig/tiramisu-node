@@ -1458,6 +1458,9 @@ class EditModal extends Component{
         deliveryman_name = m.deliveryman_name;
       }
     })
+    if(deliveryman_id == 0){
+        Noty('warning', '请选择配送员'); return;        
+    }
     var form_data = {};
     form_data.deliveryman_id = deliveryman_id;
     form_data.deliveryman_name = deliveryman_name;

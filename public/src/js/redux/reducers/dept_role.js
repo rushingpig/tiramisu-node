@@ -10,6 +10,7 @@ var  initail_state={
 	active_org_id:-1,
 	dataaccess:[],
 	stations:[],
+	stations_national: [],
 }
 
 function _t(data){
@@ -46,7 +47,12 @@ export function dept_role(Actions=DeptRoleActionTypes){
 			case Actions.GOT_STATIONS_BY_CITYIDS:
 				return {...state,stations:_t(action.data)};
 			case Actions.GOT_STATIONS_BY_CITYIDS_SIGNAL:
-				return {...state,stations:_t(action.data)};
+				if(action.is_national == 0){
+					return {...state,stations:_t(action.data)};					
+				}else{
+					return {...state,stations_national: _t(action.data)};					
+				}
+			case Actions.GOT_STATIONS_NATIONAL_SIGNAL:
 			case Actions.RESET_STATIONS:
 				return {...state,stations:[]};
 			default:

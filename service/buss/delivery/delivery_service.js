@@ -43,7 +43,8 @@ function DeliveryService(){
  */
 DeliveryService.prototype.getDeliveryStationList = (req,res,next)=>{
     req.checkQuery('city_id').optional().isInt();
-    req.checkQuery('city_ids').optional().notEmpty();
+    if (req.query.is_national === undefined)
+        req.checkQuery('city_ids').optional().notEmpty();
     req.checkQuery('is_national').optional().isInt();
     let errors = req.validationErrors();
     if (errors) {
@@ -53,6 +54,7 @@ DeliveryService.prototype.getDeliveryStationList = (req,res,next)=>{
     let query_data = {
         city_id : req.query.city_id,
         city_ids : req.query.city_ids ? req.query.city_ids.split(',') : null,
+        is_national: req.query.is_national,
         signal : req.query.signal,
         user : req.session.user
     };
@@ -113,6 +115,9 @@ DeliveryService.prototype.exchageOrders = (req,res,next)=>{
         }
         for(let i = 0;i < results.length;i++){
             let curr = results[i];
+            if (!systemUtils.checkOrderDataScopes(req.session.user, curr)) {
+                throw new TiramisuError(res_obj.OPTION_EXPIRED, '待转换的订单号[' + curr.id + ']没有权限操作');
+            }
             if(curr.status !== Constant.OS.STATION){
                 throw new TiramisuError(res_obj.ORDER_NO_STATION,'待转换的订单号['+curr.id+']状态为['+curr.status+'],不能被转换...');
             }
@@ -346,7 +351,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
         } else if (_res[0].status === Constant.OS.EXCEPTION) {
             throw new TiramisuError(res_obj.ORDER_EXCEPTION);
         }
-        if (!systemUtils.isOrderCanUpdateStatus(_res[0].status, order_obj.status)) {
+        if (!systemUtils.checkOrderDataScopes(req.session.user, _res[0]) || !systemUtils.isOrderCanUpdateStatus(_res[0].status, order_obj.status)) {
             throw new TiramisuError(res_obj.OPTION_EXPIRED);
         }
         //===========for history begin=============
@@ -362,6 +367,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
             option += '修改{配送员}为{' + deliveryman.name + '('+deliveryman.mobile+')}\n';
         }
         if(order) {
+            let remarks = '';
             products = order.products || [];
             order_obj.total_amount = current_order.total_amount;
             order_obj.total_original_price = 0;
@@ -377,13 +383,6 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                         let change = products[i].num - _res[j].num;
                         let tmp_one_price = parseInt(_res[j].discount_price / _res[j].num);
                         let tmp_change_amount = tmp_one_price * change;
-                        if (change > 0) {
-                            is_change = true;
-                            option += '增加{' + curr.name + '}数量{' + change + '}\n';
-                        } else if (change < 0) {
-                            is_change = true;
-                            option += '减少{' + curr.name + '}数量{' + (-change) + '}\n';
-                        }
                         let order_sku_obj = {
                             order_id: orderId,
                             sku_id: curr.sku_id,
@@ -396,6 +395,15 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                             discount_price: _res[j].discount_price + tmp_change_amount,
                             amount: _res[j].amount + tmp_change_amount
                         };
+                        if (change > 0) {
+                            is_change = true;
+                            remarks += '增加{' + curr.name + '}数量{' + change + '},';
+                            remarks += '金额由{' + (_res[j].discount_price / 100) + '}变为{' + (order_sku_obj.discount_price / 100) + '}\n';
+                        } else if (change < 0) {
+                            is_change = true;
+                            remarks += '减少{' + curr.name + '}数量{' + (-change) + '},';
+                            remarks += '金额由{' + (_res[j].discount_price / 100) + '}变为{' + (order_sku_obj.discount_price / 100) + '}\n';
+                        }
                         order_obj.total_amount += tmp_change_amount;
                         if (order_sku_obj.amount < 0) {
                             change_amount += order_sku_obj.amount;
@@ -407,7 +415,6 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                 if (isAdd) {
                     let curr = products[i];
                     is_change = true;
-                    option += '增加{' + curr.name + '}数量{' + curr.num + '}\n';
                     let order_sku_obj = {
                         order_id: orderId,
                         sku_id: curr.sku_id,
@@ -420,6 +427,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                         discount_price: curr.discount_price,
                         amount: 0
                     };
+                    remarks += '增加{' + curr.name + '}数量{' + curr.num + '},金额{' + (order_sku_obj.discount_price / 100) + '}\n';
                     order_obj.total_amount += curr.discount_price;
                     change_amount += curr.discount_price;
                     add_skus.push(systemUtils.assembleInsertObj(req, order_sku_obj));
@@ -435,11 +443,24 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                 if (isDelete && _res[i].sku_id) {
                     let curr = _res[i];
                     is_change = true;
-                    option += '删除{' + curr.product_name + '}数量{' + curr.num + '}\n';
+                    remarks += '删除{' + curr.product_name + '}数量{' + curr.num + '},金额{' + (curr.discount_price / 100) + '}\n';
                     order_obj.total_amount -= _res[i].discount_price;
                     change_amount += _res[i].amount - _res[i].discount_price;
                     delete_skuIds.push(curr.sku_id);
                 }
+            }
+
+            if (order_obj.total_amount != _res[0].total_amount) {
+                remarks += '订单总应收金额由{' + (_res[0].total_amount / 100) + '}变为{' + (order_obj.total_amount / 100) + '}';
+            }
+
+            if (remarks != '') {
+                option += remarks;
+                order_obj.remarks = '';
+                if (_res[0].remarks) {
+                    order_obj.remarks += _res[0].remarks + '\n';
+                }
+                order_obj.remarks += remarks;
             }
 
             if (is_change) {
@@ -565,7 +586,7 @@ DeliveryService.prototype.unsigninOrder = (req,res,next) => {
         }else if(_res[0].status === Constant.OS.EXCEPTION){
             throw new TiramisuError(res_obj.ORDER_EXCEPTION);
         }
-        if (!systemUtils.isOrderCanUpdateStatus(_res[0].status, update_obj.status)) {
+        if (!systemUtils.checkOrderDataScopes(req.session.user, _res[0]) || !systemUtils.isOrderCanUpdateStatus(_res[0].status, update_obj.status)) {
             throw new TiramisuError(res_obj.OPTION_EXPIRED);
         }
         return orderDao.updateOrder(systemUtils.assembleUpdateObj(req,update_obj),order_id);
@@ -910,7 +931,7 @@ DeliveryService.prototype.print = (req,res,next)=>{
             }else if (print_status === Constant.PS.AUDITING){
                 throw new TiramisuError(res_obj.ORDER_AUDITING);
             }
-            if (!systemUtils.isOrderCanUpdateStatus(curr.status, Constant.OS.INLINE)) {
+             if (!systemUtils.checkOrderDataScopes(req.session.user, curr) || !systemUtils.isOrderCanUpdateStatus(curr.status, Constant.OS.INLINE)) {
                 throw new TiramisuError(res_obj.OPTION_EXPIRED);
             }
         });

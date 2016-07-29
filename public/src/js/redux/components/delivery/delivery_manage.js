@@ -345,15 +345,15 @@ class DeliveryManagePannel extends Component {
     this.showScanModal = this.showScanModal.bind(this);
   }
   render(){
-    var { filter, area, deliveryman, main, all_order_srcs, all_pay_modes,
-      getAllDeliveryman, applyDeliveryman, startPrint, applyPrint, validatePrintCode, rePrint, searchByScan,
+    var { filter, area, main, all_order_srcs, deliveryman, all_pay_modes, getAllDeliveryman,
+      getDeliverymanByOrder, applyDeliveryman, startPrint, applyPrint, validatePrintCode, rePrint, searchByScan,
       getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
     var { loading, refresh, page_no, checkall, total, list, checked_orders, check_order_info, 
       active_order_id, get_products_detail_ing } = this.props.orders;
     var { showBatchPrintModal, printHandler, showEditModal, showScanModal, showBatchEditModal,
        checkOrderHandler, viewOrderDetail, activeOrderHandler, viewOrderOperationRecord, refreshDataList } = this;
 
-    var {scan} = main; //扫描
+    var {scan, order_deliveryman, order_deliveryman_load_success} = main; //扫描
 
     var content = list.map((n, i) => {
       return <OrderRow 
@@ -422,7 +422,7 @@ class DeliveryManagePannel extends Component {
             </div>
           : null }
 
-        <EditModal ref="EditModal" {...{getAllDeliveryman, applyDeliveryman, deliveryman, submitting: main.submitting }} callback={refreshDataList} />
+        <EditModal ref="EditModal" {...{getDeliverymanByOrder, getAllDeliveryman, applyDeliveryman, order_deliveryman, deliveryman, order_deliveryman_load_success, submitting: main.submitting }} callback={refreshDataList} />
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} all_order_srcs={all_order_srcs.map} all_pay_modes={all_pay_modes} />
         <PrintModal ref="PrintModal" {...{checked_orders, startPrint, callback: refreshDataList}} />
         <ApplyPrintModal ref="ApplyPrintModal" {...{applyPrint, submitting: main.submitting}} callback={refreshDataList} />
@@ -564,6 +564,8 @@ var PrintModal = React.createClass({
 var EditModal = React.createClass({
   propTypes: {
     'deliveryman': PropTypes.object.isRequired,
+    'order_deliveryman': PropTypes.object.isRequired,
+    'getDeliverymanByOrder': PropTypes.func.isRequired,
     'getAllDeliveryman': PropTypes.func.isRequired,
     'applyDeliveryman': PropTypes.func.isRequired,
   },
@@ -577,10 +579,15 @@ var EditModal = React.createClass({
     };
   },
   componentWillReceiveProps: function(nextProps){
-    var { deliveryman } = nextProps;
-    //只需要初始化一次
-    if(deliveryman.load_success && !this._hasInitial){
-      this._hasInitial = true;
+    var deliveryman = [];
+    if(this.state.orders.length > 1){
+      deliveryman = nextProps.deliveryman;
+    }else{
+      deliveryman.list = nextProps.order_deliveryman;
+      deliveryman.load_success = nextProps.order_deliveryman_load_success;
+    }
+    //只需要初始化一次的（根据订单号来获取配送员后，此限制去掉 20160727 xiaohong）
+    if(deliveryman.load_success){
       var { list } = deliveryman;
       var build = function(){
         var new_data = list.map(function(n){
@@ -675,6 +682,9 @@ var EditModal = React.createClass({
   saveHandler: function(){
     var { selected_deliveryman_id, orders } = this.state;
     var selected_deliveryman = this.state.filter_results.filter(n => n.deliveryman_id == selected_deliveryman_id);
+    if(selected_deliveryman_id == 0){
+        Noty('warning', '请选择配送员'); return;        
+    }
     this.props.applyDeliveryman({
       deliveryman_id: selected_deliveryman_id,
       deliveryman_name: selected_deliveryman.length && selected_deliveryman[0].deliveryman_name,
@@ -690,12 +700,19 @@ var EditModal = React.createClass({
   },
   componentDidMount: function(){
     //稍微延时一下，
-    setTimeout(() => {
-      this.props.getAllDeliveryman();
-    }, 200);
   },
   show: function(orders){
     this.setState({orders})
+    if(orders.length > 1){
+      setTimeout(() => {
+        this.props.getAllDeliveryman();
+      }, 200);
+    }else if(orders.length == 1){
+      var order_id = orders[0].order_id;
+      setTimeout(() => {
+        this.props.getDeliverymanByOrder(order_id);
+      }, 200);
+    }    
     this.refs.modal.show();
   },
   hideCallback: function(){

@@ -106,9 +106,18 @@ export default function dept_role(ActionTypes=DeptRoleActionTypes){
         data:{1:'xxx',2:'xxx'}
       }*/
     },
-    getStationsByCityIdsSignal:function(city_ids,signal){
-      return GET(Url.station_merge_list.toString(),{city_ids:city_ids,signal:signal},ActionTypes.GOT_STATIONS_BY_CITYIDS_SIGNAL);
-    },   
+    getStationsByCityIdsSignal:function(filter_data){
+      return (dispatch) => {
+        return get(Url.station_merge_list.toString(),filter_data)
+                .done((data) =>{
+                  dispatch({
+                    type: ActionTypes.GOT_STATIONS_BY_CITYIDS_SIGNAL,
+                    is_national: filter_data.is_national,
+                    data:data,
+                  })
+                })        
+              }
+    }   
 
   }
 }

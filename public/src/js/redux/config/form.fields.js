@@ -35,6 +35,7 @@ export default {
     'tmp_cities',
     'city_ids',
     'tmp_stations',
+    'tmp_stations_national',
     'station_ids',
     'cities_in',
     'stations_in',

@@ -74,12 +74,14 @@ class ManageUserDetailPannel extends Component{
   componentDidMount(){
     var {params}=this.props;
     var _this = this;
+    this.props.actions.getStationsByCityIdsSignal({signal: 'authority', is_national: 1});
     if(params && params.id){
       this.props.actions.getUserById(params.id)
         .done(function(){
           var {city_ids} = _this.props.mainForm.data;
           var city_ids_str = city_ids.join(',');
-          _this.props.actions.getStationsByCityIdsSignal(city_ids_str, 'authority');
+          if(city_ids_str != '')
+            _this.props.actions.getStationsByCityIdsSignal({city_ids:city_ids_str, signal:'authority', is_national:0});
         })
     }else{
       _this.props.actions.resetStations();

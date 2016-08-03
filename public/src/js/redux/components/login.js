@@ -19,9 +19,9 @@ var Login = React.createClass({
             <img src={config.root + "images/logo.png"} alt="" />
           </div>
           <div className="login-wrap">
-            <input value={username} ref="username"
+            <input id="username" value={username} ref="username"
                 onChange={this.onUsernameChange} type="text" className="form-control" placeholder="用户名" autofocus=""/>
-            <input value={password} ref="password"
+            <input id="password" value={password} ref="password"
                 onChange={this.onPasswordChange} onKeyDown={this.onEnterHandler} type="password" className="form-control" placeholder="密码"/>
             <div className="error-msg">{error_msg}</div>
             <button disabled={login_ing} onClick={this.login} className="btn-login btn-block">

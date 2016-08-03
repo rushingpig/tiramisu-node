@@ -1,6 +1,7 @@
 import React from 'react';
 import StdModal from 'common/std_modal.js';
 import Select from 'common/select';
+import { SELECT_DEFAULT_VALUE} from 'config/app.config';
 
 var RefundModal = React.createClass({
   getInitialState:function(){
@@ -9,6 +10,8 @@ var RefundModal = React.createClass({
       other_reason:false,
       initiator_active: true,
       refund_type: 1,
+      refund_type_tip: '',
+      refund_reason_id: SELECT_DEFAULT_VALUE,
       refund_way: 1,
       is_alipay: true,
 
@@ -18,6 +21,7 @@ var RefundModal = React.createClass({
       recipient_mobile: '',
       owner_name: '',
       owner_mobile: '',
+      order: {},
     }
   },
   render(){
@@ -28,9 +32,9 @@ var RefundModal = React.createClass({
                           {id:4, text: '客户更改产品(款式或磅数)'},
                           {id:5, text: '其他'},
                          ]
-    var {relate_order_id, other_reason, initiator_active, refund_type, refund_way, is_alipay,
+    var {relate_order_id, other_reason, initiator_active, refund_type, refund_type_tip, refund_way, is_alipay,
           refund_amount, total_discount_price, recipient_mobile, recipient_name, owner_mobile,
-          owner_name,
+          owner_name, refund_reason_id,
           } = this.state;
     return(
       <StdModal ref='modal' title='退款申请页面'>
@@ -45,11 +49,12 @@ var RefundModal = React.createClass({
         </div>
         <div className='form-group form-inline'>
           <label>退款金额：</label>
-          <span>￥</span><input value={refund_amount / 100} ref='amount' type='text' readOnly className='form-control input-xs short-input'/>          
+          <span>￥</span><input value={refund_amount / 100} ref='amount' type='text' readOnly className='form-control input-xs short-input'/> 
+          <label style={{color: 'grey'}}>{'　　' + refund_type_tip}</label>         
         </div>
         <div className='form-group form-inline'>
           <label>退款原因：</label>
-          <Select options={reasonOptions} onChange={this.reasonChange}/>
+          <Select value={refund_reason_id} options={reasonOptions} onChange={this.reasonChange}/>
           {
             (relate_order_id || other_reason )&& 
             [<label key='relate_order_id_lbl'>{'　关联订单号：'}</label>,
@@ -134,7 +139,11 @@ var RefundModal = React.createClass({
       recipient_name: order.recipient_name,
       recipient_mobile: order.recipient_mobile,
       owner_name: order.owner_name,
-      owner_mobile: order.owner_mobile,
+      owner_mobile: order.owner_mobile,      
+      refund_type: 1,
+      refund_type_tip: '',
+      refund_reason_id: SELECT_DEFAULT_VALUE,
+      order: order,
     });
     this.refs.modal.show();
   },
@@ -144,8 +153,15 @@ var RefundModal = React.createClass({
     var amount_input = this.refs.amount;
     if(value == 1){
       amount_input.setAttribute('readOnly', 'true');
+      this.setState({ refund_type_tip: '', refund_amount: order.total_discount_price});
     }else{
       amount_input.removeAttribute('readOnly');
+      this.setState({ refund_amount: 0});
+      if(value == 2){
+        this.setState({refund_type_tip: '<' + this.state.order.total_discount_price / 100});
+      }else{
+        this.setState({refund_type_tip: '>' + this.state.order.total_discount_price / 100});
+      }
     }
   },
   contactChange(e){

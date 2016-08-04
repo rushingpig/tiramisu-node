@@ -293,7 +293,7 @@ class ManageAddForm extends Component {
             ]
           : <button 
                 onClick={handleSubmit(this._check.bind(this, this.handleCreateOrder))} 
-                disabled={save_ing} 
+                disabled={save_ing || save_success} 
                 data-submitting={save_ing} 
                 className="btn btn-theme btn-xs">生成新订单</button>
         }
@@ -373,16 +373,21 @@ class ManageAddForm extends Component {
     return $(findDOMNode(this.refs[_refs])).find('option:selected').html();
   }
   handleCreateOrder(form_data){
-    this.props.actions.createOrder(form_data)
-      .done(function(){
-        Noty('success', '保存成功');
-        this.props.actions.resetOrderStore(); //重置order_manage状态
-        this.props.actions.destroyForm('order_manage_filter'); //重置order_manage 过滤条件
-        history.push('/om/index');
-      }.bind(this))
-      .fail(function(msg, code){
-        Noty('error', msg || '网络繁忙，请稍后再试');
-      });
+    //二次保险（防止重复提交）
+    if(!this._insurance_){
+      this._insurance_ = true;
+      this.props.actions.createOrder(form_data)
+        .done(function(){
+          this._insurance_ = undefined;
+          history.push('/om/index');
+          Noty('success', '保存成功');
+          this.props.actions.resetOrderStore(); //重置order_manage状态
+          this.props.actions.destroyForm('order_manage_filter'); //重置order_manage 过滤条件
+        }.bind(this))
+        .fail(function(msg, code){
+          Noty('error', msg || '网络繁忙，请稍后再试');
+        });
+    }
   }
   handleSaveOrder(form_data){
     this.props.actions.saveOrder(form_data)
@@ -398,12 +403,16 @@ class ManageAddForm extends Component {
     if(!form_data.delivery_id){
       Noty('warning', '请选择配送中心'); return;
     }
-    this.props.actions.submitOrder(form_data).done(function(){
-      history.push('/om/index');
-      Noty('success', '已成功提交！');
-    }).fail(function(msg){
-      Noty('error', msg || '网络繁忙，请稍后再试');
-    });
+    if(!this._insurance_){
+      this._insurance_ = true;
+      this.props.actions.submitOrder(form_data).done(() => {
+        this._insurance_ = undefined;
+        history.push('/om/index');
+        Noty('success', '已成功提交！');
+      }).fail(function(msg){
+        Noty('error', msg || '网络繁忙，请稍后再试');
+      });
+    }
   }
   componentDidMount(){
     var {getProvincesSignal, getOrderSrcs, getDeliveryStations, getPayModes} = this.props.actions;

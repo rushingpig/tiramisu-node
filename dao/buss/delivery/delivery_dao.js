@@ -27,7 +27,8 @@ function DeliveryDao(){
  * query for stations
  */
 DeliveryDao.prototype.findAllStations = function(query_data){
-    let sql = `SELECT bds.* FROM ?? bds `;
+    if (!query_data) query_data = {};
+    let sql = "select bds.* from ?? bds";
     let params = [];
     params.push(tables.buss_delivery_station);
     sql += `INNER JOIN ?? dr ON dr.id = bds.regionalism_id `;  // 区
@@ -60,7 +61,7 @@ DeliveryDao.prototype.findAllStations = function(query_data){
     }
     // data filter begin
     // 添加用户时只展示该用户所属的配送站供选择
-    if(query_data && query_data.signal && query_data.user.is_national == 0){
+    if(query_data && query_data.signal && query_data.user && query_data.user.is_national == 0){
         sql += " and bds.id in " + dbHelper.genInSql(query_data.user.station_ids);
     }
     // data filter end

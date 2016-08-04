@@ -626,3 +626,37 @@ CREATE TABLE `sys_city` (
     `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
     PRIMARY KEY `IDX_UNQ_UID` (`regionalism_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='开通城市表';
+
+# 创建系统图片表
+DROP TABLE IF EXISTS `buss_image`;
+CREATE TABLE `buss_image` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `url` varchar(255) NOT NULL COMMENT '图片url',
+  `name` varchar(255) NOT NULL COMMENT '图片名称',
+  `size` int(11) NOT NULL  COMMENT '图片大小',
+  `created_by` int(11) NOT NULL COMMENT '创建人id',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
+  `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+  `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+  `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '删除标志',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统图片表';
+
+# 创建图片目录表
+DROP TABLE IF EXISTS `buss_directory`;
+CREATE TABLE `buss_directory` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` enum('d','f') NOT NULL COMMENT '目录、文件',
+  `parent_id` int(11) unsigned NOT NULL COMMENT '父级目录ID',
+  `name` varchar(255) NOT NULL COMMENT '目录名称',
+  `img_id` int(11) COMMENT '图片id',
+  `created_by` int(11) NOT NULL COMMENT '创建人id',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
+  `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+  `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+  `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '删除标志',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统图片表';
+
+INSERT INTO `buss_directory` (`id`,`type`,`parent_id`,`name`,`created_by`,`created_time`,`updated_by`,`updated_time`,`del_flag`) VALUES (1,'d',0,'/',1,'2016-08-04 12:00:00',NULL,NULL,1);
+INSERT INTO `buss_directory` (`id`,`type`,`parent_id`,`name`,`created_by`,`created_time`,`updated_by`,`updated_time`,`del_flag`) VALUES (2,'d',1,'图片管理',1,'2016-08-04 12:00:00',NULL,NULL,1);

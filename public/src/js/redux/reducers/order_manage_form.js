@@ -30,7 +30,7 @@ var initial_state = {
   all_pay_modes: [],
 
   save_ing: false,
-  save_success: true,
+  save_success: false,
   submit_ing: false,
 
   //edit data from server
@@ -71,7 +71,7 @@ function mainForm(state = initial_state, action) {
     case FormActions.SUBMIT_ORDER_ING:
       return {...state, submit_ing: true}
     case FormActions.SUBMIT_ORDER_COMPLETE:
-      return {...state, submit_ing: true}
+      return {...state, submit_ing: false}
 
     case FormActions.GOT_ORDER_BY_ID:
     case FormActions.GOT_COPY_ORDER_BY_ID:

@@ -76,6 +76,8 @@ a
   color: $theme-font-color
 .text-left
   text-align: left !important
+.text-center
+  text-align: center !important
 .nowrap
   white-space: nowrap
 .gray
@@ -112,7 +114,17 @@ a
   background-color: $theme-colour-bg
 .relative
   position: relative !important
-
+.display-none
+  display: none
+.pointer
+  cursor: pointer
+.fa-color-gray
+  color: gray
+  &:hover
+    color: inherit
+.underline-on-hover
+  &:hover
+    text-decoration: underline
 /**************************/
 /********* 组件类 **********/
 /**************************/
@@ -130,6 +142,12 @@ a
     border-bottom: none
     color: $theme-font-color
     cursor: default
+.achor
+  display: inline-block
+  cursor: pointer
+  border-bottom: 1px solid transparent
+  &:hover
+    border-color: $theme-black
 .form-control.short-input
   width: 85px
 .form-control.long-input
@@ -294,6 +312,10 @@ hr.dotted
   @extend .rotate-loading
   @include rotate-loading(0.3s)
   margin-right: 0
+
+tr:hover
+  .show-on-parent-hover
+    display: block
 
 .deleteable-row
   .del-btn

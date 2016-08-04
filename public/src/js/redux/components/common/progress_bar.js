@@ -2,14 +2,14 @@ import React, { Component, PropTypes } from 'react';
 
 class ProgressBar extends Component {
   render(){
-    var { theme, type, persent } = this.props;
-    if(persent == 100){
+    var { theme, type, percent } = this.props;
+    if(percent == 100){
       theme = 'success';
     }
     return (
       <div className={`progress progress-${type} active progress-sm`}>
-        <div style={{width: persent + '%'}} className={`progress-bar progress-bar-${theme}`}>
-          <span className="persent">{persent}%</span>
+        <div style={{width: percent + '%'}} className={`progress-bar progress-bar-${theme}`}>
+          <span className="percent">{percent}%</span>
         </div>
       </div>
     )
@@ -17,13 +17,13 @@ class ProgressBar extends Component {
 }
 
 ProgressBar.defaultProps = {
-  persent: 0,
+  percent: 0,
   theme: 'theme',
   type: 'striped',
 };
 
 ProgressBar.propTypes = {
-  persent: PropTypes.number.isRequired,
+  percent: PropTypes.number.isRequired,
   theme: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
 }

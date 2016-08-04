@@ -26,8 +26,8 @@ class ProgressRow extends Component {
   render(){
     return (
       <div className="col-lg-4 col-md-6 col-sm-6">
-        <div className="theme mg-4">{this.props.name}</div>
-        <ProgressBar persent={this.props.persent} />
+        <div className={`${this.props.percent == 100 ? 'text-success' : 'theme'} mg-4`}>{this.props.name}</div>
+        <ProgressBar percent={this.props.percent} />
       </div>
     )
   }
@@ -37,19 +37,13 @@ var FilterHeader = React.createClass({
   getInitialState: function() {
     return {
       search_ing: false,
-      progressBars: [
-        // {
-        //   key: timestamp
-        //   name: '',
-        //   persent: 88
-        // }
-      ],
+      progressBars: [],
     };
   },
   render(){
     var { search_ing, progressBars } = this.state;
     var progressList = progressBars.map( n => {
-      return <ProgressRow ref={n.key} key={n.key} name={n.name} persent={n.persent} />;
+      return <ProgressRow ref={n.key} key={n.key} name={n.name} percent={n.percent} />;
     });
     return (
       <div className="panel search">
@@ -66,7 +60,7 @@ var FilterHeader = React.createClass({
                 </a>
               </li>
               <li>
-                <a ref="uploadDirBtn" onClick={this.uploadFileHandler} href="javascript:void(0)" >
+                <a id="uploadDirBtn" onClick={this.uploadFileHandler} href="javascript:void(0)" >
                   上传文件夹
                 </a>
               </li>
@@ -92,91 +86,94 @@ var FilterHeader = React.createClass({
     )
   },
   componentDidMount(){
+    //api文档：http://developer.qiniu.com/code/v6/sdk/javascript.html
+    var uploaderOptions = this.getUploaderOptions();
     LazyLoad('qiniu_dev', () => {
-      var fileUploader = Qiniu.uploader({
-        runtimes: 'html5',
+      const fileUploader = Qiniu.uploader({
+        ...uploaderOptions,
         browse_button: 'uploadFileBtn',
-        // get_new_uptoken: true,
-        // unique_names: true, //文件名将变为hash值
-        // auto_start: true,
-        uptoken_url: '/upload/token', //服务器端可以
-        domain: 'o8wbe9riz.bkt.clouddn.com',
         init: {
           'FilesAdded': (up, files) => {
-            plupload.each(files, (file) => {
-              // 文件添加进队列后,处理相关的事情
-            });
+            this.setState( state => {
+              state.progressBars = state.progressBars.concat(
+                ...files.map( file => ({
+                  key: file.id,
+                  name: file.name,
+                  percent: 0
+                }))
+              )
+              return state;
+            })
             fileUploader.start();
           },
-          // 'key': (up, file) => {
-          //   debugger;
-          //   return file.name;
-          // },
-          'BeforeUpload': (up, file) => {
-            // 每个文件上传前,处理相关的事情
-          },
-          'UploadProgress': (up, file) => {
-            // 每个文件上传时,处理相关的事情
-          },
-          'FileUploaded': (up, file, info) => {
-            // 每个文件上传成功后,处理相关的事情
-            // 其中 info 是文件上传成功后，服务端返回的json，形式如
-            // {
-            //    "hash": "Fh8xVqod2MQ1mocfI4S4KpRL6D98",
-            //    "key": "gogopher.jpg"
-            //  }
-            // 参考http://developer.qiniu.com/docs/v6/api/overview/up/response/simple-response.html
- 
-            // var domain = up.getOption('domain');
-            // var res = parseJSON(info);
-            // var sourceLink = domain + res.key; 获取上传成功后的文件的Url
-          },
-          'UploadComplete': () => {
-            //队列文件处理完毕后,处理相关的 =>事情
-          },
-          'Error': (up, err, errTip) => {
-            //上传出错时,处理相关的事情
-          },
+          ...uploaderOptions.init
         }
-      })
+      });
+      var Q2 = new QiniuJsSDK();
+      const dirUploader = Q2.uploader({
+        ...uploaderOptions,
+        browse_button: 'uploadDirBtn',
+        init: {
+          'FilesAdded': (up, files) => {
+            try{
+              var dirname = files[0].getNative().webkitRelativePath.split('/')[0];
+            }catch(e){
+              Noty('error', '读取文件夹失败！');
+              return;
+            }
+            this.setState( state => {
+              state.progressBars = state.progressBars.concat(
+                ...files.map( file => ({
+                  key: file.id,
+                  name: file.getNative().webkitRelativePath,
+                  percent: 0
+                }))
+              )
+              return state;
+            })
+            fileUploader.start();
+          },
+          ...uploaderOptions.init
+        }
+      });
+      //添加上传文件夹支持
+      $('#uploadDirBtn').next().find('input').attr('webkitdirectory', true);
     });
   },
-  fileUploadOptions: function(){
+  getUploaderOptions(){
     return {
-      send: (e, data) => {
-        data.key = +new Date();
-        var { progressBars } = this.state;
-        progressBars.push({
-          key: data.key,
-          name: data.uploadName,
-          persent: 0
-        });
-        this.setState({ progressBars });
-        return true;
-      },
-      progress: (e, data) => {
-        console.log(data.loaded, data.total);
-        this.state.progressBars.forEach( n => {
-          if(n.key == data.key){
-            n.persent = parseInt(data.loaded / data.total * 100);
-          }
-        });
-        this.setState(this.state);
-      },
-      done: (e, data) => {
-        //data.result : 代表返回的json数据
-        var { progressBars } = this.state;
-        $(findDOMNode(this.refs[data.key])).delay(1000).fadeOut(1000, () => {
-          del(progressBars, n => n.key == data.key);
-          this.setState({ progressBars });
-        })
-      },
-      fail: (e, data) => {
-        Noty('error', '上传 '+data.uploadName + ' 出错了，请重试！');
-        var { progressBars } = this.state;
-        del(progressBars, n => n.key == data.key);
-        this.setState({ progressBars });
-      }     
+      runtimes: 'html5',
+      get_new_uptoken: true,
+      unique_names: true, //文件名将变为hash值
+      // save_key: true,
+      // uptoken: 'CQH3l1cozF_-KJZj-CiKWUDkaCVGtdRYgI_klK5I:g2QT0uKcRNWuVwizj_uj8zkkCjs=:eyJzY29wZSI6ImhhcHB5dGVzdCIsImRlYWRsaW5lIjoxNDcwMjIwMDU3fQ==',
+      uptoken_url: 'http://192.168.0.109:3000/qiniu/token', //服务器端可以
+      domain: 'o8wbe9riz.bkt.clouddn.com',
+      init: {
+        'UploadProgress': (up, file) => {
+          this.setState(state => {
+            state.progressBars.forEach( pb => {
+              if(pb.key == file.id){
+                pb.percent = file.percent;
+              }
+            });
+            return state;
+          });
+        },
+        'FileUploaded': (up, file, info) => {
+          debugger;
+          //data.result : 代表返回的json数据
+          var { progressBars } = this.state;
+          $(findDOMNode(this.refs[file.id])).delay(1000).fadeOut(1000, () => {
+            del(progressBars, pb => pb.key == file.id);
+            this.setState({ progressBars });
+          })
+        },
+        'Error': (up, err, errTip = '上传出错，请重试！') => {
+          //上传出错时,处理相关的事情
+          Noty('error', errTip);
+        },
+      }
     }
   },
   uploadFileHandler(e){

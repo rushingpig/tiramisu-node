@@ -28,7 +28,7 @@ function DeliveryDao(){
  */
 DeliveryDao.prototype.findAllStations = function(query_data){
     if (!query_data) query_data = {};
-    let sql = "select bds.* from ?? bds";
+    let sql = `SELECT bds.* FROM ?? bds `;
     let params = [];
     params.push(tables.buss_delivery_station);
     sql += `INNER JOIN ?? dr ON dr.id = bds.regionalism_id `;  // 区

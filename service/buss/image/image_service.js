@@ -13,6 +13,8 @@ const TYPE = {
     dir: 'd',
     file: 'f'
 };
+const PATH_ROOT = 1;
+const PATH_IMAGE = 2;
 
 function ImageService() {
 }
@@ -26,7 +28,7 @@ ImageService.prototype.addImage = (req, res, next) => {
     }
     let data = {
         type: TYPE.file,
-        parent_id: req.body.dir,
+        parent_id: req.body.dir || PATH_ROOT,
         name: req.body.name,
         size: req.body.size,
         url: req.body.url,
@@ -126,7 +128,7 @@ ImageService.prototype.getDirInfo = function (req, res, next) {
         return getDirInfoByParentId(req, res, next);
     }
     // 直接查询根目录，默认是2
-    req.query.parent_id = 2;
+    req.query.parent_id = PATH_IMAGE;
     return getDirInfoByParentId(req, res, next);
 }
 

@@ -7,8 +7,5 @@ module.exports = {
     },
     'url': {
         notEmpty: true
-    },
-    'dir': {
-        notEmpty: true
     }
 }

@@ -28,7 +28,7 @@ ImageService.prototype.addImage = (req, res, next) => {
     }
     let data = {
         type: TYPE.file,
-        parent_id: req.body.dir || PATH_ROOT,
+        parent_id: req.body.dir || PATH_IMAGE,
         name: req.body.name,
         size: req.body.size,
         url: req.body.url,

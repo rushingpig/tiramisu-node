@@ -101,4 +101,33 @@ ImageService.prototype.renameDir = (req, res, next) => {
     });
     systemUtils.wrapService(res, next, promise);
 }
+
+let getDirInfoByName = (req, res, next) => {
+    let promise = imageDao.getDirInfoByName(req.query.name).then(result => {
+        res.api(result);
+    });
+    systemUtils.wrapService(res, next, promise);
+}
+
+let getDirInfoByParentId = (req, res, next) => {
+    let promise = imageDao.getDirInfoByParentId(req.query.parent_id).then(result => {
+        res.api(result);
+    });
+    systemUtils.wrapService(res, next, promise);
+}
+
+ImageService.prototype.getDirInfo = function (req, res, next) {
+    // 名称模糊搜索
+    if (req.query.name) {
+        return getDirInfoByName(req, res, next);
+    }
+    // 根据父目录id查询
+    if (req.query.parent_id) {
+        return getDirInfoByParentId(req, res, next);
+    }
+    // 直接查询根目录，默认是2
+    req.query.parent_id = 2;
+    return getDirInfoByParentId(req, res, next);
+}
+
 module.exports = new ImageService();

@@ -6,6 +6,14 @@ var baseDao = require('../../base_dao'),
     config = require('../../../config');
 
 function ImageDao() {
+    this.baseColumns = [
+        'id',
+        'type',
+        'name',
+        'url',
+        'size',
+        'updated_time'
+    ];
     this.base_insert_sql = 'insert into ?? set ?';
     this.base_select_sql = 'select ?? from ?? where 1=1 and del_flag = ? ';
     this.base_update_sql = 'update ?? set ?';
@@ -102,6 +110,23 @@ ImageDao.prototype.renameDir = function(req, id, name) {
     };
     let sql = this.base_update_sql + ' where id = ?';
     let columns = [config.tables.buss_directory, systemUtils.assembleUpdateObj(req, params, true), id];
+    return baseDao.select(sql, columns);
+};
+/**
+ * get dir info by name
+ * 模糊匹配
+ */
+ImageDao.prototype.getDirInfoByName = function(name) {
+    let sql = this.base_select_sql + ` and name like '%${name}%'`;
+    let columns = [this.baseColumns, config.tables.buss_directory, del_flag.SHOW];
+    return baseDao.select(sql, columns);
+};
+/**
+ * get dir info by parent_id
+ */
+ImageDao.prototype.getDirInfoByParentId = function(parent_id) {
+    let sql = this.base_select_sql + ' and parent_id = ?';
+    let columns = [this.baseColumns, config.tables.buss_directory, del_flag.SHOW, parent_id];
     return baseDao.select(sql, columns);
 };
 module.exports = ImageDao;

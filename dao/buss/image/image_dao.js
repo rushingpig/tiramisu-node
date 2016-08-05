@@ -123,7 +123,7 @@ ImageDao.prototype.renameDir = function(req, id, name) {
  */
 ImageDao.prototype.getDirInfoByName = function(name) {
     let sql = this.base_select_sql + ` and name like '%${name}%'`;
-    let columns = [this.baseColumns, config.tables.buss_directory, del_flag.SHOW];
+    let columns = [config.tables.buss_directory, del_flag.SHOW];
     return baseDao.select(sql, columns);
 };
 /**

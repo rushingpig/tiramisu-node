@@ -7,11 +7,13 @@ module.exports = function(router){
 //*********************
 //******** POST *******
 //*********************
-    router.post('/image',imageService.addImage);
-    router.post('/image/dir',imageService.addDir);
+    router.post('/image', imageService.addImage);
+    router.post('/image/dir', imageService.addDir);
 //*********************
 //******** PUT ********
 //*********************
+    router.put('/image/delete', imageService.deleteDir);
+    router.put('/image/move', imageService.moveDir);
 //*********************
 //******** DELETE *****
 //*********************

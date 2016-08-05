@@ -69,4 +69,42 @@ ImageService.prototype.addDir = (req, res, next)=> {
     });
     systemUtils.wrapService(res, next, promise);
 };
+/**
+ * add new dir
+ * @param req
+ * @param res
+ * @param next
+ */
+ImageService.prototype.deleteDir = (req, res, next)=> {
+    req.checkBody(schema.deleteDir);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let promise = imageDao.deleteDir(req, req.body.ids).then(() => {
+        res.api();
+    });
+    systemUtils.wrapService(res, next, promise);
+};
+/**
+ * add new dir
+ * @param req
+ * @param res
+ * @param next
+ */
+ImageService.prototype.moveDir = (req, res, next)=> {
+    req.checkBody(schema.moveDir);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let ids = req.body.ids;
+    let id = req.body.id;
+    let promise = imageDao.moveDir(req, ids, id).then(() => {
+        res.api();
+    });
+    systemUtils.wrapService(res, next, promise);
+};
 module.exports = new ImageService();

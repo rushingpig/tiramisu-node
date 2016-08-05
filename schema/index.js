@@ -35,5 +35,7 @@ module.exports = {
   addProductSku: require('./buss/product/add_product_sku'),
   addCity: require('./sys/add_city'),
   addImage: require('./buss/image/add_image'),
-  addDir: require('./buss/image/add_dir')
+  addDir: require('./buss/image/add_dir'),
+  deleteDir: require('./buss/image/delete_dir'),
+  moveDir: require('./buss/image/move_dir')
 };

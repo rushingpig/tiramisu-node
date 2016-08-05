@@ -16,12 +16,7 @@ const TYPE = {
 
 function ImageService() {
 }
-/**
- * add new image
- * @param req
- * @param res
- * @param next
- */
+
 ImageService.prototype.addImage = (req, res, next) => {
     req.checkBody(schema.addImage);
     let errors = req.validationErrors();
@@ -29,30 +24,22 @@ ImageService.prototype.addImage = (req, res, next) => {
         res.api(res_obj.INVALID_PARAMS, errors);
         return;
     }
-    let image = {
-        url: req.body.url,
+    let data = {
+        type: TYPE.file,
+        parent_id: req.body.dir,
         name: req.body.name,
         size: req.body.size,
+        url: req.body.url,
     };
-    let promise = imageDao.insertImage(req, image).then(result => {
-        let dir = {
-            type: TYPE.file,
-            parent_id: req.body.dir,
-            img_id: result.insertId
-        };
-        return imageDao.insertDir(req, dir).then( () => {
-            res.api();
+    let promise = imageDao.insertDir(req, data).then(result => {
+        res.api({
+            id: result.insertId
         });
     });
     systemUtils.wrapService(res, next, promise);
 };
-/**
- * add new dir
- * @param req
- * @param res
- * @param next
- */
-ImageService.prototype.addDir = (req, res, next)=> {
+
+ImageService.prototype.addDir = (req, res, next) => {
     req.checkBody(schema.addDir);
     let errors = req.validationErrors();
     if (errors) {
@@ -64,18 +51,15 @@ ImageService.prototype.addDir = (req, res, next)=> {
         parent_id: req.body.parent_id,
         name: req.body.name
     };
-    let promise = imageDao.insertDir(req, dir).then(() => {
-        res.api();
+    let promise = imageDao.insertDir(req, dir).then(result => {
+        res.api({
+            id: result.insertId
+        });
     });
     systemUtils.wrapService(res, next, promise);
 };
-/**
- * add new dir
- * @param req
- * @param res
- * @param next
- */
-ImageService.prototype.deleteDir = (req, res, next)=> {
+
+ImageService.prototype.deleteDir = (req, res, next) => {
     req.checkBody(schema.deleteDir);
     let errors = req.validationErrors();
     if (errors) {
@@ -87,13 +71,8 @@ ImageService.prototype.deleteDir = (req, res, next)=> {
     });
     systemUtils.wrapService(res, next, promise);
 };
-/**
- * add new dir
- * @param req
- * @param res
- * @param next
- */
-ImageService.prototype.moveDir = (req, res, next)=> {
+
+ImageService.prototype.moveDir = (req, res, next) => {
     req.checkBody(schema.moveDir);
     let errors = req.validationErrors();
     if (errors) {
@@ -107,4 +86,19 @@ ImageService.prototype.moveDir = (req, res, next)=> {
     });
     systemUtils.wrapService(res, next, promise);
 };
+
+ImageService.prototype.renameDir = (req, res, next) => {
+    req.checkBody(schema.renameDir);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let id = req.body.id;
+    let name = req.body.name;
+    let promise = imageDao.renameDir(req, id, name).then(() => {
+        res.api();
+    });
+    systemUtils.wrapService(res, next, promise);
+}
 module.exports = new ImageService();

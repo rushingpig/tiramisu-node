@@ -11,13 +11,6 @@ function ImageDao() {
     this.base_update_sql = 'update ?? set ?';
 }
 /**
- * insert new image
- */
-ImageDao.prototype.insertImage = function(req, params) {
-    let columns = [config.tables.buss_image, systemUtils.assembleInsertObj(req, params, true)];
-    return baseDao.select(this.base_insert_sql, columns);
-};
-/**
  * insert new dir 
  */
 ImageDao.prototype.insertDir = function(req, params) {
@@ -100,5 +93,15 @@ ImageDao.prototype.moveDir = function(req, ids, targetId) {
             });;
     });
 };
-
+/**
+ * rename dir
+ */
+ImageDao.prototype.renameDir = function(req, id, name) {
+    let params = {
+        name: name
+    };
+    let sql = this.base_update_sql + ' where id = ?';
+    let columns = [config.tables.buss_directory, systemUtils.assembleUpdateObj(req, params, true), id];
+    return baseDao.select(sql, columns);
+};
 module.exports = ImageDao;

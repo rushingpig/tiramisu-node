@@ -14,6 +14,7 @@ module.exports = function(router){
 //*********************
     router.put('/image/delete', imageService.deleteDir);
     router.put('/image/move', imageService.moveDir);
+    router.put('/image/name', imageService.renameDir);
 //*********************
 //******** DELETE *****
 //*********************

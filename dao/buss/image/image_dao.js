@@ -6,16 +6,16 @@ var baseDao = require('../../base_dao'),
     config = require('../../../config');
 
 function ImageDao() {
-    this.baseColumns = [
+    let baseColumns = [
         'id',
         'type',
         'name',
         'url',
         'size',
-        'updated_time'
+        '(case when updated_time IS NULL then created_time else updated_time end) as updated_time'
     ];
     this.base_insert_sql = 'insert into ?? set ?';
-    this.base_select_sql = 'select ?? from ?? where 1=1 and del_flag = ? ';
+    this.base_select_sql = 'select ' + baseColumns.join(',') + ' from ?? where 1=1 and del_flag = ? ';
     this.base_update_sql = 'update ?? set ?';
 }
 /**
@@ -126,7 +126,7 @@ ImageDao.prototype.getDirInfoByName = function(name) {
  */
 ImageDao.prototype.getDirInfoByParentId = function(parent_id) {
     let sql = this.base_select_sql + ' and parent_id = ?';
-    let columns = [this.baseColumns, config.tables.buss_directory, del_flag.SHOW, parent_id];
+    let columns = [config.tables.buss_directory, del_flag.SHOW, parent_id];
     return baseDao.select(sql, columns);
 };
 module.exports = ImageDao;

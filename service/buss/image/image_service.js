@@ -50,7 +50,7 @@ ImageService.prototype.addDir = (req, res, next) => {
     }
     let dir = {
         type: TYPE.dir,
-        parent_id: req.body.parent_id,
+        parent_id: req.body.parent_id || PATH_IMAGE,
         name: req.body.name
     };
     let promise = imageDao.insertDir(req, dir).then(result => {

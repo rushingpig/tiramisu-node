@@ -39,6 +39,12 @@ function main(state = initail_state, action){
 			var data = clone(action.data);
 			data.order_time = data.order_time / 60;
 			var {online_time} = data;
+			if( !online_time){
+				var iNow = new Date();
+				var hour = iNow.getHours();
+				var min = iNow.getMinutes();
+				online_time = getDate() + ' ' + hour + ':' + min;
+			}
 			var time1 = online_time.split(' ');
 			var time2 = time1[1].split(':');
 			var online_time_date = getDate(online_time)

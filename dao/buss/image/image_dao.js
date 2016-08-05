@@ -5,6 +5,11 @@ var baseDao = require('../../base_dao'),
     systemUtils = require('../../../common/SystemUtils'),
     config = require('../../../config');
 
+const TYPE = {
+    dir: 'd',
+    file: 'f'
+};
+
 function ImageDao() {
     let baseColumns = [
         'id',
@@ -127,6 +132,14 @@ ImageDao.prototype.getDirInfoByName = function(name) {
 ImageDao.prototype.getDirInfoByParentId = function(parent_id) {
     let sql = this.base_select_sql + ' and parent_id = ?';
     let columns = [config.tables.buss_directory, del_flag.SHOW, parent_id];
+    return baseDao.select(sql, columns);
+};
+/**
+ * get total dir
+ */
+ImageDao.prototype.getAllDir = function() {
+    let sql = 'select id,parent_id,name from ?? where del_flag = ? and type = ?';
+    let columns = [config.tables.buss_directory, del_flag.SHOW, TYPE.dir];
     return baseDao.select(sql, columns);
 };
 module.exports = ImageDao;

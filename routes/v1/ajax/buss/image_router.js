@@ -5,6 +5,7 @@ module.exports = function(router){
 //******** GET ********
 //*********************
     router.get('/image', imageService.getDirInfo);    //文件列表搜索
+    router.get('/image/dir', imageService.getAllDir);    //获取完整目录
 //*********************
 //******** POST *******
 //*********************

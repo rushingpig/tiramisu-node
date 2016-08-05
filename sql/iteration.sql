@@ -643,6 +643,3 @@ CREATE TABLE `buss_directory` (
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '删除标志',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统图片表';
-
-INSERT INTO `buss_directory` (`id`,`type`,`parent_id`,`name`,`created_by`,`created_time`,`updated_by`,`updated_time`,`del_flag`) VALUES (1,'d',0,'/',1,'2016-08-04 12:00:00',NULL,NULL,1);
-INSERT INTO `buss_directory` (`id`,`type`,`parent_id`,`name`,`created_by`,`created_time`,`updated_by`,`updated_time`,`del_flag`) VALUES (2,'d',1,'图片管理',1,'2016-08-04 12:00:00',NULL,NULL,1);

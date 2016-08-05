@@ -13,8 +13,7 @@ const TYPE = {
     dir: 'd',
     file: 'f'
 };
-const PATH_ROOT = 1;
-const PATH_IMAGE = 2;
+const PATH_ROOT = 0;
 
 function ImageService() {
 }
@@ -28,7 +27,7 @@ ImageService.prototype.addImage = (req, res, next) => {
     }
     let data = {
         type: TYPE.file,
-        parent_id: req.body.dir || PATH_IMAGE,
+        parent_id: req.body.dir || PATH_ROOT,
         name: req.body.name,
         size: req.body.size,
         url: req.body.url,
@@ -50,7 +49,7 @@ ImageService.prototype.addDir = (req, res, next) => {
     }
     let dir = {
         type: TYPE.dir,
-        parent_id: req.body.parent_id || PATH_IMAGE,
+        parent_id: req.body.parent_id || PATH_ROOT,
         name: req.body.name
     };
     let promise = imageDao.insertDir(req, dir).then(result => {
@@ -127,9 +126,16 @@ ImageService.prototype.getDirInfo = function (req, res, next) {
     if (req.query.parent_id) {
         return getDirInfoByParentId(req, res, next);
     }
-    // 直接查询根目录，默认是2
-    req.query.parent_id = PATH_IMAGE;
+    // 直接查询根目录
+    req.query.parent_id = PATH_ROOT;
     return getDirInfoByParentId(req, res, next);
+}
+
+ImageService.prototype.getAllDir = (req, res, next) => {
+    let promise = imageDao.getAllDir().then(result => {
+        res.api(result);
+    });
+    systemUtils.wrapService(res, next, promise);
 }
 
 module.exports = new ImageService();

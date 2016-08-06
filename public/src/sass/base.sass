@@ -78,6 +78,10 @@ a
   text-align: left !important
 .text-center
   text-align: center !important
+// .text-ellipsis
+//   white-space: nowrap
+//   overflow: hidden
+//   text-overflow: ellipsis
 .nowrap
   white-space: nowrap
 .gray
@@ -114,8 +118,8 @@ a
   background-color: $theme-colour-bg
 .relative
   position: relative !important
-.display-none
-  display: none
+.visibility-hidden
+  visibility: hidden
 .pointer
   cursor: pointer
 .fa-color-gray
@@ -125,6 +129,12 @@ a
 .underline-on-hover
   &:hover
     text-decoration: underline
+.no-userselect
+  user-select: none
+.hover-effect
+  opacity: 0.8
+  &:hover
+    opacity: 1
 /**************************/
 /********* 组件类 **********/
 /**************************/
@@ -315,7 +325,7 @@ hr.dotted
 
 tr:hover
   .show-on-parent-hover
-    display: block
+    visibility: visible
 
 .deleteable-row
   .del-btn

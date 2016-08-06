@@ -28,7 +28,7 @@ var config = {
   },
   qiniu: {
     js: [
-      '/plugins/plupload/full.min.js',
+      '/plugins/plupload/plupload.full.min.js',
       '/plugins/qiniu/qiniu.min.js'
     ]
   },

@@ -46,7 +46,7 @@ export default class TreeView extends React.Component {
       }, {
         id: 200,
         name: 'Test-2',
-        checked: true,
+        checked: false,
         children: null
       }]
     }

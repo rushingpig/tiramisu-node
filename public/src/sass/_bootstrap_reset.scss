@@ -348,3 +348,7 @@ h4, .h4 {
 .alert-danger, .alert-info, .alert-success, .alert-warning{
   border: 1px solid transparent;
 }
+
+.nav>li>a:focus, .nav>li>a:hover{
+  background-color: $theme-light-color
+}

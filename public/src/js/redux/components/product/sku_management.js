@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { Link } from 'react-router';
 
 import DateTimeRangePicker from 'react-bootstrap-datetimerange-picker';
 import MessageBox, { MessageBoxIcon, MessageBoxType } from 'common/message_box';
@@ -738,7 +739,7 @@ class Main extends Component {
 
   render() {
 
-    const { state, Action, citiesSelector, CitiesSelectorAction } = this.props;
+    const { state, Action, citiesSelector, CitiesSelectorAction, params: {productId} } = this.props;
 
     if (state.basicDataLoadStatus === 'pending') {
       return (
@@ -775,8 +776,13 @@ class Main extends Component {
         <TopHeader />
         <ul className="nav nav-tabs">
           <li className="active">
-            <Anchor>新建商品</Anchor>
+            {
+              state.addMode
+                ? <Anchor>新建商品</Anchor>
+                : <Anchor>编辑商品</Anchor>
+            }
           </li>
+          <li><Link to={`/pm/sku_manage/edit_website/${productId}`} >商品官网设置</Link></li>
         </ul>
         <div className="panel" style={tabContentBoxStyle}>
           <div className="panel-body">

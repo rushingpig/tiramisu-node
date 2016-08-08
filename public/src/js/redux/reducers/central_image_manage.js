@@ -9,6 +9,7 @@ var initial_state = {
   dir_id: undefined, //当前所在目录id
   domain: 'http://qn.blissmall.net/',
   list: [],
+  asc: true, //默认升序
   checked_list: [],
   loading: true,
   search_ing: false,
@@ -46,7 +47,14 @@ function main(state = initial_state, action){
         }
         n.isDir = n.type == 'd';
       })
+      //降序
+      if(!state.asc){
+        action.data = action.data.sort().reverse();
+      }
       return {...state, dir_id: action.dir_id, list: action.data, checked_list: [], loading: false, search_ing: false};
+    case Actions.TOGGLE_IMG_SORTING:
+      var asc = !state.asc;
+      return {...state, asc, list: [...state.list.reverse()]}
     case Actions.CHECK_ALL_IMG_ROW:
       state.list.forEach(n => {
         n.checked = action.checked;

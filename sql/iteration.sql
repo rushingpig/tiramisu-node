@@ -710,3 +710,71 @@ then
 end if;
 end if;
 end;
+
+# 产品详情表
+DROP TABLE IF EXISTS `buss_product_detail`;
+CREATE TABLE `buss_product_detail` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `product_id` int(10) DEFAULT NULL COMMENT '产品id',
+    `regionalism_id` int(10) NOT NULL COMMENT '区域id',
+    `list_img` varchar(255) NOT NULL COMMENT '列表页图片',
+    `list_copy` varchar(255) NOT NULL COMMENT '列表页文案',
+    `detail_top_copy` varchar(255) NOT NULL COMMENT '详情页顶部商品描述',
+    `detail_template_copy` varchar(255) NOT NULL COMMENT '详情页模板上方的包装文案',
+    `detail_template_copy_end` varchar(255) NOT NULL COMMENT '详情页模板上方的结束标题',
+    `detail_img_1` varchar(255) NOT NULL COMMENT '缩略展示图1',
+    `detail_img_2` varchar(255) NOT NULL COMMENT '缩略展示图2',
+    `detail_img_3` varchar(255) NOT NULL COMMENT '缩略展示图3',
+    `detail_img_4` varchar(255) NOT NULL COMMENT '缩略展示图4',
+    `created_by` int(11) NOT NULL COMMENT '创建人id',
+    `created_time` datetime NOT NULL COMMENT '创建时间',
+    `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+    `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+    `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='产品详情表';
+
+# 产品详情说明表
+DROP TABLE IF EXISTS `buss_product_detail_spec`;
+CREATE TABLE `buss_product_detail_spec` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `detail_id` int(10) DEFAULT NULL COMMENT '产品详情id',
+    `key` varchar(255) NOT NULL COMMENT '说明key',
+    `value` varchar(255) NOT NULL COMMENT '说明value',
+    `created_by` int(11) NOT NULL COMMENT '创建人id',
+    `created_time` datetime NOT NULL COMMENT '创建时间',
+    `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+    `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+    `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='产品详情说明表';
+
+# 详情页模板表
+DROP TABLE IF EXISTS `buss_product_template`;
+CREATE TABLE `buss_product_template` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `name` varchar(255) NOT NULL COMMENT '模板名称',
+    `created_by` int(11) NOT NULL COMMENT '创建人id',
+    `created_time` datetime NOT NULL COMMENT '创建时间',
+    `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+    `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+    `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='详情页模板表';
+INSERT INTO `tiramisu`.`buss_product_template` (`name`,`created_by`,`created_time`) VALUES ('默认模板','1','2016-08-08 12:00:00');
+
+# 详情页模板数据表
+DROP TABLE IF EXISTS `buss_product_template_data`;
+CREATE TABLE `buss_product_template_data` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `detail_id` int(10) DEFAULT NULL COMMENT '产品详情id',
+    `template_id` int(10) NOT NULL COMMENT '模板id',
+    `position_id` int(10) NOT NULL COMMENT '位置id',
+    `value` varchar(255) NOT NULL COMMENT '值',
+    `created_by` int(11) NOT NULL COMMENT '创建人id',
+    `created_time` datetime NOT NULL COMMENT '创建时间',
+    `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+    `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+    `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='详情页模板数据表';

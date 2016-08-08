@@ -248,9 +248,9 @@ class ManageAddForm extends Component {
               <div className="form-group form-inline">
                 <label>{'　团购密码：'}</label>
                 <input {...coupon} className={`form-control input-xs ${coupon.error}`} type="text" />{' '}
-                <button onClick={this.checkGroupbuyPsd.bind(this)} data-submitting={groupbuy_check_ing} disabled={groupbuy_check_ing} className="btn btn-default btn-xs">验劵</button>
+                {/*(注释掉的验券服务)<button onClick={this.checkGroupbuyPsd.bind(this)} data-submitting={groupbuy_check_ing} disabled={groupbuy_check_ing} className="btn btn-default btn-xs">验劵</button>
                 {' '}
-                <span className={'fadeIn animated ' + (groupbuy_success ? 'text-success' : 'text-danger')}>{groupbuy_msg}</span>
+                <span className={'fadeIn animated ' + (groupbuy_success ? 'text-success' : 'text-danger')}>{groupbuy_msg}</span>*/}
               </div>
             )
           : null
@@ -293,7 +293,7 @@ class ManageAddForm extends Component {
             ]
           : <button 
                 onClick={handleSubmit(this._check.bind(this, this.handleCreateOrder))} 
-                disabled={save_ing} 
+                disabled={save_ing || save_success} 
                 data-submitting={save_ing} 
                 className="btn btn-theme btn-xs">生成新订单</button>
         }
@@ -344,12 +344,12 @@ class ManageAddForm extends Component {
           form_data.recipient_address = this.findSelectedOptionText('shop');
           form_data.recipient_landmark = '';
         }
-        //团购密码验证
-        if( isSrc(SRC.group_site, form_data.src_id) ){
-          if( !this.state.groupbuy_checked ){
-            Noty('warning', '请确定团购密码已验证通过'); return;
-          }
-        }
+        //团购密码验证(注释掉的验券服务)
+        // if( isSrc(SRC.group_site, form_data.src_id) ){
+        //   if( !this.state.groupbuy_checked ){
+        //     Noty('warning', '请确定团购密码已验证通过'); return;
+        //   }
+        // }
 
         callback.call(this, form_data);
       }else{
@@ -373,16 +373,21 @@ class ManageAddForm extends Component {
     return $(findDOMNode(this.refs[_refs])).find('option:selected').html();
   }
   handleCreateOrder(form_data){
-    this.props.actions.createOrder(form_data)
-      .done(function(){
-        Noty('success', '保存成功');
-        this.props.actions.resetOrderStore(); //重置order_manage状态
-        this.props.actions.destroyForm('order_manage_filter'); //重置order_manage 过滤条件
-        history.push('/om/index');
-      }.bind(this))
-      .fail(function(msg, code){
-        Noty('error', msg || '网络繁忙，请稍后再试');
-      });
+    //二次保险（防止重复提交）
+    if(!this._insurance_){
+      this._insurance_ = true;
+      this.props.actions.createOrder(form_data)
+        .done(function(){
+          this._insurance_ = undefined;
+          history.push('/om/index');
+          Noty('success', '保存成功');
+          this.props.actions.resetOrderStore(); //重置order_manage状态
+          this.props.actions.destroyForm('order_manage_filter'); //重置order_manage 过滤条件
+        }.bind(this))
+        .fail(function(msg, code){
+          Noty('error', msg || '网络繁忙，请稍后再试');
+        });
+    }
   }
   handleSaveOrder(form_data){
     this.props.actions.saveOrder(form_data)
@@ -398,12 +403,16 @@ class ManageAddForm extends Component {
     if(!form_data.delivery_id){
       Noty('warning', '请选择配送中心'); return;
     }
-    this.props.actions.submitOrder(form_data).done(function(){
-      history.push('/om/index');
-      Noty('success', '已成功提交！');
-    }).fail(function(msg){
-      Noty('error', msg || '网络繁忙，请稍后再试');
-    });
+    if(!this._insurance_){
+      this._insurance_ = true;
+      this.props.actions.submitOrder(form_data).done(() => {
+        this._insurance_ = undefined;
+        history.push('/om/index');
+        Noty('success', '已成功提交！');
+      }).fail(function(msg){
+        Noty('error', msg || '网络繁忙，请稍后再试');
+      });
+    }
   }
   componentDidMount(){
     var {getProvincesSignal, getOrderSrcs, getDeliveryStations, getPayModes} = this.props.actions;

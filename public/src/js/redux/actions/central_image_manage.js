@@ -180,11 +180,11 @@ export function selectDir(id){
   }
 }
 export const SUBMIT_NEW_DIR_IN_MODAL = 'SUBMIT_NEW_DIR_IN_MODAL';
-export function submitNewDirInModal(dir_info, e){
+export function submitNewDirInModal(parent_id, e){
   var name = e.target.value;
   return dispatch => {
     if(name){
-      return R.post(Url.create_img_dir.toString(), {name})
+      return R.post(Url.create_img_dir.toString(), {parent_id, name})
         .done( data => {
           dispatch({
             type: SUBMIT_NEW_DIR_IN_MODAL,

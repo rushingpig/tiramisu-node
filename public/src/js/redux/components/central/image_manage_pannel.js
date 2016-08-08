@@ -348,10 +348,10 @@ class Row extends Component {
       return 'fa-file-image-o';
     }else if(/((\.doc)|(\.docx))$/i.test(name)){
       return 'fa-file-word-0';
-    }else if(/\.xls$/i.test(name)){
+    }else if(/\.xlsx$/i.test(name)){
       return 'fa-file-excel-o';
     }else if(/\.txt$/i.test(name)){
-      return 'fa-text-o';
+      return 'fa-file-text-o';
     }else if(/((\.zip)|(\.rar))$/i.test(name)){
       return 'fa-file-archive-o';
     }else{
@@ -362,7 +362,7 @@ class Row extends Component {
     this.props.actions.checkImgRow(this.props.id, e.target.checked);
   }
   submitNewDir(e){
-    this.props.actions.submitNewDir({name: e.target.value.trim()});
+    this.props.actions.submitNewDir({name: e.target.value.trim(), parent_id: this.props.dirId});
   }
   rename(e){
     if(e.target.value.trim()){
@@ -413,6 +413,7 @@ class ImageManagePannel extends Component {
         showMoveModal={this.showMoveModal}
         actions={this.props}
         domain={domain}
+        dirId={dir_id}
       />
     );
     return (
@@ -559,7 +560,7 @@ class TreeNode extends React.Component {
           <div className="tree-folder-name no-userselect">
             {
               data.isNewDir
-                ? <input ref="input" onBlur={submitNewDirInModal.bind(this, data)} defaultValue={data.name} type="text"/>
+                ? <input ref="input" onBlur={submitNewDirInModal.bind(this, data.parent_id)} defaultValue={data.name} type="text"/>
                 : data.name
             }
           </div>

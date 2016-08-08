@@ -390,7 +390,7 @@ class ImageManagePannel extends Component {
   constructor(props){
     super(props);
     this.state = {
-      breadcrumb: [{id: undefined, name: '全部文件'}]
+      breadcrumb: [{id: undefined, name: '全部文件'}],
     };
     this.onBreadcrumbClicked = this.onBreadcrumbClicked.bind(this);
     this.enterDir = this.enterDir.bind(this);
@@ -401,7 +401,7 @@ class ImageManagePannel extends Component {
   }
   render(){
    //借用父组件的省份数据, 默认城市信息
-    var { dir_id, loading, search_ing, list, checked_list, search_ing, domain, view_img } = this.props.main;
+    var { dir_id, asc, loading, search_ing, list, checked_list, search_ing, domain, view_img } = this.props.main;
     var { breadcrumb } = this.state;
     var { enterDir, backToUpperDir, checkAllHandler } = this;
     var content = list.map( (n, i) => 
@@ -466,7 +466,7 @@ class ImageManagePannel extends Component {
                       }
                     </th>
                     <th>大小</th>
-                    <th className={`/*sorting desc*/`}>修改日期</th>
+                    <th className={'sorting ' + (asc ? 'asc' : 'desc')} onClick={this.props.toggleImgSorting}>修改日期</th>
                   </tr>
                 </thead>
                 <tbody>

@@ -52,6 +52,13 @@ export function checkAll(checked){
   }
 }
 
+export const TOGGLE_IMG_SORTING = 'TOGGLE_IMG_SORTING';
+export function toggleImgSorting(){
+  return {
+    type: TOGGLE_IMG_SORTING
+  }
+}
+
 export const CREATE_NEW_IMG_DIR = 'CREATE_NEW_IMG_DIR';
 export function createNewDir(){
   return {

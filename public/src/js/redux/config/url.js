@@ -168,6 +168,14 @@ const URL = (function() {
 
     //用户管理
     alter_psd: '/user/:username/password', //修改密码
+
+    //图片管理
+    images: '/image',
+    create_img_dir: '/image/dir',
+    delete_img: '/image/delete',
+    move_img: '/image/move',
+    rename_img: '/image/name',
+    all_img_dir: '/image/dir',
   };
 
   for (var a in url) {

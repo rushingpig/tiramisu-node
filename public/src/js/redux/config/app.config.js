@@ -1,7 +1,7 @@
 export default {
   root: '/',
   ajax: '/v1/a',
-  test_acl: false,  //是否开启权限控制 true 开始，false 禁用
+  test_acl: false,  //测试权限时请置为true
 
   REQUEST: {
     ING: 0,

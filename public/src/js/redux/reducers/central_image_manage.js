@@ -145,7 +145,8 @@ function move_modal(state = modal_state, action){
           d.children = [...(d.children || []), {
             id: +new Date(),
             name: '',
-            isNewDir: true
+            isNewDir: true,
+            parent_id: d.id
           }]
         }else if(d.children){
           d.children.forEach(f2)

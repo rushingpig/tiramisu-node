@@ -40,8 +40,6 @@ class TopHeader extends Component{
 			</div>
 		)
 	}
-
-
 }
 
 class FilterHeader extends Component{
@@ -56,6 +54,7 @@ class FilterHeader extends Component{
 			end_time:getDate(),
 			province_id:-1,
 			city_id:-1,
+			district_id: -1,
 			station_id:-1,
 			deliveryman_id:-1,
 			COD:1,
@@ -106,10 +105,10 @@ class FilterHeader extends Component{
 		var {
 			area,stations
 		} = this.props;
-		var {provinces , cities} = area ;
-		var { filter_deliveryman_results, search_ing, search_by_keywords_ing } = this.state;
-		var content = filter_deliveryman_results.map( n => {
-      		return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
+		var {provinces , cities, districts} = area ;
+		var { filter_deliveryman_results, search_ing, city_id, search_by_keywords_ing } = this.state;
+		var content = filter_deliveryman_results.map( (n, i) => {
+      return <option key={n.deliveryman_id + '' + i} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
 		})
 		return(
 			<div>
@@ -121,7 +120,6 @@ class FilterHeader extends Component{
 					</button>
 					:null
 				}
-				
 			</div>
 			<div className='panel search' >
 
@@ -143,13 +141,18 @@ class FilterHeader extends Component{
 					 {
 					 	V('DeliveryManSalaryManageCityFilter')
 					 	?[
-					 		<Select className='space-right' ref='province' name='province' options = {provinces} 
+					 		<Select className="space-right" key="province" ref='province' options = {provinces} 
 					 			onChange = {this.onProvinceChange.bind(this)}
 					 			default-text = '请选择省份'/>,
-					 		<Select className='space-right' ref='city' name='city' options = { cities} 
+					 		<Select className='space-right' key="city" ref='city' options = { cities } 
 					 			onChange= {this.onCityChange.bind(this)}
 					 			default-text = '请选择城市'/>,
-					 		<Select className='space-right' ref='station' name = 'station' options = { stations }
+					 		districts.length > 1 || (districts.length == 1 && districts[0].id != city_id)
+		            ? <Select className='space-right' key="district" ref='district' options={districts} 
+							 			onChange= {this.onDistrictChange.bind(this)}
+							 			default-text = '请选择区县'/>
+		            : null,
+					 		<Select className='space-right' key="station" ref='station' options = { stations }
 					 			default-text = '请选择配送站' />
 					 	]:null
 					 }
@@ -245,33 +248,45 @@ class FilterHeader extends Component{
 	onProvinceChange(e){
 	  var {value} = e.target;
 	  this.props.actions.resetCities();
-	  if(value != this.refs.province.props['default-value'])
+    this.props.resetStationListWhenScopeChange();
+	  if(value != this.refs.province.props['default-value']){
 	    var $city = $(findDOMNode(this.refs.city));
-		//this.props.actions.getCities(value);
-	    this.props.actions.getCitiesSignal(value, 'authority').done(() => {
-	      this.props.getStationListByScopeSignal({signal:'authority', province_id: value});
+	    this.props.actions.getCitiesSignal({ province_id: value, is_standard_area: 1  }).done(() => {
+	      this.props.getStationListByScopeSignal({ province_id: value });
 	      $city.trigger('focus'); //聚焦已使city_id的值更新
-
 	    });
+	  }
 	}
 	onCityChange(e){
 		this.setState({ _hasInitial: false});
 		var {value} = e.target;
-		/*this.props.actions.getCityStations(value);*/
-		var $deliveryman = $(findDOMNode(this.refs.deliveryman));
+		this.props.actions.resetDistricts();
+    this.props.resetStationListWhenScopeChange();
+    if(value != this.refs.province.props['default-value']){
+      this.props.actions.getDistrictsAndCity(value);
+    }
+
 		if(value == SELECT_DEFAULT_VALUE){
-			this.props.actions.getAllDeliveryman().done(() => {
-				$deliveryman.trigger('focus');
-			});
+			this.props.actions.getAllDeliveryman();
 		}else{
 			this.props.actions.getCityDeliveryman(value).done(() => {
-				//this.props.actions.getCityStations(value);
-				this.props.getStationListByScopeSignal({signal:'authority', city_id: value})
-				$deliveryman.trigger('focus');
-				
-			});			
+				this.props.getStationListByScopeSignal({ city_id: value, is_standard_area: 1 })
+			});
 		}
 
+	}
+	onDistrictChange(e){
+		var {value} = e.target;
+		var { city_id } = this.state;
+    this.props.resetStationListWhenScopeChange();
+    var data = { city_id, is_standard_area: 1 };
+		if(value != SELECT_DEFAULT_VALUE){
+			data.city_id = value;
+			data.is_standard_area = 0;
+		}
+		this.props.actions.getCityDeliveryman(city_id).done(() => {
+			this.props.getStationListByScopeSignal(data)
+		});
 	}
 	FilterDeliveyRecord(search_in_state){
 		this.setState({[search_in_state]:true});
@@ -295,8 +310,17 @@ class FilterHeader extends Component{
 		}
 		if(this.refs.city){
 			var city_id = parseInt($(findDOMNode(this.refs.city))[0].value);
-			if(city_id != this.refs.city.props['default-value'])
+			if(city_id != this.refs.city.props['default-value']){
 				filterdata.city_id = city_id;
+				filterdata.is_standard_area = 1;
+			}
+		}
+		if(this.refs.district){
+			var city_id = parseInt($(findDOMNode(this.refs.district))[0].value);
+			if(city_id != this.refs.district.props['default-value']){
+				filterdata.city_id = city_id;
+				delete filterdata.is_standard_area;
+			}
 		}
 		var deliveryman_id = this.refs.deliveryman.value;
 		if(deliveryman_id != 0){
@@ -320,9 +344,9 @@ class FilterHeader extends Component{
 	componentDidMount(){
 		setTimeout(() => {
 			LazyLoad('noty');
-			this.props.actions.getProvincesSignal('authority');
+			this.props.actions.getProvincesSignal();
 			this.props.actions.getAllDeliveryman();
-			this.props.getStationListByScopeSignal({signal:'authority'});
+			this.props.getStationListByScopeSignal();
 		}, 0);		
 	}
 }
@@ -392,7 +416,7 @@ var SalaryRow = React.createClass({
 						:
 						props.order_status == SIGN_STATUS_EXCEPTION ? 
 						[<span key='span_unsign'>未签收</span>,<br key='unsign_br'/>,<a href='javascript:;' onClick={this.showCredential} key='unSign_Credential'>[未签收凭证]</a>]
-						:<span>正常签收</span>
+						:<span key="normal_sign">正常签收</span>
 					}
 				</td>
 				<td>{props.delivery_count >= 2
@@ -427,8 +451,8 @@ var SalaryRow = React.createClass({
 					{
 						V('DeliveryManSalaryManageEdit')
 							?this.state.Edit_ing
-								?[<a href='javascript:;' onClick = {this.onCancel}>[取消]</a>,<br/>]
-								:[<a href='javascript:;' onClick = {this.onEdit}>[编辑]</a>,<br/>]
+								?[<a key="a1" href='javascript:;' onClick = {this.onCancel}>[取消]</a>,<br key="br1"/>]
+								:[<a key="a2" href='javascript:;' onClick = {this.onEdit}>[编辑]</a>,<br key="br2" />]
 							:null
 					}
 					
@@ -543,7 +567,7 @@ class DeliveryManSalaryManagePannel extends Component{
 		var { viewCredentialModal ,viewOperationRecordModal} = this;
 		var {provinces, cities } = area;
 		var content = deliveryRecord.map((n,i) => {
-			return <SalaryRow key={n.order_id}
+			return <SalaryRow key={n.order_id + '' + i}
 						{...{...n, ...this.props, viewCredentialModal, viewOperationRecordModal}} />;
 		});
 		return (
@@ -551,7 +575,8 @@ class DeliveryManSalaryManagePannel extends Component{
 					{/*<TopHeader {...{exportExcel}}/>*/}
 					<FilterHeader  {...{area,deliveryman,stations: stations.station_list, page_size: this.state.page_size}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, 
 											...stationSalaryActions, exportExcel, 
-											resetStationListWhenScopeChange},dispatch) }}
+											},dispatch) }}
+									resetStationListWhenScopeChange = { resetStationListWhenScopeChange }
 									getStationListByScopeSignal = { getStationListByScopeSignal }/>
 					<div className='panel' >
 						<header className="panel-heading">工资信息列表</header>

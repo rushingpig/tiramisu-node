@@ -21,6 +21,7 @@ import RadioGroup from 'common/radio_group';
 import SearchInput from 'common/search_input';
 import RecipientInfo from 'common/recipient_info';
 import ToolTip from 'common/tooltip';
+import AddressSelector from 'common/address_selector';
 
 import { order_status, DELIVERY_MAP, YES_OR_NO ,ACCESSORY_CATE_ID, pay_status} from 'config/app.config';
 import history from 'history_instance';
@@ -72,7 +73,8 @@ class FilterHeader extends Component {
       filter_deliveryman_results: [],
       selected_deliveryman_id:0,
       all_print_status: YES_OR_NO,
-    }
+    };
+    this.AddressSelectorHook = this.AddressSelectorHook.bind(this);
   }
   componentWillReceiveProps(nextProps){
     var { deliveryman } = nextProps;
@@ -121,9 +123,11 @@ class FilterHeader extends Component {
         delivery_id,
         province_id,
         city_id,
+        district_id,
       },
       provinces,
       cities,
+      districts,
       stations: { station_list },
       all_order_status,
       all_pay_modes,
@@ -145,10 +149,10 @@ class FilterHeader extends Component {
             <Select {...status} options={all_order_status} default-text="选择订单状态" className="space-right"/>
             {
               V( 'DeliveryManageDistributeAddressFilter' )
-              ? [
-                  <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" key="province" default-text="选择省份" className="space-right"/>,
-                  <Select {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>
-                ]
+              ? <AddressSelector
+                  {...{ province_id, city_id, district_id, provinces, cities, districts, actions: this.props,
+                   AddressSelectorHook: this.AddressSelectorHook, form: 'order_distribute_filter' }}
+                />
               : null
             }
             {
@@ -188,12 +192,16 @@ class FilterHeader extends Component {
   componentDidMount(){
     setTimeout(function(){
       var { getProvincesSignal, getPayModes, getAllDeliveryman, getStationListByScopeSignal } = this.props;
-      getProvincesSignal('authority');
+      getProvincesSignal();
       getPayModes();
       getAllDeliveryman();
-      getStationListByScopeSignal({signal: 'authority'});
+      getStationListByScopeSignal();
       LazyLoad('noty');
     }.bind(this),0)
+  }
+  AddressSelectorHook(e, data){
+    this.props.resetStationListWhenScopeChange('order_distribute_filter');
+    this.props.getStationListByScopeSignal({ ...data });
   }
   filterHandler(e){
     var { value } = e.target;
@@ -216,29 +224,6 @@ class FilterHeader extends Component {
   onSelectDeliveryman(e){
     this.setState({ selected_deliveryman_id: e.target.value});
   } 
-  onProvinceChange(callback, e){
-    var {value} = e.target;
-    this.props.resetCities();
-    if(value != this.refs.province.props['default-value']){
-      var $city = $(findDOMNode(this.refs.city));
-      this.props.getCitiesSignal(value, 'authority').done(() => {
-        $city.trigger('focus'); //聚焦已使city_id的值更新
-      });
-      this.props.getStationListByScopeSignal({ province_id: value, signal:'authority' });
-    }else{
-      this.props.resetStationListWhenScopeChange();
-    }
-    callback(e);
-  }
-  onCityChange(callback, e){
-    var {value} = e.target;
-    if(value != this.refs.city.props['default-value']){ 
-      this.props.getStationListByScopeSignal({ city_id: value , signal: 'authority'});
-    }else{
-      this.props.resetStationListWhenScopeChange();
-    }
-    callback(e);
-  }
   search(search_in_state){
     this.setState({[search_in_state]: true});
     this.props.triggerFormUpdate('order_distribute_filter', 'order_ids', ''); //清空扫描列表
@@ -272,6 +257,7 @@ FilterHeader = reduxForm({
     'delivery_id',
     'province_id',
     'city_id',
+    'district_id',
 
     'order_ids' //扫描结果
   ]

@@ -37,6 +37,7 @@ const URL = (function() {
     provinces:                '/provinces',
     cities:                   '/province/:provinceId/cities',
     districts:                '/city/:cityId/districts',
+    districts_and_city:       '/city/:cityId/cities',
     pay_modes:                '/pay/modes',
     order_sign:               '/order/:orderId/signin',
     order_unsign:             '/order/:orderId/unsignin',

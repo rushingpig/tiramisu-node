@@ -12,6 +12,7 @@ import Alert from 'common/alert';
 import LineRouter from 'common/line_router';
 import { tableLoader } from 'common/loading';
 import showMessageBox from 'common/message_box';
+import AddressSelector from 'common/address_selector';
 import history from 'history_instance';
 
 import Autocomplete from './autocomplete';
@@ -67,7 +68,9 @@ class FilterHeader extends Component {
     this.state = {
       search_ing :false,
       station_name: '',
-    }
+      // address_data: {},
+    };
+    // this.AddressSelectorHook = this.AddressSelectorHook.bind(this);
   }
   render(){
     var {
@@ -76,10 +79,12 @@ class FilterHeader extends Component {
         // name,
         province_id,
         city_id,
+        district_id,
       },
       area: {
         provinces,
         cities,
+        districts,
       },
       stations: {
         name_list,
@@ -89,10 +94,12 @@ class FilterHeader extends Component {
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <Autocomplete value={this.state.station_name} ref="autocomplete" placeholder={'请输入配送站名称'} onChange={this.stationInputHandler.bind(this)} list={name_list} className='pull-left'/>
-          <Select {...province_id} options={provinces} default-text="选择省份" onChange={this.onProvinceChange.bind(this, province_id.onChange)} ref="province" className={`space-left space-right ${city_id.error}`}/>
-          <Select {...city_id} options={cities} default-text="选择城市" ref="city" className={`space-right ${city_id.error}`}/>
-          <button disabled={this.state.search_ing} onClick={handleSubmit(this.search)} className="btn btn-theme btn-xs">
+          <Autocomplete value={this.state.station_name} ref="autocomplete" placeholder={'请输入配送站名称'} onChange={this.stationInputHandler.bind(this)} list={name_list} className='pull-left space-right'/>
+          <AddressSelector
+            {...{ province_id, city_id, district_id, provinces, cities, districts, actions: this.props,
+             AddressSelectorHook: this.AddressSelectorHook, form: 'station_scope_manage_filter' }}
+          />
+          <button disabled={this.state.search_ing} data-submitting={this.state.search_ing} onClick={handleSubmit(this.search)} className="btn btn-theme btn-xs">
             <i className="fa fa-search" style={{'padding': '0 5px'}}></i>
             查询
           </button>
@@ -101,17 +108,11 @@ class FilterHeader extends Component {
     )
   }
   componentDidMount(){
-    var { getProvincesSignal, getCitiesSignal, getDistricts, getAllStationsName, getStationList} = this.props;
-    getProvincesSignal();
-    var {params ,getStationListById} = this.props;
+    var { getAllStationsName, getStationListByScopeSignal, params ,getStationListById } = this.props;
     if(params && params.id){
       getStationListById(params.id);
-      getCitiesSignal(this.props.fields.province_id.initialValue,'authority');
-      getDistricts(this.props.fields.city_id.initialValue);
     }else{
-      getStationList({isPage: false}, 'station_scope_manage_filter');
-      getCitiesSignal(ADDRESS.GUANG_ZHOU, 'authority');
-      getDistricts(ADDRESS.SHEN_ZHENG);
+      this.search();
     }
     getAllStationsName();
     LazyLoad('noty');
@@ -119,28 +120,32 @@ class FilterHeader extends Component {
   stationInputHandler(station_name){
     this.setState({ station_name })
   }
-  onProvinceChange(callback, e){
-    var {value} = e.target;
-    this.props.resetCities();
-    if(value != this.refs.province.props['default-value'])
-      var $city = $(findDOMNode(this.refs.city));
-      this.props.getCitiesSignal(value, 'authority').done(() => {
-        $city.trigger('focus'); //聚焦已使city_id的值更新
-      });
-    callback(e);
-  }
+  // AddressSelectorHook(e, data){
+  //   this.setState({ address_data: data });
+  // }
   search(){
     setTimeout(() => {
-      var { errors } = this.props;
+      var { station_name } = this.state;
+      var { errors, fields: {province_id, city_id, district_id} } = this.props;
       if(Object.keys(errors).length){
         Noty('warning', '请选择城市');
         return;
       }
       this.setState({search_ing: true});
-      this.props.getStationList(
-        {isPage: false, station_name: this.state.station_name || undefined},
-        'station_scope_manage_filter'
-      ).always(()=>{
+      var data = {
+        isPage: false,
+        station_name: station_name || undefined,
+        province_id: province_id.value == SELECT_DEFAULT_VALUE ? undefined : province_id.value,
+        city_id: city_id.value == SELECT_DEFAULT_VALUE ? undefined : city_id.value,
+        is_standard_area: 1
+      };
+      if(district_id.value && district_id.value != SELECT_DEFAULT_VALUE){
+        data.city_id = district_id.value;
+        // delete data.is_standard_area; 禁止用删除
+        data.is_standard_area = 0;
+      }
+
+      this.props.getStationListByScopeSignal(data).always(()=>{
         this.setState({search_ing: false});
       });
     }, 0);
@@ -150,9 +155,9 @@ class FilterHeader extends Component {
 FilterHeader = reduxForm({
   form: 'station_scope_manage_filter',
   fields: [
-    'name',
     'province_id',
     'city_id',
+    'district_id'
   ],
   //注意这里的初始化，移到了 FilterHeader 的props上
   // initialValues: {

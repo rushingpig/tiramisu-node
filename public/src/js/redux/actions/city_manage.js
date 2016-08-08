@@ -46,8 +46,8 @@ export function getAccessibleCityList(data){
 }
 
 export const GOT_PROVINCES_SIGNAL = 'GOT_PROVINCES_SIGNAL';
-export function getProvincesSignal(signal){
-  return GET(Url.provinces.toString(),{signal:signal}, GOT_PROVINCES_SIGNAL);
+export function getProvincesSignal(signal = 'authority'){
+  return GET(Url.provinces.toString(),{signal}, GOT_PROVINCES_SIGNAL);
 }
 
 export const GOT_REGIONALISM_LETTER = 'GOT_REGIONALISM_LETTER';

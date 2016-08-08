@@ -251,7 +251,6 @@ ProductDao.prototype.getProductDetailByParams = function (req, data) {
     let columns = [
         'product.id as spu',
         'product.name as name',
-        'product.detail_page as detail_page',
         'pic.pic_url as pic_url',
         'primary_cate.name as primary_cate_name',
         'secondary_cate.name as secondary_cate_name',

@@ -112,8 +112,7 @@ ADD COLUMN `isAddition` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '是否为附加
 
 ALTER TABLE `tiramisu`.`buss_product` 
 DROP COLUMN `original_price`,
-ADD COLUMN `detail_page` varchar(255) NULL COMMENT '商品网站详情页' AFTER `category_id`,
-ADD COLUMN `created_by` INT(255) NULL DEFAULT NULL COMMENT '创建人' AFTER `detail_page`,
+ADD COLUMN `created_by` INT(255) NULL DEFAULT NULL COMMENT '创建人' AFTER `category_id`,
 ADD COLUMN `created_time` DATETIME NULL DEFAULT NULL AFTER `created_by`,
 ADD COLUMN `updated_by` INT(255) NULL DEFAULT NULL COMMENT '更新人' AFTER `created_time`,
 ADD COLUMN `updated_time` DATETIME NULL DEFAULT NULL AFTER `updated_by`,

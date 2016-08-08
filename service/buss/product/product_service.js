@@ -232,7 +232,6 @@ ProductService.prototype.getProductDetails = (req, res, next)=> {
             return {
               spu: result.spu,
               name: result.name,
-              detail_page: result.detail_page,
               pic_url: result.pic_url,
               primary_cate_name: result.primary_cate_name,
               secondary_cate_name: result.secondary_cate_name,

@@ -61,7 +61,10 @@ function main(state = initial_state, action){
       })
       return {...state, checked_list: action.checked ? state.list.map(n => n.id) : []}
     case Actions.DELETE_IMG:
-      return {...state, list: [...state.list.filter( n => action.data.some(m => m != n.id) )]};
+      return {...state, 
+        list: [...state.list.filter( n => !action.data.some(m => m == n.id) )],
+        checked_list: [...state.checked_list.filter( n => action.data.some(m => m == n.id) )],
+      };
 
     //Row
     case Actions.CHECK_IMG_ROW:

@@ -516,13 +516,11 @@ class ImageManagePannel extends Component {
   patchDelete(){
     var { main: {checked_list, dir_id}, deleteImg } = this.props;
     if(checked_list.length){
-      this.deleteImg(checked_list).done( () => {
-        this.props.getImageFileList({parent_id: dir_id});
-      });
+      this.deleteImg(checked_list);
     }
   }
   deleteImg(list){
-    Confirm('确认删除吗？删除后将不可恢复请注意！').done( () => {
+    return Confirm('确认删除吗？删除后将不可恢复请注意！').done( () => {
       this.props.deleteImg(list).fail( () => Noty('error', '删除失败，请重试！'));
     })
   }

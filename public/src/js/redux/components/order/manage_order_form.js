@@ -248,9 +248,9 @@ class ManageAddForm extends Component {
               <div className="form-group form-inline">
                 <label>{'　团购密码：'}</label>
                 <input {...coupon} className={`form-control input-xs ${coupon.error}`} type="text" />{' '}
-                <button onClick={this.checkGroupbuyPsd.bind(this)} data-submitting={groupbuy_check_ing} disabled={groupbuy_check_ing} className="btn btn-default btn-xs">验劵</button>
+                {/*(注释掉的验券服务)<button onClick={this.checkGroupbuyPsd.bind(this)} data-submitting={groupbuy_check_ing} disabled={groupbuy_check_ing} className="btn btn-default btn-xs">验劵</button>
                 {' '}
-                <span className={'fadeIn animated ' + (groupbuy_success ? 'text-success' : 'text-danger')}>{groupbuy_msg}</span>
+                <span className={'fadeIn animated ' + (groupbuy_success ? 'text-success' : 'text-danger')}>{groupbuy_msg}</span>*/}
               </div>
             )
           : null
@@ -344,12 +344,12 @@ class ManageAddForm extends Component {
           form_data.recipient_address = this.findSelectedOptionText('shop');
           form_data.recipient_landmark = '';
         }
-        //团购密码验证
-        if( isSrc(SRC.group_site, form_data.src_id) ){
-          if( !this.state.groupbuy_checked ){
-            Noty('warning', '请确定团购密码已验证通过'); return;
-          }
-        }
+        //团购密码验证(注释掉的验券服务)
+        // if( isSrc(SRC.group_site, form_data.src_id) ){
+        //   if( !this.state.groupbuy_checked ){
+        //     Noty('warning', '请确定团购密码已验证通过'); return;
+        //   }
+        // }
 
         callback.call(this, form_data);
       }else{

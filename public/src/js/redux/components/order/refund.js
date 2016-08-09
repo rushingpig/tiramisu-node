@@ -252,7 +252,8 @@ var RefundRow = React.createClass({
 			this.props.activeOrder(this.props.order_id);
 	},
 	viewOrderOperationRecord: function(){
-		this.props.viewOperationRecordModal(this.props);
+		var data = {refund_id: this.props.id, owner_name: this.props.owner_name, owner_mobile: this.props.owner_mobile, order_id: this.props.order_id}
+		this.props.viewOperationRecordModal(data);
 	},
 	viewRefundModal: function(e){
 		this.props.getRefundApplyDetail(this.props.id);
@@ -260,10 +261,10 @@ var RefundRow = React.createClass({
 	},
 	viewRefundCredential: function(){
 		this.props.handleRefund(this.props.id, 'COMPLETED');
-		this.props.viewRefundCredential();
+		this.props.viewRefundCredential(this.props.id);
 	},
 	viewRemarkModal: function(){
-		this.props.viewRemarkModal();
+		this.props.viewRemarkModal(this.props.id, this.props.remarks);
 	},
 	viewBindOrderRecord(e){
 	  this.props.viewBindOrderRecord(this.props);
@@ -317,11 +318,11 @@ class ManagePannel extends Component{
 	render(){
 		var { RefundManage, getOrderOptRecord, resetOrderOptRecord, refund_data , bindOrderRecord, area,
 			 getProvincesSignal, getCitiesSignal, getRefundList, getRefundReasons, getRefundApplyDetail,
-			 editRefundChangeStatus, refundEdit, getBindOrders, resetBindOrders, addRemark  } = this.props;
+			 editRefundChangeStatus, refundEdit, getBindOrders, resetBindOrders, addRemark, refundComplete_CS  } = this.props;
 		var { list, total, loading, refresh, page_no, check_order_info, active_order_id, operationRecord, all_refund_status, all_refund_way, all_refund_reasons } = RefundManage;
 		var { viewOperationRecordModal, viewRefundModal, viewRefundCredential, viewRemarkModal, viewBindOrderRecord } = this;
 		var content = list.map((n) => {
-			return <RefundRow  key={n.order_id} {...{...n, ...this.props, viewOperationRecordModal, viewRefundModal,
+			return <RefundRow  key={n.id} {...{...n, ...this.props, viewOperationRecordModal, viewRefundModal,
 					viewRefundCredential, viewRemarkModal, getRefundApplyDetail, viewBindOrderRecord }} />
 		})
 		return (
@@ -391,7 +392,7 @@ class ManagePannel extends Component{
         			 editRefundChangeStatus = {editRefundChangeStatus}
         			 refundEdit = {refundEdit}
         			 />
-        		<RefundCredentials ref='viewRefundCredential' editable = {true} editRefundChangeStatus = {editRefundChangeStatus} />
+        		<RefundCredentials ref='viewRefundCredential' editable = {true} editRefundChangeStatus = {editRefundChangeStatus} refundComplete_CS = {refundComplete_CS}/>
         		<RemarkModal ref='viewRemarkModal' addRemark = {addRemark} />
         		<BindOrderRecordModal ref='BindOrderRecordModal' {...{getBindOrders, resetBindOrders, ...bindOrderRecord}}/>				
 			</div>			
@@ -414,11 +415,11 @@ class ManagePannel extends Component{
 	viewRefundModal(){
 		this.refs.RefundModal.show();
 	}
-	viewRefundCredential(){
-		this.refs.viewRefundCredential.show();
+	viewRefundCredential(id){
+		this.refs.viewRefundCredential.show(id);
 	}
-	viewRemarkModal(){
-		this.refs.viewRemarkModal.show();
+	viewRemarkModal(remarks){
+		this.refs.viewRemarkModal.show(remarks);
 	}
 	viewBindOrderRecord(order){
 	  this.refs.BindOrderRecordModal.show(order);
@@ -464,28 +465,29 @@ class RefundCredentials extends Component{
 		super(props);
 		this.state = {
 			pay_id: '',
-			merchant_id: '',			
+			merchant_id: '',
+			id: '',			
 		}
 	}
 	render(){
 		var { pay_id, merchant_id } = this.state;
 		return(
-			<StdModal ref='modal' title='客服退款凭证'>
+			<StdModal ref='modal' title='客服退款凭证' onConfirm = {this.submitHandler.bind(this)}>
 				<div>
 					<div className='form-group form-inline'>
 						<label>{'支付宝转账交易订单号：'}</label>
-						<input value = {pay_id} className='form-control input-xs' type='text' style={{width: 300}}/>
+						<input onChange = {this.onTradeIdChange.bind(this)} value = {pay_id} className='form-control input-xs' type='text' style={{width: 300}}/>
 					</div>
 					<div className = 'form-group form-inline'>
 						<label>{'　　　　　商户订单号：'}</label>
-						<input value = {merchant_id} className='form-control input-xs' type='text' style={{width: 300}}/>
+						<input onChange = {this.onMerchantIdChange.bind(this)} value = {merchant_id} className='form-control input-xs' type='text' style={{width: 300}}/>
 					</div>
 				</div>
 			</StdModal>
 			)
 	}
-	show(){
-		this.setState({pay_id: '', merchant_id: ''})
+	show(id){
+		this.setState({pay_id: '', merchant_id: '', id: id})
 		this.refs.modal.show();
 	}
 	onTradeIdChange(e){
@@ -497,8 +499,8 @@ class RefundCredentials extends Component{
 		this.setState({ merchant_id: value});
 	}
 	submitHandler(){
-		var { pay_id ,merchant_id } = this.state;
-		this.props.addRemark(pay_id, merchant_id)
+		var { pay_id ,merchant_id, id } = this.state;
+		this.props.refundComplete_CS(id, pay_id, merchant_id)
 			.done( function(){
 				this.setState({pay_id: '', merchant_id: ''});
 				Noty('success', '添加成功')
@@ -514,6 +516,7 @@ class RemarkModal extends Component{
 		super(props);
 		this.state = ({
 			remark: '',
+			id: '',
 		})
 	}
 	render(){
@@ -521,20 +524,20 @@ class RemarkModal extends Component{
 			<StdModal ref='modal' title='添加退款备注' onConfirm = {this.submitHandler.bind(this)}>
 				<div>
 					<label>{'备注：'}</label>
-					<textarea value = {this.state.remark} className='form-control' style={{width: '100%',height:120}} />
+					<textarea onChange={this.onRemarkChange.bind(this)} value = {this.state.remark} className='form-control' style={{width: '100%',height:120}} />
 				</div>
 			</StdModal>
 			)
 	}
-	show(){
-		this.setState({remark: ''});
+	show(id, remarks){
+		this.setState({remark: remarks, id: id});
 		this.refs.modal.show();
 	}
 	onRemarkChange(e){
 		this.setState({remark: e.target.value});
 	}
 	submitHandler(){
-		this.props.addRemark(this.state.remark)
+		this.props.addRemark(this.state.id,this.state.remark)
 			.done(function(){
 				this.setState({remark: ''});
 				Noty('success', '添加成功');

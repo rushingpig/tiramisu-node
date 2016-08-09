@@ -55,20 +55,36 @@ function RefundManage(state = initial_state, action){
 			return {...state, handle_refund_status: 'success', list: list}
 		case REFUNDACTIONS.REFUND_EDIT:
 			var {list} = state;
-			var {orderId } = action;
+			var {refundId } = action;
 			list = list.map( m => {
-				if(m.order_id == orderId ){
+				if(m.id == refundId ){
 					m.status = 'TREATED';
 				}
 				return m;
 			})
 			return {...state, list: list}
+		case REFUNDACTIONS.REFUND_COMPLETE_CS:
+			var {list } = state;
+			var { refundId, merchant_id } = action;
+			list = list.map( m => {
+				if(m.id == refundId ){
+					m.merchant_id = merchant_id;
+				}
+				return m;
+			})
+			return {...state, list: list}			
 		case REFUNDACTIONS.HANDLE_REFUND_FAIL:
 			return {...state, handle_refund_status: 'fail'}
 		case REFUNDACTIONS.RESET_REFUND_STATUS:
 			return {...state, handle_refund_status: 'normal'}
 		case REFUNDACTIONS.GET_ORDER_DETAIL_PRODUCTS:
 			return {...state, check_order_info:action.data }
+		case REFUNDACTIONS.RESET_ORDER_OPT_RECORD:
+		  	return {...state, operationRecord:{}};
+		case REFUNDACTIONS.GET_ORDER_OPT_RECORD:
+			var data = action.data;
+			data.page_size = data.total;
+		  	return {...state, operationRecord:data }
 		default:
 			return state;
 	}

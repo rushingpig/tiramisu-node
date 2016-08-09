@@ -2,6 +2,8 @@ import {get, post, put, GET,TEST} from 'utils/request'; //Promise
 import Url from 'config/url';
 import { getValues } from 'redux-form';
 
+import { alterOrderRefundStatus } from 'actions/orders';
+
 export const GET_REFUND_APPLY_DATA = 'GET_REFUND_APPLY_DATA';
 export function getRefundApplyData(orderId){
   return (dispatch) => {
@@ -80,6 +82,7 @@ export function refundApply(form_data){
     return post(Url.refund_apply.toString(), {...data, ...form_data })
             .done(function(){
               dispatch({
+                order_id: form_data.order_id,
                 type: REFUND_APPLY_SUCCESS                
               })
             })
@@ -106,6 +109,7 @@ export function refundEdit(refundId){
     return put(Url.handle_refund.toString(refundId), data )
             .done(function(){
               dispatch({
+                data: {...data, refundId},
                 type: REFUND_EDIT_SUCCESS
               })
             })

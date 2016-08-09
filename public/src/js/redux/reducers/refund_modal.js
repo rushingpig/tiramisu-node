@@ -4,6 +4,7 @@ import { map } from 'utils/index';
 import { SELECT_DEFAULT_VALUE} from 'config/app.config';
 
 import * as ACTIONS from 'actions/refund_modal';
+import {getGlobalStore} from 'stores/getter';
 
 var initial_state = {
 	refund_apply_data: {},
@@ -19,6 +20,7 @@ function _t(data){
 }
 
 export function refund_data(state = initial_state, action){
+    var store = getGlobalStore();
 	switch(action.type){
 		case ACTIONS.GET_REFUND_REASONS:
 			return {...state, all_refund_reasons: _t(action.data)}
@@ -44,10 +46,34 @@ export function refund_data(state = initial_state, action){
 		case ACTIONS.REFUND_APPLY_ING:
 			return {...state, save_ing: true}
 		case ACTIONS.REFUND_APPLY_SUCCESS:
+  			var list = store.getState().orderManage.orders.list;
+  			list.map( m => {
+  				if(m.order_id == action.order_id){
+  					m.refund_status = 'TREATED';
+  				}
+  				return m;
+  			})
 			return {...state, save_ing: false, save_success: true}
 		case ACTIONS.REFUND_APPLY_FAIL:
 			return {...state, save_ing: false, save_success: false}
-		case ACTIONS.REFUND_EDIT_SUCCESS:			
+		case ACTIONS.REFUND_EDIT_SUCCESS:
+			var list = store.getState().refundManage.RefundManage.list;
+			var {refundId } = action.data;
+			list.map( m => {
+				if(m.id == refundId){
+					m.amount = action.data.amount;
+					m.way = action.data.way;
+					m.status = 'TREATED';
+					m.account_name = action.data.account_name;
+					m.account = action.data.account;
+					m.reason = action.data.reason;
+					m.merchant_id = action.data.merchant_id;
+					m.linkman = action.data.linkman;
+					m.linkman_name = action.data.linkman_name;
+					m.linkman_mobile = action.data.linkman_mobile;
+				}
+				return m;
+			})
 			return {...state, submit_ing: false}
 		case ACTIONS.REFUND_EDIT_ING:
 			return {...state, submit_ing: true}

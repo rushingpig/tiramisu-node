@@ -48,7 +48,7 @@ export function getRefundList(filter_data){
   return (dispatch, getState) => {
     var _filter_data = getValues(getState().form.refund_list_filter);
     _filter_data = formCompile(_filter_data);
-    return get(Url.refund_list.toString(), _filter_data)
+    return get(Url.refund_list.toString(), {..._filter_data, ...filter_data})
             .done( (data) => {
               dispatch({
                 page_no: filter_data.page_no,
@@ -161,6 +161,18 @@ export function handleRefund(refundId, handleActionName){
     }
 }
 
+export const REFUND_COMPLETE_CS = 'REFUND_COMPLETE_CS';
+export function refundComplete_CS(refundId, pay_id, merchant_id){
+  return PUT(Url.handle_refund.toString(refundId), {pay_id, merchant_id})
+          .done(function(){
+            dispatch({
+              type: REFUND_COMPLETE_CS,
+              refundId: refundId,
+              merchant_id: merchant_id,
+            })
+          })
+}
+
 export const RESET_REFUND_STATUS = 'RESET_REFUND_STATUS';
 export function resetRefundStatus() {
   return {
@@ -169,16 +181,37 @@ export function resetRefundStatus() {
 }
 
 export const REFUND_EDIT = 'REFUND_EDIT';
-export function editRefundChangeStatus(orderId){
+export function editRefundChangeStatus(refundId){
   return {
-    orderId : orderId,
+    refundId : refundId,
     type: REFUND_EDIT,
   }
 }
 
 export const ADD_REMARK = 'ADD_REMARK';
-export function addRemark(orderId, remarks){
-  return {
+export function addRemark(refundId, remarks){
+  return PUT(Url.edit_refund_remark.toString(refundId), {remarks: remarks}, ADD_REMARK)
+/*  return {
     type: ADD_REMARK
+  }*/
+}
+
+export const GET_ORDER_OPT_RECORD = 'GET_ORDER_OPT_RECORD';
+export function getOrderOptRecord(order_id, data){
+  return dispatch => {
+    return get(Url.refund_history.toString(order_id), data)
+      .done(function(jsonobj){
+        dispatch({
+          type: GET_ORDER_OPT_RECORD,
+          data: jsonobj,
+        })
+      })
+  }
+}
+
+export const RESET_ORDER_OPT_RECORD = 'RESET_ORDER_OPT_RECORD'; //先重置历史数据
+export function resetOrderOptRecord(){
+  return {
+    type: RESET_ORDER_OPT_RECORD,
   }
 }

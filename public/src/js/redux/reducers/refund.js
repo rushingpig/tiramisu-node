@@ -34,10 +34,10 @@ function RefundManage(state = initial_state, action){
 		case REFUNDACTIONS.HANDLE_REFUND_ING:
 			return {...state, handle_refund_status: 'handling'}
 		case REFUNDACTIONS.HANDLE_REFUND_SUCCESS:
-			var { handleActionName, orderId } = action;
+			var { handleActionName, refundId } = action;
 			var {list} = state;
 			list = list.map ( m => {
-				if( m.order_id == orderId ){
+				if( m.id == refundId ){
 					switch(handleActionName){
 						case 'TREATED':
 							m.status = 'TREATED';break;

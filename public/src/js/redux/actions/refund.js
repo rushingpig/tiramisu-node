@@ -136,16 +136,16 @@ export const HANDLE_REFUND_SUCCESS = 'HANDLE_REFUND_SUCCESS';
 export const HANDLE_REFUND_FAIL = 'HANDLE_REFUND_FAIL';
 export const HANDLE_REFUND_ING = 'HANDLE_REFUND_ING';
 
-export function handleRefund(orderId, handleActionName){
+export function handleRefund(refundId, handleActionName){
     return dispatch => {
       dispatch({
         type: HANDLE_REFUND_ING
       })
-      return put(Url.handle_refund.toString(orderId), {status: handleActionName})
+      return put(Url.handle_refund.toString(refundId), {status: handleActionName})
             .done(function(){
               dispatch({
                 handleActionName: handleActionName,
-                orderId: orderId,
+                refundId: refundId,
                 type: HANDLE_REFUND_SUCCESS
               })
             })

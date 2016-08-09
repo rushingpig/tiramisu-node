@@ -21,6 +21,7 @@ import AreaActions from 'actions/area';
 import { AreaActionTypes1 } from 'actions/action_types';
 import * as RefundActions from 'actions/refund_modal';
 
+import LazyLoad from 'utils/lazy_load';
 import V from 'utils/acl';
 import {REFUND_STATUS, REFUND_WAY, ACCOUNT_TYPE} from 'config/app.config'
 import { Noty, dateFormat } from 'utils/index';
@@ -251,14 +252,14 @@ var RefundRow = React.createClass({
 			this.props.activeOrder(this.props.order_id);
 	},
 	viewOrderOperationRecord: function(){
-		this.props.viewOperationRecordModal();
+		this.props.viewOperationRecordModal(this.props);
 	},
 	viewRefundModal: function(e){
-		this.props.getRefundApplyDetail(this.props.active_order_id);
+		this.props.getRefundApplyDetail(this.props.id);
 		this.props.viewRefundModal();
 	},
 	viewRefundCredential: function(){
-		this.props.handleRefund(this.props.order_id, 'COMPLETED');
+		this.props.handleRefund(this.props.id, 'COMPLETED');
 		this.props.viewRefundCredential();
 	},
 	viewRemarkModal: function(){
@@ -269,7 +270,7 @@ var RefundRow = React.createClass({
 	  e.stopPropagation();
 	},
 	onTreat: function(e){
-		this.props.handleRefund(this.props.order_id, 'TREATED')
+		this.props.handleRefund(this.props.id, 'TREATED')
 			.done(function(){
 				Noty('success', '确认成功');
 			}.bind(this))
@@ -279,7 +280,7 @@ var RefundRow = React.createClass({
 		e.stopPropagation();
 	},
 	onReview: function(e){
-		this.props.handleRefund(this.props.order_id, 'REVIEWED')
+		this.props.handleRefund(this.props.id, 'REVIEWED')
 			.done(function(){
 				Noty('success', '审核成功');
 			}.bind(this))
@@ -289,7 +290,7 @@ var RefundRow = React.createClass({
 		e.stopPropagation();
 	},
 	onCancel: function(e){
-		this.props.handleRefund(this.props.order_id, 'CANCEL')
+		this.props.handleRefund(this.props.id, 'CANCEL')
 		.done(function(){
 			Noty('success', '取消成功');
 		}.bind(this))
@@ -397,6 +398,7 @@ class ManagePannel extends Component{
 			)
 	}
 	componentDidMount(){
+      	LazyLoad('noty');
 		this.search();
 	}
 	search(page){
@@ -406,8 +408,8 @@ class ManagePannel extends Component{
 	onPageChange(page){
 		this.search(page);
 	}
-	viewOperationRecordModal(){
-		this.refs.viewOperationRecord.show();
+	viewOperationRecordModal(order){
+		this.refs.viewOperationRecord.show(order);
 	}
 	viewRefundModal(){
 		this.refs.RefundModal.show();

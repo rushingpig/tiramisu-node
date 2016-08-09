@@ -22,9 +22,9 @@ var BindOrderModal = React.createClass({
           <td className="text-left">
             {
               sort_type == 'DESC' && i == 0 || sort_type == 'ASC' && i == content.length - 1?
-              <span style = {{color: '#9C6B21'}}>{n.bind_order_id}</span>
+              <span style = {{color: '#9C6B21'}}>{n.order_id}</span>
               :
-              <span>{n.bind_order_id}</span>
+              <span>{n.order_id}</span>
             }
           </td>
           <td>{n.created_time}</td>

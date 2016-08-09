@@ -141,6 +141,19 @@ export function handleRefund(orderId, handleActionName){
       dispatch({
         type: HANDLE_REFUND_ING
       })
+      return put(Url.handle_refund.toString(orderId), {status: handleActionName})
+            .done(function(){
+              dispatch({
+                handleActionName: handleActionName,
+                orderId: orderId,
+                type: HANDLE_REFUND_SUCCESS
+              })
+            })
+            .fail(function(){
+              dispatch({
+                type: HANDLE_REFUND_FAIL
+              })
+            })
 /*      return TEST({
         handleActionName: handleActionName,
         orderId: orderId,

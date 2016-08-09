@@ -34,8 +34,7 @@ function RefundManage(state = initial_state, action){
 		case REFUNDACTIONS.HANDLE_REFUND_ING:
 			return {...state, handle_refund_status: 'handling'}
 		case REFUNDACTIONS.HANDLE_REFUND_SUCCESS:
-			var data = clone(action.data);
-			var { handleActionName, orderId } = data;
+			var { handleActionName, orderId } = action;
 			var {list} = state;
 			list = list.map ( m => {
 				if( m.order_id == orderId ){

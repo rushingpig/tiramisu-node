@@ -61,7 +61,7 @@ const URL = (function() {
     refund_apply:             '/refund',  //申请退款
     get_refund_apply_data:    '/order/:orderId/refund/option',  //获取申请退款需要的数据
     get_refund_detail:        'refund/:refundId',  //获取退款详情
-    get_related_orders:       'order/:orderId/relate/list',  //获取订单关联历史记录
+    bind_orders:              '/order/:orderId/relate/list',  //获取订单关联历史记录
     refund_history:           'refund/:refundId/history',  //获取退款历史记录
     handle_refund:            '/refund/:refundId',  //编辑/审核/完成退款
     cancel_refund:            'refund/:refundId',  //取消退款

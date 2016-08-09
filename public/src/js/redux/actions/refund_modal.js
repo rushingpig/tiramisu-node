@@ -132,7 +132,17 @@ function _getFormData( getState){
 
 export const GET_BIND_ORDERS = 'GET_BIND_ORDERS';
 export function getBindOrders(order_id, data){
-  return {
+  return dispatch => {
+    return get(Url.bind_orders.toString(order_id), data)
+      .done(function(data){
+        dispatch({
+          type: GET_BIND_ORDERS,
+          data: data,          
+        })
+
+      })
+  }
+/*  return {
     type: GET_BIND_ORDERS,
     data: {
       "total": 12,
@@ -180,7 +190,7 @@ export function getBindOrders(order_id, data){
       "page_no": "0",
       "page_size": "8"
     }
-  }
+  }*/
 }
 
 export const RESET_BIND_ORDERS = 'RESET_BIND_ORDERS';

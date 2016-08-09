@@ -48,7 +48,16 @@ export function getRefundList(filter_data){
   return (dispatch, getState) => {
     var _filter_data = getValues(getState().form.refund_list_filter);
     _filter_data = formCompile(_filter_data);
-      return TEST({
+    return get(Url.refund_list.toString(), _filter_data)
+            .done( (data) => {
+              dispatch({
+                page_no: filter_data.page_no,
+                data: data,
+                type: GET_REFUND_LIST,
+              })
+            })
+
+/*      return TEST({
         list:[
           { 
             status: 'UNTREATED', 
@@ -118,7 +127,7 @@ export function getRefundList(filter_data){
         ],
         total:4,
       },
-      GET_REFUND_LIST)(dispatch)
+      GET_REFUND_LIST)(dispatch)*/
   }
 
 }

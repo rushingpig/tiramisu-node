@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import clone from 'clone';
 import { map } from 'utils/index';
+import { SELECT_DEFAULT_VALUE} from 'config/app.config';
 
 import * as ACTIONS from 'actions/refund_modal';
 
@@ -25,10 +26,14 @@ export function refund_data(state = initial_state, action){
 			var data = clone(action.data);
 			data.type = 'PART';
 			data.amount = 0;
-			data.reason_id = 1;
 			data.linkman = 0;
 			data.way = 'THIRD_PARTY';
 			data.account_type = 'ALIPAY';
+			data.order_id = action.order_id;
+			data.reason_type = SELECT_DEFAULT_VALUE;
+			data.is_urgent = 0;
+			data.account = '';
+			data.account_name = '';
 			return {...state, refund_apply_data: data }
 		case ACTIONS.GET_REFUND_APPLY_DETAIL:
 			var data = clone(action.data);

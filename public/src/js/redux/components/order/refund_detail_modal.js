@@ -22,6 +22,7 @@ class RefundModal extends Component{
             all_refund_reasons = {all_refund_reasons}
             editRefundChangeStatus = {editRefundChangeStatus}
             refundEdit = { refundEdit }
+            onCancel = {this.cancel.bind(this)}
             /> 
       </StdModal>
       )

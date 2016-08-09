@@ -4,25 +4,36 @@ import { getValues } from 'redux-form';
 
 export const GET_REFUND_APPLY_DATA = 'GET_REFUND_APPLY_DATA';
 export function getRefundApplyData(orderId){
-  return TEST({
+  return (dispatch) => {
+    return get(Url.get_refund_apply_data.toString(orderId), null)
+            .done((data) => {
+              dispatch({
+                type: GET_REFUND_APPLY_DATA,
+                data: data,
+                order_id: orderId
+              })
+            })  
+  }
+/*  return TEST({
     'bind_order_id': '2016080415381109',
     'owner_mobile':  '15981838480',
     'owner_name': '艺奕非凡',
     'payment_amount': '19800',
     'recipient_mobile': '何艳敏',
     'recipient_name': '15981838480',
-  }, GET_REFUND_APPLY_DATA);
+  }, GET_REFUND_APPLY_DATA);*/
 }
 
 export const GET_REFUND_REASONS = 'GET_REFUND_REASONS';
 export function getRefundReasons(){
-	return TEST({
+    return GET(Url.refund_reasons.toString(), null, GET_REFUND_REASONS);
+/*	return TEST({
 		1: '用户取消蛋糕配件',
 		2: '客户要求取消订单',
 		3: '用户地址不配送',
 		4: '客户更改产品(款式或磅数)',
 		5: '其他',
-	}, GET_REFUND_REASONS)
+	}, GET_REFUND_REASONS)*/
 }
 
 export const GET_REFUND_APPLY_DETAIL = 'GET_REFUND_APPLY_DETAIL';
@@ -49,15 +60,27 @@ export const REFUND_APPLY_SUCCESS = 'REFUND_APPLY_SUCCESS';
 export const REFUND_APPLY_FAIL = 'REFUND_APPLY_FAIL';
 
 export const REFUND_APPLY = 'REFUND_APPLY';
-export function refundApply(){
+export function refundApply(form_data){
 	return (dispatch, getState) => {
 		var data = _getFormData( getState);
+
 		dispatch({
 			type: REFUND_APPLY_ING
 		})
-		return TEST({
+    return post(Url.refund_apply.toString(), {...data, ...form_data })
+            .done(function(){
+              dispatch({
+                type: REFUND_APPLY_SUCCESS                
+              })
+            })
+            .fail(function(){
+              dispatch({
+                type: REFUND_APPLY_FAIL
+              })
+            })
+/*		return TEST({
 			type: REFUND_APPLY_SUCCESS
-		})
+		})*/
 	}
 }
 
@@ -85,6 +108,7 @@ function _getFormData( getState){
 			refund_data.linkman_name = refund_data.recipient_name;
 			refund_data.linkman_mobile = refund_data.recipient_mobile;
 		}
+    refund_data.amount = refund_data.amount * 100;
 		delete refund_data.owner_name;
 		delete refund_data.owner_mobile;
 		delete refund_data.recipient_name;

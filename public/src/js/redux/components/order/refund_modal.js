@@ -99,14 +99,14 @@ class RefundPannel extends Component{
           <label>退款原因：</label>
           <Select {...reason_type} options={all_refund_reasons || []} className={` ${reason_type.error}`}/>
           {
-            (reason_type.value == 4 || reason_type.value == 5 )&& 
+            (reason_type.value == 0 || reason_type.value == 3 )&& 
             [<label key='relate_order_id_lbl'>{'　关联订单号：'}</label>,
             <input value = {bind_order_id} readOnly key='relate_order_id_txt' type='text' className='form-control input-xs' />]
           }
 
         </div>
         {
-          reason_type.value == 5 &&
+          reason_type.value == 0 &&
           <div className='form-group form-inline'>
           <label key='reason_lbl'>{'其他原因：'}</label>
           <input {...reason} key='reason_txt' type='text' className='form-control' style={{width: 390}} />
@@ -241,7 +241,15 @@ class RefundPannel extends Component{
     }
   }
   handleRefundApply(){
-    this.props.refundApply();
+    var form_data = {order_id : this.props.order_id}
+    this.props.refundApply(form_data)
+      .done(function(){
+        Noty('success', '保存成功');
+        this.props.onCancel();
+      }.bind(this))
+      .fail(function(msg){
+        Noty('error', msg || '操作异常');
+      })
   }
   handleRefundEdit(){
     var orderId = this.props.order_id;

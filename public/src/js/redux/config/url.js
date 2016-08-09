@@ -58,15 +58,16 @@ const URL = (function() {
     update_order_src: '/order/src/:srcId',
 
     //退款
-    refund_apply:             'refund',  //申请退款
-    get_refund_apply_data:    'order/:orderId/refund/option',  //获取申请退款需要的数据
+    refund_apply:             '/refund',  //申请退款
+    get_refund_apply_data:    '/order/:orderId/refund/option',  //获取申请退款需要的数据
     get_refund_detail:        'refund/:refundId',  //获取退款详情
     get_related_orders:       'order/:orderId/relate/list',  //获取订单关联历史记录
     refund_history:           'refund/:refundId/history',  //获取退款历史记录
     edit_refund:              'refund/:refundId',  //编辑/审核/完成退款
     cancel_refund:            'refund/:refundId',  //取消退款
-    refund_list:              'order/:orderId/relate/list',  //获取退款列表
+    refund_list:              '/refund/list',  //获取退款列表
     edit_refund_remark:       'refund/:refundId/remarks',  //修改退款备注
+    refund_reasons:           '/refund/reason/type', //获取退款原因
 
     //产品
     categories: '/product/categories',

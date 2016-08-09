@@ -1436,7 +1436,7 @@ OrderDao.prototype.isCanBind = function (order_id) {
   return co(function *() {
     let sql = `SELECT bo.id FROM ?? bo `;
     let params = [tables.buss_order];
-    sql += `WHERE (bo.id = ? AND bo.status IN (CANCEL, EXCEPTION) ) `;
+    sql += `WHERE (bo.id = ? AND bo.status IN ('CANCEL', 'EXCEPTION') ) `;
     params.push(order_id);
     sql += `OR bo.bind_order_id = ? `;
     params.push(order_id);

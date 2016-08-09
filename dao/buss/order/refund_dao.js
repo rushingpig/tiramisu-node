@@ -206,10 +206,10 @@ RefundDao.prototype.findRefund = function (query) {
     }
 
     return co(function *() {
-        let count_sql = sql.replace(/^SELECT * FROM/, `SELECT count(id) AS total FROM`);
+        let count_sql = sql.replace(/^SELECT .* FROM/, `SELECT count(*) AS total FROM`);
         let _res = {};
         let total = yield baseDao.select(count_sql, params);
-        _res.total = total.total;
+        _res.total = total[0].total;
 
         sql += `ORDER BY bre.created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
         _res.list = yield baseDao.select(sql, params);

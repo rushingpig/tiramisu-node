@@ -118,12 +118,11 @@ OrderService.prototype.addOrder = (req, res, next) => {
       // 判断是否处在退款流程中
       let option = yield refundDao.findOptionByOrderId(bind_order_id);
       if (!option) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED, '所选订单号不存在...'));
-      if (option.status) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED, '所选订单号处于退款流程中,不能被绑定...'));
-      if (option) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED, '所选订单号处于退款流程中,不能被绑定...'));
+      if (option.refund_status) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED, '所选订单号处于退款流程中,不能被绑定...'));
       req.body.bind_order_id = bind_order_id;
       req.body.origin_order_id = option.origin_order_id;
       req.body.payment_amount = option.payment_amount;
-      if (req.body.origin_order_id == '0') {
+      if (!req.body.origin_order_id || req.body.origin_order_id == '0') {
         req.body.origin_order_id = bind_order_id;
       }
     }

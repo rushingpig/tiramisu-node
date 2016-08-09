@@ -194,8 +194,8 @@ module.exports.addRefund = function (req, res, next) {
         let option = yield refundDao.findOptionByOrderId(order_id);
         if (!option) return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS));
         if (option.refund_status) return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS, '订单处于退款中'));
-        if ((refund_obj.type == REFUND_TYPE.PART && refund_obj.amount >= option.payfor_amount)
-            || (refund_obj.type == REFUND_TYPE.FULL && refund_obj.amount != option.payfor_amount)) {
+        if ((refund_obj.type == REFUND_TYPE.PART && refund_obj.amount >= option.payment_amount)
+            || (refund_obj.type == REFUND_TYPE.FULL && refund_obj.amount != option.payment_amount)) {
             return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS, '退款金额输入有误'));
         }
 

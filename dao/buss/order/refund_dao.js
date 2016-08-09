@@ -148,6 +148,8 @@ RefundDao.prototype.findRefund = function (query) {
         'bre.created_time',
         'su2.name As updated_by',
         'bre.updated_time',
+        'bo.owner_name',
+        'bo.owner_mobile',
         'bo.merchant_id',
         'bo.id AS order_id',
         'bo.created_time AS order_created_time',

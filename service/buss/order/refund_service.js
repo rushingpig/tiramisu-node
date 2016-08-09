@@ -227,7 +227,24 @@ module.exports.editRefund = function (req, res, next) {
         if (!info || info.length == 0) return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS));
         info = info[0];
         let refund_obj = Object.assign({}, b);
-        if (!refund_id.status) refund_obj.status = RS.TREATED;
+        if (!refund_id.status) {
+            refund_obj = _.pick(b, [
+                'status',
+                'type',
+                'amount',
+                'way',
+                'account_type',
+                'account',
+                'account_name',
+                'reason_type',
+                'reason',
+                'linkman',
+                'linkman_name',
+                'linkman_mobile',
+                'is_urgent'
+            ]);
+            refund_obj.status = RS.TREATED;
+        }
         if (isRefundCanUpdateStatus(info.status, refund_obj.status)) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
 
         let order_obj;

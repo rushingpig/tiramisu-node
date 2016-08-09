@@ -376,8 +376,8 @@ class ManageAddForm extends Component {
     return $(findDOMNode(this.refs[_refs])).find('option:selected').html();
   }
   handleCreateOrder(form_data){
-    if(this.props.bind_order_id){
-      form_data.bind_order_id = this.props.bind_order_id;
+    if(this.props['form-data'].data.bind_order_id){
+      form_data.bind_order_id = this.props['form-data'].data.bind_order_id;
     }
     this.props.actions.createOrder(form_data)
       .done(function(){

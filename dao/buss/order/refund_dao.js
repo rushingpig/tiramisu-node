@@ -78,7 +78,7 @@ RefundDao.prototype.insertRefund = function (refund_obj) {
 
 RefundDao.prototype.updateRefund = function (refund_id, refund_obj) {
     let sql = `${this.base_update_sql} WHERE id = ? `;
-    return baseDao.insert(sql, [this.table, refund_obj, refund_id]);
+    return baseDao.update(sql, [this.table, refund_obj, refund_id]);
 };
 
 RefundDao.prototype.deleteRefund = function (refund_id) {

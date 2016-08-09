@@ -236,7 +236,7 @@ module.exports.editRefund = function (req, res, next) {
         if (!info || info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS));
         info = info[0];
         let refund_obj = Object.assign({}, b);
-        if (!refund_id.status) {
+        if (!refund_obj.status) {
             refund_obj = _.pick(b, [
                 'status',
                 'type',
@@ -254,24 +254,26 @@ module.exports.editRefund = function (req, res, next) {
             ]);
             refund_obj.status = RS.TREATED;
         }
-        if (isRefundCanUpdateStatus(info.status, refund_obj.status)) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
+        if (!isRefundCanUpdateStatus(info.status, refund_obj.status)) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
 
         let order_obj;
         let refund_history = {option: ''};
         let order_history = {option: ''};
         order_history.order_id = info.order_id;
         refund_history.bind_id = refund_id;
-        if (refund_id.status == RS.CANCEL) {
+        if (refund_obj.status == RS.CANCEL) {
             refund_obj = {status: RS.CANCEL};
             order_history.option += `取消退款申请\n`;
             refund_history.option += `取消退款申请\n`;
-        } else if (refund_id.status == RS.COMPLETED) {
+        } else if (refund_obj.status == RS.COMPLETED) {
             refund_obj = {status: RS.COMPLETED};
             order_history.option += `退款完成\n退款金额为${info.amount / 100}`;
             refund_history.option += `退款完成\n`;
             let option = yield refundDao.findOptionByOrderId(info.order_id);
             if (!option) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS));
             order_obj = {id: info.order_id, payment_amount: option.payment_amount - info.amount};
+        } else if (refund_obj.status == RS.REVIEWED) {
+            refund_history.option += `退款审核通过\n`;
         } else {
             joinHistory(info, refund_obj, refund_history);
             if (refund_history.option == '') return;

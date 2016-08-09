@@ -732,8 +732,8 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
           signin_time: curr.signin_time,
           greeting_card: curr.greeting_card
         };
-        if (curr.bind_order_id != '0') {
-          list_obj.bind_order_id = yield orderDao.joinOrderId(list_obj.bind_order_id);
+        if (curr.bind_order_id && curr.bind_order_id != '0') {
+          list_obj.bind_order_id = yield orderDao.joinOrderId(curr.bind_order_id);
         }
         let refund_obj = yield refundDao.findLastRefundByOrderId(curr.id);
         if (refund_obj) {

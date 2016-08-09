@@ -534,7 +534,8 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
     'su3.mobile as deliveryman_mobile',
     'su4.name as last_opt_cs',
     'bo.updated_time',
-    'bo.greeting_card'
+    'bo.greeting_card',
+    'bo.bind_order_id',
   ];
   if (query_data.list_products) {
     columns_arr = columns_arr.concat(['bp.`name` as product_name',

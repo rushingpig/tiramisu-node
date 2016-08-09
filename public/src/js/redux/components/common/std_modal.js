@@ -69,6 +69,8 @@ StdModal.defaultProps = {
   size: '', // lg
   title: 'TODO',
   submitting: false,
+  loading: false,
+  disabled: false,
   onConfirm: function(){},
   onCancel: function(){},  //modal关闭前需执行的callback
   footer: true, //是否需要 modal-footer

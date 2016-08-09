@@ -45,10 +45,15 @@
     min-width: 100px;
 }
 
-.tree .tree-folder .tree-folder-header:hover{
-    // background-color:#F1F2F7;
-    background-color:$theme-color;
-    border-radius: 4px;
+.tree .tree-folder .tree-folder-header{
+    &:hover,
+    &.active{
+        background-color:$theme-color;
+        border-radius: 4px;
+    }
+    &.active{
+        background-color: darken($theme-color, 5);
+    }
 }
 .tree .tree-folder .tree-folder-header .fa{
     display: inline-block;

@@ -38,7 +38,9 @@ export function refund_data(state = initial_state, action){
 		case ACTIONS.GET_REFUND_APPLY_DETAIL:
 			var data = clone(action.data);
 			data.amount = data.amount / 100;
-			return {...state, refund_apply_data: data}
+			var {option } = data;
+			data.id = action.refundId;
+			return {...state, refund_apply_data: {...data, ...option} }
 		case ACTIONS.REFUND_APPLY_ING:
 			return {...state, save_ing: true}
 		case ACTIONS.REFUND_APPLY_SUCCESS:

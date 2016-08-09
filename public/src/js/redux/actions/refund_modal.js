@@ -1,4 +1,4 @@
-import {get, post, GET,TEST} from 'utils/request'; //Promise
+import {get, post, put, GET,TEST} from 'utils/request'; //Promise
 import Url from 'config/url';
 import { getValues } from 'redux-form';
 
@@ -37,8 +37,18 @@ export function getRefundReasons(){
 }
 
 export const GET_REFUND_APPLY_DETAIL = 'GET_REFUND_APPLY_DETAIL';
-export function getRefundApplyDetail(orderId){
-	return TEST({
+export function getRefundApplyDetail(refundId){
+    return dispatch => {
+      return get(Url.get_refund_detail.toString(refundId), null)
+        .done((data) => {
+          dispatch({
+            type: GET_REFUND_APPLY_DETAIL,
+            data: data,
+            refundId: refundId
+          })
+        })
+    }
+/*	return TEST({
 		'type': 'PART',
 		'amount': 19800,
 		'reason_type': 1,
@@ -52,7 +62,7 @@ export function getRefundApplyDetail(orderId){
 		'account_type': 'ALIPAY',
 		'is_urgent': 1,
 		'order_id': '2016071111224371',
-	}, GET_REFUND_APPLY_DETAIL)	
+	}, GET_REFUND_APPLY_DETAIL)	*/
 }
 
 export const REFUND_APPLY_ING = 'REFUND_APPLY_ING';
@@ -87,21 +97,16 @@ export function refundApply(form_data){
 export const REFUND_EDIT_ING = 'REFUND_EDIT_ING';
 export const REFUND_EDIT_SUCCESS = 'REFUND_EDIT_SUCCESS';
 
-export function refundEdit(orderId){
+export function refundEdit(refundId){
 	return(dispatch, getState) => {
 		var data = _getFormData(getState);
 		dispatch({
 			type: REFUND_EDIT_ING
 		})
-    return put(Url.handle_refund.toString(orderId), data )
+    return put(Url.handle_refund.toString(refundId), data )
             .done(function(){
               dispatch({
-                type: REFUND_APPLY_SUCCESS
-              })
-            })
-            .fail(function(){
-              dispatch({
-                type: REFUND_APPLY_FAIL,
+                type: REFUND_EDIT_SUCCESS
               })
             })
 /*		return TEST({

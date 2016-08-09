@@ -241,9 +241,16 @@ class RefundPannel extends Component{
       })
   }
   handleRefundEdit(){
-    var orderId = this.props.order_id;
-    this.props.refundEdit(orderId);
-    this.props.editRefundChangeStatus(orderId);
+    var id = this.props.id;
+    this.props.refundEdit(id)
+      .done(function(){
+        Noty('success', '保存成功');
+        this.props.onCancel();
+        this.props.editRefundChangeStatus(id);
+      }.bind(this))
+      .fail(function(msg){
+        Noty('error', msg || '操作异常');
+      })
   }
   cancel(){
     this.props.cancel();

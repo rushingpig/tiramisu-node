@@ -10,12 +10,13 @@ class RefundModal extends Component{
   render(){
     var { editable, refund_data, refundApply, refundEdit, editRefundChangeStatus} = this.props;  
     var { refund_apply_data, all_refund_reasons } = refund_data
-    var { bind_order_id, order_id } = refund_apply_data;
+    var { bind_order_id, order_id, id } = refund_apply_data;
     return(
       <StdModal ref = 'modal' title = '退款申请页面' footer = {false}>
           <RefundApply 
             bind_order_id = { bind_order_id }
             order_id = {order_id}
+            id = {id}
             cancel = {this.cancel.bind(this)}  
             editable = {editable}
             refundApply = { refundApply }

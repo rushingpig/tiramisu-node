@@ -193,7 +193,7 @@ module.exports.addRefund = function (req, res, next) {
         let order_id = systemUtils.getDBOrderId(b.order_id);
         let option = yield refundDao.findOptionByOrderId(order_id);
         if (!option) return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS));
-        if (option.refund_status)  return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS, '订单处于退款中'));
+        if (option.refund_status) return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS, '订单处于退款中'));
         if ((refund_obj.type == REFUND_TYPE.PART && refund_obj.amount >= option.payfor_amount)
             || (refund_obj.type == REFUND_TYPE.FULL && refund_obj.amount != option.payfor_amount)) {
             return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS, '退款金额输入有误'));
@@ -212,8 +212,8 @@ module.exports.addRefund = function (req, res, next) {
         order_history.option += `提交退款申请\n`;
         refund_history.bind_id = refund_id;
         refund_history.option += `提交退款申请\n`;
-        yield refundDao.insertHistory(systemUtils.assembleInsertObj(req, refund_history));
-        yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history));
+        yield refundDao.insertHistory(systemUtils.assembleInsertObj(req, refund_history, true));
+        yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history, true));
     }).then(()=> {
         res.api();
     });
@@ -256,9 +256,9 @@ module.exports.editRefund = function (req, res, next) {
             yield orderDao.updateOrder(systemUtils.assembleUpdateObj(req, order_obj), info.order_id);
         }
         yield refundDao.updateRefund(refund_id, systemUtils.assembleUpdateObj(req, refund_obj));
-        yield refundDao.insertHistory(systemUtils.assembleInsertObj(req, refund_history));
+        yield refundDao.insertHistory(systemUtils.assembleInsertObj(req, refund_history, true));
         if (order_history.option != '') {
-            yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history));
+            yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history, true));
         }
     }).then(()=> {
         res.api();
@@ -277,7 +277,7 @@ module.exports.editRefundRemarks = function (req, res, next) {
             option: `修改备注为{${remarks}}`
         };
         yield refundDao.updateRefund(refund_id, systemUtils.assembleUpdateObj(req, {remarks: remarks}));
-        yield refundDao.insertHistory(systemUtils.assembleInsertObj(req, refund_history));
+        yield refundDao.insertHistory(systemUtils.assembleInsertObj(req, refund_history, true));
     }).then(result=> {
         res.api(result);
     });
@@ -300,8 +300,8 @@ module.exports.delRefund = function (req, res, next) {
             option: `取消退款`
         };
         yield refundDao.updateRefund(refund_id, systemUtils.assembleUpdateObj(req, {status: RS.CANCEL}));
-        yield refundDao.insertHistory(systemUtils.assembleInsertObj(req, refund_history));
-        yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history));
+        yield refundDao.insertHistory(systemUtils.assembleInsertObj(req, refund_history, true));
+        yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history, true));
     }).then(()=> {
         res.api();
     });

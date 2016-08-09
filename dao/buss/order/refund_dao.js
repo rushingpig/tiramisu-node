@@ -217,7 +217,7 @@ RefundDao.prototype.findRefund = function (query) {
         _res.page_size = page_size;
         _res.list.forEach(curr=> {
             curr.id = systemUtils.getShowOrderId(curr.order_id, curr.created_time);
-            if (curr.bind_order_id != '0') {
+            if (curr.bind_order_id && curr.bind_order_id != '0') {
                 curr.bind_order_id = systemUtils.getShowOrderId(curr.bind_order_id, curr.bind_created_time);
             }
         });

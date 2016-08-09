@@ -175,16 +175,30 @@ module.exports.getRefundHistory = function (req, res, next) {
 module.exports.addRefund = function (req, res, next) {
     let promise = co(function *() {
         let b = req.body;
+        let refund_obj = _.pick(b, [
+            'status',
+            'type',
+            'amount',
+            'way',
+            'account_type',
+            'account',
+            'account_name',
+            'reason_type',
+            'reason',
+            'linkman',
+            'linkman_name',
+            'linkman_mobile',
+            'is_urgent'
+        ]);
         let order_id = systemUtils.getDBOrderId(b.order_id);
         let option = yield refundDao.findOptionByOrderId(order_id);
         if (!option) return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS));
         if (option.refund_status)  return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS, '订单处于退款中'));
-        if ((REFUND_TYPE.PART && b.amount >= option.payfor_amount)
-            || (REFUND_TYPE.FULL && b.amount != option.payfor_amount)) {
+        if ((refund_obj.type == REFUND_TYPE.PART && refund_obj.amount >= option.payfor_amount)
+            || (refund_obj.type == REFUND_TYPE.FULL && refund_obj.amount != option.payfor_amount)) {
             return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS, '退款金额输入有误'));
         }
 
-        let refund_obj = Object.assign({}, b);
         refund_obj.status = RS.TREATED;
         refund_obj.order_id = order_id;
         if (refund_obj.reason_type == 0) refund_obj.reason = REASON_TYPE[0];

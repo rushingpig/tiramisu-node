@@ -209,7 +209,7 @@ module.exports.addRefund = function (req, res, next) {
 
         refund_obj.status = RS.TREATED;
         refund_obj.order_id = order_id;
-        if (refund_obj.reason_type !== 0) refund_obj.reason = REASON_TYPE[refund_obj.reason_type];
+        if (refund_obj.reason_type != 0) refund_obj.reason = REASON_TYPE[refund_obj.reason_type];
         let refund_id = yield refundDao.insertRefund(systemUtils.assembleInsertObj(req, refund_obj));
         if (!refund_id) return Promise.reject(new TiramisuError(res_obj.FAIL, '添加退款纪录失败...'));
         let refund_history = {option: ''};
@@ -275,7 +275,7 @@ module.exports.editRefund = function (req, res, next) {
         } else if (refund_obj.status == RS.REVIEWED) {
             refund_history.option += `退款审核通过\n`;
         } else {
-            if (refund_obj.reason_type !== 0) refund_obj.reason = REASON_TYPE[refund_obj.reason_type];
+            if (refund_obj.reason_type != 0) refund_obj.reason = REASON_TYPE[refund_obj.reason_type];
             joinHistory(info, refund_obj, refund_history);
             if (refund_history.option == '') return;
             refund_history.option += `编辑退款信息\n`;

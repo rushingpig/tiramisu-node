@@ -1444,7 +1444,6 @@ OrderDao.prototype.findRelateListById = function (query) {
     _res.list = yield baseDao.select(sql_info + sql, params);
     _res.page_no = page_no;
     _res.page_size = page_size;
-    console.log(_res);
     return _res;
   });
 };

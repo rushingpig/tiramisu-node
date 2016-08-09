@@ -103,7 +103,8 @@ module.exports.getRelateList = function (req, res, next) {
         }
         let results = yield orderDao.findRelateListById(Object.assign({order_id: origin_order_id}, req.query));
         results.list.forEach(curr=> {
-            curr.id = systemUtils.getShowOrderId(curr.id, curr.created_time);
+            curr.order_id = systemUtils.getShowOrderId(curr.id, curr.created_time);
+            delete curr.id;
         });
         return results;
     }).then(result=> {

@@ -36,19 +36,33 @@ RefundDao.prototype.findHistory = function (query) {
     let page_no = query.page_no || 0;
     let page_size = query.page_size || 10;
     let sort_type = query.sort_type || 'DESC';
-    let sql = `SELECT * FROM ?? br WHERE type = ? AND del_flag = ? AND bind_id = ? `;
-    let params = [tables.sys_history, HISTORY_TYPE, del_flag.SHOW, query.refund_id];
+    let columns = [
+        'sh.option',
+        'sh.remarks',
+        'sh.created_time',
+        'su.name AS created_by'
+    ];
+    let sql_info = `SELECT ${columns.join()} FROM `;
+    let sql = `?? sh `;
+    let params = [tables.sys_history];
+    sql += `LEFT JOIN ?? su ON su.id = sh.created_by `;
+    params.push(tables.sys_user);
+    sql += `WHERE sh.type = ? AND sh.del_flag = ? AND sh.bind_id = ? `;
+    params.push(HISTORY_TYPE);
+    params.push(del_flag.SHOW);
+    params.push(query.refund_id);
 
     return co(function *() {
-        let total_sql = sql.replace(/^SELECT * FROM/, `SELECT count(id) AS total FROM`);
+        let total_sql = `SELECT count(*) AS total FROM ` + sql;
         let _res = {};
         let total = yield baseDao.select(total_sql, params);
         _res.total = total.total;
 
         sql += `ORDER BY created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
-        _res.list = yield baseDao.select(sql, params);
+        _res.list = yield baseDao.select(sql_info + sql, params);
         _res.page_no = page_no;
         _res.page_size = page_size;
+        console.log(_res);
         return _res;
     });
 };

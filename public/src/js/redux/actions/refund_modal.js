@@ -4,7 +4,7 @@ import { getValues } from 'redux-form';
 
 export const GET_REFUND_APPLY_DATA = 'GET_REFUND_APPLY_DATA';
 export function getRefundApplyData(orderId){
-  return (dispatch) => {
+/*  return (dispatch) => {
     return get(Url.get_refund_apply_data.toString(orderId), null)
             .done((data) => {
               dispatch({
@@ -13,15 +13,15 @@ export function getRefundApplyData(orderId){
                 order_id: orderId
               })
             })  
-  }
-/*  return TEST({
+  }*/
+  return TEST({
     'bind_order_id': '2016080415381109',
     'owner_mobile':  '15981838480',
     'owner_name': '艺奕非凡',
     'payment_amount': '19800',
     'recipient_mobile': '何艳敏',
     'recipient_name': '15981838480',
-  }, GET_REFUND_APPLY_DATA);*/
+  }, GET_REFUND_APPLY_DATA);
 }
 
 export const GET_REFUND_REASONS = 'GET_REFUND_REASONS';

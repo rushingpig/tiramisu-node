@@ -205,7 +205,7 @@ RefundDao.prototype.findRefund = function (query) {
     }
     if (query.keywords !== undefined) {
         sql += `AND  bre.order_id LIKE ? `;
-        params.push(`%${query.keywords}%`);
+        params.push(`%${systemUtils.getDBOrderId(query.keywords)}%`);
     }
 
     if (query.city_id) {

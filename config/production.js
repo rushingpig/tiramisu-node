@@ -27,6 +27,7 @@ var exp_router_options = {
 //  the table list in database  ->  tiramisu
 var tables = {
 //================Sys=================
+    sys_history: 'sys_history',
     sys_user : 'sys_user',
     sys_role : 'sys_role',
     sys_menu : 'sys_menu',
@@ -58,6 +59,7 @@ var tables = {
     buss_delivery_picture: 'buss_delivery_picture',
     buss_image: 'buss_image',
     buss_directory: 'buss_directory',
+    buss_refund: 'buss_refund',
 //=================Dict===================
     dict_regionalism : 'dict_regionalism',
     delivery_pay_rule: 'delivery_pay_rule'

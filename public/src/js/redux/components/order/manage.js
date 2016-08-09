@@ -313,7 +313,7 @@ var OrderRow = React.createClass({
         <td>
           {
             !props.bind_order_id ?
-              <a className='inline-block time' onClick = {this.viewBindOrderRecord}>{'xxxxxxxxx'}</a>
+              <a className='inline-block time' onClick = {this.viewBindOrderRecord}>{props.bind_order_id}</a>
               :
               <div className='bordered bold' style={{backgroundColor: '#dac7a7', color: props.bind_order_id ? '#E44949' : '#2FB352'}}>{'无'}</div>
           }

@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import RefundApply from './refund_apply_modal';
-import RefundEdit from './refund_edit_modal';
 import StdModal from 'common/std_modal.js';
 
 class RefundModal extends Component{

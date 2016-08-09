@@ -267,6 +267,14 @@ module.exports.editRefund = function (req, res, next) {
             refund_history.option += `取消退款申请\n`;
         } else if (refund_obj.status == RS.COMPLETED) {
             refund_obj = {status: RS.COMPLETED};
+            if (b.merchant_id) {
+                refund_obj.merchant_id = b.merchant_id;
+                refund_history.option += `商户订单号为{${refund_obj.merchant_id}}\n`;
+            }
+            if (b.pay_id) {
+                refund_obj.pay_id = b.pay_id;
+                refund_history.option += `支付流水号为{${refund_obj.pay_id}}\n`;
+            }
             order_history.option += `退款完成\n退款金额为${info.amount / 100}`;
             refund_history.option += `退款完成\n`;
             let option = yield refundDao.findOptionByOrderId(info.order_id);

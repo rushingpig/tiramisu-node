@@ -56,7 +56,7 @@ RefundDao.prototype.findHistory = function (query) {
         let total_sql = `SELECT count(*) AS total FROM ` + sql;
         let _res = {};
         let total = yield baseDao.select(total_sql, params);
-        _res.total = total.total;
+        _res.total = total[0].total;
 
         sql += `ORDER BY created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
         _res.list = yield baseDao.select(sql_info + sql, params);
@@ -148,6 +148,7 @@ RefundDao.prototype.findRefund = function (query) {
         'bre.created_time',
         'su2.name As updated_by',
         'bre.updated_time',
+        'bos.merge_name AS src_name',
         'bo.owner_name',
         'bo.owner_mobile',
         'bo.merchant_id',
@@ -160,6 +161,8 @@ RefundDao.prototype.findRefund = function (query) {
     let params = [tables.buss_refund];
     sql += `INNER JOIN ?? bo ON bo.id = bre.order_id `;
     params.push(tables.buss_order);
+    sql += `LEFT JOIN ?? bos ON bos.id = bo.src_id `;
+    params.push(tables.buss_order_src);
     sql += `LEFT JOIN ?? su ON su.id = bre.created_by `;
     params.push(tables.sys_user);
     sql += `LEFT JOIN ?? su2 ON su2.id = bo.updated_by `;
@@ -192,15 +195,15 @@ RefundDao.prototype.findRefund = function (query) {
         params.push(query.end_time + ' 24:00~24:00');
     }
     if (query.is_urgent !== undefined) {
-        sql += `AND  bre.is_urgent <= ? `;
+        sql += `AND  bre.is_urgent = ? `;
         params.push(query.is_urgent);
     }
     if (query.way !== undefined) {
-        sql += `AND  bre.way <= ? `;
+        sql += `AND  bre.way = ? `;
         params.push(query.way);
     }
     if (query.status !== undefined) {
-        sql += `AND  bre.status <= ? `;
+        sql += `AND  bre.status = ? `;
         params.push(query.status);
     }
     if (query.keywords !== undefined) {

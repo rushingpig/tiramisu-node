@@ -388,6 +388,9 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
   let columns = ['br.delivery_type',
     'bo.owner_name',
     'bo.id',
+    'bo.bind_order_id',
+    'bo.origin_order_id',
+    'bo.payment_amount',
     'bo.owner_mobile',
     'br.id as recipient_id',
     'br.`name` as recipient_name',
@@ -1023,6 +1026,9 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
     prefix_address = req.body.prefix_address,
     greeting_card = req.body.greeting_card,
     coupon = req.body.coupon;
+  let bind_order_id = req.body.bind_order_id;
+  let origin_order_id = req.body.origin_order_id;
+  let payment_amount = req.body.payment_amount;
   let recipientObj = {
     regionalism_id: regionalism_id,
     name: recipient_name,
@@ -1066,6 +1072,11 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
           coupon: coupon,
           last_opt_cs: req.session.user.id
         };
+        if (bind_order_id) {
+          orderObj.bind_order_id = bind_order_id;
+          orderObj.origin_order_id = origin_order_id;
+          orderObj.payment_amount = payment_amount;
+        }
         // order
         transaction.query(this.base_insert_sql, [tables.buss_order, systemUtils.assembleInsertObj(req, orderObj)], (order_err, result) => {
           if (order_err || !result.insertId) {
@@ -1403,5 +1414,47 @@ function doFullText(query_data) {
     return true;
   }
 }
+
+OrderDao.prototype.findRelateListById = function (order_id) {
+  let columns = [
+    'bo.id',
+    'su.name AS created_by',
+    'bo.created_time'
+  ];
+  let sql = `SELECT ${columns.join()} FROM ?? bo `;
+  let params = [tables.buss_order];
+  sql += `LEFT JOIN ?? su ON su.id = bo.created_by `;
+  params.push(tables.sys_user);
+  sql += `WHERE bo.id = ? OR bo.origin_order_id = ? `;
+  params.push(order_id);
+  params.push(order_id);
+  return baseDao.select(sql, params);
+};
+
+OrderDao.prototype.isCanBind = function (order_id) {
+  return co(function *() {
+    let sql = `SELECT bo.id FROM ?? bo `;
+    let params = [tables.buss_order];
+    sql += `WHERE (bo.id = ? AND bo.status IN (CANCEL, EXCEPTION) ) `;
+    params.push(order_id);
+    sql += `OR bo.bind_order_id = ? `;
+    params.push(order_id);
+    let info = yield baseDao.select(sql, params);
+    if (!info || info.length == 0) return Promise.resolve(true);
+    return Promise.resolve(false);
+  });
+};
+
+OrderDao.prototype.joinOrderId = function (order_id) {
+  let sql = `SELECT bo.id, bo.created_time FROM ?? bo WHERE bo.id = ? `;
+  let params = [tables.buss_order, order_id];
+
+  return co(function *() {
+    let info = yield baseDao.select(sql, params);
+    if (!info || info.length == 0) return Promise.reject('not found order_id');
+    info = info[0];
+    return systemUtils.getShowOrderId(info.id, info.created_time);
+  });
+};
 
 module.exports = OrderDao;

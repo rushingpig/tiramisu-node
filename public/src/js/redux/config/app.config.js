@@ -92,10 +92,11 @@ export default {
     'REPRINTABLE': '否',
   },
   REFUND_STATUS: {
-    'UNAUDIT': '未审核',
-    'AUDITED': '已审核',
-    'REFUNDED': '退款完成',
-    'REFUNDCANCEL': '退款取消',
+    'UNTREATED': {value: '未处理', key: 0, color: '#E44949', bg: '#dac7a7'},
+    'TREATED': {value: '未审核',  key: 0, color: '#585353', bg: '#dac7a7'},
+    'REVIEWED': {value: '已审核', key: 0, color: '#585353', bg: '#dac7a7'},
+    'COMPLETED': {value: '退款完成', key: 100, color: '#2FB352', bg: '#dac7a7'},
+    'CANCEL': {value: '退款取消', key: -10, color: '#2FB352', bg: '#dac7a7'}
   },
   SRC: {
     group_site: 3, //团购网站
@@ -131,5 +132,24 @@ export default {
   SIGN_STATUS_EXCEPTION: 'EXCEPTION',
 
   MAX: 500, //
+
+  ACCOUNT_TYPE: {
+    BANK_CARD: '银行卡',
+    'ALIPAY': '支付宝',
+    'WECHAT': '微信',
+  },
+
+  REFUND_TYPE: {
+    'PART': '部分退款',
+    'FULL': '全额退款',
+    'OVERFULL': '超额退款',
+  },
+
+  REFUND_WAY: {
+    'THIRD_PARTY': '第三方平台原返',
+    'FINANCE': '财务部退款',
+    'CS': '客服部退款',
+  },
+
 
 }

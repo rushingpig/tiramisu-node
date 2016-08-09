@@ -95,7 +95,27 @@ function mainForm(state = initial_state, action) {
         
         return {...state, data}
       })();
-
+    case FormActions.GET_BIND_ORDER_BY_ID:
+      return (function(){
+        var {data} = action;
+        var tmp = data.delivery_time && data.delivery_time.split(' '); //天猫没有delivery_time
+        data.delivery_date = data.delivery_time && tmp[0];
+        data.delivery_hours = data.delivery_time && tmp[1];
+        //门店自提
+        if(data.delivery_type == DELIVERY_TO_STORE){
+          data.recipient_shop_address = data.recipient_address;
+          data.recipient_address = null;
+        }
+        data.bind_order_id = action.bind_order_id;
+        //
+        var {getCities, getDistricts, getDeliveryShops} = AreaActions();
+        store.dispatch(getCities(data.province_id));
+        store.dispatch(getDistricts(data.city_id));
+        store.dispatch(getDeliveryShops(data.regionalism_id));
+        store.dispatch(FormActions.getDeliveryStations({city_id: data.city_id}));
+        
+        return {...state, data}
+      })();      
     default:
       return state;
   }
@@ -336,6 +356,7 @@ function products_choosing(state = products_choosing_state, action){
 
     case FormActions.GOT_ORDER_BY_ID:
     case FormActions.GOT_COPY_ORDER_BY_ID:
+    case FormActions.GET_BIND_ORDER_BY_ID:
       return (function(){
         var confirm_list = clone(action.data.products);
         confirm_list.forEach( n => {

@@ -1,4 +1,4 @@
-import {post, put, GET, POST, test, TEST} from 'utils/request'; //Promise
+import {post, put, GET, get, POST, test, TEST} from 'utils/request'; //Promise
 import Url from 'config/url';
 import { getValues } from 'redux-form';
 import { initForm } from 'actions/form';
@@ -227,6 +227,20 @@ export function copyOrder(){
 export const GOT_COPY_ORDER_BY_ID = 'GOT_COPY_ORDER_BY_ID';
 export function getCopyOrderById(id){
   return GET(Url.order_detail.toString(id), null, GOT_COPY_ORDER_BY_ID)
+}
+
+export const GET_BIND_ORDER_BY_ID = 'GET_BIND_ORDER_BY_ID';
+export function getBindOrderById(id){
+  return dispatch => {
+    return get(Url.order_detail.toString(id), null)
+        .done((data) => {
+          dispatch({
+            data:data,
+            bind_order_id: id,
+            type: GET_BIND_ORDER_BY_ID
+          })
+        })
+  }
 }
 
 export const SUBMIT_ORDER_ING = 'SUBMIT_ORDER_ING';

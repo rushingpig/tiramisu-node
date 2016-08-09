@@ -118,11 +118,11 @@ class ManageAddForm extends Component {
       history_orders,
     } = this.props;
 
-    var { getHistoryOrders, checkHistoryOrder, getCopyOrderById, copyOrder } = this.props.actions;
+    var { getHistoryOrders, checkHistoryOrder, getCopyOrderById, getBindOrderById, copyOrder } = this.props.actions;
 
     var { save_ing, save_success, submit_ing, 
       all_delivery_time, all_pay_status, all_order_srcs, 
-      delivery_stations, all_pay_modes, data: { merchant_id }} = this.props['form-data'];
+      delivery_stations, all_pay_modes, data: { merchant_id, bind_order_id, payment_amount }} = this.props['form-data'];
     var {provinces, cities, districts, delivery_shops} = this.props.area;
     var {invoices, selected_order_src_level1_id = src_id.value, groupbuy_psd, groupbuy_check_ing, groupbuy_msg, groupbuy_success, auto_match_ing} = this.state;
 
@@ -271,7 +271,13 @@ class ManageAddForm extends Component {
         <label>{'发票备注：'}</label>
         <textarea {...invoice} placeholder="" rows="2" cols="22" style={{width: 202}} className={`form-control input-xs ${invoice.error}`} />
       </div>
-
+      {
+        bind_order_id &&
+        <div className='form-group form-inline'>
+          <label>{'原订单支付金额：'}</label>
+          <input className='form-control input-xs' type = 'text' readOnly value={payment_amount / 100} />
+        </div>
+      }
       <hr className="dotted" />
       {this.props.children}
       <div className="form-group">
@@ -303,7 +309,7 @@ class ManageAddForm extends Component {
           ref="history_orders_modal"
           phone_num={owner_mobile.value} 
           data={history_orders}
-          {...{getHistoryOrders, checkHistoryOrder, getCopyOrderById, copyOrder}} />
+          {...{getHistoryOrders, checkHistoryOrder, getCopyOrderById, copyOrder, getBindOrderById}} />
     </div>
     )
   }
@@ -370,6 +376,9 @@ class ManageAddForm extends Component {
     return $(findDOMNode(this.refs[_refs])).find('option:selected').html();
   }
   handleCreateOrder(form_data){
+    if(this.props.bind_order_id){
+      form_data.bind_order_id = this.props.bind_order_id;
+    }
     this.props.actions.createOrder(form_data)
       .done(function(){
         Noty('success', '保存成功');

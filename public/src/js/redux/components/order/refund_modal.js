@@ -92,12 +92,7 @@ class RefundPannel extends Component{
         <div className='form-group form-inline'>
           <label>退款金额：</label>
           <span>￥</span>
-          {
-            type.value == 'FULL'?
-            <input {...amount} value = { payment_amount.value / 100} readOnly ref='amount' type='text' className='form-control input-xs short-input'/> 
-            :
-            <input {...amount} ref='amount' type='text' className={`form-control input-xs short-input ${amount.error}`}/> 
-          }
+            <input {...amount} ref='amount' type='text' disabled = {type.value == 'FULL'} className={`form-control input-xs short-input ${amount.error}`}/> 
           <label {...payment_amount} style={{color: 'grey'}}>{'　　' + symbolflag + payment_amount.value / 100}</label>         
         </div>
         <div className='form-group form-inline'>

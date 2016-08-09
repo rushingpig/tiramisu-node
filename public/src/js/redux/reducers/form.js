@@ -167,6 +167,18 @@ export default formReducer.plugin({
     }
     return state;  //required!
   },
+  refund_apply:(state,action) =>{
+    if(action && action.form == 'refund_apply'){
+      if(action.field == 'type'){
+        if(action.type == actionTypes.CHANGE){
+          if(state.type.value == 'FULL'){
+            state.amount = {value: state.payment_amount.value / 100}
+          }
+        }
+      }
+    }
+    return state;
+  },
 });
 
   // order_manage_filter: (state, action) => {

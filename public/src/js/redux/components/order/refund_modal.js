@@ -82,7 +82,6 @@ class RefundPannel extends Component{
             {...type} 
             vertical = {false}
             className='inline-block'
-            onChange = { this.refundTypeChange.bind(this) }
             radios ={[
                 { value: 'PART', text: '部分退款　　'},
                 { value: 'FULL', text: '全额退款　　'},
@@ -92,7 +91,13 @@ class RefundPannel extends Component{
         </div>
         <div className='form-group form-inline'>
           <label>退款金额：</label>
-          <span>￥</span><input {...amount} ref='amount' type='text' className={`form-control input-xs short-input ${amount.error}`}/> 
+          <span>￥</span>
+          {
+            type.value == 'FULL'?
+            <input {...amount} value = { payment_amount.value / 100} readOnly ref='amount' type='text' className='form-control input-xs short-input'/> 
+            :
+            <input {...amount} ref='amount' type='text' className={`form-control input-xs short-input ${amount.error}`}/> 
+          }
           <label {...payment_amount} style={{color: 'grey'}}>{'　　' + symbolflag + payment_amount.value / 100}</label>         
         </div>
         <div className='form-group form-inline'>
@@ -210,17 +215,6 @@ class RefundPannel extends Component{
           Noty('warning','请填写完整');
         }
     },0);
-  }
-  refundTypeChange(e){
-    var value = e;
-    var amount_input = this.refs.amount;
-    if(value == 'FULL'){
-      amount_input.setAttribute('readOnly', 'true');
-      var {fields :{amount}, payment_amount} = this.props;
-      amount.value = this.props.payment_amount / 100;
-    }else{
-      amount_input.removeAttribute('readOnly');
-    }
   }
   contactChange(){
     var owner_name = this.refs.owner_name;

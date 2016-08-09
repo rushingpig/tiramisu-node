@@ -87,15 +87,26 @@ export function refundApply(form_data){
 export const REFUND_EDIT_ING = 'REFUND_EDIT_ING';
 export const REFUND_EDIT_SUCCESS = 'REFUND_EDIT_SUCCESS';
 
-export function refundEdit(form_data){
+export function refundEdit(orderId){
 	return(dispatch, getState) => {
 		var data = _getFormData(getState);
 		dispatch({
 			type: REFUND_EDIT_ING
 		})
-		return TEST({
+    return put(Url.handle_refund.toString(orderId), data )
+            .done(function(){
+              dispatch({
+                type: REFUND_APPLY_SUCCESS
+              })
+            })
+            .fail(function(){
+              dispatch({
+                type: REFUND_APPLY_FAIL,
+              })
+            })
+/*		return TEST({
 			type: REFUND_EDIT_SUCCESS
-		})
+		})*/
 	}
 }
 function _getFormData( getState){

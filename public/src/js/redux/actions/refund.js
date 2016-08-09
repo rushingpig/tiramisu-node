@@ -141,10 +141,10 @@ export function handleRefund(orderId, handleActionName){
       dispatch({
         type: HANDLE_REFUND_ING
       })
-      return TEST({
+/*      return TEST({
         handleActionName: handleActionName,
         orderId: orderId,
-      }, HANDLE_REFUND_SUCCESS)(dispatch)
+      }, HANDLE_REFUND_SUCCESS)(dispatch)*/
     }
 }
 

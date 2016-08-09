@@ -62,7 +62,6 @@ RefundDao.prototype.findHistory = function (query) {
         _res.list = yield baseDao.select(sql_info + sql, params);
         _res.page_no = page_no;
         _res.page_size = page_size;
-        console.log(_res);
         return _res;
     });
 };
@@ -150,8 +149,8 @@ RefundDao.prototype.findRefund = function (query) {
         'su2.name As updated_by',
         'bre.updated_time',
         'bo.merchant_id',
-        'bo.id',
-        'bo.created_time',
+        'bo.id AS order_id',
+        'bo.created_time AS order_created_time',
         'bo2.id AS bind_order_id',
         'bo2.created_time AS bind_created_time'
     ];
@@ -229,12 +228,6 @@ RefundDao.prototype.findRefund = function (query) {
         _res.list = yield baseDao.select(sql, params);
         _res.page_no = page_no;
         _res.page_size = page_size;
-        _res.list.forEach(curr=> {
-            curr.id = systemUtils.getShowOrderId(curr.order_id, curr.created_time);
-            if (curr.bind_order_id && curr.bind_order_id != '0') {
-                curr.bind_order_id = systemUtils.getShowOrderId(curr.bind_order_id, curr.bind_created_time);
-            }
-        });
         return _res;
     });
 };

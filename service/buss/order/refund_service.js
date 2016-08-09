@@ -101,8 +101,8 @@ module.exports.getRelateList = function (req, res, next) {
         if (origin_order_id == '0') {
             origin_order_id = order_id;
         }
-        let results = yield orderDao.findRelateListById(origin_order_id);
-        results.forEach(curr=> {
+        let results = yield orderDao.findRelateListById(Object.assign({order_id: origin_order_id}, req.query));
+        results.list.forEach(curr=> {
             curr.id = systemUtils.getShowOrderId(curr.id, curr.created_time);
         });
         return results;
@@ -132,7 +132,14 @@ module.exports.getRefundOption = function (req, res, next) {
 module.exports.getRefundList = function (req, res, next) {
     let promise = co(function *() {
         let query = Object.assign({}, req.query);
-        return yield refundDao.findRefund(query);
+        let results = yield refundDao.findRefund(query);
+        results.list.forEach(curr=> {
+            curr.order_id = systemUtils.getShowOrderId(curr.order_id, curr.order_created_time);
+            if (curr.bind_order_id) {
+                curr.bind_order_id = systemUtils.getShowOrderId(curr.bind_order_id, curr.bind_created_time);
+            }
+        });
+        return results;
     }).then(result=> {
         res.api(result);
     });

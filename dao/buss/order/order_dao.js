@@ -1416,20 +1416,37 @@ function doFullText(query_data) {
   }
 }
 
-OrderDao.prototype.findRelateListById = function (order_id) {
+OrderDao.prototype.findRelateListById = function (query) {
+  let page_no = query.page_no || 0;
+  let page_size = query.page_size || 10;
+  let sort_type = query.sort_type || 'DESC';
   let columns = [
     'bo.id',
     'su.name AS created_by',
     'bo.created_time'
   ];
-  let sql = `SELECT ${columns.join()} FROM ?? bo `;
+  let sql_info = `SELECT ${columns.join()} FROM `;
+  let sql = `?? bo `;
   let params = [tables.buss_order];
   sql += `LEFT JOIN ?? su ON su.id = bo.created_by `;
   params.push(tables.sys_user);
   sql += `WHERE bo.id = ? OR bo.origin_order_id = ? `;
-  params.push(order_id);
-  params.push(order_id);
-  return baseDao.select(sql, params);
+  params.push(query.order_id);
+  params.push(query.order_id);
+
+  return co(function *() {
+    let total_sql = `SELECT count(*) AS total FROM ` + sql;
+    let _res = {};
+    let total = yield baseDao.select(total_sql, params);
+    _res.total = total.total;
+
+    sql += `ORDER BY created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+    _res.list = yield baseDao.select(sql_info + sql, params);
+    _res.page_no = page_no;
+    _res.page_size = page_size;
+    console.log(_res);
+    return _res;
+  });
 };
 
 OrderDao.prototype.isCanBind = function (order_id) {

@@ -230,6 +230,7 @@ module.exports.addRefund = function (req, res, next) {
 
 module.exports.editRefund = function (req, res, next) {
     let promise = co(function *() {
+        let b = req.body;
         let refund_id = req.params.refundId;
         let info = yield refundDao.findRefundById(refund_id);
         if (!info || info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS));

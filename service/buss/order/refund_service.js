@@ -199,18 +199,18 @@ module.exports.addRefund = function (req, res, next) {
         ]);
         let order_id = systemUtils.getDBOrderId(b.order_id);
         let option = yield refundDao.findOptionByOrderId(order_id);
-        if (!option) return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS));
-        if (option.refund_status) return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS, '订单处于退款中'));
+        if (!option) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
+        if (option.refund_status) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED, '订单处于退款中'));
         if ((refund_obj.type == REFUND_TYPE.PART && refund_obj.amount >= option.payment_amount)
             || (refund_obj.type == REFUND_TYPE.FULL && refund_obj.amount != option.payment_amount)) {
-            return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS, '退款金额输入有误'));
+            return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '退款金额输入有误'));
         }
 
         refund_obj.status = RS.TREATED;
         refund_obj.order_id = order_id;
         if (refund_obj.reason_type == 0) refund_obj.reason = REASON_TYPE[0];
         let refund_id = yield refundDao.insertRefund(systemUtils.assembleInsertObj(req, refund_obj));
-        if (!refund_id) return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS));
+        if (!refund_id) return Promise.reject(new TiramisuError(res_obj.FAIL, '添加退款纪录失败...'));
         let refund_history = {option: ''};
         let order_history = {option: ''};
         order_history.order_id = order_id;
@@ -231,7 +231,7 @@ module.exports.editRefund = function (req, res, next) {
     let promise = co(function *() {
         let refund_id = req.params.refundId;
         let info = yield refundDao.findRefundById(refund_id);
-        if (!info || info.length == 0) return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS));
+        if (!info || info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS));
         info = info[0];
         let refund_obj = Object.assign({}, b);
         if (!refund_id.status) {
@@ -268,7 +268,7 @@ module.exports.editRefund = function (req, res, next) {
             order_history.option += `退款完成\n退款金额为${info.amount / 100}`;
             refund_history.option += `退款完成\n`;
             let option = yield refundDao.findOptionByOrderId(info.order_id);
-            if (!option) return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS));
+            if (!option) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS));
             order_obj = {id: info.order_id, payment_amount: option.payment_amount - info.amount};
         } else {
             joinHistory(info, refund_obj, refund_history);
@@ -295,7 +295,7 @@ module.exports.editRefundRemarks = function (req, res, next) {
         let remarks = req.body.remarks;
         let refund_id = req.params.refundId;
         let info = yield refundDao.findRefundById(refund_id);
-        if (!info || info.length == 0) return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS));
+        if (!info || info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS));
         let refund_history = {
             bind_id: refund_id,
             option: `修改备注为{${remarks}}`
@@ -312,7 +312,7 @@ module.exports.delRefund = function (req, res, next) {
     let promise = co(function *() {
         let refund_id = req.params.refundId;
         let info = yield refundDao.findRefundById(refund_id);
-        if (!info || info.length == 0) return Promise.reject(new TiramisuError(res_obj.NO_MORE_RESULTS));
+        if (!info || info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS));
         info = info[0];
         if (isRefundCanUpdateStatus(info.status, RS.CANCEL)) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
         let refund_history = {

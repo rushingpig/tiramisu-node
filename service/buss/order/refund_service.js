@@ -73,7 +73,7 @@ function joinHistory(curr_obj, new_obj, history) {
         history.option = `修改退款账户用户名为{${new_obj.account_name}}\n`;
     }
     if (new_obj.amount !== undefined && curr_obj.amount != new_obj.amount) {
-        history.option = `修改退款金额为{${new_obj.amount}}\n`;
+        history.option = `修改退款金额为{${new_obj.amount / 100}}\n`;
     }
     if (new_obj.reason_type !== undefined && curr_obj.reason_type != new_obj.reason_type) {
         history.option = `修改退款原因为{${new_obj.reason}}\n`;
@@ -215,7 +215,7 @@ module.exports.addRefund = function (req, res, next) {
         let refund_history = {option: ''};
         let order_history = {option: ''};
         order_history.order_id = order_id;
-        order_history.option += `{退款金额}为{${refund_obj.amount}}\n`;
+        order_history.option += `{退款金额}为{${refund_obj.amount / 100}}\n`;
         order_history.option += `{退款原因}为{${refund_obj.reason}}\n`;
         order_history.option += `提交退款申请\n`;
         refund_history.bind_id = refund_id;

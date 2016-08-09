@@ -163,14 +163,16 @@ export function handleRefund(refundId, handleActionName){
 
 export const REFUND_COMPLETE_CS = 'REFUND_COMPLETE_CS';
 export function refundComplete_CS(refundId, pay_id, merchant_id){
-  return PUT(Url.handle_refund.toString(refundId), {pay_id, merchant_id})
-          .done(function(){
-            dispatch({
-              type: REFUND_COMPLETE_CS,
-              refundId: refundId,
-              merchant_id: merchant_id,
-            })
-          })
+  return dispatch => {
+    return put(Url.handle_refund.toString(refundId), {pay_id, merchant_id, status: 'COMPLETED'})
+            .done(function(){
+              dispatch({
+                type: REFUND_COMPLETE_CS,
+                refundId: refundId,
+                merchant_id: merchant_id,
+              })
+            })    
+          }
 }
 
 export const RESET_REFUND_STATUS = 'RESET_REFUND_STATUS';
@@ -190,7 +192,16 @@ export function editRefundChangeStatus(refundId){
 
 export const ADD_REMARK = 'ADD_REMARK';
 export function addRemark(refundId, remarks){
-  return PUT(Url.edit_refund_remark.toString(refundId), {remarks: remarks}, ADD_REMARK)
+  return dispatch => {
+    return put(Url.edit_refund_remark.toString(refundId), {remarks: remarks})
+        .done(function(){
+          dispatch({
+           type: ADD_REMARK,
+           refundId: refundId,
+           remarks: remarks           
+         })
+        })    
+  }
 /*  return {
     type: ADD_REMARK
   }*/

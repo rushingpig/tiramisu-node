@@ -28,7 +28,7 @@ const validate = (values, props) => {
   }
 
   function _v_select(key){
-    if(form[key] && form[key].touched && (!values[key] || values[key] == SELECT_DEFAULT_VALUE))
+    if(form[key] && form[key].touched && (values[key] === undefined || values[key] == SELECT_DEFAULT_VALUE))
       errors[key] = msg;
   }
 

@@ -69,6 +69,17 @@ function RefundManage(state = initial_state, action){
 			list = list.map( m => {
 				if(m.id == refundId ){
 					m.merchant_id = merchant_id;
+					m.status = 'COMPLETED';
+				}
+				return m;
+			})
+			return {...state, list: list}
+		case REFUNDACTIONS.ADD_REMARK:
+			var {list } = state;
+			var { refundId, remarks } = action;
+			list = list.map( m => {
+				if(m.id == refundId ){
+					m.remarks = remarks;
 				}
 				return m;
 			})

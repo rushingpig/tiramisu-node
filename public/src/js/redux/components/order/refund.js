@@ -199,7 +199,7 @@ var RefundRow = React.createClass({
 					</span>
 				</td>
 				<td>
-
+					{props.merchant_id}
 				</td>
 				<td>{this.props.order_id}</td>
 				<td>
@@ -260,8 +260,7 @@ var RefundRow = React.createClass({
 		this.props.viewRefundModal();
 	},
 	viewRefundCredential: function(){
-		this.props.handleRefund(this.props.id, 'COMPLETED');
-		this.props.viewRefundCredential(this.props.id);
+		this.props.viewRefundCredential(this.props.id, this.props.pay_id, this.props.merchant_id);
 	},
 	viewRemarkModal: function(){
 		this.props.viewRemarkModal(this.props.id, this.props.remarks);
@@ -415,11 +414,11 @@ class ManagePannel extends Component{
 	viewRefundModal(){
 		this.refs.RefundModal.show();
 	}
-	viewRefundCredential(id){
-		this.refs.viewRefundCredential.show(id);
+	viewRefundCredential(id, pay_id, merchant_id){
+		this.refs.viewRefundCredential.show(id, pay_id, merchant_id);
 	}
-	viewRemarkModal(remarks){
-		this.refs.viewRemarkModal.show(remarks);
+	viewRemarkModal(id, remarks){
+		this.refs.viewRemarkModal.show(id, remarks);
 	}
 	viewBindOrderRecord(order){
 	  this.refs.BindOrderRecordModal.show(order);
@@ -486,8 +485,8 @@ class RefundCredentials extends Component{
 			</StdModal>
 			)
 	}
-	show(id){
-		this.setState({pay_id: '', merchant_id: '', id: id})
+	show(id, pay_id, merchant_id){
+		this.setState({pay_id: pay_id || '', merchant_id: merchant_id || '', id: id})
 		this.refs.modal.show();
 	}
 	onTradeIdChange(e){
@@ -503,7 +502,8 @@ class RefundCredentials extends Component{
 		this.props.refundComplete_CS(id, pay_id, merchant_id)
 			.done( function(){
 				this.setState({pay_id: '', merchant_id: ''});
-				Noty('success', '添加成功')
+				Noty('success', '添加成功');
+				this.refs.modal.hide();
 			}.bind(this))
 			.fail(function(msg, code){
 				Noty('error', msg || '添加失败')
@@ -541,6 +541,7 @@ class RemarkModal extends Component{
 			.done(function(){
 				this.setState({remark: ''});
 				Noty('success', '添加成功');
+				this.refs.modal.hide();
 			}.bind(this))
 			.fail(function(msg, code){
 				Noty('error', msg || '添加失败');

@@ -1438,7 +1438,7 @@ OrderDao.prototype.findRelateListById = function (query) {
     let total_sql = `SELECT count(*) AS total FROM ` + sql;
     let _res = {};
     let total = yield baseDao.select(total_sql, params);
-    _res.total = total.total;
+    _res.total = total[0].total;
 
     sql += `ORDER BY created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
     _res.list = yield baseDao.select(sql_info + sql, params);

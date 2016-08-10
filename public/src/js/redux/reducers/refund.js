@@ -94,7 +94,6 @@ function RefundManage(state = initial_state, action){
 		  	return {...state, operationRecord:{}};
 		case REFUNDACTIONS.GET_ORDER_OPT_RECORD:
 			var data = action.data;
-			data.page_size = data.total;
 		  	return {...state, operationRecord:data }
 		default:
 			return state;

@@ -14,14 +14,14 @@ var BindOrderModal = React.createClass({
   render(){
     var { order_id, owner_mobile, owner_name } = this.state.data;
     var { page_no, total, list, loading } = this.props;
-    var {sort_type} = this.props;
+    var {sort_type} = this.state;
     var content = list.map( (n, i) => {
       return (
         <tr key={n.order_id + '' + i}>
           <td>{n.created_by}</td>
           <td className="text-left">
             {
-              sort_type == 'DESC' && i == 0 || sort_type == 'ASC' && i == content.length - 1?
+              sort_type == 'ASC' && i == 0 || sort_type == 'DESC' && i == list.length - 1?
               <span style = {{color: '#9C6B21'}}>{n.order_id}</span>
               :
               <span>{n.order_id}</span>

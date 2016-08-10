@@ -383,7 +383,7 @@ class ManagePannel extends Component{
 				    </div>
 				  : null }
 
-				<OperationRecordModal ref='viewOperationRecord' {...{getOrderOptRecord, resetOrderOptRecord, list:operationRecord.list || [], page_no:0}}/>
+				<OperationRecordModal ref='viewOperationRecord' {...{getOrderOptRecord, resetOrderOptRecord, list:operationRecord.list || [], page_no:0, total: operationRecord.total}}/>
         		<RefundModal ref='RefundModal' editable={true} 
         			 refund_data = { refund_data } 
         			 all_refund_reasons = {all_refund_reasons} 

@@ -250,9 +250,11 @@ export function getOrderOptRecord(order_id, data){
   }*/
 }
 
+
 export const RESET_ORDER_OPT_RECORD = 'RESET_ORDER_OPT_RECORD'; //先重置历史数据
 export function resetOrderOptRecord(){
   return {
     type: RESET_ORDER_OPT_RECORD,
   }
 }
+

@@ -2,9 +2,8 @@ import React from 'react';
 import StdModal from 'common/std_modal.js';
 import { tableLoader, get_table_empty } from 'common/loading';
 import Pagination from 'common/pagination.js';
-import { colour } from 'utils/index';
 
-var OperationRecordModal = React.createClass({
+var BindOrderModal = React.createClass({
   getInitialState() {
     return {
       sort_type: 'DESC', //ASC
@@ -15,19 +14,27 @@ var OperationRecordModal = React.createClass({
   render(){
     var { order_id, owner_mobile, owner_name } = this.state.data;
     var { page_no, total, list, loading } = this.props;
+    var {sort_type} = this.state;
     var content = list.map( (n, i) => {
       return (
         <tr key={n.order_id + '' + i}>
           <td>{n.created_by}</td>
-          <td className="text-left">{colour(n.option)}</td>
+          <td className="text-left">
+            {
+              sort_type == 'ASC' && i == 0 || sort_type == 'DESC' && i == list.length - 1?
+              <span style = {{color: '#9C6B21'}}>{n.order_id}</span>
+              :
+              <span>{n.order_id}</span>
+            }
+          </td>
           <td>{n.created_time}</td>
         </tr>
       )
     })
     return (
-      <StdModal title="操作历史记录" footer={false} ref="modal" onCancel={this.hideCallback}>
+      <StdModal title="订单关联历史记录" footer={false} ref="modal" onCancel={this.hideCallback}>
         <div className="">
-          <label>订单号：</label>
+          <label>初始支付订单号：</label>
           {order_id}
         </div>
         <div className="form-group">
@@ -39,7 +46,7 @@ var OperationRecordModal = React.createClass({
             <thead>
             <tr>
               <th>操作人</th>
-              <th>操作记录</th>
+              <th>关联记录</th>
               <th className={`sorting ${this.state.sort_type.toLowerCase()}`} onClick={this.changeSortType}>操作时间</th>
             </tr>
             </thead>
@@ -69,19 +76,11 @@ var OperationRecordModal = React.createClass({
   },
   search(page_no){
     var { page_size, sort_type } = this.state;
-    if (this.state.data.refund_id != undefined ){
-      this.props.getOrderOptRecord(this.state.data.refund_id, {
-        page_no: page_no,
-        page_size,
-        sort_type
-      });
-    }else{
-      this.props.getOrderOptRecord(this.state.data.order_id, {
-        page_no: page_no,
-        page_size,
-        sort_type
-      });      
-    }
+    this.props.getBindOrders(this.state.data.order_id, {
+      page_no: page_no,
+      page_size,
+      sort_type
+    });
   },
   show(data){
     this.refs.modal.show();
@@ -90,8 +89,8 @@ var OperationRecordModal = React.createClass({
     });
   },
   hideCallback(){
-    this.props.resetOrderOptRecord();
+    this.props.resetBindOrders();
   },
 });
 
-export default OperationRecordModal;
+export default BindOrderModal;

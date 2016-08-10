@@ -47,6 +47,8 @@ a
   margin-bottom: 8px //等同于form-group的margin-bottom
 .mg-15
   margin-bottom: 15px
+.mgt-20
+  margin-top: 20px
 .v-mg
   margin-top: 4px
   margin-bottom: 4px
@@ -65,7 +67,7 @@ a
 .pl-20
   padding-left: 20px
 .ml-20
-  padding-left: 20px
+  margin-left: 20px
 .round
   @include border-radius(5px)
 .round-2
@@ -114,6 +116,15 @@ a
   background-color: $theme-colour-bg
 .relative
   position: relative !important
+.absolute
+  position: absolute !important
+.center
+  position: absolute
+  top: 50%
+  left: 50%
+  transform: translate3d(-50%, -50%, 0)
+.cursor-pointer
+  cursor: pointer
 
 /**************************/
 /********* 组件类 **********/

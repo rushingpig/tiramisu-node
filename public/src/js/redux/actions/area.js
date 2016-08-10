@@ -19,6 +19,12 @@ export default function Area(ActionTypes = AreaActionTypes1){
     getProvincesSignal:function(signal = 'authority'){
       return GET(Url.provinces.toString(), {signal}, ActionTypes.GOT_PROVINCES_SIGNAL);
     },
+    setProvince: function(province_id = 'no province id'){
+      return {
+        type: ActionTypes.SET_PROVINCE,
+        province_id
+      }
+    },
 
 
     resetCities: function (form_name){
@@ -47,6 +53,12 @@ export default function Area(ActionTypes = AreaActionTypes1){
     },
     getStandardCitiesSignal:function({ province_id, signal = 'authority' }){
       return GET(Url.cities.toString(province_id), {is_standard_area: 1, signal}, ActionTypes.GOT_CITIES_SIGNAL);
+    },
+    setCity: function(city_id = 'no city id'){
+      return {
+        type: ActionTypes.SET_CITY,
+        city_id
+      }
     },
 
 
@@ -78,6 +90,13 @@ export default function Area(ActionTypes = AreaActionTypes1){
     getCityAndDistricts: function(city_id){
       return GET(Url.districts_and_city.toString(city_id), null, ActionTypes.GOT_CITY_AND_DISTRICTS);
     },
+    setDestrict: function(district_id = 'no district id'){
+      return {
+        type: ActionTypes.SET_CITY,
+        district_id
+      }
+    },
+
 
     getDeliveryShops: function (district_id) {
       return GET(Url.shops.toString(district_id), null, ActionTypes.GOT_DELIVERY_SHOPS);

@@ -1,4 +1,5 @@
 export default {
+  //对于同一页面存在多个省市区的时候，就要用到信号2
   AreaActionTypes1: {
     GOT_PROVINCES: 'GOT_PROVINCES',
     GOT_PROVINCES_SIGNAL:'GOT_PROVINCES_SIGNAL',
@@ -13,6 +14,10 @@ export default {
     GOT_AREA_FAIL: 'GOT_AREA_FAIL',
     GOT_DELIVERY_SHOPS: 'GOT_DELIVERY_SHOPS',
     RESET_SHOPS: 'RESET_SHOPS',
+
+    SET_PROVINCE: 'SET_PROVINCE',
+    SET_CITY: 'SET_CITY',
+    SET_DESTRICT: 'SET_DESTRICT'
   },
   AreaActionTypes2: {
     GOT_PROVINCES: 'GOT_PROVINCES_2',
@@ -28,6 +33,10 @@ export default {
     GOT_AREA_FAIL: 'GOT_AREA_FAIL_2',
     GOT_DELIVERY_SHOPS: 'GOT_DELIVERY_SHOPS_2',
     RESET_SHOPS: 'RESET_SHOPS_2',
+    
+    SET_PROVINCE: 'SET_PROVINCE_2',
+    SET_CITY: 'SET_CITY_2',
+    SET_DESTRICT: 'SET_DESTRICT_2'
   },
   ProductsModalActionTypes: {
     RESET_CITIES: 'RESET_CITIES_3',

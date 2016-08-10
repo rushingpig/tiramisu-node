@@ -17,7 +17,8 @@ var res_obj = require('../../../util/res_obj'),
     orderDao = new OrderDao(),
     ProductDao = dao.product,
     productDao = new ProductDao(),
-    xlsx = require('node-xlsx');
+    xlsx = require('node-xlsx'),
+    tv4 = require('tv4');
 
 function ProductService() {
 
@@ -560,6 +561,19 @@ ProductService.prototype.exportSku = (req, res, next) => {
                 'Expires': 0
             });
             res.send(buffer);
+        });
+    systemUtils.wrapService(res, next, promise);
+}
+ProductService.prototype.addProductInfo = function (req, res, next) {
+    //验证数据
+    let correct = tv4.validate(req.body, schema.addProductInfo);
+    if (!correct) {
+        res.api(res_obj.INVALID_PARAMS, toolUtils.formatTv4Error(tv4.error));
+        return;
+    }
+    let promise = productDao.insertProductInfo(req, req.body)
+        .then(() => {
+            res.api();
         });
     systemUtils.wrapService(res, next, promise);
 }

@@ -157,4 +157,10 @@ ToolUtils.exp_validator_custom = {
     }
   }
 };
+ToolUtils.formatTv4Error = function (error) {
+  return {
+    message: error.message,
+    path: error.schemaPath
+  };
+}
 module.exports = ToolUtils;

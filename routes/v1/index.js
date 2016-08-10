@@ -103,6 +103,7 @@ a.post('/product/categories/primary', categoryService.addPrimaryCategory);  // �
 a.post('/product/categories/secondary', categoryService.addSecondaryCategory);  // 新增二级分类
 
 a.post('/product/sku', productService.addProductWithSku);  // 新增产品
+a.post('/product/info', productService.addProductInfo);  // 新增商品详情
 
 //*********************
 //******** PUT ********

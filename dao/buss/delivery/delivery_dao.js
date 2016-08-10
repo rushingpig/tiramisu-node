@@ -27,6 +27,7 @@ function DeliveryDao(){
  * query for stations
  */
 DeliveryDao.prototype.findAllStations = function(query_data){
+    if (!query_data) query_data = {};
     let sql = `SELECT bds.* FROM ?? bds `;
     let params = [];
     params.push(tables.buss_delivery_station);
@@ -54,9 +55,13 @@ DeliveryDao.prototype.findAllStations = function(query_data){
     }
     sql += `WHERE bds.del_flag = ? `;
     params.push(del_flag.SHOW);
+    if (query_data.is_national !== undefined) {
+        sql += `AND bds.is_national = ? `;
+        params.push(query_data.is_national);
+    }
     // data filter begin
     // 添加用户时只展示该用户所属的配送站供选择
-    if(query_data && query_data.signal && query_data.user.is_national == 0){
+    if(query_data && query_data.signal && query_data.user && query_data.user.is_national == 0){
         sql += " and bds.id in " + dbHelper.genInSql(query_data.user.station_ids);
     }
     // data filter end
@@ -259,9 +264,14 @@ DeliveryDao.prototype.findDeliverymansByOrder = function(order_id){
     sql += " inner join ?? sur on sur.user_id = su.id and sur.role_id = ?";
     params.push(tables.sys_user_role);
     params.push(constant.DELIVERYMAN_ID);
-    sql += " inner join ?? bo on bo.id = ? and FIND_IN_SET(bo.delivery_id, su.station_ids)";
+    sql += " inner join ?? bo on bo.id = ? ";
     params.push(tables.buss_order);
     params.push(order_id);
+    sql += ` INNER JOIN ?? bds on bds.id = bo.delivery_id `;
+    params.push(tables.buss_delivery_station);
+    sql += ` INNER JOIN ?? dr on dr.id = bds.regionalism_id AND FIND_IN_SET(dr.parent_id, su.city_ids) `;
+    params.push(tables.dict_regionalism);
+
     sql += ` WHERE su.del_flag = ? AND sur.only_admin = ? `;
     params.push(del_flag.SHOW);
     params.push(ONLY_ADMIN.NO);
@@ -338,8 +348,11 @@ function joinDeliveryRecordSql(query, need_city_name) {
                 tmp_sql += `OR bo.src_id in ${dbHelper.genInSql(query.user.src_ids)} `;
             }
         });
-        sql += tmp_sql.replace(/^OR/, '');
-        sql += `) `;
+        if (tmp_sql !== '') {
+            sql += `AND ( ${tmp_sql.replace(/^OR/, '')} )`;
+        } else {
+            sql += `AND 1 = 0 `;
+        }
     }
     if (query.begin_time) {
         sql += `AND bo.delivery_time >= ? `;

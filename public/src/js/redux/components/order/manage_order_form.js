@@ -328,6 +328,9 @@ class ManageAddForm extends Component {
           form_data.delivery_name = undefined;
         }else {
           form_data.delivery_name = this.findSelectedOptionText('delivery_center');
+          if(form_data.delivery_name == this.refs.delivery_center.props['default-text']){
+            form_data.delivery_id == SELECT_DEFAULT_VALUE;
+          }
         }
 
         //拼接省市区
@@ -396,8 +399,8 @@ class ManageAddForm extends Component {
       Noty('warning', '请选择配送中心'); return;
     }
     this.props.actions.submitOrder(form_data).done(function(){
-      Noty('success', '已成功提交！');
       history.push('/om/index');
+      Noty('success', '已成功提交！');
     }).fail(function(msg){
       Noty('error', msg || '网络繁忙，请稍后再试');
     });

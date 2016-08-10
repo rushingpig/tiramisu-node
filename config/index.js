@@ -32,6 +32,8 @@ function config_index() {
         config = require('./production');
     } else if('qa' === tiramisu_env){
         config = require('./qa');
+    } else if('pr' === tiramisu_env){
+        config = require('./pr');
     } else{
         throw new Error('please set the param : NODE_ENV in your PATH....');
     }

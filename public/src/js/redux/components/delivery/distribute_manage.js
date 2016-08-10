@@ -499,7 +499,7 @@ class DeliveryDistributePannel extends Component {
     this.refs.OperationRecordModal.show(order);
   }
   showSignedModal(n){
-    this.props.getDeliverymanAtSameStation(n.order_id);
+    this.props.getDeliverymanByOrder(n.order_id);
     /*this.props.getOrderSpareparts(n.order_id);   */ 
     this.props.getOrderDetail(n.order_id);
     
@@ -513,7 +513,7 @@ class DeliveryDistributePannel extends Component {
     this.refs.ScanModal.show();
   }
   showEditModal(n){
-    this.props.getDeliverymanAtSameStation(n.order_id);
+    this.props.getDeliverymanByOrder(n.order_id);
     this.props.getOrderDetail(n.order_id);
     this.refs.EditModal.show(n);
   }
@@ -675,7 +675,7 @@ var SignedModal = React.createClass({
   getInitialState: function() {
     return {
       CASH: 'CASH', //现金赔偿
-      REFUND: 'REFUND', //全额退款
+      FULL_REFUND: 'FULL_REFUND', //全额退款
 
       order: {},
 
@@ -685,53 +685,129 @@ var SignedModal = React.createClass({
       refund_method: '',
       refund_money: 0,
       refund_reson: '',
+      order_refund_money: 0,
+      plus_amount: 0,
+      minus_amount: 0,
       orderSpareparts:[],
       current_id: -1,
-      deliverymanAtSameStation: [],
       pay_way:1,
+      is_refund: false,
+      order_deliveryman: [],
+      filter_deliveryman_results: [],
     };
   },
   mixins: [ LinkedStateMixin ],
   render: function(){
-    var { signin_date, late_minutes, refund_method, refund_money, refund_reson,current_id, deliverymanAtSameStation , POS_terminal_id} = this.state;
+    var { signin_date, late_minutes, refund_method, refund_money, refund_reson,current_id, order_deliveryman , POS_terminal_id, plus_amount, minus_amount, order_refund_money, filter_deliveryman_results} = this.state;
     var { D_ ,loading, refresh } = this.props;
     
-    var { spareparts } =  D_ ;
-    /*var { deliverymanAtSameStation } =  D_ ;*/
+    var { spareparts, orderDetail } =  D_ ;
+    /*var { order_deliveryman } =  D_ ;*/
     var content = this.state.orderSpareparts.map( (n, i) => {
       return <PartRow key = {n.sku_id + i} 
                 {...n} 
                 onRemarksChange = { this.onRemarksChange }
                 onIncrement = {this.onIncrement}
                 onDecrement = {this.onDecrement}/>
+    });
+    var deliveryman_content = filter_deliveryman_results.map( n => {
+          return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
     })
     return (
       <StdModal submitting={this.props.submitting} onConfirm={this.submitHandler} onCancel={this.hideCallback} title="订单完成页面" ref="modal">
         <div className="form-group mg-15 form-inline">
           <div className = "row">
             <div className="col-xs-6">
-              <label>签收时间：</label>
+              <label>{'签收时间：'}</label>
               <DatePicker value={signin_date} onChange={this.onSignInDateChange} className="short-input" />
               {'　'}
               <TimeInput onChange={this.onTimeChange} onOK={this.onTimeOK} ref="timeinput" />
             </div>
             <div className="col-xs-6">
-              <label>配送员：</label>
-              <Select name = 'deliveryman_id' options = { deliverymanAtSameStation } value = { current_id } ref = 'deliveryman_id' onChange= {this.onDeliverymanChange}/>
-            </div>
-          </div>
-
-        </div>
-        <div className="form-group form-inline mg-15">
-          <div className="row">
-            <div className="col-xs-6">
-              <label>迟到时长：</label>
+              <label>{'迟到时长：'}</label>
               <div className="inline-block input-group input-group-xs">
                 <input value={late_minutes} onChange={this.onLateTimeChange} type="text" className="form-control" style={{'width': 50}} />
                 <span className="input-group-addon">Min</span>
               </div>
             </div>
-            <div className="col-xs-6">
+          </div>
+        </div>
+        <div className="form-group form-inline mg-15">
+          <label>{'　配送员：'}</label>
+          <div className="input-group input-group-xs" style={{height:'27px'}}>
+            <span  style={{height:'27px',lineHeight:1}} className="input-group-addon"><i className="fa fa-search"></i></span>
+            <input type="text"  style={{height:'27px'}} 
+              className="form-control" placeholder="配送员拼音首字母或手机号" 
+              onChange = {this.filterHandler} />
+          </div>
+          <select name= 'deliveryman' onChange = {this.onDeliverymanChange} value={current_id} ref='deliveryman' className="form-control input-sm space-left"  style={{height:'27px',minWidth:100}}>
+            {
+              deliveryman_content.length
+              ? deliveryman_content
+              : <option>无</option>
+            }
+          </select>
+          {/*<Select name = 'deliveryman_id' options = { order_deliveryman } value = { current_id } ref = 'deliveryman_id' onChange= {this.onDeliverymanChange}/>*/}
+        </div>
+
+        <div className="form-group mg-15">
+          <label>
+            <input checked = {this.state.is_refund} type = 'checkbox' onClick={this.isRefundChange}/>
+            {' 使用幸福承诺'}
+          </label>
+        </div>
+        {
+          this.state.is_refund && 
+          [<div className="form-group mg-15">
+            <label className="">
+              <input value={this.state.CASH} onClick={this.checkMethod} checked={this.state.CASH == refund_method} type="radio" name="method" />
+              {' 现金赔偿（迟到30mins以内）'}
+            </label>
+            {
+              this.state.refund_method == this.state.CASH
+              ? <div className="form-group form-inline">
+                  <div className="input-group input-group-xs pl-20">
+                    <input valueLink={this.linkState('refund_money')} className="form-control input-xs" style={{'width': 50}} />
+                    <span className="input-group-addon">RMB</span>
+                  </div>
+                </div>
+              : null
+            }
+          </div>,
+          <div className="form-group mg-15">
+            <label className="">
+              <input value={this.state.FULL_REFUND} onClick={this.checkMethod} checked={this.state.FULL_REFUND == refund_method} type="radio" name="method" />
+              {' 全额退款（迟到时间>=30mins）'}
+            </label>
+            {
+              this.state.refund_method == this.state.FULL_REFUND
+              ? <div className="form-group pl-20">
+                  <RadioGroup 
+                    value={refund_reson} 
+                    vertical={true}
+                    name="refund_reson"
+                    radios={[
+                      {value: '迟到30mins以上', text: '迟到30mins以上'}, 
+                      {value: '款式不符', text: '款式不符'}, 
+                      {value: '尺寸、规格不符', text: '尺寸、规格不符'}]}
+                    onChange={this.checkReason}
+                  />
+                </div>
+              : null
+            }
+          </div>]          
+        }
+        <div className = 'form-group form-inline mg-15'>
+          <label>{'初始应收金额：￥'}</label>
+          <input value={orderDetail.total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+          <label>{'　减：￥'}</label>
+          <input value={minus_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+          <label>{'　加：￥'}</label>
+          <input value={plus_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />         
+        </div>
+        <div className='form-group form-inline mg-15'>
+          <div className='row'>
+            <div className='col-xs-6'>
               <label>货到付款金额：￥</label>
               <input value={this.state.order.total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
               {
@@ -741,47 +817,13 @@ var SignedModal = React.createClass({
                   <option value='2'>POS机</option>
                 </select>
                 :null
-              }            
+              } 
+            </div>
+            <div className='col-xs-6'>
+              <label>系统退款金额：￥</label>
+              <input value={this.state.order.refund_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
             </div>
           </div>
-        </div>
-        <div className="form-group mg-15">
-          <label className="">
-            <input value={this.state.CASH} onClick={this.checkMethod} checked={this.state.CASH == refund_method} type="radio" name="method" />
-            {' 现金赔偿（迟到30mins以内）'}
-          </label>
-          {
-            this.state.refund_method == this.state.CASH
-            ? <div className="form-group form-inline">
-                <div className="input-group input-group-xs pl-20">
-                  <input valueLink={this.linkState('refund_money')} className="form-control input-xs" style={{'width': 50}} />
-                  <span className="input-group-addon">RMB</span>
-                </div>
-              </div>
-            : null
-          }
-        </div>
-        <div className="form-group mg-15">
-          <label className="">
-            <input value={this.state.REFUND} onClick={this.checkMethod} checked={this.state.REFUND == refund_method} type="radio" name="method" />
-            {' 全额退款（迟到时间>=30mins）'}
-          </label>
-          {
-            this.state.refund_method == this.state.REFUND
-            ? <div className="form-group pl-20">
-                <RadioGroup 
-                  value={refund_reson} 
-                  vertical={true}
-                  name="refund_reson"
-                  radios={[
-                    {value: '迟到30mins以上', text: '迟到30mins以上'}, 
-                    {value: '款式不符', text: '款式不符'}, 
-                    {value: '尺寸、规格不符', text: '尺寸、规格不符'}]}
-                  onChange={this.checkReason}
-                />
-              </div>
-            : null
-          }
         </div>
         <div className="form-group mg-15">
           <label>已购配件：</label>
@@ -809,23 +851,25 @@ var SignedModal = React.createClass({
       </StdModal>
     )
   },
+  isRefundChange(){
+    this.setState({is_refund: !this.state.is_refund});
+  },
   submitHandler(){
-    var { order, CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date, current_id, deliverymanAtSameStation, pay_way } = this.state;
+    var { order, CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date, current_id, order_deliveryman, pay_way } = this.state;
     var { orderDetail } = this.props.D_;
     var currentOrderSpareparts = this.state.orderSpareparts;
     var { updated_time } = orderDetail;
     var signin_hour = this.refs.timeinput.val();
-    var deliveryman_tmp = deliverymanAtSameStation.filter( m => m.id == current_id);
-    var deliveryman;
-    if( deliveryman_tmp.length > 0 ){
-      var arr = deliveryman_tmp[0].text.split(':');
-      var name = arr.length > 0 ? arr[0]:'';
-      var mobile = arr.length > 1 ? arr[1]: '';
-      deliveryman = { id:current_id , mobile , name };      
+    var deliveryman_tmp = order_deliveryman.filter( m => m.deliveryman_id == current_id);
+    var deliveryman = {};
+    if(deliveryman_tmp.length > 0){
+      deliveryman.id = deliveryman_tmp[0].deliveryman_id;
+      deliveryman.name = deliveryman_tmp[0].deliveryman_name;
+      deliveryman.mobile = deliveryman_tmp[0].deliveryman_mobile;
     }else{
       if (current_id == 0){
         Noty('warning', '请选择配送员'); return;        
-      }
+      }      
     }
     /*deliveryman ={ id: 1, mobile :'18118776535' ,name :'hong'}*/
 
@@ -836,26 +880,52 @@ var SignedModal = React.createClass({
       Noty('warning', '请填写正确的签收时间');return;
     }
     // 去掉迟到赔付必填
-    if(late_minutes > 0){
-/*      if(!refund_method){
+ /*    if(late_minutes > 0){
+     if(!refund_method){
         Noty('warning', '请选择赔偿方式');return;
       }*/
-      if(refund_method == CASH){
-        if(!form.isNumber(refund_money)){
-          Noty('warning', '请输入现金赔偿金额');return;
-        }else if(refund_money > 29){
-          Noty('warning', '现金赔偿金额不应大于29元');return;         
-        }
-      }else{
+    if(this.state.is_refund){
+      if(!refund_method){
+         Noty('warning', '请选择赔偿方式');return;
+       }
+       if(refund_method == CASH){
+         if(!form.isNumber(refund_money)){
+           Noty('warning', '请输入现金赔偿金额');return;
+         }else if(refund_money > 29){
+           Noty('warning', '现金赔偿金额不应大于29元');return;         
+         }
+       }
+    }else {
+      this.setState({
+        refund_money: 0,
+        refund_reson: '',
+        refund_method: '',
+      })
+    }
+
+      //去掉必须的全额退款
+/*      else{
         if(!refund_reson){
           Noty('warning', '请勾选全额退款原因');return;
         }
       }
-    }
+    }*/
     var { orderSpareparts } = this.props.D_;
+    var currentOrderDetail = this.state.order;
     var products = currentOrderSpareparts;
-    var orderProducts = this.props.D_.orderDetail.products.filter( m =>  m.category_id != ACCESSORY_CATE_ID );
+    var orderProducts = this.props.D_.orderDetail.products.filter( m =>  m.isAddition == 0 );
     products = products.filter( m =>  m.num != 0 );
+    var { minus_amount } = this.state;
+    if( minus_amount > 0){
+      products = products.map( m => {
+        if(m.amount > 0 && minus_amount >0 ) {
+          m.amount -= minus_amount ;
+          minus_amount -= m.amount;
+          m.amount = m.amount > 0 ? m.amount : 0;
+        }
+        return m;
+      })
+    }
     products = [...products, ...orderProducts];
     var signData = {
       late_minutes: late_minutes,
@@ -881,6 +951,24 @@ var SignedModal = React.createClass({
     .fail(function(msg, code){
       Noty('error', msg || '提交失败')
     })
+  },
+  filterHandler(e){
+    var { value } = e.target;
+    var { order_deliveryman } = this.state;
+    var results = [];
+    value = value.toUpperCase();
+    if(value === ''){
+      results = order_deliveryman;
+    }else if(/^\d+$/i.test(value)){ //电话号码
+        results = order_deliveryman.filter(n => n.deliveryman_mobile.indexOf(value) != -1)
+      }else if(/^\w+$/i.test(value)){ //首字母
+      results = order_deliveryman.filter(n => {
+        return n.py.some(m => m.toUpperCase().indexOf(value) == 0)
+      })
+    }else{ //中文全称
+      results = order_deliveryman.filter(n => n.deliveryman_name.indexOf(value) != -1)
+    }
+    this.setState({ filter_deliveryman_results: results, current_id: results.length && results[0].deliveryman_id });
   },
   onSignInDateChange: function(value){
     this.setState({ signin_date: value })
@@ -931,12 +1019,23 @@ var SignedModal = React.createClass({
   },
   onDecrement: function(id){
      var old_orderSpareparts = this.state.orderSpareparts ;
+    var  initial_orderSpareparts = this.props.D_.orderSpareparts;
+
      old_orderSpareparts = old_orderSpareparts.map( m => {
        if( m.sku_id == id){
         if(m.num>0){
          m.num --;
          m.amount -= m.unit_price;
+         //减少时，加，减金额的变化情况
+         //当操作的配件已存在订单配件中，且当前该配件的数量大于订单中该配件的数量，加的金额减少，当前该配件的数量小于等于订单中该配件的数量，减得金额增加
+         //当操作的配件不存在订单配件中，加的金额减少
+         if( initial_orderSpareparts.some( h => h.sku_id == m.sku_id && h.num > m.num)){
+          this.setState({minus_amount: this.state.minus_amount + m.unit_price})
+         }else{
+          this.setState({plus_amount: this.state.plus_amount - m.unit_price})
+         }         
         }
+        m.discount_price = m.unit_price * m.num;
        }
        m.amount = m.amount > 0 ? m.amount : 0;
        return m;
@@ -947,11 +1046,23 @@ var SignedModal = React.createClass({
   },
   onIncrement: function(id){
      var old_orderSpareparts = this.state.orderSpareparts;
+    var  initial_orderSpareparts = this.props.D_.orderSpareparts;
+
       old_orderSpareparts = old_orderSpareparts.map( m => {
        if( m.sku_id == id){
          m.num ++;
          m.amount += m.unit_price;
+         //增加时，加，减金额的变化情况，
+         //1.当操作的配件已存在订单配件中，且当前该配件的数量少于订单中该配件的数量，减得金额减少，
+         //其余情况，加的金额增加
+         if( initial_orderSpareparts.some(h => h.sku_id == m.sku_id && h.num >= m.num)){
+          this.setState({minus_amount: this.state.minus_amount - m.unit_price});
+         }else{
+          this.setState({plus_amount: this.state.plus_amount + m.unit_price});
+         }
+        m.discount_price = m.unit_price * m.num;
        }
+
        return m;
      });
      this.setState({orderSpareparts:old_orderSpareparts});  
@@ -975,46 +1086,52 @@ var SignedModal = React.createClass({
     this.refs.timeinput.reset();
     this.setState(this.getInitialState());
   },
+  /**
+   * 点击可选配件里的配件时触发
+   * @param  {[type]} e [description]
+   * @return {[type]}   [description]
+   */
   onSparePartChange(e){
-
-    var old_orderSpareparts = this.state.orderSpareparts;
-    if( !e.children ||   e.children.length == 0){
-      var newvalue = {};
-      if('parent_id' in e){
-        if(old_orderSpareparts.some( m => m.id == e.parent_id && m.sub == e.name)){
-          old_orderSpareparts.map( m => {
-            if( m.id == e.parent_id && m.sub == e.name){
-              m.num ++ ;
-            }
-            return m;
-          })
-        }else{
-          var newvalue = { id: e.parent_id, name: e.parent_name ,price: e.price ,sub: e.name, remarks:'',num:1, skus: e.skus }           
-        }       
-      }else{
-        if(old_orderSpareparts.some( m => m.sku_id == e.sku_id )){
-          old_orderSpareparts.map( m => {
-            if(m.sku_id == e.sku_id){
-              m.num ++;
-            }
-            return m;
-          })
-        }else{
-          var newvalue = e;
-          e.num = 1;
-          newvalue.unit_price = newvalue.discount_price;
-          newvalue.amount = newvalue.discount_price;
-          old_orderSpareparts.push(newvalue);
+    var e_copy = clone(e);   //深沉拷贝，否则在修改e_copy的值时会影响原有配件的值
+    var old_orderSpareparts = this.state.orderSpareparts;  //old_orderSpareparts  当前列表已购配件
+    var  initial_orderSpareparts = this.props.D_.orderSpareparts;  //订单原有配件
+    if(old_orderSpareparts.some( m => m.sku_id == e_copy.sku_id )){
+      //当选择的配件已存在已购配件列表时
+      old_orderSpareparts.map( m => {
+        if(m.sku_id == e_copy.sku_id){
+          m.num ++;
+          m.amount += e_copy.discount_price;   //已购配件中该配件加1，同时amount变化
+          /*加、减金额变化两种情况，‘加’的金额增加，‘减’的金额减少*/
+          if(initial_orderSpareparts.some(h => h.sku_id == e_copy.sku_id && h.num >= m.num)){
+            //选择的配件存在于原订单配件列表中，且目前该配件的数量少于原订单该配件的数量
+            this.setState({minus_amount: this.state.minus_amount - m.unit_price});
+          }else{
+            this.setState({plus_amount: this.state.plus_amount + m.unit_price});            
+          }
+        m.discount_price = m.unit_price * m.num;
         }
+        return m;
+      })
+    }else{
+      //当选择的配件不存在已购配件列表时
+      var newvalue = e_copy;
+      e_copy.num = 1;
+      newvalue.unit_price = newvalue.discount_price;
+      newvalue.amount = newvalue.discount_price;
+      old_orderSpareparts.push(newvalue);
 
-        
+      //因为选择的配件不存在已购配件中，故加，减金额的变化只讨论该配件是否存在于原订单配件列表中
+      if(initial_orderSpareparts.every( h => h.sku_id != e_copy.sku_id )){
+       this.setState({plus_amount: this.state.plus_amount + e_copy.unit_price});
+      }else{
+       this.setState({minus_amount: this.state.minus_amount - e_copy.unit_price});
       }
+    }       
       /*if( 'id' in newvalue){
         old_orderSpareparts.push(newvalue);
       }*/
       this.setState({orderSpareparts:old_orderSpareparts});
       this.getCurrentAmount();
-    }
   },
   getCurrentAmount(){
     var { orderSpareparts } = this.props.D_;
@@ -1023,12 +1140,13 @@ var SignedModal = React.createClass({
     var orderSparepartsAmount = 0 ;
     var currentOrderSparepartsAmount = 0;
     var refund_amount = 0;
+    var order = clone( this.state.order ) ;
 
     orderSpareparts.forEach(function(m){
-      orderSparepartsAmount += m.discount_price;
+      orderSparepartsAmount += m.discount_price;  //此处discount_price 为单价乘以数量
     });
     currentOrderSpareparts.forEach(m => {
-      currentOrderSparepartsAmount += parseInt( m.unit_price ) * m.num;
+      currentOrderSparepartsAmount +=  m.unit_price  * m.num;
     });
     var rest = currentOrderSparepartsAmount - orderSparepartsAmount;
     if(this.state.order.pay_status == pay_status.PAYED && rest < 0){
@@ -1036,9 +1154,8 @@ var SignedModal = React.createClass({
     }else{
       total_amount = total_amount + rest;
     }
-    var order = clone( this.state.order ) ;
     order.total_amount = total_amount;
-    if(refund_amount != 0) order.refund_amount = refund_amount;
+    if(refund_amount >= 0) order.refund_amount = refund_amount;
     this.setState( {order} );
   },
 /*  componentDidMount() {
@@ -1048,16 +1165,43 @@ var SignedModal = React.createClass({
   },*/
   componentWillReceiveProps(nextProps){
     var { D_ } = nextProps;
+    var {order_deliveryman,current_id, is_POS, load_success} = D_;   
+    if(load_success){
+      var list = order_deliveryman;
+      var build = function(){
+        var new_data = list.map(function(n){
+          n.py = window.makePy(n.deliveryman_name);
+          return n;
+        })
+        this.setState({
+          order_deliveryman: list, filter_deliveryman_results: new_data, deliveryman_id: current_id
+        })
+      }.bind(this);
+
+      if(window.makePy){
+        build();
+      }else{
+        //异步加载的chinese_py库可能还未加载完成，所以需要定时检测
+        this._build_timer = setInterval(() => {
+          if(window.makePy){
+            build();
+            clearInterval(this._build_timer);
+            delete this._build_timer;
+          }
+        }, 100);
+      }
+    }
+
     var  products  = D_.orderDetail.products || [];
-    products = products.filter( m => m.category_id == ACCESSORY_CATE_ID);
+    products = products.filter( m => m.isAddition == 1);
     var orderSpareparts = clone(products);
     orderSpareparts = orderSpareparts.map( m => {
        m.unit_price = m.discount_price / m.num;
       return m;     
     })
     var current_id = D_.current_id;
-    var deliverymanAtSameStation = D_.deliverymanAtSameStation;
-    var all_deliveryman = deliverymanAtSameStation.map( m => 
+    var order_deliveryman = D_.order_deliveryman;
+    var all_deliveryman = order_deliveryman.map( m => 
       ({id: m.deliveryman_id, text: m.deliveryman_name + ' ' + m.deliveryman_mobile})
     )
 /*    var order = clone(this.state.order);
@@ -1067,7 +1211,7 @@ var SignedModal = React.createClass({
         $(findDOMNode(this.refs.deliveryman_id)).find(':selected').text(selectText);
         current_id = 0;
       }*/
-    deliverymanAtSameStation = all_deliveryman;
+    order_deliveryman = all_deliveryman;
     var pay_way = 1;
     if(D_.orderDetail.is_POS) 
       pay_way =2;
@@ -1075,7 +1219,7 @@ var SignedModal = React.createClass({
       m.unit_price = m.discount_price / m.num;
       return m;
     })
-    this.setState({orderSpareparts ,current_id ,deliverymanAtSameStation, pay_way});
+    this.setState({orderSpareparts ,current_id , pay_way});
   },
 });
 
@@ -1191,7 +1335,7 @@ class EditModal extends Component{
     super(props);
     this.state = {
       deliveryman_id:0,
-      deliverymanAtSameStation:[],
+      order_deliveryman:[],
       is_POS:0,
       total_amount:0,
       order_id:'',
@@ -1200,7 +1344,7 @@ class EditModal extends Component{
   }
 
   render(){
-    var {deliverymanAtSameStation,is_POS, total_amount, deliveryman_id, filter_deliveryman_results} = this.state;
+    var {order_deliveryman,is_POS, total_amount, deliveryman_id, filter_deliveryman_results} = this.state;
     var pay_way = is_POS ? 2:1;
     var content = filter_deliveryman_results.map( n => {
           return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
@@ -1215,14 +1359,14 @@ class EditModal extends Component{
                 className="form-control" placeholder="配送员拼音首字母或手机号" 
                 onChange = {this.filterHandler.bind(this)} />
             </div>
-            <select name= 'deliveryman' value={deliveryman_id} ref='deliveryman' className="form-control input-sm space-left"  style={{height:'27px',minWidth:100}}>
+            <select name= 'deliveryman' onChange={this.deliveryManChange.bind(this)} value={deliveryman_id} ref='deliveryman' className="form-control input-sm space-left"  style={{height:'27px',minWidth:100}}>
               {
                 content.length
                 ? content
                 : <option>无</option>
               }
             </select>
-            {/*<Select options={deliverymanAtSameStation} value={deliveryman_id} onChange={this.deliveryManChange.bind(this)}/>*/}
+            {/*<Select options={order_deliveryman} value={deliveryman_id} onChange={this.deliveryManChange.bind(this)}/>*/}
           </div>
           <div className="">
             <label>货到付款金额：￥</label>
@@ -1247,35 +1391,35 @@ class EditModal extends Component{
   }
   filterHandler(e){
     var { value } = e.target;
-    var { deliverymanAtSameStation } = this.state;
+    var { order_deliveryman } = this.state;
     var results = [];
     value = value.toUpperCase();
     if(value === ''){
-      results = deliverymanAtSameStation;
+      results = order_deliveryman;
     }else if(/^\d+$/i.test(value)){ //电话号码
-        results = deliverymanAtSameStation.filter(n => n.deliveryman_mobile.indexOf(value) != -1)
+        results = order_deliveryman.filter(n => n.deliveryman_mobile.indexOf(value) != -1)
       }else if(/^\w+$/i.test(value)){ //首字母
-      results = deliverymanAtSameStation.filter(n => {
+      results = order_deliveryman.filter(n => {
         return n.py.some(m => m.toUpperCase().indexOf(value) == 0)
       })
     }else{ //中文全称
-      results = deliverymanAtSameStation.filter(n => n.deliveryman_name.indexOf(value) != -1)
+      results = order_deliveryman.filter(n => n.deliveryman_name.indexOf(value) != -1)
     }
     this.setState({ filter_deliveryman_results: results, deliveryman_id: results.length && results[0].deliveryman_id });
   }
   componentWillReceiveProps(nextProps){
     var { D_ } = nextProps;
-    var {deliverymanAtSameStation,current_id, is_POS, load_success} = D_;
+    var {order_deliveryman,current_id, is_POS, load_success} = D_;
     this.setState({ is_POS});
     if(load_success){
-      var list = deliverymanAtSameStation;
+      var list = order_deliveryman;
       var build = function(){
         var new_data = list.map(function(n){
           n.py = window.makePy(n.deliveryman_name);
           return n;
         })
         this.setState({
-          deliverymanAtSameStation: list, filter_deliveryman_results: new_data, deliveryman_id: current_id
+          order_deliveryman: list, filter_deliveryman_results: new_data, deliveryman_id: current_id
         })
       }.bind(this);
 
@@ -1304,15 +1448,18 @@ class EditModal extends Component{
     this.setState({is_POS});
   }
   submitHandler(){
-    var {deliverymanAtSameStation, deliveryman_id, order_id} = this.state;
+    var {order_deliveryman, deliveryman_id, order_id} = this.state;
     var deliveryman_name ='';
     var deliveryman_mobile = '';
-    deliverymanAtSameStation.forEach( m => {
+    order_deliveryman.forEach( m => {
       if(m.deliveryman_id == deliveryman_id){
         deliveryman_mobile = m.deliveryman_mobile;
         deliveryman_name = m.deliveryman_name;
       }
     })
+    if(deliveryman_id == 0){
+        Noty('warning', '请选择配送员'); return;        
+    }
     var form_data = {};
     form_data.deliveryman_id = deliveryman_id;
     form_data.deliveryman_name = deliveryman_name;
@@ -1329,7 +1476,7 @@ class EditModal extends Component{
         this.setState({
           pay_way:1,
           deliveryman_id:0,
-          deliverymanAtSameStation:[],
+          order_deliveryman:[],
           is_POS:0,
           total_amount:0,
           order_id:'',

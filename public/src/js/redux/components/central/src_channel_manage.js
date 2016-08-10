@@ -91,13 +91,13 @@ const EditGroup = function({ editHandler, deleteHandler }){
       {
         V('SrcChannelManageEdit')
           ?
-            [<a onClick={editHandler} href="javascript:;">[编辑]</a>,' ']
+            [<a key="edit" onClick={editHandler} href="javascript:;">[编辑]</a>,' ']
           :null
       }
       {
         V('SrcChannelManageRemove')
           ?
-            <a onClick={deleteHandler} href="javascript:;">[删除]</a>
+            <a key="del" onClick={deleteHandler} href="javascript:;">[删除]</a>
           :null
 
       }

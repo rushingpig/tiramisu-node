@@ -56,6 +56,8 @@ var tables = {
     buss_order_error: 'buss_order_error',
     buss_delivery_record: 'buss_delivery_record',
     buss_delivery_picture: 'buss_delivery_picture',
+    buss_image: 'buss_image',
+    buss_directory: 'buss_directory',
 //=================Dict===================
     dict_regionalism : 'dict_regionalism',
     delivery_pay_rule: 'delivery_pay_rule'
@@ -133,7 +135,7 @@ var white_ips = [
 
 var log4js_options = {
     reloadSecs: 3000 ,   // the interval to reload the log4js config file
-    cwd : './log/'
+    cwd : '/xfxb/logs/tiramisu'
 };
 
 var ping_xx = {

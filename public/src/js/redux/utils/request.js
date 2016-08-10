@@ -30,12 +30,15 @@ function _end_callback(resolve, reject) {
 
 //基本封装
 export function get(url, data) {
-  return new Promise(function(resolve, reject) {
-    req.get(url)
+  var r;
+  var p = new Promise(function(resolve, reject) {
+    r = req.get(url)
       .query(data)
       .set('X-Requested-With', 'XMLHttpRequest')
       .end(_end_callback(resolve, reject));
   });
+  p.abort = r.abort.bind(r);
+  return p;
 }
 
 export function post(url, data) {

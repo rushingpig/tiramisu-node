@@ -91,6 +91,11 @@ export default [{
     "name": "城市管理",
     "icon": "",
     "link": "/cm/city",    
+  }, {
+    "key": "ImageManageAccess",
+    "name": "图片文件管理",
+    "icon": "",
+    "link": "/cm/img"
   }]
 }, {
   "key": "ProductionManage",

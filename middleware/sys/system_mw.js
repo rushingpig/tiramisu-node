@@ -2,6 +2,7 @@
 var clone = require('clone');
 var res_obj = require('../../util/res_obj');
 var toolUtils = require('../../common/ToolUtils');
+var logger = require('../../common/LogHelper').systemLog();
 
 function SystemMiddleware(type) {
   this.type = type;
@@ -9,6 +10,7 @@ function SystemMiddleware(type) {
 
 const tiramisu_env = process.env.NODE_ENV;
 const debug_arr = ['dev', 'development','qa','test'];
+const always_debug_req = true;
 
 SystemMiddleware.prototype = {
   // intercept and wrap the ServerResponse instance
@@ -37,19 +39,23 @@ SystemMiddleware.prototype = {
   },
   debugReqAndResParams: function (req, res, next) {
 
-    if (!tiramisu_env || debug_arr.indexOf(tiramisu_env) !== -1) {
-      console.log('******************** 请༗求༗参༗数༗ **********************');
+    if (always_debug_req || !tiramisu_env || debug_arr.indexOf(tiramisu_env) !== -1) {
+      let user_id = (req.session && req.session.user && req.session.user.id) ? req.session.user.id : 0;
+      let log_str = '';
+      log_str += `[${user_id}] ${req.method.toUpperCase()} ${req.originalUrl}\n`;
+      log_str += `******************** 请༗求༗参༗数༗ **********************\n`;
       if ('get' === req.method.toLowerCase()) {
         if (!toolUtils.isEmptyObject(req.params)) {
-          console.log('params -> \n', req.params);
+          log_str += `params = ${JSON.stringify(req.params, null, 2)}\n`;
         }
         if (!toolUtils.isEmptyObject(req.query)) {
-          console.log('query -> \n', req.query);
+          log_str += `query = ${JSON.stringify(req.query, null, 2)}\n`;
         }
       } else {
-        console.log('body -> \n', JSON.stringify(req.body, null, 2));
+        log_str += `body = ${JSON.stringify(req.body, null, 2)}\n`;
       }
-      console.log('********************************************************\n');
+      log_str += `********************************************************\n`;
+      logger.info(log_str);
     }
     next();
   }
@@ -89,9 +95,9 @@ function api(res) {
         temp.err = err || '';
       }
       if (!tiramisu_env || debug_arr.indexOf(tiramisu_env) !== -1) {
-        console.log('******************** 返༗回༗参༗数༗ **********************');
-        console.log(JSON.stringify(temp,null,2));
-        console.log('********************************************************\n');
+        logger.info('******************** 返༗回༗参༗数༗ **********************');
+        logger.info(JSON.stringify(temp,null,2));
+        logger.info('********************************************************\n');
       }
       return res.json(temp);
     } catch (err) {

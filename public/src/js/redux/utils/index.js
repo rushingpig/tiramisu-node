@@ -170,6 +170,12 @@ function map(target, cb) {
   });
   return res;
 }
+function del(target, cb){
+  if(core_isArray(target)){
+    var index = target.findIndex(cb);
+    target.splice(index, 1);
+  }
+}
 
 
 function toFixed(target, digit){
@@ -278,7 +284,6 @@ function dom_lock( dom ){
   if( $dom.css('position') == 'static' ){
     $dom.css('position', 'relative');
   }
-  console.log(scrollTop, scrollLeft);
   var $layer = $dom.data('_lock_layer') || $('<div><i class="fa fa-spin fa-lg fa-spinner"></i></div>');
   $layer.css({
     position: 'absolute',
@@ -345,6 +350,7 @@ export default {
   mapValues,
   each,
   map,
+  del,
 
   clone,
 

@@ -81,9 +81,9 @@ export function getOrderSpareparts(orderId){
   }], GET_ORDER_SPARE_PARTS);
 }
 
-export const GET_DELIVERYMAN_AT_SAME_STATION = 'GET_DELIVERYMAN_AT_SAME_STATION';
-export function getDeliverymanAtSameStation(){
-  return GET(Url.deliveryman.toString(),null,GET_DELIVERYMAN_AT_SAME_STATION);
+export const GET_DELIVERYMAN_BY_ORDER = 'GET_DELIVERYMAN_BY_ORDER';
+export function getDeliverymanByOrder(orderId){
+  return GET(Url.order_deliverymans.toString(orderId),null,GET_DELIVERYMAN_BY_ORDER);
 /*  return TEST({
     current_id:2,
     list:[

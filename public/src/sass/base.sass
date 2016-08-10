@@ -80,6 +80,12 @@ a
   color: $theme-font-color
 .text-left
   text-align: left !important
+.text-center
+  text-align: center !important
+// .text-ellipsis
+//   white-space: nowrap
+//   overflow: hidden
+//   text-overflow: ellipsis
 .nowrap
   white-space: nowrap
 .gray
@@ -125,7 +131,23 @@ a
   transform: translate3d(-50%, -50%, 0)
 .cursor-pointer
   cursor: pointer
-
+.visibility-hidden
+  visibility: hidden
+.pointer
+  cursor: pointer
+.fa-color-gray
+  color: gray
+  &:hover
+    color: inherit
+.underline-on-hover
+  &:hover
+    text-decoration: underline
+.no-userselect
+  user-select: none
+.hover-effect
+  opacity: 0.8
+  &:hover
+    opacity: 1
 /**************************/
 /********* 组件类 **********/
 /**************************/
@@ -143,6 +165,12 @@ a
     border-bottom: none
     color: $theme-font-color
     cursor: default
+.achor
+  display: inline-block
+  cursor: pointer
+  border-bottom: 1px solid transparent
+  &:hover
+    border-color: $theme-black
 .form-control.short-input
   width: 85px
 .form-control.long-input
@@ -307,6 +335,10 @@ hr.dotted
   @extend .rotate-loading
   @include rotate-loading(0.3s)
   margin-right: 0
+
+tr:hover
+  .show-on-parent-hover
+    visibility: visible
 
 .deleteable-row
   .del-btn

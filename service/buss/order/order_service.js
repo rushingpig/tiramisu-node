@@ -375,7 +375,7 @@ OrderService.prototype.editOrder = function (is_submit) {
       } else if (updated_time !== _res[0].updated_time) {
         throw new TiramisuError(res_obj.OPTION_EXPIRED);
       }
-      if (!systemUtils.isOrderCanUpdateStatus(_res[0].status, order_obj.status)) {
+      if (!systemUtils.checkOrderDataScopes(req.session.user, _res[0]) || !systemUtils.isOrderCanUpdateStatus(_res[0].status, order_obj.status)) {
         throw new TiramisuError(res_obj.OPTION_EXPIRED);
       }
       //===========for history begin=============
@@ -774,6 +774,9 @@ OrderService.prototype.cancelOrder = (req, res, next) => {
       status: Constant.OS.CANCEL,
       cancel_reason: req.body.cancel_reason
     };
+    if (!systemUtils.checkOrderDataScopes(req.session.user, _res[0]) || !systemUtils.isOrderCanUpdateStatus(_res[0].status, order_update_obj.status)) {
+      throw new TiramisuError(res_obj.OPTION_EXPIRED);
+    }
     systemUtils.addLastOptCs(order_update_obj, req);
     return orderDao.updateOrder(systemUtils.assembleUpdateObj(req, order_update_obj), orderId);
   }).then((result) => {
@@ -875,6 +878,9 @@ OrderService.prototype.changeDelivery = (req,res,next)=>{
         } else if (updated_time !== _res[0].updated_time) {
             throw new TiramisuError(res_obj.OPTION_EXPIRED);
         }
+        if (!systemUtils.checkOrderDataScopes(req.session.user, _res[0]) || !systemUtils.isOrderCanUpdateStatus(_res[0].status, order_obj.status)) {
+          throw new TiramisuError(res_obj.OPTION_EXPIRED);
+        }
         //===========for history begin=============
         let current_order = _res[0],
             order_history_obj = {order_id};
@@ -954,6 +960,9 @@ OrderService.prototype.exceptionOrder = (req,res,next)=>{
       deliveryman_id: 0,
       cancel_reason: req.body.cancel_reason
     };
+    if (!systemUtils.checkOrderDataScopes(req.session.user, _res[0]) || !systemUtils.isOrderCanUpdateStatus(_res[0].status, order_update_obj.status)) {
+      throw new TiramisuError(res_obj.OPTION_EXPIRED);
+    }
     systemUtils.addLastOptCs(order_update_obj, req);
     return orderDao.updateOrder(systemUtils.assembleUpdateObj(req, order_update_obj), orderId);
   }).then((result) => {

@@ -225,6 +225,23 @@ OrderDao.prototype.delOrderSrc = function(orderSrcId) {
   }, orderSrcId, orderSrcId]);
 };
 
+OrderDao.prototype.checkDataScopes = function (user, order) {
+  if (!user || !order) return Promise.resolve(false);
+  return co(function *() {
+    let order_obj = {};
+    if (typeof order == 'Object') {
+      order_obj = order;
+    } else if (typeof order == 'String') {
+      order_obj = yield OrderDao.prototype.findOrderById(order);
+      if (!order_obj || order_obj.length == 0) return Promise.resolve(false);
+      order_obj = order_obj[0];
+    } else {
+      return Promise.resolve(false);
+    }
+    return Promise.resolve(systemUtils.checkOrderDataScopes(user, order_obj));
+  });
+};
+
 /**
  * new order
  */
@@ -965,8 +982,18 @@ OrderDao.prototype.findOrderHistory = function(query_data) {
  * @returns {Promise}
  */
 OrderDao.prototype.findOrdersByIds = function(order_ids) {
-  let sql = "select * from ?? where id in" + dbHelper.genInSql(order_ids);
-  return baseDao.select(sql, [tables.buss_order]);
+  let columns = [
+      'bo.*',
+      'dr.parent_id AS city_id'
+  ];
+  let sql = `SELECT ${columns.join()} FROM ?? bo `;
+  let params = [tables.buss_order];
+  sql += `LEFT JOIN ?? br ON br.id = bo.recipient_id `;
+  params.push(tables.buss_recipient);
+  sql += `LEFT JOIN ?? dr ON dr.id = br.regionalism_id `;
+  params.push(tables.dict_regionalism);
+  sql += `WHERE bo.id IN ` + dbHelper.genInSql(order_ids);
+  return baseDao.select(sql, params);
 };
 /**
  * batch update orders by the given order ids

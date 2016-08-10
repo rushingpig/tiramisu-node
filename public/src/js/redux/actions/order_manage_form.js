@@ -3,6 +3,7 @@ import Url from 'config/url';
 import { getValues } from 'redux-form';
 import { initForm } from 'actions/form';
 import clone from 'clone';
+import {Noty} from 'utils/index';
 import * as OrderSupport from 'actions/order_support';
 import { CLEAR_DELIVERY_STATIONS } from 'actions/order_manage';
 import { SELECT_DEFAULT_VALUE } from 'config/app.config';
@@ -88,17 +89,30 @@ function _getFormData(form_data, getState){
   var total_amount = 0, total_original_price = 0, total_discount_price = 0;
   var greeting_card = [];
   products = clone( products );
-  products.forEach(n => {
-    n.discount_price *= 100;
-    n.amount *= 100;
-    n.discount_price = Number(n.discount_price.toFixed(0)); //防止浮点误差
-    n.amount = Number(n.amount.toFixed(0));
+  try{
+    products.forEach(n => {
+      n.discount_price *= 100;
+      n.amount *= 100;
+      n.discount_price = Number(n.discount_price.toFixed(0)); //防止浮点误差
+      n.amount = Number(n.amount.toFixed(0));
 
-    total_amount += n.amount;
-    total_original_price += n.original_price * n.num;
-    total_discount_price += n.discount_price;
-    greeting_card.push(n.greeting_card);
-  })
+      if(n.amount > n.discount_price){
+        Noty('warning', '商品应收金额不能大于实际售价');
+        throw new Error('overlimit');
+      }
+
+      total_amount += n.amount;
+      total_original_price += n.original_price * n.num;
+      total_discount_price += n.discount_price;
+      greeting_card.push(n.greeting_card);
+    })
+  }catch(e){
+    if(e.msg != 'overlimit'){
+      Noty('error', '请填写正确的商品金额数据');
+    }
+    console.error(e);
+    throw e;
+  }
   return {
     ...form_data,
     total_amount,
@@ -249,12 +263,8 @@ export function submitOrder(form_data){
         })
       })
   }
-  // return ( dispatch, getState ) => {
-  //   var data = _getFormData(form_data, getState);
-  //   debugger;
-  //   dispatch({type: SUBMIT_ORDER_ING});
-  //   setTimeout(function(){
-  //     dispatch({type: SUBMIT_ORDER_COMPLETE});
-  //   }, 2000)
-  // }
+  // return TEST(null, [
+  //   {type: SUBMIT_ORDER_ING},  //立即派发
+  //   {type: SUBMIT_ORDER_COMPLETE}   //2000毫秒后派发
+  // ], 2000);
 }

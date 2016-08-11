@@ -74,12 +74,34 @@ function mainForm(state = initial_state, action) {
       return {...state, submit_ing: false}
 
     case FormActions.GOT_ORDER_BY_ID:
+      return (function(){
+        var {data} = action;
+        var tmp = data.delivery_time && data.delivery_time.split(' '); //天猫没有delivery_time
+        data.delivery_date = data.delivery_time && tmp[0];
+        data.delivery_hours = data.delivery_time && tmp[1];
+        data.operatorType = 'EDIT';    //区分数据是来源于 复制订单、关联订单还是编辑订单
+        //门店自提
+        if(data.delivery_type == DELIVERY_TO_STORE){
+          data.recipient_shop_address = data.recipient_address;
+          data.recipient_address = null;
+        }
+
+        //
+        var {getCities, getDistricts, getDeliveryShops} = AreaActions();
+        store.dispatch(getCities(data.province_id));
+        store.dispatch(getDistricts(data.city_id));
+        store.dispatch(getDeliveryShops(data.regionalism_id));
+        store.dispatch(FormActions.getDeliveryStations({city_id: data.city_id}));
+        
+        return {...state, data}
+      })();
     case FormActions.GOT_COPY_ORDER_BY_ID:
       return (function(){
         var {data} = action;
         var tmp = data.delivery_time && data.delivery_time.split(' '); //天猫没有delivery_time
         data.delivery_date = data.delivery_time && tmp[0];
         data.delivery_hours = data.delivery_time && tmp[1];
+        data.operatorType = 'COPY';    //区分数据是来源于 复制订单、关联订单还是编辑订单
         //门店自提
         if(data.delivery_type == DELIVERY_TO_STORE){
           data.recipient_shop_address = data.recipient_address;
@@ -106,6 +128,7 @@ function mainForm(state = initial_state, action) {
           data.recipient_shop_address = data.recipient_address;
           data.recipient_address = null;
         }
+        data.operatorType = 'RELATE';    //区分数据是来源于 复制订单、关联订单还是编辑订单
         data.bind_order_id = action.bind_order_id;
         //
         var {getCities, getDistricts, getDeliveryShops} = AreaActions();

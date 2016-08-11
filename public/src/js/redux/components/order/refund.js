@@ -57,7 +57,7 @@ class FilterHeader extends Component{
 	}
 	render(){
 		var YesorNoOptions = [{id:1, text: '是'},
-							 {id:2, text: '否'},];
+							 {id:0, text: '否'},];
 		var {
 			fields: {
 				keywords,
@@ -166,6 +166,16 @@ var RefundRow = React.createClass({
 				<td className='nowrap'>
 					{src_name[0]}
 					{src_name[1] ? [<br key="br" />, <span key="src_2" className="bordered bg-warning">{src_name[1]}</span>] : null}
+					{
+						props.coupon &&
+						[
+							<br key='coupon_br_1'/>,
+							<span key='coupon_span_1'>{'团购密码：'}</span>,
+							<br key='coupon_br_2'/>,
+							<span key='coupon_span_2'>{props.coupon}</span>
+						]
+					}
+					
 				</td>
 				<td>
 					<span 
@@ -383,7 +393,7 @@ class ManagePannel extends Component{
 				    </div>
 				  : null }
 
-				<OperationRecordModal ref='viewOperationRecord' {...{getOrderOptRecord, resetOrderOptRecord, list:operationRecord.list || [], page_no:0, total: operationRecord.total}}/>
+				<OperationRecordModal ref='viewOperationRecord' {...{getOrderOptRecord, resetOrderOptRecord, list:operationRecord.list || [], page_no:operationRecord.page_no, total: operationRecord.total}}/>
         		<RefundModal ref='RefundModal' editable={true} 
         			 refund_data = { refund_data } 
         			 all_refund_reasons = {all_refund_reasons} 

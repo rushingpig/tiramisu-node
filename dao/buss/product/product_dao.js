@@ -886,4 +886,16 @@ ProductDao.prototype.insertProductInfo = function (req, data) {
             });
     });
 }
+// 查询已添加详情城市
+ProductDao.prototype.getProductDetailHasAddCities = function (product_id) {
+    let sql = "select distinct regionalism_id from ?? where product_id = ? and del_flag = ?";
+    let params = [config.tables.buss_product_detail, product_id, del_flag.SHOW];
+    return baseDao.select(sql, params);
+}
+// 查询已添加详情城市
+ProductDao.prototype.getProductDetailCanAddCities = function (product_id) {
+    let sql = "select distinct regionalism_id from ?? where product_id = ? and del_flag = ?";
+    let params = [config.tables.buss_product_sku, product_id, del_flag.SHOW];
+    return baseDao.select(sql, params);
+}
 module.exports = ProductDao;

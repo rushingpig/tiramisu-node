@@ -577,4 +577,21 @@ ProductService.prototype.addProductInfo = function (req, res, next) {
         });
     systemUtils.wrapService(res, next, promise);
 }
+ProductService.prototype.getProductDetailCities = function (req, res, next) {
+    req.checkQuery('product_id', 'product_id can not be null').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let product_id = req.query.product_id;
+    let promise = productDao.getProductDetailCanAddCities(product_id)
+        .then(can_add_cities => {
+            productDao.getProductDetailHasAddCities(product_id)
+                .then(has_detailc_cities => {
+                    res.api({can_add_cities, has_detailc_cities});
+                });
+        });
+    systemUtils.wrapService(res, next, promise);
+}
 module.exports = new ProductService();

@@ -13,6 +13,8 @@ var baseDao = require('../../base_dao'),
     systemUtils = require('../../../common/SystemUtils'),
     config = require('../../../config');
 
+const DEFAULT_TEMPLATE = 1;
+
 function ProductDao(){
     this.base_table = config.tables.buss_product;
     this.baseColumns = ['id','name'];
@@ -251,7 +253,6 @@ ProductDao.prototype.getProductDetailByParams = function (req, data) {
     let columns = [
         'product.id as spu',
         'product.name as name',
-        'product.detail_page as detail_page',
         'pic.pic_url as pic_url',
         'primary_cate.name as primary_cate_name',
         'secondary_cate.name as secondary_cate_name',
@@ -794,5 +795,163 @@ ProductDao.prototype.getSkuByMultipleCondition = function (req, data) {
 
     let sql = query_sql + where_sql;
     return baseDao.select(sql, params);
+}
+ProductDao.prototype.insertProductDetail = function (req, data, connection) {
+    if(connection){
+        return baseDao.insertWithConnection(connection, this.base_insert_sql, [config.tables.buss_product_detail, systemUtils.assembleInsertObj(req, data, true)]);
+    } else {
+        return baseDao.insert(this.base_insert_sql, [this.base_table, systemUtils.assembleInsertObj(req, data, true)]);
+    }
+}
+ProductDao.prototype.insertProductDetailSepc = function (req, data, connection) {
+    if(connection){
+        return baseDao.insertWithConnection(connection, this.base_insert_sql, [config.tables.buss_product_detail_spec, systemUtils.assembleInsertObj(req, data, true)]);
+    } else {
+        return baseDao.insert(this.base_insert_sql, [this.base_table, systemUtils.assembleInsertObj(req, data, true)]);
+    }
+}
+ProductDao.prototype.insertProductTemplateData = function (req, data, connection) {
+    if(connection){
+        return baseDao.insertWithConnection(connection, this.base_insert_sql, [config.tables.buss_product_template_data, systemUtils.assembleInsertObj(req, data, true)]);
+    } else {
+        return baseDao.insert(this.base_insert_sql, [this.base_table, systemUtils.assembleInsertObj(req, data, true)]);
+    }
+}
+ProductDao.prototype.insertProductInfo = function (req, data) {
+    let self = this;
+    return baseDao.trans().then(connection => {
+        let arr = [];
+        data.infos.forEach(info_data => {
+            info_data.regionalism_ids.forEach(regionalism_id => {
+                arr.push({
+                    product_detail: {
+                        product_id: data.product_id,
+                        regionalism_id: regionalism_id,
+                        list_img: info_data.info.list_img,
+                        list_copy: info_data.info.list_copy,
+                        detail_top_copy: info_data.info.detail_top_copy,
+                        detail_template_copy: info_data.info.detail_template_copy,
+                        detail_template_copy_end: info_data.info.detail_template_copy_end,
+                        detail_img_1: info_data.info.detail_img_1,
+                        detail_img_2: info_data.info.detail_img_2,
+                        detail_img_3: info_data.info.detail_img_3,
+                        detail_img_4: info_data.info.detail_img_4,
+                    },
+                    product_detail_spec: info_data.info.spec,
+                    product_template_data: info_data.info.template_data
+                });
+            });
+        });
+        let promises = arr.map(item => {
+            //buss_product_detail
+            self.insertProductDetail(req, item.product_detail, connection)
+                .then(detail_id => {
+                    //buss_product_detail_spec
+                    let product_detail_spec_promises = item.product_detail_spec.map(product_detail_spec => {
+                        product_detail_spec.detail_id = detail_id;
+                        return self.insertProductDetailSepc(req, product_detail_spec, connection);
+                    });
+                    return Promise.all(product_detail_spec_promises)
+                        .then(() => {
+                            return Promise.resolve(detail_id);
+                        });
+                })
+                .then(detail_id => {
+                    //buss_product_template_data
+                    let product_template_data_promise = item.product_template_data.map(product_template_data => {
+                        product_template_data.detail_id = detail_id;
+                        product_template_data.template_id = product_template_data.template_id || DEFAULT_TEMPLATE;
+                        return self.insertProductTemplateData(req, product_template_data, connection);
+                    });
+                    return Promise.all(product_template_data_promise);
+                });
+        });
+        Promise.all(promises)
+            .then(() => {
+                return new Promise((resolve, reject) => {
+                    connection.commit(err => {
+                        connection.release();
+                        if (err) return reject(err);
+                        resolve();
+                    });
+                });
+            }).catch(err => {
+                return new Promise((resolve, reject) => {
+                    connection.rollback(rollbackErr => {
+                        connection.release();
+                        if (rollbackErr) return reject(rollbackErr);
+                        reject(err);
+                    });
+                });
+            });
+    });
+}
+// 查询已添加详情城市
+ProductDao.prototype.getProductDetailHasAddCities = function (product_id) {
+    let sql = "select distinct regionalism_id from ?? where product_id = ? and del_flag = ?";
+    let params = [config.tables.buss_product_detail, product_id, del_flag.SHOW];
+    return baseDao.select(sql, params);
+}
+// 查询已添加详情城市
+ProductDao.prototype.getProductDetailCanAddCities = function (product_id) {
+    let sql = "select distinct regionalism_id from ?? where product_id = ? and del_flag = ?";
+    let params = [config.tables.buss_product_sku, product_id, del_flag.SHOW];
+    return baseDao.select(sql, params);
+}
+ProductDao.prototype.getProductSpecByDetailId = function (detail_id) {
+    let sql = 'select ?? from ?? where del_flag = ? and detail_id = ?';
+    let columns = [
+        'key',
+        'value',
+    ];
+    let params = [columns, config.tables.buss_product_detail_spec, del_flag.SHOW, detail_id];
+    return baseDao.select(sql, params);
+}
+ProductDao.prototype.getProductTemplateDataByDetailId = function (detail_id) {
+    let sql = 'select ?? from ?? where del_flag = ? and detail_id = ?';
+    let columns = [
+        'template_id',
+        'position_id',
+        'value',
+    ];
+    let params = [columns, config.tables.buss_product_template_data, del_flag.SHOW, detail_id];
+    return baseDao.select(sql, params);
+}
+ProductDao.prototype.getProductDetailByProductIdAndRegionId = function (product_id, regionalism_id) {
+    let sql = this.base_select_sql + ' and product_id = ? and regionalism_id = ?';
+    let columns = [
+        'id',
+        'list_img',
+        'list_copy',
+        'detail_top_copy',
+        'detail_template_copy',
+        'detail_template_copy_end',
+        'detail_img_1',
+        'detail_img_2',
+        'detail_img_3',
+        'detail_img_4',
+    ];
+    let params = [columns, config.tables.buss_product_detail, del_flag.SHOW, product_id, regionalism_id];
+    return baseDao.select(sql, params);
+}
+ProductDao.prototype.getProductInfoByProductIdAndRegionId = function (product_id, regionalism_id) {
+    let self = this;
+    return self.getProductDetailByProductIdAndRegionId(product_id, regionalism_id)
+        .then(detail_result => {
+            let detail_id = detail_result[0].id;
+            let promises = [
+                self.getProductSpecByDetailId(detail_id),
+                self.getProductTemplateDataByDetailId(detail_id)
+            ];
+            return Promise.all(promises)
+                .then(detail_data => {
+                    let spec_result = detail_data[0];
+                    let template_result = detail_data[1];
+                    let result = detail_result[0];
+                    result.spec = spec_result;
+                    result.template_data = template_result;
+                    return Promise.resolve(result);
+                });
+        });
 }
 module.exports = ProductDao;

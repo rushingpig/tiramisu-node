@@ -17,7 +17,8 @@ var res_obj = require('../../../util/res_obj'),
     orderDao = new OrderDao(),
     ProductDao = dao.product,
     productDao = new ProductDao(),
-    xlsx = require('node-xlsx');
+    xlsx = require('node-xlsx'),
+    tv4 = require('tv4');
 
 function ProductService() {
 
@@ -232,7 +233,6 @@ ProductService.prototype.getProductDetails = (req, res, next)=> {
             return {
               spu: result.spu,
               name: result.name,
-              detail_page: result.detail_page,
               pic_url: result.pic_url,
               primary_cate_name: result.primary_cate_name,
               secondary_cate_name: result.secondary_cate_name,
@@ -561,6 +561,52 @@ ProductService.prototype.exportSku = (req, res, next) => {
                 'Expires': 0
             });
             res.send(buffer);
+        });
+    systemUtils.wrapService(res, next, promise);
+}
+ProductService.prototype.addProductInfo = function (req, res, next) {
+    //验证数据
+    let correct = tv4.validate(req.body, schema.addProductInfo);
+    if (!correct) {
+        res.api(res_obj.INVALID_PARAMS, toolUtils.formatTv4Error(tv4.error));
+        return;
+    }
+    let promise = productDao.insertProductInfo(req, req.body)
+        .then(() => {
+            res.api();
+        });
+    systemUtils.wrapService(res, next, promise);
+}
+ProductService.prototype.getProductDetailCities = function (req, res, next) {
+    req.checkQuery('product_id', 'product_id can not be null').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let product_id = req.query.product_id;
+    let promise = productDao.getProductDetailCanAddCities(product_id)
+        .then(can_add_cities => {
+            productDao.getProductDetailHasAddCities(product_id)
+                .then(has_detailc_cities => {
+                    res.api({can_add_cities, has_detailc_cities});
+                });
+        });
+    systemUtils.wrapService(res, next, promise);
+}
+ProductService.prototype.getProductDetailByProductIdAndRegionId = function (req, res, next) {
+    req.checkQuery('product_id', 'product_id can not be null').notEmpty();
+    req.checkQuery('regionalism_id', 'regionalism_id can not be null').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let product_id = req.query.product_id;
+    let regionalism_id = req.query.regionalism_id;
+    let promise = productDao.getProductInfoByProductIdAndRegionId(product_id, regionalism_id)
+        .then(result => {
+            res.api(result);
         });
     systemUtils.wrapService(res, next, promise);
 }

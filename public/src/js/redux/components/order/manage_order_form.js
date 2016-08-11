@@ -122,7 +122,7 @@ class ManageAddForm extends Component {
 
     var { save_ing, save_success, submit_ing, 
       all_delivery_time, all_pay_status, all_order_srcs, 
-      delivery_stations, all_pay_modes, data: { merchant_id, bind_order_id, payment_amount }} = this.props['form-data'];
+      delivery_stations, all_pay_modes, data: { merchant_id, bind_order_id, operatorType, payment_amount }} = this.props['form-data'];
     var {provinces, cities, districts, delivery_shops} = this.props.area;
     var {invoices, selected_order_src_level1_id = src_id.value, groupbuy_psd, groupbuy_check_ing, groupbuy_msg, groupbuy_success, auto_match_ing} = this.state;
 
@@ -272,10 +272,12 @@ class ManageAddForm extends Component {
         <textarea {...invoice} placeholder="" rows="2" cols="22" style={{width: 202}} className={`form-control input-xs ${invoice.error}`} />
       </div>
       {
-        bind_order_id &&
-        <div className='form-group form-inline'>
-          <label>{'原订单支付金额：'}</label>
-          <input className='form-control input-xs' type = 'text' readOnly value={payment_amount / 100} />
+        operatorType == 'RELATE' && bind_order_id &&
+        <div className='form-group form-inline bg-warning bordered'>
+          <label>{'　关联订单: 该订单将关联订单号为　'}</label>
+          <input className='form-control input-xs' type = 'text' readOnly value={bind_order_id} />
+          <label>{'　的订单，原订单的支付金额为 ￥'}</label>
+          <input style={{width: 80}} className='form-control input-xs' type = 'text' readOnly value={payment_amount / 100} />
         </div>
       }
       <hr className="dotted" />
@@ -376,7 +378,7 @@ class ManageAddForm extends Component {
     return $(findDOMNode(this.refs[_refs])).find('option:selected').html();
   }
   handleCreateOrder(form_data){
-    if(this.props['form-data'].data.bind_order_id){
+    if(this.props['form-data'].data.operatorType == 'RELATE'  && this.props['form-data'].data.bind_order_id ){
       form_data.bind_order_id = this.props['form-data'].data.bind_order_id;
     }
     this.props.actions.createOrder(form_data)

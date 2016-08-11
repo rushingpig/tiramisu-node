@@ -21,7 +21,7 @@ var BindOrderModal = React.createClass({
           <td>{n.created_by}</td>
           <td className="text-left">
             {
-              sort_type == 'ASC' && i == 0 || sort_type == 'DESC' && i == list.length - 1?
+              n.order_id == order_id?
               <span style = {{color: '#9C6B21'}}>{n.order_id}</span>
               :
               <span>{n.order_id}</span>

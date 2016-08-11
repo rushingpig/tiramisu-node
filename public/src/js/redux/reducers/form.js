@@ -175,6 +175,14 @@ export default formReducer.plugin({
             state.amount = {value: state.payment_amount.value / 100}
           }
         }
+      }else if(action.field == 'way'){
+        if(action.type == actionTypes.CHANGE){
+          if(state.way.value == 'THIRD_PARTY'){
+            state.account_type = {value: ''}
+          }else {
+            state.account_type = {value : 'ALIPAY'}
+          }
+        }
       }
     }
     return state;

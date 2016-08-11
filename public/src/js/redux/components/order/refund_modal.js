@@ -32,9 +32,21 @@ const validate = (values, props) => {
       errors[key] = msg;
   }
 
+  function _v_text(key){
+    if(form[key] && form[key].touched && (values[key] === undefined || values[key] == '')){
+      error[key] = msg;
+    }
+  }
+
+
   _v_amount('amount');
 
   _v_select('reason_type')
+
+  if(values['way'] == 'CS'){
+    _v_text('account');
+    _v_text('account_type');
+  }
 
   return errors;
 }
@@ -99,7 +111,7 @@ class RefundPannel extends Component{
           <label>退款原因：</label>
           <Select {...reason_type} options={all_refund_reasons || []} className={` ${reason_type.error}`}/>
           {
-            (reason_type.value == 0 || reason_type.value == 3 )&& 
+            bind_order_id != undefined && 
             [<label key='relate_order_id_lbl'>{'　关联订单号：'}</label>,
             <input value = {bind_order_id} readOnly key='relate_order_id_txt' type='text' className='form-control input-xs' />]
           }
@@ -163,14 +175,14 @@ class RefundPannel extends Component{
               :
               <label>{'　　　　绑定姓名：'}</label>
             }
-            <input {...account_name} className='form-control input-xs' type='text' style={{width:310, marginBottom:5}} /><br />
+            <input {...account_name} className={`form-control input-xs ${account_name.error}`} type='text' style={{width:310, marginBottom:5}} /><br />
             {
               account_type.value == 'ALIPAY'?
               <label>{'　　　　　　账号：'}</label>
               :
               <label>{'　　　　　　卡号：'}</label>
             }
-            <input {...account} className='form-control input-xs' type='text' style={{width:310}}/>
+            <input {...account} className={`form-control input-xs ${account.error}`} type='text' style={{width:310}}/>
             </div>
           </div>
         }
@@ -207,7 +219,17 @@ class RefundPannel extends Component{
         if(!Object.keys(errors).length){
           callback.call(this,form_data);  //以callback来代替this 调用
         }else{
-          Noty('warning','请填写完整');
+          var {fields: {type, amount, payment_amount} } = this.props;
+          if(type.value == 'FULL' && amount.value != payment_amount.value / 100){
+              Noty('warning', '全额退款金额应等于支付金额');
+          }else if(type.value == 'PART' && (amount.value >= payment_amount.value / 100 || amount.value <= 0)){
+            Noty('warning', '部分退款金额应小于支付金额');
+          }else if( type.value == 'OVERFULL' && (amount.value <= payment_amount.value / 100)){
+            Noty('warning', '超额退款金额应大于支付金额');
+          }else{
+            Noty('warning','请填写完整');
+
+          }
         }
     },0);
   }

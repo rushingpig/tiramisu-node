@@ -698,7 +698,7 @@ var SignedModal = React.createClass({
   },
   mixins: [ LinkedStateMixin ],
   render: function(){
-    var { signin_date, late_minutes, refund_method, refund_money, refund_reson,current_id, order_deliveryman , POS_terminal_id, plus_amount, minus_amount, order_refund_money, filter_deliveryman_results} = this.state;
+    var { signin_date, late_minutes, refund_method, refund_money, refund_reson,current_id, order_deliveryman , POS_terminal_id, plus_amount, minus_amount, order_refund_money, filter_deliveryman_results, order} = this.state;
     var { D_ ,loading, refresh } = this.props;
     
     var { spareparts, orderDetail } =  D_ ;
@@ -797,14 +797,17 @@ var SignedModal = React.createClass({
             }
           </div>]          
         }
-        <div className = 'form-group form-inline mg-15'>
-          <label>{'初始应收金额：￥'}</label>
-          <input value={orderDetail.total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
-          <label>{'　减：￥'}</label>
-          <input value={minus_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
-          <label>{'　加：￥'}</label>
-          <input value={plus_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />         
-        </div>
+        { minus_amount != 0 || plus_amount != 0 ?
+          <div className = 'form-group form-inline mg-15'>
+            <label>{'初始应收金额：￥'}</label>
+            <input value={orderDetail.total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+            {minus_amount != 0 && 
+              [<label>{'　减：￥'}</label>,
+              <input value={minus_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />]}
+            {plus_amount != 0 &&
+              [<label>{'　加：￥'}</label>,
+              <input value={plus_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />]}         
+          </div>: null}
         <div className='form-group form-inline mg-15'>
           <div className='row'>
             <div className='col-xs-6'>
@@ -820,8 +823,11 @@ var SignedModal = React.createClass({
               } 
             </div>
             <div className='col-xs-6'>
-              <label>系统退款金额：￥</label>
-              <input value={this.state.order.refund_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
+              {order.refund_amount && order.refund_amount != 0 ?
+                [<label>系统退款金额：￥</label>,
+                <input value={this.state.order.refund_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />]
+                :null
+              }
             </div>
           </div>
         </div>

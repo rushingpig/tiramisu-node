@@ -80,6 +80,7 @@ a.get('/product/skus/price', productService.listSkuPrice); // 查看产品规格
 a.get('/product/skus/details', productService.getProductAndSkuWithRegions); // 获取产品信息(用于产品&sku编辑)
 a.get('/product/skus/xlsx', productService.exportSku); // 导出sku
 a.get('/product/info/cities', productService.getProductDetailCities); // 获取可添加商品详情和已添加商品详情的城市
+a.get('/product/info', productService.getProductDetailByProductIdAndRegionId); // 获取商品详情
 
 //**********************
 //******** POST ********

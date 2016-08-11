@@ -594,4 +594,20 @@ ProductService.prototype.getProductDetailCities = function (req, res, next) {
         });
     systemUtils.wrapService(res, next, promise);
 }
+ProductService.prototype.getProductDetailByProductIdAndRegionId = function (req, res, next) {
+    req.checkQuery('product_id', 'product_id can not be null').notEmpty();
+    req.checkQuery('regionalism_id', 'regionalism_id can not be null').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let product_id = req.query.product_id;
+    let regionalism_id = req.query.regionalism_id;
+    let promise = productDao.getProductInfoByProductIdAndRegionId(product_id, regionalism_id)
+        .then(result => {
+            res.api(result);
+        });
+    systemUtils.wrapService(res, next, promise);
+}
 module.exports = new ProductService();

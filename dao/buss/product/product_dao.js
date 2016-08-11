@@ -898,4 +898,60 @@ ProductDao.prototype.getProductDetailCanAddCities = function (product_id) {
     let params = [config.tables.buss_product_sku, product_id, del_flag.SHOW];
     return baseDao.select(sql, params);
 }
+ProductDao.prototype.getProductSpecByDetailId = function (detail_id) {
+    let sql = 'select ?? from ?? where del_flag = ? and detail_id = ?';
+    let columns = [
+        'key',
+        'value',
+    ];
+    let params = [columns, config.tables.buss_product_detail_spec, del_flag.SHOW, detail_id];
+    return baseDao.select(sql, params);
+}
+ProductDao.prototype.getProductTemplateDataByDetailId = function (detail_id) {
+    let sql = 'select ?? from ?? where del_flag = ? and detail_id = ?';
+    let columns = [
+        'template_id',
+        'position_id',
+        'value',
+    ];
+    let params = [columns, config.tables.buss_product_template_data, del_flag.SHOW, detail_id];
+    return baseDao.select(sql, params);
+}
+ProductDao.prototype.getProductDetailByProductIdAndRegionId = function (product_id, regionalism_id) {
+    let sql = this.base_select_sql + ' and product_id = ? and regionalism_id = ?';
+    let columns = [
+        'id',
+        'list_img',
+        'list_copy',
+        'detail_top_copy',
+        'detail_template_copy',
+        'detail_template_copy_end',
+        'detail_img_1',
+        'detail_img_2',
+        'detail_img_3',
+        'detail_img_4',
+    ];
+    let params = [columns, config.tables.buss_product_detail, del_flag.SHOW, product_id, regionalism_id];
+    return baseDao.select(sql, params);
+}
+ProductDao.prototype.getProductInfoByProductIdAndRegionId = function (product_id, regionalism_id) {
+    let self = this;
+    return self.getProductDetailByProductIdAndRegionId(product_id, regionalism_id)
+        .then(detail_result => {
+            let detail_id = detail_result[0].id;
+            let promises = [
+                self.getProductSpecByDetailId(detail_id),
+                self.getProductTemplateDataByDetailId(detail_id)
+            ];
+            return Promise.all(promises)
+                .then(detail_data => {
+                    let spec_result = detail_data[0];
+                    let template_result = detail_data[1];
+                    let result = detail_result[0];
+                    result.spec = spec_result;
+                    result.template_data = template_result;
+                    return Promise.resolve(result);
+                });
+        });
+}
 module.exports = ProductDao;

@@ -11,6 +11,7 @@ const initialState = {
     { id: '12', name: '天猫' },
     { id: '17', name: '美团外卖' },
     { id: '1', name: '旧系统' },
+    { id: '58', name: '淘宝企业店' },
     { id: '35', name: '饿了么' },
     { id: '11007', name: '本站' },
     { id: '11012', name: '美团网' },

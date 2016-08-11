@@ -16,7 +16,7 @@ var initial_state = {
   view_img: null,
 }
 
-function main(state = initial_state, action){
+export function main(state = initial_state, action){
   switch (action.type) {
 
     case Actions.CREATE_NEW_IMG_DIR:

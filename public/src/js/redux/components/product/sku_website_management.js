@@ -10,13 +10,18 @@ import Styler from 'react-styling';
 import MessageBox, { MessageBoxIcon, MessageBoxType } from 'common/message_box';
 import DropDownMenu from 'common/dropdown';
 import AddressSelector from 'common/address_selector';
+import StdModal from 'common/std_modal';
+import Breadcrumb from 'common/breadcrumb';
+import SearchInput from 'common/search_input';
+import { normalLoader } from 'common/loading';
 
 import getTopHeader from '../top_header';
 import LazyLoad from 'utils/lazy_load';
 import Config from 'config/app.config';
 
 import AreaActions from 'actions/area';
-import Actions from 'actions/product_sku_website_manage';
+import * as Actions from 'actions/product_sku_website_manage';
+import * as ImgActions from 'actions/central_image_manage';
 
 const FormGroup = props => (<div className="form-group" {...props} />);
 const FormInlineGroup = props => (<div className="form-group form-inline" {...props} />);
@@ -26,27 +31,8 @@ const Radio = props => (<input type="radio" {...props} />);
 const Row = props => (<div className="row" {...props} />);
 const Col = props => <div {...props} className={`col-xs-${props.size} ${props.className}`} />;
 const Title = props => <p style={{fontWeight: 'normal'}} {...props} />;
-const Panel = props => (
-  <div 
-    className="panel"
-    style={{boxShadow: 'none', border: '1px solid #F3F3F3', marginBottom: 22}}
-  >
-    {props.header}
-    {
-      props.open
-        ? <div className="panel-body">
-            {props.children}
-            <div className="form-group clearfix">
-              <button className="btn btn-sm btn-theme pull-right">
-                确认
-              </button>
-            </div>
-          </div>
-        : null
-    }
-  </div>
-)
-class FullPanel extends Component {
+
+class Panel extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -58,18 +44,30 @@ class FullPanel extends Component {
     var {open} = this.state;
     var headerStyle = {fontWeight: 'normal'};
     !open && (headerStyle.borderBottom = 'none');
-    var panelHeader = (
-      <header className="panel-heading" style={headerStyle}>
-        <span className="theme">{this.props.title}</span>
-        <a href="javascript:;" onClick={this.onToggle} className="pull-right" style={{marginTop: 3}}>
-          <i className={`fa ${open ? 'fa-chevron-circle-up' : 'fa-edit'}`}></i>
-        </a>
-      </header>
-    )
     return (
-      <Panel header={panelHeader} open={open}>
-        {this.props.children}
-      </Panel>
+      <div 
+        className="panel"
+        style={{boxShadow: 'none', border: '1px solid #F3F3F3', marginBottom: 22}}
+      >
+        <header className="panel-heading" style={headerStyle}>
+          <span className="theme">{this.props.title}</span>
+          <a href="javascript:;" onClick={this.onToggle} className="pull-right" style={{marginTop: 3}}>
+            <i className={`fa ${open ? 'fa-chevron-circle-up' : 'fa-edit'}`}></i>
+          </a>
+        </header>
+        {
+          open
+            ? <div className="panel-body" style={{paddingTop: 12}}>
+                {this.props.children}
+                <div className="form-group clearfix">
+                  <button className="btn btn-sm btn-theme pull-right">
+                    确认
+                  </button>
+                </div>
+              </div>
+            : null
+        }
+      </div>
     )
   }
   onToggle(){
@@ -102,10 +100,11 @@ const AddButton = props => (<i className="fa fa-plus center text-center cursor-p
   width: 38,
   height: 38,
   lineHeight: '38px',
-  background: '#D09D5E',
+  background: 'rgba(216, 150, 69, 0.8)',
+  boxShadow: '1px 1px 2px rgba(0, 0, 0, 0.2)',
   color: '#fff',
   borderRadius: '50%',
-}}></i>)
+}} {...props}></i>)
 
 const TopHeader = getTopHeader([{
   name: '产品管理',
@@ -118,21 +117,63 @@ const TopHeader = getTopHeader([{
   link: ''
 }]);
 
+//(1)
 const ApplicationRange = props => (
-  <Panel open>
-    <FormGroup>
-      <label className="strong">应用范围：</label>
-      <label className="ml-20"><Radio name="city" /> 全部一致</label>
-      <label className="ml-20"><Radio name="city" /> 独立城市配置</label>
-    </FormGroup>
-    <FormGroup>
-      <label className="strong">配置城市：</label>
-      <AddressSelector className="ml-20" {...props.area} actions={props.actions} />
-    </FormGroup>
-  </Panel>
+  <div 
+    className="panel"
+    style={{boxShadow: 'none', border: '1px solid #F3F3F3', marginBottom: 22}}
+  >
+    <div className="panel-body" style={{paddingTop: 12}}>
+      <FormGroup>
+        <label className="strong">应用范围：</label>
+        <label className="ml-20">
+          <Radio
+            name="city"
+            checked={props.all}
+            onChange={props.actions.setApplicationRange.bind(undefined, true)}
+          />
+          &nbsp;全部一致
+        </label>
+        <label className="ml-20">
+          <Radio
+            name="city"
+            checked={!props.all}
+            onChange={props.actions.setApplicationRange.bind(undefined, false)}
+          />
+          &nbsp;独立城市配置
+        </label>
+      </FormGroup>
+      {
+        !props.all
+          ? <FormGroup>
+              <label className="strong">配置城市：</label>
+              <DropDownMenu
+                value={props.province_id}
+                className="ml-20 space-right"
+                list={props.provinces}
+                onChange={props.actions.selectProvince.bind(undefined)}
+              />
+              <DropDownMenu
+                value={props.city_id}
+                className="space-right"
+                list={props.cities}
+                onChange={props.actions.selectCity.bind(undefined)}
+              />
+              <button
+                disabled={props.saved || !props.city_id}
+                className="btn btn-xs btn-theme"
+                >
+                保存城市配置
+              </button>
+              <span>（暂存当前城市设置）</span>
+            </FormGroup>
+          : null
+      }
+    </div>
+  </div>
 )
 
-const ProlistImgBox = props => <div style={{width: 245}} className="relative inline-block" {...props} />
+const ProlistImgBox = props => <div style={{width: 245, height: 245}} className="relative inline-block" {...props} />
 
 const ContentEditBox = props => {
   var styles = Styler`
@@ -185,6 +226,7 @@ const ContentEditBox = props => {
   )
 }
 
+//(2)
 //产品列表信息展示
 class ProlistDetail extends Component {
   constructor(props){
@@ -204,13 +246,13 @@ class ProlistDetail extends Component {
   }
   render(){
     return (
-      <FullPanel title="分类页面信息展示">
+      <Panel title="分类页面信息展示">
         <div className="clearfix relative">
           <ColBox>
             <Title>1.商品图（展示在商品分类页面商品缩略图）</Title>
             <ProlistImgBox>
               <Img defaultSrc="images/products/pro-list-1.jpg" />
-              <AddButton />
+              <AddButton onClick={this.props.showSelectImgModal.bind(undefined, 'prolsit_img')} />
             </ProlistImgBox>
             <p className="v-mg">建议尺寸：245 x 245 像素</p>
           </ColBox>
@@ -228,7 +270,7 @@ class ProlistDetail extends Component {
             </ProlistImgBox>
           </ColBox>
         </div>
-      </FullPanel>
+      </Panel>
     )
   }
   onContentChange(e){
@@ -252,6 +294,8 @@ const FormCol = ({length = 4,...props}) => {
     </div>
   )
 }
+
+//(3)
 //产品详情页相关属性
 class ProProperties extends Component {
   constructor(props){
@@ -274,7 +318,7 @@ class ProProperties extends Component {
   }
   render(){
     return (
-      <FullPanel title="商品详情页相关属性">
+      <Panel title="商品详情页相关属性">
         <div className="clearfix relative">
           <ColBox>
             <Title>商品简介2（商品详情页面顶部商品描述）</Title>
@@ -337,7 +381,7 @@ class ProProperties extends Component {
             </div>
           </div>
         </div>
-      </FullPanel>
+      </Panel>
     )
   }
   onContentChange(key, e){
@@ -364,7 +408,20 @@ class IntroImg extends Component {
         {
           src
             ? this.state.showEditIcon 
-                ? <a href="javascript:;" className="absolute" style={{top: 10, right: 10}}><i className="fa fa-edit"></i></a>
+                ? [
+                    <a key="del"
+                      href="javascript:;" 
+                      className="absolute"
+                      style={{top: 8, right: 28}}
+                      ><i className="fa fa-trash-o"></i>
+                    </a>,
+                    <a key="edit"
+                      href="javascript:;"
+                      className="absolute"
+                      style={{top: 9, right: 8}}
+                      ><i className="fa fa-edit"></i>
+                    </a>
+                  ]
                 : null
             : <AddButton />
         }
@@ -373,18 +430,19 @@ class IntroImg extends Component {
   }
   toggleEditIcon(show){
     if(this.props.src){
-      this.setState({ showEditIcon: show })
+      this.setState({ showEditIcon: true })
     }
   }
 }
 
+//(4)
 //产品详情页缩略展示图
 class ProIntro extends Component {
   render(){
     var imgW = 80;
     return (
-      <FullPanel title="产品详情页缩略展示图">
-        <div className="clearfix">
+      <Panel title="产品详情页缩略展示图">
+        <div className="clearfix" style={{paddingLeft: 30}}>
           <div className="pull-left">
             <img src={`http://placehold.it/${imgW * 4 + 4 * 3}?text=主图`} alt=""/>
             <div style={{marginTop: 4}}>
@@ -406,7 +464,7 @@ class ProIntro extends Component {
             </div>
           </div>
         </div>
-      </FullPanel>
+      </Panel>
     )
   }
 }
@@ -416,39 +474,43 @@ const AddButtonGroup = props => (
     <AddButton {...props} />
     <div className="center theme" style={Styler`
       margin-top: 37px;
-      background: #D8B886;
+      background: rgba(230, 195, 141, 0.48);
       padding: 2px 7px;
       border-radius: 3px;
+      box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.25);
     `}>建议尺寸：{props.size} 像素</div>
   </div>
 )
 
+//(5)
 class ProDetailImgs extends Component {
   render(){
     var w = 700;
     var space = 16;
     var w_2 = (w - space)/2;
     return (
-      <FullPanel title="产品详情页">
-        <div className="relative" style={{width: w}}>
-          <Img defaultSrc="images/products/pro-desc-1.jpg" />
-          <AddButtonGroup size="1120x743" />
-        </div>
-        <div className="clearfix" style={{marginTop: space}}>
-          <div className="relative pull-left" style={{marginRight: space, width: w_2}}>
-            <Img defaultSrc="images/products/pro-desc-2-1.jpg" />
-            <AddButtonGroup size="547x547" />
+      <Panel title="产品详情页">
+        <div style={{paddingLeft: 30}}>
+          <div className="relative" style={{width: w}}>
+            <Img defaultSrc="images/products/pro-desc-1.jpg" />
+            <AddButtonGroup size="1120x743" />
           </div>
-          <div className="relative pull-left" style={{width: w_2}}>
-            <Img defaultSrc="images/products/pro-desc-2-2.jpg" />
-            <AddButtonGroup size="547x547" />
+          <div className="clearfix" style={{marginTop: space}}>
+            <div className="relative pull-left" style={{marginRight: space, width: w_2}}>
+              <Img defaultSrc="images/products/pro-desc-2-1.jpg" />
+              <AddButtonGroup size="547x547" />
+            </div>
+            <div className="relative pull-left" style={{width: w_2}}>
+              <Img defaultSrc="images/products/pro-desc-2-2.jpg" />
+              <AddButtonGroup size="547x547" />
+            </div>
+          </div>
+          <div className="relative" style={{marginTop: space, width: w}}>
+            <Img defaultSrc="images/products/pro-desc-3.jpg" />
+            <AddButtonGroup size="1120x743" />
           </div>
         </div>
-        <div className="relative" style={{marginTop: space, width: w}}>
-          <Img defaultSrc="images/products/pro-desc-3.jpg" />
-          <AddButtonGroup size="1120x743" />
-        </div>
-      </FullPanel>
+      </Panel>
     )
   }
 }
@@ -464,12 +526,12 @@ const tabContentBoxStyle = {
 class Main extends Component {
   constructor(props) {
     super(props);
+    this.showSelectImgModal = this.showSelectImgModal.bind(this);
   }
 
   render() {
 
-    const { params: {productId}, area, applicationRange, actions } = this.props;
-
+    const { params: {productId}, area, applicationRange, actions, imgActions, imgModal, imgList } = this.props;
     return (
       <div className="wrapper">
         <TopHeader />
@@ -485,11 +547,11 @@ class Main extends Component {
           <div className="panel-body" style={{paddingTop: 33}}>
             <Row>
               <div className="col-lg-8 col-lg-offset-1">
-                <ApplicationRange {...applicationRange} area={area} actions={actions} />
-                <ProlistDetail />
+                <ApplicationRange {...applicationRange} actions={actions} />
+                <ProlistDetail showSelectImgModal={this.showSelectImgModal} />
                 <ProProperties />
-                <ProIntro />
-                <ProDetailImgs />
+                <ProIntro showSelectImgModal={this.showSelectImgModal} />
+                <ProDetailImgs showSelectImgModal={this.showSelectImgModal} />
 
                 <div className="mgt-20">
                   <button className="btn btn-lg btn-theme">保存</button>
@@ -498,14 +560,22 @@ class Main extends Component {
             </Row>
           </div>
         </div>
+        <SelectImgModal ref="selectImgModal" {...{...imgModal, ...imgList}} actions={imgActions} />
       </div>
     );
   }
 
   componentDidMount() {
-    
+    this.props.actions.getProvincesSignal();
+    this.props.actions.getAllAvailableCities();
+    LazyLoad('noty');
+    LazyLoad('qiniu_dev');
+    // LazyLoad('qiniu');
   }
-
+  showSelectImgModal(which) {
+    //which用以区分是添加哪里的图片
+    this.refs.selectImgModal.show(which);
+  }
 }
 
 export default connect(
@@ -515,7 +585,176 @@ export default connect(
   dispatch => ({
     actions: bindActionCreators({
       ...AreaActions(),
-      Actions
+      ...Actions
     }, dispatch),
+    imgActions: bindActionCreators(ImgActions, dispatch)
   })
 )(Main);
+
+const FolderBox = props => (
+  <div className="pull-left text-center cursor-pointer"
+    style={{width: 100, margin: '0 15px 15px'}}
+    onClick={props.enterDir.bind(undefined, props)}
+    >
+    <div className="relative" style={{width: 100,height: 100}}>
+      <img src={Config.root + "images/folder.png"} style={{width: '78%'}} className="center" />
+    </div>
+    <h6 className="text-ellpisis">{props.name}</h6>
+  </div>
+)
+
+const ImgViewBoxStyle = Styler`
+  pxStyle {
+    color: #fff;
+    position: absolute;
+    bottom: -20px;
+    width: 100%;
+    background: rgba(0,0,0,.7);
+    height: 20px;
+    line-height: 20px;
+    transition: all .25s;
+  }
+`
+class ImgViewBox extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      px: '读取中...',
+    }
+  }
+  render(){
+    var {props} = this;
+    var style = {
+      width: 100,
+      margin: '0 15px 15px',
+      outline: props.viewImg && props.viewImg.id == props.id ? '3px solid #E4C698' : 'none'
+    };
+    return (
+      <div
+        style={style}
+        className="pull-left text-center cursor-pointer"
+        onMouseEnter={this.togglePxInfo.bind(this, true)}
+        onMouseLeave={this.togglePxInfo.bind(this, false)}
+        /*借用一下viewImg代表选中动作*/
+        onClick={props.actions.viewImg.bind(undefined, props)}
+        >
+        <div className="relative" style={{width: 100,height: 100, overflow: 'hidden'}}>
+          <img src={props.domain + props.url + '?imageView2/0/w/100/h/100'} onLoad={this.onImgLoaded.bind(this)} className="center" />
+          <div ref="pxInfo" style={ImgViewBoxStyle.pxStyle}>{this.state.px}</div>
+        </div>
+        <h6 className="text-ellipsis">{props.name}</h6>
+      </div>
+    )
+  }
+  togglePxInfo(show_or_not){
+    this.refs.pxInfo.style.transform = `translateY(${show_or_not ? -100 : 0}%)`;
+  }
+  onImgLoaded(){
+    // setTimeout(() => {
+      $.get(this.props.domain + this.props.url + '?imageInfo')
+        .done((data) => {
+          this.setState({ px: data.width + 'x' + data.height })
+        }).fail(this.onImgLoaded.bind(this))
+    // }, 10000)
+  }
+}
+class SelectImgModal extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      breadcrumb: [{id: undefined, name: '全部文件'}],
+
+    };
+    this.enterDir = this.enterDir.bind(this);
+  }
+  render(){
+    var { breadcrumb } = this.state;
+    //view_img 用来代表选中的图片
+    var { loading, search_ing, list, domain, view_img, actions } = this.props;
+    var content = list.map( (n, i) => {
+      if(n.isDir){
+        return <FolderBox {...n} enterDir={this.enterDir} key={n.id + '' + i} />
+      }else if(n.url && n.url.match(/(\.jpg$)|(\.png4)|(\.gif$)|(\.webp$)|(\.tiff$)|(\.bmp$)/)){
+        return <ImgViewBox actions={actions} key={n.id + '' + i} {...n} viewImg={view_img} domain={domain} />
+      }
+    })
+    return (
+      <StdModal
+        ref="modal" 
+        title="选择图片"
+        size="lg"
+        disabled={!view_img}
+        /*关闭窗口，同时取消选中*/
+        onCancel={this.props.actions.viewImg.bind(undefined, null)}
+        onConfirm={this.onConfirm.bind(this)}
+      >
+        <div className="panel">
+          <header className="panel-heading">
+            {
+              breadcrumb.length > 1
+                ? [
+                    <span
+                      key="return"
+                      onClick={this.backToUpperDir.bind(this)}
+                      className="achor font-sm"
+                    >
+                      返回上一级
+                    </span>,
+                    <span key="sep" className="gray"> | </span>
+                  ]
+                : null
+            }
+            <Breadcrumb
+              data={breadcrumb}
+              className="inline-block"
+              onClick={this.onBreadcrumbClicked.bind(this)}
+            />
+            <SearchInput
+              searchHandler={this.search.bind(this)}
+              searching={this.props.search_ing}
+              className="form-inline pull-right"
+              placeholder="图片名称"
+            />
+          </header>
+
+          <div className="panel-body clearfix">
+            { normalLoader(loading, content) }
+          </div>
+        </div>
+      </StdModal>
+    )
+  }
+  componentDidMount() {
+    
+  }
+  show(which){
+    this.props.actions.getImageFileList();
+    this.setState({ which }, this.refs.modal.show);
+  }
+  onConfirm(){
+    this.props.actions.selectImg(this.props.view_img.url, this.state.which);
+  }
+  onBreadcrumbClicked(node){
+    var index = this.state.breadcrumb.findIndex( b => b.id == node.id );
+    var breadcrumb = this.state.breadcrumb.slice(0, index + 1);
+    this.setState({breadcrumb});
+    this.props.actions.getImageFileList({parent_id: node.id});
+  }
+  enterDir({id, name}){
+    this.state.breadcrumb.push({id, name});
+    this.setState({
+      breadcrumb: this.state.breadcrumb
+    })
+    this.props.actions.getImageFileList({parent_id: id});
+  }
+  backToUpperDir(){
+    var { breadcrumb } = this.state;
+    breadcrumb.pop();
+    this.setState({ breadcrumb });
+    this.props.actions.getImageFileList({parent_id: breadcrumb[breadcrumb.length - 1].id});
+  }
+  search(value){
+    this.props.actions.startSearchImgByNameIng();
+    this.props.actions.getImageFileList({parent_id: this.props.dirId, name: value.trim() || undefined})
+  }
+}

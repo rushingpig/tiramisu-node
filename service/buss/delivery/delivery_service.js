@@ -1154,6 +1154,11 @@ DeliveryService.prototype.getRecord = (req, res, next)=>{
 
     let query = Object.assign({user: req.session.user}, req.query);
     if (query.isCOD !== undefined) query.is_COD = (query.isCOD == '1');
+    if (req.query.keywords && isNaN(parseInt(req.query.keywords))) {
+        query.keywords = systemUtils.encodeForFulltext(req.query.keywords);
+    } else {
+        query.keywords = req.query.keywords;
+    }
     let promise = co(function *() {
         let count = yield deliveryDao.findDeliveryRecordCount(query);
         let result = Object.assign({}, _.omit(count, ['order_ids']));

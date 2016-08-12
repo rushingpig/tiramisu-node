@@ -103,6 +103,7 @@ class AuthorityForm extends Component{
     setTimeout(() => {
       var { errors } = this.props;
       if(!Object.keys(errors).length){
+        form_data.code = form_data.code.replace(/^\s+|\s+$/g, '');
         callback.call(this, form_data);
       }else{
         Noty('warning', '请填写完整');

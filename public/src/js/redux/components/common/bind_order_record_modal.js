@@ -15,14 +15,18 @@ var BindOrderModal = React.createClass({
     var { order_id, owner_mobile, owner_name } = this.state.data;
     var { page_no, total, list, loading } = this.props;
     var {sort_type} = this.state;
+    var original_order_id;
     var content = list.map( (n, i) => {
+        if( sort_type == 'DESC' && i == list.length -1 || sort_type == 'ASC' && i == 0){
+          original_order_id = n.order_id;
+        }
       return (
         <tr key={n.order_id + '' + i}>
           <td>{n.created_by}</td>
           <td className="text-left">
             {
               n.order_id == order_id?
-              <span style = {{color: '#9C6B21'}}>{n.order_id}</span>
+              <a href='javascript:;' title = '当前退款订单号'>{n.order_id}</a>
               :
               <span>{n.order_id}</span>
             }
@@ -35,7 +39,7 @@ var BindOrderModal = React.createClass({
       <StdModal title="订单关联历史记录" footer={false} ref="modal" onCancel={this.hideCallback}>
         <div className="">
           <label>初始支付订单号：</label>
-          {order_id}
+          {original_order_id}
         </div>
         <div className="form-group">
           <label>下单人信息：</label>

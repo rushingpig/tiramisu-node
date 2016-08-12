@@ -100,7 +100,7 @@ class FilterHeader extends Component{
 	}
 	onProvinceChange(callback, e){
 		var {value } = e.target;
-		this.props.getCitiesSignal(value, 'authority');
+		this.props.getCitiesSignal(value, 1,  'authority');
 		callback(e);
 	}
 	search(search_in_state){

@@ -60,7 +60,14 @@ class HistoryOrders extends Component {
     var { checkHistoryOrder } = this.props;
     var { page_no, total, list, check_order_info, active_order_id } = this.props.data;
     var { viewDetail } = this;
-
+    var active_order_arr = list.filter( m => m.order_id == active_order_id);
+    var active_order = {}
+    var relateBtnActive = false;
+    if(active_order_arr.length > 0){
+      active_order = active_order_arr[0];
+      relateBtnActive =( active_order.status == 'CANCEL' || active_order.status == 'EXCEPTION' ) && 
+                        ( !active_order.refund_status || active_order.refund_status == '' );
+    }
     var content = list.map((n, i) => {
       return <OrderRow key={n.order_id} {...{...n, active_order_id, viewDetail, checkHistoryOrder}} />;
     })
@@ -76,7 +83,7 @@ class HistoryOrders extends Component {
         {'　'}
         <button onClick={this.copyOrder.bind(this)} className="btn btn-default btn-xs">复制订单</button>
         {'　'}
-        <button onClick={this.bindOrder.bind(this)} className="btn btn-default btn-xs">关联订单</button>
+        <button onClick={this.bindOrder.bind(this)} disabled = { !relateBtnActive } className="btn btn-default btn-xs">关联订单</button>
         <span className="pull-right theme">{ window.xfxb.user.name }</span>
       </div>
       <div className="table-responsive">

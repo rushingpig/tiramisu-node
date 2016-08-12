@@ -124,7 +124,7 @@ class FilterHeader extends Component{
 			<div className='panel search' >
 
 				<div className='panel-body form-inline'>
-          			{/*<SearchInput ref='searchKeywords' searchHandler={this.FilterDeliveyRecord.bind(this, 'search_by_keywords_ing')} searching={search_by_keywords_ing} className="form-inline v-mg space-right" placeholder="关键字" />*/}
+          			<SearchInput ref='searchKeywords' searchHandler={this.FilterDeliveyRecord.bind(this, 'search_by_keywords_ing')} searching={search_by_keywords_ing} className="form-inline v-mg space-right" placeholder="关键字" />
 					{'开始时间'}
 					<DatePicker editable 
 						upperLimit = {this.state.end_time}

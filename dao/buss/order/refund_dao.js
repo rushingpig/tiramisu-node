@@ -252,4 +252,16 @@ RefundDao.prototype.findRefundById = function (refund_id) {
     return baseDao.select(sql, params);
 };
 
+RefundDao.prototype.isBind = function (order_id) {
+    return co(function *() {
+        let sql = `SELECT bo.id FROM ?? bo `;
+        let params = [tables.buss_order];
+        sql += `WHERE bo.bind_order_id = ? `;
+        params.push(order_id);
+        let info = yield baseDao.select(sql, params);
+        if (!info || info.length == 0) return Promise.resolve(false);
+        return Promise.resolve(true);
+    });
+};
+
 module.exports = new RefundDao();

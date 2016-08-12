@@ -165,7 +165,7 @@ RefundDao.prototype.findRefund = function (query) {
     params.push(tables.buss_order_src);
     sql += `LEFT JOIN ?? su ON su.id = bre.created_by `;
     params.push(tables.sys_user);
-    sql += `LEFT JOIN ?? su2 ON su2.id = bo.updated_by `;
+    sql += `LEFT JOIN ?? su2 ON su2.id = bre.updated_by `;
     params.push(tables.sys_user);
     sql += `LEFT JOIN ?? bo2 ON bo2.id = bo.bind_order_id `;
     params.push(tables.buss_order);

@@ -55,9 +55,8 @@ export default function Area(ActionTypes = AreaActionTypes1){
     },
 
     //添加标志获取城市
-    //旧版， 根据省份id获取城市，避免与qa的三级城市冲突
-    getCitiesSignal_Old:function(province_id,signal){
-      return GET(Url.cities.toString(province_id),{signal:signal},ActionTypes.GOT_CITIES_SIGNAL);
+    getCitiesSignal:function({ province_id, is_standard_area, signal = 'authority' }){
+      return GET(Url.cities.toString(province_id), {is_standard_area, signal}, ActionTypes.GOT_CITIES_SIGNAL);
     },
 
     resetDistricts: function (){

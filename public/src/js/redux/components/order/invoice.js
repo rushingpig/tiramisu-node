@@ -18,6 +18,10 @@ import { tableLoader, get_table_empty } from 'common/loading';
 import StdModal from 'common/std_modal';
 import Pagination from 'common/pagination';
 import RadioGroup from 'common/radio_group';
+import OrderSrcsSelects from 'common/order_srcs_selects';
+
+import * as OrderSupportActions from 'actions/order_support';
+import AreaActions from 'actions/area';
 
 class TopHeader extends Component{
 	render(){
@@ -54,6 +58,7 @@ class FilterHeader extends Component{
 	}
 	render(){
 		var {search_ing, search_by_keywords_ing} = this.state;
+		var {all_order_srcs } = this.state;
 /*		var {
 			fields:{
 				province_id,
@@ -73,7 +78,11 @@ class FilterHeader extends Component{
 					<Select default-text = '请选择市' className='space-right'/>
 					<Select default-text = '请选择配送站' className='space-right'/>
 					<Select default-text = '开票状态'  className='space-right'/>
-					<Select default-text = '订单来源' className='space-right'/>
+					{
+					  /*V( 'InvoiceManageChannelFilter' )
+					    ?<OrderSrcsSelects {...{all_order_srcs}} actions={this.props.actions} reduxFormName="order_manage_filter" />
+					    :null*/
+					}
 					<button disabled={search_ing} data-submitting={search_ing} className="btn btn-theme btn-xs">
 					  <i className="fa fa-search"></i>{' 查询'}
 					</button>
@@ -82,13 +91,16 @@ class FilterHeader extends Component{
 			)
 	}
 }
-export default class ManagePannel extends Component{
+class ManagePannel extends Component{
 	render(){
+		var {all_order_srcs, getOrderSrcs, dispatch } = this.props;
+		/*var { dispatch } = actions;*/
 		return (
 			<div className='order-manage'>
 				<TopHeader 
 					viewInvoiceApplyModal= {this.viewInvoiceApplyModal.bind(this)} />
-				<FilterHeader />
+				<FilterHeader all_order_srcs = {all_order_srcs}
+					actions = {{...bindActionCreators({...AreaActions(), getOrderSrcs}, dispatch)}}/>
 				<div className = 'panel'>
 					<header className='panel-heading'>发票列表</header>
 					<div className='panel-body'>
@@ -123,6 +135,8 @@ export default class ManagePannel extends Component{
 	}
 	viewInvoiceApplyModal(){
 		this.refs.InvoiceApplyModal.show();
+	}
+	componentDidMount(){
 	}
 }
 
@@ -204,3 +218,18 @@ class InvoiceApplyModal extends Component{
 		this.refs.modal.show();
 	}
 }
+
+function mapStateToProps(state){
+	return state.invoiceManage;
+}
+
+function mapDispatchToProps(dispatch){
+	var actions =  bindActionCreators({
+		...OrderSupportActions,
+		...AreaActions(),
+	}, dispatch);
+	actions.dispatch = dispatch;
+	return actions;
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ManagePannel);

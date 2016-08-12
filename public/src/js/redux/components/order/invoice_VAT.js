@@ -25,7 +25,7 @@ class TopHeader extends Component{
 			<div className = 'clearfix top-header'>
 				{
 				  V( 'InvoiceVATManageAddInvoice' )
-				    ? <button className="btn btn-xs btn-theme pull-left">添加公司资料</button>
+				    ? <button onClick = {this.viewCompanyModal.bind(this)} className="btn btn-xs btn-theme pull-left">添加公司资料</button>
 				    : null
 				}
 				{
@@ -39,8 +39,8 @@ class TopHeader extends Component{
 			</div>
 			)
 	}
-	viewInvoiceApplyModal(){
-		this.props.viewInvoiceApplyModal();
+	viewCompanyModal(){
+		this.props.viewCompanyModal();
 	}
 }
 
@@ -72,7 +72,7 @@ export default class ManagePannel extends Component{
 	render(){
 		return (
 			<div>
-				<TopHeader />
+				<TopHeader viewCompanyModal = {this.viewCompanyModal.bind(this)}/>
 				<FilterHeader />
 				<div className = 'panel'>
 					<header className='panel-heading'>发票抬头公司列表</header>
@@ -101,8 +101,52 @@ export default class ManagePannel extends Component{
 						</div>
 					</div>
 				</div>
+				<CompanyModal ref='CompanyModal'/>
 			</div>
 			
 			)
 	}
+	viewCompanyModal(){
+		this.refs.CompanyModal.show();
+	}
 } 
+
+class CompanyModal extends Component{
+	render(){
+		return (
+			<StdModal ref = 'modal' title = '添加公司资料页面'>
+				<div className='form-group form-inline'>
+					<label>{'　　公司名称：'}</label>
+					<input type = 'text' className= 'form-control input-xs'/>
+				</div>
+				<div className='form-group form-inline'>
+					<label>{'纳税人识别号/'}<br />{'社会信用代码：'}</label>
+					<input type='text' className='form-control input-xs' />
+				</div>
+				<div className='form-group form-inline'>
+					<label>{'公司注册地址：'}</label>
+					<input type = 'text' className= 'form-control input-xs'/>
+				</div>
+				<div className='form-group form-inline'>
+					<label>{'公司注册电话：'}</label>
+					<input type = 'text' className= 'form-control input-xs'/>
+				</div>
+				<div className='form-group form-inline'>
+					<label>{'开户银行名称：'}</label>
+					<input type = 'text' className= 'form-control input-xs'/>
+				</div>
+				<div className='form-group form-inline'>
+					<label>{'开户银行账号：'}</label>
+					<input type = 'text' className= 'form-control input-xs'/>
+				</div>
+				<div className='form-group form-inline'>
+					<label>{'资质证书照片：'}</label>
+
+				</div>
+			</StdModal>
+			)
+	}
+	show(){
+		this.refs.modal.show();
+	}
+}

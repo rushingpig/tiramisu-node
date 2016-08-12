@@ -1035,7 +1035,7 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
     prefix_address = req.body.prefix_address,
     greeting_card = req.body.greeting_card,
     coupon = req.body.coupon;
-  let bind_order_id = req.body.bind_order_id;
+  let bind_order_id = req.body._bind_order_id;
   let origin_order_id = req.body.origin_order_id;
   let payment_amount = req.body.payment_amount;
   let recipientObj = {
@@ -1048,6 +1048,7 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
     del_flag: del_flag.SHOW
   };
 
+  let orderId;
   return baseDao.trans().then(transaction => {
     return new Promise((resolve, reject) => {
       // recipient
@@ -1091,8 +1092,8 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
           if (order_err || !result.insertId) {
             return reject(order_err || new TiramisuError(errorMessage.FAIL));
           }
-          let orderId = result.insertId,
-            params = [];
+          orderId = result.insertId;
+          let params = [];
           products.forEach((curr) => {
             let arr = [];
             arr.push(orderId);
@@ -1125,6 +1126,9 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
             order_id: orderId,
             option: '添加订单'
           };
+          if (req.body.bind_order_id) {
+            order_history_obj.option += `\n当前订单关联于旧订单{${req.body.bind_order_id}}`;
+          }
           let skus_sql = "insert into " + tables.buss_order_sku + "(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price,amount) values ?";
           transaction.query(skus_sql, [params], err => {
             if (err) return reject(err);
@@ -1144,7 +1148,7 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
         transaction.commit(err => {
           transaction.release();
           if (err) return reject(err);
-          resolve();
+          resolve(orderId);
         });
       });
     }).catch(err => {
@@ -1460,7 +1464,7 @@ OrderDao.prototype.isCanBind = function (order_id) {
   return co(function *() {
     let sql = `SELECT bo.id FROM ?? bo `;
     let params = [tables.buss_order];
-    sql += `WHERE (bo.id = ? AND bo.status IN ('CANCEL', 'EXCEPTION') ) `;
+    sql += `WHERE (bo.id = ? AND bo.status != 'CANCEL' AND bo.status != 'EXCEPTION' ) `;
     params.push(order_id);
     sql += `OR bo.bind_order_id = ? `;
     params.push(order_id);

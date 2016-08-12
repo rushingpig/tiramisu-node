@@ -34,7 +34,7 @@ const validate = (values, props) => {
 
   function _v_text(key){
     if(form[key] && form[key].touched && (values[key] === undefined || values[key] == '')){
-      error[key] = msg;
+      errors[key] = msg;
     }
   }
 
@@ -45,7 +45,7 @@ const validate = (values, props) => {
 
   if(values['way'] == 'CS'){
     _v_text('account');
-    _v_text('account_type');
+    _v_text('account_name');
   }
 
   return errors;

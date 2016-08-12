@@ -76,7 +76,7 @@ function joinHistory(curr_obj, new_obj, history) {
         history.option = `修改退款金额为{${new_obj.amount / 100}}\n`;
     }
     if (new_obj.reason_type !== undefined && curr_obj.reason_type != new_obj.reason_type) {
-        history.option = `修改退款原因为{${new_obj.reason}}\n`;
+        history.option = `修改退款原因为{${new_obj.reason || ''}}\n`;
     }
     if (new_obj.linkman_name !== undefined && curr_obj.linkman_name != new_obj.linkman_name) {
         history.option = `修改联系人姓名为{${new_obj.linkman_name}}\n`;
@@ -199,12 +199,13 @@ module.exports.addRefund = function (req, res, next) {
             'is_urgent'
         ]);
         let order_id = systemUtils.getDBOrderId(b.order_id);
+        if (yield refundDao.isBind(order_id)) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED, '订单处订单已被绑定...'));
         let option = yield refundDao.findOptionByOrderId(order_id);
         if (!option) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
-        if (option.refund_status) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED, '订单处于退款中'));
+        if (option.refund_status) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED, '订单处于退款中...'));
         if ((refund_obj.type == REFUND_TYPE.PART && refund_obj.amount >= option.payment_amount)
             || (refund_obj.type == REFUND_TYPE.FULL && refund_obj.amount != option.payment_amount)) {
-            return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '退款金额输入有误'));
+            return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '退款金额输入有误...'));
         }
 
         refund_obj.status = RS.TREATED;

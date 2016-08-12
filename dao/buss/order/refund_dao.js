@@ -152,6 +152,7 @@ RefundDao.prototype.findRefund = function (query) {
         'bo.owner_name',
         'bo.owner_mobile',
         'bo.merchant_id',
+        'bo.coupon',
         'bo.id AS order_id',
         'bo.created_time AS order_created_time',
         'bo2.id AS bind_order_id',
@@ -165,7 +166,7 @@ RefundDao.prototype.findRefund = function (query) {
     params.push(tables.buss_order_src);
     sql += `LEFT JOIN ?? su ON su.id = bre.created_by `;
     params.push(tables.sys_user);
-    sql += `LEFT JOIN ?? su2 ON su2.id = bo.updated_by `;
+    sql += `LEFT JOIN ?? su2 ON su2.id = bre.updated_by `;
     params.push(tables.sys_user);
     sql += `LEFT JOIN ?? bo2 ON bo2.id = bo.bind_order_id `;
     params.push(tables.buss_order);
@@ -250,6 +251,18 @@ RefundDao.prototype.findRefundById = function (refund_id) {
     params.push(del_flag.SHOW);
     params.push(refund_id);
     return baseDao.select(sql, params);
+};
+
+RefundDao.prototype.isBind = function (order_id) {
+    return co(function *() {
+        let sql = `SELECT bo.id FROM ?? bo `;
+        let params = [tables.buss_order];
+        sql += `WHERE bo.bind_order_id = ? `;
+        params.push(order_id);
+        let info = yield baseDao.select(sql, params);
+        if (!info || info.length == 0) return Promise.resolve(false);
+        return Promise.resolve(true);
+    });
 };
 
 module.exports = new RefundDao();

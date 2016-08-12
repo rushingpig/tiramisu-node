@@ -143,7 +143,7 @@ RefundDao.prototype.findRefund = function (query) {
     let page_no = query.page_no || 0;
     let page_size = query.page_size || 10;
     let sort_type = query.sort_type || 'DESC';
-    let doFt = doFullText(query);
+    // let doFt = doFullText(query);
 
     let columns = [
         'bre.*',
@@ -165,7 +165,7 @@ RefundDao.prototype.findRefund = function (query) {
     let params = [tables.buss_refund];
     sql += `INNER JOIN ?? bo ON bo.id = bre.order_id `;
     params.push(tables.buss_order);
-    if (query.keywords && doFt) {
+    if (query.keywords) {
         let match = '';
         sql += `INNER JOIN ?? bof on match(bof.owner_name,bof.owner_mobile,bof.recipient_name,bof.recipient_mobile,bof.recipient_address,bof.landmark,bof.show_order_id,bof.merchant_id,bof.coupon,bof.recipient_mobile_suffix,bof.owner_mobile_suffix) against(? IN BOOLEAN MODE) and bof.order_id = bo.id `;
         params.push(tables.buss_order_fulltext);
@@ -221,10 +221,10 @@ RefundDao.prototype.findRefund = function (query) {
         sql += `AND  bre.status = ? `;
         params.push(query.status);
     }
-    if (!doFt) {
-        sql += `AND  bre.order_id LIKE ? `;
-        params.push(`%${query.keywords}%`);
-    }
+    // if (!doFt) {
+    //     sql += `AND bre.order_id LIKE ? `;
+    //     params.push(`%${query.keywords}%`);
+    // }
 
     if (query.city_id) {
         if (query.is_standard_area == '1') {

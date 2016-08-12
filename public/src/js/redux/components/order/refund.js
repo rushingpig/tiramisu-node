@@ -100,7 +100,7 @@ class FilterHeader extends Component{
 	}
 	onProvinceChange(callback, e){
 		var {value } = e.target;
-		this.props.getCitiesSignal(value, 'authority');
+		this.props.getCitiesSignal_Old(value, 'authority');
 		callback(e);
 	}
 	search(search_in_state){
@@ -326,7 +326,7 @@ class ManagePannel extends Component{
 	}
 	render(){
 		var { RefundManage, getOrderOptRecord, resetOrderOptRecord, refund_data , bindOrderRecord, area,
-			 getProvincesSignal, getCitiesSignal, getRefundList, getRefundReasons, getRefundApplyDetail,
+			 getProvincesSignal, getCitiesSignal_Old, getRefundList, getRefundReasons, getRefundApplyDetail,
 			 editRefundChangeStatus, refundEdit, getBindOrders, resetBindOrders, addRemark, refundComplete_CS  } = this.props;
 		var { list, total, loading, refresh, page_no, check_order_info, active_order_id, operationRecord, all_refund_status, all_refund_way, all_refund_reasons } = RefundManage;
 		var { viewOperationRecordModal, viewRefundModal, viewRefundCredential, viewRemarkModal, viewBindOrderRecord } = this;
@@ -342,7 +342,7 @@ class ManagePannel extends Component{
 				  all_refund_status = {all_refund_status}
 				  area = {area}
 				  getProvincesSignal = {getProvincesSignal}
-				  getCitiesSignal = {getCitiesSignal}
+				  getCitiesSignal_Old = {getCitiesSignal_Old}
 				  getRefundList = {getRefundList}
 				  page_size = { this.state.page_size }
 				  />

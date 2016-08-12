@@ -223,7 +223,7 @@ RefundDao.prototype.findRefund = function (query) {
     }
     if (!doFt) {
         sql += `AND  bre.order_id LIKE ? `;
-        params.push(`%${systemUtils.getDBOrderId(query.keywords)}%`);
+        params.push(`%${query.keywords}%`);
     }
 
     if (query.city_id) {

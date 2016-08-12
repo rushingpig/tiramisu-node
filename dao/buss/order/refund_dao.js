@@ -152,6 +152,7 @@ RefundDao.prototype.findRefund = function (query) {
         'bo.owner_name',
         'bo.owner_mobile',
         'bo.merchant_id',
+        'bo.coupon',
         'bo.id AS order_id',
         'bo.created_time AS order_created_time',
         'bo2.id AS bind_order_id',

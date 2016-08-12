@@ -119,14 +119,20 @@ OrderService.prototype.addOrder = (req, res, next) => {
       let option = yield refundDao.findOptionByOrderId(bind_order_id);
       if (!option) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED, '所选订单号不存在...'));
       if (option.refund_status) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED, '所选订单号处于退款流程中,不能被绑定...'));
-      req.body.bind_order_id = bind_order_id;
+      req.body._bind_order_id = bind_order_id;
       req.body.origin_order_id = option.origin_order_id;
       req.body.payment_amount = option.payment_amount;
       if (!req.body.origin_order_id || req.body.origin_order_id == '0') {
         req.body.origin_order_id = bind_order_id;
       }
     }
-    yield orderDao.insertOrderInTransaction(req);
+    let order_id = yield orderDao.insertOrderInTransaction(req);
+    let show_order_id = yield orderDao.joinOrderId(order_id);
+    let order_history = {
+      order_id: req.body._bind_order_id,
+      option: `当前订单被新订单{${show_order_id}}关联`
+    };
+    yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history, true));
   }).then(()=> {
     res.api();
   });

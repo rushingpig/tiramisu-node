@@ -4,6 +4,7 @@ var _ = require('lodash');
 var co = require('co');
 
 const systemUtils = require('../../../common/SystemUtils');
+const toolUtils = require('../../../common/ToolUtils');
 var Constant = require('../../../common/Constant');
 var baseDao = require('../../base_dao');
 const del_flag = baseDao.del_flag;
@@ -142,6 +143,8 @@ RefundDao.prototype.findRefund = function (query) {
     let page_no = query.page_no || 0;
     let page_size = query.page_size || 10;
     let sort_type = query.sort_type || 'DESC';
+    let doFt = doFullText(query);
+
     let columns = [
         'bre.*',
         'su.name AS created_by',
@@ -162,6 +165,17 @@ RefundDao.prototype.findRefund = function (query) {
     let params = [tables.buss_refund];
     sql += `INNER JOIN ?? bo ON bo.id = bre.order_id `;
     params.push(tables.buss_order);
+    if (query.keywords && doFt) {
+        let match = '';
+        sql += `INNER JOIN ?? bof on match(bof.owner_name,bof.owner_mobile,bof.recipient_name,bof.recipient_mobile,bof.recipient_address,bof.landmark,bof.show_order_id,bof.merchant_id,bof.coupon,bof.recipient_mobile_suffix,bof.owner_mobile_suffix) against(? IN BOOLEAN MODE) and bof.order_id = bo.id `;
+        params.push(tables.buss_order_fulltext);
+        query.keywords.split(' ').forEach((curr) => {
+            if (curr) {
+                match += '+' + curr + ' ';
+            }
+        });
+        params.push(match + '*');
+    }
     sql += `LEFT JOIN ?? bos ON bos.id = bo.src_id `;
     params.push(tables.buss_order_src);
     sql += `LEFT JOIN ?? su ON su.id = bre.created_by `;
@@ -207,9 +221,9 @@ RefundDao.prototype.findRefund = function (query) {
         sql += `AND  bre.status = ? `;
         params.push(query.status);
     }
-    if (query.keywords !== undefined) {
+    if (!doFt) {
         sql += `AND  bre.order_id LIKE ? `;
-        params.push(`%${systemUtils.getDBOrderId(query.keywords)}%`);
+        params.push(`%${query.keywords}%`);
     }
 
     if (query.city_id) {
@@ -264,5 +278,18 @@ RefundDao.prototype.isBind = function (order_id) {
         return Promise.resolve(true);
     });
 };
+
+
+function doFullText(query_data) {
+    let keywords = query_data.keywords;
+    if (keywords && toolUtils.isInt(parseInt(keywords))
+        && keywords.toString().length !== 5
+        && !toolUtils.isMobilePhone(keywords, 'zh-CN')
+        && !toolUtils.exp_validator_custom.customValidators.isOrderId(keywords)) {
+        return false;
+    } else {
+        return true;
+    }
+}
 
 module.exports = new RefundDao();

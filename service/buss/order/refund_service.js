@@ -133,6 +133,11 @@ module.exports.getRefundOption = function (req, res, next) {
 module.exports.getRefundList = function (req, res, next) {
     let promise = co(function *() {
         let query = Object.assign({}, req.query);
+        if (req.query.keywords && isNaN(parseInt(req.query.keywords))) {
+            query.keywords = systemUtils.encodeForFulltext(req.query.keywords);
+        } else {
+            query.keywords = req.query.keywords;
+        }
         let results = yield refundDao.findRefund(query);
         results.list.forEach(curr=> {
             curr.order_id = systemUtils.getShowOrderId(curr.order_id, curr.order_created_time);

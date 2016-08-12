@@ -58,31 +58,31 @@ const ACCOUNT_TYPE_CH = {
 
 function joinHistory(curr_obj, new_obj, history) {
     if (new_obj.type !== undefined && curr_obj.type != new_obj.type) {
-        history.option = `修改退款方式为{${REFUND_TYPE_CH[new_obj.type]}}\n`;
+        history.option += `修改退款方式为{${REFUND_TYPE_CH[new_obj.type]}}\n`;
     }
     if (new_obj.way !== undefined && curr_obj.way != new_obj.way) {
-        history.option = `修改退款渠道为{${WAY_CH[new_obj.way]}}\n`;
+        history.option += `修改退款渠道为{${WAY_CH[new_obj.way]}}\n`;
     }
     if (new_obj.account_type !== undefined && curr_obj.account_type != new_obj.account_type) {
-        history.option = `修改退款账户类型为{${ACCOUNT_TYPE_CH[new_obj.account_type]}}\n`;
+        history.option += `修改退款账户类型为{${ACCOUNT_TYPE_CH[new_obj.account_type]}}\n`;
     }
     if (new_obj.account !== undefined && curr_obj.account != new_obj.account) {
-        history.option = `修改退款账户为{${new_obj.account}}\n`;
+        history.option += `修改退款账户为{${new_obj.account}}\n`;
     }
     if (new_obj.account_name !== undefined && curr_obj.account_name != new_obj.account_name) {
-        history.option = `修改退款账户用户名为{${new_obj.account_name}}\n`;
+        history.option += `修改退款账户用户名为{${new_obj.account_name}}\n`;
     }
     if (new_obj.amount !== undefined && curr_obj.amount != new_obj.amount) {
-        history.option = `修改退款金额为{${new_obj.amount / 100}}\n`;
+        history.option += `修改退款金额为{${new_obj.amount / 100}}\n`;
     }
     if (new_obj.reason_type !== undefined && curr_obj.reason_type != new_obj.reason_type) {
-        history.option = `修改退款原因为{${new_obj.reason || ''}}\n`;
+        history.option += `修改退款原因为{${new_obj.reason || ''}}\n`;
     }
     if (new_obj.linkman_name !== undefined && curr_obj.linkman_name != new_obj.linkman_name) {
-        history.option = `修改联系人姓名为{${new_obj.linkman_name}}\n`;
+        history.option += `修改联系人姓名为{${new_obj.linkman_name}}\n`;
     }
     if (new_obj.linkman_mobile !== undefined && curr_obj.linkman_mobile != new_obj.linkman_mobile) {
-        history.option = `修改联系人电话为{${new_obj.linkman_mobile}}\n`;
+        history.option += `修改联系人电话为{${new_obj.linkman_mobile}}\n`;
     }
 }
 

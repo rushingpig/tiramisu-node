@@ -22,6 +22,7 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
           OrderDetailPannel: require('../components/order/manage_order_detail_pannel'),
           AbnormalOrder:     require('../components/order/search_abnormal_order'),
           InvoicePannel:     require('../components/order/invoice'),
+          InvoiceVATPannel:  require('../components/order/invoice_VAT'),
         };
         callback();
       });
@@ -115,6 +116,7 @@ const App = () => (
         </Route>
         <Route path="refund"  component={ComingSoon} />
         <Route path="invoice" onEnter={onEnter('OrderInvoiceAccess')} getComponent={get('InvoicePannel')} />
+        <Route path="VATinvoice" onEnter={onEnter('OrderVATInvoiceAccess')} getComponent={get('InvoiceVATPannel')} />
         <Route path="winning" component={ComingSoon} />
         <Route path="ao" onEnter={onEnter('OrderAbnormalManageAccess')} getComponent={get('AbnormalOrder')} />
       </Route>

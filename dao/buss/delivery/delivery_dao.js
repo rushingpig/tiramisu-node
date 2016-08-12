@@ -284,7 +284,6 @@ DeliveryDao.prototype.findStationById = function(station_id){
 };
 DeliveryDao.prototype.findDeliveryRecordCount = function (query) {
     if (!query) query = {};
-    let doFt = doFullText(query);
     let count_columns = [
         'COUNT(*) AS total',
         'SUM(bo.total_amount) AS total_amount',
@@ -296,7 +295,7 @@ DeliveryDao.prototype.findDeliveryRecordCount = function (query) {
     let params = [tables.buss_order];
     if (query.begin_time || query.end_time)
         sql += `force index(IDX_DELIVERY_TIME) `;
-    if (query.keywords && doFt) {
+    if (query.keywords) {
         let match = '';
         sql += `INNER JOIN ?? bof on match(bof.owner_name,bof.owner_mobile,bof.recipient_name,bof.recipient_mobile,bof.recipient_address,bof.landmark,bof.show_order_id,bof.merchant_id,bof.coupon,bof.recipient_mobile_suffix,bof.owner_mobile_suffix) against(? IN BOOLEAN MODE) and bof.order_id = bo.id `;
         params.push(tables.buss_order_fulltext);
@@ -381,10 +380,10 @@ DeliveryDao.prototype.findDeliveryRecordCount = function (query) {
         else
             sql += `AND bo.total_amount = 0 `;
     }
-    if (!doFt) {
-        sql += `AND bo.id LIKE ? `;
-        params.push(`%${query.keywords}%`);
-    }
+    // if (!doFt) {
+    //     sql += `AND bo.id LIKE ? `;
+    //     params.push(`%${query.keywords}%`);
+    // }
 
     return co(function *() {
         let page_no = query.page_no || 0;

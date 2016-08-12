@@ -76,7 +76,7 @@ function joinHistory(curr_obj, new_obj, history) {
         history.option = `修改退款金额为{${new_obj.amount / 100}}\n`;
     }
     if (new_obj.reason_type !== undefined && curr_obj.reason_type != new_obj.reason_type) {
-        history.option = `修改退款原因为{${new_obj.reason}}\n`;
+        history.option = `修改退款原因为{${new_obj.reason || ''}}\n`;
     }
     if (new_obj.linkman_name !== undefined && curr_obj.linkman_name != new_obj.linkman_name) {
         history.option = `修改联系人姓名为{${new_obj.linkman_name}}\n`;

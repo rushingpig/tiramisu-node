@@ -7,6 +7,8 @@ import { reduxForm } from 'redux-form';
 
 import { Noty } from 'utils/index';
 import V from 'utils/acl';
+import * as FormActions from 'actions/form';
+import LazyLoad from 'utils/lazy_load';
 
 import history from 'history_instance';
 
@@ -20,6 +22,8 @@ import Pagination from 'common/pagination';
 import RadioGroup from 'common/radio_group';
 import OrderSrcsSelects from 'common/order_srcs_selects';
 
+import { getOrderSrcs, getDeliveryStations, autoGetDeliveryStations } from 'actions/order_manage_form';
+import { getStationListByScopeSignal, resetStationListWhenScopeChange } from 'actions/station_manage';
 import * as OrderSupportActions from 'actions/order_support';
 import AreaActions from 'actions/area';
 
@@ -58,14 +62,18 @@ class FilterHeader extends Component{
 	}
 	render(){
 		var {search_ing, search_by_keywords_ing} = this.state;
-		var {all_order_srcs } = this.state;
-/*		var {
+		var {all_order_srcs } = this.props;
+		var {
 			fields:{
 				province_id,
 				begin_time,
 				end_time,
-			}
-		} = this.props;*/
+				src_id,
+			},
+			provinces,
+			cities,
+			stations: {station_list},
+		} = this.props;
 		return(
 			<div className='panel search'>
 				<div className='panel-body form-inline'>
@@ -74,14 +82,14 @@ class FilterHeader extends Component{
 					<DatePicker editable className="short-input" />
 					{' 结束时间'}
 					<DatePicker editable className="short-input space-right" />
-					<Select default-text = '请选择省份' className='space-right'/>
-					<Select default-text = '请选择市' className='space-right'/>
-					<Select default-text = '请选择配送站' className='space-right'/>
+					<Select ref = 'province' options = {provinces} {...province_id}  default-text = '请选择省份' className='space-right' onChange = {this.onProvinceChange.bind(this, province_id.onChange)}/>
+					<Select ref = 'city' options = {cities}  default-text = '请选择市' className='space-right'/>
+					<Select options = {station_list} default-text = '请选择配送站' className='space-right'/>
 					<Select default-text = '开票状态'  className='space-right'/>
 					{
-					  /*V( 'InvoiceManageChannelFilter' )
-					    ?<OrderSrcsSelects {...{all_order_srcs}} actions={this.props.actions} reduxFormName="order_manage_filter" />
-					    :null*/
+					  V( 'InvoiceManageChannelFilter' )
+					    ?<OrderSrcsSelects {...{all_order_srcs, src_id}} actions={this.props.actions} reduxFormName="invoice_manage_filter" />
+					    :null
 					}
 					<button disabled={search_ing} data-submitting={search_ing} className="btn btn-theme btn-xs">
 					  <i className="fa fa-search"></i>{' 查询'}
@@ -90,17 +98,57 @@ class FilterHeader extends Component{
 			</div>
 			)
 	}
+	componentDidMount(){
+		setTimeout(() =>{
+			var {getOrderSrcs, getProvincesSignal } = this.props.actions;
+			getProvincesSignal();
+			getOrderSrcs();
+			LazyLoad('noty');
+		})
+		
+	}
+	onProvinceChange(callback, e){
+		var { value } = e.target;
+		this.props.actions.resetCities();
+		if(value != this.refs.province.props['default-value']){
+		  var $city = $(findDOMNode(this.refs.city));
+		  this.props.getStationListByScopeSignal({ province_id: value ,signal:'authority'});
+		  this.props.actions.getCitiesSignal({ province_id: value, is_standard_area: 1, signal: 'authority'}).done(() => {
+		    $city.trigger('focus'); //聚焦已使city_id的值更新
+		  });}else{
+		    this.props.resetStationListWhenScopeChange();
+		  }
+		callback(e);
+	}
 }
+
+FilterHeader = reduxForm({
+	form: 'invoice_manage_filter',
+	fields: [
+		'keywords',
+		'begin_time',
+		'end_time',
+		'province_id',
+		'city_id',
+		'station_id',
+		'invoice_status',
+		'src_id',
+	],
+	destroyOnUnmount: false,
+})(FilterHeader);
+
 class ManagePannel extends Component{
 	render(){
-		var {all_order_srcs, getOrderSrcs, dispatch } = this.props;
+		var {area, filter, stations, dispatch, getStationListByScopeSignal } = this.props;
 		/*var { dispatch } = actions;*/
 		return (
 			<div className='order-manage'>
 				<TopHeader 
 					viewInvoiceApplyModal= {this.viewInvoiceApplyModal.bind(this)} />
-				<FilterHeader all_order_srcs = {all_order_srcs}
-					actions = {{...bindActionCreators({...AreaActions(), getOrderSrcs}, dispatch)}}/>
+				<FilterHeader {...{...area, ...filter, stations}}
+					getStationListByScopeSignal = {getStationListByScopeSignal}
+					actions = {{...bindActionCreators({...AreaActions(), getOrderSrcs, ...FormActions,
+								 resetStationListWhenScopeChange}, dispatch)}}/>
 				<div className = 'panel'>
 					<header className='panel-heading'>发票列表</header>
 					<div className='panel-body'>
@@ -225,8 +273,9 @@ function mapStateToProps(state){
 
 function mapDispatchToProps(dispatch){
 	var actions =  bindActionCreators({
-		...OrderSupportActions,
 		...AreaActions(),
+		getStationListByScopeSignal,
+		resetStationListWhenScopeChange,
 	}, dispatch);
 	actions.dispatch = dispatch;
 	return actions;

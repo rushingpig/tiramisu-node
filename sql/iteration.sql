@@ -626,3 +626,38 @@ CREATE TABLE `sys_city` (
     `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
     PRIMARY KEY `IDX_UNQ_UID` (`regionalism_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='开通城市表';
+
+
+# 2016-08-14 Wei Zhao
+ALTER TABLE `buss_order` ADD COLUMN `payment_amount` int(10) unsigned DEFAULT NULL COMMENT '支付金额';
+ALTER TABLE `buss_order` ADD COLUMN `bind_order_id` int(11) DEFAULT '0' COMMENT '关联订单号';
+ALTER TABLE `buss_order` ADD COLUMN `origin_order_id` int(11) DEFAULT '0' COMMENT '原订单号';
+ALTER TABLE `sys_history` ADD COLUMN `bind_id` int(11) DEFAULT '0' COMMENT '关联id';
+# 退款纪录
+CREATE TABLE `buss_refund` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '退款纪录id',
+  `order_id` int(11) NOT NULL COMMENT '订单id',
+  `status` enum('CANCEL','UNTREATED','TREATED','REVIEWED','COMPLETED') NOT NULL DEFAULT 'UNTREATED' COMMENT '取消，未处理，已处理, 已审核，已完成',
+  `type` enum('PART','FULL','OVERFULL') NOT NULL DEFAULT 'FULL' COMMENT '部分退款，全额退款，超额退款',
+  `amount` int(10) unsigned DEFAULT NULL COMMENT '退款金额',
+  `way` enum('THIRD_PARTY','FINANCE','CS') DEFAULT NULL COMMENT '第三方，财务部，客服部',
+  `account_type` enum('BANK_CARD','ALIPAY','WECHAT') DEFAULT NULL COMMENT '退款账户类型',
+  `account` varchar(32) DEFAULT '' COMMENT '退款账户',
+  `account_name` varchar(32) DEFAULT '' COMMENT '退款账户姓名',
+  `reason_type` tinyint(1) DEFAULT '0' COMMENT '退款原因类型',
+  `reason` varchar(255) DEFAULT '' COMMENT '退款原因',
+  `linkman` tinyint(1) DEFAULT '0' COMMENT '联系人 0:下单人 1:收货人',
+  `linkman_name` varchar(32) DEFAULT '' COMMENT '联系人姓名',
+  `linkman_mobile` varchar(32) DEFAULT '' COMMENT '联系人电话',
+  `is_urgent` tinyint(1) DEFAULT '0' COMMENT '是否加急 1:加急',
+  `remarks` varchar(255) DEFAULT '' COMMENT '备注',
+  `merchant_id` varchar(50) CHARACTER SET utf8 DEFAULT NULL COMMENT '商户订单号',
+  `pay_id` varchar(50) CHARACTER SET utf8 DEFAULT NULL COMMENT '支付流水号',
+  `created_by` int(11) NOT NULL COMMENT '创建人id',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
+  `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+  `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+  `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+  PRIMARY KEY `IDX_ID` (`id`),
+  KEY `IDX_UNQ_OID` (`order_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='退款纪录表';

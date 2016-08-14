@@ -1,22 +1,30 @@
 import { dateFormat, map } from 'utils/index';
 import { combineReducers } from 'redux';
-import { REQUEST, order_status, ACCESSORY_CATE_ID } from 'config/app.config';
+import { REQUEST, invoice_status, ACCESSORY_CATE_ID } from 'config/app.config';
 import { GOT_ORDER_SRCS } from 'actions/order_manage_form';
 import { area } from 'reducers/area_select';
 import * as OrderSupportReducers from 'reducers/order_support';
 import stations from 'reducers/stations';
 
+import * as Actions from 'actions/order/invoice';
 import { core } from 'utils/index';
 
 
 var main_state = {
-
+	list: [],
+	total: 0,
+	page_no: 0 ,
+	refresh: false,
+	loading: true,
+	active_order_id:-1,
+    check_order_info: null,
 }
 
 
 var filter_state = {
 	search_ing : false,
 	all_order_srcs: [],
+  	all_invoice_status: map(invoice_status, ({value}, id) => ({id, text: value})),
 }
 
 function filter(state = filter_state, action){
@@ -38,16 +46,22 @@ function filter(state = filter_state, action){
 	    return state
 	}	
 }
-/*function main(state = main_state, action){
+function main(state = main_state, action){
 	switch(action.type){
-
+		case Actions.ACTIVE_ORDER:
+			return {...state,active_order_id: action.active_order_id}
+		case Actions.GET_INVOICE_LIST:
+			return {...state, ...action.data, refresh: false, loading: false};
+		case Actions.GET_ORDER_DETAIL_PRODUCTS:
+			return {...state, check_order_info:action.data }
 		default:
 			return state;
 	}
-}*/
+}
 
 export default combineReducers({
 	area: area(), 
 	filter,
 	stations,
+	main,
 })

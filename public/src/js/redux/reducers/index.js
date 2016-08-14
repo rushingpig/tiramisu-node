@@ -24,7 +24,7 @@ import categoryManage from './category_manage';
 import citiesSelector from './cities_selector';
 import productSKUManagement from './product_sku_management';
 import productSKUSearch from './product_sku_search';
-import invoiceManage from './invoice/invoice';
+import invoiceManage from './order/invoice';
 
 const rootReducer = combineReducers({
   form,

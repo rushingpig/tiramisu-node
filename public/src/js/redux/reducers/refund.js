@@ -21,12 +21,17 @@ var initial_state = {
 	all_refund_way: map(REFUND_WAY, (text, id) => ({id, text})),
   	all_refund_status: map(REFUND_STATUS, ({value}, id) => ({id, text: value})),
   	handle_refund_status: 'normal',
+  	all_refund_reasons: [],
 }
 
-
+function _t(data){
+  return map(data, (text, id) => ({id, text}))
+}
 
 function RefundManage(state = initial_state, action){
 	switch(action.type){
+		case REFUNDACTIONS.GET_REFUND_REASONS:
+			return {...state, all_refund_reasons: _t(action.data)}
 		case REFUNDACTIONS.ACTIVE_ORDER:
 			return {...state,active_order_id: action.active_order_id}
 		case REFUNDACTIONS.GET_REFUND_LIST:

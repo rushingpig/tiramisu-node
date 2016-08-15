@@ -10,9 +10,9 @@ var initial_state = {
 	refund_apply_data: {},
 	save_ing: false,
 	save_success: true,
-
-	submit_ing: false,
   	all_refund_reasons: [],
+	
+	submit_ing: false,
 }
 
 function _t(data){
@@ -70,6 +70,7 @@ export function refund_data(state = initial_state, action){
 					m.account = action.data.account;
 					m.account_type = action.data.account_type;
 					m.reason = action.data.reason;
+					m.reason_type = action.data.reason_type;
 					m.merchant_id = action.data.merchant_id;
 					m.linkman = action.data.linkman;
 					m.linkman_name = action.data.linkman_name;

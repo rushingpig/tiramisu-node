@@ -38,10 +38,20 @@ const validate = (values, props) => {
     }
   }
 
+  function _v_mobile(key){
+     if (form[key] && form[key].touched && !values[key] || (form[key] && !form[key].focus && values[key] && !uForm.isMobile(values[key]))){
+      errors[key] = msg;
+    }   
+  }
+
 
   _v_amount('amount');
 
-  _v_select('reason_type')
+  _v_select('reason_type');
+
+  _v_mobile('owner_mobile');
+
+  _v_mobile('recipient_mobile');
 
   if(values['way'] == 'CS'){
     _v_text('account');
@@ -130,7 +140,7 @@ class RefundPannel extends Component{
           <label className='bordered bg-warning'>下单人</label>
           {'　'}
           姓名：<input {...owner_name} disabled = {linkman.value == 1} ref='owner_name' type='text' className='form-control input-xs' />{'　'}
-          电话：<input {...owner_mobile} disabled = {linkman.value == 1} ref='owner_mobile' type='text' className='form-control input-xs'/>
+          电话：<input {...owner_mobile} disabled = {linkman.value == 1} ref='owner_mobile' type='text' className={`form-control input-xs ${owner_mobile.error}`}/>
         </div>
         <div className= 'form-group form-inline'>
           {'　　　　　'}
@@ -138,7 +148,7 @@ class RefundPannel extends Component{
           <label className='bordered bg-warning'>{'收货人'}</label>
           {'　'}
           姓名：<input {...recipient_name} ref='recipient_name' disabled = {linkman.value == 0} type='text' className='form-control input-xs'/>{'　'}
-          电话：<input {...recipient_mobile} ref='recipient_mobile' disabled = {linkman.value == 0} type='text' className='form-control input-xs'/>          
+          电话：<input {...recipient_mobile} ref='recipient_mobile' disabled = {linkman.value == 0} type='text' className={`form-control input-xs ${recipient_mobile.error}`}/>          
         </div>
         <div className='form-group form-inline'>
           <label>退款方式：</label>

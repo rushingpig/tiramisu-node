@@ -124,6 +124,7 @@ a.put('/product/categories/sort', categoryService.rankCategoris);  // 二级分�
 
 a.put('/product/skus', productService.deleteSku);  // 批量删除sku
 a.put('/product/sku', productService.modifyProductWithSku);  // 编辑产品&sku
+a.put('/product/info', productService.modifyProductInfo);  // 编辑产品&sku
 
 //************************
 //******** DELETE ********

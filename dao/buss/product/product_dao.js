@@ -800,21 +800,21 @@ ProductDao.prototype.insertProductDetail = function (req, data, connection) {
     if(connection){
         return baseDao.insertWithConnection(connection, this.base_insert_sql, [config.tables.buss_product_detail, systemUtils.assembleInsertObj(req, data, true)]);
     } else {
-        return baseDao.insert(this.base_insert_sql, [this.base_table, systemUtils.assembleInsertObj(req, data, true)]);
+        return baseDao.insert(this.base_insert_sql, [config.tables.buss_product_detail, systemUtils.assembleInsertObj(req, data, true)]);
     }
 }
 ProductDao.prototype.insertProductDetailSepc = function (req, data, connection) {
     if(connection){
         return baseDao.insertWithConnection(connection, this.base_insert_sql, [config.tables.buss_product_detail_spec, systemUtils.assembleInsertObj(req, data, true)]);
     } else {
-        return baseDao.insert(this.base_insert_sql, [this.base_table, systemUtils.assembleInsertObj(req, data, true)]);
+        return baseDao.insert(this.base_insert_sql, [config.tables.buss_product_detail_spec, systemUtils.assembleInsertObj(req, data, true)]);
     }
 }
 ProductDao.prototype.insertProductTemplateData = function (req, data, connection) {
     if(connection){
         return baseDao.insertWithConnection(connection, this.base_insert_sql, [config.tables.buss_product_template_data, systemUtils.assembleInsertObj(req, data, true)]);
     } else {
-        return baseDao.insert(this.base_insert_sql, [this.base_table, systemUtils.assembleInsertObj(req, data, true)]);
+        return baseDao.insert(this.base_insert_sql, [config.tables.buss_product_template_data, systemUtils.assembleInsertObj(req, data, true)]);
     }
 }
 ProductDao.prototype.insertProductInfo = function (req, data) {
@@ -836,6 +836,7 @@ ProductDao.prototype.insertProductInfo = function (req, data) {
                         detail_img_2: info_data.info.detail_img_2,
                         detail_img_3: info_data.info.detail_img_3,
                         detail_img_4: info_data.info.detail_img_4,
+                        consistency: info_data.info.consistency,
                     },
                     product_detail_spec: info_data.info.spec,
                     product_template_data: info_data.info.template_data
@@ -888,7 +889,7 @@ ProductDao.prototype.insertProductInfo = function (req, data) {
 }
 // 查询已添加详情城市
 ProductDao.prototype.getProductDetailHasAddCities = function (product_id) {
-    let sql = "select distinct regionalism_id from ?? where product_id = ? and del_flag = ?";
+    let sql = "select distinct regionalism_id,consistency from ?? where product_id = ? and del_flag = ?";
     let params = [config.tables.buss_product_detail, product_id, del_flag.SHOW];
     return baseDao.select(sql, params);
 }
@@ -953,5 +954,140 @@ ProductDao.prototype.getProductInfoByProductIdAndRegionId = function (product_id
                     return Promise.resolve(result);
                 });
         });
+}
+ProductDao.prototype.deleteAllSpec = function (req, detail_id, connection) {
+    let sql =  this.base_update_sql + ' where detail_id = ?';
+    let data = {
+        del_flag: del_flag.HIDE
+    };
+    if(connection){
+        return baseDao.execWithConnection(connection, sql, [config.tables.buss_product_detail_spec, systemUtils.assembleUpdateObj(req, data, true), detail_id]);
+    } else {
+        return baseDao.update(sql, [config.tables.buss_product_detail_spec, systemUtils.assembleUpdateObj(req, data, true), detail_id]);
+    }
+}
+ProductDao.prototype.deleteAllTemplateData = function (req, detail_id, connection) {
+    let sql =  this.base_update_sql + ' where detail_id = ?';
+    let data = {
+        del_flag: del_flag.HIDE
+    };
+    if(connection){
+        return baseDao.execWithConnection(connection, sql, [config.tables.buss_product_template_data, systemUtils.assembleUpdateObj(req, data, true), detail_id]);
+    } else {
+        return baseDao.update(sql, [config.tables.buss_product_template_data, systemUtils.assembleUpdateObj(req, data, true), detail_id]);
+    }
+}
+ProductDao.prototype.updateProductDetail = function (req, data, id, connection) {
+    let sql = this.base_update_sql + ' where id = ?';
+    if(connection){
+        return baseDao.execWithConnection(connection, sql, [config.tables.buss_product_detail, systemUtils.assembleUpdateObj(req, data, true), id]);
+    } else {
+        return baseDao.insert(sql, [config.tables.buss_product_detail, systemUtils.assembleUpdateObj(req, data, true), id]);
+    }
+}
+ProductDao.prototype.modifyProductInfo = function (req, data) {
+    let self = this;
+    let product_id = data.product_id;
+    let modified_infos = data.modified_infos;
+    let new_infos = data.new_infos;
+    return baseDao.trans().then(connection => {
+        // 修改旧数据
+        let modified_promises = modified_infos.map(modified_info => {
+            let detail_id = modified_info.detail_id;
+            let product_detail = {
+                list_img: modified_info.list_img,
+                list_copy: modified_info.list_copy,
+                detail_top_copy: modified_info.detail_top_copy,
+                detail_template_copy: modified_info.detail_template_copy,
+                detail_template_copy_end: modified_info.detail_template_copy_end,
+                detail_img_1: modified_info.detail_img_1,
+                detail_img_2: modified_info.detail_img_2,
+                detail_img_3: modified_info.detail_img_3,
+                detail_img_4: modified_info.detail_img_4,
+                consistency: modified_info.consistency,
+            };
+            let product_detail_specs = modified_info.spec;
+            let product_template_datas = modified_info.template_data;
+            return self.updateProductDetail(req, product_detail, detail_id, connection)
+                .then(() => {
+                    return self.deleteAllSpec(req, detail_id, connection)
+                        .then(() => {
+                            let product_detail_spec_promises = product_detail_specs.map(product_detail_spec => {
+                                product_detail_spec.detail_id = detail_id;
+                                return self.insertProductDetailSepc(req, product_detail_spec, connection);
+                            });
+                            return Promise.all(product_detail_spec_promises);
+                        });
+                }).then(() => {
+                    return self.deleteAllTemplateData(req, detail_id, connection)
+                        .then(() => {
+                            let product_template_data_promise = product_template_datas.map(product_template_data => {
+                                product_template_data.detail_id = detail_id;
+                                product_template_data.template_id = product_template_data.template_id || DEFAULT_TEMPLATE;
+                                return self.insertProductTemplateData(req, product_template_data, connection);
+                            });
+                            return Promise.all(product_template_data_promise);
+                        });
+                });
+        });
+        // 插入新数据
+        let new_promises = new_infos.map(new_info => {
+            let product_detail = {
+                product_id: product_id,
+                regionalism_id: new_info.regionalism_id,
+                list_img: new_info.list_img,
+                list_copy: new_info.list_copy,
+                detail_top_copy: new_info.detail_top_copy,
+                detail_template_copy: new_info.detail_template_copy,
+                detail_template_copy_end: new_info.detail_template_copy_end,
+                detail_img_1: new_info.detail_img_1,
+                detail_img_2: new_info.detail_img_2,
+                detail_img_3: new_info.detail_img_3,
+                detail_img_4: new_info.detail_img_4,
+                consistency: new_info.consistency,
+            };
+            let product_detail_specs = new_info.spec;
+            let product_template_datas = new_info.template_data;
+            return self.insertProductDetail(req, product_detail, connection)
+                .then(detail_id => {
+                    let product_detail_spec_promises = product_detail_specs.map(product_detail_spec => {
+                        product_detail_spec.detail_id = detail_id;
+                        return self.insertProductDetailSepc(req, product_detail_spec, connection);
+                    });
+                    return Promise.all(product_detail_spec_promises)
+                        .then(() => {
+                            return Promise.resolve(detail_id);
+                        });
+                }).then(detail_id => {
+                    let product_template_data_promise = product_template_datas.map(product_template_data => {
+                        product_template_data.detail_id = detail_id;
+                        product_template_data.template_id = product_template_data.template_id || DEFAULT_TEMPLATE;
+                        return self.insertProductTemplateData(req, product_template_data, connection);
+                    });
+                    return Promise.all(product_template_data_promise);
+                });
+        });
+
+        return Promise.all(modified_promises)
+            .then(()=> {
+                return Promise.all(new_promises);
+            }).then(() => {
+                return new Promise((resolve, reject) => {
+                    connection.commit(err => {
+                        connection.release();
+                        if (err) return reject(err);
+                        resolve();
+                    });
+                });
+            }).catch(err => {
+                return new Promise((resolve, reject) => {
+                    connection.rollback(rollbackErr => {
+                        connection.release();
+                        if (rollbackErr) return reject(rollbackErr);
+                        reject(err);
+                    });
+                });
+            });;
+    });
 }
 module.exports = ProductDao;

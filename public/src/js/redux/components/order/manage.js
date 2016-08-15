@@ -317,7 +317,7 @@ var OrderRow = React.createClass({
     )
   },
   ACL: function(){
-    var { status, refund_status } = this.props;
+    var { status, refund_status, is_bind } = this.props;
     var roles = null;
     switch( status ){
       case 'UNTREATED':
@@ -339,17 +339,16 @@ var OrderRow = React.createClass({
     }
     switch(refund_status ){
       case 'COMPLETED':
-        roles.push('OrderManageRefundApply');break;
       case 'CANCEL':
-        roles.push('OrderManageRefundApply');break;
+        if(( status == 'CANCEL' || status == 'EXCEPTION') && !is_bind )
+          roles.push('OrderManageRefundApply');break;
       case 'UNTREATED':
-        roles.push('OrderManageRefundApplying');break;
       case 'TREATED':
-        roles.push('OrderManageRefundApplying');break;
       case 'REVIEWED':
         roles.push('OrderManageRefundApplying');break;
       default:
-        roles.push('OrderManageRefundApply');break;
+        if(( status == 'CANCEL' || status == 'EXCEPTION') && !is_bind )
+          roles.push('OrderManageRefundApply');break;
     }
     roles.push('OrderManageView');
     var results = []
@@ -357,7 +356,7 @@ var OrderRow = React.createClass({
       var ele = arguments[i][0];
       if( V( ele.key ) && roles.some( n => n == ele.key)){
         results.push(arguments[i]);
-      }
+      }s
     }
     return results;
   },

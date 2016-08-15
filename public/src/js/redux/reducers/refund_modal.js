@@ -59,6 +59,7 @@ export function refund_data(state = initial_state, action){
 		case ACTIONS.REFUND_EDIT_SUCCESS:
 			var list = store.getState().refundManage.RefundManage.list;
 			var {refundId } = action.data;
+			var { user } = window.xfxb;
 			list.map( m => {
 				if(m.id == refundId){
 					m.amount = action.data.amount;
@@ -73,6 +74,7 @@ export function refund_data(state = initial_state, action){
 					m.linkman = action.data.linkman;
 					m.linkman_name = action.data.linkman_name;
 					m.linkman_mobile = action.data.linkman_mobile;
+					m.updated_by = user.name;
 				}
 				return m;
 			})

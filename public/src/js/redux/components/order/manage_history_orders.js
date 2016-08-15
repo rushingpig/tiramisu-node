@@ -66,7 +66,9 @@ class HistoryOrders extends Component {
     if(active_order_arr.length > 0){
       active_order = active_order_arr[0];
       relateBtnActive =( active_order.status == 'CANCEL' || active_order.status == 'EXCEPTION' ) && 
-                        ( !active_order.refund_status || active_order.refund_status == '' );
+                        ( !active_order.refund_status || active_order.refund_status == 'CANCEL'
+                         || active_order.refund_status == 'COMPLETED')
+                        && !active_order.is_bind ;
     }
     var content = list.map((n, i) => {
       return <OrderRow key={n.order_id} {...{...n, active_order_id, viewDetail, checkHistoryOrder}} />;

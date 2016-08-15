@@ -56,7 +56,12 @@ function main(state = main_state, action){
 		case Actions.GET_ORDER_DETAIL_PRODUCTS:
 			return {...state, check_order_info:action.data }
 		case Actions.GET_ORDER_INVOICE_INFO:
-			return {...state, order_invoice_info: action.data}
+			var {data} = action;
+			data.recipient = 1;
+			data._recipient_name = data.recipient_name;
+			data._recipient_mobile = data.recipient_mobile;
+			data.enable_recipient_address = 1;
+			return {...state, order_invoice_info: data}
 		default:
 			return state;
 	}

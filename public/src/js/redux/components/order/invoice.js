@@ -343,8 +343,8 @@ class InvoiceApplyPannel extends Component{
 				amount,
 				company_id,
 				order_id,
-				recipient_mobile,
-				recipient_name,
+				_recipient_mobile,
+				_recipient_name,
 				remarks,
 				title,
 				type,
@@ -403,9 +403,9 @@ class InvoiceApplyPannel extends Component{
           					</div>
           					<div className='form-group form-inline' style = {{marginBottom: 8}}>
           						<label className='control-label'>{'　　姓名：'}</label>
-          						<input {...recipient_name} type='text' className='form-control input-xs'/>
+          						<input {..._recipient_name} type='text' className='form-control input-xs'/>
           						<label>{'　　电话：'}</label>
-          						<input {...recipient_mobile} type='text'  className='form-control input-xs'/>
+          						<input {..._recipient_mobile} type='text'  className='form-control input-xs'/>
           					</div>
           					<div className='form-group form-inline' style = {{marginBottom: 8, display: 'block'}}>
           						<label>{'　　地址：'}</label>
@@ -443,8 +443,8 @@ InvoiceApplyPannel = reduxForm({
 		'company_id',
 		'order_id',
 		'recipient',
-		'recipient_mobile',
-		'recipient_name',
+		'_recipient_mobile',
+		'_recipient_name',
 		'remarks',
 		'title',
 		'type',
@@ -455,6 +455,11 @@ InvoiceApplyPannel = reduxForm({
 		'address',
 	],
 	destroyOnUnmount: false
+}, state => {
+  return {
+    //赋初始值
+    initialValues: state.invoiceManage.main.order_invoice_info
+  }
 })(InvoiceApplyPannel);
 
 function mapStateToProps(state){

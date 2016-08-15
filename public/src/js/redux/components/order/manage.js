@@ -356,7 +356,7 @@ var OrderRow = React.createClass({
       var ele = arguments[i][0];
       if( V( ele.key ) && roles.some( n => n == ele.key)){
         results.push(arguments[i]);
-      }s
+      }
     }
     return results;
   },

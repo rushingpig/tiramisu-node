@@ -26,6 +26,18 @@ export function getRefundApplyData(orderId){
   }, GET_REFUND_APPLY_DATA);*/
 }
 
+export const GET_REFUND_REASONS = 'GET_REFUND_REASONS';
+export function getRefundReasons(){
+    return GET(Url.refund_reasons.toString(), null, GET_REFUND_REASONS);
+/*  return TEST({
+    1: '用户取消蛋糕配件',
+    2: '客户要求取消订单',
+    3: '用户地址不配送',
+    4: '客户更改产品(款式或磅数)',
+    5: '其他',
+  }, GET_REFUND_REASONS)*/
+}
+
 export const GET_REFUND_APPLY_DETAIL = 'GET_REFUND_APPLY_DETAIL';
 export function getRefundApplyDetail(refundId){
     return dispatch => {

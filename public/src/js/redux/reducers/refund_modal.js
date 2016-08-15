@@ -10,13 +10,20 @@ var initial_state = {
 	refund_apply_data: {},
 	save_ing: false,
 	save_success: true,
-
+  	all_refund_reasons: [],
+	
 	submit_ing: false,
+}
+
+function _t(data){
+  return map(data, (text, id) => ({id, text}))
 }
 
 export function refund_data(state = initial_state, action){
     var store = getGlobalStore();
 	switch(action.type){
+		case ACTIONS.GET_REFUND_REASONS:
+			return {...state, all_refund_reasons: _t(action.data)}
 		case ACTIONS.GET_REFUND_APPLY_DATA:
 			var data = clone(action.data);
 			data.type = 'PART';

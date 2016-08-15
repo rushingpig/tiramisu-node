@@ -471,7 +471,7 @@ class ManagePannel extends Component {
       main: {submitting, prepare_delivery_data_ok},
       activeOrder, showProductsDetail, operationRecord, bindOrderRecord, dispatch, getOrderList, exportExcel,
       getOrderOptRecord, resetOrderOptRecord, cancelOrder, orderException, alterOrderRemarks, getBindOrders, resetBindOrders, 
-      getStationListByScopeSignal, resetStationListWhenScopeChange, getRefundApplyData, refundApply } = this.props;
+      getStationListByScopeSignal, resetStationListWhenScopeChange, getRefundApplyData, refundApply, getRefundReasons, } = this.props;
     var { loading, refresh, page_no, total, list, check_order_info, active_order_id, show_products_detail, get_products_detail_ing } = this.props.orders;
     var { viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, 
         showOrderException, showRefund, viewOrderOperationRecord, refreshDataList,
@@ -559,6 +559,7 @@ class ManagePannel extends Component {
             ...alter_delivery_area, actions: this.props, callback: refreshDataList}} />
         <RefundModal refund_data = { refund_data } ref='RefundModal' editable={false} 
           refundApply = { refundApply }
+          getRefundReasons = {getRefundReasons}
           />
         <BindOrderRecordModal ref='BindOrderRecordModal' {...{getBindOrders, resetBindOrders, ...bindOrderRecord}}/>
       </div>

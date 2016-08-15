@@ -222,7 +222,7 @@ module.exports.addRefund = function (req, res, next) {
         let order_history = {option: ''};
         order_history.order_id = order_id;
         order_history.option += `{退款金额}为{${refund_obj.amount / 100}}\n`;
-        order_history.option += `{退款原因}为{${refund_obj.reason}}\n`;
+        order_history.option += `{退款原因}为{${refund_obj.reason || ''}}\n`;
         order_history.option += `提交退款申请\n`;
         refund_history.bind_id = refund_id;
         refund_history.option += `提交退款申请\n`;
@@ -291,7 +291,7 @@ module.exports.editRefund = function (req, res, next) {
         } else {
             if (refund_obj.reason_type != 0) refund_obj.reason = REASON_TYPE[refund_obj.reason_type];
             joinHistory(info, refund_obj, refund_history);
-            if (refund_history.option == '') return;
+            if (refund_history.option == '') return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '没有修改内容...'));
             refund_history.option += `编辑退款信息\n`;
         }
 

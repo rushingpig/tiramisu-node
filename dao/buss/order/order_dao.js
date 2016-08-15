@@ -536,7 +536,10 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
     'su4.name as last_opt_cs',
     'bo.updated_time',
     'bo.greeting_card',
-    'bo.bind_order_id',
+    'bob1.id as bind_order_id',
+    'bob1.created_time as bind_created_time',
+    'bob2.id as by_bind_order_id',
+    'bob2.created_time as by_bind_created_time'
   ];
   if (query_data.list_products) {
     columns_arr = columns_arr.concat(['bp.`name` as product_name',
@@ -617,6 +620,10 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
   params.push(tables.sys_user);
   sql += " left join ?? bpm on bpm.id = bo.pay_modes_id";
   params.push(tables.buss_pay_modes);
+  sql += " left join ?? bob1 on bob1.id = bo.bind_order_id";
+  params.push(tables.buss_order);
+  sql += " left join ?? bob2 on bob2.bind_order_id = bo.id";
+  params.push(tables.buss_order);
 
   sql += " where 1=1";
   if (query_data.owner_mobile) {
@@ -1471,6 +1478,18 @@ OrderDao.prototype.isCanBind = function (order_id) {
     let info = yield baseDao.select(sql, params);
     if (!info || info.length == 0) return Promise.resolve(true);
     return Promise.resolve(false);
+  });
+};
+
+OrderDao.prototype.isBind = function (order_id) {
+  return co(function *() {
+    let sql = `SELECT bo.id FROM ?? bo `;
+    let params = [tables.buss_order];
+    sql += `WHERE bo.bind_order_id = ? `;
+    params.push(order_id);
+    let info = yield baseDao.select(sql, params);
+    if (!info || info.length == 0) return Promise.resolve(false);
+    return Promise.resolve(true);
   });
 };
 

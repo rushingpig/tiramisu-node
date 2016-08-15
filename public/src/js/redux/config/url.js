@@ -84,7 +84,8 @@ const URL = (function() {
     viewSkuSpec:              '/product/skus/price',
     deleteSku:                '/product/skus',
     exportSkuDetail:          '/product/skus/details',
-
+    product_cities:           '/product/info/cities',
+    
     //送货管理
     order_exchange:     '/orders/exchange', //订单转送单列表
     order_delivery:     '/orders/delivery', //送货单管理列表

@@ -13,7 +13,7 @@ import AddressSelector from 'common/address_selector';
 import StdModal from 'common/std_modal';
 import Breadcrumb from 'common/breadcrumb';
 import SearchInput from 'common/search_input';
-import { normalLoader } from 'common/loading';
+import { normalLoader, get_loading_icon } from 'common/loading';
 
 import getTopHeader from '../top_header';
 import LazyLoad from 'utils/lazy_load';
@@ -22,6 +22,7 @@ import Config from 'config/app.config';
 import AreaActions from 'actions/area';
 import * as Actions from 'actions/product_sku_website_manage';
 import * as ImgActions from 'actions/central_image_manage';
+import { onFormChange } from 'actions/common';
 
 const FormGroup = props => (<div className="form-group" {...props} />);
 const FormInlineGroup = props => (<div className="form-group form-inline" {...props} />);
@@ -31,6 +32,7 @@ const Radio = props => (<input type="radio" {...props} />);
 const Row = props => (<div className="row" {...props} />);
 const Col = props => <div {...props} className={`col-xs-${props.size} ${props.className}`} />;
 const Title = props => <p style={{fontWeight: 'normal'}} {...props} />;
+const outline = '1px solid #eee';
 
 class Panel extends Component {
   constructor(props){
@@ -44,13 +46,14 @@ class Panel extends Component {
     var {open} = this.state;
     var headerStyle = {fontWeight: 'normal'};
     !open && (headerStyle.borderBottom = 'none');
+    var { props } = this;
     return (
       <div 
         className="panel"
         style={{boxShadow: 'none', border: '1px solid #F3F3F3', marginBottom: 22}}
       >
         <header className="panel-heading" style={headerStyle}>
-          <span className="theme">{this.props.title}</span>
+          <span className="theme">{props.title}</span>
           <a href="javascript:;" onClick={this.onToggle} className="pull-right" style={{marginTop: 3}}>
             <i className={`fa ${open ? 'fa-chevron-circle-up' : 'fa-edit'}`}></i>
           </a>
@@ -58,10 +61,14 @@ class Panel extends Component {
         {
           open
             ? <div className="panel-body" style={{paddingTop: 12}}>
-                {this.props.children}
+                {props.children}
                 <div className="form-group clearfix">
-                  <button className="btn btn-sm btn-theme pull-right">
-                    确认
+                  <button
+                    disabled={props.ok}
+                    className={`btn btn-sm btn-${props.ok ? 'default' : 'theme'} pull-right`}
+                    onClick={props.onConfirm}
+                  >
+                    {props.ok ? <i className="fa fa-check"></i> : '确认'}
                   </button>
                 </div>
               </div>
@@ -77,22 +84,59 @@ class Panel extends Component {
 
 const ColBox = props => <div {...props} style={{...props.style, width: props.width || 300}} className="text-center pull-left relative" />;
 
-const Img = props => {
-  var grayStyle = Styler`
-    -webkit-filter: grayscale(100%);
-    opacity: .4;
-    outline: 1px solid #eee;
-  `;
-  return (
-    <img
-      width="100%"
-      height="100%"
-      alt="img"
-      {...props}
-      style={!props.src ? {...grayStyle, ...props.style} : null}
-      src={props.src || (Config.root + props.defaultSrc)}
-    />
-  )
+class Img extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      loading: false,
+    }
+  }
+  componentWillReceiveProps(nextProps){
+    if(nextProps.src && nextProps.src != this.props.src){
+      this.setState({ loading: true });
+    }
+  }
+  render(){
+    var { props } = this;
+    var grayStyle = Styler`
+      -webkit-filter: grayscale(100%);
+      opacity: .4;
+    `;
+    if(props.src){
+      grayStyle.opacity = 0;
+    }
+    return (
+      <div position="relative">
+        <img
+          alt="img"
+          width="100%"
+          // height="100%"
+          src={Config.root + props.defaultSrc}
+          style={grayStyle}
+        />
+        {
+          props.src
+            ? <img
+                alt="img"
+                width="100%"
+                src={props.src}
+                className="absolute"
+                style={{top: 0, left: 0}}
+                onLoad={this.onLoad.bind(this)}
+              />
+            : null
+        }
+        {
+          this.state.loading
+            ? <div style={{zIndex: 100}} className="center theme">{get_loading_icon()}</div>
+            : null
+        }
+      </div>
+    )
+  }
+  onLoad(){
+    this.setState({ loading: false })
+  }
 }
 
 const AddButton = props => (<i className="fa fa-plus center text-center cursor-pointer hover-effect" style={{
@@ -106,16 +150,65 @@ const AddButton = props => (<i className="fa fa-plus center text-center cursor-p
   borderRadius: '50%',
 }} {...props}></i>)
 
-const TopHeader = getTopHeader([{
-  name: '产品管理',
-  link: ''
-}, {
-  name: '搜索商品',
-  link: '/pm/sku_manage'
-}, {
-  name: '商品官网设置',
-  link: ''
-}]);
+
+class EditImgBox extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      showEditIcon: false
+    }
+  }
+  render(){
+    var { props, props: {src} } = this;
+    var opStyle = {
+      top: 8,
+      right: 8,
+      background: 'rgba(255, 255, 255, 0.69)',
+      padding: '0 3px',
+      borderRadius: '2px'
+    }
+    return (
+      <div onMouseEnter={this.toggleEditIcon.bind(this, true)}
+        onMouseLeave={this.toggleEditIcon.bind(this, false)}
+        className={'relative ' + props.className}
+        style={{outline, verticalAlign: 'top', ...props.style}}
+      >
+        <Img src={props.src} defaultSrc={props.defaultSrc || "images/products/pro-list-1.jpg"} />
+        {
+          src
+            ? this.state.showEditIcon 
+                ? <div className="absolute" style={opStyle}>
+                    <a onClick={props.onDeleteImg} href="javascript:;" className="space-right"><i className="fa fa-trash-o"></i></a>
+                    <a onClick={props.onChooseImg} href="javascript:;"><i className="fa fa-edit"></i></a>
+                  </div>
+                : null
+            : [
+                <AddButton key="addBtn" onClick={this.props.onChooseImg} />,
+                props.children
+              ]
+        }
+      </div>
+    )
+  }
+  toggleEditIcon(show){
+    if(this.props.src){
+      this.setState({ showEditIcon: show })
+    }
+  }
+}
+
+const TopHeader = getTopHeader(
+  [{
+    name: '产品管理',
+    link: ''
+  }, {
+    name: '搜索商品',
+    link: '/pm/sku_manage'
+  }, {
+    name: '商品官网设置',
+    link: ''
+  }]
+);
 
 //(1)
 const ApplicationRange = props => (
@@ -173,13 +266,13 @@ const ApplicationRange = props => (
   </div>
 )
 
-const ProlistImgBox = props => <div style={{width: 245, height: 245}} className="relative inline-block" {...props} />
+const ProlistImgBox = props => <div className="relative inline-block" {...props} style={{width: 245, height: 245, outline, ...props.style}} />
 
 const ContentEditBox = props => {
   var styles = Styler`
     main {
       background: #fff;
-      border: 1px solid #eee;
+      border: 1px solid #DAD8D8;
       border-radius: 4px;
       font-size: 12px;
       line-height: 19px;
@@ -200,13 +293,14 @@ const ContentEditBox = props => {
     }
     tipsStyle {
       position: absolute;
-      bottom: -2px;
+      bottom: -4px;
       right: 3px;
     }
   `;
   return (
     <div {...props} style={{...props.style, ...styles.main}}>
       <textarea
+        content={props.content}
         onChange={props.onContentChange}
         className="text-left" style={styles.textareaStyle}
         maxLength={props.contentMaxLength}
@@ -229,43 +323,48 @@ const ContentEditBox = props => {
 //(2)
 //产品列表信息展示
 class ProlistDetail extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      content: ''
-    }
-  }
   componentWillMount(){
     this.styles = Styler`
       contentStyle {
         width: 100%;
         position: absolute;
-        padding: 18px 5px;
+        padding: 18px 5px 24px;
+        top: 50%;
+        transform: translateY(-50%);
       }
     `
   }
   render(){
+    var { props, props: { actions } } = this;
+    var img_src = props.list_img && (props.domain + props.list_img);
     return (
-      <Panel title="分类页面信息展示">
+      <Panel
+        title="分类页面信息展示"
+        ok={props.ok}
+        onConfirm={actions.confirmThisPart.bind(null, 'ProlistDetail')}
+      >
         <div className="clearfix relative">
           <ColBox>
             <Title>1.商品图（展示在商品分类页面商品缩略图）</Title>
             <ProlistImgBox>
-              <Img defaultSrc="images/products/pro-list-1.jpg" />
-              <AddButton onClick={this.props.showSelectImgModal.bind(undefined, 'prolsit_img')} />
+              <EditImgBox
+                src={img_src}
+                defaultSrc="images/products/pro-list-1.jpg"
+                onChooseImg={props.showSelectImgModal.bind(undefined, 'prolist_img')}
+                onDeleteImg={actions.deleteImg.bind(null, 'prolist_img')}
+              />
             </ProlistImgBox>
             <p className="v-mg">建议尺寸：245 x 245 像素</p>
           </ColBox>
           <ColBox>
             <Title>2.商品简介1（展示在商品分类页面描述文案）</Title>
             <ProlistImgBox>
-              <Img defaultSrc="images/products/pro-list-1.jpg" />
+              <Img src={img_src} defaultSrc="images/products/pro-list-1.jpg" />
               <ContentEditBox
-                className="center"
                 contentMaxLength={35}
-                onContentChange={this.onContentChange.bind(this)}
-                content={this.state.content}
+                content={props.list_copy}
                 style={this.styles.contentStyle}
+                onContentChange={actions.onFormChange.bind(undefined, 'prolist_desc')}
                 placeholder='"芒果茫茫 + 榴莲香雪 + 提拉米苏 + 黑森林"，一次让您品尝四种不同口味！' />
             </ProlistImgBox>
           </ColBox>
@@ -273,26 +372,69 @@ class ProlistDetail extends Component {
       </Panel>
     )
   }
-  onContentChange(e){
-    this.setState({ content: e.target.value });
-  }
+
 }
 
-const FormCol = ({length = 4,...props}) => {
-  var label = props.label.split('');
-  var str = new Array(length).fill('　');
-  str.splice(0, label.length, ...label);
-  return (
-    <div className="form-group form-inline inline-block" style={{marginRight: 60}}>
-      <label className="v-top">{str.join('')}：</label>
-      {
-        props.value && props.value.length > 15
-          ? <textarea className="form-control input-xs long-input" style={{resize: 'vertical'}}></textarea>
-          : <input type="text" className="form-control input-xs long-input"/>
-      }
-      
-    </div>
-  )
+class FormCol extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      focus: false,
+    }
+  }
+  render(){
+    var { props } = this;
+    var label = props.label.split('');
+    var str = new Array(props.length).fill('　');
+    str.splice(0, label.length, ...label);
+    var onChange = props.actions.onSpecItemChange.bind(null, props.label);
+    var textareaStyle = props.value && props.value.length > 15
+      ? {resize: 'vertical', height: 'auto', lineHeight: '15px'}
+      : {resize: 'none', height: 27}
+    return (
+      !props.editable
+        ? <div className="form-group form-inline inline-block" style={{marginRight: 60}}>
+            <label><span>{str.join('')}</span>：</label>
+            <textarea
+              ref="textarea"
+              value={props.value}
+              onChange={onChange}
+              style={textareaStyle}
+              className="form-control input-xs long-input"
+            ></textarea>
+          </div>
+        : <div ref="main" className="form-group form-inline inline-block relative" style={{marginRight: 60}}>
+            <input
+              type="text"
+              ref="editInput"
+              onChange={props.actions.onFormChange.bind(null, 'editable_key')}
+              className="form-control input-xs v-top"
+            />
+            ：
+            <input
+              type="text"
+              onChange={onChange}
+              className="form-control input-xs long-input"
+            />
+            <div className="absolute" style={{top: 4, right: 4}}>
+              <i
+                style={{marginRight: 2}}
+                onClick={props.actions.excSpecItem.bind(null, 'OK')}
+                className="fa fa-check cursor-pointer hover-effect"
+              ></i>
+              <i
+                onClick={props.actions.excSpecItem.bind(null, 'DEL')}
+                className="fa fa-times cursor-pointer hover-effect"
+              ></i>
+            </div>
+          </div>
+    )
+  }
+  componentDidMount(){
+    if(this.props.editable){
+      this.refs.editInput.style.width = $(this.refs.main).prev().find('label span').width() + 'px';
+    }
+  }
 }
 
 //(3)
@@ -301,9 +443,6 @@ class ProProperties extends Component {
   constructor(props){
     super(props);
     this.state = {
-      briefIntro_1: '',
-      briefIntro_2: '',
-      briefIntro_3: '',
       placeholder_2: `
         /每个女生的心中都有一个公主梦//梦想着有一天穿上心爱的水晶鞋遇上命中的白马王子//幸福快乐地生活在一起//
         每个人对幸福都有着不同的理解//但都逃不过一种甜蜜的感觉/
@@ -311,24 +450,31 @@ class ProProperties extends Component {
       `,
     }
   }
-  componentWillMount(){
-    this.styles = Styler`
-      
-    `
-  }
   render(){
+    var { props, props: { actions } } = this;
+    var spec_max_length = Math.max(...props.spec.map( n => n.editable ? 0 : n.key.length ));
+    var spec_list = props.spec.map( (n, i) =>
+      <FormCol
+        key={i}
+        label={n.key}
+        value={n.value}
+        actions={actions}
+        editable={n.editable}
+        length={spec_max_length}
+      />
+    );
     return (
-      <Panel title="商品详情页相关属性">
+      <Panel title="商品详情页相关属性" ok={props.ok} onConfirm={actions.confirmThisPart.bind(null, 'ProProperties')}>
         <div className="clearfix relative">
           <ColBox>
             <Title>商品简介2（商品详情页面顶部商品描述）</Title>
-            <ProlistImgBox>
+            <ProlistImgBox style={{outline: 'none', height: 'auto'}}>
               <ContentEditBox
                 className="relative"
                 style={{padding: '5px 5px 21px'}}
                 contentMaxLength={35}
-                content={this.state.briefIntro_1}
-                onContentChange={this.onContentChange.bind(this, 'briefIntro_1')}
+                content={props.briefIntro_1}
+                onContentChange={actions.onFormChange.bind(null, 'briefIntro_1')}
                 placeholder='"芒果茫茫 + 榴莲香雪 + 提拉米苏 + 黑森林"，一次让您品尝四种不同口味！'
               />
             </ProlistImgBox>
@@ -338,15 +484,15 @@ class ProProperties extends Component {
             <ContentEditBox
               className="relative"
               style={{padding: '10px 5px'}}
-              content={this.state.briefIntro_2}
-              onContentChange={this.onContentChange.bind(this, 'briefIntro_2')}
+              content={props.briefIntro_2}
+              onContentChange={actions.onFormChange.bind(null, 'briefIntro_2')}
               placeholder={this.state.placeholder_2}
             />
             <ContentEditBox
               className="relative"
               style={{padding: '10px 5px', marginTop: 20}}
-              content={this.state.briefIntro_3}
-              onContentChange={this.onContentChange.bind(this, 'briefIntro_3')}
+              content={props.briefIntro_3}
+              onContentChange={actions.onFormChange.bind(this, 'briefIntro_3')}
               placeholder="/四重奏/"
             />
           </ColBox>
@@ -356,29 +502,15 @@ class ProProperties extends Component {
           <div className="mg-8">
             <Title className="inline-block">产品原材料</Title>
             <span>(展示在商品分类页面，非必填项，其中一项不填则该描述不显示在页面)</span>
-            <button className="btn btn-xs btn-default space-left">
+            <button
+              disabled={props.spec.some( n => n.editable )}
+              onClick={actions.excSpecItem.bind(null, 'ADD')}
+              className="btn btn-xs btn-default space-left">
               <i className="fa fa-plus"></i>{' 添加'}
             </button>
           </div>
-          <div>
-            <FormCol label="蛋糕类型" />
-            <FormCol label="口味" />
-            <FormCol label="适合人群" />
-          </div>
-          <div>
-            <FormCol label="甜度" />
-            <FormCol label="保鲜条件" />
-            <FormCol label="原材料" />
-          </div>
-          <div>
-            <div className="form-group form-inline inline-block relative" style={{marginRight: 60}}>
-              <input className="form-control input-xs v-top" type="text" style={{width: 52}} />：
-              <input type="text" className="form-control input-xs long-input"/>
-              <div className="absolute" style={{top: 4, right: 4}}>
-                <i className="fa fa-check cursor-pointer hover-effect" style={{marginRight: 2}}></i>
-                <i className="fa fa-times cursor-pointer hover-effect"></i>
-              </div>
-            </div>
+          <div style={{width: 1100}}>
+            {spec_list}
           </div>
         </div>
       </Panel>
@@ -389,78 +521,40 @@ class ProProperties extends Component {
   }
 }
 
-class IntroImg extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      showEditIcon: false
-    }
-  }
-  render(){
-    var { src } = this.props;
-    return (
-      <div onMouseEnter={this.toggleEditIcon.bind(this, true)}
-        onMouseLeave={this.toggleEditIcon.bind(this, false)}
-        className="inline-block relative"
-        style={{marginRight: 50}}
-      >
-        <Img src={src} defaultSrc="images/products/pro-list-1.jpg" style={{width: 180, height: 180}} />
-        {
-          src
-            ? this.state.showEditIcon 
-                ? [
-                    <a key="del"
-                      href="javascript:;" 
-                      className="absolute"
-                      style={{top: 8, right: 28}}
-                      ><i className="fa fa-trash-o"></i>
-                    </a>,
-                    <a key="edit"
-                      href="javascript:;"
-                      className="absolute"
-                      style={{top: 9, right: 8}}
-                      ><i className="fa fa-edit"></i>
-                    </a>
-                  ]
-                : null
-            : <AddButton />
-        }
-      </div>
-    )
-  }
-  toggleEditIcon(show){
-    if(this.props.src){
-      this.setState({ showEditIcon: true })
-    }
-  }
-}
-
 //(4)
 //产品详情页缩略展示图
 class ProIntro extends Component {
   render(){
     var imgW = 80;
+    var { props, props: { actions } } = this;
+    var ok = props.intro_img_1 && props.intro_img_2 && props.intro_img_3 && props.intro_img_4;
+    var list = [1, 2, 3, 4].map( n => 
+      <EditImgBox
+        key={n}
+        className="inline-block"
+        style={{margin: '0 50px 30px 0', width: 180, height: 180}}
+        src={props['intro_img_' + n] ? (props.domain + props['intro_img_' + n]) : ''}
+        defaultSrc="images/products/pro-list-1.jpg"
+        onChooseImg={props.showSelectImgModal.bind(null, 'intro_img_' + n)}
+        onDeleteImg={actions.deleteImg.bind(null, 'intro_img_' + n)}
+      />
+    )
     return (
-      <Panel title="产品详情页缩略展示图">
+      <Panel title="产品详情页缩略展示图" ok={props.ok} onConfirm={actions.confirmThisPart.bind(null, 'ProIntro')}>
         <div className="clearfix" style={{paddingLeft: 30}}>
           <div className="pull-left">
-            <img src={`http://placehold.it/${imgW * 4 + 4 * 3}?text=主图`} alt=""/>
+            <img src={`http://placehold.it/${imgW * 4 + 4 * 3}?text=${ok ? '✓' : '主图'}`} alt=""/>
             <div style={{marginTop: 4}}>
-              <img src={`http://placehold.it/${imgW}?text=图1`} style={{marginRight: 4}} alt=""/>
-              <img src={`http://placehold.it/${imgW}?text=图2`} style={{marginRight: 4}} alt=""/>
-              <img src={`http://placehold.it/${imgW}?text=图3`} style={{marginRight: 4}} alt=""/>
-              <img src={`http://placehold.it/${imgW}?text=图4`} alt=""/>
+              <img src={`http://placehold.it/${imgW}?text=${props.intro_img_1 ? '✓' : '图1'}`} style={{marginRight: 4}} alt=""/>
+              <img src={`http://placehold.it/${imgW}?text=${props.intro_img_2 ? '✓' : '图2'}`} style={{marginRight: 4}} alt=""/>
+              <img src={`http://placehold.it/${imgW}?text=${props.intro_img_3 ? '✓' : '图3'}`} style={{marginRight: 4}} alt=""/>
+              <img src={`http://placehold.it/${imgW}?text=${props.intro_img_4 ? '✓' : '图4'}`} alt=""/>
             </div>
           </div>
           <div className="pull-left" style={{marginLeft: 30}}>
             <p>商品展示图 (推荐尺寸：526 x 526)</p>
-            <div>
-              <IntroImg src="http://placehold.it/180" />
-              <IntroImg />
-            </div>
-            <div style={{marginTop: 30}}>
-              <IntroImg />
-              <IntroImg />
+            <div className="inline-block" style={{width: 500}}>
+              { list }
             </div>
           </div>
         </div>
@@ -469,9 +563,7 @@ class ProIntro extends Component {
   }
 }
 
-const AddButtonGroup = props => (
-  <div>
-    <AddButton {...props} />
+const ProDetailImgsTip = props => (
     <div className="center theme" style={Styler`
       margin-top: 37px;
       background: rgba(230, 195, 141, 0.48);
@@ -479,7 +571,6 @@ const AddButtonGroup = props => (
       border-radius: 3px;
       box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.25);
     `}>建议尺寸：{props.size} 像素</div>
-  </div>
 )
 
 //(5)
@@ -488,26 +579,47 @@ class ProDetailImgs extends Component {
     var w = 700;
     var space = 16;
     var w_2 = (w - space)/2;
+    var { props, props: { actions, template_data } } = this;
     return (
-      <Panel title="产品详情页">
+      <Panel title="产品详情页" ok={props.ok} onConfirm={actions.confirmThisPart.bind(null, 'ProDetailImgs')}>
         <div style={{paddingLeft: 30}}>
           <div className="relative" style={{width: w}}>
-            <Img defaultSrc="images/products/pro-desc-1.jpg" />
-            <AddButtonGroup size="1120x743" />
+            <EditImgBox
+              src={template_data['prodetail_img_1'] ? (props.domain + template_data['prodetail_img_1']) : ''}
+              defaultSrc="images/products/pro-desc-1.jpg"
+              onChooseImg={props.showSelectImgModal.bind(null, 'prodetail_img_1')}
+              onDeleteImg={actions.deleteImg.bind(null, 'prodetail_img_1')}>
+              <ProDetailImgsTip size="1120x743" />
+            </EditImgBox>
           </div>
           <div className="clearfix" style={{marginTop: space}}>
             <div className="relative pull-left" style={{marginRight: space, width: w_2}}>
-              <Img defaultSrc="images/products/pro-desc-2-1.jpg" />
-              <AddButtonGroup size="547x547" />
+              <EditImgBox
+                src={template_data['prodetail_img_2'] ? (props.domain + template_data['prodetail_img_2']) : ''}
+                defaultSrc="images/products/pro-desc-2-1.jpg"
+                onChooseImg={props.showSelectImgModal.bind(null, 'prodetail_img_2')}
+                onDeleteImg={actions.deleteImg.bind(null, 'prodetail_img_2')}>
+                <ProDetailImgsTip size="547x547" />
+              </EditImgBox>
             </div>
             <div className="relative pull-left" style={{width: w_2}}>
-              <Img defaultSrc="images/products/pro-desc-2-2.jpg" />
-              <AddButtonGroup size="547x547" />
+              <EditImgBox
+                src={template_data['prodetail_img_3'] ? (props.domain + template_data['prodetail_img_3']) : ''}
+                defaultSrc="images/products/pro-desc-2-2.jpg"
+                onChooseImg={props.showSelectImgModal.bind(null, 'prodetail_img_3')}
+                onDeleteImg={actions.deleteImg.bind(null, 'prodetail_img_3')}>
+                <ProDetailImgsTip size="547x547" />
+              </EditImgBox>
             </div>
           </div>
           <div className="relative" style={{marginTop: space, width: w}}>
-            <Img defaultSrc="images/products/pro-desc-3.jpg" />
-            <AddButtonGroup size="1120x743" />
+            <EditImgBox
+              src={template_data['prodetail_img_4'] ? (props.domain + template_data['prodetail_img_4']) : ''}
+              defaultSrc="images/products/pro-desc-3.jpg"
+              onChooseImg={props.showSelectImgModal.bind(null, 'prodetail_img_4')}
+              onDeleteImg={actions.deleteImg.bind(null, 'prodetail_img_4')}>
+              <ProDetailImgsTip size="1120x743" />
+            </EditImgBox>
           </div>
         </div>
       </Panel>
@@ -530,8 +642,8 @@ class Main extends Component {
   }
 
   render() {
-
-    const { params: {productId}, area, applicationRange, actions, imgActions, imgModal, imgList } = this.props;
+    const { props } = this;
+    const { params: {productId}, area, applicationRange, prolistDetail, actions, imgActions, imgModal, imgList } = props;
     return (
       <div className="wrapper">
         <TopHeader />
@@ -546,12 +658,33 @@ class Main extends Component {
         <div className="panel" style={tabContentBoxStyle}>
           <div className="panel-body" style={{paddingTop: 33}}>
             <Row>
-              <div className="col-lg-8 col-lg-offset-1">
-                <ApplicationRange {...applicationRange} actions={actions} />
-                <ProlistDetail showSelectImgModal={this.showSelectImgModal} />
-                <ProProperties />
-                <ProIntro showSelectImgModal={this.showSelectImgModal} />
-                <ProDetailImgs showSelectImgModal={this.showSelectImgModal} />
+              <div className="col-lg-12 col-lg-offset-0">
+                <ApplicationRange
+                  {...applicationRange}
+                  actions={actions}
+                />
+                <ProlistDetail
+                  {...props.prolistDetail}
+                  actions={actions}
+                  domain={imgList.domain}
+                  showSelectImgModal={this.showSelectImgModal}
+                />
+                <ProProperties
+                  {...props.proProperties}
+                  actions={actions}
+                />
+                <ProIntro
+                  {...props.proIntro}
+                  actions={actions}
+                  domain={imgList.domain}
+                  showSelectImgModal={this.showSelectImgModal}
+                />
+                <ProDetailImgs
+                  {...props.proDetailImgs}
+                  actions={actions}
+                  domain={imgList.domain}
+                  showSelectImgModal={this.showSelectImgModal}
+                />
 
                 <div className="mgt-20">
                   <button className="btn btn-lg btn-theme">保存</button>
@@ -560,14 +693,18 @@ class Main extends Component {
             </Row>
           </div>
         </div>
-        <SelectImgModal ref="selectImgModal" {...{...imgModal, ...imgList}} actions={imgActions} />
+        <SelectImgModal
+          ref="selectImgModal"
+          {...{...imgModal, ...imgList}}
+          actions={{...imgActions, selectImg: actions.selectImg}}
+        />
       </div>
     );
   }
 
   componentDidMount() {
     this.props.actions.getProvincesSignal();
-    this.props.actions.getAllAvailableCities();
+    this.props.actions.getAllAvailableCities(this.props.params.productId);
     LazyLoad('noty');
     LazyLoad('qiniu_dev');
     // LazyLoad('qiniu');
@@ -585,7 +722,8 @@ export default connect(
   dispatch => ({
     actions: bindActionCreators({
       ...AreaActions(),
-      ...Actions
+      ...Actions,
+      onFormChange
     }, dispatch),
     imgActions: bindActionCreators(ImgActions, dispatch)
   })
@@ -627,7 +765,9 @@ class ImgViewBox extends Component {
     var style = {
       width: 100,
       margin: '0 15px 15px',
-      outline: props.viewImg && props.viewImg.id == props.id ? '3px solid #E4C698' : 'none'
+      outline: props.viewImg && props.viewImg.id == props.id
+        ? '3px solid rgb(232, 207, 169)'
+        : 'none'
     };
     return (
       <div
@@ -639,7 +779,13 @@ class ImgViewBox extends Component {
         onClick={props.actions.viewImg.bind(undefined, props)}
         >
         <div className="relative" style={{width: 100,height: 100, overflow: 'hidden'}}>
-          <img src={props.domain + props.url + '?imageView2/0/w/100/h/100'} onLoad={this.onImgLoaded.bind(this)} className="center" />
+          <img
+            ref="img"
+            className="center"
+            src={props.domain + props.url + '?imageView2/0/w/100/h/100'}
+            onLoad={this.onImgLoaded.bind(this)}
+            onError={this.onImgError.bind(this)}
+          />
           <div ref="pxInfo" style={ImgViewBoxStyle.pxStyle}>{this.state.px}</div>
         </div>
         <h6 className="text-ellipsis">{props.name}</h6>
@@ -650,12 +796,15 @@ class ImgViewBox extends Component {
     this.refs.pxInfo.style.transform = `translateY(${show_or_not ? -100 : 0}%)`;
   }
   onImgLoaded(){
-    // setTimeout(() => {
-      $.get(this.props.domain + this.props.url + '?imageInfo')
-        .done((data) => {
-          this.setState({ px: data.width + 'x' + data.height })
-        }).fail(this.onImgLoaded.bind(this))
-    // }, 10000)
+    $.get(this.props.domain + this.props.url + '?imageInfo')
+      .done((data) => {
+        this.setState({ px: data.width + 'x' + data.height })
+      }).fail(this.onImgLoaded.bind(this))
+  }
+  onImgError(){
+    var { img } = this.refs;
+    img.onerror = this.onImgError.bind(this);
+    img.src = this.props.domain + this.props.url + '?imageView2/0/w/100/h/100';
   }
 }
 class SelectImgModal extends Component {
@@ -733,6 +882,7 @@ class SelectImgModal extends Component {
   }
   onConfirm(){
     this.props.actions.selectImg(this.props.view_img.url, this.state.which);
+    this.refs.modal.hide();
   }
   onBreadcrumbClicked(node){
     var index = this.state.breadcrumb.findIndex( b => b.id == node.id );

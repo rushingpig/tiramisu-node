@@ -176,7 +176,24 @@ function del(target, cb){
     target.splice(index, 1);
   }
 }
-
+function some(target, cb){
+  if (target && typeof target === 'object') {
+    if (core_isArray(target)) {
+      //target.forEach(target, cb);
+      for (var i = 0, len = target.length; i < len; i++){
+        if( cb(target[i], i) ){
+          return true
+        }
+      }
+    } else {
+      for (var a in target){
+        if( cb(target[a], a) ){
+          return true
+        }
+      }
+    }
+  }
+}
 
 function toFixed(target, digit){
   var t = parseFloat(target);
@@ -350,6 +367,7 @@ export default {
   mapValues,
   each,
   map,
+  some,
   del,
 
   clone,

@@ -207,6 +207,18 @@ export function addRemark(refundId, remarks){
   }*/
 }
 
+export const GET_REFUND_REASONS = 'GET_REFUND_REASONS';
+export function getRefundReasons(){
+    return GET(Url.refund_reasons.toString(), null, GET_REFUND_REASONS);
+/*  return TEST({
+    1: '用户取消蛋糕配件',
+    2: '客户要求取消订单',
+    3: '用户地址不配送',
+    4: '客户更改产品(款式或磅数)',
+    5: '其他',
+  }, GET_REFUND_REASONS)*/
+}
+
 export const GET_ORDER_OPT_RECORD = 'GET_ORDER_OPT_RECORD';
 export function getOrderOptRecord(order_id, data){
   return dispatch => {

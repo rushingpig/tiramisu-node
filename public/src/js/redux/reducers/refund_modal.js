@@ -12,18 +12,11 @@ var initial_state = {
 	save_success: true,
 
 	submit_ing: false,
-  	all_refund_reasons: [],
-}
-
-function _t(data){
-  return map(data, (text, id) => ({id, text}))
 }
 
 export function refund_data(state = initial_state, action){
     var store = getGlobalStore();
 	switch(action.type){
-		case ACTIONS.GET_REFUND_REASONS:
-			return {...state, all_refund_reasons: _t(action.data)}
 		case ACTIONS.GET_REFUND_APPLY_DATA:
 			var data = clone(action.data);
 			data.type = 'PART';
@@ -70,6 +63,7 @@ export function refund_data(state = initial_state, action){
 					m.account = action.data.account;
 					m.account_type = action.data.account_type;
 					m.reason = action.data.reason;
+					m.reason_type = action.data.reason_type;
 					m.merchant_id = action.data.merchant_id;
 					m.linkman = action.data.linkman;
 					m.linkman_name = action.data.linkman_name;

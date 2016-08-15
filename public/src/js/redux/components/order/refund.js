@@ -141,6 +141,13 @@ var RefundRow = React.createClass({
 		var { props } = this;
     	var src_name = props.src_name ? props.src_name.split(',') : ['', ''];
     	var _refund_status = REFUND_STATUS[props.status] || {};
+    	var {all_refund_reasons} = props.RefundManage;
+    	var reason_ = all_refund_reasons.filter( m => m.id == props.reason_type);
+    	var reasonStr = reason_[0].text;
+    	var otherreason = !props.reason && props.reason != '' ? '(' + props.reason + ')' :''
+    	if(props.reason_type == 0){
+    		reasonStr = reasonStr + otherreason;
+    	}
 		return(
 			<tr onClick={this.ClickHandler}>
 				<td>
@@ -202,7 +209,7 @@ var RefundRow = React.createClass({
 						</td>
 						: <td>{'无'}</td>
 					}
-				<td>{props.reason}</td>
+				<td>{reasonStr}</td>
 				<td>
 					<span className='bordered bold bg-warning' style={{color: props.is_urgent == 1 ? '#E44949':''}}>
 						{props.is_urgent == 1 ? '是' : '否'}
@@ -326,7 +333,7 @@ class ManagePannel extends Component{
 	}
 	render(){
 		var { RefundManage, getOrderOptRecord, resetOrderOptRecord, refund_data , bindOrderRecord, area,
-			 getProvincesSignal, getCitiesSignal, getRefundList, getRefundReasons, getRefundApplyDetail,
+			 getProvincesSignal, getCitiesSignal, getRefundList, getRefundApplyDetail,
 			 editRefundChangeStatus, refundEdit, getBindOrders, resetBindOrders, addRemark, refundComplete_CS  } = this.props;
 		var { list, total, loading, refresh, page_no, check_order_info, active_order_id, operationRecord, all_refund_status, all_refund_way, all_refund_reasons } = RefundManage;
 		var { viewOperationRecordModal, viewRefundModal, viewRefundCredential, viewRemarkModal, viewBindOrderRecord } = this;
@@ -397,7 +404,6 @@ class ManagePannel extends Component{
         		<RefundModal ref='RefundModal' editable={true} 
         			 refund_data = { refund_data } 
         			 all_refund_reasons = {all_refund_reasons} 
-        			 getRefundReasons = {getRefundReasons}
         			 editRefundChangeStatus = {editRefundChangeStatus}
         			 refundEdit = {refundEdit}
         			 />
@@ -409,6 +415,7 @@ class ManagePannel extends Component{
 	}
 	componentDidMount(){
       	LazyLoad('noty');
+      	this.props.getRefundReasons();
 		this.search();
 	}
 	search(page){

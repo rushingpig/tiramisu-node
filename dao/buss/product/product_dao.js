@@ -893,10 +893,12 @@ ProductDao.prototype.getProductDetailHasAddCities = function (product_id) {
     let params = [config.tables.buss_product_detail, product_id, del_flag.SHOW];
     return baseDao.select(sql, params);
 }
-// 查询已添加详情城市
+// 查询可添加详情城市
 ProductDao.prototype.getProductDetailCanAddCities = function (product_id) {
-    let sql = "select distinct regionalism_id from ?? where product_id = ? and del_flag = ?";
-    let params = [config.tables.buss_product_sku, product_id, del_flag.SHOW];
+    let sql = "select distinct dict_city.id as city_id,dict_city.name as city_name,(case dict_province.level_type when 1 then dict_province.id when 2 then dict_province.parent_id end) as province_id " +
+        "from ?? sku join ?? dict_city on sku.regionalism_id = dict_city.id and sku.product_id = ? and sku.del_flag = ? and dict_city.del_flag = ? " + 
+        "join ?? dict_province on dict_city.parent_id = dict_province.id and dict_province.del_flag = ? ";
+    let params = [config.tables.buss_product_sku, config.tables.dict_regionalism, product_id, del_flag.SHOW, del_flag.SHOW, config.tables.dict_regionalism, del_flag.SHOW];
     return baseDao.select(sql, params);
 }
 ProductDao.prototype.getProductSpecByDetailId = function (detail_id) {

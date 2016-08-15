@@ -1344,19 +1344,19 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
           transaction.release();
           if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
           // TODO: move to submit when tiramisu is online
-          if (SMS_HOST && sendRedwineMessage.has(regionalism_id)) {
-            request.post(
-              {
-                uri: SMS_HOST,
-                json: true,
-                body: {
-                  timestamp: moment().unix(),
-                  phone: recipient_mobile,
-                  method: 'promotion.redwine',
-                  params: {}
-                }
-              });
-          }
+          // if (SMS_HOST && sendRedwineMessage.has(regionalism_id)) {
+          //   request.post(
+          //     {
+          //       uri: SMS_HOST,
+          //       json: true,
+          //       body: {
+          //         timestamp: moment().unix(),
+          //         phone: recipient_mobile,
+          //         method: 'promotion.redwine',
+          //         params: {}
+          //       }
+          //     });
+          // }
           resolve();
         });
       });

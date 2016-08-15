@@ -738,7 +738,11 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
           greeting_card: curr.greeting_card
         };
         if (curr.bind_order_id && curr.bind_order_id != '0') {
-          list_obj.bind_order_id = yield orderDao.joinOrderId(curr.bind_order_id);
+          list_obj.bind_order_id = systemUtils.getShowOrderId(curr.bind_order_id, curr.bind_created_time);
+        }
+        if (curr.by_bind_order_id) {
+          list_obj.is_bind = 1;
+          list_obj.by_bind_order_id = systemUtils.getShowOrderId(curr.by_bind_order_id, curr.by_bind_created_time);
         }
         let refund_obj = yield refundDao.findLastRefundByOrderId(curr.id);
         if (refund_obj) {

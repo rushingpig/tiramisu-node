@@ -233,7 +233,7 @@ class ManagePannel extends Component{
 	}
 	render(){
 		var {area, filter, stations, dispatch, getStationListByScopeSignal, resetStationListWhenScopeChange,
-			getInvoiceList, 
+			getInvoiceList, getOrderInvoiceInfo,
 			main: {list, page_no, total, loading, refresh, active_order_id, check_order_info},
 		} = this.props;
 		var content = list.map((n, i) => {
@@ -294,7 +294,7 @@ class ManagePannel extends Component{
 				      </div>
 				    </div>
 				  : null }
-				<InvoiceApplyModal ref='InvoiceApplyModal'/>
+				<InvoiceApplyModal ref='InvoiceApplyModal' getOrderInvoiceInfo = {getOrderInvoiceInfo}/>
 			</div>
 			)
 	}

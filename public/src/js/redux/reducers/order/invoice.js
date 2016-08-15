@@ -18,6 +18,7 @@ var main_state = {
 	loading: true,
 	active_order_id:-1,
     check_order_info: null,
+    order_invoice_info: null,
 }
 
 
@@ -54,6 +55,8 @@ function main(state = main_state, action){
 			return {...state, ...action.data, refresh: false, loading: false};
 		case Actions.GET_ORDER_DETAIL_PRODUCTS:
 			return {...state, check_order_info:action.data }
+		case Actions.GET_ORDER_INVOICE_INFO:
+			return {...state, order_invoice_info: action.data}
 		default:
 			return state;
 	}

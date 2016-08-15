@@ -16,6 +16,22 @@ export function activeOrder(id){
   }
 }
 
+export const GET_ORDER_INVOICE_INFO = 'GET_ORDER_INVOICE_INFO';
+export function getOrderInvoiceInfo(id){
+	return TEST({
+		amount: 10000,
+		owner_mobile: '18588420689',
+		owner_name: 'gaozheng81503',
+		recipient_name: 'xxxxx',
+		recipient_mobile: 'xxx',
+		recipient_address: 'xxx',
+		province_id: '',
+		city_id: '440300',
+		regionalism_id: '',
+		recipient_address: '',
+	}, GET_ORDER_INVOICE_INFO);
+}
+
 export const GET_INVOICE_LIST = 'GET_INVOICE_LIST';
 export function getInvoiceList(data){
 /*	return (dispatch, getState) => {

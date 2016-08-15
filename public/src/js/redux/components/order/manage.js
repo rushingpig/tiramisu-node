@@ -350,14 +350,14 @@ var OrderRow = React.createClass({
     switch(refund_status ){
       case 'COMPLETED':
       case 'CANCEL':
-        if(( status == 'CANCEL' || status == 'EXCEPTION') && !is_bind )
+        if(!is_bind )
           roles.push('OrderManageRefundApply');break;
       case 'UNTREATED':
       case 'TREATED':
       case 'REVIEWED':
         roles.push('OrderManageRefundApplying');break;
       default:
-        if(( status == 'CANCEL' || status == 'EXCEPTION') && !is_bind )
+        if(!is_bind )
           roles.push('OrderManageRefundApply');break;
     }
     roles.push('OrderManageView');

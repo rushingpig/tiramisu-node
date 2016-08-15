@@ -565,8 +565,8 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                         reason_type: 4,
                         reason: REASON_TYPE['4'],
                         linkman: 0,
-                        linkman_name: _res.owner_name,
-                        linkman_mobile: _res.owner_mobile
+                        linkman_name: _res[0].owner_name,
+                        linkman_mobile: _res[0].owner_mobile
                     };
                     refund_history.option = `因减少配件自动生成退款\n退款金额为{${refund_obj.amount / 100}}\n`;
                     let order_history = {option: ''};

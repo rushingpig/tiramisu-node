@@ -565,7 +565,6 @@ ProductService.prototype.exportSku = (req, res, next) => {
     systemUtils.wrapService(res, next, promise);
 }
 ProductService.prototype.addProductInfo = function (req, res, next) {
-    //验证数据
     let correct = tv4.validate(req.body, schema.addProductInfo);
     if (!correct) {
         res.api(res_obj.INVALID_PARAMS, toolUtils.formatTv4Error(tv4.error));
@@ -607,6 +606,18 @@ ProductService.prototype.getProductDetailByProductIdAndRegionId = function (req,
     let promise = productDao.getProductInfoByProductIdAndRegionId(product_id, regionalism_id)
         .then(result => {
             res.api(result);
+        });
+    systemUtils.wrapService(res, next, promise);
+}
+ProductService.prototype.modifyProductInfo = function (req, res, next) {
+    let correct = tv4.validate(req.body, schema.modifyProductInfo);
+    if (!correct) {
+        res.api(res_obj.INVALID_PARAMS, toolUtils.formatTv4Error(tv4.error));
+        return;
+    }
+    let promise = productDao.modifyProductInfo(req, req.body)
+        .then(() => {
+            res.api();
         });
     systemUtils.wrapService(res, next, promise);
 }

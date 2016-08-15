@@ -742,6 +742,7 @@ CREATE TABLE `buss_product_detail` (
     `detail_img_2` varchar(255) NOT NULL COMMENT '缩略展示图2',
     `detail_img_3` varchar(255) NOT NULL COMMENT '缩略展示图3',
     `detail_img_4` varchar(255) NOT NULL COMMENT '缩略展示图4',
+    `consistency` int(1) COMMENT '是否全部一致',
     `created_by` int(11) NOT NULL COMMENT '创建人id',
     `created_time` datetime NOT NULL COMMENT '创建时间',
     `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',

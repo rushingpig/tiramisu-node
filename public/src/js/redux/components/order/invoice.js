@@ -234,7 +234,7 @@ class ManagePannel extends Component{
 	render(){
 		var {area, filter, stations, dispatch, getStationListByScopeSignal, resetStationListWhenScopeChange,
 			getInvoiceList, getOrderInvoiceInfo,
-			main: {list, page_no, total, loading, refresh, active_order_id, check_order_info},
+			main: {list, page_no, total, loading, refresh, active_order_id, check_order_info, order_invoice_info},
 		} = this.props;
 		var content = list.map((n, i) => {
 		  return <InvoiceRow {...{...n, ...this.props}} key={n.invoice_id} 
@@ -294,7 +294,9 @@ class ManagePannel extends Component{
 				      </div>
 				    </div>
 				  : null }
-				<InvoiceApplyModal ref='InvoiceApplyModal' getOrderInvoiceInfo = {getOrderInvoiceInfo}/>
+				<InvoiceApplyModal ref='InvoiceApplyModal' getOrderInvoiceInfo = {getOrderInvoiceInfo}
+					data = {order_invoice_info}
+					/>
 			</div>
 			)
 	}
@@ -319,39 +321,79 @@ class InvoiceApplyModal extends Component{
 	render(){
 		return(
 			<StdModal ref='modal' title='发票申请页面' >
+				<InvoiceApplyPannel {...this.props} />
+			</StdModal>
+			)
+	}
+	show(){
+		this.refs.modal.show();
+	}
+}
+
+class InvoiceApplyPannel extends Component{
+	constructor(props){
+		super(props);
+		this.state = {
+			search_by_keywords_ing: false,
+		}
+	}
+	render(){
+		var {
+			fields: {
+				amount,
+				company_id,
+				order_id,
+				recipient_mobile,
+				recipient_name,
+				remarks,
+				title,
+				type,
+				enable_recipient_address,
+				recipient,
+				province_id,
+				city_id,
+				district_id,
+				address,
+			}
+		} = this.props;
+		return(
 				<div>
 					<div className='form-group form-inline'>
 						<label>{'　订单号：'}</label>
-						<SearchInput className='form-inline v-img space-right' placeholder='搜索要开具发票的订单号' />				
-					</div>
-					<div className='form-group form-inline'>
-						<label>{'发票金额/'}<br />{'流水金额：'}</label>
-						￥<input className='form-control input-xs' type='text' readOnly />
+						<SearchInput {...order_id} searchHandler = {this.search.bind(this, 'search_by_keywords_ing')} className='form-inline v-img space-right' placeholder='搜索要开具发票的订单号' />				
 					</div>
 					<div className='form-group form-inline'>
 						<label>{'发票类型：'}</label>
 						<label>
-						  <input type="radio" 
-							 /> 增值税普通发票</label>
+						  <input {...type} checked = {type.value == 0} type="radio" value = '0' /> 增值税普通发票</label>
 						{'　'}
 						<label>
-						  <input type="radio" 
-								/> 增值税专用发票</label> 
+						  <input {...type} checked = {type.value == 0} type="radio"  value = '1' /> 增值税专用发票</label> 
 					</div>
 					
 					
 					<div className='form-group form-inline'>
 						<label>{'发票抬头：'}</label>
-						<Select default-text='请选择已审核公司' />
-						<input className='form-control input-xs' type='text' placeholder='个人/公司全称' />
+						{
+							type.value == 0 ?
+							<Select {...company_id} default-text='请选择已审核公司' />
+							:
+							<input {...title} className='form-control input-xs' type='text' placeholder='个人/公司全称' />
+						}
 					</div>
 					<div className='form-group form-inline'>
 						<fieldset className='box-wrapper' style={{'border':'1px solid #ddd'}}>
           					<legend style={{'padding':'5px 10px','fontSize':'13','width':'auto','border':'0', marginBottom: 5}}>收票人信息</legend>
           					<div>
-          					{'　　　'}<div className='form-group form-inline' style = {{marginBottom: 8}}>
-		 						<RadioGroup
+          					{'　　'}<div className='form-group form-inline' style = {{marginBottom: 8}}>
+          						<label>{'发票金额/'}{'流水金额：'}</label>
+          						￥<input {...amount} className='form-control input-xs' style = {{width: 80}} type='text' readOnly />
+          					</div><br />
+          					<div className='form-group form-inline' style = {{marginBottom: 8}}>
+		 						{'　　'}<RadioGroup
+		 							{...recipient}
 		                   			vertical={false}
+		                   			className = 'inline-block'
 		 							radios={[
 		 								{value: 1, text: '手动输入'},
 		 								{value: 2, text: '下单人'},
@@ -361,38 +403,59 @@ class InvoiceApplyModal extends Component{
           					</div>
           					<div className='form-group form-inline' style = {{marginBottom: 8}}>
           						<label className='control-label'>{'　　姓名：'}</label>
-          						<input type='text' className='form-control input-xs'/>
+          						<input {...recipient_name} type='text' className='form-control input-xs'/>
           						<label>{'　　电话：'}</label>
-          						<input type='text'  className='form-control input-xs'/>
-          					</div>
-          					<div className='form-group form-inline'>
-          						
+          						<input {...recipient_mobile} type='text'  className='form-control input-xs'/>
           					</div>
           					<div className='form-group form-inline' style = {{marginBottom: 8, display: 'block'}}>
           						<label>{'　　地址：'}</label>
-          						<input type = 'checkbox' /><label>{'启用收货人地址'}</label>        						
+          						<input checked = {enable_recipient_address.value == 1} type = 'checkbox' /><label>{'启用收货人地址'}</label>        						
           					</div>
           					
           					<div className='form-group form-inline' style = {{marginBottom: 8}}>
-        						{'　　　　　'}<Select ref="province" default-text="--选择省份--" className="form-select" />{' '}
-        						<Select ref="city"  default-text="--城市--" />{' '}
-        						<Select ref="district"  default-text="--区/县--" />{' '}
+        						{'　　　　　'}<Select {...province_id} ref="province" default-text="--选择省份--" className="form-select" />{' '}
+        						<Select {...city_id} ref="city"  default-text="--城市--" />{' '}
+        						<Select {...district_id} ref="district"  default-text="--区/县--" />{' '}
           					</div>
           					<div className='form-group form-inline' style = {{marginBottom: 8}}>
-        						{'　　　　　'}<input ref="recipient_address" className='form-control input-xs'  style={{width: 280}} type="text" placeholder='详细地址：小区、楼栋、门牌号'/>
+        						{'　　　　　'}<input {...address} ref="recipient_address" className='form-control input-xs'  style={{width: 280}} type="text" placeholder='详细地址：小区、楼栋、门牌号'/>
           					</div>	
           					</div>
 
 						</fieldset>
 					</div>
 				</div>
-			</StdModal>
 			)
 	}
-	show(){
-		this.refs.modal.show();
+	search(){
+		var {fields: {order_id}, getOrderInvoiceInfo} = this.props;
+		this.setState({search_by_keywords_ing: true});
+		getOrderInvoiceInfo(order_id.value);
+		this.setState({search_by_keywords_ing: false});
 	}
+
 }
+
+InvoiceApplyPannel = reduxForm({
+	form: 'invoice_apply_pannel',
+	fields: [
+		'amount',
+		'company_id',
+		'order_id',
+		'recipient',
+		'recipient_mobile',
+		'recipient_name',
+		'remarks',
+		'title',
+		'type',
+		'enable_recipient_address',
+		'province_id',
+		'city_id',
+		'district_id',
+		'address',
+	],
+	destroyOnUnmount: false
+})(InvoiceApplyPannel);
 
 function mapStateToProps(state){
 	return state.invoiceManage;

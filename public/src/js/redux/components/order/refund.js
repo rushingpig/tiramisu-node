@@ -157,7 +157,7 @@ var RefundRow = React.createClass({
 						[<a key='RefundManageReview' href='javascript:;' onClick = { this.onReview }>[审核]</a>, <br key='1' />],
 						[<a key='RefundManageEdit' href='javascript:;' onClick={this.viewRefundModal}>[编辑]</a>, <br key='2' />],
 						[<a key='RefundManageCancel' href='javascript:;' onClick = { this.onCancel }>[取消]</a>, <br key='3' />],
-						[<a key='RefundManageRefunded'  href='javascript:;' onClick={this.viewRefundCredential}>[退款完成]</a>, <br key='4' />],
+						[<a key='RefundManageRefunded'  href='javascript:;' onClick={this.refundComplete}>[退款完成]</a>, <br key='4' />],
 						[<a key='RefundManageComment' href='javascript:;' onClick={this.viewRemarkModal}>[添加备注]</a>,<br key='5' />]
 						)
 					}
@@ -276,8 +276,18 @@ var RefundRow = React.createClass({
 		this.props.getRefundApplyDetail(this.props.id);
 		this.props.viewRefundModal();
 	},
-	viewRefundCredential: function(){
-		this.props.viewRefundCredential(this.props.id, this.props.pay_id, this.props.merchant_id);
+	refundComplete: function(e){
+		if(this.props.way == 'CS'){
+			this.props.viewRefundCredential(this.props.id, this.props.pay_id, this.props.merchant_id);
+		}else{
+			this.props.handleRefund(this.props.id, 'COMPLETED')
+				.done(function(){
+					Noty('success', '退款完成');
+				}.bind(this))
+				.fail(function(msg, code){
+					Noty('error', msg || '退款失败');
+				})
+		}
 	},
 	viewRemarkModal: function(){
 		this.props.viewRemarkModal(this.props.id, this.props.remarks);

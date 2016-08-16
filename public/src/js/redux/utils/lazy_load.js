@@ -16,7 +16,20 @@ var config = {
   },
   datetimerangepicker: {
     css: '/node_modules/react-bootstrap-datetimerange-picker/dist/react-bootstrap-datetime-range-picker.css'
-  }
+  },
+  qiniu: {
+    js: [
+      '/plugins/plupload/plupload.full.min.js',
+      '/plugins/qiniu/qiniu.min.js'
+    ]
+  },
+  qiniu_dev: {
+    js: [
+      '/plugins/plupload/moxie.js',
+      '/plugins/plupload/plupload.dev.js',
+      '/plugins/qiniu/qiniu.js'
+    ]
+  },
 };
 var load_map = {};
 

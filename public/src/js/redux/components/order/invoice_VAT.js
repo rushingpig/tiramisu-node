@@ -19,6 +19,7 @@ import StdModal from 'common/std_modal';
 import Pagination from 'common/pagination';
 import RadioGroup from 'common/radio_group';
 import ProgressBar from 'common/progress_bar';
+import LazyLoad from 'utils/lazy_load';
 
 class TopHeader extends Component{
 	render(){
@@ -161,7 +162,7 @@ class CompanyModal extends Component{
 				</div>
 				<div className='form-group form-inline'>
 					<label>{'资质证书照片：'}</label>
-
+					<a id='uploadFileBtn' >上传图片</a>
 				</div>
 				{
 					progressList.length
@@ -178,5 +179,77 @@ class CompanyModal extends Component{
 	}
 	show(){
 		this.refs.modal.show();
+	}
+	componentDidMount(){
+		var uploaderOptions = this.getUploaderOptions();
+		LazyLoad('qiniu', () => ({
+			var fileUploader = Qiniu.uploader({
+				...uploaderOptions,
+				browse_button: 'uploadFileBtn',
+				init: {
+					'FilesAdded': (up, files) => {
+					  /*this.setState( state => {
+					    state.progressBars = state.progressBars.concat(
+					      ...files.map( file => ({
+					        key: file.id,
+					        name: file.name,
+					        percent: 0
+					      }))
+					    )
+					    return state;
+					  })*/
+					  fileUploader.start();
+					},
+					FileUploaded: (up, file, info) => {
+					  //data.result : 代表返回的json数据
+					  var { progressBars } = this.state;
+					  $(findDOMNode(this.refs[file.id])).delay(800).fadeOut(800, () => {
+					    del(progressBars, pb => pb.key == file.id);
+					    this.setState({ progressBars });
+					  });
+					  //提交文件信息到node服务器
+					  this.submitImgInfo({
+					    dir: this.props.dirId,
+					    url: JSON.parse(info).key,
+					    name: file.name,
+					    size: file.size,
+					  });
+					},
+					...uploaderOptions.init					
+				}
+			})
+		}))
+	}
+
+	getUploaderOptions(){
+		return {
+		  runtimes: 'html5',
+		  get_new_uptoken: true,
+		  unique_names: true, //文件名将变为hash值
+		  // save_key: true,
+		  // uptoken: 'CQH3l1cozF_-KJZj-CiKWUDkaCVGtdRYgI_klK5I:g2QT0uKcRNWuVwizj_uj8zkkCjs=:eyJzY29wZSI6ImhhcHB5dGVzdCIsImRlYWRsaW5lIjoxNDcwMjIwMDU3fQ==',
+		  // uptoken_url: 'http://192.168.0.109:3000/qiniu/token', //服务器端可以
+		  uptoken_url: 'http://120.76.25.32:8080/qiniu/token',
+		  domain: this.props.domain,
+		  init: {
+		    UploadProgress: (up, file) => {
+		      this.setState(state => {
+		        state.progressBars.forEach( pb => {
+		          if(pb.key == file.id){
+		            pb.percent = file.percent;
+		          }
+		        });
+		        return state;
+		      });
+		    },
+		    UploadComplete: () => {
+		      this.props.actions.getImageFileList({parent_id: this.props.dirId});
+		    },
+		    Error: (up, err, errTip = '上传出错，请重试！') => {
+		      //上传出错时,处理相关的事情
+		      Noty('error', errTip);
+		    },
+		  }
+		}
 	}
 }

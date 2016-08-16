@@ -13,6 +13,7 @@ import OrderProductsDetail from 'common/order_products_detail';
 import StdModal from 'common/std_modal';
 import OperationRecordModal from 'common/operation_record_modal.js';
 import MessageBox, { MessageBoxIcon } from 'common/message_box';
+import AddressSelector from 'common/address_selector';
 
 import RefundModal from './refund_detail_modal.js';
 
@@ -65,13 +66,14 @@ class FilterHeader extends Component{
 				end_time,
 				province_id,
 				city_id,
+				district_id,
 				is_urgent,
 				way,
 				status,
 			},
 			all_refund_status,
 			all_refund_way,
-			area: { provinces, cities },
+			area: { provinces, cities, districts },
 		} = this.props;
 		var { search_ing, search_by_keywords_ing, } = this.state;
 		return(
@@ -82,8 +84,12 @@ class FilterHeader extends Component{
           			<DatePicker redux-form = {begin_time} editable className="short-input" />
           			{' 结束时间'}
           			<DatePicker redux-form = {end_time} editable className="short-input space-right" />
-          			<Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" key="province" className="space-right"/>
-          			<Select {...city_id} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>
+          			{/*<Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" key="province" className="space-right"/>
+          			<Select {...city_id} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>*/}
+          			<AddressSelector
+		                  {...{ province_id, city_id, district_id, provinces, cities, districts, actions: this.props,
+		                    form: 'refund_list_filter'}}
+		                />
           			<Select {...way} options = {all_refund_way} default-text='退款方式' className='space-right' />
           			<Select {...is_urgent} options = {YesorNoOptions} default-text = '是否加急处理' className='space-right' />
           			<Select {...status} options ={all_refund_status} default-text = '退款状态' className = 'space-right' />
@@ -120,6 +126,7 @@ FilterHeader = reduxForm({
 		'end_time',
 		'province_id',
 		'city_id',
+		'district_id',
 		'is_urgent',
 		'way',
 		'status',
@@ -343,7 +350,7 @@ class ManagePannel extends Component{
 	}
 	render(){
 		var { RefundManage, getOrderOptRecord, resetOrderOptRecord, refund_data , bindOrderRecord, area,
-			 getProvincesSignal, getCitiesSignal, getRefundList, getRefundApplyDetail,
+			 getProvincesSignal, getCitiesSignal, resetCities, resetDistricts, getRefundList, getRefundApplyDetail,
 			 editRefundChangeStatus, refundEdit, getBindOrders, resetBindOrders, addRemark, refundComplete_CS  } = this.props;
 		var { list, total, loading, refresh, page_no, check_order_info, active_order_id, operationRecord, all_refund_status, all_refund_way, all_refund_reasons } = RefundManage;
 		var { viewOperationRecordModal, viewRefundModal, viewRefundCredential, viewRemarkModal, viewBindOrderRecord } = this;
@@ -361,6 +368,8 @@ class ManagePannel extends Component{
 				  getProvincesSignal = {getProvincesSignal}
 				  getCitiesSignal = {getCitiesSignal}
 				  getRefundList = {getRefundList}
+				  resetDistricts = {resetDistricts}
+				  resetCities = {resetCities}
 				  page_size = { this.state.page_size }
 				  />
 				<div className='panel'>

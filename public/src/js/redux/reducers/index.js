@@ -25,6 +25,7 @@ import citiesSelector from './cities_selector';
 import productSKUManagement from './product_sku_management';
 import productSKUSearch from './product_sku_search';
 import invoiceManage from './order/invoice';
+import invoiceVATManage from './order/invoice_VAT';
 
 const rootReducer = combineReducers({
   form,
@@ -53,6 +54,7 @@ const rootReducer = combineReducers({
   productSKUManagement,
   productSKUSearch,
   invoiceManage,
+  invoiceVATManage,
 });
 
 export default rootReducer

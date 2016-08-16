@@ -33,7 +33,7 @@ const validate = (values, props) => {
   }
 
   function _v_text(key){
-    if(form[key] && form[key].touched && (values[key] === undefined || values[key] == '')){
+    if(form[key] && form[key].touched && (values[key] === undefined || values[key].trim() == '')){
       errors[key] = msg;
     }
   }

@@ -55,8 +55,8 @@ export default function Area(ActionTypes = AreaActionTypes1){
     },
 
     //添加标志获取城市
-    getCitiesSignal:function(province_id,signal){
-      return GET(Url.cities.toString(province_id),{signal:signal},ActionTypes.GOT_CITIES_SIGNAL);
+    getCitiesSignal:function({ province_id, is_standard_area, signal = 'authority' }){
+      return GET(Url.cities.toString(province_id), {is_standard_area, signal}, ActionTypes.GOT_CITIES_SIGNAL);
     },
 
     resetDistricts: function (){

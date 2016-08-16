@@ -889,7 +889,7 @@ ProductDao.prototype.insertProductInfo = function (req, data) {
 }
 // 查询已添加详情城市
 ProductDao.prototype.getProductDetailHasAddCities = function (product_id) {
-    let sql = "select distinct regionalism_id,consistency from ?? where product_id = ? and del_flag = ?";
+    let sql = "select id,regionalism_id,consistency from ?? where product_id = ? and del_flag = ?";
     let params = [config.tables.buss_product_detail, product_id, del_flag.SHOW];
     return baseDao.select(sql, params);
 }

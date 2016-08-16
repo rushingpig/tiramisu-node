@@ -251,7 +251,7 @@ button, .btn:focus, .btn.focus, .btn:active:focus, .btn:active.focus, .btn.activ
   font-weight: bold;
 }
 .form-control {
-  box-shadow: none;
+  box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.06);
 }
 input {
   outline: 0
@@ -359,4 +359,8 @@ h4, .h4 {
 }
 .alert-danger, .alert-info, .alert-success, .alert-warning{
   border: 1px solid transparent;
+}
+
+.nav>li>a:focus, .nav>li>a:hover{
+  background-color: $theme-light-color
 }

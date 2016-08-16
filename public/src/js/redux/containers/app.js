@@ -56,6 +56,7 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
           ...components,
           SkuSearch:         require('../components/product/sku_search'),
           SkuManage:         require('../components/product/sku_management'),
+          SkuWebsiteManage:  require('../components/product/sku_website_management'),
           ViewInfo:          require('../components/product/view_info'),
           ViewSpecfications: require('../components/product/view_specfications'),
         }
@@ -166,6 +167,7 @@ const App = () => (
           <IndexRoute onEnter={onEnter('ProductionManageAccess')} getComponent={get('SkuSearch')} />
           <Route path="add" onEnter={onEnter('ProductionManageAddAccess')} getComponent={get('SkuManage')} />
           <Route path="edit/:productId" onEnter={onEnter('ProductionManageEditAccess')} getComponent={get('SkuManage')} />
+          <Route path="edit_website/:productId" onEnter={onEnter('ProductionManageEditWebsiteAccess')} getComponent={get('SkuWebsiteManage')} />
           <Route path="view">
             <Route path="info/:cityId/:productId" onEnter={onEnter('ProductionViewInfoAccess')} getComponent={get('ViewInfo')} />
             <Route path="specfications/:cityId/:productId" onEnter={onEnter('ProductionViewSpecAccess')} getComponent={get('ViewSpecfications')} />

@@ -291,7 +291,7 @@ class ManageAddForm extends Component{
       this.props.actions.getCityAndDistricts(value);
     }
   }
-  onCityChange(callback,e){
+  onCityChange(callback, e ){
     //this.props.actions.
     /*var {value} = e.target;*/
       this.props.actions.resetStations();

@@ -59,14 +59,11 @@ var tables = {
     buss_delivery_picture: 'buss_delivery_picture',
     buss_image: 'buss_image',
     buss_directory: 'buss_directory',
-<<<<<<< HEAD
     buss_refund: 'buss_refund',
-=======
     buss_product_detail: 'buss_product_detail',
     buss_product_detail_spec: 'buss_product_detail_spec',
     buss_product_template: 'buss_product_template',
     buss_product_template_data: 'buss_product_template_data',
->>>>>>> dev_city
 //=================Dict===================
     dict_regionalism : 'dict_regionalism',
     delivery_pay_rule: 'delivery_pay_rule'

@@ -126,6 +126,7 @@ class ProgressRow extends Component {
 
 class CompanyModal extends Component{
 	constructor(props){
+		super(props);
 		this.state = {
 			progressBars: [],
 		}
@@ -182,7 +183,7 @@ class CompanyModal extends Component{
 	}
 	componentDidMount(){
 		var uploaderOptions = this.getUploaderOptions();
-		LazyLoad('qiniu', () => ({
+		LazyLoad('qiniu', () => {
 			var fileUploader = Qiniu.uploader({
 				...uploaderOptions,
 				browse_button: 'uploadFileBtn',
@@ -218,7 +219,7 @@ class CompanyModal extends Component{
 					...uploaderOptions.init					
 				}
 			})
-		}))
+		})
 	}
 
 	getUploaderOptions(){

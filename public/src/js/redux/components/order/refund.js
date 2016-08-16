@@ -73,7 +73,7 @@ class FilterHeader extends Component{
 			},
 			all_refund_status,
 			all_refund_way,
-			area: { provinces, cities },
+			area: { provinces, cities, districts },
 		} = this.props;
 		var { search_ing, search_by_keywords_ing, } = this.state;
 		return(

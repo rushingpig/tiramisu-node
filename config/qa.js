@@ -110,6 +110,13 @@ var exp_session_options = function(store) {
 //  exclude path arrays of login filter
 var exclude_paths = ['/', '/v1/a/login'];
 
+const global_paths = [
+    /\/v1\/a\/provinces/,
+    /\/v1\/a\/province\/\d+\/cities/,
+    /\/v1\/a\/city\/\d+\/districts/,
+    /\/v1\/a\/cities/
+];
+
 var white_ips = [
   // localhost
   '1',
@@ -150,6 +157,7 @@ module .exports = {
     mysql_options : mysql_options,
     log4js_options : log4js_options,
     exclude_paths : exclude_paths,
+    global_paths: global_paths,
     white_ips : white_ips,
     sms_host : sms_host,
     coupon_host : coupon_host,

@@ -18,6 +18,7 @@ import { tableLoader, get_table_empty } from 'common/loading';
 import StdModal from 'common/std_modal';
 import Pagination from 'common/pagination';
 import RadioGroup from 'common/radio_group';
+import ProgressBar from 'common/progress_bar';
 
 class TopHeader extends Component{
 	render(){
@@ -111,8 +112,27 @@ export default class ManagePannel extends Component{
 	}
 } 
 
+class ProgressRow extends Component {
+  render(){
+    return (
+      <div className="col-lg-4 col-md-6 col-sm-6">
+        <div className={`${this.props.percent == 100 ? 'text-success' : 'theme'} mg-4`}>{this.props.name}</div>
+        <ProgressBar percent={this.props.percent} />
+      </div>
+    )
+  }
+}
+
 class CompanyModal extends Component{
+	constructor(props){
+		this.state = {
+			progressBars: [],
+		}
+	}
 	render(){
+		var progressList = this.state.progressBars.map( n => {
+		      return <ProgressRow ref={n.key} key={n.key} name={n.name} percent={n.percent} />;
+		    });
 		return (
 			<StdModal ref = 'modal' title = '添加公司资料页面'>
 				<div className='form-group form-inline'>
@@ -143,6 +163,16 @@ class CompanyModal extends Component{
 					<label>{'资质证书照片：'}</label>
 
 				</div>
+				{
+					progressList.length
+					?[
+						<hr key = 'hr' />,
+						<div className="row" key="progressBars" style={{maxHeight: '171px', overflowY: 'auto'}}>
+                    		{ progressList }
+                  		</div>
+					]
+					:null
+				}
 			</StdModal>
 			)
 	}

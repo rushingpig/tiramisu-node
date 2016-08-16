@@ -306,7 +306,7 @@ const ContentEditBox = props => {
   return (
     <div {...props} style={{...props.style, ...styles.main}}>
       <textarea
-        content={props.content}
+        value={props.content}
         onChange={props.onContentChange}
         className="text-left" style={styles.textareaStyle}
         maxLength={props.contentMaxLength}
@@ -645,6 +645,11 @@ const tabContentBoxStyle = {
   borderTop: 'none',
   boxShadow: 'none'
 }
+const containerStyle = Styler`
+  max-width: 100%;
+  min-width: 
+  width: calc((100% - 1440px)*40px)
+`
 
 class Main extends Component {
   constructor(props) {
@@ -657,7 +662,9 @@ class Main extends Component {
     this.getProductInfo = this.getProductInfo.bind(this);
     this.beforeLeave = this.beforeLeave.bind(this);
   }
-
+  componentWillMount(){
+    
+  }
   render() {
     const { props } = this;
     const { params: {productId}, area, applicationRange, actions, imgActions, main, imgModal, imgList } = props;
@@ -675,8 +682,7 @@ class Main extends Component {
         </ul>
         <div className="panel" style={tabContentBoxStyle}>
           <div className="panel-body" style={{paddingTop: 33}}>
-            <Row>
-              <div className="col-lg-12 col-lg-offset-0">
+              <div id="sku_website_management_container_style" className="-col-lg-9 -col-lg-offset-1">
                 <ApplicationRange
                   {...applicationRange}
                   actions={actions}
@@ -716,7 +722,7 @@ class Main extends Component {
                   </button>
                 </div>
               </div>
-            </Row>
+
           </div>
         </div>
         <SelectImgModal
@@ -728,7 +734,17 @@ class Main extends Component {
     );
   }
   componentWillMount(){
-    history.registerTransitionHook(this.beforeLeave)
+    history.registerTransitionHook(this.beforeLeave);
+    var s = document.createElement('style');
+    s.setAttribute('media', 'screen and (min-width: 1440px)');
+    s.innerHTML = `
+      #sku_website_management_container_style {
+        margin-left: 8.33333%;
+        width: 70%;
+      }
+    `
+    document.head.appendChild(s);
+    this._containerStyle = s;
   }
   beforeLeave(location, callback){
     if(this.props.applicationRange.cached.length){
@@ -745,7 +761,7 @@ class Main extends Component {
     this.props.actions.getAllAvailableCities(this.props.params.productId)
       .done( (provinces, cities) => {
         if(cities[0].has_detailc_cities.length && cities[0].has_detailc_cities.every( n => n.consistency == 0)){
-          this.getProductInfo(cities[0].has_detailc_cities[0].city_id);
+          this.getProductInfo(cities[0].has_detailc_cities[0].regionalism_id);
         }
       })
     LazyLoad('noty');
@@ -753,7 +769,8 @@ class Main extends Component {
     // LazyLoad('qiniu');
   }
   componentWillUnmount(){
-    history.unregisterTransitionHook(this.beforeLeave)
+    history.unregisterTransitionHook(this.beforeLeave);
+    document.head.removeChild(this._containerStyle);
   }
   showSelectImgModal(which) {
     //which用以区分是添加哪里的图片
@@ -772,13 +789,14 @@ class Main extends Component {
   }
   //转换为提交格式的数据
   getInfo(){
-    const { props: {
+    const { props, props: {
       prolistDetail,
       proProperties,
       proIntro,
       proDetailImgs
     }} = this;
     return {
+      consistency: props.applicationRange.all ? 0 : 1, //是否全部一致
       list_img: prolistDetail.list_img,
       list_copy: prolistDetail.list_copy,
       detail_top_copy: proProperties.briefIntro_1,
@@ -795,18 +813,29 @@ class Main extends Component {
   cacheInfo(){
     var { props } = this;
     if(
-      props.prolistDetail.ok &
-      props.proProperties.ok &
-      props.proIntro.ok &
-      props.proDetailImgs.ok &
+      props.prolistDetail.ok &&
+      props.proProperties.ok &&
+      props.proIntro.ok &&
+      props.proDetailImgs.ok &&
       props.applicationRange.city_id
     ){
-      this.props.cacheInfo({
-        regionalism_ids: this.props.applicationRange.city_id,
-        info: this.getInfo()
-      })
-    }else{
+      var cacheData = {
+        regionalism_id: this.props.applicationRange.city_id,
+        ...this.getInfo()
+      };
+      if(props.applicationRange.product_info_ing){
+        Noty('warning', '数据加载中，请稍后！');
+        return;
+      }else{
+        if(props.applicationRange.product_info){
+          cacheData.detail_id = props.applicationRange.product_info.id;
+        }
+      }
+      this.props.actions.cacheInfo(cacheData);
+    }else if(!props.applicationRange.city_id){
       Noty('warning', '请选择城市')
+    }else{
+      Noty('warning', '请确认以下编辑内容！')
     }
   }
   submit(productId){
@@ -821,36 +850,61 @@ class Main extends Component {
             info
           }]
         })
-      }else{  //这里就是编辑
+      }else{  //这里就是编辑(也有新增和修改两种)
+        let new_infos = [];
+        let modified_infos = [];
+        props.applicationRange.all_available_cities.map(n => {
+          if(
+            props.applicationRange.all_edited_cities.some( m => {
+              if(m.city_id == n.city_id){
+                modified_infos.push({
+                  regionalism_id: n.city_id,
+                  detail_id: m.detail_id,
+                  ...info
+                });
+                return true;
+              }
+              return false;
+            })
+          ){
+            
+          }else{
+            new_infos.push({
+              regionalism_id: n.city_id,
+              ...info
+            });
+          }
+        })
         return props.actions.submitEdit({
           product_id: productId,
-          modified_info: props.applicationRange.all_available_cities.map( n => ({
-            regionalism_ids: n.city_id,
-            info
-          }))
+          new_infos,
+          modified_infos
         })
       }
     }else{ //独立城市配置
-      let new_info = [];
-      let modified_info = [];
+      let new_infos = [];
+      let modified_infos = [];
       [
         ...props.applicationRange.cached,
-        !props.applicationRange.saved && { //当前没有加入缓存的城市
-          regionalism_ids: props.applicationRange.city_id,
-          info
+        props.applicationRange.city_id && 
+        !props.applicationRange.cached.some( n => n.regionalism_id == props.applicationRange.city_id) && //当前没有加入缓存的城市
+        {
+          regionalism_id: props.applicationRange.city_id,
+          ...info,
+          ...(props.applicationRange.product_info ? {detail_id : props.applicationRange.product_info.id} : {})
         }
       ].forEach(n => {
         if(!n) return;
-        if(props.applicationRange.all_edited_cities.some( m => m.id == n.regionalism_ids)){
-          modified_info.push(n);
+        if(props.applicationRange.all_edited_cities.some( m => m.city_id == n.regionalism_id)){
+          modified_infos.push(n);
         }else{
-          new_info.push(n);
+          new_infos.push(n);
         }
       })
       return props.actions.submitEdit({
         product_id: productId,
-        new_info,
-        modified_info,
+        new_infos,
+        modified_infos,
       })
     }
   }
@@ -866,7 +920,7 @@ class Main extends Component {
       props.proIntro.ok &
       props.proDetailImgs.ok
     ){
-      this.submit(productId)
+      this.submit(+productId)
         .done(() => {
           Noty('success', '保存成功！');
           props.actions.getAllAvailableCities(productId); //刷新数据

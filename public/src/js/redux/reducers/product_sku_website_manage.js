@@ -11,12 +11,12 @@ import { Noty, map, some } from 'utils/index';
 var initial_state = {
   all: true, //是否全部一致,
   all_available_cities: [],
-  all_edited_cities: [], //[{id, consistency: 是否全部一致（0：是，1：独立}]
+  all_edited_cities: [], //[{city_id, detail_id, consistency: 是否全部一致（0：是，1：独立}]
   provinces: [],
   cities: [],
   province_id: undefined,
   city_id: undefined,
-  saved: false,
+  // saved: false,
 
   product_info_ing: false,
   product_info: null, //每次都根据product_id, city_id拉取商品配置信息，如果为空，则代表应添加
@@ -38,7 +38,7 @@ function applicationRange(state = initial_state, action){
         provinces: action.provinces,
         all_available_cities: action.can_add_cities ? action.can_add_cities : [],
         all_edited_cities: action.has_detailc_cities
-          ? action.has_detailc_cities.map(({regionalism_id, consistency}) => {city_id: regionalism_id, consistency})
+          ? action.has_detailc_cities.map(({regionalism_id, id, consistency}) => ({city_id: regionalism_id, detail_id: id, consistency}))
           : []
       }
     case AreaActions.GOT_PROVINCES_SIGNAL:
@@ -92,7 +92,6 @@ function prolistDetail(state = prolistDetail_state, action){
     case Actions.GET_PRODUCT_INFO:
       return { ...state, ok: false, list_img: action.data.list_img, list_copy: action.data.list_copy }
     case Actions.SUBMIT_INFO:
-    case Actions.CACHE_INFO:
       return { ...state, ok: false }
     default:
       return state;
@@ -120,9 +119,9 @@ function proProperties(state = proProperties_state, action){
     case Actions.GET_PRODUCT_INFO:
       return { ...state,
         ok: false,
-        briefIntro_1: aciton.data.detail_top_copy,
-        briefIntro_2: aciton.data.detail_template_copy,
-        briefIntro_3: aciton.data.detail_template_copy_end,
+        briefIntro_1: action.data.detail_top_copy,
+        briefIntro_2: action.data.detail_template_copy,
+        briefIntro_3: action.data.detail_template_copy_end,
         spec: action.data.spec,
       }
     case FORM_CHANGE + 'briefIntro_1':
@@ -168,7 +167,6 @@ function proProperties(state = proProperties_state, action){
       }
       return {...state, spec: [...state.spec]}
     case Actions.SUBMIT_INFO:
-    case Actions.CACHE_INFO:
       return { ...state, ok: false }
     default:
       return state;
@@ -225,7 +223,6 @@ function proIntro(state = proIntro_state, action){
       }
       return {...state, ok: true}
     case Actions.SUBMIT_INFO:
-    case Actions.CACHE_INFO:
       return { ...state, ok: false }
     default :
       return state;
@@ -268,7 +265,6 @@ function proDetailImgs(state = proDetailImgs_state, action){
       }
       return {...state, ok: true}
     case Actions.SUBMIT_INFO:
-    case Actions.CACHE_INFO:
       return { ...state, ok: false }
     default :
       return state;

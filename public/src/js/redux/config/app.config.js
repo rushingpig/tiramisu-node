@@ -75,9 +75,9 @@ export default {
     'PARTPAYED': '部分付款',
   },
   invoice_status: {
-    'INVOICING': {value:'等待中'},
-    'UNINVOICE': {value: '未开具'},
-    'INVOICED': {value: '已开具'},
+    'WAITING': {value:'等待中'},
+    'UNTREATED': {value: '未开具'},
+    'COMPLETED': {value: '已开具'},
     'DELIVERY': {value: '已发货'},
     'CANCEL': {value: '已取消'},
   },

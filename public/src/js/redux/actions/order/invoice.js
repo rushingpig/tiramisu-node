@@ -24,12 +24,43 @@ export function getOrderInvoiceInfo(id){
 		owner_name: 'gaozheng81503',
 		recipient_name: 'xxxxx',
 		recipient_mobile: 'xxx',
-		recipient_address: 'xxx',
-		province_id: '',
-		city_id: '440300',
-		regionalism_id: '',
+		recipient_province_id: '130000',
+		recipient_city_id: '130100',
+		recipient_regionalism_id: '130102',
+
 		recipient_address: '',
 	}, GET_ORDER_INVOICE_INFO);
+}
+
+export const GET_INVOICE_INFO = 'GET_INVOICE_INFO';
+export function getInvoiceInfo(id){
+	return TEST({
+		amount: 10000,
+		owner_mobile: '18588420689',
+		owner_name: 'gaozheng81503',
+		recipient_name: 'xxxxx',
+		recipient_mobile: 'xxx',
+		address: 'xxx',
+		province_id: '130000',
+		city_id: '130100',
+		regionalism_id: '130102',
+		recipient_province_id: '130000',
+		recipient_city_id: '130100',
+		recipient_regionalism_id: '130102',	
+		recipient_address: 'xxx',
+		order_id: 'xxxxx',
+		enable_recipient_address: 1,
+		remarks: 'xxxx',
+		recipient: 0,
+		type: 0,
+	}, GET_INVOICE_INFO)
+}
+
+export const GET_INVOICE_COMPANY = 'GET_INVOICE_COMPANY';
+export function getInvoiceCompany(){
+	return TEST({
+		1: 'xxxxxxx', 2: '222'
+	}, GET_INVOICE_COMPANY)
 }
 
 export const GET_INVOICE_LIST = 'GET_INVOICE_LIST';
@@ -45,19 +76,19 @@ export function getInvoiceList(data){
 		list: [
 			{
 				invoice_id: 1,
-				invoice_status: 'INVOICING',
+				invoice_status: 'WAITING',
 				status: 'CANCEL',
 				order_id: '2016081215435718',
 			},
 			{
 				invoice_id: 2,
-				invoice_status: 'UNINVOICE',
+				invoice_status: 'UNTREATED',
 				status: 'UNTREATED',
 				order_id: '2016081415444153'
 			},
 			{
 				invoice_id: 3,
-				invoice_status: 'INVOICED',
+				invoice_status: 'COMPLETED',
 				status: 'TREATED',
 				order_id: '2016081215435947',
 			},
@@ -76,3 +107,121 @@ export function getInvoiceList(data){
 		]
 	}, GET_INVOICE_LIST)
 }
+
+function _getFormdata(form_data, getState){
+	var invoice_data = getValues(getState().form.invoice_apply_pannel);
+	if(invoice_data){
+		if(invoice_data.enable_recipient_address == 1){
+			invoice_data.province_id = invoice_data.recipient_province_id;
+			invoice_data.city_id = invoice_data.recipient_city_id;
+			invoice_data.regionalism_id = invoice_data.recipient_regionalism_id;
+			invoice_data.address = invoice_data.recipient_address;
+		}
+		delete invoice_data.recipient_province_id;
+		delete invoice_data.recipient_city_id;
+		delete invoice_data.recipient_regionalism_id;
+		delete invoice_data.recipient_address;
+		return invoice_data;
+	}
+}
+
+export const INVOICE_APPLY_ING = 'INVOICE_APPLY_ING';
+export const INVOICE_APPLY_SUCCESS = 'INVOICE_APPLY_SUCCESS';
+export const INVOICE_APPLY_FAIL = 'INVOICE_APPLY_FAIL';
+
+export function invoiceApply(){
+	return (dispatch, getState) => {
+		var data = _getFormdata(getState);
+		dispatch({
+			type: INVOICE_APPLY_ING,
+		})
+
+		return TEST({
+			type: INVOICE_APPLY_SUCCESS
+		})
+	}
+}
+
+export const INVOICE_EDIT_SUCCESS = 'INVOICE_EDIT_SUCCESS';
+export const INVOICE_EDIT_ING = 'INVOICE_EDIT_ING';
+
+export function invoiceEdit(invoiceId){
+	return (dispatch, getState) => {
+		var data = _getFormdata(getState);
+		dispatch({
+			type: INVOICE_EDIT_ING,
+		})
+
+		return TEST({
+			type: INVOICE_EDIT_SUCCESS,
+		})
+	}
+}
+
+export const HANDLE_INVOICE_ING = 'HANDLE_INVOICE_ING';
+export const HANDLE_INVOICE_SUCCESS = 'HANDLE_INVOICE_SUCCESS';
+export const HANDLE_INVOICE_FAIL = 'HANDLE_INVOICE_FAIL';
+
+export function handleInvoice(invoiceId, handleActionName){
+	return dispatch => {
+		dispatch({
+			type: HANDLE_INVOICE_ING
+		})
+		return TEST({
+			handleActionName: handleActionName,
+			invoiceId: invoiceId,
+		}, HANDLE_INVOICE_SUCCESS)(dispatch)
+	}
+}
+
+export const GET_EXPRESS_COMPANY = 'GET_EXPRESS_COMPANY';
+export function getExpressCompany(){
+	return TEST({1: '中通快递', 2: '申通快递'}, GET_EXPRESS_COMPANY)
+}	
+
+export const GET_FORM_PROVINCES = 'GET_FORM_PROVINCES';
+export function getFormProvinces(){
+    return GET(Url.provinces.toString(), null , GET_FORM_PROVINCES);	
+}
+
+export const GET_FORM_CITIES = 'GET_FORM_CITIES';
+export function getFormCities(province_id){
+    return GET(Url.cities.toString(province_id), null,  GET_FORM_CITIES);
+}
+
+export const RESET_FORM_CITIES = 'RESET_FORM_CITIES';
+export function resetFormCities(){
+	return{
+		type: RESET_FORM_CITIES
+	}
+}
+
+export const GET_FORM_DISTRICTS = 'GET_FORM_DISTRICTS';
+export function getFormDistricts(city_id){
+      return GET(Url.districts.toString(city_id),null, GET_FORM_DISTRICTS);
+}
+
+export const RESET_FORM_DISTRICTS = 'RESET_FORM_DISTRICTS';
+export function resetFormDistricts(){
+	return {
+		type: RESET_FORM_DISTRICTS
+	}
+}
+
+export const SUBMIT_EXPRESS_ING = 'SUBMIT_EXPRESS_ING';
+export const SUBMIT_EXPRESS_SUCCESS = 'SUBMIT_EXPRESS_SUCCESS';
+export const SUBMIT_EXPRESS_FAIL = 'SUBMIT_EXPRESS_FAIL';
+
+export function submitExpress(invoiceId, express_no, express_type){
+	return {
+		type: SUBMIT_EXPRESS_SUCCESS
+	}
+}
+
+export const AddRemark = 'AddRemark';
+export function addRemark(invoiceId, remakrs){
+	return {
+		type: AddRemark,
+	}
+}
+

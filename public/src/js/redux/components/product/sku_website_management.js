@@ -6,8 +6,10 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Link } from 'react-router';
 import Styler from 'react-styling';
+import clone from 'clone';
+import history from 'history_instance';
 
-import MessageBox, { MessageBoxIcon, MessageBoxType } from 'common/message_box';
+import { Confirm } from 'common/message_box';
 import DropDownMenu from 'common/dropdown';
 import AddressSelector from 'common/address_selector';
 import StdModal from 'common/std_modal';
@@ -18,6 +20,7 @@ import { normalLoader, get_loading_icon } from 'common/loading';
 import getTopHeader from '../top_header';
 import LazyLoad from 'utils/lazy_load';
 import Config from 'config/app.config';
+import { Noty, map } from 'utils/index';
 
 import AreaActions from 'actions/area';
 import * as Actions from 'actions/product_sku_website_manage';
@@ -68,7 +71,7 @@ class Panel extends Component {
                     className={`btn btn-sm btn-${props.ok ? 'default' : 'theme'} pull-right`}
                     onClick={props.onConfirm}
                   >
-                    {props.ok ? <i className="fa fa-check"></i> : '确认'}
+                    {props.ok ? <i className="fa fa-check theme"></i> : '确认'}
                   </button>
                 </div>
               </div>
@@ -150,7 +153,6 @@ const AddButton = props => (<i className="fa fa-plus center text-center cursor-p
   borderRadius: '50%',
 }} {...props}></i>)
 
-
 class EditImgBox extends Component {
   constructor(props){
     super(props);
@@ -211,60 +213,64 @@ const TopHeader = getTopHeader(
 );
 
 //(1)
-const ApplicationRange = props => (
-  <div 
-    className="panel"
-    style={{boxShadow: 'none', border: '1px solid #F3F3F3', marginBottom: 22}}
-  >
-    <div className="panel-body" style={{paddingTop: 12}}>
-      <FormGroup>
-        <label className="strong">应用范围：</label>
-        <label className="ml-20">
-          <Radio
-            name="city"
-            checked={props.all}
-            onChange={props.actions.setApplicationRange.bind(undefined, true)}
-          />
-          &nbsp;全部一致
-        </label>
-        <label className="ml-20">
-          <Radio
-            name="city"
-            checked={!props.all}
-            onChange={props.actions.setApplicationRange.bind(undefined, false)}
-          />
-          &nbsp;独立城市配置
-        </label>
-      </FormGroup>
-      {
-        !props.all
-          ? <FormGroup>
-              <label className="strong">配置城市：</label>
-              <DropDownMenu
-                value={props.province_id}
-                className="ml-20 space-right"
-                list={props.provinces}
-                onChange={props.actions.selectProvince.bind(undefined)}
-              />
-              <DropDownMenu
-                value={props.city_id}
-                className="space-right"
-                list={props.cities}
-                onChange={props.actions.selectCity.bind(undefined)}
-              />
-              <button
-                disabled={props.saved || !props.city_id}
-                className="btn btn-xs btn-theme"
-                >
-                保存城市配置
-              </button>
-              <span>（暂存当前城市设置）</span>
-            </FormGroup>
-          : null
-      }
+const ApplicationRange = props => {
+  const hasCached = props.cached.some(n => n.regionalism_id == props.city_id);
+  return (
+    <div 
+      className="panel"
+      style={{boxShadow: 'none', border: '1px solid #F3F3F3', marginBottom: 22}}
+    >
+      <div className="panel-body" style={{paddingTop: 12}}>
+        <FormGroup>
+          <label className="strong">应用范围：</label>
+          <label className="ml-20">
+            <Radio
+              name="city"
+              checked={props.all}
+              onChange={props.actions.setApplicationRange.bind(undefined, true)}
+            />
+            &nbsp;全部一致
+          </label>
+          <label className="ml-20">
+            <Radio
+              name="city"
+              checked={!props.all}
+              onChange={props.actions.setApplicationRange.bind(undefined, false)}
+            />
+            &nbsp;独立城市配置
+          </label>
+        </FormGroup>
+        {
+          !props.all
+            ? <FormGroup>
+                <label className="strong">配置城市：</label>
+                <DropDownMenu
+                  value={props.province_id}
+                  className="ml-20 space-right"
+                  list={props.provinces}
+                  onChange={props.actions.selectProvince.bind(undefined)}
+                />
+                <DropDownMenu
+                  value={props.city_id}
+                  className="space-right"
+                  list={props.cities}
+                  onChange={(value) => {props.actions.selectCity(value);props.getProductInfo(value)}}
+                />
+                <button
+                  onClick={props.cacheInfo}
+                  disabled={!props.city_id || hasCached}
+                  className="btn btn-xs btn-theme"
+                  >
+                  {hasCached ? '已缓存' : '保存城市配置'}
+                </button>
+                {hasCached ? null : <span>（暂存当前城市设置）</span>}
+              </FormGroup>
+            : null
+        }
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 const ProlistImgBox = props => <div className="relative inline-block" {...props} style={{width: 245, height: 245, outline, ...props.style}} />
 
@@ -375,6 +381,53 @@ class ProlistDetail extends Component {
 
 }
 
+//(3)
+//产品详情页缩略展示图
+class ProIntro extends Component {
+  render(){
+    var imgW = 80;
+    var { props, props: { actions } } = this;
+    var ok = props.intro_img_1 && props.intro_img_2 && props.intro_img_3 && props.intro_img_4;
+    var showList = [1, 2, 3, 4].map( n => 
+      <img
+        key={n}
+        alt={n}
+        src={`http://placehold.it/${imgW}${ok ? '/ccc/A58F68' : ''}?text=${props['intro_img_' + n] ? '✓' : '图1'}`}
+        style={{marginRight: 4}}
+      />
+    )
+    var list = [1, 2, 3, 4].map( n => 
+      <EditImgBox
+        key={n}
+        className="inline-block"
+        style={{margin: '0 50px 30px 0', width: 180, height: 180}}
+        src={props['intro_img_' + n] ? (props.domain + props['intro_img_' + n]) : ''}
+        defaultSrc="images/products/pro-list-1.jpg"
+        onChooseImg={props.showSelectImgModal.bind(null, 'intro_img_' + n)}
+        onDeleteImg={actions.deleteImg.bind(null, 'intro_img_' + n)}
+      />
+    )
+    return (
+      <Panel title="产品详情页缩略展示图" ok={props.ok} onConfirm={actions.confirmThisPart.bind(null, 'ProIntro')}>
+        <div className="clearfix" style={{paddingLeft: 30}}>
+          <div className="pull-left">
+            <img src={`http://placehold.it/${imgW * 4 + 4 * 3}${ok ? '/ccc/A58F68' : ''}?text=${ok ? '✓' : '主图'}`} alt=""/>
+            <div style={{marginTop: 4, marginRight: -4}}>
+              { showList }
+            </div>
+          </div>
+          <div className="pull-left" style={{marginLeft: 30}}>
+            <p>商品展示图 (推荐尺寸：526 x 526)</p>
+            <div className="inline-block" style={{width: 500}}>
+              { list }
+            </div>
+          </div>
+        </div>
+      </Panel>
+    )
+  }
+}
+
 class FormCol extends Component {
   constructor(props){
     super(props);
@@ -437,7 +490,7 @@ class FormCol extends Component {
   }
 }
 
-//(3)
+//(4)
 //产品详情页相关属性
 class ProProperties extends Component {
   constructor(props){
@@ -521,48 +574,6 @@ class ProProperties extends Component {
   }
 }
 
-//(4)
-//产品详情页缩略展示图
-class ProIntro extends Component {
-  render(){
-    var imgW = 80;
-    var { props, props: { actions } } = this;
-    var ok = props.intro_img_1 && props.intro_img_2 && props.intro_img_3 && props.intro_img_4;
-    var list = [1, 2, 3, 4].map( n => 
-      <EditImgBox
-        key={n}
-        className="inline-block"
-        style={{margin: '0 50px 30px 0', width: 180, height: 180}}
-        src={props['intro_img_' + n] ? (props.domain + props['intro_img_' + n]) : ''}
-        defaultSrc="images/products/pro-list-1.jpg"
-        onChooseImg={props.showSelectImgModal.bind(null, 'intro_img_' + n)}
-        onDeleteImg={actions.deleteImg.bind(null, 'intro_img_' + n)}
-      />
-    )
-    return (
-      <Panel title="产品详情页缩略展示图" ok={props.ok} onConfirm={actions.confirmThisPart.bind(null, 'ProIntro')}>
-        <div className="clearfix" style={{paddingLeft: 30}}>
-          <div className="pull-left">
-            <img src={`http://placehold.it/${imgW * 4 + 4 * 3}?text=${ok ? '✓' : '主图'}`} alt=""/>
-            <div style={{marginTop: 4}}>
-              <img src={`http://placehold.it/${imgW}?text=${props.intro_img_1 ? '✓' : '图1'}`} style={{marginRight: 4}} alt=""/>
-              <img src={`http://placehold.it/${imgW}?text=${props.intro_img_2 ? '✓' : '图2'}`} style={{marginRight: 4}} alt=""/>
-              <img src={`http://placehold.it/${imgW}?text=${props.intro_img_3 ? '✓' : '图3'}`} style={{marginRight: 4}} alt=""/>
-              <img src={`http://placehold.it/${imgW}?text=${props.intro_img_4 ? '✓' : '图4'}`} alt=""/>
-            </div>
-          </div>
-          <div className="pull-left" style={{marginLeft: 30}}>
-            <p>商品展示图 (推荐尺寸：526 x 526)</p>
-            <div className="inline-block" style={{width: 500}}>
-              { list }
-            </div>
-          </div>
-        </div>
-      </Panel>
-    )
-  }
-}
-
 const ProDetailImgsTip = props => (
     <div className="center theme" style={Styler`
       margin-top: 37px;
@@ -585,39 +596,39 @@ class ProDetailImgs extends Component {
         <div style={{paddingLeft: 30}}>
           <div className="relative" style={{width: w}}>
             <EditImgBox
-              src={template_data['prodetail_img_1'] ? (props.domain + template_data['prodetail_img_1']) : ''}
+              src={template_data['100001'] ? (props.domain + template_data['100001']) : ''}
               defaultSrc="images/products/pro-desc-1.jpg"
-              onChooseImg={props.showSelectImgModal.bind(null, 'prodetail_img_1')}
-              onDeleteImg={actions.deleteImg.bind(null, 'prodetail_img_1')}>
+              onChooseImg={props.showSelectImgModal.bind(null, 'prodetail_img_100001')}
+              onDeleteImg={actions.deleteImg.bind(null, 'prodetail_img_100001')}>
               <ProDetailImgsTip size="1120x743" />
             </EditImgBox>
           </div>
           <div className="clearfix" style={{marginTop: space}}>
             <div className="relative pull-left" style={{marginRight: space, width: w_2}}>
               <EditImgBox
-                src={template_data['prodetail_img_2'] ? (props.domain + template_data['prodetail_img_2']) : ''}
+                src={template_data['100002'] ? (props.domain + template_data['100002']) : ''}
                 defaultSrc="images/products/pro-desc-2-1.jpg"
-                onChooseImg={props.showSelectImgModal.bind(null, 'prodetail_img_2')}
-                onDeleteImg={actions.deleteImg.bind(null, 'prodetail_img_2')}>
+                onChooseImg={props.showSelectImgModal.bind(null, 'prodetail_img_100002')}
+                onDeleteImg={actions.deleteImg.bind(null, 'prodetail_img_100002')}>
                 <ProDetailImgsTip size="547x547" />
               </EditImgBox>
             </div>
             <div className="relative pull-left" style={{width: w_2}}>
               <EditImgBox
-                src={template_data['prodetail_img_3'] ? (props.domain + template_data['prodetail_img_3']) : ''}
+                src={template_data['100003'] ? (props.domain + template_data['100003']) : ''}
                 defaultSrc="images/products/pro-desc-2-2.jpg"
-                onChooseImg={props.showSelectImgModal.bind(null, 'prodetail_img_3')}
-                onDeleteImg={actions.deleteImg.bind(null, 'prodetail_img_3')}>
+                onChooseImg={props.showSelectImgModal.bind(null, 'prodetail_img_100003')}
+                onDeleteImg={actions.deleteImg.bind(null, 'prodetail_img_100003')}>
                 <ProDetailImgsTip size="547x547" />
               </EditImgBox>
             </div>
           </div>
           <div className="relative" style={{marginTop: space, width: w}}>
             <EditImgBox
-              src={template_data['prodetail_img_4'] ? (props.domain + template_data['prodetail_img_4']) : ''}
+              src={template_data['100004'] ? (props.domain + template_data['100004']) : ''}
               defaultSrc="images/products/pro-desc-3.jpg"
-              onChooseImg={props.showSelectImgModal.bind(null, 'prodetail_img_4')}
-              onDeleteImg={actions.deleteImg.bind(null, 'prodetail_img_4')}>
+              onChooseImg={props.showSelectImgModal.bind(null, 'prodetail_img_100004')}
+              onDeleteImg={actions.deleteImg.bind(null, 'prodetail_img_100004')}>
               <ProDetailImgsTip size="1120x743" />
             </EditImgBox>
           </div>
@@ -639,17 +650,24 @@ class Main extends Component {
   constructor(props) {
     super(props);
     this.showSelectImgModal = this.showSelectImgModal.bind(this);
+    this.submit = this.submit.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+    this.getInfo = this.getInfo.bind(this);
+    this.cacheInfo = this.cacheInfo.bind(this);
+    this.getProductInfo = this.getProductInfo.bind(this);
+    this.beforeLeave = this.beforeLeave.bind(this);
   }
 
   render() {
     const { props } = this;
-    const { params: {productId}, area, applicationRange, prolistDetail, actions, imgActions, imgModal, imgList } = props;
+    const { params: {productId}, area, applicationRange, actions, imgActions, main, imgModal, imgList } = props;
+    const disableSubmit = (!applicationRange.all && !applicationRange.city_id) || !props.prolistDetail.ok || !props.proProperties.ok || !props.proIntro.ok || !props.proDetailImgs.ok;
     return (
       <div className="wrapper">
         <TopHeader />
         <ul className="nav nav-tabs">
           <li>
-            <Link to={`/pm/sku_manage/edit/${productId}`}>编辑商品</Link>
+            <Link to={`/pm/sku_manage/edit/${productId+location.hash}`}>编辑商品</Link>
           </li>
           <li className="active">
             <a href="javascript:;">商品品官网设置</a>
@@ -662,9 +680,17 @@ class Main extends Component {
                 <ApplicationRange
                   {...applicationRange}
                   actions={actions}
+                  cacheInfo={this.cacheInfo}
+                  getProductInfo={this.getProductInfo}
                 />
                 <ProlistDetail
                   {...props.prolistDetail}
+                  actions={actions}
+                  domain={imgList.domain}
+                  showSelectImgModal={this.showSelectImgModal}
+                />
+                <ProIntro
+                  {...props.proIntro}
                   actions={actions}
                   domain={imgList.domain}
                   showSelectImgModal={this.showSelectImgModal}
@@ -673,12 +699,6 @@ class Main extends Component {
                   {...props.proProperties}
                   actions={actions}
                 />
-                <ProIntro
-                  {...props.proIntro}
-                  actions={actions}
-                  domain={imgList.domain}
-                  showSelectImgModal={this.showSelectImgModal}
-                />
                 <ProDetailImgs
                   {...props.proDetailImgs}
                   actions={actions}
@@ -686,8 +706,14 @@ class Main extends Component {
                   showSelectImgModal={this.showSelectImgModal}
                 />
 
-                <div className="mgt-20">
-                  <button className="btn btn-lg btn-theme">保存</button>
+                <div className="mgt-20 text-right">
+                  <button
+                    onClick={this.onSubmit}
+                    disabled={disableSubmit || main.submitting}
+                    data-submitting={main.submitting}
+                    className="btn btn-lg btn-theme">
+                    保存
+                  </button>
                 </div>
               </div>
             </Row>
@@ -701,17 +727,154 @@ class Main extends Component {
       </div>
     );
   }
-
+  componentWillMount(){
+    history.registerTransitionHook(this.beforeLeave)
+  }
+  beforeLeave(location, callback){
+    if(this.props.applicationRange.cached.length){
+      Confirm('您还有暂存的数据没有保存，确认离开吗？')
+        .done(() => {
+          history.unregisterTransitionHook(this.beforeLeave)
+          callback();
+        });
+    }else{
+      callback();
+    }
+  }
   componentDidMount() {
-    this.props.actions.getProvincesSignal();
-    this.props.actions.getAllAvailableCities(this.props.params.productId);
+    this.props.actions.getAllAvailableCities(this.props.params.productId)
+      .done( (provinces, cities) => {
+        if(cities[0].has_detailc_cities.length && cities[0].has_detailc_cities.every( n => n.consistency == 0)){
+          this.getProductInfo(cities[0].has_detailc_cities[0].city_id);
+        }
+      })
     LazyLoad('noty');
-    LazyLoad('qiniu_dev');
+    // LazyLoad('qiniu_dev');
     // LazyLoad('qiniu');
+  }
+  componentWillUnmount(){
+    history.unregisterTransitionHook(this.beforeLeave)
   }
   showSelectImgModal(which) {
     //which用以区分是添加哪里的图片
     this.refs.selectImgModal.show(which);
+  }
+  getProductInfo(city_id){
+    var product_id = this.props.params.productId;
+    var regionalism_id = city_id || this.props.applicationRange.city_id;
+    if(!product_id || !regionalism_id){
+      Noty('error', '页面有错误！'); return;
+    }
+    if(this.__getProInfoReques){
+      this.__getProInfoReques.abort(); //取消上一次数据请求
+    }
+    this.__getProInfoReques = this.props.actions.getProductInfo({ product_id, regionalism_id })
+  }
+  //转换为提交格式的数据
+  getInfo(){
+    const { props: {
+      prolistDetail,
+      proProperties,
+      proIntro,
+      proDetailImgs
+    }} = this;
+    return {
+      list_img: prolistDetail.list_img,
+      list_copy: prolistDetail.list_copy,
+      detail_top_copy: proProperties.briefIntro_1,
+      detail_template_copy: proProperties.briefIntro_2,
+      detail_template_copy_end: proProperties.briefIntro_3,
+      spec: clone(proProperties.spec),
+      detail_img_1: proIntro.intro_img_1,
+      detail_img_2: proIntro.intro_img_2,
+      detail_img_3: proIntro.intro_img_3,
+      detail_img_4: proIntro.intro_img_4,
+      template_data: map(proDetailImgs.template_data, (value, position_id) => ({position_id: +position_id, value}))
+    }
+  }
+  cacheInfo(){
+    var { props } = this;
+    if(
+      props.prolistDetail.ok &
+      props.proProperties.ok &
+      props.proIntro.ok &
+      props.proDetailImgs.ok &
+      props.applicationRange.city_id
+    ){
+      this.props.cacheInfo({
+        regionalism_ids: this.props.applicationRange.city_id,
+        info: this.getInfo()
+      })
+    }else{
+      Noty('warning', '请选择城市')
+    }
+  }
+  submit(productId){
+    const { props } = this;
+    var info = this.getInfo();
+    if(props.applicationRange.all){ //全部一致
+      if(!props.applicationRange.all_edited_cities.length){ //之前不存在已编辑过的城市, 那么就是添加
+        return props.actions.submitCreate({
+          product_id: productId,
+          infos: [{
+            regionalism_ids: props.applicationRange.all_available_cities.map(n => n.city_id),
+            info
+          }]
+        })
+      }else{  //这里就是编辑
+        return props.actions.submitEdit({
+          product_id: productId,
+          modified_info: props.applicationRange.all_available_cities.map( n => ({
+            regionalism_ids: n.city_id,
+            info
+          }))
+        })
+      }
+    }else{ //独立城市配置
+      let new_info = [];
+      let modified_info = [];
+      [
+        ...props.applicationRange.cached,
+        !props.applicationRange.saved && { //当前没有加入缓存的城市
+          regionalism_ids: props.applicationRange.city_id,
+          info
+        }
+      ].forEach(n => {
+        if(!n) return;
+        if(props.applicationRange.all_edited_cities.some( m => m.id == n.regionalism_ids)){
+          modified_info.push(n);
+        }else{
+          new_info.push(n);
+        }
+      })
+      return props.actions.submitEdit({
+        product_id: productId,
+        new_info,
+        modified_info,
+      })
+    }
+  }
+  onSubmit(){
+    const { props } = this;
+    const { params: {productId} } = props;
+    if(!productId){
+      Noty('error', '产品数据有误，无法提交');
+    }
+    if(
+      props.prolistDetail.ok &
+      props.proProperties.ok &
+      props.proIntro.ok &
+      props.proDetailImgs.ok
+    ){
+      this.submit(productId)
+        .done(() => {
+          Noty('success', '保存成功！');
+          props.actions.getAllAvailableCities(productId); //刷新数据
+        })
+        .fail(msg => Noty('error', msg || '提交出错！'))
+    }else{
+      Noty('warning', '请确认所有内容已设置完毕！')
+    }
   }
 }
 

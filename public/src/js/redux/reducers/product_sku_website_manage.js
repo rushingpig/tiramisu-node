@@ -5,17 +5,22 @@ import { FORM_CHANGE } from 'actions/common';
 import { UPDATE_PATH } from 'redux-simple-router';
 
 import { main as imgList } from 'reducers/central_image_manage';
-import { SELECT_DEFAULT_VALUE } from 'config/app.config';
+import { SELECT_DEFAULT_VALUE, REQUEST } from 'config/app.config';
 import { Noty, map, some } from 'utils/index';
 
 var initial_state = {
-  all: false, //是否全部一致,
-  all_available_city_ids: [],
+  all: true, //是否全部一致,
+  all_available_cities: [],
+  all_edited_cities: [], //[{id, consistency: 是否全部一致（0：是，1：独立}]
   provinces: [],
   cities: [],
   province_id: undefined,
   city_id: undefined,
   saved: false,
+
+  product_info_ing: false,
+  product_info: null, //每次都根据product_id, city_id拉取商品配置信息，如果为空，则代表应添加
+  cached: [], //缓存数据
 }
 
 function _t(data){
@@ -28,15 +33,37 @@ function applicationRange(state = initial_state, action){
     case Actions.SET_APPLICATION_RANGE:
       return { ...state, all: action.all }
     case Actions.GET_ALL_AVAILABLE_CITIES:
-      return { ...state, all_available_city_ids: action.data ? action.data.has_detailc_cities : [] }
+      return { ...state,
+        all: !( action.has_detailc_cities && action.has_detailc_cities.some( n => n.consistency != 0) ),
+        provinces: action.provinces,
+        all_available_cities: action.can_add_cities ? action.can_add_cities : [],
+        all_edited_cities: action.has_detailc_cities
+          ? action.has_detailc_cities.map(({regionalism_id, consistency}) => {city_id: regionalism_id, consistency})
+          : []
+      }
     case AreaActions.GOT_PROVINCES_SIGNAL:
       return { ...state, provinces: _t(action.data) }
     case AreaActions.GOT_CITIES:
-      return { ...state, cities: _t(action.data).filter( n => state.all_available_city_ids.some(m => m == n.id) ) }
+      return { ...state,
+        cities: _t(action.data).filter( n => {
+          if(state.all_available_cities.some(m => m.city_id == n.id)){
+            n.checked = state.all_edited_cities.some( m => m.city_id == n.id );
+            return true;
+          }
+        })
+      }
     case Actions.SELECT_PROVINCE:
       return { ...state, province_id: action.province_id, city_id: undefined }
     case Actions.SELECT_CITY:
       return { ...state, city_id: action.city_id }
+    case Actions.GET_PRODUCT_INFO_ING:
+      return { ...state, product_info_ing: true }
+    case Actions.GET_PRODUCT_INFO:
+      return { ...state, product_info_ing: false, product_info: action.data }
+    case Actions.CACHE_INFO:
+      return { ...state, cached: [...state.cached, action.data] }
+    case Actions.SUBMIT_INFO:
+      return { ...state, cached: [] }
     default :
       return state;
   }
@@ -62,6 +89,11 @@ function prolistDetail(state = prolistDetail_state, action){
         Noty('warning', '某些选项您可能没有进行设置')
       }
       return {...state, ok: true}
+    case Actions.GET_PRODUCT_INFO:
+      return { ...state, ok: false, list_img: action.data.list_img, list_copy: action.data.list_copy }
+    case Actions.SUBMIT_INFO:
+    case Actions.CACHE_INFO:
+      return { ...state, ok: false }
     default:
       return state;
   }
@@ -84,7 +116,15 @@ var proProperties_state = {
 function proProperties(state = proProperties_state, action){
   switch (action.type) {
     case UPDATE_PATH:
-      return prolistDetail_state;
+      return proProperties_state;
+    case Actions.GET_PRODUCT_INFO:
+      return { ...state,
+        ok: false,
+        briefIntro_1: aciton.data.detail_top_copy,
+        briefIntro_2: aciton.data.detail_template_copy,
+        briefIntro_3: aciton.data.detail_template_copy_end,
+        spec: action.data.spec,
+      }
     case FORM_CHANGE + 'briefIntro_1':
       return {...state, briefIntro_1: action.value, ok: false}
     case FORM_CHANGE + 'briefIntro_2':
@@ -99,7 +139,7 @@ function proProperties(state = proProperties_state, action){
       // ){
       //   Noty('warning', '某些选项您可能没有进行设置')
       // }
-      return {...state, ok: true}
+      return {...state, spec: [...state.spec.filter(n => !n.editable)], ok: true}
     case Actions.SPEC_ITEM_CHANGE:
       state.spec.forEach(n => {
         if(n.key === action.name){
@@ -127,6 +167,9 @@ function proProperties(state = proProperties_state, action){
         delete editable_item.editable;
       }
       return {...state, spec: [...state.spec]}
+    case Actions.SUBMIT_INFO:
+    case Actions.CACHE_INFO:
+      return { ...state, ok: false }
     default:
       return state;
   }
@@ -142,7 +185,15 @@ var proIntro_state = {
 function proIntro(state = proIntro_state, action){
   switch (action.type) {
     case UPDATE_PATH:
-      return initial_state;
+      return proIntro_state;
+    case Actions.GET_PRODUCT_INFO:
+      return {...state,
+        ok: false,
+        intro_img_1: action.data.detail_img_1,
+        intro_img_2: action.data.detail_img_2,
+        intro_img_3: action.data.detail_img_3,
+        intro_img_4: action.data.detail_img_4,
+      }
     case Actions.SELECT_IMG:
       if(
         action.which == 'intro_img_1' ||
@@ -173,6 +224,9 @@ function proIntro(state = proIntro_state, action){
         Noty('warning', '某些选项您可能没有进行设置')
       }
       return {...state, ok: true}
+    case Actions.SUBMIT_INFO:
+    case Actions.CACHE_INFO:
+      return { ...state, ok: false }
     default :
       return state;
   }
@@ -180,26 +234,31 @@ function proIntro(state = proIntro_state, action){
 
 var proDetailImgs_state = {
   ok: false,
+  template_id: 100000,
   template_data: {
-    prodetail_img_1: '',
-    prodetail_img_2: '',
-    prodetail_img_3: '',
-    prodetail_img_4: '',
+    100001: '',
+    100002: '',
+    100003: '',
+    100004: '',
   }
 }
 function proDetailImgs(state = proDetailImgs_state, action){
   switch (action.type) {
     case UPDATE_PATH:
-      return initial_state;
+      return proDetailImgs_state;
+    case Actions.GET_PRODUCT_INFO:
+      var template_data = {};
+      action.data.template_data.forEach( n => template_data[n.position_id] = n.value );
+      return {...state, template_data}
     case Actions.SELECT_IMG:
-      if(action.which.startsWith('prodetail_img')){
-        state.template_data[action.which] = action.img_key;
+      if(action.which.startsWith('prodetail_img_')){
+        state.template_data[action.which.replace('prodetail_img_', '')] = action.img_key;
         return {...state, template_data: {...state.template_data}, ok: false}
       }
       return state;
     case Actions.DELETE_IMG:
-      if(action.which.startsWith('prodetail_img')){
-        state.template_data[action.which] = '';
+      if(action.which.startsWith('prodetail_img_')){
+        state.template_data[action.which.replace('prodetail_img_', '')] = '';
         return {...state, template_data: {...state.template_data}, ok: false}
       }
       return state;
@@ -208,6 +267,27 @@ function proDetailImgs(state = proDetailImgs_state, action){
         Noty('warning', '某些选项您可能没有进行设置')
       }
       return {...state, ok: true}
+    case Actions.SUBMIT_INFO:
+    case Actions.CACHE_INFO:
+      return { ...state, ok: false }
+    default :
+      return state;
+  }
+}
+
+var main_state = {
+  submitting: false,
+}
+function main(state = main_state, action){
+  switch (action.type) {
+    case UPDATE_PATH:
+      return main_state;
+    case Actions.SUBMIT_INFO:
+      if(action.key == REQUEST.ING){
+        return { ...state, submitting: true }
+      }else if(action.key == REQUEST.SUCCESS || action.key == REQUEST.FAIL){
+        return { ...state, submitting: false }
+      }
     default :
       return state;
   }
@@ -219,7 +299,7 @@ var imageModal_state = {
 function imgModal(state = imageModal_state, action){
   switch (action.type) {
     case UPDATE_PATH:
-      return initial_state;
+      return imageModal_state;
     default :
       return state;
   }
@@ -231,6 +311,7 @@ export default combineReducers({
   proProperties,
   proIntro,
   proDetailImgs,
+  main,
   imgModal,
   imgList,
 })

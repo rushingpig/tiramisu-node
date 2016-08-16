@@ -1,8 +1,8 @@
 import R from 'utils/request';
 import Url from 'config/url';
-import { clone, dateFormat } from 'utils/index';
+import { clone, dateFormat, map } from 'utils/index';
 import Area from 'actions/area';
-import { SELECT_DEFAULT_VALUE } from 'config/app.config';
+import { SELECT_DEFAULT_VALUE, REQUEST } from 'config/app.config';
 import { onFormChange } from 'actions/common';
 
 //PW 为 命名空间
@@ -16,12 +16,25 @@ export function setApplicationRange(all){
 
 export const GET_ALL_AVAILABLE_CITIES = 'PW_GET_ALLCITIES';
 export function getAllAvailableCities(product_id){
-  return R.GET(Url.product_cities.toString(), {product_id}, GET_ALL_AVAILABLE_CITIES);
-  // return R.TEST({has_detailc_cities: [
-  //   440100,
-  //   440114,
-  //   440300
-  // ]}, GET_ALL_AVAILABLE_CITIES);
+  return dispatch => $.when(
+    Area().getProvincesSignal()(dispatch),
+    R.get(Url.product_cities.toString(), {product_id})
+  ).done( (provinces, cities) => {
+    dispatch({
+      type: GET_ALL_AVAILABLE_CITIES,
+      provinces: map(provinces[0], (text, id) => ({id: +id, text})).filter(n => cities[0].can_add_cities.some(m => m.province_id == n.id)),
+      ...cities[0]
+    })
+  })
+}
+
+export const GET_PRODUCT_INFO_ING = 'PW_GET_PRODUCT_INFO_ING';
+export const GET_PRODUCT_INFO = 'PW_GET_PRODUCT_INFO';
+export function getProductInfo(data){
+  return dispatch => {
+    dispatch({ type: GET_PRODUCT_INFO_ING });
+    return R.GET(Url.product_info.toString(), data, GET_PRODUCT_INFO)(dispatch);
+  };
 }
 
 export const SELECT_PROVINCE = 'PW_SELECT_PROVINCE';
@@ -39,11 +52,17 @@ export function selectProvince(province_id){
 
 export const SELECT_CITY = 'PW_SELECT_CITY';
 export function selectCity(city_id){
-  return dispatch => {
-    dispatch({
-      type: SELECT_CITY,
-      city_id
-    })
+  return {
+    type: SELECT_CITY,
+    city_id
+  }
+}
+
+export const CACHE_INFO = 'PW_CACHE_INFO';
+export function cacheInfo(data){
+  return {
+    type: CACHE_INFO,
+    data
   }
 }
 
@@ -85,4 +104,22 @@ export function onSpecItemChange( name, e){
     name,
     value: e.target.value
   }
+}
+
+//添加产品设置
+export const SUBMIT_INFO = 'PW_SUBMIT_INFO';
+export function submitCreate(data){
+  return R.POST(Url.product_info.toString(), data, SUBMIT_INFO);
+  // return R.TEST(null, [
+  //   {type: SUBMIT_INFO, key: 0},
+  //   {type: SUBMIT_INFO, key: 1},
+  // ], 2000)
+}
+//编辑产品设置
+export function submitEdit(data){
+  return R.PUT(Url.product_info.toString(), data, SUBMIT_INFO);
+  // return R.TEST(null, [
+  //   {type: SUBMIT_INFO, key: REQUEST.ING},
+  //   {type: SUBMIT_INFO, key: REQUEST.SUCCESS},
+  // ], 2000)
 }

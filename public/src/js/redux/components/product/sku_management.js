@@ -782,7 +782,7 @@ class Main extends Component {
                 : <Anchor>编辑商品</Anchor>
             }
           </li>
-          <li><Link to={`/pm/sku_manage/edit_website/${productId}`} >商品官网设置</Link></li>
+          <li><Link to={`/pm/sku_manage/edit_website/${productId+location.hash}`} >商品官网设置</Link></li>
         </ul>
         <div className="panel" style={tabContentBoxStyle}>
           <div className="panel-body">

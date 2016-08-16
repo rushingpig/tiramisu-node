@@ -350,7 +350,7 @@ class ManagePannel extends Component{
 	}
 	render(){
 		var { RefundManage, getOrderOptRecord, resetOrderOptRecord, refund_data , bindOrderRecord, area,
-			 getProvincesSignal, getCitiesSignal, resetCities, resetDistricts, getRefundList, getRefundApplyDetail,
+			 getProvincesSignal, getCitiesSignal, getDistrictsAndCity, resetCities, resetDistricts, getRefundList, getRefundApplyDetail,
 			 editRefundChangeStatus, refundEdit, getBindOrders, resetBindOrders, addRemark, refundComplete_CS  } = this.props;
 		var { list, total, loading, refresh, page_no, check_order_info, active_order_id, operationRecord, all_refund_status, all_refund_way, all_refund_reasons } = RefundManage;
 		var { viewOperationRecordModal, viewRefundModal, viewRefundCredential, viewRemarkModal, viewBindOrderRecord } = this;
@@ -367,6 +367,7 @@ class ManagePannel extends Component{
 				  area = {area}
 				  getProvincesSignal = {getProvincesSignal}
 				  getCitiesSignal = {getCitiesSignal}
+				  getDistrictsAndCity = {getDistrictsAndCity}
 				  getRefundList = {getRefundList}
 				  resetDistricts = {resetDistricts}
 				  resetCities = {resetCities}

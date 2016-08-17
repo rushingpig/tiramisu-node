@@ -860,7 +860,7 @@ class Main extends Component {
         btnType: MessageBoxType.YesNo,
         text: '是否立即设置商品详情页相关内容？'
       }).then(x => {
-        debugger
+        //取一个默认城市
         if(state.citiesOptionApplyRange == 0){
           var city_id = [...state.citiesData.keys()][0];
         }else{

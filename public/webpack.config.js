@@ -43,7 +43,7 @@ const config = {
   module: {
     loaders: [{
       test: /\.jsx?$/,
-      loader: 'babel',
+      loader: 'babel?cacheDirectory=cache',
       exclude: /node_modules/,
       include: path.join(__dirname, 'src/js/redux')
     }]

@@ -225,13 +225,16 @@ ProductDao.prototype.insertProductWithSku = function (req, data) {
                     };
                     return self.insertSku(req, sku_data, connection);
                 });
-                return Promise.all(promises);
-            }).then(() => {
+                return Promise.all(promises)
+                    .then(() => {
+                        return Promise.resolve(productId);
+                    });
+            }).then(productId => {
                 return new Promise((resolve, reject) => {
                     connection.commit(err => {
                         connection.release();
                         if (err) return reject(err);
-                        resolve();
+                        resolve(productId);
                     });
                 });
             }).catch(err => {

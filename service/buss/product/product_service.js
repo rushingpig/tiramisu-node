@@ -200,8 +200,10 @@ ProductService.prototype.addProductWithSku = (req, res, next)=> {
         return;
     }
     let promise = productDao.insertProductWithSku(req, req.body)
-        .then(() => {
-            res.api();
+        .then(productId => {
+            res.api({
+                productId: productId
+            });
         });
     systemUtils.wrapService(res, next, promise);
 };

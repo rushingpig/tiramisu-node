@@ -106,6 +106,7 @@ class ManageAddForm extends Component {
         recipient_landmark, //标志性建筑
         delivery_id,     //配送中心
         src_id,          //订单来源
+        new_merchant_id,     //商户订单号
         pay_modes_id,    //支付方式
         coupon,          //团购密码
         pay_status,
@@ -232,11 +233,17 @@ class ManageAddForm extends Component {
                 className={`form-select ${src_id.error}`} />
         }
       </div>
-      { merchant_id && (
-          <div className="form-group form-inline">
-            <label>{'　　　　　　'}</label>{merchant_id}
-          </div>
-        )
+      {
+        editable
+          ? merchant_id && (
+              <div className="form-group form-inline">
+                <label>{'商户订单号：'}</label>{merchant_id}
+              </div>
+            )
+          : <div className="form-group form-inline">
+              <label>{'商户订单号：'}</label>
+              <input {...new_merchant_id} className={`form-control input-xs`} type="text" />
+            </div>
       }
       <div className="form-group form-inline">
         <label>{'　支付方式：'}</label>
@@ -376,6 +383,10 @@ class ManageAddForm extends Component {
     //二次保险（防止重复提交）
     if(!this._insurance_){
       this._insurance_ = true;
+      if(form_data.new_merchant_id){
+        form_data.merchant_id = form_data.new_merchant_id;
+      }
+      delete form_data.new_merchant_id;
       this.props.actions.createOrder(form_data)
         .done(function(){
           this._insurance_ = undefined;

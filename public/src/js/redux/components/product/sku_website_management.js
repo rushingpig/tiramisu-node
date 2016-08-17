@@ -1040,7 +1040,7 @@ class SelectImgModal extends Component {
     var content = list.map( (n, i) => {
       if(n.isDir){
         return <FolderBox {...n} enterDir={this.enterDir} key={n.id + '' + i} />
-      }else if(n.url && n.url.match(/(\.jpg$)|(\.png4)|(\.gif$)|(\.webp$)|(\.tiff$)|(\.bmp$)/)){
+      }else if(n.url && n.url.match(/(\.jpg$)|(\.png$)|(\.gif$)|(\.webp$)|(\.tiff$)|(\.bmp$)/)){
         return <ImgViewBox actions={actions} key={n.id + '' + i} {...n} viewImg={view_img} domain={domain} />
       }
     })

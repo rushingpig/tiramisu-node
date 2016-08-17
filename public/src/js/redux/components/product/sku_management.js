@@ -782,7 +782,11 @@ class Main extends Component {
                 : <Anchor>编辑商品</Anchor>
             }
           </li>
-          <li><Link to={`/pm/sku_manage/edit_website/${productId+location.hash}`} >商品官网设置</Link></li>
+          {
+            state.addMode
+              ? null
+              : <li><Link to={`/pm/sku_manage/edit_website/${productId+location.hash}`} >商品官网设置</Link></li>
+          }
         </ul>
         <div className="panel" style={tabContentBoxStyle}>
           <div className="panel-body">
@@ -853,9 +857,21 @@ class Main extends Component {
 
     if (state.saveStatus === 'success') {
       return MessageBox({
-        icon: MessageBoxIcon.Success,
-        text: '保存成功'
+        btnType: MessageBoxType.YesNo,
+        text: '是否立即设置商品详情页相关内容？'
       }).then(x => {
+        //取一个默认城市
+        if(state.citiesOptionApplyRange == 0){
+          var city_id = [...state.citiesData.keys()][0];
+        }else{
+          var city_id = [...state.citiesOptions.keys()][0];
+          if (city_id === "all") {
+            city_id = [...state.citiesOptions.keys()][1];
+          }
+        }
+        history.push(`/pm/sku_manage/edit_website/${state.newProductId+'#'+city_id}`);
+        Action.resetSaveStatus();
+      }, () => {
         Action.resetSaveStatus();
         history.push('/pm/sku_manage');
       });

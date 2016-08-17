@@ -797,10 +797,11 @@ const saveOption = () => (
     }
 
     return (addMode ? addSku(postData) : saveEditSku(postData)).then(
-      () => {
+      (data) => {
         dispatch({
           type: ActionTypes.SAVE_OPTION,
-          saveStatus: 'success'
+          saveStatus: 'success',
+          newProductId: data.productId,
         });
       }
     ).catch(
@@ -812,6 +813,11 @@ const saveOption = () => (
       }
     );
   }
+  // {
+  //   saveStatus: 'success',
+  //   newProductId: 593,
+  //   type: ActionTypes.SAVE_OPTION
+  // }
 )
 
 export { ActionTypes }

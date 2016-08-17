@@ -10,6 +10,7 @@ const initialState = {
   deletedSku:          [],   // 被删除的sku id，编辑模式下用
 
   productId:   0,
+  newProductId: undefined, //新建商品返回的id
   productName: '', // 商品名称
   buyEntry:    0,  // 购买方式 0:商城可购买 1:外部渠道可购买
 
@@ -912,10 +913,11 @@ const switchType = {
     return state;
   },
 
-  [ActionTypes.SAVE_OPTION]: (state, { saveStatus }) => {
+  [ActionTypes.SAVE_OPTION]: (state, { saveStatus, newProductId }) => {
     return {
       ...state,
-      saveStatus
+      saveStatus,
+      newProductId 
     }
   },
 

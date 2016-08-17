@@ -3,6 +3,7 @@ import { AreaActionTypes1 as AreaActions } from 'actions/action_types';
 import * as Actions from 'actions/product_sku_website_manage';
 import { FORM_CHANGE } from 'actions/common';
 import { UPDATE_PATH } from 'redux-simple-router';
+import clone from 'clone';
 
 import { main as imgList } from 'reducers/central_image_manage';
 import { SELECT_DEFAULT_VALUE, REQUEST } from 'config/app.config';
@@ -108,7 +109,7 @@ var proProperties_state = {
     {key: '口味',     value: ''},
     {key: '适合人群',  value: ''},
     {key: '甜度',      value: ''},
-    {key: '保险条件',  value: ''},
+    {key: '保鲜条件',  value: ''},
     {key: '原材料',    value: ''},
   ]
 }
@@ -140,12 +141,13 @@ function proProperties(state = proProperties_state, action){
       // }
       return {...state, spec: [...state.spec.filter(n => !n.editable)], ok: true}
     case Actions.SPEC_ITEM_CHANGE:
-      state.spec.forEach(n => {
+      let new_spec = clone(state.spec);
+      new_spec.forEach(n => {
         if(n.key === action.name){
           n.value = action.value
         }
       })
-      return {...state, spec: [...state.spec], ok: false}
+      return {...state, spec: [...new_spec], ok: false}
     case FORM_CHANGE + 'editable_key':
       var editable_item = state.spec[state.spec.length - 1];
       if(editable_item.editable){
@@ -249,14 +251,19 @@ function proDetailImgs(state = proDetailImgs_state, action){
       return {...state, template_data}
     case Actions.SELECT_IMG:
       if(action.which.startsWith('prodetail_img_')){
-        state.template_data[action.which.replace('prodetail_img_', '')] = action.img_key;
-        return {...state, template_data: {...state.template_data}, ok: false}
+        return {...state,
+          template_data: {...state.template_data, [action.which.replace('prodetail_img_', '')]: action.img_key},
+          ok: false
+        }
       }
       return state;
     case Actions.DELETE_IMG:
       if(action.which.startsWith('prodetail_img_')){
-        state.template_data[action.which.replace('prodetail_img_', '')] = '';
-        return {...state, template_data: {...state.template_data}, ok: false}
+        return {...state,
+          template_data: {...state.template_data},
+          [action.which.replace('prodetail_img_', '')]: '',
+          ok: false
+        }
       }
       return state;
     case 'ProDetailImgs' + Actions.IS_OK:

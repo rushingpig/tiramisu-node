@@ -1041,7 +1041,8 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
     products = req.body.products,
     prefix_address = req.body.prefix_address,
     greeting_card = req.body.greeting_card,
-    coupon = req.body.coupon;
+    coupon = req.body.coupon,
+    merchant_id = req.body.merchant_id;
   let bind_order_id = req.body._bind_order_id;
   let origin_order_id = req.body.origin_order_id;
   let payment_amount = req.body.payment_amount;
@@ -1087,7 +1088,8 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
           total_discount_price: total_discount_price,
           greeting_card: greeting_card,
           coupon: coupon,
-          last_opt_cs: req.session.user.id
+          last_opt_cs: req.session.user.id,
+          merchant_id: merchant_id
         };
         if (bind_order_id) {
           orderObj.bind_order_id = bind_order_id;
@@ -1126,7 +1128,8 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
             landmark: systemUtils.encodeForFulltext(recipient_landmark),
             // coupon : coupon,
             owner_mobile_suffix : owner_mobile.substring(owner_mobile.length - 5),
-            recipient_mobile_suffix : recipient_mobile.substring(recipient_mobile.length - 5)
+            recipient_mobile_suffix : recipient_mobile.substring(recipient_mobile.length - 5),
+            merchant_id: merchant_id
           };
           if(coupon) order_fulltext_obj.coupon = coupon;
           let order_history_obj = {

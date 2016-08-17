@@ -14,5 +14,6 @@ public/images
 public/index.html
 public/node_modules
 public/build
+public/cache/*.gzip
 views/index.hbs
 .vscode

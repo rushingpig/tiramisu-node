@@ -17,7 +17,7 @@ const config = {
     loaders: [{
       test: /\.jsx?$/,
       // loaders: ['react-hot', 'babel'], // 位置不能颠倒
-      loaders: ['babel'], // 暂时觉得hot-loader效果有限
+      loaders: ['babel?cacheDirectory=cache'], // 暂时觉得hot-loader效果有限
       exclude: /node_modules/,
       include: path.join(__dirname, 'src/js/redux')
     }]

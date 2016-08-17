@@ -14,6 +14,7 @@ export function getCompanyList(filterdata){
 				code: '678956789000',
 				add: '',
 				status: 'REVIEWED',
+				img1: 'o_1aq9fsnp4sof1qf51a7g1lqjimc.jpg',
 			},
 			{
 				id: 2,
@@ -22,6 +23,7 @@ export function getCompanyList(filterdata){
 				code: '678956789000',
 				add: '',
 				status: 'UNREVIEWED',
+				img2: 'o_1aq9i6roi5081drb1pri1o7715huc.png',
 			},
 		],
 		total: 4,
@@ -59,4 +61,12 @@ export function editCompany(companyId){
 			type: EDIT_COMPANY_SUCCESS
 		})
 	}	
+}
+
+export const VIEW_IMG = 'VIEW_IMG';
+export function viewImg(img){
+	return {
+		type: VIEW_IMG,
+		data: img
+	}
 }

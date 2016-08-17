@@ -125,20 +125,20 @@ var CompanyRow = React.createClass({
 				<td></td>
 				<td>
 				{
-					!props.img1 && props.img1 != '' &&
-					[<a href='javascript:;' key='img1_a'>营业执照</a>,<br key='img1_br'/>]
+					props.img1 && props.img1 != '' &&
+					[<a onClick = {this.props.viewImg.bind(null, props.img1)} href='javascript:;' key='img1_a'>营业执照</a>,<br key='img1_br'/>]
 				}
 				{
-					!props.img2 && props.img2 != '' &&
+					props.img2 && props.img2 != '' &&
 					[<a href='javascript:;' key='img2_a'>税务登记证</a>,<br key='img2_br'/>]
 				}
 				{
-					!props.img3 && props.img3 != '' &&
-					[<a href='javascript:;' key='img3_a'>营业执照</a>,<br key='img3_br'/>]
+					props.img3 && props.img3 != '' &&
+					[<a href='javascript:;' key='img3_a'>纳税人资格证</a>,<br key='img3_br'/>]
 				}
 				{
-					!props.img4 && props.img4 != '' &&
-					[<a href='javascript:;' key='img4_a'>营业执照</a>,<br key='img4_br'/>]
+					props.img4 && props.img4 != '' &&
+					[<a href='javascript:;' key='img4_a'>银行开户许可证</a>,<br key='img4_br'/>]
 				}
 				</td>
 				<td></td>
@@ -205,7 +205,7 @@ class ManagePannel extends Component{
 		}
 	}
 	render(){
-		var {list, total, page_no} = this.props;
+		var { main: {list, total, page_no, refresh, loading, view_img}} = this.props;
 		var content = list.map( m => {
 			return (
 				<CompanyRow {...{...m, ...this.props}} key = {m.id}
@@ -215,7 +215,7 @@ class ManagePannel extends Component{
 		})
 		return (
 			<div>
-				<TopHeader viewCompanyModal = {this.viewCompanyModal.bind(this)}/>
+				<TopHeader viewCompanyCreateModal = {this.viewCompanyCreateModal.bind(this)}/>
 				<FilterHeader />
 				<div className = 'panel'>
 					<header className='panel-heading'>发票抬头公司列表</header>
@@ -240,6 +240,11 @@ class ManagePannel extends Component{
 						  				<th>操作时间</th>
 						  			</tr>
 						  		</thead>
+						  		<tbody>
+                					{ 
+                						tableLoader( loading || refresh, content ) 
+                					}
+						  		</tbody>
 						  	</table>
 						</div>
 						<Pagination 
@@ -252,6 +257,12 @@ class ManagePannel extends Component{
 				</div>
 				<CompanyModal ref='CompanyCreateModal' editable = {false}/>
 				<CompanyModal ref = 'CompanyEditModal' editable = {true}/>
+				{
+					view_img
+					?
+					<ViewModal {...view_img} domain = 'http://qn.blissmall.net/' actions = {this.props} />
+					:null
+				}
 			</div>
 			
 			)
@@ -291,14 +302,11 @@ class CompanyModal extends Component{
 	constructor(props){
 		super(props);
 		this.state = {
-			progressBars: [],
 			id: '',
 		}
 	}
 	render(){
-		var progressList = this.state.progressBars.map( n => {
-		      return <ProgressRow ref={n.key} key={n.key} name={n.name} percent={n.percent} />;
-		    });
+		
 		return (
 			<StdModal ref = 'modal' title = '添加公司资料页面' footer={false}>
 				<CompanyInfo {...this.props}
@@ -319,7 +327,26 @@ class CompanyModal extends Component{
 	}
 }
 
+const validate = (values, props) => {
+	const errors = {};
+	var msg = 'error'
+	var {form} = props;
+
+	function _v_text(key){
+	  if(form[key] && form[key].touched && (values[key] === undefined || values[key].trim() == '')){
+	    errors[key] = msg;
+	  }
+	}
+
+	return errors;
+}
 class CompanyInfo extends Component{
+	constructor(props){
+		super(props);
+		this.state = {
+			progressBars: [],
+		}
+	}
 	render(){
 		var {
 			fields: {
@@ -332,7 +359,11 @@ class CompanyInfo extends Component{
 			},
 			editable,
 			company_id,
+			handleSubmit,
 		} = this.props;
+		var progressList = this.state.progressBars.map( n => {
+		      return <ProgressRow ref={n.key} key={n.key} name={n.name} percent={n.percent} />;
+		    });
 		return(
 			<div>				
 				<div className='form-group form-inline'>
@@ -341,8 +372,8 @@ class CompanyInfo extends Component{
 					{
 						editable ?
 						[
-							<label>{'公司编号：'}</label>,
-							<input readOnly value = {company_id} type = 'text' className = 'form-control input-xs' />
+							<label key='company_no_lbl'>{'公司编号：'}</label>,
+							<input key= 'company_no_txt' readOnly value = {company_id} type = 'text' className = 'form-control input-xs' />
 						]: null
 					}
 				</div>
@@ -400,6 +431,16 @@ class CompanyInfo extends Component{
 				</div>				
 			</div>
 			)
+	}
+	_check(callback,form_data){
+	  setTimeout(()=>{
+	      var {errors} =this.props;
+	      if(!Object.keys(errors).length){
+	        callback.call(this,form_data);  //以callback来代替this 调用
+	      }else{
+	        Noty('warning','请填写完整');
+	      }
+	  },0);
 	}
 	componentDidMount(){
 		var uploaderOptions = this.getUploaderOptions();
@@ -500,6 +541,7 @@ class CompanyInfo extends Component{
 
 CompanyInfo = reduxForm({
 	form: 'company_info',
+	validate,
 	fields: [
 		'name',
 		'code',
@@ -516,11 +558,11 @@ function mapStateToProps(state){
 }
 
 function mapDispatchToProps(dispatch){
-	/*var actions =  bindActionCreators({
-
+	var actions =  bindActionCreators({
+		...invoiceVATActions
 	}, dispatch);
-	actions.dispatch = dispatch;*/
-	return invoiceVATActions;
+	actions.dispatch = dispatch;
+	return actions;
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ManagePannel)

@@ -9,14 +9,25 @@ var main_state = {
 	list: [],
 	total: 0,
 	page_no: 0,
+	refresh: false,
+	loading: true,
+	domain: 'http://qn.blissmall.net/',
+	view_img: null,
 }
 
-export default function main(state = main_state, action){
+function main(state = main_state, action){
 	switch(action.type){
 		case Actions.GET_COMPANY_LIST:
-			return {...state, ...action.data}
+			return {...state, ...action.data, loading: false, fresh: false}
+		case Actions.VIEW_IMG:
+			return {...state, view_img: action.data}
 		default:
 			return state;
 	}
 }
+
+
+export default combineReducers({
+	main,
+})
 

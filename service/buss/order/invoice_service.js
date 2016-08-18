@@ -239,8 +239,9 @@ module.exports.getInvoiceList = function (req, res, next) {
 module.exports.addInvoice = function (req, res, next) {
     let promise = co(function *() {
         let order_id = systemUtils.getDBOrderId(req.body.order_id);
-        let option = yield invoiceDao.findOptionByOrderId(order_id);
-        if (!option) return Promise.reject(new TiramisuError(res_obj.FAIL));
+        let order_info = yield orderDao.findOrderById(order_id);
+        if (!order_info || order_info.length == 0) return Promise.reject(new TiramisuError(res_obj.FAIL, '订单号不存在...'));
+        order_info = order_info[0];
         let info = _.pick(req.body, [
             'type',
             'company_id',

@@ -106,6 +106,7 @@ class ManageAddForm extends Component {
         recipient_landmark, //标志性建筑
         delivery_id,     //配送中心
         src_id,          //订单来源
+        merchant_id,     //商户订单号
         pay_modes_id,    //支付方式
         coupon,          //团购密码
         pay_status,
@@ -122,7 +123,7 @@ class ManageAddForm extends Component {
 
     var { save_ing, save_success, submit_ing, 
       all_delivery_time, all_pay_status, all_order_srcs, 
-      delivery_stations, all_pay_modes, data: { merchant_id }} = this.props['form-data'];
+      delivery_stations, all_pay_modes} = this.props['form-data'];
     var {provinces, cities, districts, delivery_shops} = this.props.area;
     var {invoices, selected_order_src_level1_id = src_id.value, groupbuy_psd, groupbuy_check_ing, groupbuy_msg, groupbuy_success, auto_match_ing} = this.state;
 
@@ -232,11 +233,17 @@ class ManageAddForm extends Component {
                 className={`form-select ${src_id.error}`} />
         }
       </div>
-      { merchant_id && (
-          <div className="form-group form-inline">
-            <label>{'　　　　　　'}</label>{merchant_id}
-          </div>
-        )
+      {
+        editable
+          ? merchant_id.value && (
+              <div className="form-group form-inline">
+                <label>{'商户订单号：'}</label>{merchant_id.value}
+              </div>
+            )
+          : <div className="form-group form-inline">
+              <label>{'商户订单号：'}</label>
+              <input {...merchant_id} className={`form-control input-xs`} type="text" />
+            </div>
       }
       <div className="form-group form-inline">
         <label>{'　支付方式：'}</label>

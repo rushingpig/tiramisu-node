@@ -13,6 +13,7 @@ export default {
     'recipient_landmark', //标志性建筑
     'delivery_id',     //配送中心
     'src_id',          //订单来源
+    'merchant_id', //商户订单号
     'pay_modes_id',
     'coupon',          //团购密码
     'pay_status',

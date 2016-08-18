@@ -54,5 +54,8 @@ module.exports = {
     },
     'greeting_card' : {
         optional : true
+    },
+    'merchant_id': {
+        optional: true
     }
 };

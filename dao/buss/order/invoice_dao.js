@@ -14,7 +14,7 @@ const HISTORY_COMPANY = Constant.HISTORY_TYPE.COMPANY;
 const HISTORY_INVOICE = Constant.HISTORY_TYPE.INVOICE;
 
 function InvoiceDao(table) {
-    this.table = table || tables.buss_refund;
+    this.table = table || tables.buss_invoice;
     this.base_insert_sql = `INSERT INTO ?? SET ? `;
     this.base_update_sql = `UPDATE ?? SET ? `;
     this.base_select_sql = `SELECT * FROM ?? `;

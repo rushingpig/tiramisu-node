@@ -10,6 +10,7 @@ import V from 'utils/acl';
 import { SELECT_DEFAULT_VALUE  } from 'config/app.config';
 
 import history from 'history_instance';
+import * as FormActions from 'actions/form';
 
 import DatePicker from 'common/datepicker';
 import Linkers from 'common/linkers';
@@ -61,12 +62,15 @@ class FilterHeader extends Component{
 	}
 	render(){
 		var {search_ing} = this.state;
-		var { all_invoice_status } = this.props;
 		return (
 			<div className = 'panel search'>
 				<div className = 'panel-body form-inline'>
 					<input ref = 'company_name' placeholder = '公司名' className='form-control input-xs space-right'/>
-					<Select ref='status' default-text = '资料审核状态' options = {all_invoice_status}/>
+					<Select ref='status' default-text = '资料审核状态' options = {
+						[{value : 0, text: '未审核'},
+						{value: 1, text: '已审核'}
+						]
+					}/>
 					<button disabled={search_ing} data-submitting={search_ing} 
 						className="btn btn-theme btn-xs space-left"
 						onClick = {this.search.bind(this)} >
@@ -81,10 +85,10 @@ class FilterHeader extends Component{
 	  var name = '';
 	  var status = '';
 	  var data = {page_no: 0, page_size: this.props.page_size}
-	  if(!this.refs.company_name){
+	  if(this.refs.company_name){
 	  	name = this.refs.company_name.value.trim();
 	  }
-	  if(!this.refs.status){
+	  if(this.refs.status){
 	  	var statusSelect = $(findDOMNode(this.refs.status));
 	  	if(statusSelect[0].value != SELECT_DEFAULT_VALUE){
 	  		status = statusSelect[0].value.trim();
@@ -96,7 +100,7 @@ class FilterHeader extends Component{
 	  if(status != ''){
 	  	data.status = status;
 	  }
-	  this.props.actions.getCompanyList(data)
+	  this.props.getCompanyList(data)
 	    .always(()=>{
 	      this.setState({search_ing: false});
 	    });
@@ -110,8 +114,8 @@ var CompanyRow = React.createClass({
 			<tr>
 				<td>
 					{
-						V('InvoiceVATManageReview') && props.status == 'UNREVIEWED' ?
-						[<a key='companyReview' href='javascript:;'>[审核]</a>,<br key='review_br'/>]
+						V('InvoiceVATManageReview') && !props.is_review  ?
+						[<a key='companyReview' onClick = {this.reviewCompany} href='javascript:;'>[审核]</a>,<br key='review_br'/>]
 						: null
 					}
 					{
@@ -149,26 +153,34 @@ var CompanyRow = React.createClass({
 				<td>
 					{props.bank_account}
 				</td>
-				<td>
+				<td style={{textAlign: 'left'}}>
 				{
 					props.img_1 && props.img_1 != '' &&
-					[<a onClick = { this.props.viewImg.bind(null,{url: props.img_1, name: '营业执照'} )} href='javascript:;' key='img1_a'>营业执照</a>,<br key='img1_br'/>]
+					[<a onClick = { this.props.viewImg.bind(null,{url: props.img_1, name: '营业执照'} )} href='javascript:;' key='img1_a'>
+					<i className = 'fa fa-lg fa-file-image-o space-right' key='img_1_i'></i>
+					营业执照</a>,<br key='img1_br'/>]
 				}
 				{
 					props.img_2 && props.img_2 != '' &&
-					[<a onClick = { this.props.viewImg.bind(null, {url: props.img_2, name: '税务登记证'})} href='javascript:;' key='img2_a'>税务登记证</a>,<br key='img2_br'/>]
+					[<a onClick = { this.props.viewImg.bind(null, {url: props.img_2, name: '税务登记证'})} href='javascript:;' key='img2_a'>
+					<i className = 'fa fa-lg fa-file-image-o space-right' key='img_2_i'></i>
+					税务登记证</a>,<br key='img2_br'/>]
 				}
 				{
 					props.img_3 && props.img_3 != '' &&
-					[<a onClick = { this.props.viewImg.bind(null, {url: props.img_3, name: '纳税人资格证'})} href='javascript:;' key='img3_a'>纳税人资格证</a>,<br key='img3_br'/>]
+					[<a onClick = { this.props.viewImg.bind(null, {url: props.img_3, name: '纳税人资格证'})} href='javascript:;' key='img3_a'>
+					<i className = 'fa fa-lg fa-file-image-o space-right' key='img_3_i'></i>
+					纳税人资格证</a>,<br key='img3_br'/>]
 				}
 				{
 					props.img_4 && props.img_4 != '' &&
-					[<a onClick = { this.props.viewImg.bind(null, {url: props.img_4, name: '银行开户许可证'})} href='javascript:;' key='img4_a'>银行开户许可证</a>,<br key='img4_br'/>]
+					[<a onClick = { this.props.viewImg.bind(null, {url: props.img_4, name: '银行开户许可证'})} href='javascript:;' key='img4_a'>
+					<i className = 'fa fa-lg fa-file-image-o space-right' key='img_4_i'></i>
+					银行开户许可证</a>,<br key='img4_br'/>]
 				}
 				</td>
 				<td>
-					{props.status == 'UNREVIEWED' ? '未审核' : '已审核'}
+					{!props.is_review ? '未审核' : '已审核'}
 				</td>
 				<td>
 					{
@@ -266,8 +278,8 @@ class ManagePannel extends Component{
 		}
 	}
 	render(){
-		var { main: {list, total, page_no, refresh, loading, view_img, all_invoice_status, active_company_info}, operationRecord, invoiceRecord,
-			getCompanyOptRecord, resetCompanyOptRecord, getCompanyInvoiceRecord, resetCompanyInvoiceRecord,
+		var { main: {list, total, page_no, refresh, loading, view_img, active_company_info}, operationRecord, invoiceRecord,
+			getCompanyOptRecord, resetCompanyOptRecord, getCompanyInvoiceRecord, resetCompanyInvoiceRecord, getCompanyList,
 			editCompany, createCompany} = this.props;
 		var content = list.map( m => {
 			return (
@@ -281,7 +293,10 @@ class ManagePannel extends Component{
 		return (
 			<div>
 				<TopHeader viewCompanyCreateModal = {this.viewCompanyCreateModal.bind(this)}/>
-				<FilterHeader all_invoice_status = {all_invoice_status }/>
+				<FilterHeader 
+					getCompanyList = {getCompanyList}
+					page_size = {this.state.page_size}
+				/>
 				<div className = 'panel'>
 					<header className='panel-heading'>发票抬头公司列表</header>
 					<div className = 'panel-body'>
@@ -335,6 +350,7 @@ class ManagePannel extends Component{
 			)
 	}
 	viewCompanyCreateModal(){
+		this.props.destroyForm('company_info');
 		this.refs.CompanyCreateModal.show();
 	}
 	viewCompanyEditModal(id){
@@ -352,7 +368,7 @@ class ManagePannel extends Component{
 	}
 	search(page){
 	  //搜索数据，无需loading图
-	  page = typeof page == 'undefined' ? this.props.page_no : page;
+	  page = typeof page == 'undefined' ? this.props.main.page_no : page;
 	  return this.props.getCompanyList({page_no: page, page_size: this.state.page_size});
 	}
 	onPageChange(page){
@@ -746,7 +762,8 @@ function mapStateToProps(state){
 
 function mapDispatchToProps(dispatch){
 	var actions =  bindActionCreators({
-		...invoiceVATActions
+		...invoiceVATActions,
+		...FormActions,
 	}, dispatch);
 	actions.dispatch = dispatch;
 	return actions;

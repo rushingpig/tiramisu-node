@@ -5,7 +5,8 @@ import { getValues } from 'redux-form';
 
 export const GET_COMPANY_LIST  =  'GET_COMPANY_LIST';
 export function getCompanyList(filterdata){
-	return TEST({
+	return GET(Url.get_company_list.toString(), filterdata, GET_COMPANY_LIST)
+/*	return TEST({
 		list: [
 			{
 				id: 1,
@@ -35,7 +36,7 @@ export function getCompanyList(filterdata){
 			},
 		],
 		total: 4,
-	}, GET_COMPANY_LIST)
+	}, GET_COMPANY_LIST)*/
 }
 
 export const CREATE_COMPANY_ING = 'CREATE_COMPANY_ING';
@@ -67,10 +68,15 @@ export function editCompany(id, form_data){
 		dispatch({
 			type: EDIT_COMPANY_ING,
 		})
-
-		return TEST({
+		return put(Url.edit_company.toString(id), form_data)
+				.done( () => {
+					id: id,
+					data: form_data,
+					type: EDIT_COMPANY_SUCCESS
+				})
+		/*return TEST({
 			type: EDIT_COMPANY_SUCCESS
-		})
+		})*/
 	}	
 }
 
@@ -91,16 +97,16 @@ export function viewImg(img){
 
 export const GET_COMPANY_OPT_RECORD = 'GET_COMPANY_OPT_RECORD';
 export function getCompanyOptRecord(id, data){
-/*  return dispatch => {
-    return get(Url.order_opt_record.toString(order_id), data)
+  return dispatch => {
+    return get(Url.company_opt_history.toString(id), data)
       .done(function(jsonobj){
         dispatch({
           type: GET_COMPANY_OPT_RECORD,
           data: jsonobj,
         })
       })
-  }*/
-  return {
+  }
+/*  return {
     type: GET_COMPANY_OPT_RECORD,
     data: {
       "total": 12,
@@ -148,7 +154,7 @@ export function getCompanyOptRecord(id, data){
       "page_no": "0",
       "page_size": "8"
     }
-  }
+  }*/
 }
 
 export const GET_COMPANY_INVOICE_RECORD = 'GET_COMPANY_INVOICE_RECORD';

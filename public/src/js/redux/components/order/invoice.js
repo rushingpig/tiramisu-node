@@ -22,7 +22,8 @@ import Pagination from 'common/pagination';
 import RadioGroup from 'common/radio_group';
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderSrcsSelects from 'common/order_srcs_selects';
-import { SELECT_DEFAULT_VALUE } from 'config/app.config';
+import { SELECT_DEFAULT_VALUE, invoice_status as INVOICE_STATUS, order_status } from 'config/app.config';
+import RecipientInfo from 'common/recipient_info';
 
 import { getOrderSrcs, getDeliveryStations, autoGetDeliveryStations } from 'actions/order_manage_form';
 import { getStationListByScopeSignal, resetStationListWhenScopeChange } from 'actions/station_manage';
@@ -167,6 +168,7 @@ FilterHeader = reduxForm({
 var  InvoiceRow = React.createClass({
 	render(){
 		var {props} = this;
+		var src_name = props.src_name ? props.src_name.split(',') : ['', ''];
 		return(
 			<tr onClick = {this.ClickHandler}>
 				<td>
@@ -180,24 +182,53 @@ var  InvoiceRow = React.createClass({
 						)
 					}
 				</td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
+				<td>
+					{
+						props.type ?
+						'增值税普通发票'
+						:
+						'增值税专用发票'
+					}
+				</td>
+				<td>
+					{
+						props.title
+					}
+				</td>
+				<td>
+					￥{
+						props.amount / 100
+					}
+				</td>
+				<td>
+					{
+						INVOICE_STATUS[props.status].value
+					}
+				</td>
+				<td>
+					{
+						order_status[props.order_status].value
+					}
+				</td>
+				<RecipientInfo data={{recipient_address: props.address, ...props}} />
+				<td>
+					{props.city}
+				</td>
+				<td>
+					{props.station}
+				</td>
+				<td>
+					{src_name[0]}
+					{src_name[1] ? [<br key="br" />, <span key="src_2" className="bordered bg-warning">{src_name[1]}</span>] : null}
+				</td>
+				<td>
+					{props.order_id}
+				</td>
 				<td></td>
 				<td>
-					{props.updated_by}
+					{props.created_by}
 				</td>
+				<td>{props.updated_by}</td>
 				<td>
 					<a href='javascript:;' onClick = {this.viewOperationRecordModal}>{props.updated_time}</a>
 				</td>
@@ -209,9 +240,9 @@ var  InvoiceRow = React.createClass({
 			this.props.activeOrder(this.props.order_id);
 	},
 	ACL:function(){
-		var {invoice_status} = this.props;
+		var {status} = this.props;
 		var roles = null;
-		switch(invoice_status){
+		switch(status){
 			case 'UNTREATED':
 				roles = ['InvoiceManageTreat', 'InvoiceManageEdit', 'InvoiceManageCancel'];break;
 			case 'COMPLETED':
@@ -232,16 +263,22 @@ var  InvoiceRow = React.createClass({
 		return results;
 	},
 	onTreat(){
-		this.props.handleInvoice(this.props.invoice_id, 'COMPLETED');
+		this.props.handleInvoice(this.props.id, 'COMPLETED')
+			.done(() => {
+				Noty('success', '发票已成功开具')
+			})
+			.fail((msg, code) => {
+				Noty('error', msg || '发票开具失败' );
+			})
 	},
 	viewDeliveryModal(){
-		this.props.viewDeliveryModal(this.props.invoice_id);
+		this.props.viewDeliveryModal(this.props.id);
 	},
 	viewRemarkModal(){
-		this.props.viewRemarkModal(this.props.invoice_id);
+		this.props.viewRemarkModal(this.props.id);
 	},
 	viewInvoiceEditModal(){
-		this.props.viewInvoiceEditModal(this.props.invoice_id);
+		this.props.viewInvoiceEditModal(this.props.id);
 	},
 	viewOperationRecordModal(){
 		this.props.viewOperationRecordModal({order_id: this.props.order_id, 
@@ -301,7 +338,7 @@ class ManagePannel extends Component{
 						  			<th>城市</th>
 						  			<th>配送站</th>
 						  			<th>订单来源</th>
-						  			<th>订单号查询</th>
+						  			<th>订单号</th>
 						  			<th>物流追踪</th>
 						  			<th>申请人</th>
 						  			<th>操作人</th>

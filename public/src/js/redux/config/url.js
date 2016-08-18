@@ -64,6 +64,8 @@ const URL = (function() {
     invoice_apply:    '/invoice',         //发票申请
     invoice_edit:     '/invoice/:invoiceId', //发票编辑
     order_invoice_data: '/order/:orderId/invoice/option',  //根据订单获取发票所需数据
+    invoice_data: '/invoice/:invoiceId',  //获取发票信息
+    invoice_get_company: '/invoice/company/list', //添加发票时获取公司
 
     add_company:       '/company',   //添加开发票的公司
     edit_company:      '/company/:companyId', // 编辑开发票公司

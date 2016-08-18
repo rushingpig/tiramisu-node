@@ -7,7 +7,7 @@ import { reduxForm } from 'redux-form';
 
 import { Noty, del } from 'utils/index';
 import V from 'utils/acl';
-import { SELECT_DEFAULT_VALUE  } from 'config/app.config';
+import { SELECT_DEFAULT_VALUE, img_uptoken_url, img_domain  } from 'config/app.config';
 
 import history from 'history_instance';
 import * as FormActions from 'actions/form';
@@ -67,8 +67,8 @@ class FilterHeader extends Component{
 				<div className = 'panel-body form-inline'>
 					<input ref = 'company_name' placeholder = '公司名' className='form-control input-xs space-right'/>
 					<Select ref='status' default-text = '资料审核状态' options = {
-						[{value : 0, text: '未审核'},
-						{value: 1, text: '已审核'}
+						[{id : 0, text: '未审核'},
+						{id: 1, text: '已审核'}
 						]
 					}/>
 					<button disabled={search_ing} data-submitting={search_ing} 
@@ -95,10 +95,10 @@ class FilterHeader extends Component{
 	  	}
 	  }
 	  if( name != ''){
-	  	data.name = name;
+	  	data.keywords = name;
 	  }
 	  if(status != ''){
-	  	data.status = status;
+	  	data.is_review = status;
 	  }
 	  this.props.getCompanyList(data)
 	    .always(()=>{
@@ -255,11 +255,11 @@ function ViewModal(props){
       </div>
       <center style={{height: '100%'}}>
         <div style={{marginTop: '10%', verticalAlign: 'top'}}>
-          <img style={{maxHeight: '80vh', maxWidth: '80vw'}} src={props.domain + props.url} alt="加载失败" />
+          <img style={{maxHeight: '80vh', maxWidth: '80vw'}} src={img_domain + props.url} alt="加载失败" />
           <div className="inline-block text-left v-top" style={{paddingLeft: 31, maxWidth: '20vw', boxSizing: 'border-box'}}>
             <div className="font-lg">{props.name}</div>
             <h5>{props.size}</h5>
-            <a href={props.domain + props.url} download={props.name} style={{color: 'inherit'}}>
+            <a href={img_domain + props.url} download={props.name} style={{color: 'inherit'}}>
               <i className="hover-effect pointer fa fa-lg fa-cloud-download"></i>
             </a>
           </div>
@@ -342,7 +342,7 @@ class ManagePannel extends Component{
 				{
 					view_img
 					?
-					<ViewModal {...view_img} domain = 'http://qn.blissmall.net/' actions = {this.props} />
+					<ViewModal {...view_img} domain = {img_domain} actions = {this.props} />
 					:null
 				}
 			</div>
@@ -673,8 +673,8 @@ class CompanyInfo extends Component{
 		  // save_key: true,
 		  // uptoken: 'CQH3l1cozF_-KJZj-CiKWUDkaCVGtdRYgI_klK5I:g2QT0uKcRNWuVwizj_uj8zkkCjs=:eyJzY29wZSI6ImhhcHB5dGVzdCIsImRlYWRsaW5lIjoxNDcwMjIwMDU3fQ==',
 		  // uptoken_url: 'http://192.168.0.109:3000/qiniu/token', //服务器端可以
-		  uptoken_url: 'http://120.76.25.32:8080/qiniu/token',
-		  domain: 'http://qn.blissmall.net/',
+		  uptoken_url: img_uptoken_url,
+		  domain: img_domain,
 		  init: {
 		    UploadProgress: (up, file) => {
 		      this.setState(state => {

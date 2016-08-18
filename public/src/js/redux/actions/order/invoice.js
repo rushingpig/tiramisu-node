@@ -47,7 +47,17 @@ export function getOrderInvoiceInfo(id){
 
 export const GET_INVOICE_INFO = 'GET_INVOICE_INFO';
 export function getInvoiceInfo(id){
-	return TEST({
+	return dispatch => {
+		return get(Url.invoice_data.toString(id), null)
+			.done((data) => {
+				dispatch({
+					id: id,
+					data: data,
+					type: GET_INVOICE_INFO,
+				})
+			})
+	}
+/*	return TEST({
 		amount: 10000,
 		owner_mobile: '18588420689',
 		owner_name: 'gaozheng81503',
@@ -66,7 +76,7 @@ export function getInvoiceInfo(id){
 		remarks: 'xxxx',
 		recipient: 0,
 		type: 0,
-	}, GET_INVOICE_INFO)
+	}, GET_INVOICE_INFO)*/
 }
 
 export const RESET_INVOICE_DATA = 'RESET_INVOICE_DATA';
@@ -78,9 +88,10 @@ export function resetInvoiceData(){
 
 export const GET_INVOICE_COMPANY = 'GET_INVOICE_COMPANY';
 export function getInvoiceCompany(){
-	return TEST({
+	return GET(Url.invoice_get_company.toString(), null ,GET_INVOICE_COMPANY);
+	/*return TEST({
 		1: 'xxxxxxx', 2: '222'
-	}, GET_INVOICE_COMPANY)
+	}, GET_INVOICE_COMPANY)*/
 }
 
 export const GET_INVOICE_LIST = 'GET_INVOICE_LIST';
@@ -146,6 +157,7 @@ function _getFormdata(getState){
 			invoice_data.regionalism_id = invoice_data.recipient_regionalism_id;
 			invoice_data.address = invoice_data.recipient_address;
 		}
+		invoice_data.amount = invoice_data.amount * 100;
 		delete invoice_data.recipient_province_id;
 		delete invoice_data.recipient_city_id;
 		delete invoice_data.recipient_regionalism_id;
@@ -208,15 +220,29 @@ export function handleInvoice(invoiceId, handleActionName){
 		dispatch({
 			type: HANDLE_INVOICE_ING
 		})
-		return TEST({
+		return put(Url.invoice_edit.toString(invoiceId), {status: handleActionName})
+				.done(() => {
+					dispatch({
+						handleActionName: handleActionName,
+						refundId: refundId,
+						type: HANDLE_INVOICE_SUCCESS,
+					})
+				})
+				.fail(function(){
+					dispatch({
+						type: HANDLE_INVOICE_FAIL,
+					})
+				})
+/*		return TEST({
 			handleActionName: handleActionName,
 			invoiceId: invoiceId,
-		}, HANDLE_INVOICE_SUCCESS)(dispatch)
+		}, HANDLE_INVOICE_SUCCESS)(dispatch)*/
 	}
 }
 
 export const GET_EXPRESS_COMPANY = 'GET_EXPRESS_COMPANY';
 export function getExpressCompany(){
+	/*return GET(Url.invoice_get_company.toString(), null ,GET_EXPRESS_COMPANY);*/
 	return TEST({1: '中通快递', 2: '申通快递'}, GET_EXPRESS_COMPANY)
 }	
 

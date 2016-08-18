@@ -69,11 +69,12 @@ export function editCompany(id, form_data){
 			type: EDIT_COMPANY_ING,
 		})
 		return put(Url.edit_company.toString(id), form_data)
-				.done( () => {
+				.done(() => 
+					dispatch({
 					id: id,
 					data: form_data,
 					type: EDIT_COMPANY_SUCCESS
-				})
+				}))
 		/*return TEST({
 			type: EDIT_COMPANY_SUCCESS
 		})*/

@@ -128,6 +128,7 @@ module.exports.editCompany = function (req, res, next) {
             'img_3',
             'img_4'
         ]);
+        info.is_review = 0;
         yield invoiceDao.updateCompany(company_id, systemUtils.assembleUpdateObj(req, info));
         let history = {option: ''};
         history.bind_id = company_id;
@@ -169,7 +170,7 @@ module.exports.getCompanyInfo = function (req, res, next) {
     let promise = co(function *() {
         let company_id = req.params.companyId;
         let company_info = yield invoiceDao.findCompanyById(company_id);
-        if (!company_info || company_info.length == 0) return Promise.reject(new TiramisuError());
+        if (!company_info || company_info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '公司信息不存在...'));
         company_info = company_info[0];
         return company_info;
     }).then(result=> {

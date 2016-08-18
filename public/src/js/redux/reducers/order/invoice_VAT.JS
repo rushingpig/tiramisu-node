@@ -14,7 +14,6 @@ var main_state = {
 	loading: true,
 	domain: 'http://qn.blissmall.net/',
 	view_img: null,
-	all_invoice_status: map(invoice_status, ({value}, id) => ({id, text: value})),
 	active_company_info: {},
 }
 
@@ -37,7 +36,7 @@ function main(state = main_state, action){
 			var {list} = state;
 			list.map( m => {
 				if( m.id == id){
-					m.status = 'REVIEWED';
+					m.is_review = 1;
 				}
 				return m;
 			})
@@ -58,6 +57,7 @@ function main(state = main_state, action){
 					m.bank_account = data.bank_account;
 					m.add = data.add;
 					m.tel = data.tel;
+					m.is_review = 0;
 					m.img_1 = data.img_1;
 					m.img_2 = data.img_2;
 					m.img_3 = data.img_3;

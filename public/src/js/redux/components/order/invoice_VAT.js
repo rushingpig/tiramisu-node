@@ -10,6 +10,7 @@ import V from 'utils/acl';
 import { SELECT_DEFAULT_VALUE  } from 'config/app.config';
 
 import history from 'history_instance';
+import * as FormActions from 'actions/form';
 
 import DatePicker from 'common/datepicker';
 import Linkers from 'common/linkers';
@@ -61,12 +62,15 @@ class FilterHeader extends Component{
 	}
 	render(){
 		var {search_ing} = this.state;
-		var { all_invoice_status } = this.props;
 		return (
 			<div className = 'panel search'>
 				<div className = 'panel-body form-inline'>
 					<input ref = 'company_name' placeholder = '公司名' className='form-control input-xs space-right'/>
-					<Select ref='status' default-text = '资料审核状态' options = {all_invoice_status}/>
+					<Select ref='status' default-text = '资料审核状态' options = {
+						[{value : 0, text: '未审核'},
+						{value: 1, text: '已审核'}
+						]
+					}/>
 					<button disabled={search_ing} data-submitting={search_ing} 
 						className="btn btn-theme btn-xs space-left"
 						onClick = {this.search.bind(this)} >
@@ -81,10 +85,10 @@ class FilterHeader extends Component{
 	  var name = '';
 	  var status = '';
 	  var data = {page_no: 0, page_size: this.props.page_size}
-	  if(!this.refs.company_name){
+	  if(this.refs.company_name){
 	  	name = this.refs.company_name.value.trim();
 	  }
-	  if(!this.refs.status){
+	  if(this.refs.status){
 	  	var statusSelect = $(findDOMNode(this.refs.status));
 	  	if(statusSelect[0].value != SELECT_DEFAULT_VALUE){
 	  		status = statusSelect[0].value.trim();
@@ -96,7 +100,7 @@ class FilterHeader extends Component{
 	  if(status != ''){
 	  	data.status = status;
 	  }
-	  this.props.actions.getCompanyList(data)
+	  this.props.getCompanyList(data)
 	    .always(()=>{
 	      this.setState({search_ing: false});
 	    });
@@ -110,8 +114,8 @@ var CompanyRow = React.createClass({
 			<tr>
 				<td>
 					{
-						V('InvoiceVATManageReview') && props.status == 'UNREVIEWED' ?
-						[<a key='companyReview' href='javascript:;'>[审核]</a>,<br key='review_br'/>]
+						V('InvoiceVATManageReview') && !props.is_review  ?
+						[<a key='companyReview' onClick = {this.reviewCompany} href='javascript:;'>[审核]</a>,<br key='review_br'/>]
 						: null
 					}
 					{
@@ -176,7 +180,7 @@ var CompanyRow = React.createClass({
 				}
 				</td>
 				<td>
-					{props.status == 'UNREVIEWED' ? '未审核' : '已审核'}
+					{!props.is_review ? '未审核' : '已审核'}
 				</td>
 				<td>
 					{
@@ -274,8 +278,8 @@ class ManagePannel extends Component{
 		}
 	}
 	render(){
-		var { main: {list, total, page_no, refresh, loading, view_img, all_invoice_status, active_company_info}, operationRecord, invoiceRecord,
-			getCompanyOptRecord, resetCompanyOptRecord, getCompanyInvoiceRecord, resetCompanyInvoiceRecord,
+		var { main: {list, total, page_no, refresh, loading, view_img, active_company_info}, operationRecord, invoiceRecord,
+			getCompanyOptRecord, resetCompanyOptRecord, getCompanyInvoiceRecord, resetCompanyInvoiceRecord, getCompanyList,
 			editCompany, createCompany} = this.props;
 		var content = list.map( m => {
 			return (
@@ -289,7 +293,10 @@ class ManagePannel extends Component{
 		return (
 			<div>
 				<TopHeader viewCompanyCreateModal = {this.viewCompanyCreateModal.bind(this)}/>
-				<FilterHeader all_invoice_status = {all_invoice_status }/>
+				<FilterHeader 
+					getCompanyList = {getCompanyList}
+					page_size = {this.state.page_size}
+				/>
 				<div className = 'panel'>
 					<header className='panel-heading'>发票抬头公司列表</header>
 					<div className = 'panel-body'>
@@ -343,6 +350,7 @@ class ManagePannel extends Component{
 			)
 	}
 	viewCompanyCreateModal(){
+		this.props.destroyForm('company_info');
 		this.refs.CompanyCreateModal.show();
 	}
 	viewCompanyEditModal(id){
@@ -754,7 +762,8 @@ function mapStateToProps(state){
 
 function mapDispatchToProps(dispatch){
 	var actions =  bindActionCreators({
-		...invoiceVATActions
+		...invoiceVATActions,
+		...FormActions,
 	}, dispatch);
 	actions.dispatch = dispatch;
 	return actions;

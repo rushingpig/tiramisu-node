@@ -85,13 +85,21 @@ export function getInvoiceCompany(){
 
 export const GET_INVOICE_LIST = 'GET_INVOICE_LIST';
 export function getInvoiceList(data){
-/*	return (dispatch, getState) => {
+	return (dispatch, getState) => {
 		var filter_data = getValues(getState().form.invoice_manage_filter);
 		filter_data = formCompile(filter_data);
 
+		return get(Url.get_invoice_list.toString(), {...filter_data, ...data})
+				.done((_data) => {
+					dispatch({
+						page_no: data.page_no,
+						data: _data,
+						type: GET_INVOICE_LIST,
+					})
+				})
 
-	}*/
-	return TEST({
+	}
+/*	return TEST({
 		total: 5,
 		list: [
 			{
@@ -126,7 +134,7 @@ export function getInvoiceList(data){
 				order_id: 'EXCEPTION',
 			},
 		]
-	}, GET_INVOICE_LIST)
+	}, GET_INVOICE_LIST)*/
 }
 
 function _getFormdata(getState){

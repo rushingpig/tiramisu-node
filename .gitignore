@@ -17,3 +17,4 @@ public/build
 public/cache/*.gzip
 views/index.hbs
 .vscode
+version/

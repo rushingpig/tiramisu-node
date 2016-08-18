@@ -7,7 +7,7 @@ var dateUtils = require('./DateUtils'),
   Constant = require('./Constant'),
   res_obj = require('../util/res_obj'),
   geolib = require('geolib'),
-  version = require('../package.json').version,
+  version = require('../version/package.json').version,
   constant = require('./Constant');
 
 const OS = Constant.OS;

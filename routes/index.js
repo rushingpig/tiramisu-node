@@ -19,7 +19,7 @@ router.get('/',function(req,res){
             name : userInfo.name,
             permissions : userInfo.permissions
         };
-    };
+    }
     systemUtils.commonRender(req,res);
 });
 

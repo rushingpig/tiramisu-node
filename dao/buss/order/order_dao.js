@@ -555,8 +555,8 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
   let doFt = doFullText(query_data);
   let sql = "select " + columns + " from ?? bo ";
   // 当使用配送时间作为查询过滤条件时,强制使用相关索引
-  if (query_data.begin_time || query_data.end_time) {
-    sql += "force index(IDX_DE_RE_DE_SR)";
+  if (!query_data.keywords && (query_data.begin_time || query_data.end_time)) {
+    sql += "force index(IDX_DELIVERY_TIME)";
   }
   params.push(tables.buss_order);
   // 订单转送货单模块  ->  当输入条件既不为手机号也不是完整订单号时,不进行全文检索,支持模糊匹配

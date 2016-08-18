@@ -31,7 +31,8 @@ import AreaActions from 'actions/area';
 import * as InvoiceManageActions from 'actions/order/invoice';
 
 import OperationRecordModal from 'common/operation_record_modal.js';
-import InvoiceApplyPannel from './invoice_apply_pannel';
+/*import InvoiceApplyPannel from './invoice_apply_pannel';*/
+import InvoiceApplyPannel from './invoice_detail_modal';
 
 
 class TopHeader extends Component{
@@ -262,7 +263,7 @@ class ManagePannel extends Component{
 		var {area, filter, stations, dispatch, getStationListByScopeSignal, resetStationListWhenScopeChange,
 			getInvoiceList, getOrderInvoiceInfo, getInvoiceCompany, getFormProvinces, getFormCities, getFormDistricts,
 			resetFormCities, resetFormDistricts, submitExpress,getInvoiceInfo, getOrderOptRecord, resetOrderOptRecord,
-			invoiceApply,
+			invoiceApply, resetInvoiceData,
 			main: {list, page_no, total, loading, refresh, active_order_id, check_order_info, order_invoice_info, 
 					company_data, form_provinces, form_cities, form_districts, express_companies},
 			operationRecord,
@@ -332,8 +333,8 @@ class ManagePannel extends Component{
 				<InvoiceModal ref='InvoiceModal'
 					{...{getFormProvinces, getFormCities, getFormDistricts,
 					 resetFormCities, resetFormDistricts, getInvoiceCompany, 
-					 getOrderInvoiceInfo, invoiceApply,
-					 form_provinces, form_cities, form_districts}}
+					 getOrderInvoiceInfo, invoiceApply,getInvoiceInfo,
+					 form_provinces, form_cities, form_districts, resetInvoiceData}}
 					data = {order_invoice_info}
 					company_data = {company_data}
 					/>
@@ -395,9 +396,9 @@ class InvoiceModal extends Component{
 		}
 	}
 	render(){
-		var title = this.props.editable ? '发票编辑页面' : '发票申请页面';
+		var title = this.state.editable ? '发票编辑页面' : '发票申请页面';
 		return(
-			<StdModal ref='modal' title={title} footer = {false}>
+			<StdModal ref='modal' title={title} footer = {false} >
 				<InvoiceApplyPannel {...this.props}
 					onHide = {this.hide.bind(this)}
 					invoice_id = {this.state.invoice_id}
@@ -410,7 +411,9 @@ class InvoiceModal extends Component{
 		this.setState({editable: data.editable})
 		if(data.editable){
 			this.setState({invoice_id: data.id})
-			this.props.getInvoiceInfo(id)
+			this.props.getInvoiceInfo(data.id)
+		}else{
+			this.props.resetInvoiceData();
 		}
 		this.props.getInvoiceCompany();
 		this.props.getFormProvinces();

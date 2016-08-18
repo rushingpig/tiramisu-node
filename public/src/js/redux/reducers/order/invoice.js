@@ -30,6 +30,8 @@ var main_state = {
     submit_ing: false,
 
     handle_invoice_status: '',
+    order_invoice_info: null,
+  	company_data: [],
 }
 
 function _t(data){
@@ -40,8 +42,7 @@ var filter_state = {
 	search_ing : false,
 	all_order_srcs: [],
   	all_invoice_status: map(invoice_status, ({value}, id) => ({id, text: value})),
-  	order_invoice_info: null,
-  	company_data: [],
+
 }
 
 function filter(state = filter_state, action){
@@ -92,6 +93,9 @@ function main(state = main_state, action){
 			store.dispatch(getFormDistricts(data.city_id));
 			
 			return {...state, order_invoice_info: data}
+		case Actions.RESET_INVOICE_DATA:
+			return {...state, order_invoice_info: null ,company_data: [], form_provinces: [],
+					form_cities: [], form_districts: []}
 		case Actions.GET_INVOICE_INFO:
 			var {getFormCities, getFormDistricts} = Actions;
 			var {data} = action;

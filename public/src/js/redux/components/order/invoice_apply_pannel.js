@@ -268,7 +268,7 @@ class InvoiceApplyPannel extends Component{
 
 }
 
-InvoiceApplyPannel = reduxForm({
+/*InvoiceApplyPannel = reduxForm({
 	form: 'invoice_apply_pannel',
 	validate,
 	fields: [
@@ -301,6 +301,38 @@ InvoiceApplyPannel = reduxForm({
     //赋初始值
     initialValues: state.invoiceManage.main.order_invoice_info
   }
-})(InvoiceApplyPannel);
+})(InvoiceApplyPannel);*/
 
-export default InvoiceApplyPannel;
+export default function InvoiceApplyPannel(initFunc){
+	  return reduxForm({
+	    form:'invoice_apply_pannel',
+	    fields: [
+			'amount',
+			'company_id',
+			'order_id',
+			'recipient',
+			'_recipient_mobile',
+			'_recipient_name',
+			'owner_mobile',
+			'owner_name',
+			'recipient_mobile',
+			'recipient_name',
+			'recipient_province_id',
+			'recipient_city_id',
+			'recipient_regionalism_id',
+			'recipient_address',
+			'remarks',
+			'title',
+			'type',
+			'enable_recipient_address',
+			'province_id',
+			'city_id',
+			'regionalism_id',
+			'address',
+		],
+	    validate,
+	   /*roleinfo:{roleinfo},
+	    depts:{depts},*/
+	    touchOnBlur: true,
+	  },initFunc)(InvoiceApplyPannel);	
+}

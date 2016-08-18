@@ -69,6 +69,13 @@ export function getInvoiceInfo(id){
 	}, GET_INVOICE_INFO)
 }
 
+export const RESET_INVOICE_DATA = 'RESET_INVOICE_DATA';
+export function resetInvoiceData(){
+	return {
+		type: RESET_INVOICE_DATA,
+	}
+}
+
 export const GET_INVOICE_COMPANY = 'GET_INVOICE_COMPANY';
 export function getInvoiceCompany(){
 	return TEST({

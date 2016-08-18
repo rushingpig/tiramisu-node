@@ -1,7 +1,13 @@
+const isProduction = process.env.NODE_ENV === 'production';
+
 export default {
   root: '/',
   ajax: '/v1/a',
   test_acl: false,  //测试权限时请置为true
+
+  //图片管理（七牛）
+  img_uptoken_url: isProduction ? 'http://brownie.xfxb.net' : 'http://120.76.25.32:8080/qiniu/token',
+  img_domain: isProduction ? 'http://qn.blissmall.net/' : 'http://rs.blissmall.net/',
 
   REQUEST: {
     ING: 0,

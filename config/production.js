@@ -56,6 +56,8 @@ var tables = {
     buss_order_error: 'buss_order_error',
     buss_delivery_record: 'buss_delivery_record',
     buss_delivery_picture: 'buss_delivery_picture',
+    buss_company: 'buss_company',
+    buss_invoice: 'buss_invoice',
 //=================Dict===================
     dict_regionalism : 'dict_regionalism',
     delivery_pay_rule: 'delivery_pay_rule'

@@ -205,4 +205,55 @@ Constant.REGIONALISM_LEVEL = {
     DISTRICT: 3
 };
 
+Constant.HISTORY_TYPE = {
+    USER: 1,
+    CITY: 2,
+    ORDER: 3,
+    REFUND: 4,
+    INVOICE: 5,
+    COMPANY: 6
+};
+
+Constant.REFUND = {
+    TYPE: {
+        PART: 'PART',  // 部分退款
+        FULL: 'FULL',  // 全额退款
+        OVERFULL: 'OVERFULL'  // 超额退款
+    },
+    WAY: {
+        THIRD_PARTY: 'THIRD_PARTY',  // 第三方
+        FINANCE: 'FINANCE',  // 财务部
+        CS: 'CS'  // 客服部
+    },
+    STATUS: {
+        CANCEL: 'CANCEL',  // 取消
+        UNTREATED: 'UNTREATED',  // 未处理
+        TREATED: 'TREATED',  // 已处理
+        REVIEWED: 'REVIEWED',  // 已审核
+        COMPLETED: 'COMPLETED'  // 已完成
+    },
+    REASON_TYPE:{
+        0: '其它',
+        1: '客户要求取消订单',
+        2: '用户地址不配送',
+        3: '客户更改产品(款式或磅数)',
+        4: '用户取消蛋糕配件'
+    }
+};
+
+Constant.EXPRESS = {
+    '1': '顺丰快递',
+    '2': '中通快递'
+};
+
+Constant.INVOICE = {
+    STATUS: {
+        CANCEL: 'CANCEL',  // 取消
+        WAITING: 'WAITING',  // 等待订单完成
+        UNTREATED: 'UNTREATED',  // 未开具
+        COMPLETED: 'COMPLETED',  // 已开具
+        DELIVERY: 'DELIVERY'  // 已发货
+    }
+};
+
 module.exports = Constant;

@@ -139,7 +139,7 @@ const App = () => (
           <Route path="add" onEnter={onEnter('CityManageAddCity')} getComponent = {get('CityDetailPannel')} />
           <Route path=":id" onEnter={onEnter('CityManageEdit')} getComponent = {get('CityDetailPannel')} />       
         </Route>
-        <Route path="img" getComponent={get('ImageManagePannel')}   />
+        <Route path="img" onEnter={onEnter('ImageManageAccess')} getComponent={get('ImageManagePannel')}   />
       </Route>
 
       <Route path="am" onEnter={getComponents('am')}>

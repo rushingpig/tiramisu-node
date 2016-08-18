@@ -79,6 +79,7 @@ export function getInvoiceList(data){
 				invoice_status: 'WAITING',
 				status: 'CANCEL',
 				order_id: '2016081215435718',
+				updated_time: 'ssssssssssss',
 			},
 			{
 				invoice_id: 2,
@@ -223,5 +224,74 @@ export function addRemark(invoiceId, remakrs){
 	return {
 		type: AddRemark,
 	}
+}
+
+export const GET_ORDER_OPT_RECORD = 'GET_ORDER_OPT_RECORD';
+export function getOrderOptRecord(order_id, data){
+/*  return dispatch => {
+    return get(Url.order_opt_record.toString(order_id), data)
+      .done(function(jsonobj){
+        dispatch({
+          type: GET_ORDER_OPT_RECORD,
+          data: jsonobj,
+        })
+      })
+  }*/
+  return {
+    type: GET_ORDER_OPT_RECORD,
+    data: {
+      "total": 12,
+      "list": [{
+        "order_id": 10000035,
+        "option": "编辑订单：分配{配送站}为{龙华配送站}\n修改{收货地址}\n提交订单",
+        "created_time": "2016-01-15 13:09:47",
+        "created_by": "系统管理员"
+      }, {
+        "order_id": 10000035,
+        "option": "{取消订单}",
+        "created_time": "2016-01-15 13:08:08",
+        "created_by": "系统管理员"
+      }, {
+        "order_id": 10000035,
+        "option": "添加订单",
+        "created_time": "2016-01-15 13:06:28",
+        "created_by": "系统管理员"
+      }, {
+        "order_id": 10000035,
+        "option": "修改 {配送站} 为 {龙华配送站} \n 修改 {配送时间} 为 {20151220 10:00~11:00} \n 删除 {榴莲双拼}",
+        "created_time": "2016-01-15 11:45:26",
+        "created_by": "系统管理员"
+      }, {
+        "order_id": 10000035,
+        "option": "打印订单",
+        "created_time": "2016-01-15 11:43:47",
+        "created_by": "系统管理员"
+      }, {
+        "order_id": 10000035,
+        "option": "打印订单",
+        "created_time": "2016-01-15 11:16:31",
+        "created_by": "系统管理员"
+      }, {
+        "order_id": 10000035,
+        "option": "打印订单",
+        "created_time": "2016-01-15 10:39:22",
+        "created_by": "系统管理员"
+      }, {
+        "order_id": 10000035,
+        "option": "打印订单",
+        "created_time": "2016-01-15 10:27:46",
+        "created_by": "系统管理员"
+      }],
+      "page_no": "0",
+      "page_size": "8"
+    }
+  }
+}
+
+export const RESET_ORDER_OPT_RECORD = 'RESET_ORDER_OPT_RECORD'; //先重置历史数据
+export function resetOrderOptRecord(){
+  return {
+    type: RESET_ORDER_OPT_RECORD,
+  }
 }
 

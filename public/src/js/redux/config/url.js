@@ -57,6 +57,10 @@ const URL = (function() {
     delete_order_src: '/order/src/:srcId',
     update_order_src: '/order/src/:srcId',
 
+    //发票
+    company_review: '/company/:companyId/review', //公司审核
+    company_del:    '/company/:companyId', //删除公司
+    
     //产品
     categories: '/product/categories',
     products:   '/products',

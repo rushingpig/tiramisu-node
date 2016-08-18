@@ -177,6 +177,25 @@ function del(target, cb){
   }
 }
 
+function some(target, cb){
+  if (target && typeof target === 'object') {
+    if (core_isArray(target)) {
+      //target.forEach(target, cb);
+      for (var i = 0, len = target.length; i < len; i++){
+        if( cb(target[i], i) ){
+          return true
+        }
+      }
+    } else {
+      for (var a in target){
+        if( cb(target[a], a) ){
+          return true
+        }
+      }
+    }
+  }
+}
+
 function toFixed(target, digit){
   var t = parseFloat(target);
   digit = typeof digit == 'undefined' ? 2 : digit; //默认2位
@@ -349,7 +368,7 @@ export default {
   mapValues,
   each,
   map,
-
+  del,
   clone,
 
   toFixed,

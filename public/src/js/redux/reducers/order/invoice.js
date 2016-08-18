@@ -135,9 +135,28 @@ function main(state = main_state, action){
 	}
 }
 
+var operation_record = {
+  page_no: 0,
+  total: 0,
+  list: [],
+  loading: true,
+}
+
+function operationRecord(state = operation_record, action){
+  switch(action.type){
+    case Actions.RESET_ORDER_OPT_RECORD:
+      return {...operation_record};
+    case Actions.GET_ORDER_OPT_RECORD:
+      return {...state, ...action.data, loading: false}
+    default:
+      return state;
+  }
+}
+
 export default combineReducers({
 	area: area(), 
 	filter,
 	stations,
 	main,
+	operationRecord,
 })

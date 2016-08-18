@@ -30,6 +30,8 @@ import * as OrderSupportActions from 'actions/order_support';
 import AreaActions from 'actions/area';
 import * as InvoiceManageActions from 'actions/order/invoice';
 
+import OperationRecordModal from 'common/operation_record_modal.js';
+
 
 class TopHeader extends Component{
 	render(){
@@ -192,8 +194,12 @@ var  InvoiceRow = React.createClass({
 				<td></td>
 				<td></td>
 				<td></td>
-				<td></td>
-				<td></td>
+				<td>
+					{props.updated_by}
+				</td>
+				<td>
+					<a href='javascript:;' onClick = {this.viewOperationRecordModal}>{props.updated_time}</a>
+				</td>
 			</tr>
 			)
 	},
@@ -235,6 +241,12 @@ var  InvoiceRow = React.createClass({
 	},
 	viewInvoiceEditModal(){
 		this.props.viewInvoiceEditModal(this.props.invoice_id);
+	},
+	viewOperationRecordModal(){
+		this.props.viewOperationRecordModal({order_id: this.props.order_id, 
+			owner_name: this.props.owner_name,
+			owner_mobile: this.props.owner_mobile,
+		})
 	}
 })
 
@@ -248,15 +260,17 @@ class ManagePannel extends Component{
 	render(){
 		var {area, filter, stations, dispatch, getStationListByScopeSignal, resetStationListWhenScopeChange,
 			getInvoiceList, getOrderInvoiceInfo, getInvoiceCompany, getFormProvinces, getFormCities, getFormDistricts,
-			resetFormCities, resetFormDistricts, submitExpress,getInvoiceInfo,
+			resetFormCities, resetFormDistricts, submitExpress,getInvoiceInfo, getOrderOptRecord, resetOrderOptRecord,
 			main: {list, page_no, total, loading, refresh, active_order_id, check_order_info, order_invoice_info, 
 					company_data, form_provinces, form_cities, form_districts, express_companies},
+			operationRecord,
 		} = this.props;
 		var content = list.map((n, i) => {
 		  return <InvoiceRow {...{...n, ...this.props}} key={n.invoice_id} 
 		  			viewDeliveryModal = {this.viewDeliveryModal.bind(this)}
 		  			viewRemarkModal = {this.viewRemarkModal.bind(this)}
 		  			viewInvoiceEditModal = {this.viewInvoiceEditModal.bind(this)}
+		  			viewOperationRecordModal = {this.viewOperationRecordModal.bind(this)}
 		  		/>
 		})
 		return (
@@ -334,6 +348,8 @@ class ManagePannel extends Component{
 					express_companies = {express_companies}/>
 				<RemarksModal ref = 'RemarksModal'
 					/>
+        		<OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
+				
 			</div>
 			)
 	}
@@ -349,6 +365,9 @@ class ManagePannel extends Component{
 	}
 	viewRemarkModal(invoice_id){
 		this.refs.RemarksModal.show();
+	}
+	viewOperationRecordModal(order){
+		this.refs.OperationRecordModal.show(order);
 	}
 	componentDidMount(){
 		this.search();
@@ -561,7 +580,7 @@ class InvoiceApplyPannel extends Component{
           					{
           						enable_recipient_address.value == 1 ?
           						[
-				  					<div className='form-group form-inline' style = {{marginBottom: 8}}>
+				  					<div key='province_div' className='form-group form-inline' style = {{marginBottom: 8}}>
 										{'　　　　　'}<Select disabled = {true} ref='form_province'  options = {form_provinces} {...recipient_province_id} 
 														ref="province" default-text="--选择省份--" className='form-select'
 														/>{' '}
@@ -570,12 +589,12 @@ class InvoiceApplyPannel extends Component{
 										<Select disabled = {true} ref='form_district' 
 												options = {form_districts} {...recipient_regionalism_id} ref="district"  default-text="--区/县--" />{' '}
 				  					</div>,
-				  					<div className='form-group form-inline' style = {{marginBottom: 8}}>
+				  					<div key='add_div' className='form-group form-inline' style = {{marginBottom: 8}}>
 										{'　　　　　'}<input disabled = {true} {...recipient_address} ref="recipient_address" className={`form-control input-xs ${address.error}`}  style={{width: 280}} type="text" placeholder='详细地址：小区、楼栋、门牌号'/>
 				  					</div>
           						]:
           						[
-				  					<div className='form-group form-inline' style = {{marginBottom: 8}}>
+				  					<div key='province_div' className='form-group form-inline' style = {{marginBottom: 8}}>
 										{'　　　　　'}<Select ref='form_province'  options = {form_provinces} {...province_id} 
 														ref="province" default-text="--选择省份--" className={`form-select ${province_id.error}`} 
 														/>{' '}
@@ -587,7 +606,7 @@ class InvoiceApplyPannel extends Component{
 												className = {`${regionalism_id.error}`}
 												options = {form_districts} {...regionalism_id} ref="district"  default-text="--区/县--" />{' '}
 				  					</div>,
-				  					<div className='form-group form-inline' style = {{marginBottom: 8}}>
+				  					<div key = 'add_div' className='form-group form-inline' style = {{marginBottom: 8}}>
 										{'　　　　　'}<input {...address} ref="recipient_address" className={`form-control input-xs ${address.error}`}  style={{width: 280}} type="text" placeholder='详细地址：小区、楼栋、门牌号'/>
 				  					</div>
           						]

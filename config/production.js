@@ -27,6 +27,7 @@ var exp_router_options = {
 //  the table list in database  ->  tiramisu
 var tables = {
 //================Sys=================
+    sys_history: 'sys_history',
     sys_user : 'sys_user',
     sys_role : 'sys_role',
     sys_menu : 'sys_menu',

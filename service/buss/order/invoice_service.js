@@ -44,9 +44,8 @@ module.exports.getExpressList = function (req, res) {
 module.exports.getCompanyHistory = function (req, res, next) {
     let promise = co(function *() {
         let company_id = req.params.companyId;
-        let query = Object.assign({company_id: company_id}, req.query);
-        let company_history = yield invoiceDao.findCompanyHistory(query);
-        return company_history;
+        let query = Object.assign({bind_id: company_id}, req.query);
+        return yield invoiceDao.findCompanyHistory(query);
     }).then(result=> {
         res.api(result);
     });
@@ -56,9 +55,8 @@ module.exports.getCompanyHistory = function (req, res, next) {
 module.exports.getInvoiceHistory = function (req, res, next) {
     let promise = co(function *() {
         let invoice_id = req.params.invoiceId;
-        let query = Object.assign({invoice_id: invoice_id}, req.query);
-        let invoice_history = yield invoiceDao.findInvoiceHistory(query);
-        return invoice_history;
+        let query = Object.assign({bind_id: invoice_id}, req.query);
+        return yield invoiceDao.findInvoiceHistory(query);
     }).then(result=> {
         res.api(result);
     });
@@ -95,7 +93,7 @@ module.exports.delCompany = function (req, res, next) {
     let promise = co(function *() {
         let company_id = req.params.companyId;
         let company_info = yield invoiceDao.findInvoiceById(company_id);
-        if (!company_info || company_info.length == 0) return Promise.reject(new TiramisuError());
+        if (!company_info || company_info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '公司信息不存在...'));
         let info = {
             del_flag: 0
         };
@@ -114,7 +112,7 @@ module.exports.editCompany = function (req, res, next) {
     let promise = co(function *() {
         let company_id = req.params.companyId;
         let company_info = yield invoiceDao.findCompanyById(company_id);
-        if (!company_info || company_info.length == 0) return Promise.reject(new TiramisuError());
+        if (!company_info || company_info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '公司信息不存在...'));
         company_info = company_info[0];
         let info = _.pick(req.body, [
             'name',
@@ -144,7 +142,7 @@ module.exports.reviewCompany = function (req, res, next) {
     let promise = co(function *() {
         let company_id = req.params.companyId;
         let company_info = yield invoiceDao.findCompanyById(company_id);
-        if (!company_info || company_info.length == 0) return Promise.reject(new TiramisuError());
+        if (!company_info || company_info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '公司信息不存在...'));
         let info = {is_review: 1};
         yield invoiceDao.updateCompany(company_id, systemUtils.assembleUpdateObj(req, info));
         let history = {option: ''};
@@ -173,6 +171,23 @@ module.exports.getCompanyInfo = function (req, res, next) {
         if (!company_info || company_info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '公司信息不存在...'));
         company_info = company_info[0];
         return company_info;
+    }).then(result=> {
+        res.api(result);
+    });
+    systemUtils.wrapService(res, next, promise);
+};
+
+module.exports.getCompanyInvoiceHistory = function (req, res, next) {
+    let promise = co(function *() {
+        let company_id = req.params.companyId;
+        let _res = yield invoiceDao.findInvoiceList({company_id: company_id});
+        _res.list.forEach(curr=> {
+            if (curr.order_status != 'COMPLETED') {
+                curr.status = IS.WAITING;
+            }
+            curr.order_id = systemUtils.getShowOrderId(curr.order_id, curr.order_created_time);
+        });
+        return _res;
     }).then(result=> {
         res.api(result);
     });
@@ -257,6 +272,12 @@ module.exports.addInvoice = function (req, res, next) {
         ]);
         info.order_id = order_id;
         info.status = IS.UNTREATED;
+        if (info.company_id) {
+            let company_info = yield invoiceDao.findCompanyById(info.company_id);
+            if (!company_info || company_info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '公司信息不存在...'));
+            company_info = company_info[0];
+            info.title = company_info.name;
+        }
         let invoice_id = yield invoiceDao.insertInvoice(systemUtils.assembleInsertObj(req, info));
         if (!invoice_id) return Promise.reject(new TiramisuError(res_obj.FAIL, '发票申请,提交失败...'));
         let history = {option: ''};
@@ -275,23 +296,34 @@ module.exports.editInvoice = function (req, res, next) {
         let invoice_info = yield invoiceDao.findInvoiceById(invoice_id);
         if (!invoice_info || invoice_info.length == 0) return Promise.reject(new TiramisuError());
         invoice_info = invoice_info[0];
-        let info = _.pick(req.body, [
-            'status',
-            'type',
-            'company_id',
-            'title',
-            'amount',
-            'recipient',
-            'recipient_name',
-            'recipient_mobile',
-            'regionalism_id',
-            'address'
-        ]);
-        if (!req.body.status) {
+        let info;
+        if (req.body.status == IS.COMPLETED) {
+            info = {status: IS.COMPLETED};
+        } else {
+            info = _.pick(req.body, [
+                'type',
+                'company_id',
+                'title',
+                'amount',
+                'recipient',
+                'recipient_name',
+                'recipient_mobile',
+                'regionalism_id',
+                'address'
+            ]);
             info.status = IS.UNTREATED;
+            if (info.type == '0') {
+                info.company_id = 0;
+            }
+            if (info.company_id) {
+                let company_info = yield invoiceDao.findCompanyById(info.company_id);
+                if (!company_info || company_info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '公司信息不存在...'));
+                company_info = company_info[0];
+                info.title = company_info.name;
+            }
         }
         if (!isInvoiceCanUpdateStatus(invoice_info.status, info.status)) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
-        yield invoiceDao.updateInvoice(systemUtils.assembleInsertObj(req, info));
+        yield invoiceDao.updateInvoice(invoice_id, systemUtils.assembleInsertObj(req, info));
         let history = {option: ''};
         history.bind_id = invoice_id;
         if (info.status == IS.UNTREATED) {
@@ -329,6 +361,9 @@ module.exports.getInvoiceInfo = function (req, res, next) {
             address: order_info.recipient_address,
             amount: order_info.total_discount_price
         };
+        if (invoice_info.order_status != 'COMPLETED') {
+            invoice_info.status = IS.WAITING;
+        }
         invoice_info.order_id = systemUtils.getShowOrderId(invoice_info.order_id, invoice_info.order_created_time);
         return invoice_info;
     }).then(result=> {

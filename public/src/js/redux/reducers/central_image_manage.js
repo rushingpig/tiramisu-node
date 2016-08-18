@@ -1,13 +1,13 @@
 import { GOT_ORDER_SRCS } from 'actions/order_support';
 import * as Actions from 'actions/central_image_manage';
 import { core, map, del, Noty } from 'utils/index';
-import { REQUEST } from 'config/app.config';
+import { REQUEST, img_domain } from 'config/app.config';
 import { combineReducers } from 'redux';
 import clone from 'clone';
 
 var initial_state = {
   dir_id: undefined, //当前所在目录id
-  domain: 'http://qn.blissmall.net/',
+  domain: img_domain,
   list: [],
   asc: true, //默认升序
   checked_list: [],

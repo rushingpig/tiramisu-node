@@ -21,6 +21,7 @@ function init(){
   ${npm} install && \
   ${npm} prune && \
   rm -fr ./*.jpg *.png
+  cd version && ${npm} version patch && cd ..
 }
 
 function start(){

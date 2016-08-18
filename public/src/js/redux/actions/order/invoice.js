@@ -136,10 +136,20 @@ export function invoiceApply(){
 		dispatch({
 			type: INVOICE_APPLY_ING,
 		})
-
-		return TEST({
+		return post(Url.invoice_apply.toString(), data)
+				.done(() => {
+					dispatch({
+						type: INVOICE_APPLY_SUCCESS
+					})
+				})
+				.fail(()=> {
+					dispatch({
+						type: INVOICE_APPLY_FAIL
+					})
+				})
+		/*return TEST({
 			type: INVOICE_APPLY_SUCCESS
-		})
+		})*/
 	}
 }
 
@@ -152,10 +162,12 @@ export function invoiceEdit(invoiceId){
 		dispatch({
 			type: INVOICE_EDIT_ING,
 		})
-
-		return TEST({
-			type: INVOICE_EDIT_SUCCESS,
-		})
+		return put(Url.invoice_edit.toString(invoiceId), data)
+				.done(() => {
+					dispatch({
+						type: INVOICE_EDIT_SUCCESS
+					})
+				})
 	}
 }
 

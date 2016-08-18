@@ -60,7 +60,9 @@ const URL = (function() {
     //发票
     company_review: '/company/:companyId/review', //公司审核
     company_del:    '/company/:companyId', //删除公司
-    
+    get_invoice_list: '/invoice/list',    //获取发票列表
+    invoice_apply:    '/invoice',         //发票申请
+    invoice_edit:     '/invoice/:invoiceId', //发票编辑
     //产品
     categories: '/product/categories',
     products:   '/products',

@@ -104,8 +104,12 @@ function main(state = main_state, action){
 			return {...state, save_ing: true}
 		case Actions.INVOICE_APPLY_FAIL:
 			return {...state, save_ing: false, save_success: false}
+		case Actions.INVOICE_EDIT_ING:
+			return {...state, submit_ing: true}
 		case Actions.INVOICE_APPLY_SUCCESS:
 			return {...state, save_ing: false, save_success: true}
+		case Actions.INVOICE_EDIT_SUCCESS:
+			return {...state, submit_ing: false}
 		case Actions.HANDLE_INVOICE_SUCCESS:
 			var {handleActionName, invoiceId} = action.data;
 			var {list } = state;

@@ -83,7 +83,11 @@ function main(state = main_state, action){
 			data.enable_recipient_address = 1;
 			data.amount = data.amount / 100;
 			data.type = 0;
-
+			data.recipient_province_id = data.province_id;
+			data.recipient_city_id = data.city_id;
+			data.recipient_regionalism_id = data.regionalism_id;
+			data.recipient_address = data.address;
+			data.order_id = action.order_id;
 			store.dispatch(getFormCities(data.province_id));
 			store.dispatch(getFormDistricts(data.city_id));
 			

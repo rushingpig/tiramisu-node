@@ -63,6 +63,10 @@ const URL = (function() {
     get_invoice_list: '/invoice/list',    //获取发票列表
     invoice_apply:    '/invoice',         //发票申请
     invoice_edit:     '/invoice/:invoiceId', //发票编辑
+    order_invoice_data: '/order/:orderId/invoice/option',  //根据订单获取发票所需数据
+
+    add_company:       '/company',   //添加开发票的公司
+    
     //产品
     categories: '/product/categories',
     products:   '/products',

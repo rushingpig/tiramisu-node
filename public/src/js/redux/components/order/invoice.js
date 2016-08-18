@@ -261,6 +261,7 @@ class ManagePannel extends Component{
 		var {area, filter, stations, dispatch, getStationListByScopeSignal, resetStationListWhenScopeChange,
 			getInvoiceList, getOrderInvoiceInfo, getInvoiceCompany, getFormProvinces, getFormCities, getFormDistricts,
 			resetFormCities, resetFormDistricts, submitExpress,getInvoiceInfo, getOrderOptRecord, resetOrderOptRecord,
+			invoiceApply,
 			main: {list, page_no, total, loading, refresh, active_order_id, check_order_info, order_invoice_info, 
 					company_data, form_provinces, form_cities, form_districts, express_companies},
 			operationRecord,
@@ -330,7 +331,7 @@ class ManagePannel extends Component{
 				<InvoiceApplyModal ref='InvoiceApplyModal'
 					{...{getFormProvinces, getFormCities, getFormDistricts,
 					 resetFormCities, resetFormDistricts, getInvoiceCompany, 
-					 getOrderInvoiceInfo, 
+					 getOrderInvoiceInfo, invoiceApply,
 					 form_provinces, form_cities, form_districts}}
 					data = {order_invoice_info}
 					company_data = {company_data}
@@ -528,10 +529,10 @@ class InvoiceApplyPannel extends Component{
 					<div className='form-group form-inline'>
 						<label>{'发票类型：'}</label>
 						<label>
-						  <input {...type} checked = {type.value == 0} type="radio" value = '0' /> 增值税普通发票</label>
+						  <input {...type} type="radio" value = {0} /> 增值税普通发票</label>
 						{'　'}
 						<label>
-						  <input {...type} checked = {type.value == 1} type="radio"  value = '1' /> 增值税专用发票</label> 
+						  <input {...type} type="radio"  value = {1} /> 增值税专用发票</label> 
 					</div>
 					
 					
@@ -669,7 +670,7 @@ class InvoiceApplyPannel extends Component{
 		}
 	}
 	handleCreateInvoice(form_data){
-		this.props.actions.invoiceApply(form_data)
+		this.props.invoiceApply(form_data)
 			.done(function(){
 				Noty('success', '保存成功');
 				this.props.onHide();

@@ -18,7 +18,20 @@ export function activeOrder(id){
 
 export const GET_ORDER_INVOICE_INFO = 'GET_ORDER_INVOICE_INFO';
 export function getOrderInvoiceInfo(id){
-	return TEST({
+	return dispatch => {
+		return get(Url.order_invoice_data.toString(id), null)
+			.done((data) => {
+				dispatch({
+					order_id: id,
+					data: data,
+					type: GET_ORDER_INVOICE_INFO,
+				})
+			})
+
+	}
+
+	/*return GET(Url.order_invoice_data.toString(id), null, GET_ORDER_INVOICE_INFO);*/
+/*	return TEST({
 		amount: 10000,
 		owner_mobile: '18588420689',
 		owner_name: 'gaozheng81503',
@@ -29,7 +42,7 @@ export function getOrderInvoiceInfo(id){
 		recipient_regionalism_id: '130102',
 
 		recipient_address: '',
-	}, GET_ORDER_INVOICE_INFO);
+	}, GET_ORDER_INVOICE_INFO);*/
 }
 
 export const GET_INVOICE_INFO = 'GET_INVOICE_INFO';
@@ -109,7 +122,7 @@ export function getInvoiceList(data){
 	}, GET_INVOICE_LIST)
 }
 
-function _getFormdata(form_data, getState){
+function _getFormdata(getState){
 	var invoice_data = getValues(getState().form.invoice_apply_pannel);
 	if(invoice_data){
 		if(invoice_data.enable_recipient_address == 1){

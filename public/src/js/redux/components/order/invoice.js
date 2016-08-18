@@ -357,6 +357,8 @@ class ManagePannel extends Component{
 			)
 	}
 	viewInvoiceApplyModal(){
+		this.props.resetInvoiceData();
+		this.props.destroyForm('invoice_apply_pannel');
 		this.refs.InvoiceModal.show({editable: false});
 	}
 	viewInvoiceEditModal(id){
@@ -710,7 +712,7 @@ InvoiceApplyPannel = reduxForm({
 		'regionalism_id',
 		'address',
 	],
-	destroyOnUnmount: false
+	destroyOnUnmount: true
 }, state => {
   return {
     //赋初始值
@@ -796,6 +798,7 @@ function mapDispatchToProps(dispatch){
 		...InvoiceManageActions,
 		getStationListByScopeSignal,
 		resetStationListWhenScopeChange,
+		...FormActions,
 	}, dispatch);
 	actions.dispatch = dispatch;
 	return actions;

@@ -66,7 +66,9 @@ const URL = (function() {
     order_invoice_data: '/order/:orderId/invoice/option',  //根据订单获取发票所需数据
 
     add_company:       '/company',   //添加开发票的公司
-    
+    edit_company:      '/company/:companyId', // 编辑开发票公司
+    get_company_list:  '/company/list', //获取公司列表
+    company_opt_history: '/company/:companyId/history', //获取公司操作记录
     //产品
     categories: '/product/categories',
     products:   '/products',

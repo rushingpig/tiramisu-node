@@ -149,22 +149,30 @@ var CompanyRow = React.createClass({
 				<td>
 					{props.bank_account}
 				</td>
-				<td>
+				<td style={{textAlign: 'left'}}>
 				{
 					props.img_1 && props.img_1 != '' &&
-					[<a onClick = { this.props.viewImg.bind(null,{url: props.img_1, name: '营业执照'} )} href='javascript:;' key='img1_a'>营业执照</a>,<br key='img1_br'/>]
+					[<a onClick = { this.props.viewImg.bind(null,{url: props.img_1, name: '营业执照'} )} href='javascript:;' key='img1_a'>
+					<i className = 'fa fa-lg fa-file-image-o space-right' key='img_1_i'></i>
+					营业执照</a>,<br key='img1_br'/>]
 				}
 				{
 					props.img_2 && props.img_2 != '' &&
-					[<a onClick = { this.props.viewImg.bind(null, {url: props.img_2, name: '税务登记证'})} href='javascript:;' key='img2_a'>税务登记证</a>,<br key='img2_br'/>]
+					[<a onClick = { this.props.viewImg.bind(null, {url: props.img_2, name: '税务登记证'})} href='javascript:;' key='img2_a'>
+					<i className = 'fa fa-lg fa-file-image-o space-right' key='img_2_i'></i>
+					税务登记证</a>,<br key='img2_br'/>]
 				}
 				{
 					props.img_3 && props.img_3 != '' &&
-					[<a onClick = { this.props.viewImg.bind(null, {url: props.img_3, name: '纳税人资格证'})} href='javascript:;' key='img3_a'>纳税人资格证</a>,<br key='img3_br'/>]
+					[<a onClick = { this.props.viewImg.bind(null, {url: props.img_3, name: '纳税人资格证'})} href='javascript:;' key='img3_a'>
+					<i className = 'fa fa-lg fa-file-image-o space-right' key='img_3_i'></i>
+					纳税人资格证</a>,<br key='img3_br'/>]
 				}
 				{
 					props.img_4 && props.img_4 != '' &&
-					[<a onClick = { this.props.viewImg.bind(null, {url: props.img_4, name: '银行开户许可证'})} href='javascript:;' key='img4_a'>银行开户许可证</a>,<br key='img4_br'/>]
+					[<a onClick = { this.props.viewImg.bind(null, {url: props.img_4, name: '银行开户许可证'})} href='javascript:;' key='img4_a'>
+					<i className = 'fa fa-lg fa-file-image-o space-right' key='img_4_i'></i>
+					银行开户许可证</a>,<br key='img4_br'/>]
 				}
 				</td>
 				<td>
@@ -352,7 +360,7 @@ class ManagePannel extends Component{
 	}
 	search(page){
 	  //搜索数据，无需loading图
-	  page = typeof page == 'undefined' ? this.props.page_no : page;
+	  page = typeof page == 'undefined' ? this.props.main.page_no : page;
 	  return this.props.getCompanyList({page_no: page, page_size: this.state.page_size});
 	}
 	onPageChange(page){

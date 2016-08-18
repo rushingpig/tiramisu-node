@@ -225,11 +225,12 @@ module.exports.getInvoiceList = function (req, res, next) {
     let promise = co(function *() {
         let _res = yield invoiceDao.findInvoiceList(req.query);
         _res.list.forEach(curr=> {
-            if (curr.order_status == '') {
+            if (curr.order_status != 'COMPLETED') {
                 curr.status = IS.WAITING;
             }
             curr.order_id = systemUtils.getShowOrderId(curr.order_id, curr.order_created_time);
-        })
+        });
+        return _res;
     }).then(result=> {
         res.api(result);
     });

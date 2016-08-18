@@ -47,28 +47,38 @@ var FilterHeader = React.createClass({
     return (
       <div className="panel search">
         <div className="panel-body form-inline">
-          <div className="inline-block btn-group">
-            <button onClick={this.showDropDownMenu} className="btn dropdown-toggle btn-theme btn-xs">
-              <i className="fa fa-cloud-upload"></i> 上传
-              <span className="caret" style={{marginLeft: 8}}></span>
-            </button>
-            <ul ref="dropDownMenu" className="dropdown-menu">
-              <li>
-                <a id="uploadFileBtn" onClick={this.uploadFileHandler} href="javascript:void(0)" >
-                  上传文件
-                </a>
-              </li>
-              <li>
-                <a id="uploadDirBtn" onClick={this.uploadFileHandler} href="javascript:void(0)" >
-                  上传文件夹
-                </a>
-              </li>
-            </ul>
-          </div>
-          {'　　'}
-          <button onClick={this.props.actions.createNewDir} className="btn btn-theme btn-xs">
-            <i className="fa fa-plus-circle"></i>{' 新建文件夹'}
-          </button>
+          {
+            V('ImageManageUpload')
+              ? [
+                  <div key="uploadGroup" className="inline-block btn-group">
+                    <button onClick={this.showDropDownMenu} className="btn dropdown-toggle btn-theme btn-xs">
+                      <i className="fa fa-cloud-upload"></i> 上传
+                      <span className="caret" style={{marginLeft: 8}}></span>
+                    </button>
+                    <ul ref="dropDownMenu" className="dropdown-menu">
+                      <li>
+                        <a id="uploadFileBtn" onClick={this.uploadFileHandler} href="javascript:void(0)" >
+                          上传文件
+                        </a>
+                      </li>
+                      <li>
+                        <a id="uploadDirBtn" onClick={this.uploadFileHandler} href="javascript:void(0)" >
+                          上传文件夹
+                        </a>
+                      </li>
+                    </ul>
+                  </div>,
+                  '　　'
+                ]
+              : null
+          }
+          {
+            V('ImageManageCreateDir')
+              ? <button onClick={this.props.actions.createNewDir} className="btn btn-theme btn-xs">
+                  <i className="fa fa-plus-circle"></i>{' 新建文件夹'}
+                </button>
+              : null
+          }
           <SearchInput searchHandler={this.search} searching={this.props.searchIng} className="form-inline pull-right" placeholder="图片名称" />
           {
             progressList.length
@@ -89,6 +99,9 @@ var FilterHeader = React.createClass({
     var uploaderOptions = this.getUploaderOptions();
     // LazyLoad('qiniu_dev', () => {
     LazyLoad('qiniu', () => {
+      if( !V('ImageManageUpload') ){
+        return;
+      }
       var fileUploader = Qiniu.uploader({
         ...uploaderOptions,
         browse_button: 'uploadFileBtn',
@@ -273,9 +286,13 @@ function ViewModal(props){
           <div className="inline-block text-left v-top" style={{paddingLeft: 31, maxWidth: '20vw', boxSizing: 'border-box'}}>
             <div className="font-lg">{props.name}</div>
             <h5>{props.size}</h5>
-            <a href={props.domain + props.url} download={props.name} style={{color: 'inherit'}}>
-              <i className="hover-effect pointer fa fa-lg fa-cloud-download"></i>
-            </a>
+            {
+              V('ImageManageDownload')
+                ? <a href={props.domain + props.url} download={props.name} style={{color: 'inherit'}}>
+                    <i className="hover-effect pointer fa fa-lg fa-cloud-download"></i>
+                  </a>
+                : null
+            }
           </div>
         </div>
       </center>
@@ -289,9 +306,9 @@ class Row extends Component {
     this.state = {
       editable: false,
       operate_options: [
-        { key: 'move', text: '移动到' },
-        { key: 'rename', text: '重命名' },
-        { key: 'del', text: '删除' },
+        { key: 'move', text: '移动到', hide: !V('ImageManageMove') },
+        { key: 'rename', text: '重命名', hide: !V('ImageManageRename') },
+        { key: 'del', text: '删除', hide: !V('ImageManageDel') },
       ],
     };
     this.submitNewDir = this.submitNewDir.bind(this);
@@ -317,8 +334,10 @@ class Row extends Component {
           </div>
           <div className="visibility-hidden pull-right show-on-parent-hover" style={{marginRight: 20}}>
             {
-              !isDir
-                ? <a href={domain + url} download={name}><i className="fa fa-download fa-color-gray space pointer"></i></a>
+              V('ImageManageDownload')
+                ? (!isDir
+                    ? <a href={domain + url} download={name}><i className="fa fa-download fa-color-gray space pointer"></i></a>
+                    : null)
                 : null
             }
             <DropDown
@@ -453,15 +472,23 @@ class ImageManagePannel extends Component {
                               {/*<button className="btn btn-default btn-xs space-left">
                                 <i className="fa fa-download"></i> 下载
                               </button>*/}
-                              <button onClick={this.patchDelete.bind(this)} className="btn btn-default btn-xs space-left">
-                                <i className="fa fa-trash-o"></i> 删除
-                              </button>
+                              {
+                                V('ImageManageDel')
+                                  ? <button onClick={this.patchDelete.bind(this)} className="btn btn-default btn-xs space-left">
+                                      <i className="fa fa-trash-o"></i> 删除
+                                    </button>
+                                  : null
+                              }
                               {/*<button disabled={checked_list.length > 1} className="btn btn-default btn-xs space-left">
                                                               重命名
                                                             </button>*/}
-                              <button onClick={this.showMoveModal.bind(this, checked_list)} className="btn btn-default btn-xs space-left">
-                                移动到
-                              </button>
+                              {
+                                V('ImageManageMove')
+                                  ? <button onClick={this.showMoveModal.bind(this, checked_list)} className="btn btn-default btn-xs space-left">
+                                      移动到
+                                    </button>
+                                  : null
+                              }
                             </div>
                           : <span>文件名</span>
                       }
@@ -617,9 +644,13 @@ class MoveModal extends React.Component {
   render(){
     return (
       <StdModal onConfirm={this.onConfirm.bind(this)} submitting={this.props.submitting} disabled={this.props.editable} ref="modal" title="移动到">
-        <div className="form-group">
-          <button onClick={this.props.actions.createNewDirInModal} className="btn btn-xs btn-theme">创建文件夹</button>
-        </div>
+        {
+          V('ImageManageCreateDir')
+            ? <div className="form-group">
+                <button onClick={this.props.actions.createNewDirInModal} className="btn btn-xs btn-theme">创建文件夹</button>
+              </div>
+            : null
+        }
         <TreeView actions={this.props.actions} loading={this.props.loading} data={this.props.tree_data} />
       </StdModal>
     )

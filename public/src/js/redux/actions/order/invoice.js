@@ -294,16 +294,16 @@ export function addRemark(invoiceId, remakrs){
 
 export const GET_ORDER_OPT_RECORD = 'GET_ORDER_OPT_RECORD';
 export function getOrderOptRecord(order_id, data){
-/*  return dispatch => {
-    return get(Url.order_opt_record.toString(order_id), data)
+  return dispatch => {
+    return get(Url.invoice_opt_history.toString(order_id), data)
       .done(function(jsonobj){
         dispatch({
           type: GET_ORDER_OPT_RECORD,
           data: jsonobj,
         })
       })
-  }*/
-  return {
+  }
+/*  return {
     type: GET_ORDER_OPT_RECORD,
     data: {
       "total": 12,
@@ -351,7 +351,7 @@ export function getOrderOptRecord(order_id, data){
       "page_no": "0",
       "page_size": "8"
     }
-  }
+  }*/
 }
 
 export const RESET_ORDER_OPT_RECORD = 'RESET_ORDER_OPT_RECORD'; //先重置历史数据

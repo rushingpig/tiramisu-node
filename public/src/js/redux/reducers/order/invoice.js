@@ -2,6 +2,7 @@ import { dateFormat, map } from 'utils/index';
 import { combineReducers } from 'redux';
 import { REQUEST, invoice_status, ACCESSORY_CATE_ID } from 'config/app.config';
 import { GOT_ORDER_SRCS } from 'actions/order_manage_form';
+
 import { area } from 'reducers/area_select';
 import * as OrderSupportReducers from 'reducers/order_support';
 import stations from 'reducers/stations';
@@ -15,6 +16,8 @@ var main_state = {
 	list: [],
 	total: 0,
 	page_no: 0 ,
+	page_size: 0,
+
 	refresh: false,
 	loading: true,
 	active_order_id:-1,
@@ -115,6 +118,8 @@ function main(state = main_state, action){
 		case Actions.INVOICE_EDIT_ING:
 			return {...state, submit_ing: true}
 		case Actions.INVOICE_APPLY_SUCCESS:
+			var { getInvoiceList } = Actions;
+			store.dispatch(getInvoiceList({page_no: 0, page_size: state.page_size}))
 			return {...state, save_ing: false, save_success: true}
 		case Actions.INVOICE_EDIT_SUCCESS:
 			return {...state, submit_ing: false}

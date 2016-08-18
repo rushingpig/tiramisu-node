@@ -17,7 +17,7 @@ import ProgressBar from 'common/progress_bar';
 import { get_normal_loading } from 'common/loading';
 
 import { Noty, del } from 'utils/index';
-import { SELECT_DEFAULT_VALUE } from 'config/app.config';
+import Config from 'config/app.config';
 import LazyLoad from 'utils/lazy_load';
 import V from 'utils/acl';
 
@@ -189,7 +189,7 @@ var FilterHeader = React.createClass({
       // save_key: true,
       // uptoken: 'CQH3l1cozF_-KJZj-CiKWUDkaCVGtdRYgI_klK5I:g2QT0uKcRNWuVwizj_uj8zkkCjs=:eyJzY29wZSI6ImhhcHB5dGVzdCIsImRlYWRsaW5lIjoxNDcwMjIwMDU3fQ==',
       // uptoken_url: 'http://192.168.0.109:3000/qiniu/token', //服务器端可以
-      uptoken_url: 'http://120.76.25.32:8080/qiniu/token',
+      uptoken_url: Config.img_uptoken_url,
       domain: this.props.domain,
       init: {
         UploadProgress: (up, file) => {
@@ -300,6 +300,7 @@ class Row extends Component {
   render(){
     var fileIcon = this.getFileIcon(this.props);
     var {isDir, editable, isNewDir, id, checked, url, name, size, updated_time, domain} = this.props;
+    var isImg = (/(\.jpg$)|(\.png$)|(\.gif$)|(\.webp$)|(\.tiff$)|(\.bmp$)/).test(name);
     return (
       <tr>
         <td className="text-center"><input onClick={this.checkHandler.bind(this)} checked={checked} type="checkbox"/></td>
@@ -311,7 +312,7 @@ class Row extends Component {
                 ? <input ref="file_name" defaultValue={name} onBlur={isNewDir ? this.submitNewDir : this.rename} type="text" />
                 : isDir
                   ? <span onClick={this.props.enterDir.bind(null, {name, id})} className="underline-on-hover">{name}</span>
-                  : <span onClick={this.props.actions.viewImg.bind(null, this.props)}>{name}</span>
+                  : <span onClick={isImg && this.props.actions.viewImg.bind(null, this.props)}>{name}</span>
             }
           </div>
           <div className="visibility-hidden pull-right show-on-parent-hover" style={{marginRight: 20}}>

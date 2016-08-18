@@ -1245,97 +1245,107 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
 
   return baseDao.trans().then(transaction => {
     return new Promise((resolve, reject) => {
-      // recipient
-      transaction.query(this.base_insert_sql, [tables.buss_recipient, recipientObj], (recipient_err, info) => {
-        if (recipient_err) {
-          return reject(new TiramisuError(errorMessage.SQL_ERROR, recipient_err.message));
+      // 检查是否存在此merchant_id且非EXCEPTION的订单，返回错误
+      let sql = this.base_select_sql + 'and merchant_id = ? and status <> ?';
+      transaction.query(sql, [['id'], tables.buss_order, del_flag.SHOW, merchant_id, 'EXCEPTION'], (exist_err, result) => {
+        if (exist_err) {
+            return reject(new TiramisuError(errorMessage.SQL_ERROR, exist_err.message));
         }
-        if (!info.insertId) {
-          return reject(new TiramisuError(errorMessage.FAIL));
+        if (result.length > 0) {
+            return reject(new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, merchant_id));
         }
-        if (toolUtils.isEmptyArray(products)) {
-          return reject(new TiramisuError(errorMessage.ORDER_NO_PRODUCT));
-        }
-        let recipientId = info.insertId;
-        let orderObj = {
-          //office_id : req.session.user.office_id,
-          recipient_id: recipientId,
-          // force not setting the delivery station id
-          delivery_id: -1,
-          src_id: src_id,
-          pay_modes_id: pay_modes_id,
-          pay_status: pay_status,
-          owner_name: owner_name,
-          owner_mobile: owner_mobile,
-          is_submit: 0,
-          is_deal: 0,
-          status: Constant.OS.UNTREATED,
-          remarks: remarks,
-          invoice: invoice,
-          delivery_time: delivery_time,
-          total_amount: total_amount,
-          total_original_price: total_original_price,
-          total_discount_price: total_discount_price,
-          greeting_card: greeting_card,
-          coupon: coupon,
-          merchant_id: merchant_id,
-          shop_id: shop_id,
-          // Force using system id
-          created_by: 20
-        };
-        // order
-        transaction.query(this.base_insert_sql, [tables.buss_order, systemUtils.assembleInsertObj(req, orderObj)], (order_err, result) => {
-          if (order_err) {
-            if (order_err.code === 'ER_DUP_ENTRY') {
-              return reject(new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, orderObj.merchant_id));
-            } else {
-              return reject(new TiramisuError(errorMessage.SQL_ERROR, order_err.message));
-            }
+        // recipient
+        transaction.query(this.base_insert_sql, [tables.buss_recipient, recipientObj], (recipient_err, info) => {
+          if (recipient_err) {
+            return reject(new TiramisuError(errorMessage.SQL_ERROR, recipient_err.message));
           }
-          if (!result.insertId) {
+          if (!info.insertId) {
             return reject(new TiramisuError(errorMessage.FAIL));
           }
-          let orderId = result.insertId,
-            params = [];
-          products.forEach((curr) => {
-            let arr = [];
-            arr.push(orderId);
-            arr.push(curr.sku_id);
-            arr.push(curr.num);
-            arr.push(curr.choco_board || '');
-            arr.push(curr.greeting_card || '');
-            arr.push(curr.atlas);
-            arr.push(curr.custom_name || '');
-            arr.push(curr.custom_desc || '');
-            arr.push(curr.discount_price || 0);
-            arr.push(curr.amount || 0);
-            params.push(arr);
-          });
-          let order_fulltext_obj = {
-            order_id: orderId,
-            show_order_id: systemUtils.getShowOrderId(orderId, new Date()),
-            owner_name: systemUtils.encodeForFulltext(owner_name),
+          if (toolUtils.isEmptyArray(products)) {
+            return reject(new TiramisuError(errorMessage.ORDER_NO_PRODUCT));
+          }
+          let recipientId = info.insertId;
+          let orderObj = {
+            //office_id : req.session.user.office_id,
+            recipient_id: recipientId,
+            // force not setting the delivery station id
+            delivery_id: -1,
+            src_id: src_id,
+            pay_modes_id: pay_modes_id,
+            pay_status: pay_status,
+            owner_name: owner_name,
             owner_mobile: owner_mobile,
-            recipient_name: systemUtils.encodeForFulltext(recipient_name),
-            recipient_mobile: recipient_mobile,
-            recipient_address: systemUtils.encodeForFulltext(recipient_address),
-            landmark: systemUtils.encodeForFulltext(recipient_landmark),
-            merchant_id: merchant_id
-          };
-          if(coupon) order_fulltext_obj.coupon = coupon;
-          let order_history_obj = {
-            order_id: orderId,
-            option: '添加订单',
+            is_submit: 0,
+            is_deal: 0,
+            status: Constant.OS.UNTREATED,
+            remarks: remarks,
+            invoice: invoice,
+            delivery_time: delivery_time,
+            total_amount: total_amount,
+            total_original_price: total_original_price,
+            total_discount_price: total_discount_price,
+            greeting_card: greeting_card,
+            coupon: coupon,
+            merchant_id: merchant_id,
+            shop_id: shop_id,
+            // Force using system id
             created_by: 20
           };
-          let skus_sql = "insert into " + tables.buss_order_sku + "(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price,amount) values ?";
-          transaction.query(skus_sql, [params], err => {
-            if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
-            transaction.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], err => {
+          // order
+          transaction.query(this.base_insert_sql, [tables.buss_order, systemUtils.assembleInsertObj(req, orderObj)], (order_err, result) => {
+            if (order_err) {
+              if (order_err.code === 'ER_DUP_ENTRY') {
+                return reject(new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, orderObj.merchant_id));
+              } else {
+                return reject(new TiramisuError(errorMessage.SQL_ERROR, order_err.message));
+              }
+            }
+            if (!result.insertId) {
+              return reject(new TiramisuError(errorMessage.FAIL));
+            }
+            let orderId = result.insertId,
+              params = [];
+            products.forEach((curr) => {
+              let arr = [];
+              arr.push(orderId);
+              arr.push(curr.sku_id);
+              arr.push(curr.num);
+              arr.push(curr.choco_board || '');
+              arr.push(curr.greeting_card || '');
+              arr.push(curr.atlas);
+              arr.push(curr.custom_name || '');
+              arr.push(curr.custom_desc || '');
+              arr.push(curr.discount_price || 0);
+              arr.push(curr.amount || 0);
+              params.push(arr);
+            });
+            let order_fulltext_obj = {
+              order_id: orderId,
+              show_order_id: systemUtils.getShowOrderId(orderId, new Date()),
+              owner_name: systemUtils.encodeForFulltext(owner_name),
+              owner_mobile: owner_mobile,
+              recipient_name: systemUtils.encodeForFulltext(recipient_name),
+              recipient_mobile: recipient_mobile,
+              recipient_address: systemUtils.encodeForFulltext(recipient_address),
+              landmark: systemUtils.encodeForFulltext(recipient_landmark),
+              merchant_id: merchant_id
+            };
+            if(coupon) order_fulltext_obj.coupon = coupon;
+            let order_history_obj = {
+              order_id: orderId,
+              option: '添加订单',
+              created_by: 20
+            };
+            let skus_sql = "insert into " + tables.buss_order_sku + "(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price,amount) values ?";
+            transaction.query(skus_sql, [params], err => {
               if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
-              transaction.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], err => {
+              transaction.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], err => {
                 if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
-                resolve();
+                transaction.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], err => {
+                  if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
+                  resolve();
+                });
               });
             });
           });

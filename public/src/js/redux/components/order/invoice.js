@@ -34,6 +34,7 @@ import * as InvoiceManageActions from 'actions/order/invoice';
 import OperationRecordModal from './invoice_opt_record.js';
 /*import InvoiceApplyPannel from './invoice_apply_pannel';*/
 
+/*import AddressSelector from 'common/address_selector';*/
 
 class TopHeader extends Component{
 	render(){
@@ -79,7 +80,7 @@ class FilterHeader extends Component{
 				begin_time,
 				end_time,
 				src_id,
-				station_id,
+				delivery_id,
 				status,
 			},
 			provinces,
@@ -94,9 +95,17 @@ class FilterHeader extends Component{
 					<DatePicker redux-form = {begin_time} editable className="short-input" />
 					{' 结束时间'}
 					<DatePicker redux-form = {end_time} editable className="short-input space-right" />
-					<Select  ref = 'province' options = {provinces} {...province_id}  default-text = '请选择省份' className='space-right' onChange = {this.onProvinceChange.bind(this, province_id.onChange)}/>
-					<Select  ref = 'city' options = {cities} {...city_id}  default-text = '请选择市' className='space-right' onChange = {this.onCityChange.bind(this, city_id.onChange)}/>
-					<Select  options = {station_list} {...station_id} default-text = '请选择配送站' className='space-right'/>
+					{/*<Select  ref = 'province' options = {provinces} {...province_id}  default-text = '请选择省份' className='space-right' onChange = {this.onProvinceChange.bind(this, province_id.onChange)}/>
+					<Select  ref = 'city' options = {cities} {...city_id}  default-text = '请选择市' className='space-right' onChange = {this.onCityChange.bind(this, city_id.onChange)}/>*/}
+					{
+					          /* V( 'InvoiceManageAddressFilter' )
+					             ? <AddressSelector
+					                 {...{ province_id, city_id, district_id, provinces, cities, districts, actions,
+					                  AddressSelectorHook: this.AddressSelectorHook, form: 'invoice_manage_filter' }}
+					               />
+					             : null*/
+					 }
+					<Select  options = {station_list} {...delivery_id} default-text = '请选择配送站' className='space-right'/>
 					<Select {...status}  options = {all_invoice_status}  default-text = '开票状态'  className='space-right'/>
 					{
 					  V( 'InvoiceManageChannelFilter' )
@@ -140,6 +149,10 @@ class FilterHeader extends Component{
 	    this.props.resetStationListWhenScopeChange();     
 	  }
 	  callback(e);
+	}
+	AddressSelectorHook(e, data){
+	  this.props.resetStationListWhenScopeChange('invoice_manage_filter');
+	  this.props.getStationListByScopeSignal({ ...data });
 	}
 	search(search_in_state){
 	  this.setState({[search_in_state]: true});

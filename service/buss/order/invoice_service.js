@@ -157,7 +157,13 @@ module.exports.reviewCompany = function (req, res, next) {
 
 module.exports.getCompanyList = function (req, res, next) {
     let promise = co(function *() {
-        return yield invoiceDao.findCompanyList(req.query);
+        let _res = yield invoiceDao.findCompanyList(req.query);
+        _res.list.forEach(curr=> {
+            if (curr.order_id) {
+                curr.order_id = systemUtils.getShowOrderId(curr.order_id, curr.order_created_time);
+            }
+        });
+        return _res;
     }).then(result=> {
         res.api(result);
     });

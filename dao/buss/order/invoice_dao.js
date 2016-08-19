@@ -77,7 +77,9 @@ InvoiceDao.prototype.findCompanyList = function (query) {
     let columns = [
         'bc.*',
         'su.name AS created_by',
-        'su2.name AS updated_by'
+        'su2.name AS updated_by',
+        'bo.id AS order_id',
+        'bo.created_time AS order_created_time'
     ];
     let sql_info = `SELECT ${columns.join()} FROM `;
     let sql = `?? bc `;
@@ -86,6 +88,10 @@ InvoiceDao.prototype.findCompanyList = function (query) {
     params.push(tables.sys_user);
     sql += `LEFT JOIN ?? su2 ON su2.id = bc.updated_by `;
     params.push(tables.sys_user);
+    sql += `LEFT JOIN ?? bi ON bi.company_id = bc.id `;
+    params.push(tables.buss_invoice);
+    sql += `LEFT JOIN ?? bo ON bo.id = bi.order_id `;
+    params.push(tables.buss_order);
     sql += `WHERE bc.del_flag = ? `;
     params.push(del_flag.SHOW);
 
@@ -98,11 +104,13 @@ InvoiceDao.prototype.findCompanyList = function (query) {
         params.push(`%${query.keywords}%`);
     }
 
+    sql += `GROUP BY bc.id `;
+
     return co(function *() {
         let total_sql = `SELECT count(*) AS total FROM ` + sql;
         let _res = {};
         let total = yield baseDao.select(total_sql, params);
-        _res.total = total[0].total;
+        _res.total = total.length;
 
         sql += `ORDER BY bc.created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
         _res.list = yield baseDao.select(sql_info + sql, params);

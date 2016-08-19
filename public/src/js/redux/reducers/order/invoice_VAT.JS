@@ -10,6 +10,7 @@ var main_state = {
 	list: [],
 	total: 0,
 	page_no: 0,
+	page_size: 10,
 	refresh: false,
 	loading: true,
 	domain: 'http://qn.blissmall.net/',
@@ -66,6 +67,11 @@ function main(state = main_state, action){
 				}
 			})
 			return {...state, list: list}
+		case Actions.CREATE_COMPANY_SUCCESS:
+  			var store = getGlobalStore();
+			var { getCompanyList } = Actions;
+			store.dispatch(getCompanyList({page_no: 0, page_size: state.page_size}))
+			return state;
 		default:
 			return state;
 	}

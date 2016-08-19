@@ -104,6 +104,10 @@ function main(state = main_state, action){
 			var {data} = action;
 			data._recipient_name = data.recipient_name;
 			data._recipient_mobile = data.recipient_mobile;
+			if(data.recipient == 2) {
+				data.origin_name = data.recipient_name;
+				data.origin_mobile = data.recipient_name;
+			}
 			data.amount = data.amount / 100;
 			var { option } = data;
 
@@ -134,6 +138,8 @@ function main(state = main_state, action){
 			store.dispatch(getInvoiceList({page_no: 0, page_size: state.page_size}))
 			return {...state, save_ing: false, save_success: true}
 		case Actions.INVOICE_EDIT_SUCCESS:
+			var { getInvoiceList } = Actions;
+			store.dispatch(getInvoiceList({page_no: 0, page_size: state.page_size}))
 			return {...state, submit_ing: false}
 		case Actions.HANDLE_INVOICE_SUCCESS:
 			var {handleActionName, invoiceId} = action;

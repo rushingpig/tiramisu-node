@@ -309,7 +309,7 @@ class ManagePannel extends Component{
 		var {area, filter, stations, dispatch, getStationListByScopeSignal, resetStationListWhenScopeChange,
 			getInvoiceList, getOrderInvoiceInfo, getInvoiceCompany, gotRegionalismLetter,
 			resetFormCities, resetFormDistricts, submitExpress,getInvoiceInfo, getOrderOptRecord, resetOrderOptRecord,
-			invoiceApply, invoiceEdit, addRemark,  resetInvoiceData,
+			invoiceApply, invoiceEdit, addRemark,  resetInvoiceData, triggerFormUpdate,
 			main: {list, page_no, total, loading, refresh, active_order_id, check_order_info, order_invoice_info, 
 					company_data, form_provinces, form_cities, form_districts, express_companies},
 			operationRecord,
@@ -377,7 +377,7 @@ class ManagePannel extends Component{
 				    </div>
 				  : null }
 				<InvoiceModal ref='InvoiceModal'
-					{...{gotRegionalismLetter,
+					{...{gotRegionalismLetter, triggerFormUpdate,
 					 resetFormCities, resetFormDistricts, getInvoiceCompany, 
 					 getOrderInvoiceInfo, invoiceApply, invoiceEdit, getInvoiceInfo,
 					 form_provinces, form_cities, form_districts, resetInvoiceData}}
@@ -462,6 +462,7 @@ class InvoiceModal extends Component{
 			this.setState({invoice_id: data.id})
 			this.props.getInvoiceInfo(data.id)
 		}else{
+			this.props.triggerFormUpdate('invoice_apply_pannel', 'order_id', '');
 			this.props.resetInvoiceData();
 		}
 		this.props.getInvoiceCompany();
@@ -528,6 +529,8 @@ class InvoiceApplyPannel extends Component{
 				order_id,
 				_recipient_mobile,
 				_recipient_name,
+				origin_name,
+				origin_mobile,
 				owner_mobile,
 				owner_name,
 				recipient_mobile,
@@ -605,9 +608,9 @@ class InvoiceApplyPannel extends Component{
           					</div>
           					<div className='form-group form-inline' style = {{marginBottom: 8}}>
           						<label className='control-label'>{'　　姓名：'}</label>
-          						<input {..._recipient_name} type='text' className={`form-control input-xs ${_recipient_name.error}`}/>
+          						<input disabled = {recipient.value != 2} {..._recipient_name} type='text' className={`form-control input-xs ${_recipient_name.error}`}/>
           						<label>{'　　电话：'}</label>
-          						<input {..._recipient_mobile} type='text'  className={`form-control input-xs ${_recipient_mobile.error}`}/>
+          						<input disabled = {recipient.value != 2} {..._recipient_mobile} type='text'  className={`form-control input-xs ${_recipient_mobile.error}`}/>
           					</div>
           					<div className='form-group form-inline' style = {{marginBottom: 8, display: 'block'}}>
           						<label>{'　　地址：'}</label>
@@ -762,6 +765,8 @@ InvoiceApplyPannel = reduxForm({
 		'recipient',
 		'_recipient_mobile',
 		'_recipient_name',
+		'origin_mobile',
+		'origin_name',
 		'owner_mobile',
 		'owner_name',
 		'recipient_mobile',

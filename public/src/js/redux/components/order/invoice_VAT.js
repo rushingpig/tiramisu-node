@@ -280,7 +280,7 @@ class ManagePannel extends Component{
 	render(){
 		var { main: {list, total, page_no, refresh, loading, view_img, active_company_info}, operationRecord, invoiceRecord,
 			getCompanyOptRecord, resetCompanyOptRecord, getCompanyInvoiceRecord, resetCompanyInvoiceRecord, getCompanyList,
-			editCompany, createCompany} = this.props;
+			editCompany, createCompany, triggerFormUpdate} = this.props;
 		var content = list.map( m => {
 			return (
 				<CompanyRow {...{...m, ...this.props}} key = {m.id}
@@ -337,7 +337,7 @@ class ManagePannel extends Component{
 				</div>
 				<OperationRecordModal ref='viewOperationRecord' {...{getCompanyOptRecord, resetCompanyOptRecord, ...operationRecord}}/>
 				<InvoiceRecordModal ref = 'viewInvoiceRecordModal' {...{getCompanyInvoiceRecord, resetCompanyInvoiceRecord , ...invoiceRecord}} />
-				<CompanyModal createCompany = {createCompany} viewImg = {this.props.viewImg} ref='CompanyCreateModal' editable = {false}/>
+				<CompanyModal triggerFormUpdate = {triggerFormUpdate} createCompany = {createCompany} viewImg = {this.props.viewImg} ref='CompanyCreateModal' editable = {false}/>
 				<CompanyModal active_company_info = {active_company_info} editCompany = {editCompany} viewImg = {this.props.viewImg} ref = 'CompanyEditModal' editable = {true}/>
 				{
 					view_img
@@ -445,7 +445,7 @@ class CompanyInfo extends Component{
 			img_2: '',
 			img_3: '',
 			img_4: '',
-			current_upload_img: 1,
+			current_upload_img: '1',
 		}
 	}
 	render(){
@@ -457,6 +457,10 @@ class CompanyInfo extends Component{
 				add,
 				bank_name,
 				bank_account,
+				img_1,
+				img_2,
+				img_3,
+				img_4,
 			},
 			editable,
 			company_id,
@@ -466,7 +470,7 @@ class CompanyInfo extends Component{
 		      return <ProgressRow ref={n.key} key={n.key} name={n.name} percent={n.percent} />;
 		    });
 		var widthStyle =  { width: 340}
-		var {img_1, img_2, img_3, img_4} = this.state;
+		/*var {img_1, img_2, img_3, img_4} = this.state;*/
 		return(
 			<div>
 				{
@@ -529,7 +533,7 @@ class CompanyInfo extends Component{
 				</div>
 				<div className = 'form-group form-inline'>
 					{
-						img_1 != ''
+						img_1 && img_1.value && img_1.value != ''
 						?
 						<a onClick = { this.props.viewImg.bind(null, {url: img_1, name: '营业执照'})} href = 'javascript:;'>
 							{'　　'}<i className = 'fa fa-lg fa-file-image-o space-right'></i>
@@ -538,7 +542,7 @@ class CompanyInfo extends Component{
 						:null
 					}
 					{
-						img_2 != ''
+						img_2 && img_2.value && img_2.value != ''
 						?
 						<a onClick = { this.props.viewImg.bind(null, {url: img_2, name: '税务登记证'})} href = 'javascript:;'>
 							{'　　'}<i className = 'fa fa-lg fa-file-image-o space-right'></i>
@@ -547,7 +551,7 @@ class CompanyInfo extends Component{
 						:null
 					}
 					{
-						img_3 != ''
+						img_3 && img_3.value && img_3.value != ''
 						?
 						<a onClick = { this.props.viewImg.bind(null, {url: img_3, name: '纳税人资格证'})} href = 'javascript:;'>
 							{'　　'}<i className = 'fa fa-lg fa-file-image-o space-right'></i>
@@ -556,7 +560,7 @@ class CompanyInfo extends Component{
 						:null
 					}
 					{
-						img_4 != ''
+						img_4 && img_4.value && img_4.value != ''
 						?
 						<a onClick = { this.props.viewImg.bind(null, {url: img_4, name: '银行开户许可证'})} href = 'javascript:;'>
 							{'　　'}<i className = 'fa fa-lg fa-file-image-o space-right'></i>
@@ -600,9 +604,11 @@ class CompanyInfo extends Component{
 	_check(callback,form_data){
 	  setTimeout(()=>{
 	      var {errors} =this.props;
-	      var { img_1 , img_2, img_3, img_4} = this.state;
+	      var { fields: { img_1 , img_2, img_3, img_4}} = this.props;
 	      if(!Object.keys(errors).length){
-	      	if( img_1 == '' || img_2 == '' || img_3 == '' || img_4 == ''){
+	      	if(!img_1 || !img_2 || !img_3 || !img_4 || img_1.value == ''
+	      		|| !img_1.value || !img_2.value || !img_3.value || !img_4.value
+	      		|| img_2.value == '' || img_3.value == '' || img_4.value == ''){
 	      		Noty('warning', '请上传所有图片凭证');
 	      	}else{
 	        	callback.call(this,{...form_data, img_1, img_2, img_3, img_4});  //以callback来代替this 调用	      		
@@ -614,14 +620,21 @@ class CompanyInfo extends Component{
 	}
 	componentDidMount(){
 		var {editable , active_company_info ,} = this.props;
-		if(editable){
+/*		if(editable){
 			this.setState({
 				img_1: active_company_info.img_1,
 				img_2: active_company_info.img_2,
 				img_3: active_company_info.img_3,
 				img_4: active_company_info.img_4,
 			})
-		}
+		}else{
+			this.setState({
+				img_1: '',
+				img_2: '',
+				img_3: '',
+				img_4: '',
+			})
+		}*/
 		var uploaderOptions = this.getUploaderOptions();
 		LazyLoad('qiniu', () => {
 			var fileUploader = Qiniu.uploader({
@@ -721,15 +734,20 @@ class CompanyInfo extends Component{
 	}
 	saveImgInfo(data){
 		var { current_upload_img } = this.state;
+		var {	triggerFormUpdate } = this.props;
 		switch(current_upload_img){
-			case 1:
-				this.setState({img_1: data.url, current_upload_img: 2});break;
-			case 2: 
-				this.setState({img_2: data.url, current_upload_img: 3});break;
-			case 3:
-				this.setState({img_3: data.url, current_upload_img: 4});break;
-			case 4:
-				this.setState({img_4: data.url, current_upload_img: 1});break;
+			case '1':
+				triggerFormUpdate('company_info', 'img_1', data.url);
+				this.setState({current_upload_img: '2'});break;
+			case '2': 
+				triggerFormUpdate('company_info', 'img_2', data.url);
+				this.setState({ current_upload_img: '3'});break;
+			case '3':
+				triggerFormUpdate('company_info', 'img_3', data.url);
+				this.setState({ current_upload_img: '4'});break;
+			case '4':
+				triggerFormUpdate('company_info', 'img_4', data.url);
+				this.setState({ current_upload_img: '1'});break;
 			default:;break;
 		}
 	}
@@ -746,6 +764,10 @@ CompanyInfo = reduxForm({
 		'code',
 		'add',
 		'tel',
+		'img_1',
+		'img_2',
+		'img_3',
+		'img_4',
 		'bank_name',
 		'bank_account',
 	],

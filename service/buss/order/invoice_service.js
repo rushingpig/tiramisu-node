@@ -23,7 +23,7 @@ function isInvoiceCanUpdateStatus(curr_status, new_status) {
             result = [IS.CANCEL, IS.UNTREATED].indexOf(new_status);
             break;
         case IS.UNTREATED:  // 未开具
-            result = [IS.CANCEL, IS.COMPLETED].indexOf(new_status);
+            result = [IS.CANCEL, IS.UNTREATED, IS.COMPLETED].indexOf(new_status);
             break;
         case IS.COMPLETED:  // 已开具
             result = [IS.CANCEL, IS.DELIVERY].indexOf(new_status);

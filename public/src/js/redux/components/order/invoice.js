@@ -297,7 +297,7 @@ var  InvoiceRow = React.createClass({
 		this.props.viewDeliveryModal(this.props.id);
 	},
 	viewRemarkModal(){
-		this.props.viewRemarkModal(this.props.id);
+		this.props.viewRemarkModal(this.props.id, this.props.remarks);
 	},
 	viewInvoiceEditModal(){
 		this.props.viewInvoiceEditModal(this.props.id);
@@ -429,8 +429,8 @@ class ManagePannel extends Component{
 		this.props.getExpressCompany();
 		this.refs.DeliveryModal.show(invoice_id);
 	}
-	viewRemarkModal(invoice_id){
-		this.refs.RemarksModal.show(invoice_id);
+	viewRemarkModal(invoice_id, remarks){
+		this.refs.RemarksModal.show(invoice_id, remarks);
 	}
 	viewOperationRecordModal(order){
 		this.refs.OperationRecordModal.show(order);
@@ -864,8 +864,8 @@ class RemarksModal extends Component{
 			</StdModal>
 			)
 	}
-	show(id){
-		this.setState({invoiceId: id});
+	show(id, remark){
+		this.setState({invoiceId: id, remark: remark});
 		this.refs.modal.show();
 	}
 	onRemarkChange(e){

@@ -98,6 +98,14 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
         callback();
       });
       break;
+    case 'opm':
+      require.ensure([], require => {
+        components = {...components,
+          HomePageControl:          require('../components/operation/home_page_control_pannel'),
+        }
+        callback();
+      })
+      break;
     default:
       break;
   }
@@ -183,6 +191,10 @@ const App = () => (
             <Route path="edit/:id" onEnter={onEnter('CategoryManageEditSecondaryCategory')} getComponent={get('CategoryManageSecond')} />
           </Route>
         </Route>
+      </Route>
+
+      <Route path="opm" onEnter={getComponents('opm')}>
+        <Route path="hpc" onEnter={onEnter('HomePageControlAccess')} getComponent={get('HomePageControl')} />
       </Route>
 
 

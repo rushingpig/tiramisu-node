@@ -27,13 +27,13 @@ import * as Actions from 'actions/product_sku_website_manage';
 import * as ImgActions from 'actions/central_image_manage';
 import { onFormChange } from 'actions/common';
 
-const FormGroup = props => (<div className="form-group" {...props} />);
-const FormInlineGroup = props => (<div className="form-group form-inline" {...props} />);
+export const FormGroup = props => (<div className="form-group" {...props} />);
+export const FormInlineGroup = props => (<div className="form-group form-inline" {...props} />);
 const Input = props => (<input type="number" className="form-control input-xs" {...props} />);
 const CheckBox = props => (<input type="checkbox" {...props} />);
-const Radio = props => (<input type="radio" {...props} />);
-const Row = props => (<div className="row" {...props} />);
-const Col = props => <div {...props} className={`col-xs-${props.size} ${props.className}`} />;
+export const Radio = props => (<input type="radio" {...props} />);
+export const Row = props => (<div className="row" {...props} />);
+export const Col = props => <div {...props} className={`col-xs-${props.size} ${props.className}`} />;
 const Title = props => <p style={{fontWeight: 'normal'}} {...props} />;
 const outline = '1px solid #eee';
 
@@ -153,7 +153,7 @@ const AddButton = props => (<i className="fa fa-plus center text-center cursor-p
   borderRadius: '50%',
 }} {...props}></i>)
 
-class EditImgBox extends Component {
+export class EditImgBox extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -574,7 +574,7 @@ class ProProperties extends Component {
   }
 }
 
-const ProDetailImgsTip = props => (
+export const ProDetailImgsTip = props => (
     <div className="center theme" style={Styler`
       margin-top: 37px;
       background: rgba(230, 195, 141, 0.48);
@@ -1024,7 +1024,7 @@ class ImgViewBox extends Component {
     img.src = this.props.domain + this.props.url + '?imageView2/0/w/100/h/100';
   }
 }
-class SelectImgModal extends Component {
+export class SelectImgModal extends Component {
   constructor(props){
     super(props);
     this.state = {

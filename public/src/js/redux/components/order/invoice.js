@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import LinkedStateMixin from 'react-addons-linked-state-mixin';
 import { reduxForm } from 'redux-form';
 
-import { Noty, form as uForm } from 'utils/index';
+import { Noty, form as uForm, dom } from 'utils/index';
 import V from 'utils/acl';
 import * as FormActions from 'actions/form';
 import LazyLoad from 'utils/lazy_load';
@@ -177,7 +177,7 @@ var  InvoiceRow = React.createClass({
 							[<a key='InvoiceManageTreat' onClick= {this.onTreat} href='javascript:;' >[开具发票]</a>,<br key='treat_br' />],
 							[<a key='InvoiceManageEdit' onClick = {this.viewInvoiceEditModal} href='javascript:;' >[编辑]</a>,<br key='edit_br' />],
 							[<a key='InvoiceManageLogistics' href='javascript:;'  onClick = {this.viewDeliveryModal}>[物流填写]</a>,<br key = 'logistics_br' />],
-							[<a key='InvoiceManageCancel' href='javascript:;' >[取消]</a>,<br key='cancel_br' />],
+							[<a key='InvoiceManageCancel' onClick = {this.onInvoiceDel} href='javascript:;' >[取消]</a>,<br key='cancel_br' />],
 							[<a key='InvoiceManageAddRemarks' onClick = {this.viewRemarkModal} href='javascript:;' >[添加备注]</a>,<br key= 'remark' />]
 						)
 					}
@@ -269,6 +269,15 @@ var  InvoiceRow = React.createClass({
 			})
 			.fail((msg, code) => {
 				Noty('error', msg || '发票开具失败' );
+			})
+	},
+	onInvoiceDel(){
+		this.props.invoiceDel(this.props.id)
+			.done(() => {
+				Noty('success', '发票已取消')
+			})
+			.fail((msg, code) => {
+				Noty('error', msg || '发票取消失败')
 			})
 	},
 	viewDeliveryModal(){
@@ -603,6 +612,7 @@ class InvoiceApplyPannel extends Component{
           						<label>{'　　地址：'}</label>
           						<input {...enable_recipient_address} 
           							checked={enable_recipient_address.value == 1} type = 'checkbox' 
+          							onChange = {this.onEnableRecipientAddrChange.bind(this, enable_recipient_address.onChange)}
           							/>
           						<label>{'启用收货人地址'}</label>        						
           					</div>
@@ -682,6 +692,18 @@ class InvoiceApplyPannel extends Component{
 		this.setState({search_by_keywords_ing: true});
 		getOrderInvoiceInfo(order_id.value);
 		this.setState({search_by_keywords_ing: false});
+	}
+	onEnableRecipientAddrChange(callback, e){
+		var {value } = e.target;
+		var {fields: {recipient_province_id, recipient_city_id, city_id, province_id }} = this.props;
+		if(value){
+			this.props.gotRegionalismLetter({type: 'city', parent_id: recipient_province_id.value});
+			this.props.gotRegionalismLetter({type: 'district', parent_id : recipient_city_id.value});
+		}else{
+			this.props.gotRegionalismLetter({type: 'city', parent_id: province_id.value});
+			this.props.gotRegionalismLetter({type: 'district', parent_id: city_id.value})
+		}
+		callback(e);
 	}
 	onProvinceChange(callback, e){
 		var { value } = e.target;

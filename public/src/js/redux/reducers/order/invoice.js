@@ -116,6 +116,11 @@ function main(state = main_state, action){
 			store.dispatch(gotRegionalismLetter({type: 'district', parent_id: data.city_id}));
 			
 			return {...state, order_invoice_info: data}
+		case Actions.INVOICE_DEL:
+			var {list, total} = state;
+			var {id } = action;
+			list = list.filter( m => m.id != id);
+			return {...state, list: list, total: total -1}
 		case Actions.INVOICE_APPLY_ING:
 			return {...state, save_ing: true}
 		case Actions.INVOICE_APPLY_FAIL:

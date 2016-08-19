@@ -67,6 +67,7 @@ const URL = (function() {
     invoice_data: '/invoice/:invoiceId',  //获取发票信息
     invoice_get_company: '/invoice/company/list', //添加发票时获取公司
     invoice_opt_history: '/invoice/:invoiceId/history', //获取发票历史记录
+    invoice_del:         '/invoice/:invoiceId',         //删除发票
 
     add_company:       '/company',   //添加开发票的公司
     edit_company:      '/company/:companyId', // 编辑开发票公司

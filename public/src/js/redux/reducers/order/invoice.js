@@ -2,6 +2,7 @@ import { dateFormat, map } from 'utils/index';
 import { combineReducers } from 'redux';
 import { REQUEST, invoice_status, ACCESSORY_CATE_ID } from 'config/app.config';
 import { GOT_ORDER_SRCS } from 'actions/order_manage_form';
+
 import { area } from 'reducers/area_select';
 import * as OrderSupportReducers from 'reducers/order_support';
 import stations from 'reducers/stations';
@@ -15,6 +16,8 @@ var main_state = {
 	list: [],
 	total: 0,
 	page_no: 0 ,
+	page_size: 0,
+
 	refresh: false,
 	loading: true,
 	active_order_id:-1,
@@ -76,7 +79,7 @@ function main(state = main_state, action){
 		case Actions.GET_INVOICE_COMPANY:
 			return {...state, company_data: _t(action.data)}
 		case Actions.GET_ORDER_INVOICE_INFO:
-			var {getFormCities, getFormDistricts} = Actions;
+			var { gotRegionalismLetter} = Actions;
 			var {data} = action;
 			data.recipient = 1;
 			data._recipient_name = data.recipient_name;
@@ -89,25 +92,35 @@ function main(state = main_state, action){
 			data.recipient_regionalism_id = data.regionalism_id;
 			data.recipient_address = data.address;
 			data.order_id = action.order_id;
-			store.dispatch(getFormCities(data.province_id));
-			store.dispatch(getFormDistricts(data.city_id));
+			store.dispatch(gotRegionalismLetter({type: 'city', parent_id: data.province_id}));
+			store.dispatch(gotRegionalismLetter({type: 'district', parent_id: data.city_id}));
 			
 			return {...state, order_invoice_info: data}
 		case Actions.RESET_INVOICE_DATA:
 			return {...state, order_invoice_info: null ,company_data: [], form_provinces: [],
 					form_cities: [], form_districts: []}
 		case Actions.GET_INVOICE_INFO:
-			var {getFormCities, getFormDistricts} = Actions;
+			var {gotRegionalismLetter} = Actions;
 			var {data} = action;
 			data._recipient_name = data.recipient_name;
 			data._recipient_mobile = data.recipient_mobile;
-			data.enable_recipient_address = 1;
 			data.amount = data.amount / 100;
+			var { option } = data;
 
-			store.dispatch(getFormCities(data.province_id));
-			store.dispatch(getFormDistricts(data.city_id));
+			data.recipient_province_id = option.province_id;
+			data.recipient_city_id = option.city_id;
+			data.recipient_regionalism_id = option.regionalism_id;
+			data.recipient_address = data.address;
+
+			store.dispatch(gotRegionalismLetter({type: 'city', parent_id: data.province_id}));
+			store.dispatch(gotRegionalismLetter({type: 'district', parent_id: data.city_id}));
 			
 			return {...state, order_invoice_info: data}
+		case Actions.INVOICE_DEL:
+			var {list, total} = state;
+			var {id } = action;
+			list = list.filter( m => m.id != id);
+			return {...state, list: list, total: total -1}
 		case Actions.INVOICE_APPLY_ING:
 			return {...state, save_ing: true}
 		case Actions.INVOICE_APPLY_FAIL:
@@ -115,15 +128,17 @@ function main(state = main_state, action){
 		case Actions.INVOICE_EDIT_ING:
 			return {...state, submit_ing: true}
 		case Actions.INVOICE_APPLY_SUCCESS:
+			var { getInvoiceList } = Actions;
+			store.dispatch(getInvoiceList({page_no: 0, page_size: state.page_size}))
 			return {...state, save_ing: false, save_success: true}
 		case Actions.INVOICE_EDIT_SUCCESS:
 			return {...state, submit_ing: false}
 		case Actions.HANDLE_INVOICE_SUCCESS:
-			var {handleActionName, invoiceId} = action.data;
+			var {handleActionName, invoiceId} = action;
 			var {list } = state;
 			list = list.map( m => {
 				if(m.invoice_id ==  invoiceId){
-					m.invoice_status = handleActionName
+					m.status = handleActionName
 				}
 				return m;
 			})
@@ -142,6 +157,28 @@ function main(state = main_state, action){
 			return {...state, form_districts: _t(action.data)}
 		case Actions.RESET_FORM_DISTRICTS:
 			return {...state, form_districts: []}
+		case Actions.GOT_REGIONALISM_LETTER:
+			var type = action.dataType;
+			var regionalisms = action.data.list;
+			regionalisms = regionalisms.map( m => {
+				var p = {};
+				if(type == 'province')
+					p.ascii_value = m.first_letter.charCodeAt();
+				p.id = m.regionalism_id;
+				p.text = m.regionalism_name;
+				p.is_open = m.is_open;
+				return p;});
+			switch(type){
+				case 'province':					
+					return {...state, form_provinces: regionalisms}
+					break;
+				case 'city':
+					return {...state, form_cities: regionalisms}
+					break;
+				case 'district':
+					return {...state, form_districts: regionalisms}
+				default:;
+			}
 		default:
 			return state;
 	}

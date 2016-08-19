@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import LinkedStateMixin from 'react-addons-linked-state-mixin';
 import { reduxForm } from 'redux-form';
 
-import { Noty, form as uForm } from 'utils/index';
+import { Noty, form as uForm, dom } from 'utils/index';
 import V from 'utils/acl';
 import * as FormActions from 'actions/form';
 import LazyLoad from 'utils/lazy_load';
@@ -31,7 +31,7 @@ import * as OrderSupportActions from 'actions/order_support';
 import AreaActions from 'actions/area';
 import * as InvoiceManageActions from 'actions/order/invoice';
 
-import OperationRecordModal from 'common/operation_record_modal.js';
+import OperationRecordModal from './invoice_opt_record.js';
 /*import InvoiceApplyPannel from './invoice_apply_pannel';*/
 
 
@@ -80,7 +80,7 @@ class FilterHeader extends Component{
 				end_time,
 				src_id,
 				station_id,
-				invoice_status,
+				status,
 			},
 			provinces,
 			cities,
@@ -89,15 +89,15 @@ class FilterHeader extends Component{
 		return(
 			<div className='panel search'>
 				<div className='panel-body form-inline'>
-					<SearchInput searchHandler = {this.search.bind(this, 'search_by_keywords_ing')} ref='city_name' className='form-inline v-img space-right' placeholder='订单号查询' />
+					<SearchInput {...keywords} searchHandler = {this.search.bind(this, 'search_by_keywords_ing')} ref='city_name' className='form-inline v-img space-right' placeholder='订单号查询' />
 					{' 开始时间'}
-					<DatePicker editable className="short-input" />
+					<DatePicker redux-form = {begin_time} editable className="short-input" />
 					{' 结束时间'}
-					<DatePicker editable className="short-input space-right" />
-					<Select ref = 'province' options = {provinces} {...province_id}  default-text = '请选择省份' className='space-right' onChange = {this.onProvinceChange.bind(this, province_id.onChange)}/>
-					<Select ref = 'city' options = {cities} {...city_id}  default-text = '请选择市' className='space-right' onChange = {this.onCityChange.bind(this, city_id.onChange)}/>
-					<Select options = {station_list} {...station_id} default-text = '请选择配送站' className='space-right'/>
-					<Select options = {all_invoice_status} {...invoice_status} default-text = '开票状态'  className='space-right'/>
+					<DatePicker redux-form = {end_time} editable className="short-input space-right" />
+					<Select  ref = 'province' options = {provinces} {...province_id}  default-text = '请选择省份' className='space-right' onChange = {this.onProvinceChange.bind(this, province_id.onChange)}/>
+					<Select  ref = 'city' options = {cities} {...city_id}  default-text = '请选择市' className='space-right' onChange = {this.onCityChange.bind(this, city_id.onChange)}/>
+					<Select  options = {station_list} {...station_id} default-text = '请选择配送站' className='space-right'/>
+					<Select {...status}  options = {all_invoice_status}  default-text = '开票状态'  className='space-right'/>
 					{
 					  V( 'InvoiceManageChannelFilter' )
 					    ?<OrderSrcsSelects {...{all_order_srcs, src_id}} actions={this.props.actions} reduxFormName="invoice_manage_filter" />
@@ -159,7 +159,7 @@ FilterHeader = reduxForm({
 		'province_id',
 		'city_id',
 		'station_id',
-		'invoice_status',
+		'status',
 		'src_id',
 	],
 	destroyOnUnmount: false,
@@ -177,7 +177,7 @@ var  InvoiceRow = React.createClass({
 							[<a key='InvoiceManageTreat' onClick= {this.onTreat} href='javascript:;' >[开具发票]</a>,<br key='treat_br' />],
 							[<a key='InvoiceManageEdit' onClick = {this.viewInvoiceEditModal} href='javascript:;' >[编辑]</a>,<br key='edit_br' />],
 							[<a key='InvoiceManageLogistics' href='javascript:;'  onClick = {this.viewDeliveryModal}>[物流填写]</a>,<br key = 'logistics_br' />],
-							[<a key='InvoiceManageCancel' href='javascript:;' >[取消]</a>,<br key='cancel_br' />],
+							[<a key='InvoiceManageCancel' onClick = {this.onInvoiceDel} href='javascript:;' >[取消]</a>,<br key='cancel_br' />],
 							[<a key='InvoiceManageAddRemarks' onClick = {this.viewRemarkModal} href='javascript:;' >[添加备注]</a>,<br key= 'remark' />]
 						)
 					}
@@ -215,7 +215,7 @@ var  InvoiceRow = React.createClass({
 					{props.city}
 				</td>
 				<td>
-					{props.station}
+					{props.delivery_name}
 				</td>
 				<td>
 					{src_name[0]}
@@ -271,6 +271,15 @@ var  InvoiceRow = React.createClass({
 				Noty('error', msg || '发票开具失败' );
 			})
 	},
+	onInvoiceDel(){
+		this.props.invoiceDel(this.props.id)
+			.done(() => {
+				Noty('success', '发票已取消')
+			})
+			.fail((msg, code) => {
+				Noty('error', msg || '发票取消失败')
+			})
+	},
 	viewDeliveryModal(){
 		this.props.viewDeliveryModal(this.props.id);
 	},
@@ -284,6 +293,7 @@ var  InvoiceRow = React.createClass({
 		this.props.viewOperationRecordModal({order_id: this.props.order_id, 
 			owner_name: this.props.owner_name,
 			owner_mobile: this.props.owner_mobile,
+			id: this.props.id,
 		})
 	}
 })
@@ -297,9 +307,9 @@ class ManagePannel extends Component{
 	}
 	render(){
 		var {area, filter, stations, dispatch, getStationListByScopeSignal, resetStationListWhenScopeChange,
-			getInvoiceList, getOrderInvoiceInfo, getInvoiceCompany, getFormProvinces, getFormCities, getFormDistricts,
+			getInvoiceList, getOrderInvoiceInfo, getInvoiceCompany, gotRegionalismLetter,
 			resetFormCities, resetFormDistricts, submitExpress,getInvoiceInfo, getOrderOptRecord, resetOrderOptRecord,
-			invoiceApply, resetInvoiceData,
+			invoiceApply, invoiceEdit, resetInvoiceData,
 			main: {list, page_no, total, loading, refresh, active_order_id, check_order_info, order_invoice_info, 
 					company_data, form_provinces, form_cities, form_districts, express_companies},
 			operationRecord,
@@ -316,7 +326,7 @@ class ManagePannel extends Component{
 			<div className='order-manage'>
 				<TopHeader 
 					viewInvoiceApplyModal= {this.viewInvoiceApplyModal.bind(this)} />
-				<FilterHeader {...{...area, ...filter, stations}}
+				<FilterHeader {...{...area, ...filter, stations, page_size:this.state.page_size}}
 					getStationListByScopeSignal = {getStationListByScopeSignal}
 					resetStationListWhenScopeChange = {resetStationListWhenScopeChange}
 					actions = {{...bindActionCreators({...AreaActions(), getOrderSrcs, ...FormActions,
@@ -367,9 +377,9 @@ class ManagePannel extends Component{
 				    </div>
 				  : null }
 				<InvoiceModal ref='InvoiceModal'
-					{...{getFormProvinces, getFormCities, getFormDistricts,
+					{...{gotRegionalismLetter,
 					 resetFormCities, resetFormDistricts, getInvoiceCompany, 
-					 getOrderInvoiceInfo, invoiceApply,getInvoiceInfo,
+					 getOrderInvoiceInfo, invoiceApply, invoiceEdit, getInvoiceInfo,
 					 form_provinces, form_cities, form_districts, resetInvoiceData}}
 					data = {order_invoice_info}
 					company_data = {company_data}
@@ -454,7 +464,7 @@ class InvoiceModal extends Component{
 			this.props.resetInvoiceData();
 		}
 		this.props.getInvoiceCompany();
-		this.props.getFormProvinces();
+		this.props.gotRegionalismLetter({type: 'province'});
 		this.refs.modal.show();
 	}
 	hide(){
@@ -602,6 +612,7 @@ class InvoiceApplyPannel extends Component{
           						<label>{'　　地址：'}</label>
           						<input {...enable_recipient_address} 
           							checked={enable_recipient_address.value == 1} type = 'checkbox' 
+          							onChange = {this.onEnableRecipientAddrChange.bind(this, enable_recipient_address.onChange)}
           							/>
           						<label>{'启用收货人地址'}</label>        						
           					</div>
@@ -625,6 +636,7 @@ class InvoiceApplyPannel extends Component{
 				  					<div key='province_div' className='form-group form-inline' style = {{marginBottom: 8}}>
 										{'　　　　　'}<Select ref='form_province'  options = {form_provinces} {...province_id} 
 														ref="province" default-text="--选择省份--" className={`form-select ${province_id.error}`} 
+														onChange = {this.onProvinceChange.bind(this, province_id.onChange)}
 														/>{' '}
 										<Select ref='form_city' options = {form_cities} {...city_id} 
 											className = {`${city_id.error}`}
@@ -681,11 +693,23 @@ class InvoiceApplyPannel extends Component{
 		getOrderInvoiceInfo(order_id.value);
 		this.setState({search_by_keywords_ing: false});
 	}
+	onEnableRecipientAddrChange(callback, e){
+		var {value } = e.target;
+		var {fields: {recipient_province_id, recipient_city_id, city_id, province_id }} = this.props;
+		if(value){
+			this.props.gotRegionalismLetter({type: 'city', parent_id: recipient_province_id.value});
+			this.props.gotRegionalismLetter({type: 'district', parent_id : recipient_city_id.value});
+		}else{
+			this.props.gotRegionalismLetter({type: 'city', parent_id: province_id.value});
+			this.props.gotRegionalismLetter({type: 'district', parent_id: city_id.value})
+		}
+		callback(e);
+	}
 	onProvinceChange(callback, e){
 		var { value } = e.target;
 		this.props.resetFormCities();
 		if(value != SELECT_DEFAULT_VALUE){
-		  this.props.getFormCities(value);
+		  this.props.gotRegionalismLetter({type: 'city', parent_id: value});
 		}
 		callback(e);		
 	}
@@ -693,8 +717,9 @@ class InvoiceApplyPannel extends Component{
 		var {value} = e.target;
 		this.props.resetFormDistricts();
 		if(value != SELECT_DEFAULT_VALUE ){
-			this.props.getFormDistricts(value);
+			this.props.gotRegionalismLetter({type: 'district', parent_id: value});
 		}
+		callback(e);
 	}
 	handleCreateInvoice(form_data){
 		this.props.invoiceApply(form_data)
@@ -707,7 +732,7 @@ class InvoiceApplyPannel extends Component{
 			})
 	}
 	handleEditInvoice(){
-		this.props.actions.invoiceEdit(this.props.invoice_id)
+		this.props.invoiceEdit(this.props.invoice_id)
 			.done(function(){
 				Noty('success', '保存成功');
 				this.props.onHide();

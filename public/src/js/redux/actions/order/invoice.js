@@ -193,6 +193,19 @@ export function invoiceApply(){
 	}
 }
 
+export const INVOICE_DEL = 'INVOICE_DEL';
+export function invoiceDel(id){
+	return dispatch => {
+		return del(Url.invoice_del.toString(id), null)
+				.done(() => {
+					dispatch({
+						type: INVOICE_DEL,
+						id: id,
+					})
+				})
+	}
+}
+
 export const INVOICE_EDIT_SUCCESS = 'INVOICE_EDIT_SUCCESS';
 export const INVOICE_EDIT_ING = 'INVOICE_EDIT_ING';
 
@@ -224,7 +237,7 @@ export function handleInvoice(invoiceId, handleActionName){
 				.done(() => {
 					dispatch({
 						handleActionName: handleActionName,
-						refundId: refundId,
+						invoiceId: invoiceId,
 						type: HANDLE_INVOICE_SUCCESS,
 					})
 				})
@@ -246,14 +259,19 @@ export function getExpressCompany(){
 	return TEST({1: '中通快递', 2: '申通快递'}, GET_EXPRESS_COMPANY)
 }	
 
-export const GET_FORM_PROVINCES = 'GET_FORM_PROVINCES';
-export function getFormProvinces(){
-    return GET(Url.provinces.toString(), null , GET_FORM_PROVINCES);	
-}
 
-export const GET_FORM_CITIES = 'GET_FORM_CITIES';
-export function getFormCities(province_id){
-    return GET(Url.cities.toString(province_id), null,  GET_FORM_CITIES);
+export const GOT_REGIONALISM_LETTER = 'GOT_REGIONALISM_LETTER';
+export function gotRegionalismLetter(form_data){
+	return (dispatch) => {
+		return get(Url.regionalism_list.toString(),form_data )
+				.done((data) => {
+					dispatch({
+						dataType: form_data.type,
+						data: data,
+						type: GOT_REGIONALISM_LETTER,
+					})
+				})
+	}
 }
 
 export const RESET_FORM_CITIES = 'RESET_FORM_CITIES';
@@ -261,11 +279,6 @@ export function resetFormCities(){
 	return{
 		type: RESET_FORM_CITIES
 	}
-}
-
-export const GET_FORM_DISTRICTS = 'GET_FORM_DISTRICTS';
-export function getFormDistricts(city_id){
-      return GET(Url.districts.toString(city_id),null, GET_FORM_DISTRICTS);
 }
 
 export const RESET_FORM_DISTRICTS = 'RESET_FORM_DISTRICTS';
@@ -294,16 +307,16 @@ export function addRemark(invoiceId, remakrs){
 
 export const GET_ORDER_OPT_RECORD = 'GET_ORDER_OPT_RECORD';
 export function getOrderOptRecord(order_id, data){
-/*  return dispatch => {
-    return get(Url.order_opt_record.toString(order_id), data)
+  return dispatch => {
+    return get(Url.invoice_opt_history.toString(order_id), data)
       .done(function(jsonobj){
         dispatch({
           type: GET_ORDER_OPT_RECORD,
           data: jsonobj,
         })
       })
-  }*/
-  return {
+  }
+/*  return {
     type: GET_ORDER_OPT_RECORD,
     data: {
       "total": 12,
@@ -351,7 +364,7 @@ export function getOrderOptRecord(order_id, data){
       "page_no": "0",
       "page_size": "8"
     }
-  }
+  }*/
 }
 
 export const RESET_ORDER_OPT_RECORD = 'RESET_ORDER_OPT_RECORD'; //先重置历史数据

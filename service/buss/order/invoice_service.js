@@ -97,7 +97,7 @@ module.exports.delCompany = function (req, res, next) {
         let info = {
             del_flag: 0
         };
-        yield invoiceDao.updateCompany(systemUtils.assembleInsertObj(req, info));
+        yield invoiceDao.updateCompany(company_id, systemUtils.assembleInsertObj(req, info));
         let history = {option: ''};
         history.bind_id = company_id;
         history.option += `删除公司信息\n`;

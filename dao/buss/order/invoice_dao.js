@@ -235,6 +235,8 @@ InvoiceDao.prototype.updateInvoice = function (invoice_id, invoice_obj) {
 InvoiceDao.prototype.findInvoiceById = function (invoice_id) {
     let columns = [
         'bi.*',
+        'dr2.id AS city_id',
+        'dr2.parent_id AS province_id',
         'bo.status AS order_status',
         'bo.created_time AS order_created_time'
     ];
@@ -242,6 +244,10 @@ InvoiceDao.prototype.findInvoiceById = function (invoice_id) {
     let params = [tables.buss_invoice];
     sql += `INNER JOIN ?? bo ON bo.id = bi.order_id `;
     params.push(tables.buss_order);
+    sql += `INNER JOIN ?? dr on dr.id = bi.regionalism_id `;
+    params.push(tables.dict_regionalism);
+    sql += `INNER JOIN ?? dr2 on dr2.id = dr.parent_id `;
+    params.push(tables.dict_regionalism);
     sql += `WHERE bi.del_flag = ? AND bi.id = ? `;
     params.push(del_flag.SHOW);
     params.push(invoice_id);

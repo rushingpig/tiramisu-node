@@ -213,6 +213,10 @@ InvoiceDao.prototype.findInvoiceList = function (query) {
         params.push(query.src_id);
         params.push(query.src_id);
     }
+    if (query.delivery_id) {
+        sql += `AND bi.delivery_id = ? `;
+        params.push(query.delivery_id);
+    }
 
     return co(function *() {
         let total_sql = `SELECT count(*) AS total FROM ` + sql;

@@ -47,7 +47,7 @@ function findHistory(type) {
         sql += `WHERE sh.type = ? AND sh.del_flag = ? AND sh.bind_id = ? `;
         params.push(type);
         params.push(del_flag.SHOW);
-        params.push(query.refund_id);
+        params.push(query.bind_id);
 
         return co(function *() {
             let total_sql = `SELECT count(*) AS total FROM ` + sql;
@@ -77,7 +77,9 @@ InvoiceDao.prototype.findCompanyList = function (query) {
     let columns = [
         'bc.*',
         'su.name AS created_by',
-        'su2.name AS updated_by'
+        'su2.name AS updated_by',
+        'bo.id AS order_id',
+        'bo.created_time AS order_created_time'
     ];
     let sql_info = `SELECT ${columns.join()} FROM `;
     let sql = `?? bc `;
@@ -86,6 +88,10 @@ InvoiceDao.prototype.findCompanyList = function (query) {
     params.push(tables.sys_user);
     sql += `LEFT JOIN ?? su2 ON su2.id = bc.updated_by `;
     params.push(tables.sys_user);
+    sql += `LEFT JOIN ?? bi ON bi.company_id = bc.id `;
+    params.push(tables.buss_invoice);
+    sql += `LEFT JOIN ?? bo ON bo.id = bi.order_id `;
+    params.push(tables.buss_order);
     sql += `WHERE bc.del_flag = ? `;
     params.push(del_flag.SHOW);
 
@@ -98,11 +104,13 @@ InvoiceDao.prototype.findCompanyList = function (query) {
         params.push(`%${query.keywords}%`);
     }
 
+    sql += `GROUP BY bc.id `;
+
     return co(function *() {
         let total_sql = `SELECT count(*) AS total FROM ` + sql;
         let _res = {};
         let total = yield baseDao.select(total_sql, params);
-        _res.total = total[0].total;
+        _res.total = total.length;
 
         sql += `ORDER BY bc.created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
         _res.list = yield baseDao.select(sql_info + sql, params);
@@ -136,6 +144,11 @@ InvoiceDao.prototype.findInvoiceList = function (query) {
         'bi.*',
         'bo.status AS order_status',
         'bo.created_time AS order_created_time',
+        'bo.owner_name',
+        'bo.owner_mobile',
+        'dr2.name AS city',
+        'bds.name AS delivery_name',
+        'bos.merge_name AS src_name',
         'su.name AS created_by',
         'su2.name AS updated_by'
     ];
@@ -144,12 +157,57 @@ InvoiceDao.prototype.findInvoiceList = function (query) {
     let params = [tables.buss_invoice];
     sql += `INNER JOIN ?? bo ON bo.id = bi.order_id `;
     params.push(tables.buss_order);
+    if (query.keywords) {
+        let match = '';
+        sql += `INNER JOIN ?? bof on match(bof.owner_name,bof.owner_mobile,bof.recipient_name,bof.recipient_mobile,bof.recipient_address,bof.landmark,bof.show_order_id,bof.merchant_id,bof.coupon,bof.recipient_mobile_suffix,bof.owner_mobile_suffix) against(? IN BOOLEAN MODE) and bof.order_id = bo.id `;
+        params.push(tables.buss_order_fulltext);
+        query.keywords.split(' ').forEach((curr) => {
+            if (curr) {
+                match += '+' + curr + ' ';
+            }
+        });
+        params.push(match + '*');
+    }
+    sql += `LEFT JOIN ?? bds ON bds.id = bo.delivery_id `;
+    params.push(tables.buss_delivery_station);
+    sql += `LEFT JOIN ?? bos ON bos.id = bo.src_id `;
+    params.push(tables.buss_order_src);
+    sql += `LEFT JOIN ?? br ON br.id = bo.recipient_id `;
+    params.push(tables.buss_recipient);
+    sql += `INNER JOIN ?? dr on dr.id = br.regionalism_id `;
+    params.push(tables.dict_regionalism);
+    sql += `INNER JOIN ?? dr2 on dr2.id = dr.parent_id `;
+    params.push(tables.dict_regionalism);
     sql += `LEFT JOIN ?? su ON su.id = bi.created_by `;
     params.push(tables.sys_user);
     sql += `LEFT JOIN ?? su2 ON su2.id = bi.updated_by `;
     params.push(tables.sys_user);
     sql += `WHERE bi.del_flag = ? `;
     params.push(del_flag.SHOW);
+    if (query.begin_time) {
+        sql += `AND  bi.created_time >= ? `;
+        params.push(query.begin_time + ' 00:00~00:00');
+    }
+    if (query.end_time) {
+        sql += `AND  bi.created_time <= ? `;
+        params.push(query.end_time + ' 24:00~24:00');
+    }
+    if (query.status !== undefined) {
+        sql += `AND  bi.status = ? `;
+        params.push(query.status);
+    }
+    if (query.province_id) {
+        sql += `AND dr2.parent_id = ? `;
+        params.push(query.province_id);
+    }
+    if (query.city_id) {
+        sql += `AND dr.parent_id = ? `;
+        params.push(query.city_id);
+    }
+    if (query.company_id) {
+        sql += `AND bi.company_id = ? `;
+        params.push(query.company_id);
+    }
 
     return co(function *() {
         let total_sql = `SELECT count(*) AS total FROM ` + sql;
@@ -184,7 +242,7 @@ InvoiceDao.prototype.findInvoiceById = function (invoice_id) {
     let params = [tables.buss_invoice];
     sql += `INNER JOIN ?? bo ON bo.id = bi.order_id `;
     params.push(tables.buss_order);
-    sql += `WHERE bi.del_flag = ? AND bi.invoice_id = ? `;
+    sql += `WHERE bi.del_flag = ? AND bi.id = ? `;
     params.push(del_flag.SHOW);
     params.push(invoice_id);
 

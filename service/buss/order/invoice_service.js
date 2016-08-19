@@ -410,7 +410,7 @@ module.exports.editInvoiceRemarks = function (req, res, next) {
         let info = {
             remarks: req.body.remarks
         };
-        yield invoiceDao.updateInvoice(systemUtils.assembleInsertObj(req, info));
+        yield invoiceDao.updateInvoice(invoice_id, systemUtils.assembleInsertObj(req, info));
         let history = {option: ''};
         history.bind_id = invoice_id;
         history.option += `修改备注为{${info.remarks}}\n`;

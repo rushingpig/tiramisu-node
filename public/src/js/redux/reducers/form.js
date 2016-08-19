@@ -194,8 +194,8 @@ export default formReducer.plugin({
       if(action.field == 'recipient'){
         if(action.type == actionTypes.CHANGE){
           if(state.recipient.value == 2){
-            state._recipient_name = {value: ''};
-            state._recipient_mobile = {value: ''};
+            state._recipient_name = state.origin_name;
+            state._recipient_mobile = state.origin_mobile;
           }else if(state.recipient.value == 0){
             state._recipient_mobile = state.owner_mobile;
             state._recipient_name = state.owner_name;

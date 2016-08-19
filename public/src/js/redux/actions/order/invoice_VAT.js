@@ -50,12 +50,14 @@ export function createCompany(form_data){
 			type: CREATE_COMPANY_ING,
 		})
 		return post(Url.add_company.toString(), form_data)
-				.done(() => {
+				.done(() => 
+					dispatch({
 					type: CREATE_COMPANY_SUCCESS
-				})
-				.fail(() => {
+				}))
+				.fail(() => 
+					dispatch({
 					type: CREATE_COMPANY_FAIL
-				})
+				}))
 	}
 }
 

@@ -157,6 +157,10 @@ function _getFormdata(getState){
 			invoice_data.regionalism_id = invoice_data.recipient_regionalism_id;
 			invoice_data.address = invoice_data.recipient_address;
 		}
+		if(invoice_data.recipient == 2){
+			invoice_data.recipient_name = invoice_data._recipient_name;
+			invoice_data.recipient_mobile =invoice_data._recipient_mobile;
+		}
 		invoice_data.amount = invoice_data.amount * 100;
 		delete invoice_data.recipient_province_id;
 		delete invoice_data.recipient_city_id;
@@ -299,10 +303,11 @@ export function submitExpress(invoiceId, express_no, express_type){
 }
 
 export const AddRemark = 'AddRemark';
-export function addRemark(invoiceId, remakrs){
-	return {
+export function addRemark(invoiceId, remarks){
+	return PUT(Url.add_invoice_remarks.toString(invoiceId), {remarks: remarks}, AddRemark);
+/*	return {
 		type: AddRemark,
-	}
+	}*/
 }
 
 export const GET_ORDER_OPT_RECORD = 'GET_ORDER_OPT_RECORD';

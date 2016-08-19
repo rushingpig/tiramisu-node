@@ -309,7 +309,7 @@ class ManagePannel extends Component{
 		var {area, filter, stations, dispatch, getStationListByScopeSignal, resetStationListWhenScopeChange,
 			getInvoiceList, getOrderInvoiceInfo, getInvoiceCompany, gotRegionalismLetter,
 			resetFormCities, resetFormDistricts, submitExpress,getInvoiceInfo, getOrderOptRecord, resetOrderOptRecord,
-			invoiceApply, invoiceEdit, resetInvoiceData,
+			invoiceApply, invoiceEdit, addRemark,  resetInvoiceData, triggerFormUpdate,
 			main: {list, page_no, total, loading, refresh, active_order_id, check_order_info, order_invoice_info, 
 					company_data, form_provinces, form_cities, form_districts, express_companies},
 			operationRecord,
@@ -377,7 +377,7 @@ class ManagePannel extends Component{
 				    </div>
 				  : null }
 				<InvoiceModal ref='InvoiceModal'
-					{...{gotRegionalismLetter,
+					{...{gotRegionalismLetter, triggerFormUpdate,
 					 resetFormCities, resetFormDistricts, getInvoiceCompany, 
 					 getOrderInvoiceInfo, invoiceApply, invoiceEdit, getInvoiceInfo,
 					 form_provinces, form_cities, form_districts, resetInvoiceData}}
@@ -397,6 +397,7 @@ class ManagePannel extends Component{
 					submitExpress = {submitExpress}
 					express_companies = {express_companies}/>
 				<RemarksModal ref = 'RemarksModal'
+					addRemark = {addRemark}
 					/>
         		<OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
 				
@@ -416,7 +417,7 @@ class ManagePannel extends Component{
 		this.refs.DeliveryModal.show(invoice_id);
 	}
 	viewRemarkModal(invoice_id){
-		this.refs.RemarksModal.show();
+		this.refs.RemarksModal.show(invoice_id);
 	}
 	viewOperationRecordModal(order){
 		this.refs.OperationRecordModal.show(order);
@@ -461,6 +462,7 @@ class InvoiceModal extends Component{
 			this.setState({invoice_id: data.id})
 			this.props.getInvoiceInfo(data.id)
 		}else{
+			this.props.triggerFormUpdate('invoice_apply_pannel', 'order_id', '');
 			this.props.resetInvoiceData();
 		}
 		this.props.getInvoiceCompany();
@@ -527,6 +529,8 @@ class InvoiceApplyPannel extends Component{
 				order_id,
 				_recipient_mobile,
 				_recipient_name,
+				origin_name,
+				origin_mobile,
 				owner_mobile,
 				owner_name,
 				recipient_mobile,
@@ -604,9 +608,9 @@ class InvoiceApplyPannel extends Component{
           					</div>
           					<div className='form-group form-inline' style = {{marginBottom: 8}}>
           						<label className='control-label'>{'　　姓名：'}</label>
-          						<input {..._recipient_name} type='text' className={`form-control input-xs ${_recipient_name.error}`}/>
+          						<input disabled = {recipient.value != 2} {..._recipient_name} type='text' className={`form-control input-xs ${_recipient_name.error}`}/>
           						<label>{'　　电话：'}</label>
-          						<input {..._recipient_mobile} type='text'  className={`form-control input-xs ${_recipient_mobile.error}`}/>
+          						<input disabled = {recipient.value != 2} {..._recipient_mobile} type='text'  className={`form-control input-xs ${_recipient_mobile.error}`}/>
           					</div>
           					<div className='form-group form-inline' style = {{marginBottom: 8, display: 'block'}}>
           						<label>{'　　地址：'}</label>
@@ -697,11 +701,15 @@ class InvoiceApplyPannel extends Component{
 		var {value } = e.target;
 		var {fields: {recipient_province_id, recipient_city_id, city_id, province_id }} = this.props;
 		if(value){
-			this.props.gotRegionalismLetter({type: 'city', parent_id: recipient_province_id.value});
-			this.props.gotRegionalismLetter({type: 'district', parent_id : recipient_city_id.value});
+			if(recipient_province_id.value != SELECT_DEFAULT_VALUE)
+				this.props.gotRegionalismLetter({type: 'city', parent_id: recipient_province_id.value});
+			if(recipient_city_id.value != SELECT_DEFAULT_VALUE)
+				this.props.gotRegionalismLetter({type: 'district', parent_id : recipient_city_id.value});
 		}else{
-			this.props.gotRegionalismLetter({type: 'city', parent_id: province_id.value});
-			this.props.gotRegionalismLetter({type: 'district', parent_id: city_id.value})
+			if(province_id.value != SELECT_DEFAULT_VALUE)
+				this.props.gotRegionalismLetter({type: 'city', parent_id: province_id.value});
+			if(city_id.value != SELECT_DEFAULT_VALUE)
+				this.props.gotRegionalismLetter({type: 'district', parent_id: city_id.value})
 		}
 		callback(e);
 	}
@@ -757,6 +765,8 @@ InvoiceApplyPannel = reduxForm({
 		'recipient',
 		'_recipient_mobile',
 		'_recipient_name',
+		'origin_mobile',
+		'origin_name',
 		'owner_mobile',
 		'owner_name',
 		'recipient_mobile',
@@ -833,7 +843,7 @@ class RemarksModal extends Component{
 	}
 	render(){
 		return(
-			<StdModal ref = 'modal' title = '添加发票备注' >
+			<StdModal ref = 'modal' title = '添加发票备注' onConfirm = {this.addRemark.bind(this)}>
 				<div>
 					<label>{'备注：'}</label>
 					<textarea onChange={this.onRemarkChange.bind(this)} value = {this.state.remark} className='form-control' style={{width: '100%',height:120}} />
@@ -847,6 +857,16 @@ class RemarksModal extends Component{
 	}
 	onRemarkChange(e){
 		this.setState({remark: e.target.value})
+	}
+	addRemark(){
+		this.props.addRemark(this.state.invoiceId, this.state.remark)
+			.done(() => {
+				Noty('success', '添加备注成功');
+				this.refs.modal.hide();
+			})
+			.fail((msg, code) => {
+				Noty('error', msg || '操作失败');
+			})
 	}
 }
 

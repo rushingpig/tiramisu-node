@@ -68,6 +68,7 @@ class FilterHeader extends Component{
 			search_ing: false,
 			search_by_keywords_ing: false,
 		}
+		this.AddressSelectorHook = this.AddressSelectorHook.bind(this);
 	}
 	render(){
 		var {search_ing, search_by_keywords_ing} = this.state;

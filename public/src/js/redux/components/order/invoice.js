@@ -697,11 +697,15 @@ class InvoiceApplyPannel extends Component{
 		var {value } = e.target;
 		var {fields: {recipient_province_id, recipient_city_id, city_id, province_id }} = this.props;
 		if(value){
-			this.props.gotRegionalismLetter({type: 'city', parent_id: recipient_province_id.value});
-			this.props.gotRegionalismLetter({type: 'district', parent_id : recipient_city_id.value});
+			if(recipient_province_id.value != SELECT_DEFAULT_VALUE)
+				this.props.gotRegionalismLetter({type: 'city', parent_id: recipient_province_id.value});
+			if(recipient_city_id.value != SELECT_DEFAULT_VALUE)
+				this.props.gotRegionalismLetter({type: 'district', parent_id : recipient_city_id.value});
 		}else{
-			this.props.gotRegionalismLetter({type: 'city', parent_id: province_id.value});
-			this.props.gotRegionalismLetter({type: 'district', parent_id: city_id.value})
+			if(province_id.value != SELECT_DEFAULT_VALUE)
+				this.props.gotRegionalismLetter({type: 'city', parent_id: province_id.value});
+			if(city_id.value != SELECT_DEFAULT_VALUE)
+				this.props.gotRegionalismLetter({type: 'district', parent_id: city_id.value})
 		}
 		callback(e);
 	}

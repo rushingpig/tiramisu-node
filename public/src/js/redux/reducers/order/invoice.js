@@ -111,6 +111,8 @@ function main(state = main_state, action){
 			data.recipient_city_id = option.city_id;
 			data.recipient_regionalism_id = option.regionalism_id;
 			data.recipient_address = data.address;
+			data.owner_name = option.owner_name;
+			data.owner_mobile = option.owner_mobile;
 
 			store.dispatch(gotRegionalismLetter({type: 'city', parent_id: data.province_id}));
 			store.dispatch(gotRegionalismLetter({type: 'district', parent_id: data.city_id}));

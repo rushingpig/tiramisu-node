@@ -157,6 +157,10 @@ function _getFormdata(getState){
 			invoice_data.regionalism_id = invoice_data.recipient_regionalism_id;
 			invoice_data.address = invoice_data.recipient_address;
 		}
+		if(invoice_data.recipient == 2){
+			invoice_data.recipient_name = invoice_data._recipient_name;
+			invoice_data.recipient_mobile =invoice_data._recipient_mobile;
+		}
 		invoice_data.amount = invoice_data.amount * 100;
 		delete invoice_data.recipient_province_id;
 		delete invoice_data.recipient_city_id;

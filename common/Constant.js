@@ -209,7 +209,9 @@ Constant.HISTORY_TYPE = {
     USER: 1,
     CITY: 2,
     ORDER: 3,
-    REFUND: 4
+    REFUND: 4,
+    INVOICE: 5,
+    COMPANY: 6
 };
 
 Constant.REFUND = {
@@ -236,6 +238,21 @@ Constant.REFUND = {
         2: '用户地址不配送',
         3: '客户更改产品(款式或磅数)',
         4: '用户取消蛋糕配件'
+    }
+};
+
+Constant.EXPRESS = {
+    '1': '顺丰快递',
+    '2': '中通快递'
+};
+
+Constant.INVOICE = {
+    STATUS: {
+        CANCEL: 'CANCEL',  // 取消
+        WAITING: 'WAITING',  // 等待订单完成
+        UNTREATED: 'UNTREATED',  // 未开具
+        COMPLETED: 'COMPLETED',  // 已开具
+        DELIVERY: 'DELIVERY'  // 已发货
     }
 };
 

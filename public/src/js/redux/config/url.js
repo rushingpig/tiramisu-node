@@ -70,6 +70,25 @@ const URL = (function() {
     edit_refund_remark:       '/refund/:refundId/remarks',  //修改退款备注
     refund_reasons:           '/refund/reason/type', //获取退款原因
 
+    //发票
+    company_review: '/company/:companyId/review', //公司审核
+    company_del:    '/company/:companyId', //删除公司
+    get_invoice_list: '/invoice/list',    //获取发票列表
+    invoice_apply:    '/invoice',         //发票申请
+    invoice_edit:     '/invoice/:invoiceId', //发票编辑
+    order_invoice_data: '/order/:orderId/invoice/option',  //根据订单获取发票所需数据
+    invoice_data: '/invoice/:invoiceId',  //获取发票信息
+    invoice_get_company: '/invoice/company/list', //添加发票时获取公司
+    invoice_opt_history: '/invoice/:invoiceId/history', //获取发票历史记录
+    invoice_del:         '/invoice/:invoiceId',         //删除发票
+    add_invoice_remarks: '/invoice/:invoiceId/remarks', //添加备注
+
+    add_company:       '/company',   //添加开发票的公司
+    edit_company:      '/company/:companyId', // 编辑开发票公司
+    get_company_list:  '/company/list', //获取公司列表
+    company_opt_history: '/company/:companyId/history', //获取公司操作记录
+    company_invoice_history: '/company/:companyId/invoice/history', //公司开票历史记录
+
     //产品
     categories: '/product/categories',
     products:   '/products',

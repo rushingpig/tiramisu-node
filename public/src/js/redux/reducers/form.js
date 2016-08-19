@@ -190,25 +190,44 @@ export default formReducer.plugin({
     return state;
   },
   refund_apply:(state,action) =>{
-    if(action && action.form == 'refund_apply'){
-      if(action.field == 'type'){
-        if(action.type == actionTypes.CHANGE){
-          if(state.type.value == 'FULL'){
+    if(action && action.form == 'refund_apply') {
+      if (action.field == 'type') {
+        if (action.type == actionTypes.CHANGE) {
+          if (state.type.value == 'FULL') {
             state.amount = {value: state.payment_amount.value / 100}
           }
         }
-      }else if(action.field == 'way'){
-        if(action.type == actionTypes.CHANGE){
-          if(state.way.value == 'THIRD_PARTY'){
+      } else if (action.field == 'way') {
+        if (action.type == actionTypes.CHANGE) {
+          if (state.way.value == 'THIRD_PARTY') {
             state.account_type = {value: ''}
-          }else {
-            state.account_type = {value : 'ALIPAY'}
+          } else {
+            state.account_type = {value: 'ALIPAY'}
           }
         }
       }
     }
     return state;
   },
+  invoice_apply_pannel:(state, action) => {
+    if(action && action.form == 'invoice_apply_pannel'){
+      if(action.field == 'recipient'){
+        if(action.type == actionTypes.CHANGE){
+          if(state.recipient.value == 2){
+            state._recipient_name = state.origin_name;
+            state._recipient_mobile = state.origin_mobile;
+          }else if(state.recipient.value == 0){
+            state._recipient_mobile = state.owner_mobile;
+            state._recipient_name = state.owner_name;
+          }else if(state.recipient.value == 1){
+            state._recipient_name = state.recipient_name;
+            state._recipient_mobile = state.recipient_mobile;
+          }
+        }
+      }
+    }
+    return state;
+  }
 });
 
   // order_manage_filter: (state, action) => {

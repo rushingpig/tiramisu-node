@@ -29,6 +29,8 @@ import productSKUWebsiteManagement from './product_sku_website_manage';
 import productSKUSearch from './product_sku_search';
 import productViewInfo from './product_view_info';
 import productViewSpecifications from './product_view_specifications';
+import invoiceManage from './order/invoice';
+import invoiceVATManage from './order/invoice_VAT';
 
 const rootReducer = combineReducers({
   form,
@@ -61,6 +63,8 @@ const rootReducer = combineReducers({
   productSKUSearch,
   productViewInfo,
   productViewSpecifications,
+  invoiceManage,
+  invoiceVATManage,
 });
 
 export default rootReducer

@@ -23,7 +23,7 @@ function isInvoiceCanUpdateStatus(curr_status, new_status) {
             result = [IS.CANCEL, IS.UNTREATED].indexOf(new_status);
             break;
         case IS.UNTREATED:  // 未开具
-            result = [IS.CANCEL, IS.COMPLETED].indexOf(new_status);
+            result = [IS.CANCEL, IS.UNTREATED, IS.COMPLETED].indexOf(new_status);
             break;
         case IS.COMPLETED:  // 已开具
             result = [IS.CANCEL, IS.DELIVERY].indexOf(new_status);
@@ -300,7 +300,7 @@ module.exports.editInvoice = function (req, res, next) {
     let promise = co(function *() {
         let invoice_id = req.params.invoiceId;
         let invoice_info = yield invoiceDao.findInvoiceById(invoice_id);
-        if (!invoice_info || invoice_info.length == 0) return Promise.reject(new TiramisuError());
+        if (!invoice_info || invoice_info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '发票信息不存在...'));
         invoice_info = invoice_info[0];
         let info;
         if (req.body.status == IS.COMPLETED) {
@@ -348,7 +348,7 @@ module.exports.getInvoiceInfo = function (req, res, next) {
     let promise = co(function *() {
         let invoice_id = req.params.invoiceId;
         let invoice_info = yield invoiceDao.findInvoiceById(invoice_id);
-        if (!invoice_info || invoice_info.length == 0) return Promise.reject(new TiramisuError());
+        if (!invoice_info || invoice_info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '发票信息不存在...'));
         invoice_info = invoice_info[0];
         let order_info = yield orderDao.findOrderById(invoice_info.order_id);
         if (!order_info || order_info.length == 0) return Promise.reject(new TiramisuError(res_obj.FAIL, '订单号不存在...'));
@@ -382,7 +382,7 @@ module.exports.setInvoiceExpress = function (req, res, next) {
     let promise = co(function *() {
         let invoice_id = req.params.invoiceId;
         let invoice_info = yield invoiceDao.findInvoiceById(invoice_id);
-        if (!invoice_info || invoice_info.length == 0) return Promise.reject(new TiramisuError());
+        if (!invoice_info || invoice_info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '发票信息不存在...'));
         invoice_info = invoice_info[0];
         let info = _.pick(req.body, [
             'express_type',
@@ -406,7 +406,7 @@ module.exports.editInvoiceRemarks = function (req, res, next) {
     let promise = co(function *() {
         let invoice_id = req.params.invoiceId;
         let invoice_info = yield invoiceDao.findInvoiceById(invoice_id);
-        if (!invoice_info || invoice_info.length == 0) return Promise.reject(new TiramisuError());
+        if (!invoice_info || invoice_info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '发票信息不存在...'));
         let info = {
             remarks: req.body.remarks
         };
@@ -425,7 +425,7 @@ module.exports.delInvoice = function (req, res, next) {
     let promise = co(function *() {
         let invoice_id = req.params.invoiceId;
         let invoice_info = yield invoiceDao.findInvoiceById(invoice_id);
-        if (!invoice_info || invoice_info.length == 0) return Promise.reject(new TiramisuError());
+        if (!invoice_info || invoice_info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '发票信息不存在...'));
         let info = {
             status: IS.CANCEL
         };

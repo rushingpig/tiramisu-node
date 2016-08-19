@@ -550,7 +550,7 @@ var PrintModal = React.createClass({
 var EditModal = React.createClass({
   propTypes: {
     'deliveryman': PropTypes.object.isRequired,
-    'order_deliveryman': PropTypes.object.isRequired,
+    'order_deliveryman': PropTypes.array.isRequired,
     'getDeliverymanByOrder': PropTypes.func.isRequired,
     'getAllDeliveryman': PropTypes.func.isRequired,
     'applyDeliveryman': PropTypes.func.isRequired,

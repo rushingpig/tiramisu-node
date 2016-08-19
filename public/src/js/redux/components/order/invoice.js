@@ -298,7 +298,7 @@ class ManagePannel extends Component{
 	}
 	render(){
 		var {area, filter, stations, dispatch, getStationListByScopeSignal, resetStationListWhenScopeChange,
-			getInvoiceList, getOrderInvoiceInfo, getInvoiceCompany, getFormProvinces, getFormCities, getFormDistricts,
+			getInvoiceList, getOrderInvoiceInfo, getInvoiceCompany, gotRegionalismLetter,
 			resetFormCities, resetFormDistricts, submitExpress,getInvoiceInfo, getOrderOptRecord, resetOrderOptRecord,
 			invoiceApply, resetInvoiceData,
 			main: {list, page_no, total, loading, refresh, active_order_id, check_order_info, order_invoice_info, 
@@ -368,7 +368,7 @@ class ManagePannel extends Component{
 				    </div>
 				  : null }
 				<InvoiceModal ref='InvoiceModal'
-					{...{getFormProvinces, getFormCities, getFormDistricts,
+					{...{gotRegionalismLetter,
 					 resetFormCities, resetFormDistricts, getInvoiceCompany, 
 					 getOrderInvoiceInfo, invoiceApply,getInvoiceInfo,
 					 form_provinces, form_cities, form_districts, resetInvoiceData}}
@@ -455,7 +455,7 @@ class InvoiceModal extends Component{
 			this.props.resetInvoiceData();
 		}
 		this.props.getInvoiceCompany();
-		this.props.getFormProvinces();
+		this.props.gotRegionalismLetter({type: 'province'});
 		this.refs.modal.show();
 	}
 	hide(){
@@ -626,6 +626,7 @@ class InvoiceApplyPannel extends Component{
 				  					<div key='province_div' className='form-group form-inline' style = {{marginBottom: 8}}>
 										{'　　　　　'}<Select ref='form_province'  options = {form_provinces} {...province_id} 
 														ref="province" default-text="--选择省份--" className={`form-select ${province_id.error}`} 
+														onChange = {this.onProvinceChange.bind(this, province_id.onChange)}
 														/>{' '}
 										<Select ref='form_city' options = {form_cities} {...city_id} 
 											className = {`${city_id.error}`}
@@ -686,7 +687,7 @@ class InvoiceApplyPannel extends Component{
 		var { value } = e.target;
 		this.props.resetFormCities();
 		if(value != SELECT_DEFAULT_VALUE){
-		  this.props.getFormCities(value);
+		  this.props.gotRegionalismLetter({type: 'city', parent_id: value});
 		}
 		callback(e);		
 	}
@@ -694,8 +695,9 @@ class InvoiceApplyPannel extends Component{
 		var {value} = e.target;
 		this.props.resetFormDistricts();
 		if(value != SELECT_DEFAULT_VALUE ){
-			this.props.getFormDistricts(value);
+			this.props.gotRegionalismLetter({type: 'district', parent_id: value});
 		}
+		callback(e);
 	}
 	handleCreateInvoice(form_data){
 		this.props.invoiceApply(form_data)

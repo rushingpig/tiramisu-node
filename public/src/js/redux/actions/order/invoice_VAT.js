@@ -160,7 +160,16 @@ export function getCompanyOptRecord(id, data){
 
 export const GET_COMPANY_INVOICE_RECORD = 'GET_COMPANY_INVOICE_RECORD';
 export function getCompanyInvoiceRecord(id, data){
-	  return {
+	return dispatch => {
+	  return get(Url.company_invoice_history.toString(id), data)
+	    .done(function(jsonobj){
+	      dispatch({
+	        type: GET_COMPANY_INVOICE_RECORD,
+	        data: jsonobj,
+	      })
+	    })
+	}	
+/*	  return {
 	    type: GET_COMPANY_INVOICE_RECORD,
 	    data: {
 	      "total": 12,
@@ -211,7 +220,7 @@ export function getCompanyInvoiceRecord(id, data){
 	      "page_no": "0",
 	      "page_size": "8"
 	    }
-	}	
+	}*/	
 }
 
 export const RESET_COMPANY_OPT_RECORD = 'RESET_COMPANY_OPT_RECORD'; //先重置历史数据

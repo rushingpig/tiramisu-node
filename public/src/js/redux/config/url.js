@@ -66,12 +66,13 @@ const URL = (function() {
     order_invoice_data: '/order/:orderId/invoice/option',  //根据订单获取发票所需数据
     invoice_data: '/invoice/:invoiceId',  //获取发票信息
     invoice_get_company: '/invoice/company/list', //添加发票时获取公司
-    invoice_opt_history: '/v1/a/invoice/:invoiceId/history', //获取发票历史记录
+    invoice_opt_history: '/invoice/:invoiceId/history', //获取发票历史记录
 
     add_company:       '/company',   //添加开发票的公司
     edit_company:      '/company/:companyId', // 编辑开发票公司
     get_company_list:  '/company/list', //获取公司列表
     company_opt_history: '/company/:companyId/history', //获取公司操作记录
+    company_invoice_history: '/company/:companyId/invoice/history', //公司开票历史记录
     //产品
     categories: '/product/categories',
     products:   '/products',

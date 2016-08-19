@@ -256,6 +256,20 @@ export function getFormCities(province_id){
     return GET(Url.cities.toString(province_id), null,  GET_FORM_CITIES);
 }
 
+export const GOT_REGIONALISM_LETTER = 'GOT_REGIONALISM_LETTER';
+export function gotRegionalismLetter(form_data){
+	return (dispatch) => {
+		return get(Url.regionalism_list.toString(),form_data )
+				.done((data) => {
+					dispatch({
+						dataType: form_data.type,
+						data: data,
+						type: GOT_REGIONALISM_LETTER,
+					})
+				})
+	}
+}
+
 export const RESET_FORM_CITIES = 'RESET_FORM_CITIES';
 export function resetFormCities(){
 	return{

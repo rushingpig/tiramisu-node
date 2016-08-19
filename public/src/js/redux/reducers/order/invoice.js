@@ -79,7 +79,7 @@ function main(state = main_state, action){
 		case Actions.GET_INVOICE_COMPANY:
 			return {...state, company_data: _t(action.data)}
 		case Actions.GET_ORDER_INVOICE_INFO:
-			var {getFormCities, getFormDistricts} = Actions;
+			var { gotRegionalismLetter} = Actions;
 			var {data} = action;
 			data.recipient = 1;
 			data._recipient_name = data.recipient_name;
@@ -92,23 +92,28 @@ function main(state = main_state, action){
 			data.recipient_regionalism_id = data.regionalism_id;
 			data.recipient_address = data.address;
 			data.order_id = action.order_id;
-			store.dispatch(getFormCities(data.province_id));
-			store.dispatch(getFormDistricts(data.city_id));
+			store.dispatch(gotRegionalismLetter({type: 'city', parent_id: data.province_id}));
+			store.dispatch(gotRegionalismLetter({type: 'district', parent_id: data.city_id}));
 			
 			return {...state, order_invoice_info: data}
 		case Actions.RESET_INVOICE_DATA:
 			return {...state, order_invoice_info: null ,company_data: [], form_provinces: [],
 					form_cities: [], form_districts: []}
 		case Actions.GET_INVOICE_INFO:
-			var {getFormCities, getFormDistricts} = Actions;
+			var {gotRegionalismLetter} = Actions;
 			var {data} = action;
 			data._recipient_name = data.recipient_name;
 			data._recipient_mobile = data.recipient_mobile;
-			data.enable_recipient_address = 1;
 			data.amount = data.amount / 100;
+			var { option } = data;
 
-			store.dispatch(getFormCities(data.province_id));
-			store.dispatch(getFormDistricts(data.city_id));
+			data.recipient_province_id = option.province_id;
+			data.recipient_city_id = option.city_id;
+			data.recipient_regionalism_id = option.regionalism_id;
+			data.recipient_address = data.address;
+
+			store.dispatch(gotRegionalismLetter({type: 'city', parent_id: data.province_id}));
+			store.dispatch(gotRegionalismLetter({type: 'district', parent_id: data.city_id}));
 			
 			return {...state, order_invoice_info: data}
 		case Actions.INVOICE_APPLY_ING:
@@ -147,6 +152,28 @@ function main(state = main_state, action){
 			return {...state, form_districts: _t(action.data)}
 		case Actions.RESET_FORM_DISTRICTS:
 			return {...state, form_districts: []}
+		case Actions.GOT_REGIONALISM_LETTER:
+			var type = action.dataType;
+			var regionalisms = action.data.list;
+			regionalisms = regionalisms.map( m => {
+				var p = {};
+				if(type == 'province')
+					p.ascii_value = m.first_letter.charCodeAt();
+				p.id = m.regionalism_id;
+				p.text = m.regionalism_name;
+				p.is_open = m.is_open;
+				return p;});
+			switch(type){
+				case 'province':					
+					return {...state, form_provinces: regionalisms}
+					break;
+				case 'city':
+					return {...state, form_cities: regionalisms}
+					break;
+				case 'district':
+					return {...state, form_districts: regionalisms}
+				default:;
+			}
 		default:
 			return state;
 	}

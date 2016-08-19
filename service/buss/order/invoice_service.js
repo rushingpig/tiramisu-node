@@ -97,7 +97,7 @@ module.exports.delCompany = function (req, res, next) {
         let info = {
             del_flag: 0
         };
-        yield invoiceDao.updateCompany(company_id, systemUtils.assembleInsertObj(req, info));
+        yield invoiceDao.updateCompany(company_id, systemUtils.assembleUpdateObj(req, info));
         let history = {option: ''};
         history.bind_id = company_id;
         history.option += `删除公司信息\n`;
@@ -329,7 +329,7 @@ module.exports.editInvoice = function (req, res, next) {
             }
         }
         if (!isInvoiceCanUpdateStatus(invoice_info.status, info.status)) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
-        yield invoiceDao.updateInvoice(invoice_id, systemUtils.assembleInsertObj(req, info));
+        yield invoiceDao.updateInvoice(invoice_id, systemUtils.assembleUpdateObj(req, info));
         let history = {option: ''};
         history.bind_id = invoice_id;
         if (info.status == IS.UNTREATED) {
@@ -390,7 +390,7 @@ module.exports.setInvoiceExpress = function (req, res, next) {
         ]);
         info.status = IS.DELIVERY;
         if (!isInvoiceCanUpdateStatus(invoice_info.status, info.status)) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
-        yield invoiceDao.updateInvoice(systemUtils.assembleInsertObj(req, info));
+        yield invoiceDao.updateInvoice(invoice_id, systemUtils.assembleUpdateObj(req, info));
         let history = {option: ''};
         history.bind_id = invoice_id;
         history.option += `发票寄出\n`;
@@ -410,7 +410,7 @@ module.exports.editInvoiceRemarks = function (req, res, next) {
         let info = {
             remarks: req.body.remarks
         };
-        yield invoiceDao.updateInvoice(systemUtils.assembleInsertObj(req, info));
+        yield invoiceDao.updateInvoice(invoice_id, systemUtils.assembleUpdateObj(req, info));
         let history = {option: ''};
         history.bind_id = invoice_id;
         history.option += `修改备注为{${info.remarks}}\n`;
@@ -429,7 +429,7 @@ module.exports.delInvoice = function (req, res, next) {
         let info = {
             status: IS.CANCEL
         };
-        yield invoiceDao.updateInvoice(invoice_id, systemUtils.assembleInsertObj(req, info));
+        yield invoiceDao.updateInvoice(invoice_id, systemUtils.assembleUpdateObj(req, info));
         let history = {option: ''};
         history.bind_id = invoice_id;
         history.option += `取消开发票\n`;

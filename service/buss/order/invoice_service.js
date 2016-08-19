@@ -429,7 +429,7 @@ module.exports.delInvoice = function (req, res, next) {
         let info = {
             status: IS.CANCEL
         };
-        yield invoiceDao.updateInvoice(systemUtils.assembleInsertObj(req, info));
+        yield invoiceDao.updateInvoice(invoice_id, systemUtils.assembleInsertObj(req, info));
         let history = {option: ''};
         history.bind_id = invoice_id;
         history.option += `取消开发票\n`;

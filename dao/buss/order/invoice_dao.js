@@ -208,6 +208,11 @@ InvoiceDao.prototype.findInvoiceList = function (query) {
         sql += `AND bi.company_id = ? `;
         params.push(query.company_id);
     }
+    if (query.src_id) {
+        sql += `AND (bo.src_id = ? OR bos.parent_id = ?) `;
+        params.push(query.src_id);
+        params.push(query.src_id);
+    }
 
     return co(function *() {
         let total_sql = `SELECT count(*) AS total FROM ` + sql;

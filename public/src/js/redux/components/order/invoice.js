@@ -309,7 +309,7 @@ class ManagePannel extends Component{
 		var {area, filter, stations, dispatch, getStationListByScopeSignal, resetStationListWhenScopeChange,
 			getInvoiceList, getOrderInvoiceInfo, getInvoiceCompany, gotRegionalismLetter,
 			resetFormCities, resetFormDistricts, submitExpress,getInvoiceInfo, getOrderOptRecord, resetOrderOptRecord,
-			invoiceApply, invoiceEdit, resetInvoiceData,
+			invoiceApply, invoiceEdit, addRemark,  resetInvoiceData,
 			main: {list, page_no, total, loading, refresh, active_order_id, check_order_info, order_invoice_info, 
 					company_data, form_provinces, form_cities, form_districts, express_companies},
 			operationRecord,
@@ -397,6 +397,7 @@ class ManagePannel extends Component{
 					submitExpress = {submitExpress}
 					express_companies = {express_companies}/>
 				<RemarksModal ref = 'RemarksModal'
+					addRemark = {addRemark}
 					/>
         		<OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
 				
@@ -416,7 +417,7 @@ class ManagePannel extends Component{
 		this.refs.DeliveryModal.show(invoice_id);
 	}
 	viewRemarkModal(invoice_id){
-		this.refs.RemarksModal.show();
+		this.refs.RemarksModal.show(invoice_id);
 	}
 	viewOperationRecordModal(order){
 		this.refs.OperationRecordModal.show(order);
@@ -837,7 +838,7 @@ class RemarksModal extends Component{
 	}
 	render(){
 		return(
-			<StdModal ref = 'modal' title = '添加发票备注' >
+			<StdModal ref = 'modal' title = '添加发票备注' onConfirm = {this.addRemark.bind(this)}>
 				<div>
 					<label>{'备注：'}</label>
 					<textarea onChange={this.onRemarkChange.bind(this)} value = {this.state.remark} className='form-control' style={{width: '100%',height:120}} />
@@ -851,6 +852,16 @@ class RemarksModal extends Component{
 	}
 	onRemarkChange(e){
 		this.setState({remark: e.target.value})
+	}
+	addRemark(){
+		this.props.addRemark(this.state.invoiceId, this.state.remark)
+			.done(() => {
+				Noty('success', '添加备注成功');
+				this.refs.modal.hide();
+			})
+			.fail((msg, code) => {
+				Noty('error', msg || '操作失败');
+			})
 	}
 }
 

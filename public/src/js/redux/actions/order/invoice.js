@@ -303,10 +303,11 @@ export function submitExpress(invoiceId, express_no, express_type){
 }
 
 export const AddRemark = 'AddRemark';
-export function addRemark(invoiceId, remakrs){
-	return {
+export function addRemark(invoiceId, remarks){
+	return PUT(Url.add_invoice_remarks.toString(invoiceId), {remarks: remarks}, AddRemark);
+/*	return {
 		type: AddRemark,
-	}
+	}*/
 }
 
 export const GET_ORDER_OPT_RECORD = 'GET_ORDER_OPT_RECORD';

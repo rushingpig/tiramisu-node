@@ -86,7 +86,9 @@ class FilterHeader extends Component{
 			},
 			provinces,
 			cities,
+			districts,
 			stations: {station_list},
+			actions,
 		} = this.props;
 		return(
 			<div className='panel search'>

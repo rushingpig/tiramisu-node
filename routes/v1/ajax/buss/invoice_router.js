@@ -8,7 +8,7 @@ module.exports = function (router) {
     router.get('/company/list', invoiceService.getCompanyList);  // 获取公司列表
     router.get('/company/:companyId', invoiceService.getCompanyInfo);  // 获取公司信息
     router.get('/company/:companyId/history', invoiceService.getCompanyHistory);  // 获取公司信息修改记录
-    router.get('/company/:companyId/invoice/history', invoiceService.getCompanyInvoiceHistory);  // 获取公司信息修改记录
+    router.get('/company/:companyId/invoice/history', invoiceService.getCompanyInvoiceHistory);  // 获取公司的历史开票记录
 
     router.get('/invoice/company/list', invoiceService.getInvoiceCompanyList);  // 获取公司列表
     router.get('/order/:orderId/invoice/option', invoiceService.getInvoiceOption);  // 获取开发票所需数据

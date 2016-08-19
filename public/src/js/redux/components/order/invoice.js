@@ -34,7 +34,7 @@ import * as InvoiceManageActions from 'actions/order/invoice';
 import OperationRecordModal from './invoice_opt_record.js';
 /*import InvoiceApplyPannel from './invoice_apply_pannel';*/
 
-/*import AddressSelector from 'common/address_selector';*/
+import AddressSelector from 'common/address_selector';
 
 class TopHeader extends Component{
 	render(){
@@ -98,12 +98,12 @@ class FilterHeader extends Component{
 					{/*<Select  ref = 'province' options = {provinces} {...province_id}  default-text = '请选择省份' className='space-right' onChange = {this.onProvinceChange.bind(this, province_id.onChange)}/>
 					<Select  ref = 'city' options = {cities} {...city_id}  default-text = '请选择市' className='space-right' onChange = {this.onCityChange.bind(this, city_id.onChange)}/>*/}
 					{
-					          /* V( 'InvoiceManageAddressFilter' )
+					           V( 'InvoiceManageAddressFilter' )
 					             ? <AddressSelector
 					                 {...{ province_id, city_id, district_id, provinces, cities, districts, actions,
 					                  AddressSelectorHook: this.AddressSelectorHook, form: 'invoice_manage_filter' }}
 					               />
-					             : null*/
+					             : null
 					 }
 					<Select  options = {station_list} {...delivery_id} default-text = '请选择配送站' className='space-right'/>
 					<Select {...status}  options = {all_invoice_status}  default-text = '开票状态'  className='space-right'/>

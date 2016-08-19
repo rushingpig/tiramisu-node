@@ -134,11 +134,11 @@ function main(state = main_state, action){
 		case Actions.INVOICE_EDIT_SUCCESS:
 			return {...state, submit_ing: false}
 		case Actions.HANDLE_INVOICE_SUCCESS:
-			var {handleActionName, invoiceId} = action.data;
+			var {handleActionName, invoiceId} = action;
 			var {list } = state;
 			list = list.map( m => {
 				if(m.invoice_id ==  invoiceId){
-					m.invoice_status = handleActionName
+					m.status = handleActionName
 				}
 				return m;
 			})

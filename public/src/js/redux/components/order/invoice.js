@@ -309,7 +309,7 @@ class ManagePannel extends Component{
 		var {area, filter, stations, dispatch, getStationListByScopeSignal, resetStationListWhenScopeChange,
 			getInvoiceList, getOrderInvoiceInfo, getInvoiceCompany, gotRegionalismLetter,
 			resetFormCities, resetFormDistricts, submitExpress,getInvoiceInfo, getOrderOptRecord, resetOrderOptRecord,
-			invoiceApply, resetInvoiceData,
+			invoiceApply, invoiceEdit, resetInvoiceData,
 			main: {list, page_no, total, loading, refresh, active_order_id, check_order_info, order_invoice_info, 
 					company_data, form_provinces, form_cities, form_districts, express_companies},
 			operationRecord,
@@ -379,7 +379,7 @@ class ManagePannel extends Component{
 				<InvoiceModal ref='InvoiceModal'
 					{...{gotRegionalismLetter,
 					 resetFormCities, resetFormDistricts, getInvoiceCompany, 
-					 getOrderInvoiceInfo, invoiceApply,getInvoiceInfo,
+					 getOrderInvoiceInfo, invoiceApply, invoiceEdit, getInvoiceInfo,
 					 form_provinces, form_cities, form_districts, resetInvoiceData}}
 					data = {order_invoice_info}
 					company_data = {company_data}
@@ -732,7 +732,7 @@ class InvoiceApplyPannel extends Component{
 			})
 	}
 	handleEditInvoice(){
-		this.props.actions.invoiceEdit(this.props.invoice_id)
+		this.props.invoiceEdit(this.props.invoice_id)
 			.done(function(){
 				Noty('success', '保存成功');
 				this.props.onHide();

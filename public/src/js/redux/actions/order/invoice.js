@@ -237,7 +237,7 @@ export function handleInvoice(invoiceId, handleActionName){
 				.done(() => {
 					dispatch({
 						handleActionName: handleActionName,
-						refundId: refundId,
+						invoiceId: invoiceId,
 						type: HANDLE_INVOICE_SUCCESS,
 					})
 				})

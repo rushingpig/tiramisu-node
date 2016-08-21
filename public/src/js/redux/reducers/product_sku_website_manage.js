@@ -5,9 +5,12 @@ import { FORM_CHANGE } from 'actions/common';
 import { UPDATE_PATH } from 'redux-simple-router';
 import clone from 'clone';
 
+import Area from 'actions/area';
 import { main as imgList } from 'reducers/central_image_manage';
+import { getGlobalStore } from 'stores/getter';
+
 import { SELECT_DEFAULT_VALUE, REQUEST } from 'config/app.config';
-import { Noty, map, some } from 'utils/index';
+import { Noty, map, some, delay } from 'utils/index';
 
 var initial_state = {
   all: true, //是否全部一致,
@@ -34,13 +37,23 @@ function applicationRange(state = initial_state, action){
     case Actions.SET_APPLICATION_RANGE:
       return { ...state, all: action.all }
     case Actions.GET_ALL_AVAILABLE_CITIES:
+      let city_id = location.hash.slice(1);
+      let city_info = action.can_add_cities.find(n => n.city_id == city_id);
+      let province_id = city_info && city_info.province_id;
+      if(province_id){
+        delay( () => getGlobalStore().dispatch( Area().getCities(province_id) ) );
+      }
       return { ...state,
         all: !( action.has_detailc_cities && action.has_detailc_cities.some( n => n.consistency != 0) ),
         provinces: action.provinces,
         all_available_cities: action.can_add_cities ? action.can_add_cities : [],
         all_edited_cities: action.has_detailc_cities
-          ? action.has_detailc_cities.map(({regionalism_id, id, consistency}) => ({city_id: regionalism_id, detail_id: id, consistency}))
-          : []
+          ? action.has_detailc_cities.map(
+              ({regionalism_id, id, consistency}) => ({city_id: regionalism_id, detail_id: id, consistency})
+            )
+          : [],
+        city_id: city_id,
+        province_id: province_id
       }
     case AreaActions.GOT_PROVINCES_SIGNAL:
       return { ...state, provinces: _t(action.data) }

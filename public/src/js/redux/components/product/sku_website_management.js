@@ -245,13 +245,13 @@ const ApplicationRange = props => {
             ? <FormGroup>
                 <label className="strong">配置城市：</label>
                 <DropDownMenu
-                  value={props.province_id}
+                  value={+props.province_id}
                   className="ml-20 space-right"
                   list={props.provinces}
                   onChange={props.actions.selectProvince.bind(undefined)}
                 />
                 <DropDownMenu
-                  value={props.city_id}
+                  value={+props.city_id}
                   className="space-right"
                   list={props.cities}
                   onChange={(value) => {props.actions.selectCity(value);props.getProductInfo(value)}}
@@ -760,8 +760,14 @@ class Main extends Component {
   componentDidMount() {
     this.props.actions.getAllAvailableCities(this.props.params.productId)
       .done( (provinces, cities) => {
-        if(cities[0].has_detailc_cities.length && cities[0].has_detailc_cities.every( n => n.consistency == 0)){
-          this.getProductInfo(cities[0].has_detailc_cities[0].regionalism_id);
+        try{
+          if(cities[0].has_detailc_cities.length && cities[0].has_detailc_cities.every( n => n.consistency == 0)){
+            this.getProductInfo(cities[0].has_detailc_cities[0].regionalism_id);
+          }else if(cities[0].has_detailc_cities.length && cities[0].has_detailc_cities.some( n => n.regionalism_id == location.hash.slice(1) )){
+              this.getProductInfo(+location.hash.slice(1));
+          }
+        }catch(e){
+          console.error(e);
         }
       })
     LazyLoad('noty');

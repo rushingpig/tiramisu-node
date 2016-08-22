@@ -35,7 +35,7 @@ export default class TimeInput extends Component {
     var { hour, minute, hour_error, minute_error } = this.state;
     return !hour || !minute ||  hour_error || minute_error 
         ? '' 
-        : (hour > 9 ? hour : '0' + hour) + ':' + (minute.length == 2 ? minute : '0' + minute);
+        : (hour.length == 2 ? hour : '0' + hour) + ':' + (minute.length == 2 ? minute : '0' + minute);
   }
   reset(){
     this.setState({

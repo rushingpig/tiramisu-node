@@ -14,8 +14,10 @@ public/images
 public/index.html
 public/node_modules
 public/build
-public/lib
 public/cache/*.gzip
+public/bootstrap-datepicker.min.js
+public/chinese_py.min.js
+public/plugins.min.js
 views/index.hbs
 .vscode
 version/

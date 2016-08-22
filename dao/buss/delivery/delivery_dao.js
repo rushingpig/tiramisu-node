@@ -346,7 +346,6 @@ function joinDeliveryRecordSql(query, need_city_name) {
 
     sql += `WHERE bo.status IN ('${constant.OS.COMPLETED}', '${constant.OS.EXCEPTION}') `;
     if (need_ds_flag) {
-        sql += `AND ( `;
         let tmp_sql = '';
         query.user.data_scopes.forEach(curr=> {
             if (curr == constant.DS.STATION.id) {

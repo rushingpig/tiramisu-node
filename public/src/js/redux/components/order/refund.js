@@ -149,8 +149,13 @@ var RefundRow = React.createClass({
     	var src_name = props.src_name ? props.src_name.split(',') : ['', ''];
     	var _refund_status = REFUND_STATUS[props.status] || {};
     	var {all_refund_reasons} = props.RefundManage;
-    	var reason_ = all_refund_reasons.filter( m => m.id == props.reason_type);
-    	var reasonStr = reason_[0].text;
+    	var reasonStr = '';
+    	if(props.reason_type == 0 && props.reason && props.reason != ''){
+    		reasonStr ='其他' + '：' + props.reason ;
+    	}else{
+			var reason_ = all_refund_reasons.filter( m => m.id == props.reason_type);
+    		reasonStr = reason_[0].text;
+    	}
     	var otherreason = !props.reason && props.reason != '' ? '(' + props.reason + ')' :''
     	if(props.reason_type == 0){
     		reasonStr = reasonStr + otherreason;

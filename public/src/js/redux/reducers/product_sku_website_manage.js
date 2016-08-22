@@ -30,7 +30,7 @@ var initial_state = {
 function _t(data){
   return map(data, (text, id) => ({id: +id, text}))
 }
-function applicationRange(state = initial_state, action){
+export function applicationRange(state = initial_state, action){
   switch (action.type) {
     case UPDATE_PATH:
       return initial_state;

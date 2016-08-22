@@ -115,6 +115,17 @@ export default [{
     "link": "/pm/cam"
   }]
 }, {
+  "key": "operation_manage",
+  "name": "运营管理",
+  "short_name": "运营",
+  "icon": "",
+  "link": [{
+    "key": "HomePageControlAccess",
+    "name": "首页运营控制",
+    "icon": "",
+    "link": "/opm/hpc"
+  }]
+}, {
   "key": "authority_manage",
   "name": "权限管理",
   "short_name": "权限",

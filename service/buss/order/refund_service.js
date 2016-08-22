@@ -58,13 +58,13 @@ const ACCOUNT_TYPE_CH = {
 
 function joinHistory(curr_obj, new_obj, history) {
     if (new_obj.type !== undefined && curr_obj.type != new_obj.type) {
-        history.option += `修改退款方式为{${REFUND_TYPE_CH[new_obj.type]}}\n`;
+        history.option += `修改退款方式为{${REFUND_TYPE_CH[new_obj.type] || ''}}\n`;
     }
     if (new_obj.way !== undefined && curr_obj.way != new_obj.way) {
-        history.option += `修改退款渠道为{${WAY_CH[new_obj.way]}}\n`;
+        history.option += `修改退款渠道为{${WAY_CH[new_obj.way] || ''}}\n`;
     }
     if (new_obj.account_type !== undefined && curr_obj.account_type != new_obj.account_type) {
-        history.option += `修改退款账户类型为{${ACCOUNT_TYPE_CH[new_obj.account_type]}}\n`;
+        history.option += `修改退款账户类型为{${ACCOUNT_TYPE_CH[new_obj.account_type] || ''}}\n`;
     }
     if (new_obj.account !== undefined && curr_obj.account != new_obj.account) {
         history.option += `修改退款账户为{${new_obj.account}}\n`;

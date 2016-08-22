@@ -375,10 +375,10 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
             products = order.products || [];
             order_obj.total_amount = current_order.total_amount;
             order_obj.total_original_price = 0;
-            order_obj.total_discount_price = 0;
+            // order_obj.total_discount_price = 0;
             for (let i = 0; i < products.length; i++) {
                 order_obj.total_original_price += products[i].original_price * products[i].num;
-                order_obj.total_discount_price += products[i].discount_price;
+                // order_obj.total_discount_price += products[i].discount_price;
                 let isAdd = true;
                 for (let j = 0; j < _res.length; j++) {
                     if (products[i].sku_id == _res[j].sku_id) {

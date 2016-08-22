@@ -108,8 +108,8 @@ class FilterHeader extends Component{
 		} = this.props;
 		var {provinces , cities} = area ;
 		var { filter_deliveryman_results, search_ing, search_by_keywords_ing } = this.state;
-		var content = filter_deliveryman_results.map( n => {
-      		return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
+		var content = filter_deliveryman_results.map( (n, i) => {
+      		return <option key={n.deliveryman_id + ' ' + i} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
 		})
 		return(
 			<div>
@@ -143,13 +143,13 @@ class FilterHeader extends Component{
 					 {
 					 	V('DeliveryManSalaryManageCityFilter')
 					 	?[
-					 		<Select ref='province' name='province' options = {provinces} 
+					 		<Select key='province_filter' ref='province' name='province' options = {provinces} 
 					 			onChange = {this.onProvinceChange.bind(this)}
 					 			default-text = '请选择省份'/>,
-					 		<Select className='space-right' ref='city' name='city' options = { cities} 
+					 		<Select key='city_filter' className='space-right' ref='city' name='city' options = { cities} 
 					 			onChange= {this.onCityChange.bind(this)}
 					 			default-text = '请选择城市'/>,
-					 		<Select className='space-right' ref='station' name = 'station' options = { stations }
+					 		<Select key='station_filter' className='space-right' ref='station' name = 'station' options = { stations }
 					 			default-text = '请选择配送站' />
 					 	]:null
 					 }

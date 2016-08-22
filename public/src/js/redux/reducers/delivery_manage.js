@@ -63,7 +63,7 @@ function main(state = main_state, action){
       var {list} = action.data;
       /*var {current_id} = action.data;*/
       //var  order_deliveryman = list.map( m => ({id: m.deliveryman_id, text: m.deliveryman_name + ':' + m.deliveryman_mobile}));
-      return {...state,order_deliveryman: list, order_deliveryman_load_success: true }
+      return {...state,order_deliveryman: list || [], order_deliveryman_load_success: true }
     default:
       return state
   }

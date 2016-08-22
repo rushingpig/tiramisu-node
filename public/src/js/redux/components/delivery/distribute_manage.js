@@ -72,6 +72,7 @@ class FilterHeader extends Component {
       filter_deliveryman_results: [],
       selected_deliveryman_id:0,
       all_print_status: YES_OR_NO,
+      _hasInitial: false,
     }
   }
   componentWillReceiveProps(nextProps){
@@ -129,8 +130,8 @@ class FilterHeader extends Component {
       all_pay_modes,
     } = this.props;
     var { filter_deliveryman_results, search_ing, search_by_keywords_ing } = this.state;
-    var content = filter_deliveryman_results.map( n => {
-          return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
+    var content = filter_deliveryman_results.map( (n, i) => {
+          return <option key={n.deliveryman_id + ' ' + i} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
     })
     return (
       <div className="panel search">
@@ -708,6 +709,7 @@ var SignedModal = React.createClass({
       is_refund: false,
       order_deliveryman: [],
       filter_deliveryman_results: [],
+      _hasInitial: false,
     };
   },
   mixins: [ LinkedStateMixin ],
@@ -718,14 +720,14 @@ var SignedModal = React.createClass({
     var { spareparts, orderDetail } =  D_ ;
     /*var { order_deliveryman } =  D_ ;*/
     var content = this.state.orderSpareparts.map( (n, i) => {
-      return <PartRow key = {n.sku_id + i} 
+      return <PartRow key = {n.sku_id + ' ' + i} 
                 {...n} 
                 onRemarksChange = { this.onRemarksChange }
                 onIncrement = {this.onIncrement}
                 onDecrement = {this.onDecrement}/>
     });
-    var deliveryman_content = filter_deliveryman_results.map( n => {
-          return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
+    var deliveryman_content = filter_deliveryman_results.map( (n, i) => {
+          return <option key={n.deliveryman_id + ' ' + i} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
     })
     return (
       <StdModal submitting={this.props.submitting} onConfirm={this.submitHandler} onCancel={this.hideCallback} title="订单完成页面" ref="modal">
@@ -965,6 +967,7 @@ var SignedModal = React.createClass({
     delete signData.order.D_;
     this.props.signOrder(order.order_id, signData).done(function(){
       this.refs.modal.hide();
+      this.setState({_hasInitial: false})
       this.props.callback();
       Noty('success', '签收成功！');
     }.bind(this))
@@ -1185,7 +1188,8 @@ var SignedModal = React.createClass({
   },*/
   componentWillReceiveProps(nextProps){
     var { D_ } = nextProps;
-    var {order_deliveryman,current_id, is_POS, load_success} = D_;   
+    var {order_deliveryman,current_id, is_POS, load_success} = D_; 
+    var { _hasInitial } = this.state;  
     if(load_success){
       var list = order_deliveryman;
       var build = function(){
@@ -1194,7 +1198,7 @@ var SignedModal = React.createClass({
           return n;
         })
         this.setState({
-          order_deliveryman: list, filter_deliveryman_results: new_data, deliveryman_id: current_id
+          order_deliveryman: list, filter_deliveryman_results: new_data, 
         })
       }.bind(this);
 
@@ -1239,7 +1243,13 @@ var SignedModal = React.createClass({
       m.unit_price = m.discount_price / m.num;
       return m;
     })
-    this.setState({orderSpareparts ,current_id , pay_way});
+    this.setState({orderSpareparts , pay_way});
+    if(!_hasInitial){
+      this.setState({
+        _hasInitial: true,
+        current_id: current_id
+      })
+    }
   },
 });
 
@@ -1360,6 +1370,7 @@ class EditModal extends Component{
       total_amount:0,
       order_id:'',
       filter_deliveryman_results:[],
+      _hasInitial: false,
     } 
   }
 
@@ -1439,8 +1450,14 @@ class EditModal extends Component{
           return n;
         })
         this.setState({
-          order_deliveryman: list, filter_deliveryman_results: new_data, deliveryman_id: current_id
+          order_deliveryman: list, filter_deliveryman_results: new_data, 
         })
+        if(!this.state._hasInitial){
+          this.setState({
+            _hasInitial: true,
+            deliveryman_id: current_id
+          })
+        }
       }.bind(this);
 
       if(window.makePy){
@@ -1500,6 +1517,7 @@ class EditModal extends Component{
           is_POS:0,
           total_amount:0,
           order_id:'',
+          _hasInitial: false,
         })
         Noty('success', '编辑成功！');
       }.bind(this))

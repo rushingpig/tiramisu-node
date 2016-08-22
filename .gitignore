@@ -15,9 +15,9 @@ public/index.html
 public/node_modules
 public/build
 public/cache/*.gzip
-public/bootstrap-datepicker.min.js
-public/chinese_py.min.js
-public/plugins.min.js
+public/lib/bootstrap-datepicker.min.js
+public/lib/chinese_py.min.js
+public/lib/plugins.min.js
 views/index.hbs
 .vscode
 version/

@@ -157,7 +157,7 @@ class FilterHeader extends Component{
 					 	]:null
 					 }
 					
-					<div className="input-group input-group-sm" style={{height:'27px'}}>
+					<div className="input-group input-group-sm space-right" style={{height:'27px'}}>
 						<span  style={{height:'27px',lineHeight:1}} className="input-group-addon"><i className="fa fa-search"></i></span>
 						<input type="text"  style={{height:'27px', width:'120px'}} 
 						  className="form-control space-right" placeholder="配送员拼音首字母或手机号" 
@@ -573,9 +573,7 @@ class DeliveryManSalaryManagePannel extends Component{
 		return (
 				<div className=''>
 					{/*<TopHeader {...{exportExcel}}/>*/}
-					<FilterHeader  {...{area,deliveryman,stations: stations.station_list, page_size: this.state.page_size}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, 
-											...stationSalaryActions, exportExcel, 
-											},dispatch) }}
+					<FilterHeader  {...{area,deliveryman,stations: stations.station_list, page_size: this.state.page_size}} actions = {this.props.actions}
 									resetStationListWhenScopeChange = { resetStationListWhenScopeChange }
 									getStationListByScopeSignal = { getStationListByScopeSignal }/>
 					<div className='panel' >

@@ -586,7 +586,7 @@ var EditModal = React.createClass({
   componentWillReceiveProps: function(nextProps){
     var {deliveryman } = nextProps;
     //只需要初始化一次的（根据订单号来获取配送员后，此限制去掉 20160727 xiaohong）
-    if(deliveryman.load_success){
+    if(deliveryman.load_success && this.props.deliveryman != deliveryman){
       var { list } = deliveryman;
       var build = function(){
         var new_data = list.map(function(n){

@@ -143,18 +143,18 @@ class FilterHeader extends Component{
 					 {
 					 	V('DeliveryManSalaryManageCityFilter')
 					 	?[
-					 		<Select ref='province' name='province' options = {provinces} 
+					 		<Select key="province" ref='province' className="space-right" name='province' options = {provinces} 
 					 			onChange = {this.onProvinceChange.bind(this)}
 					 			default-text = '请选择省份'/>,
-					 		<Select className='space-right' ref='city' name='city' options = { cities} 
+					 		<Select key="city" className='space-right' ref='city' name='city' options = { cities} 
 					 			onChange= {this.onCityChange.bind(this)}
 					 			default-text = '请选择城市'/>,
-					 		<Select className='space-right' ref='station' name = 'station' options = { stations }
+					 		<Select key="station" className='space-right' ref='station' name = 'station' options = { stations }
 					 			default-text = '请选择配送站' />
 					 	]:null
 					 }
 					
-					<div className="input-group input-group-sm" style={{height:'27px'}}>
+					<div className="input-group input-group-sm space-right" style={{height:'27px'}}>
 						<span  style={{height:'27px',lineHeight:1}} className="input-group-addon"><i className="fa fa-search"></i></span>
 						<input type="text"  style={{height:'27px', width:'120px'}} 
 						  className="form-control" placeholder="配送员拼音首字母或手机号" 
@@ -427,8 +427,8 @@ var SalaryRow = React.createClass({
 					{
 						V('DeliveryManSalaryManageEdit')
 							?this.state.Edit_ing
-								?[<a href='javascript:;' onClick = {this.onCancel}>[取消]</a>,<br/>]
-								:[<a href='javascript:;' onClick = {this.onEdit}>[编辑]</a>,<br/>]
+								?[<a key="cancel" href='javascript:;' onClick = {this.onCancel}>[取消]</a>,<br key="br-1" />]
+								:[<a key="edit" href='javascript:;' onClick = {this.onEdit}>[编辑]</a>,<br key="br-2" />]
 							:null
 					}
 					
@@ -549,9 +549,7 @@ class DeliveryManSalaryManagePannel extends Component{
 		return (
 				<div className=''>
 					{/*<TopHeader {...{exportExcel}}/>*/}
-					<FilterHeader  {...{area,deliveryman,stations: stations.station_list, page_size: this.state.page_size}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, 
-											...stationSalaryActions, exportExcel, 
-											resetStationListWhenScopeChange},dispatch) }}
+					<FilterHeader  {...{area,deliveryman,stations: stations.station_list, page_size: this.state.page_size}} actions = {this.props.actions}
 									getStationListByScopeSignal = { getStationListByScopeSignal }/>
 					<div className='panel' >
 						<header className="panel-heading">工资信息列表</header>

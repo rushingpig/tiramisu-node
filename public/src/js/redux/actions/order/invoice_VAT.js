@@ -86,6 +86,11 @@ export function editCompany(id, form_data){
 function _getFormdata(getState){
 	var company_data = getValues(getState().form.company_info);
 	if(company_data){
+		if(company_data.type == '0'){
+			delete company_data.company_id;
+		}else{
+			delete company_data.title;
+		}
 		return company_data;
 	}
 }

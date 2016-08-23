@@ -1178,7 +1178,7 @@ var SignedModal = React.createClass({
   componentWillReceiveProps(nextProps){
     var { D_, order_deliveryman } = nextProps;
     var { is_POS} = D_;  
-    if(order_deliveryman.load_success){
+    if(order_deliveryman.load_success && this.props.order_deliveryman != order_deliveryman){
       var {list} = order_deliveryman;
       var build = function(){
         var new_data = list.map(function(n){
@@ -1414,7 +1414,7 @@ class EditModal extends Component{
     var { is_POS } = D_;
     var {current_id, load_success} = order_deliveryman;
     this.setState({ is_POS});
-    if(load_success){
+    if(load_success && this.props.order_deliveryman != order_deliveryman){
       var {list} = order_deliveryman;
       var build = function(){
         var new_data = list.map(function(n){

@@ -55,7 +55,7 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
           ...components,
           SkuSearch:         require('../components/product/sku_search'),
           SkuManage:         require('../components/product/sku_management'),
-          SkuWebsiteManage:  require('../components/product/sku_website_management'),
+          SkuWebsiteManage:  require('../components/product/sku_website_management').default,
           ViewInfo:          require('../components/product/view_info'),
           ViewSpecfications: require('../components/product/view_specfications'),
         }

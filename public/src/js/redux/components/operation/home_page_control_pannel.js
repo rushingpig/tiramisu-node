@@ -21,7 +21,7 @@ import { Radio, Row, Col, FormGroup, FormInlineGroup,
 import getTopHeader from '../top_header';
 import LazyLoad from 'utils/lazy_load';
 import Config from 'config/app.config';
-import { Noty, map } from 'utils/index';
+import { Noty, map, dom, delay } from 'utils/index';
 
 import AreaActions from 'actions/area';
 import * as ImgActions from 'actions/central_image_manage';
@@ -82,7 +82,7 @@ const ApplicationRange = props => {
                   onChange={(value) => {props.actions.selectCity(value);props.getProductInfo(value)}}
                 />
                 <button
-                  onClick={props.cacheInfo}
+                  onClick={props.actions.cacheInfo}
                   disabled={!props.city_id || hasCached}
                   className="btn btn-xs btn-theme"
                   >
@@ -103,21 +103,56 @@ const EditImgBoxPlus = props => (
   </div>
 )
 
+class EditLink extends Component {
+  render(){
+    var { props } = this;
+    return (
+      <div ref="editPart" className="panel">
+        <div className="panel-body ">
+          <FormInlineGroup>
+            <label className="v-top">选择图片：</label>
+            <div className="inline-block">
+              <img src={props.domain + props.banners[props.selected_index].img_key} width="150" />
+              <h6>建议尺寸：1920x985</h6>
+            </div>
+          </FormInlineGroup>
+          <FormInlineGroup>
+            <label className="v-top">对应链接：</label>
+            <textarea
+              cols="40"
+              style={{padding: 6}}
+              className="form-control"
+              onChange={props.actions.onFormChange.bind(null, 'banner_link')}
+              value={props.banners[props.selected_index].link}
+            ></textarea>
+          </FormInlineGroup>
+        </div>
+      </div>
+    )
+  }
+  componentDidMount(){
+    delay(() => {
+      this.closeFixHandler = dom.fixed({dom: this.refs.editPart, offsetTop: 60})
+    });
+  }
+  componentWillUnmount(){
+    this.closeFixHandler();
+  }
+}
+
 //首页轮播图
 class BannerImgs extends Component {
-  selected_index
-  
   render(){
     var { props } = this;
     var banner_list = props.banners.map( (n, i) => (
       <EditImgBoxPlus
         key={i}
-        src={n.img_key}
         active={i == props.selected_index}
+        src={n.img_key ? (props.domain + n.img_key) : ''}
         defaultSrc="images/banner.jpg"
         onSelect={props.actions.selectBanner.bind(null, i)}
-        // onChooseImg={props.showSelectImgModal.bind(null, 'prodetail_img_100001')}
-        // onDeleteImg={actions.deleteImg.bind(null, 'prodetail_img_100001')}
+        onChooseImg={props.showSelectImgModal.bind(null, i)}
+        onDeleteImg={props.actions.deleteImg.bind(null, i)}
         >
         <ProDetailImgsTip size="1920x985" />
       </EditImgBoxPlus>
@@ -132,8 +167,12 @@ class BannerImgs extends Component {
           <Row>
             <Col size="8">
               { banner_list }
-              <div className="text-center">
-                <button className="btn btn-sm btn-default">
+              <div className="text-center relative" style={{zIndex: 100}}>
+                <button
+                  disabled={banner_list.length >= 5}
+                  onClick={props.actions.addBanner.bind(null)}
+                  className="btn btn-sm btn-default"
+                >
                   <i className="fa fa-plus"></i>
                   {' 再添加一张'}
                 </button>
@@ -142,27 +181,13 @@ class BannerImgs extends Component {
             <Col size="4">
               {
                 props.selected_index != -1
-                  ? <div className="panel">
-                      <div className="panel-body ">
-                        <FormInlineGroup>
-                          <label className="v-top">选择图片：</label>
-                          <div className="inline-block">
-                            <img src={Config.root + "images/banner.jpg"} width="150" />
-                            <h6>建议尺寸：1920x985</h6>
-                          </div>
-                        </FormInlineGroup>
-                        <FormInlineGroup>
-                          <label className="v-top">对应链接：</label>
-                          <textarea className="form-control" cols="40"></textarea>
-                        </FormInlineGroup>
-                      </div>
-                    </div>
+                  ? <EditLink {...props} />
                   : null
               }
             </Col>
           </Row>
           <div className="text-right">
-            <button className="btn btn-lg btn-theme">保存</button>
+            <button disabled={!props.submitable} className="btn btn-lg btn-theme">保存</button>
           </div>
         </div>
       </div>
@@ -173,20 +198,18 @@ class BannerImgs extends Component {
 class Main extends Component {
   constructor(props) {
     super(props);
-    // this.showSelectImgModal = this.showSelectImgModal.bind(this);
+    this.showSelectImgModal = this.showSelectImgModal.bind(this);
     // this.submit = this.submit.bind(this);
     // this.onSubmit = this.onSubmit.bind(this);
-    // this.getInfo = this.getInfo.bind(this);
-    // this.cacheInfo = this.cacheInfo.bind(this);
     // this.getProductInfo = this.getProductInfo.bind(this);
-    // this.beforeLeave = this.beforeLeave.bind(this);
+    this.beforeLeave = this.beforeLeave.bind(this);
   }
   render() {
     const { props } = this;
     const { area, actions, imgActions, main, imgList } = props;
-    // const disableSubmit = (!applicationRange.all && !applicationRange.city_id) || !props.prolistDetail.ok || !props.proProperties.ok || !props.proIntro.ok || !props.proDetailImgs.ok;
     return (
       <div className="wrapper">
+
         <TopHeader />
 
         <ApplicationRange
@@ -196,13 +219,19 @@ class Main extends Component {
           getProductInfo={this.getProductInfo}
         />
 
-        <BannerImgs {...main}  actions={actions} />
+        <BannerImgs
+          {...main}
+          actions={actions}
+          domain={imgList.domain}
+          showSelectImgModal={this.showSelectImgModal}
+        />
 
-        {/*<SelectImgModal
-                  ref="selectImgModal"
-                  {...{...imgModal, ...imgList}}
-                  actions={{...imgActions, selectImg: actions.selectImg}}
-                />*/}
+        <SelectImgModal
+          ref="selectImgModal"
+          {...imgList}
+          actions={{...imgActions, selectImg: actions.selectImg}}
+        />
+
       </div>
     );
   }
@@ -210,7 +239,7 @@ class Main extends Component {
     history.registerTransitionHook(this.beforeLeave);
   }
   beforeLeave(location, callback){
-    if(this.props.cached.length){
+    if(this.props.main.cached.length){
       Confirm('您还有暂存的数据没有保存，确认离开吗？')
         .done(() => {
           history.unregisterTransitionHook(this.beforeLeave)
@@ -244,51 +273,24 @@ class Main extends Component {
   //   }
   //   this.__getProInfoReques = this.props.actions.getProductInfo({ product_id, regionalism_id })
   // }
-  //转换为提交格式的数据
-  getInfo(){
-    const { props, props: {
-      prolistDetail,
-      proProperties,
-      proIntro,
-      proDetailImgs
-    }} = this;
-    return {
-      consistency: props.applicationRange.all ? 0 : 1, //是否全部一致
-      list_img: prolistDetail.list_img,
-      list_copy: prolistDetail.list_copy,
-      detail_top_copy: proProperties.briefIntro_1,
-      detail_template_copy: proProperties.briefIntro_2,
-      detail_template_copy_end: proProperties.briefIntro_3,
-      spec: clone(proProperties.spec),
-      detail_img_1: proIntro.intro_img_1,
-      detail_img_2: proIntro.intro_img_2,
-      detail_img_3: proIntro.intro_img_3,
-      detail_img_4: proIntro.intro_img_4,
-      template_data: map(proDetailImgs.template_data, (value, position_id) => ({position_id: +position_id, value}))
-    }
-  }
-  cacheInfo(){
-    var { props } = this;
-    
-  }
-  submit(productId){
-    const { props } = this;
-    var info = this.getInfo();
-    if(props.applicationRange.all){ //全部一致
-      if(!props.applicationRange.all_edited_cities.length){ //之前不存在已编辑过的城市, 那么就是添加
+  
+  submit(){
+    const { props, props: { banners } } = this;
+    if(props.all){ //全部一致
+      if(!props.all_edited_cities.length){ //之前不存在已编辑过的城市, 那么就是添加
         return props.actions.submitCreate({
           product_id: productId,
           infos: [{
-            regionalism_ids: props.applicationRange.all_available_cities.map(n => n.city_id),
+            regionalism_ids: props.all_available_cities.map(n => n.city_id),
             info
           }]
         })
       }else{  //这里就是编辑(也有新增和修改两种)
         let new_infos = [];
         let modified_infos = [];
-        props.applicationRange.all_available_cities.map(n => {
+        props.all_available_cities.map(n => {
           if(
-            props.applicationRange.all_edited_cities.some( m => {
+            props.all_edited_cities.some( m => {
               if(m.city_id == n.city_id){
                 modified_infos.push({
                   regionalism_id: n.city_id,
@@ -343,20 +345,11 @@ class Main extends Component {
   }
   onSubmit(){
     const { props } = this;
-    const { params: {productId} } = props;
-    if(!productId){
-      Noty('error', '产品数据有误，无法提交');
-    }
-    if(
-      props.prolistDetail.ok &
-      props.proProperties.ok &
-      props.proIntro.ok &
-      props.proDetailImgs.ok
-    ){
-      this.submit(+productId)
+    if(props.submitable){
+      this.submit()
         .done(() => {
           Noty('success', '保存成功！');
-          props.actions.getAllAvailableCities(productId); //刷新数据
+          props.actions.getConfigureData(); //刷新数据
         })
         .fail(msg => Noty('error', msg || '提交出错！'))
     }else{

@@ -8,7 +8,7 @@ import * as AreaActions from 'actions/area';
 
 import { main as imgList } from 'reducers/central_image_manage';
 import { SELECT_DEFAULT_VALUE, REQUEST } from 'config/app.config';
-import { Noty, map, some } from 'utils/index';
+import { Noty, map, some, del } from 'utils/index';
 
 var initial_state = {
   all: true, //是否全部一致,
@@ -21,14 +21,21 @@ var initial_state = {
   cached: [], //缓存数据
 
   selected_index: -1,
-  banners: [],
+  banners: [{img_key: '', link: ''},{img_key: '', link: ''}],
+
+  submitable: false,
   submitting: false,
 }
 
 function _t(data){
   return map(data, (text, id) => ({id: +id, text}))
 }
+function checkSubmitable(banners){
+  banners = banners.filter(n => n.img_key && n.link);
+  return banners.length >=2 && banners.length <=5;
+}
 function main(state = initial_state, action){
+  var new_banners = undefined;
   switch (action.type) {
     case UPDATE_PATH:
       return initial_state;
@@ -40,32 +47,64 @@ function main(state = initial_state, action){
         ...state,
         all,
         configure_data: action.data,
-        banners: all && action.data.length ? action.data[0] : [{img_key: '', link: ''},{img_key: '', link: ''}]
+        provinces: _t(action.provinces),
+        banners: all && action.data.length ? action.data[0] : state.banners
       }
     case AreaActions.GOT_PROVINCES_SIGNAL:
-      return { ...state, provinces: _t(action.data) }
+      return { ...state,  }
     case AreaActions.GOT_CITIES:
       return { ...state,
-        cities: _t(action.data).filter( n => {
+        cities: _t(action.data)/*.filter( n => {
           if(state.configure_data.some(m => m.city_id == n.id)){
             n.checked = true;
             return true;
           }
-        })
+        })*/
       }
     case Actions.SELECT_PROVINCE:
       return { ...state, province_id: action.province_id, city_id: undefined }
     case Actions.SELECT_CITY:
       return { ...state, city_id: action.city_id }
     case Actions.CACHE_INFO:
-      return { ...state, cached: [...state.cached, action.data] }
-    case Actions.SUBMIT_INFO:
-      return { ...state, cached: [] }
+      if(checkSubmitable()){
+        return { ...state,
+          cached: [...state.cached, {city_id: state.city_id, consistency: 1, data: clone(state.banners)}],
+          banners: initial_state.banners
+        }
+      }else{
+        return state;
+      }
+
+    case Actions.SELECT_IMG:
+      new_banners = clone(state.banners);
+      new_banners[action.which] && (new_banners[action.which].img_key = action.img_key);
+      return { ...state, banners: new_banners, selected_index: action.which, submitable: checkSubmitable(new_banners) }
+    case Actions.DELETE_IMG:
+      new_banners = clone(state.banners);
+      if(new_banners[action.which]){
+        new_banners[action.which].img_key = '';
+        new_banners[action.which].link = '';
+      }
+      return { ...state,
+        banners: new_banners,
+        selected_index: action.which == state.selected_index ? -1 : state.selected_index,
+        submitable: checkSubmitable(new_banners)
+      }
+    case Actions.ADD_BANNER:
+      return { ...state, banners: [...state.banners, {img_key: '', link: ''}] }
+    case Actions.SELECT_BANNER:
+      return { ...state, selected_index: action.which }
+    case FORM_CHANGE + 'banner_link':
+      new_banners = clone(state.banners);
+      new_banners[state.selected_index].link = action.value;
+      return { ...state, banners: new_banners, submitable: checkSubmitable(new_banners) }
 
     case Actions.SUBMIT_INFO:
       if(action.key == REQUEST.ING){
         return { ...state, submitting: true }
-      }else if(action.key == REQUEST.SUCCESS || action.key == REQUEST.FAIL){
+      }else if(action.key == REQUEST.SUCCESS){
+        return { ...state, submitting: false, cached: [] }
+      }else if(action.key == REQUEST.FAIL){
         return { ...state, submitting: false }
       }
     default :

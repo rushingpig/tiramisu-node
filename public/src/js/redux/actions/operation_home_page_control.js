@@ -16,13 +16,23 @@ export function setApplicationRange(all){
 
 export const GET_CONFIGURE_DATA = 'HPC_GET_CONFIGURE_DATA';
 export function getConfigureData(){
-  return R.TEST([
-    // {city_id: 440100, consistency: 0, data: [
-    //   {img_key: 'url1', link: 'http://xxxx.com'},
-    //   {img_key: 'url2', link: 'http://xxxx.com'},
-    //   {img_key: 'url3', link: 'http://xxxx.com'}
-    // ]}
-  ], GET_CONFIGURE_DATA)
+  return dispatch => $.when(
+    Area().getProvincesSignal()(dispatch),
+    []
+  ).done( (provinces, data) => {
+    dispatch({
+      type: GET_CONFIGURE_DATA,
+      provinces: provinces[0]/*.filter(n => cities[0].can_add_cities.some(m => m.province_id == n.id))*/,
+      data
+    })
+  })
+  // return R.TEST([
+  //   // {city_id: 440100, consistency: 0, data: [
+  //   //   {img_key: 'url1', link: 'http://xxxx.com'},
+  //   //   {img_key: 'url2', link: 'http://xxxx.com'},
+  //   //   {img_key: 'url3', link: 'http://xxxx.com'}
+  //   // ]}
+  // ], GET_CONFIGURE_DATA)
 }
 
 export const SELECT_PROVINCE = 'HPC_SELECT_PROVINCE';
@@ -47,18 +57,17 @@ export function selectCity(city_id){
 }
 
 export const CACHE_INFO = 'HPC_CACHE_INFO';
-export function cacheInfo(data){
+export function cacheInfo(){
   return {
     type: CACHE_INFO,
-    data
   }
 }
 
 export const SELECT_BANNER = 'HPC_SELECT_BANNER';
-export function selectBanner(img_key){
+export function selectBanner(which){
   return {
     type: SELECT_BANNER,
-    img_key
+    which
   }
 }
 
@@ -76,6 +85,13 @@ export function deleteImg(which){
   return {
     type: DELETE_IMG,
     which
+  }
+}
+
+export const ADD_BANNER = 'HPC_ADD_BANNER';
+export function addBanner(){
+  return {
+    type: ADD_BANNER
   }
 }
 

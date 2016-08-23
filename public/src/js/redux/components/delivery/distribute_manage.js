@@ -72,7 +72,7 @@ class FilterHeader extends Component {
       search_ing: false,
       search_by_keywords_ing: false,
       filter_deliveryman_results: [],
-      selected_deliveryman_id:0,
+      selected_deliveryman_id: 0,
       all_print_status: YES_OR_NO,
     };
     this.AddressSelectorHook = this.AddressSelectorHook.bind(this);
@@ -220,6 +220,7 @@ class FilterHeader extends Component {
     }else{ //中文全称
       results = all_deliveryman.filter(n => n.deliveryman_name.indexOf(value) != -1)
     }
+    this.props.triggerFormUpdate('order_distribute_filter', 'deliveryman_id', results.length && results[0].deliveryman_id)
     this.setState({ filter_deliveryman_results: results, selected_deliveryman_id: results.length && results[0].deliveryman_id });
   }
   onSelectDeliveryman(e){

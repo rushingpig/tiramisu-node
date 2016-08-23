@@ -566,7 +566,7 @@ var EditModal = React.createClass({
       search_txt: '',
       selected_deliveryman_id: undefined,
       orders: [],
-      _hasInitials: false,  //选择配送员后提交时，重置selected_deliveryman_id的值导致的显示问题，此处控制其显示
+     // _hasInitials: false,  //选择配送员后提交时，重置selected_deliveryman_id的值导致的显示问题，此处控制其显示
     };
   },
   componentWillReceiveProps: function(nextProps){
@@ -581,13 +581,8 @@ var EditModal = React.createClass({
         })
         this.setState({
           all_deliveryman: list, filter_results: new_data, 
+          selected_deliveryman_id: list.length && list[0].deliveryman_id  //只初始化一次, 提交后不再设置
         })
-        if(!this.state._hasInitials){
-          this.setState({
-            _hasInitials: true,
-            selected_deliveryman_id: list.length && list[0].deliveryman_id  //只初始化一次, 提交后不再设置
-          })
-        }
       }.bind(this);
 
       if(window.makePy){
@@ -684,7 +679,6 @@ var EditModal = React.createClass({
     }).done(function(json){
       Noty('success', '操作成功！');
       this.refs.modal.hide();
-      this.setState({_hasInitials: false})
       this.props.callback();
     }.bind(this)).fail(function(msg){
       Noty('error', msg || '操作失败！');
@@ -714,7 +708,6 @@ var EditModal = React.createClass({
       search_txt: '',
       selected_deliveryman_id: undefined,
       orders: [],
-      _hasInitials: false,
     });
   },
 });

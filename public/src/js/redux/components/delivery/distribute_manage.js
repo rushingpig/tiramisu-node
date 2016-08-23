@@ -699,7 +699,6 @@ var SignedModal = React.createClass({
       is_refund: false,
       all_deliveryman: [],
       filter_deliveryman_results: [],
-      _hasInitial: false,
     };
   },
   mixins: [ LinkedStateMixin ],
@@ -957,7 +956,6 @@ var SignedModal = React.createClass({
     delete signData.order.D_;
     this.props.signOrder(order.order_id, signData).done(function(){
       this.refs.modal.hide();
-      this.setState({_hasInitial: false})
       this.props.callback();
       Noty('success', '签收成功！');
     }.bind(this))
@@ -1179,8 +1177,7 @@ var SignedModal = React.createClass({
   },*/
   componentWillReceiveProps(nextProps){
     var { D_, order_deliveryman } = nextProps;
-    var { is_POS} = D_; 
-    var { _hasInitial } = this.state;  
+    var { is_POS} = D_;  
     if(order_deliveryman.load_success){
       var {list} = order_deliveryman;
       var build = function(){
@@ -1220,13 +1217,7 @@ var SignedModal = React.createClass({
         m.unit_price = m.discount_price / m.num;
         return m;
       })
-      this.setState({orderSpareparts , pay_way});
-      if(!_hasInitial){
-        this.setState({
-          _hasInitial: true,
-          current_id: current_id
-        })
-      }
+      this.setState({orderSpareparts , pay_way, current_id});
 
     }
 
@@ -1351,7 +1342,6 @@ class EditModal extends Component{
       total_amount:0,
       order_id:'',
       filter_deliveryman_results:[],
-      _hasInitial: false,
     } 
   }
 
@@ -1432,14 +1422,8 @@ class EditModal extends Component{
           return n;
         })
         this.setState({
-          all_deliveryman: list, filter_deliveryman_results: new_data, 
+          all_deliveryman: list, filter_deliveryman_results: new_data, deliveryman_id: current_id,
         })
-        if(!this.state._hasInitial){
-          this.setState({
-            _hasInitial: true,
-            deliveryman_id: current_id
-          })
-        }
       }.bind(this);
 
       if(window.makePy){
@@ -1500,7 +1484,6 @@ class EditModal extends Component{
           is_POS:0,
           total_amount:0,
           order_id:'',
-          _hasInitial: false,
         })
         Noty('success', '编辑成功！');
       }.bind(this))
@@ -1518,7 +1501,6 @@ class EditModal extends Component{
       total_amount:0,
       order_id:'',
       filter_deliveryman_results:[],
-      _hasInitial: false,
     })
   }
 }

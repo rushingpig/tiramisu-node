@@ -140,7 +140,7 @@ class Img extends Component {
             : null
         }
         {
-          this.state.loading
+          props.src && this.state.loading
             ? <div style={{zIndex: 100}} className="center theme">{get_loading_icon()}</div>
             : null
         }

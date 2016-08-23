@@ -18,7 +18,15 @@ export const GET_CONFIGURE_DATA = 'HPC_GET_CONFIGURE_DATA';
 export function getConfigureData(){
   return dispatch => $.when(
     Area().getProvincesSignal()(dispatch),
-    []
+    [{
+      city_id: 440100,
+      consistency: 0,
+      data: [
+        {img_key: 'url1', link: 'http://xxxx.com'},
+        {img_key: 'url2', link: 'http://xxxx.com'},
+        {img_key: 'url3', link: 'http://xxxx.com'}
+      ]
+    }]
   ).done( (provinces, data) => {
     dispatch({
       type: GET_CONFIGURE_DATA,

@@ -145,7 +145,7 @@ function main(state = main_state, action){
 			var {handleActionName, invoiceId} = action;
 			var {list } = state;
 			list = list.map( m => {
-				if(m.invoice_id ==  invoiceId){
+				if(m.id ==  invoiceId){
 					m.status = handleActionName
 				}
 				return m;

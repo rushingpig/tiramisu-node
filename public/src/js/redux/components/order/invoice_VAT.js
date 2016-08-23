@@ -535,7 +535,7 @@ class CompanyInfo extends Component{
 					{
 						img_1 && img_1.value && img_1.value != ''
 						?
-						<a onClick = { this.props.viewImg.bind(null, {url: img_1, name: '营业执照'})} href = 'javascript:;'>
+						<a onClick = { this.props.viewImg.bind(null, {url: img_1.value, name: '营业执照'})} href = 'javascript:;'>
 							{'　　'}<i className = 'fa fa-lg fa-file-image-o space-right'></i>
 							<span>营业执照</span>
 						</a>
@@ -544,7 +544,7 @@ class CompanyInfo extends Component{
 					{
 						img_2 && img_2.value && img_2.value != ''
 						?
-						<a onClick = { this.props.viewImg.bind(null, {url: img_2, name: '税务登记证'})} href = 'javascript:;'>
+						<a onClick = { this.props.viewImg.bind(null, {url: img_2.value, name: '税务登记证'})} href = 'javascript:;'>
 							{'　　'}<i className = 'fa fa-lg fa-file-image-o space-right'></i>
 							<span>税务登记证</span>
 						</a>
@@ -553,7 +553,7 @@ class CompanyInfo extends Component{
 					{
 						img_3 && img_3.value && img_3.value != ''
 						?
-						<a onClick = { this.props.viewImg.bind(null, {url: img_3, name: '纳税人资格证'})} href = 'javascript:;'>
+						<a onClick = { this.props.viewImg.bind(null, {url: img_3.value, name: '纳税人资格证'})} href = 'javascript:;'>
 							{'　　'}<i className = 'fa fa-lg fa-file-image-o space-right'></i>
 							<span>纳税人资格证</span>
 						</a>
@@ -562,7 +562,7 @@ class CompanyInfo extends Component{
 					{
 						img_4 && img_4.value && img_4.value != ''
 						?
-						<a onClick = { this.props.viewImg.bind(null, {url: img_4, name: '银行开户许可证'})} href = 'javascript:;'>
+						<a onClick = { this.props.viewImg.bind(null, {url: img_4.value, name: '银行开户许可证'})} href = 'javascript:;'>
 							{'　　'}<i className = 'fa fa-lg fa-file-image-o space-right'></i>
 							<span>银行开户许可证</span>
 						</a>
@@ -611,7 +611,7 @@ class CompanyInfo extends Component{
 	      		|| img_2.value == '' || img_3.value == '' || img_4.value == ''){
 	      		Noty('warning', '请上传所有图片凭证');
 	      	}else{
-	        	callback.call(this,{...form_data, img_1, img_2, img_3, img_4});  //以callback来代替this 调用	      		
+	        	callback.call(this, form_data);  //以callback来代替this 调用	      		
 	      	}
 	      }else{
 	        Noty('warning','请填写完整');

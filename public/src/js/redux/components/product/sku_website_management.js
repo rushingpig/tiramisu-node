@@ -15,7 +15,7 @@ import AddressSelector from 'common/address_selector';
 import StdModal from 'common/std_modal';
 import Breadcrumb from 'common/breadcrumb';
 import SearchInput from 'common/search_input';
-import { normalLoader, get_loading_icon } from 'common/loading';
+import { normalLoader, get_loading_icon, get_normal_loading } from 'common/loading';
 
 import getTopHeader from '../top_header';
 import LazyLoad from 'utils/lazy_load';
@@ -27,13 +27,13 @@ import * as Actions from 'actions/product_sku_website_manage';
 import * as ImgActions from 'actions/central_image_manage';
 import { onFormChange } from 'actions/common';
 
-const FormGroup = props => (<div className="form-group" {...props} />);
-const FormInlineGroup = props => (<div className="form-group form-inline" {...props} />);
+export const FormGroup = props => (<div className="form-group" {...props} />);
+export const FormInlineGroup = props => (<div className="form-group form-inline" {...props} />);
 const Input = props => (<input type="number" className="form-control input-xs" {...props} />);
 const CheckBox = props => (<input type="checkbox" {...props} />);
-const Radio = props => (<input type="radio" {...props} />);
-const Row = props => (<div className="row" {...props} />);
-const Col = props => <div {...props} className={`col-xs-${props.size} ${props.className}`} />;
+export const Radio = props => (<input type="radio" {...props} />);
+export const Row = props => (<div className="row" {...props} />);
+export const Col = props => <div {...props} className={`col-xs-${props.size} ${props.className}`} />;
 const Title = props => <p style={{fontWeight: 'normal'}} {...props} />;
 const outline = '1px solid #eee';
 
@@ -92,9 +92,13 @@ class Img extends Component {
     super(props);
     this.state = {
       loading: false,
+      autofit: false,
     }
   }
   componentWillReceiveProps(nextProps){
+    if(this.props.src != nextProps.src){
+      this.setState({ autofit: false })
+    }
     if(nextProps.src && nextProps.src != this.props.src){
       this.setState({ loading: true });
     }
@@ -108,9 +112,13 @@ class Img extends Component {
     if(props.src){
       grayStyle.opacity = 0;
     }
+    if(this.state.autofit){
+      grayStyle.display = 'none';
+    }
     return (
       <div position="relative">
         <img
+          ref="defaultImg"
           alt="img"
           width="100%"
           // height="100%"
@@ -120,12 +128,14 @@ class Img extends Component {
         {
           props.src
             ? <img
+                ref="img"
                 alt="img"
                 width="100%"
                 src={props.src}
-                className="absolute"
+                className={this.state.autofit ? "static" : "absolute"}
                 style={{top: 0, left: 0}}
                 onLoad={this.onLoad.bind(this)}
+                onError={this.onError.bind(this)}
               />
             : null
         }
@@ -138,6 +148,13 @@ class Img extends Component {
     )
   }
   onLoad(){
+    if(this.refs.img.height > this.refs.defaultImg.height){
+      this.setState({ loading: false, autofit: true })
+    }else{
+      this.setState({ loading: false, autofit: false })
+    }
+  }
+  onError(){
     this.setState({ loading: false })
   }
 }
@@ -153,7 +170,7 @@ const AddButton = props => (<i className="fa fa-plus center text-center cursor-p
   borderRadius: '50%',
 }} {...props}></i>)
 
-class EditImgBox extends Component {
+export class EditImgBox extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -179,7 +196,7 @@ class EditImgBox extends Component {
         {
           src
             ? this.state.showEditIcon 
-                ? <div className="absolute" style={opStyle}>
+                ? <div className="absolute" style={opStyle} onClick={e => e.stopPropagation()}>
                     <a onClick={props.onDeleteImg} href="javascript:;" className="space-right"><i className="fa fa-trash-o"></i></a>
                     <a onClick={props.onChooseImg} href="javascript:;"><i className="fa fa-edit"></i></a>
                   </div>
@@ -574,7 +591,7 @@ class ProProperties extends Component {
   }
 }
 
-const ProDetailImgsTip = props => (
+export const ProDetailImgsTip = props => (
     <div className="center theme" style={Styler`
       margin-top: 37px;
       background: rgba(230, 195, 141, 0.48);
@@ -662,9 +679,6 @@ class Main extends Component {
     this.getProductInfo = this.getProductInfo.bind(this);
     this.beforeLeave = this.beforeLeave.bind(this);
   }
-  componentWillMount(){
-    
-  }
   render() {
     const { props } = this;
     const { params: {productId}, area, applicationRange, actions, imgActions, main, imgModal, imgList } = props;
@@ -677,7 +691,7 @@ class Main extends Component {
             <Link to={`/pm/sku_manage/edit/${productId+location.hash}`}>编辑商品</Link>
           </li>
           <li className="active">
-            <a href="javascript:;">商品品官网设置</a>
+            <a href="javascript:;">商品官网设置</a>
           </li>
         </ul>
         <div className="panel" style={tabContentBoxStyle}>
@@ -826,7 +840,7 @@ class Main extends Component {
       props.applicationRange.city_id
     ){
       var cacheData = {
-        regionalism_id: this.props.applicationRange.city_id,
+        regionalism_id: +this.props.applicationRange.city_id,
         ...this.getInfo()
       };
       if(props.applicationRange.product_info_ing){
@@ -852,7 +866,7 @@ class Main extends Component {
         return props.actions.submitCreate({
           product_id: productId,
           infos: [{
-            regionalism_ids: props.applicationRange.all_available_cities.map(n => n.city_id),
+            regionalism_ids: props.applicationRange.all_available_cities.map(n => +n.city_id),
             info
           }]
         })
@@ -864,7 +878,7 @@ class Main extends Component {
             props.applicationRange.all_edited_cities.some( m => {
               if(m.city_id == n.city_id){
                 modified_infos.push({
-                  regionalism_id: n.city_id,
+                  regionalism_id: +n.city_id,
                   detail_id: m.detail_id,
                   ...info
                 });
@@ -876,7 +890,7 @@ class Main extends Component {
             
           }else{
             new_infos.push({
-              regionalism_id: n.city_id,
+              regionalism_id: +n.city_id,
               ...info
             });
           }
@@ -895,7 +909,7 @@ class Main extends Component {
         props.applicationRange.city_id && 
         !props.applicationRange.cached.some( n => n.regionalism_id == props.applicationRange.city_id) && //当前没有加入缓存的城市
         {
-          regionalism_id: props.applicationRange.city_id,
+          regionalism_id: +props.applicationRange.city_id,
           ...info,
           ...(props.applicationRange.product_info ? {detail_id : props.applicationRange.product_info.id} : {})
         }
@@ -1030,7 +1044,7 @@ class ImgViewBox extends Component {
     img.src = this.props.domain + this.props.url + '?imageView2/0/w/100/h/100';
   }
 }
-class SelectImgModal extends Component {
+export class SelectImgModal extends Component {
   constructor(props){
     super(props);
     this.state = {

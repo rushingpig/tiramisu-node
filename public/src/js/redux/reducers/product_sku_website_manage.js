@@ -30,30 +30,32 @@ var initial_state = {
 function _t(data){
   return map(data, (text, id) => ({id: +id, text}))
 }
-function applicationRange(state = initial_state, action){
+export function applicationRange(state = initial_state, action){
   switch (action.type) {
     case UPDATE_PATH:
       return initial_state;
     case Actions.SET_APPLICATION_RANGE:
       return { ...state, all: action.all }
     case Actions.GET_ALL_AVAILABLE_CITIES:
-      let city_id = location.hash.slice(1);
-      let city_info = action.can_add_cities.find(n => n.city_id == city_id);
-      let province_id = city_info && city_info.province_id;
-      if(province_id){
-        delay( () => getGlobalStore().dispatch( Area().getCities(province_id) ) );
+      let all = action.has_detailc_cities.length ? action.has_detailc_cities.every( n => n.consistency == 0) : true;
+      if(!all){
+        var city_id = +location.hash.slice(1);
+        var city_info = action.can_add_cities.find(n => n.city_id == city_id);
+        var province_id = city_info && city_info.province_id;
+        if(province_id && action.has_detailc_cities.length){
+          delay( () => getGlobalStore().dispatch( Area().getCities(province_id) ) );
+        }
       }
       return { ...state,
-        all: !( action.has_detailc_cities && action.has_detailc_cities.some( n => n.consistency != 0) ),
+        all,
         provinces: action.provinces,
-        all_available_cities: action.can_add_cities ? action.can_add_cities : [],
-        all_edited_cities: action.has_detailc_cities
-          ? action.has_detailc_cities.map(
-              ({regionalism_id, id, consistency}) => ({city_id: regionalism_id, detail_id: id, consistency})
-            )
-          : [],
-        city_id: city_id,
-        province_id: province_id
+        all_available_cities: action.can_add_cities,
+        all_edited_cities: action.has_detailc_cities.map(
+          ({regionalism_id, id, consistency}) => ({city_id: +regionalism_id, detail_id: id, consistency})
+        ),
+        city_id: all ? undefined : +city_id,
+        cities: all ? [] : [{id: +city_id, text: city_info.city_name}], //占位，防止页面跳动
+        province_id: all ? undefined : +province_id,
       }
     case AreaActions.GOT_PROVINCES_SIGNAL:
       return { ...state, provinces: _t(action.data) }
@@ -273,8 +275,10 @@ function proDetailImgs(state = proDetailImgs_state, action){
     case Actions.DELETE_IMG:
       if(action.which.startsWith('prodetail_img_')){
         return {...state,
-          template_data: {...state.template_data},
-          [action.which.replace('prodetail_img_', '')]: '',
+          template_data: {
+            ...state.template_data,
+            [action.which.replace('prodetail_img_', '')]: '',
+          },
           ok: false
         }
       }

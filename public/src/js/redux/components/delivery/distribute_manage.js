@@ -1401,7 +1401,7 @@ class EditModal extends Component{
     }else if(/^\d+$/i.test(value)){ //电话号码
         results = all_deliveryman.filter(n => n.deliveryman_mobile.indexOf(value) != -1)
       }else if(/^\w+$/i.test(value)){ //首字母
-      results = order_deliveryman.filter(n => {
+      results = all_deliveryman.filter(n => {
         return n.py.some(m => m.toUpperCase().indexOf(value) == 0)
       })
     }else{ //中文全称

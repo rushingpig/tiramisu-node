@@ -29,8 +29,6 @@ var main_state = {
   submitting: false, //多处提交状态共享, 因为不可能多出同时提交
 
   scan: false, //为true时显示scan_list（不分页）
-  order_deliveryman: [],
-  order_deliveryman_load_success: false,
 }
 function main(state = main_state, action){
   switch(action.type){
@@ -59,11 +57,6 @@ function main(state = main_state, action){
         console.error('nali');
         return state;
       }
-    case Actions.GET_DELIVERYMAN_BY_ORDER:
-      var {list} = action.data;
-      /*var {current_id} = action.data;*/
-      //var  order_deliveryman = list.map( m => ({id: m.deliveryman_id, text: m.deliveryman_name + ':' + m.deliveryman_mobile}));
-      return {...state,order_deliveryman: list || [], order_deliveryman_load_success: true }
     default:
       return state
   }
@@ -73,7 +66,7 @@ export default combineReducers({
   filter,
   orders: orders(),
   operationRecord,
-  deliveryman,
+  deliveryman: deliveryman(),
   stations,
   main,
   area: area(),

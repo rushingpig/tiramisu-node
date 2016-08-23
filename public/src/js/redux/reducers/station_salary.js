@@ -97,7 +97,7 @@ function operationRecord(state = operationRecord, action){
 }*/
 const stationSalaryReducers = combineReducers({
 	area:area(),
-	deliveryman,
+	deliveryman: deliveryman(),
 	stations,
 	main,
 })

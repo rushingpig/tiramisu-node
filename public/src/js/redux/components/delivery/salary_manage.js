@@ -19,7 +19,7 @@ import AreaActions from 'actions/area';
 import { AreaActionTypes1 } from 'actions/action_types';
 import * as stationSalaryActions from 'actions/station_salary';
 import * as FormActions from 'actions/form';
-import * as DeliverymanActions from 'actions/deliveryman';
+import DeliverymanActions from 'actions/deliveryman';
 import { getStationListByScopeSignal, resetStationListWhenScopeChange } from 'actions/station_manage';
 
 import LazyLoad from 'utils/lazy_load';
@@ -854,7 +854,7 @@ function mapDispatchToProps(dispatch){
 	var actions ={actions: bindActionCreators({
 	  	...AreaActions(AreaActionTypes1), 
 	    ...stationSalaryActions,
-	    ...DeliverymanActions,
+	    ...DeliverymanActions(),
 	    getStationListByScopeSignal,
 	    resetStationListWhenScopeChange
 	  }, dispatch)};

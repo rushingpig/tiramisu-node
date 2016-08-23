@@ -30,7 +30,7 @@ import V from 'utils/acl';
 
 import * as OrderActions from 'actions/orders';
 import AreaActions from 'actions/area';
-import * as DeliverymanActions from 'actions/deliveryman';
+import DeliverymanActions from 'actions/deliveryman';
 import * as DeliveryDistributeActions from 'actions/delivery_distribute';
 import { getPayModes } from 'actions/order_manage_form';
 import * as OrderSupportActions from 'actions/order_support';
@@ -41,6 +41,7 @@ import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from './order_detail_modal';
 import ScanModal from 'common/scan_modal';
 import OperationRecordModal from 'common/operation_record_modal.js';
+import { DeliverymanActionTypes2 } from 'actions/action_types';
 
 class TopHeader extends Component {
   render(){
@@ -390,8 +391,8 @@ class DeliveryDistributePannel extends Component {
     this.refreshDataList = this.refreshDataList.bind(this);
   }
   render(){
-    var { filter, area, deliveryman, orders, main, all_order_srcs, all_pay_modes, signOrder, unsignOrder, 
-      searchByScan, exportExcel, getOrderOptRecord, resetOrderOptRecord, operationRecord, D_, editSignedOrder  } = this.props;
+    var { filter, area, deliveryman, order_deliveryman, orders, main, all_order_srcs, all_pay_modes, signOrder, unsignOrder, dispatch, 
+      searchByScan, exportExcel, getOrderOptRecord, resetOrderOptRecord, operationRecord, D_, editSignedOrder, resetDeliveryman  } = this.props;
     var { submitting } = main;
     var { loading, refresh, page_no, checkall, total, list, check_order_info, active_order_id, get_products_detail_ing } = orders;
     var { search, showSignedModal, showUnSignedModal, showEditModal,showScanModal, checkOrderHandler, 
@@ -411,6 +412,7 @@ class DeliveryDistributePannel extends Component {
         <TopHeader exportExcel={exportExcel} />
         <FilterHeader
           {...{...this.props, ...filter, ...area, showScanModal}}
+          {...{...bindActionCreators({...DeliverymanActions()}, dispatch)}}
           page_size={this.state.page_size}
         />
 
@@ -465,9 +467,9 @@ class DeliveryDistributePannel extends Component {
           : null }
 
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} all_order_srcs={all_order_srcs.map} all_pay_modes={all_pay_modes} />
-        <SignedModal ref="SignedModal" {...{submitting, signOrder,loading,refresh, D_, callback: refreshDataList}} />
+        <SignedModal ref="SignedModal" {...{submitting, signOrder,loading,refresh, D_, callback: refreshDataList, order_deliveryman, resetDeliveryman}} />
         <UnSignedModal ref="UnSignedModal" {...{submitting, unsignOrder, callback: refreshDataList}} />
-        <EditModal ref="EditModal" {...{D_, editSignedOrder}}/>
+        <EditModal ref="EditModal" {...{D_, editSignedOrder, order_deliveryman, resetDeliveryman}}/>
         <ScanModal ref="ScanModal" submitting={submitting} search={searchByScan}  />
         <OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
       </div>
@@ -541,17 +543,19 @@ function mapStateToProps({distributeManage}){
 
 /* 这里可以使用 bindActionCreators , 也可以直接写在 connect 的第二个参数里面（一个对象) */
 function mapDispatchToProps(dispatch){
-  return bindActionCreators({
+  var actions = bindActionCreators({
     ...OrderActions,
     ...AreaActions(),
     ...OrderSupportActions,
-    ...DeliverymanActions,
+    ...DeliverymanActions(DeliverymanActionTypes2),
     ...DeliveryDistributeActions,
     getPayModes,
     triggerFormUpdate,
     getStationListByScopeSignal,
     resetStationListWhenScopeChange
   }, dispatch);
+  actions.dispatch = dispatch;
+  return actions
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeliveryDistributePannel);
@@ -707,7 +711,7 @@ var SignedModal = React.createClass({
       current_id: -1,
       pay_way:1,
       is_refund: false,
-      order_deliveryman: [],
+      all_deliveryman: [],
       filter_deliveryman_results: [],
       _hasInitial: false,
     };
@@ -877,12 +881,12 @@ var SignedModal = React.createClass({
     this.setState({is_refund: !this.state.is_refund});
   },
   submitHandler(){
-    var { order, CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date, current_id, order_deliveryman, pay_way } = this.state;
+    var { order, CASH, late_minutes, refund_method, refund_money, refund_reson, signin_date, current_id, all_deliveryman, pay_way } = this.state;
     var { orderDetail } = this.props.D_;
     var currentOrderSpareparts = this.state.orderSpareparts;
     var { updated_time } = orderDetail;
     var signin_hour = this.refs.timeinput.val();
-    var deliveryman_tmp = order_deliveryman.filter( m => m.deliveryman_id == current_id);
+    var deliveryman_tmp = all_deliveryman.filter( m => m.deliveryman_id == current_id);
     var deliveryman = {};
     if(deliveryman_tmp.length > 0){
       deliveryman.id = deliveryman_tmp[0].deliveryman_id;
@@ -977,19 +981,19 @@ var SignedModal = React.createClass({
   },
   filterHandler(e){
     var { value } = e.target;
-    var { order_deliveryman } = this.state;
+    var { all_deliveryman } = this.state;
     var results = [];
     value = value.toUpperCase();
     if(value === ''){
-      results = order_deliveryman;
+      results = all_deliveryman;
     }else if(/^\d+$/i.test(value)){ //电话号码
-        results = order_deliveryman.filter(n => n.deliveryman_mobile.indexOf(value) != -1)
+        results = all_deliveryman.filter(n => n.deliveryman_mobile.indexOf(value) != -1)
       }else if(/^\w+$/i.test(value)){ //首字母
-      results = order_deliveryman.filter(n => {
+      results = all_deliveryman.filter(n => {
         return n.py.some(m => m.toUpperCase().indexOf(value) == 0)
       })
     }else{ //中文全称
-      results = order_deliveryman.filter(n => n.deliveryman_name.indexOf(value) != -1)
+      results = all_deliveryman.filter(n => n.deliveryman_name.indexOf(value) != -1)
     }
     this.setState({ filter_deliveryman_results: results, current_id: results.length && results[0].deliveryman_id });
   },
@@ -1107,6 +1111,7 @@ var SignedModal = React.createClass({
   },
   hideCallback: function(){
     this.refs.timeinput.reset();
+    this.props.resetDeliveryman();
     this.setState(this.getInitialState());
   },
   /**
@@ -1187,18 +1192,18 @@ var SignedModal = React.createClass({
     this.setState({orderSpareparts ,current_id });    
   },*/
   componentWillReceiveProps(nextProps){
-    var { D_ } = nextProps;
-    var {order_deliveryman,current_id, is_POS, load_success} = D_; 
+    var { D_, order_deliveryman } = nextProps;
+    var { is_POS} = D_; 
     var { _hasInitial } = this.state;  
-    if(load_success){
-      var list = order_deliveryman;
+    if(order_deliveryman.load_success){
+      var {list} = order_deliveryman;
       var build = function(){
         var new_data = list.map(function(n){
           n.py = window.makePy(n.deliveryman_name);
           return n;
         })
         this.setState({
-          order_deliveryman: list, filter_deliveryman_results: new_data, 
+          all_deliveryman: list, filter_deliveryman_results: new_data, 
         })
       }.bind(this);
 
@@ -1213,43 +1218,33 @@ var SignedModal = React.createClass({
             delete this._build_timer;
           }
         }, 100);
+      }      
+      var  products  = D_.orderDetail.products || [];
+      products = products.filter( m => m.isAddition == 1);
+      var orderSpareparts = clone(products);
+      orderSpareparts = orderSpareparts.map( m => {
+         m.unit_price = m.discount_price / m.num;
+        return m;     
+      })
+      var {current_id} = order_deliveryman;
+      var pay_way = 1;
+      if(D_.orderDetail.is_POS) 
+        pay_way =2;
+      orderSpareparts = orderSpareparts.map( m => {
+        m.unit_price = m.discount_price / m.num;
+        return m;
+      })
+      this.setState({orderSpareparts , pay_way});
+      if(!_hasInitial){
+        this.setState({
+          _hasInitial: true,
+          current_id: current_id
+        })
       }
+
     }
 
-    var  products  = D_.orderDetail.products || [];
-    products = products.filter( m => m.isAddition == 1);
-    var orderSpareparts = clone(products);
-    orderSpareparts = orderSpareparts.map( m => {
-       m.unit_price = m.discount_price / m.num;
-      return m;     
-    })
-    var current_id = D_.current_id;
-    var order_deliveryman = D_.order_deliveryman;
-    var all_deliveryman = order_deliveryman.map( m => 
-      ({id: m.deliveryman_id, text: m.deliveryman_name + ' ' + m.deliveryman_mobile})
-    )
-/*    var order = clone(this.state.order);
-    var selectText = order.deliveryman_name + ':' + order.deliveryman_mobile;
-    if( order.deliveryman_name != null )
-      {
-        $(findDOMNode(this.refs.deliveryman_id)).find(':selected').text(selectText);
-        current_id = 0;
-      }*/
-    order_deliveryman = all_deliveryman;
-    var pay_way = 1;
-    if(D_.orderDetail.is_POS) 
-      pay_way =2;
-    orderSpareparts = orderSpareparts.map( m => {
-      m.unit_price = m.discount_price / m.num;
-      return m;
-    })
-    this.setState({orderSpareparts , pay_way});
-    if(!_hasInitial){
-      this.setState({
-        _hasInitial: true,
-        current_id: current_id
-      })
-    }
+
   },
 });
 
@@ -1365,7 +1360,7 @@ class EditModal extends Component{
     super(props);
     this.state = {
       deliveryman_id:0,
-      order_deliveryman:[],
+      all_deliveryman:[],
       is_POS:0,
       total_amount:0,
       order_id:'',
@@ -1375,13 +1370,13 @@ class EditModal extends Component{
   }
 
   render(){
-    var {order_deliveryman,is_POS, total_amount, deliveryman_id, filter_deliveryman_results} = this.state;
+    var {all_deliveryman,is_POS, total_amount, deliveryman_id, filter_deliveryman_results} = this.state;
     var pay_way = is_POS ? 2:1;
     var content = filter_deliveryman_results.map( n => {
           return <option key={n.deliveryman_id} value={n.deliveryman_id}>{n.deliveryman_name + ' ' + n.deliveryman_mobile}</option>
     })    
     return(
-      <StdModal ref='modal' title='编辑订单完成页面' onConfirm={this.submitHandler.bind(this)}>
+      <StdModal ref='modal' title='编辑订单完成页面' onConfirm={this.submitHandler.bind(this)} onCancel = {this.hideCallback.bind(this)}>
         <div className='form-group mg-15 form-inline'>
           <div className="mg-15">
             <div className="input-group input-group-xs" style={{height:'27px'}}>
@@ -1422,35 +1417,36 @@ class EditModal extends Component{
   }
   filterHandler(e){
     var { value } = e.target;
-    var { order_deliveryman } = this.state;
+    var { all_deliveryman } = this.state;
     var results = [];
     value = value.toUpperCase();
     if(value === ''){
-      results = order_deliveryman;
+      results = all_deliveryman;
     }else if(/^\d+$/i.test(value)){ //电话号码
-        results = order_deliveryman.filter(n => n.deliveryman_mobile.indexOf(value) != -1)
+        results = all_deliveryman.filter(n => n.deliveryman_mobile.indexOf(value) != -1)
       }else if(/^\w+$/i.test(value)){ //首字母
       results = order_deliveryman.filter(n => {
         return n.py.some(m => m.toUpperCase().indexOf(value) == 0)
       })
     }else{ //中文全称
-      results = order_deliveryman.filter(n => n.deliveryman_name.indexOf(value) != -1)
+      results = all_deliveryman.filter(n => n.deliveryman_name.indexOf(value) != -1)
     }
     this.setState({ filter_deliveryman_results: results, deliveryman_id: results.length && results[0].deliveryman_id });
   }
   componentWillReceiveProps(nextProps){
-    var { D_ } = nextProps;
-    var {order_deliveryman,current_id, is_POS, load_success} = D_;
+    var { D_ , order_deliveryman} = nextProps;
+    var { is_POS } = D_;
+    var {current_id, load_success} = order_deliveryman;
     this.setState({ is_POS});
     if(load_success){
-      var list = order_deliveryman;
+      var {list} = order_deliveryman;
       var build = function(){
         var new_data = list.map(function(n){
           n.py = window.makePy(n.deliveryman_name);
           return n;
         })
         this.setState({
-          order_deliveryman: list, filter_deliveryman_results: new_data, 
+          all_deliveryman: list, filter_deliveryman_results: new_data, 
         })
         if(!this.state._hasInitial){
           this.setState({
@@ -1485,10 +1481,10 @@ class EditModal extends Component{
     this.setState({is_POS});
   }
   submitHandler(){
-    var {order_deliveryman, deliveryman_id, order_id} = this.state;
+    var {all_deliveryman, deliveryman_id, order_id} = this.state;
     var deliveryman_name ='';
     var deliveryman_mobile = '';
-    order_deliveryman.forEach( m => {
+    all_deliveryman.forEach( m => {
       if(m.deliveryman_id == deliveryman_id){
         deliveryman_mobile = m.deliveryman_mobile;
         deliveryman_name = m.deliveryman_name;
@@ -1510,10 +1506,11 @@ class EditModal extends Component{
     }
     this.props.editSignedOrder(order_id, form_data).done(function(){
         this.refs.modal.hide();
+        this.props.resetDeliveryman();
         this.setState({
           pay_way:1,
           deliveryman_id:0,
-          order_deliveryman:[],
+          all_deliveryman:[],
           is_POS:0,
           total_amount:0,
           order_id:'',
@@ -1523,6 +1520,19 @@ class EditModal extends Component{
       }.bind(this))
       .fail(function(msg, code){
         Noty('error', msg || '编辑失败')
+    })
+    
+  }
+  hideCallback(){
+    this.props.resetDeliveryman();
+    this.setState({
+      deliveryman_id:0,
+      all_deliveryman:[],
+      is_POS:0,
+      total_amount:0,
+      order_id:'',
+      filter_deliveryman_results:[],
+      _hasInitial: false,
     })
   }
 }

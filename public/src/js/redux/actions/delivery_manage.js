@@ -34,25 +34,6 @@ export function startPrint(order_ids){
   // return test();
 }
 
-export const GET_DELIVERYMAN_BY_ORDER = 'GET_DELIVERYMAN_BY_ORDER';
-export function getDeliverymanByOrder(orderId){
-  return GET(Url.order_deliverymans.toString(orderId),null,GET_DELIVERYMAN_BY_ORDER);
-/*  return TEST({
-    current_id:2,
-    list:[
-      {
-        deliveryman_id:1, 
-        deliveryman_name:'张三', 
-        deliveryman_mobile:'18118776535',
-      },
-      {
-        deliveryman_id:2,
-        deliveryman_name:'郭林',
-        deliveryman_mobile:'13600177900',
-      }],
-  },GET_DELIVERYMAN_AT_SAME_STATION);*/
-}
-
 export const APPLY_PRINT = 'APPLY_PRINT'; //key: 0->正在处理，1->成功，2->失败
 export function applyPrint(data) {
   //若是异步的话，那么该函数必须也返回一个函数

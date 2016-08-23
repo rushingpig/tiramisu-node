@@ -10,6 +10,7 @@ import * as Actions from 'actions/delivery_distribute';
 import { UPDATE_PATH } from 'redux-simple-router';
 import * as OrderSupportReducers from 'reducers/order_support';
 import stations from 'reducers/stations';
+import { DeliverymanActionTypes2 } from 'actions/action_types';
 
 var filter_state = {
   search_ing: false,
@@ -62,13 +63,10 @@ function main(state = main_state, action){
 }
 
 var D_state = {
-  order_deliveryman : [],
   spareparts: [],
   orderSpareparts: [],
-  current_id: -1,
   is_POS: 1,
   orderDetail:{},
-  load_success: false,
 }
 
 function D_(state = D_state, action) {
@@ -102,14 +100,6 @@ function D_(state = D_state, action) {
       return {...state, spareparts:spareparts}
     case Actions.GET_ORDER_SPARE_PARTS:
       return { ...state, orderSpareparts: action.data || [] }
-    case Actions.GET_DELIVERYMAN_BY_ORDER:
-      var {list} = action.data;
-      if(!list){
-        list = [];
-      }
-      /*var {current_id} = action.data;*/
-      //var  order_deliveryman = list.map( m => ({id: m.deliveryman_id, text: m.deliveryman_name + ':' + m.deliveryman_mobile}));
-      return {...state,order_deliveryman: list, load_success: true }
     case Actions.GET_ORDER_DETAIL:
       var orderSpareparts = action.data.products;
       orderSpareparts = orderSpareparts.filter( m => m.isAddition == 1);
@@ -129,6 +119,7 @@ export default combineReducers({
   D_,
   stations,
   area: area(),
-  deliveryman,
+  deliveryman: deliveryman(),
+  order_deliveryman: deliveryman(DeliverymanActionTypes2),
   ...OrderSupportReducers
 })

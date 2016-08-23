@@ -27,7 +27,7 @@ import V from 'utils/acl';
 
 import * as OrderActions from 'actions/orders';
 import AreaActions from 'actions/area';
-import * as DeliverymanActions from 'actions/deliveryman';
+import DeliverymanActions from 'actions/deliveryman';
 import * as DeliveryManageActions from 'actions/delivery_manage';
 import * as OrderSupportActions from 'actions/order_support';
 import { triggerFormUpdate } from 'actions/form';
@@ -37,6 +37,7 @@ import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from './order_detail_modal';
 import ScanModal from 'common/scan_modal';
 import OperationRecordModal from 'common/operation_record_modal.js';
+import { DeliverymanActionTypes2 } from 'actions/action_types';
 
 const TopHeader = () => (
   <div className="clearfix top-header">
@@ -345,15 +346,16 @@ class DeliveryManagePannel extends Component {
     this.showScanModal = this.showScanModal.bind(this);
   }
   render(){
-    var { filter, area, main, all_order_srcs, deliveryman, all_pay_modes, getAllDeliveryman,
-      getDeliverymanByOrder, applyDeliveryman, startPrint, applyPrint, validatePrintCode, rePrint, searchByScan,
-      getOrderOptRecord, resetOrderOptRecord, operationRecord } = this.props;
+    var { filter, area, main, all_order_srcs, all_pay_modes, deliveryman,
+      applyDeliveryman, startPrint, applyPrint, validatePrintCode, rePrint, searchByScan,
+      getAllDeliveryman, getDeliverymanByOrder, resetDeliveryman,
+      getOrderOptRecord, resetOrderOptRecord, operationRecord, dispatch } = this.props;
     var { loading, refresh, page_no, checkall, total, list, checked_orders, check_order_info, 
       active_order_id, get_products_detail_ing } = this.props.orders;
     var { showBatchPrintModal, printHandler, showEditModal, showScanModal, showBatchEditModal,
        checkOrderHandler, viewOrderDetail, activeOrderHandler, viewOrderOperationRecord, refreshDataList } = this;
 
-    var {scan, order_deliveryman, order_deliveryman_load_success} = main; //扫描
+    var {scan } = main; //扫描
 
     var content = list.map((n, i) => {
       return <OrderRow 
@@ -421,8 +423,11 @@ class DeliveryManagePannel extends Component {
               </div>
             </div>
           : null }
-
-        <EditModal ref="EditModal" {...{getDeliverymanByOrder, getAllDeliveryman, applyDeliveryman, order_deliveryman, deliveryman, order_deliveryman_load_success, submitting: main.submitting }} callback={refreshDataList} />
+        <EditModal ref="EditModal" 
+          {...{getAllDeliveryman, getDeliverymanByOrder, applyDeliveryman, resetDeliveryman}}
+          submitting = {main.submitting}
+          deliveryman = {deliveryman}
+          callback={refreshDataList} />
         <OrderDetailModal ref="detail_modal" data={check_order_info || {}} all_order_srcs={all_order_srcs.map} all_pay_modes={all_pay_modes} />
         <PrintModal ref="PrintModal" {...{checked_orders, startPrint, callback: refreshDataList}} />
         <ApplyPrintModal ref="ApplyPrintModal" {...{applyPrint, submitting: main.submitting}} callback={refreshDataList} />
@@ -564,9 +569,8 @@ var PrintModal = React.createClass({
 var EditModal = React.createClass({
   propTypes: {
     'deliveryman': PropTypes.object.isRequired,
-    'order_deliveryman': PropTypes.object.isRequired,
-    'getDeliverymanByOrder': PropTypes.func.isRequired,
     'getAllDeliveryman': PropTypes.func.isRequired,
+    'getDeliverymanByOrder': PropTypes.func.isRequired,
     'applyDeliveryman': PropTypes.func.isRequired,
   },
   getInitialState: function() {
@@ -580,13 +584,7 @@ var EditModal = React.createClass({
     };
   },
   componentWillReceiveProps: function(nextProps){
-    var deliveryman = [];
-    if(this.state.orders.length > 1){
-      deliveryman = nextProps.deliveryman;
-    }else{
-      deliveryman.list = nextProps.order_deliveryman;
-      deliveryman.load_success = nextProps.order_deliveryman_load_success;
-    }
+    var {deliveryman } = nextProps;
     //只需要初始化一次的（根据订单号来获取配送员后，此限制去掉 20160727 xiaohong）
     if(deliveryman.load_success){
       var { list } = deliveryman;
@@ -596,12 +594,12 @@ var EditModal = React.createClass({
           return n;
         })
         this.setState({
-          all_deliveryman: list, filter_results: new_data, selected_deliveryman_id: list.length && list[0].deliveryman_id  //只初始化一次, 提交后不再设置
+          all_deliveryman: list, filter_results: new_data, 
         })
         if(!this.state._hasInitials){
           this.setState({
             _hasInitials: true,
-            
+            selected_deliveryman_id: list.length && list[0].deliveryman_id  //只初始化一次, 提交后不再设置
           })
         }
       }.bind(this);
@@ -724,11 +722,13 @@ var EditModal = React.createClass({
     this.refs.modal.show();
   },
   hideCallback: function(){
+    this.props.resetDeliveryman();
     this.setState({
       filter_results: this.state.all_deliveryman,
       search_txt: '',
       selected_deliveryman_id: undefined,
-      orders: []
+      orders: [],
+      _hasInitials: false,
     });
   },
 });
@@ -896,13 +896,14 @@ var RePrintModal = React.createClass({
   }
 });
 
+
 export default connect(
   ({deliveryManage}) => deliveryManage,
-  dispatch => bindActionCreators({
+  dispatch =>  bindActionCreators({
     ...OrderActions,
     ...AreaActions(),
     ...OrderSupportActions,
-    ...DeliverymanActions,
+    ...DeliverymanActions(),
     ...DeliveryManageActions,
     triggerFormUpdate,
     getStationListByScopeSignal,

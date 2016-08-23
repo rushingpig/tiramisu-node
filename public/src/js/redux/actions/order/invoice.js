@@ -302,9 +302,18 @@ export function submitExpress(invoiceId, express_no, express_type){
 	}
 }
 
-export const AddRemark = 'AddRemark';
+export const ADD_REMARK = 'ADD_REMARK';
 export function addRemark(invoiceId, remarks){
-	return PUT(Url.add_invoice_remarks.toString(invoiceId), {remarks: remarks}, AddRemark);
+	return dispatch => {		
+		return put(Url.add_invoice_remarks.toString(invoiceId), {remarks: remarks})
+				.done( () => {
+					dispatch({
+						type: ADD_REMARK,
+						remarks: remarks,
+						invoiceId: invoiceId,
+					})
+				})
+	}
 /*	return {
 		type: AddRemark,
 	}*/

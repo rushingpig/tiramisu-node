@@ -151,6 +151,16 @@ function main(state = main_state, action){
 				return m;
 			})
 			return {...state, handle_invoice_status: 'success', list: list}
+		case Actions.ADD_REMARK:
+			var {invoiceId, remarks} = action;
+			var {list } = state;
+			list = list.map( m => {
+				if(m.id ==  invoiceId){
+					m.remarks = remarks
+				}
+				return m;
+			})
+			return {...state, list: list}
 		case Actions.GET_EXPRESS_COMPANY:
 			return {...state, express_companies: _t(action.data)}
 		case Actions.GET_FORM_PROVINCES:

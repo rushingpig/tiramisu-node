@@ -280,7 +280,7 @@ class ManagePannel extends Component{
 	render(){
 		var { main: {list, total, page_no, refresh, loading, view_img, active_company_info}, operationRecord, invoiceRecord,
 			getCompanyOptRecord, resetCompanyOptRecord, getCompanyInvoiceRecord, resetCompanyInvoiceRecord, getCompanyList,
-			editCompany, createCompany, triggerFormUpdate} = this.props;
+			editCompany, createCompany, triggerFormUpdate, viewImg} = this.props;
 		var content = list.map( m => {
 			return (
 				<CompanyRow {...{...m, ...this.props}} key = {m.id}
@@ -337,8 +337,22 @@ class ManagePannel extends Component{
 				</div>
 				<OperationRecordModal ref='viewOperationRecord' {...{getCompanyOptRecord, resetCompanyOptRecord, ...operationRecord}}/>
 				<InvoiceRecordModal ref = 'viewInvoiceRecordModal' {...{getCompanyInvoiceRecord, resetCompanyInvoiceRecord , ...invoiceRecord}} />
-				<CompanyModal triggerFormUpdate = {triggerFormUpdate} createCompany = {createCompany} viewImg = {this.props.viewImg} ref='CompanyCreateModal' editable = {false}/>
-				<CompanyModal active_company_info = {active_company_info} editCompany = {editCompany} viewImg = {this.props.viewImg} ref = 'CompanyEditModal' editable = {true}/>
+				{/*<CompanyModal 
+					triggerFormUpdate = {triggerFormUpdate} 
+					createCompany = {createCompany} 
+					viewImg = {this.props.viewImg} 
+					ref='CompanyCreateModal' 
+					editable = {false}/>
+				<CompanyModal 
+					active_company_info = {active_company_info} 
+					editCompany = {editCompany} 
+					viewImg = {this.props.viewImg} 
+					ref = 'CompanyEditModal' 
+					editable = {true}/>*/}
+				<CompanyModal
+					{...{triggerFormUpdate, active_company_info, editCompany, createCompany, viewImg: this.props.viewImg}}
+					ref = 'CompanyModal'
+					/>
 				{
 					view_img
 					?
@@ -351,10 +365,10 @@ class ManagePannel extends Component{
 	}
 	viewCompanyCreateModal(){
 		this.props.destroyForm('company_info');
-		this.refs.CompanyCreateModal.show();
+		this.refs.CompanyModal.show(false);
 	}
 	viewCompanyEditModal(id){
-		this.refs.CompanyEditModal.show(id);
+		this.refs.CompanyModal.show(true, id);
 	}
 	viewOperationRecordModal(data){
 		this.refs.viewOperationRecord.show(data)
@@ -393,22 +407,24 @@ class CompanyModal extends Component{
 		super(props);
 		this.state = {
 			id: '',
+			editable: false,
 		}
 	}
 	render(){
-		var title = this.props.editable ? '编辑公司资料页面': '添加公司资料页面';
+		var title = this.state.editable ? '编辑公司资料页面': '添加公司资料页面';
 		return (
 			<StdModal ref = 'modal' title = {title} footer={false}>
 				<CompanyInfo {...this.props}
 					company_id = {this.state.id}
 					hide = {this.hide.bind(this)}
+					editable = {this.state.editable}
 					/>
 			</StdModal>
 			)
 	}
-	show(id){
-		if(this.props.editable){
-			this.setState({id: id})
+	show(editable, id){
+		if(editable){
+			this.setState({id, editable})
 		}
 		this.refs.modal.show();
 	}

@@ -39,6 +39,7 @@ const DropDown = React.createClass({
     var list = this.props.options.map( (n, i) => {
       //n.rebuild : 重新自定义结构
       //n.hide    : 是否隐藏
+      if(n.hide){ return null; }
       return (
         <li key={'drop_down'+i} onClick={this._onClick.bind(this, n)} style={{'display': n.hide ? 'none' : 'block'}}>{
           n.rebuild

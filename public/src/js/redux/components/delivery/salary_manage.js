@@ -19,7 +19,7 @@ import AreaActions from 'actions/area';
 import { AreaActionTypes1 } from 'actions/action_types';
 import * as stationSalaryActions from 'actions/station_salary';
 import * as FormActions from 'actions/form';
-import * as DeliverymanActions from 'actions/deliveryman';
+import DeliverymanActions from 'actions/deliveryman';
 import { getStationListByScopeSignal, resetStationListWhenScopeChange } from 'actions/station_manage';
 
 import LazyLoad from 'utils/lazy_load';
@@ -549,9 +549,8 @@ class DeliveryManSalaryManagePannel extends Component{
 		return (
 				<div className=''>
 					{/*<TopHeader {...{exportExcel}}/>*/}
-					<FilterHeader  {...{area,deliveryman,stations: stations.station_list, page_size: this.state.page_size}} actions = {{...bindActionCreators({...AreaActions(), ...FormActions, ...DeliverymanActions, 
-											...stationSalaryActions, exportExcel, 
-											resetStationListWhenScopeChange},dispatch) }}
+					<FilterHeader  {...{area,deliveryman,stations: stations.station_list, page_size: this.state.page_size}} actions = {this.props.actions}
+									resetStationListWhenScopeChange = { resetStationListWhenScopeChange }
 									getStationListByScopeSignal = { getStationListByScopeSignal }/>
 					<div className='panel' >
 						<header className="panel-heading">工资信息列表</header>
@@ -831,7 +830,7 @@ function mapDispatchToProps(dispatch){
 	var actions ={actions: bindActionCreators({
 	  	...AreaActions(AreaActionTypes1), 
 	    ...stationSalaryActions,
-	    ...DeliverymanActions,
+	    ...DeliverymanActions(),
 	    getStationListByScopeSignal,
 	    resetStationListWhenScopeChange
 	  }, dispatch)};

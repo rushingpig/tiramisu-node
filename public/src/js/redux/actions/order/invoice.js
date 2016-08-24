@@ -161,6 +161,11 @@ function _getFormdata(getState){
 			invoice_data.recipient_name = invoice_data._recipient_name;
 			invoice_data.recipient_mobile =invoice_data._recipient_mobile;
 		}
+		if(invoice_data.type == '0'){
+			delete invoice_data.company_id;
+		}else{
+			delete invoice_data.title;
+		}
 		invoice_data.amount = invoice_data.amount * 100;
 		delete invoice_data.recipient_province_id;
 		delete invoice_data.recipient_city_id;

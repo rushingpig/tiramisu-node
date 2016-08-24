@@ -10,11 +10,5 @@ module.exports = {
     last_id : {
         optional : true,
         isInt : true
-    },
-    page_no : {
-        isInt : true
-    },
-    page_size : {
-        isInt : true
     }
 };

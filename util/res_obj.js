@@ -139,6 +139,10 @@ module.exports = {
   SQL_ERROR: {
     code: '2009',
     msg: 'Error happened when performing query'
+  },
+  ALREADY_IN_BLACKLIST: {
+    code: '2012',
+    msg: '该用户已经被加入到黑名单,请设置是否可用即可'
   }
 };
 

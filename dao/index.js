@@ -17,5 +17,6 @@ module.exports = {
     org : require('./sys/org_dao'),
     role : require('./sys/role_dao'),
     category : require('./buss/product/category_dao'),
-    image : require('./buss/image/image_dao')
+    image : require('./buss/image/image_dao'),
+    appUser : require('./app/user/app_user_dao')
 };

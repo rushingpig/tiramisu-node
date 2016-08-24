@@ -38,5 +38,7 @@ module.exports = {
   addDir: require('./buss/image/add_dir'),
   deleteDir: require('./buss/image/delete_dir'),
   moveDir: require('./buss/image/move_dir'),
-  renameDir: require('./buss/image/rename_dir')
+  renameDir: require('./buss/image/rename_dir'),
+  listAppUsers : require('./app/user/list_app_users'),
+  listAppUserLoginLogs:require('./app/user/list_user_loginLogs')
 };

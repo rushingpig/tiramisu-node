@@ -32,6 +32,7 @@ AppUserDao.prototype.findAppUsers = function (query_data) {
     let columns = [
         'aup.*',
         'aua.auth_token',
+        'aua.auth_id',
         'dr1.name as province_name',
         'dr2.name as city_name',
         'dr3.name as regionalism_name'
@@ -80,6 +81,7 @@ AppUserDao.prototype.findAppUserByUUID = function (uuid) {
     let columns = [
         'aup.*',
         'aua.auth_token',
+        'aua.auth_id',
         'dr1.name as province_name',
         'dr2.name as city_name',
         'dr3.name as regionalism_name'

@@ -32,6 +32,7 @@ AppUserDao.prototype.findAppUsers = function (query_data) {
     let columns = [
         'aup.*',
         'aua.auth_token',
+        'aua.auth_id',
         'dr1.name as province_name',
         'dr2.name as city_name',
         'dr3.name as regionalism_name'
@@ -58,7 +59,7 @@ AppUserDao.prototype.findAppUsers = function (query_data) {
         params.push(query_data.province_id);
     }
     if (query_data.city_id) {
-        sql += " and qup.city_id = ?";
+        sql += " and aup.city_id = ?";
         params.push(query_data.city_id);
     }
     if (query_data.uuid) {
@@ -80,6 +81,7 @@ AppUserDao.prototype.findAppUserByUUID = function (uuid) {
     let columns = [
         'aup.*',
         'aua.auth_token',
+        'aua.auth_id',
         'dr1.name as province_name',
         'dr2.name as city_name',
         'dr3.name as regionalism_name'
@@ -119,7 +121,7 @@ AppUserDao.prototype.findLoginLogs = function (query_data) {
         params.push(query_data.last_id);
     }
     sql += " order by id desc";
-    return baseDao.select(dbHelper.paginate(sql,query_data.page_no,query_data.page_size), params);
+    return baseDao.select(dbHelper.paginate(sql,0,query_data.page_size), params);
 };
 /**
  * 更新用户profiles为黑名单

@@ -25,6 +25,7 @@ import categoryManage from './category_manage';
 import citiesSelector from './cities_selector';
 import productSKUManagement from './product_sku_management';
 import productSKUSearch from './product_sku_search';
+import customerManage from './customer_manage';
 
 const rootReducer = combineReducers({
   form,
@@ -52,7 +53,8 @@ const rootReducer = combineReducers({
   categoryManage,
   citiesSelector,
   productSKUManagement,
-  productSKUSearch
+  productSKUSearch,
+  customerManage
 });
 
 export default rootReducer

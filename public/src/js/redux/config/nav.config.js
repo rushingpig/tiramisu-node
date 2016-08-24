@@ -139,5 +139,11 @@ export default [{
     "name": "系统权限管理",
     "icon": "",
     "link": "/am/systemauthority"
-  },]
+  }]
+}, {
+  "key": "custom_manage",
+  "name": "客户管理",
+  "short_name": "客户",
+  "icon": "",
+  "link":"/cosm"
 }];

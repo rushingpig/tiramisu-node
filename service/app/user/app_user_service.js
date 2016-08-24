@@ -164,9 +164,17 @@ AppUserService.prototype.getUserLoginLogs = (req,res,next) => {
             return res.api(res_obj.NO_MORE_RESULTS_ARR);
         }
         let data = {
-            list : results,
+            list : [],
             last_id : results[results.length - 1].id
         };
+        results.forEach((curr) => {
+            let res_data = {
+                ip : s(curr.ip),
+                visit_src : s(curr.visit_src),
+                datetime : curr.datetime
+            };
+            data.list.push(res_data);
+        });
         res.api(data);
     });
     systemUtils.wrapService(res,next,promise);

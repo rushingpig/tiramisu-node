@@ -121,7 +121,7 @@ AppUserDao.prototype.findLoginLogs = function (query_data) {
         params.push(query_data.last_id);
     }
     sql += " order by id desc";
-    return baseDao.select(dbHelper.paginate(sql,query_data.page_no,query_data.page_size), params);
+    return baseDao.select(dbHelper.paginate(sql,0,query_data.page_size), params);
 };
 /**
  * 更新用户profiles为黑名单

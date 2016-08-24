@@ -44,7 +44,7 @@ AppUserDao.prototype.findAppUsers = function (query_data) {
     params.push(tables.app_user_auths);
     if (query_data.keywords) {
         sql += " and aua.auth_id = ?";
-        params.push(query_data, keywords);
+        params.push(query_data.keywords);
     }
 
     sql += " left join ?? dr1 on aup.province_id = dr1.id";

@@ -59,7 +59,7 @@ AppUserDao.prototype.findAppUsers = function (query_data) {
         params.push(query_data.province_id);
     }
     if (query_data.city_id) {
-        sql += " and qup.city_id = ?";
+        sql += " and aup.city_id = ?";
         params.push(query_data.city_id);
     }
     if (query_data.uuid) {

@@ -61,10 +61,10 @@ AppUserService.prototype.listAppUsers = (req, res, next) => {
                 address : (s(curr.province_name) + " " + s(curr.city_name) + " " + s(curr.regionalism_name) + " " + s(curr.address)).trim(),
                 birthday : curr.birthday ? curr.birthday : "",
                 is_in_blacklist : curr.is_in_blacklist,
-                nicke_name : s(curr.nick_name),
-                passworded : systemUtils.isBlankDBValue(curr.auth_token),
+                nick_name : s(curr.nick_name),
+                passworded : !systemUtils.isBlankDBValue(curr.auth_token),
                 auth_id : curr.auth_id,
-                sex : !systemUtils.getSexName(curr.sex),
+                sex : systemUtils.getSexName(curr.sex),
                 uuid : curr.uuid,
             };
             data.list.push(res_data);
@@ -96,7 +96,7 @@ AppUserService.prototype.getAppUserInfo = (req,res,next) => {
             birthday : curr.birthday ? curr.birthday : "",
             avatar : curr.avatar,
             is_in_blacklist : curr.is_in_blacklist,
-            nicke_name : s(curr.nick_name),
+            nick_name : s(curr.nick_name),
             passworded : !systemUtils.isBlankDBValue(curr.auth_token),
             auth_id : curr.auth_id,
             sex : systemUtils.getSexName(curr.sex)

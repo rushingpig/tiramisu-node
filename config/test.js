@@ -149,6 +149,8 @@ var img_host = 'http://rs.blissmall.net/';
 // 导出excel的远程host
 var excel_export_host = 'http://localhost:8080/excel/order/';
 
+var mongodb_uri = 'mongodb://cupcake_qa:17F2wDwxI39w@120.76.25.32:27017/cupcake';
+
 module .exports = {
     exp_static_options : exp_static_options,
     exp_session_options : exp_session_options,
@@ -163,6 +165,7 @@ module .exports = {
     coupon_host : coupon_host,
     tartetatin_host: tartetatin_host,
     img_host: img_host,
-    excel_export_host : excel_export_host
+    excel_export_host : excel_export_host,
+    mongodb_uri: mongodb_uri
 };
 

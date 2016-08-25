@@ -4,7 +4,7 @@ const config = require('../config');
 var mongoose = require('mongoose');
 const logger = require('../common/LogHelper').systemLog();
 
-var uri = 'mongodb://cupcake_qa:17F2wDwxI39w@120.76.25.32:27017/cupcake';
+const uri = config.mongodb_uri;
 
 mongoose.connect(uri, function (error) {
     if (error) {

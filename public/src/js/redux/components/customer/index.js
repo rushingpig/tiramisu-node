@@ -7,7 +7,7 @@ import * as actions             from 'actions/customer_manage';
 import area                     from 'actions/area';
 
 import Pagination               from 'common/pagination';
-import { tableLoader, get_normal_loading }          from 'common/loading';
+import { tableLoader, get_normal_loading, get_normal_empty } from 'common/loading';
 import Select                   from 'common/select';
 import V                        from 'utils/acl';
 import StdModal                 from 'common/std_modal';
@@ -15,46 +15,46 @@ import { SELECT_DEFAULT_VALUE } from 'config/app.config';
 import { Noty } from 'utils/index';
 import LazyLoad from 'utils/lazy_load';
 
+const Form = props => (
+  <div className="col-xs-4">
+    <label>{props.label}</label>
+    <span className="theme">{props.children}</span>
+  </div>
+)
 const TR = props => <div className="text-center" style={{fontSize: 0, marginRight: -3, overflow: 'hidden'}}>{props.children}</div> ;
 const TD = props => <div {...props} style={
   {display: 'inline-block', width: '291px', fontSize: 12, padding: 8, borderRight: '1px solid #ddd', borderBottom: '1px solid #ddd'}
-}>{props.children}</div> ;
+}>{props.children || <span>&nbsp;</span> }</div> ;
 
 class DetailModal extends Component {
   render(){
     var {props} = this;
     return (
-      <StdModal ref="modal" title="客户详情" size="lg" footer={false} onCancel={this.onHide} >
+      <StdModal ref="modal" title="客户详情" size="lg" footer={false} onCancel={this.onHide.bind(this)} >
         <div className="row">
           <div className="col-xs-8">
             <div className="row">
-              <div className="col-xs-4">
-                <label>用户名：</label>{props.auth_id}
-              </div>
-              <div className="col-xs-4">
-                <label>已设密码：</label>{props.passworded == 1 ? '是' : '否'}
-              </div>
-              <div className="col-xs-4">
-                <label>　　生日：</label>{props.birthday}
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-xs-4">
-                <label>　昵称：</label>{props.nick_name}
-              </div>
-              <div className="col-xs-4">
-                <label>　　性别：</label>{props.sex}
-              </div>
+              <Form label="用户名：">{props.auth_id}</Form>
+              <Form label="已设密码：">{props.passworded == 1 ? '是' : '否'}</Form>
+              <Form label="　　生日：">{props.birthday}</Form>
+
+              <Form label="　昵称：">{props.nick_name}</Form>
+              <Form label="　　性别：">{props.sex}</Form>
             </div>
             <div className="row">
               <div className="col-xs-12">
-                <label>所在地：</label>{props.address}
+                <label>所在地：</label>
+                <span className="theme">{props.address}</span>
               </div>
             </div>
           </div>
           <div className="col-xs-4">
             <div className="pull-right">
-              <img src={props.avatar} alt="avatar"/>
+              {
+                props.avatar
+                  ? <img width="80" src={props.avatar} alt="avatar"/>
+                  : null
+              }
             </div>
           </div>
         </div>
@@ -73,16 +73,22 @@ class DetailModal extends Component {
           <div className="table-bordered" style={{'maxHeight': 300, overflow: 'auto'}}>
             {
               props.list
-                ? props.list.map(n => (
-                    <TR key={n.id}>
-                      <TD>{n.datetime}</TD>
-                      <TD>{n.ip}</TD>
-                      <TD>{n.visit_src}</TD>
-                    </TR>
-                  )).concat(
-                    <TR key="more">
-                      <a href="javascript:;" style={{display: 'inline-block', fontSize: 12, padding: 8}}>更多>></a>
-                    </TR>
+                ? (
+                    props.list.length == 0
+                      ? get_normal_empty()
+                      : props.list.map((n, i) => (
+                          <TR key={i}>
+                            <TD>{n.datetime}</TD>
+                            <TD>{n.ip}</TD>
+                            <TD>{n.visit_src == 'NONE' ? '-' : n.visit_src}</TD>
+                          </TR>
+                        )).concat(
+                          props.list.length % 10 == 0
+                            ? <TR key="more">
+                                <a onClick={this.loadMore.bind(this)} href="javascript:;" style={{display: 'inline-block', fontSize: 12, padding: 8}}>更多>></a>
+                              </TR>
+                            : null
+                        )
                   )
                 : get_normal_loading()
             }
@@ -114,6 +120,7 @@ class DetailModal extends Component {
       uuid: this.props.uuid,
       last_id: this.props.last_id,
       page_size: 10,
+      page_no: this.props.page_no,
     })
   }
   addToBlackList(){
@@ -122,6 +129,7 @@ class DetailModal extends Component {
         Noty('success', '加入黑名单成功！');
         this.props.callback();
       })
+      .fail( msg => Noty('error', msg || '添加失败！'))
   }
   onHide(){
     this.props.actions.hideDetailModal();
@@ -236,7 +244,7 @@ var Main = React.createClass({
   },
   viewDetail(uuid){
     this.props.actions.getCustomerInfo(uuid);
-    this.props.actions.getCustomerLogs({uuid, last_id: 0, page_size: 10})
+    this.props.actions.getCustomerLogs({uuid, page_size: 10})
   },
   search(page){
     var { state } = this;

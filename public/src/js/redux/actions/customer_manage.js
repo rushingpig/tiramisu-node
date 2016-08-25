@@ -45,8 +45,8 @@ export function getCustomerInfo(uuid){
 }
 
 export const GET_CUSTOMER_LOGS = 'GET_CUSTOMER_LOGS';
-export function getCustomerLogs({uuid, last_id, page_size}){
-  return R.GET(Url.customer_logs.toString(uuid), {last_id, page_size}, GET_CUSTOMER_LOGS)
+export function getCustomerLogs(data){
+  return R.GET(Url.customer_logs.toString(data.uuid), data, GET_CUSTOMER_LOGS)
   // return R.TEST({
   //   last_id: 0,
   //   list: [{

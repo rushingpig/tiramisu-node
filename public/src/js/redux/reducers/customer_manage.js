@@ -16,10 +16,15 @@ const initial_state = {
 function main(state = initial_state, action){
   switch(action.type){
     case Actions.GET_CUSTOMER_LIST:
-      return { ...state, loading: false, ...action.data }
+      return { ...state, loading: false, list: action.data.list || initial_state.list, page_no: action.data.page_no || initial_state.page_no }
     case Actions.GET_CUSTOMER_INFO:
-    case Actions.GET_CUSTOMER_LOGS:
       return { ...state, customer_info: {...state.customer_info, ...action.data} }
+    case Actions.GET_CUSTOMER_LOGS:
+      return { ...state, customer_info: 
+        state.customer_info
+          ? {...state.customer_info, ...action.data, list: (state.customer_info.list || []).concat(action.data.list)}
+          : {...state.customer_info, ...action.data}
+      }
     case Actions.SELECT_CUSTOMER:
       return { ...state, selected_uuid: action.uuid }
     case Actions.ADD_TO_BLACK_LIST:

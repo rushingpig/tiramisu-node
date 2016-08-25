@@ -115,6 +115,18 @@ export default [{
     "link": "/pm/cam"
   }]
 }, {
+  "key": 'GroupbuyManageAccess',
+  'name': '团购管理',
+  'short_name': '团购',
+  'icon': '',
+  'link': [{
+    'key': 'GroupbuyProgramManageAccess',
+    'name': '团购项目管理',
+    'short_name': '团购项目',
+    'icon': '',
+    'link': '/gm/pro',
+  }]
+}, {
   "key": "authority_manage",
   "name": "权限管理",
   "short_name": "权限",

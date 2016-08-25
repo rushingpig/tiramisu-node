@@ -25,6 +25,8 @@ import categoryManage from './category_manage';
 import citiesSelector from './cities_selector';
 import productSKUManagement from './product_sku_management';
 import productSKUSearch from './product_sku_search';
+import groupbuysProgramManage from './groupbuys/program_manage';
+import groupbuysProgramFormManage from './groupbuys/program_form';
 
 const rootReducer = combineReducers({
   form,
@@ -52,7 +54,9 @@ const rootReducer = combineReducers({
   categoryManage,
   citiesSelector,
   productSKUManagement,
-  productSKUSearch
+  productSKUSearch,
+  groupbuysProgramManage,
+  groupbuysProgramFormManage,
 });
 
 export default rootReducer

@@ -10,6 +10,9 @@ import Select from 'common/select';
 import Pagination from 'common/pagination';
 import AddressSelector from 'common/address_selector';
 import { tableLoader, get_table_empty } from 'common/loading';
+import Linkers from 'common/linkers';
+import history from 'history_instance';
+import StdModal from 'common/std_modal';
 
 import * as GroupbuysProgramActions from 'actions/groupbuys/program_manage';
 import AreaActions from 'actions/area';
@@ -18,24 +21,45 @@ class TopHeader extends Component{
 	render() {
 		return (
 			<div className='clearfix top-header'>
-				<button className="btn btn-theme btn-xs pull-left">
+				<button
+				 onClick = {this.addProgram}
+				 className="btn btn-theme btn-xs pull-left">
 				   添加
 				</button>
+				<Linkers
+				  data={['团购管理', '团购项目列表']}
+				  active="团购项目列表"
+				  className="pull-right" />
 			</div>
 		)
 	}
-
+	addProgram(){
+		history.push('/gm/pro/add');
+	}
 
 }
 
 class FilterHeader extends Component{
+
 	render(){
+		var {
+			fields: {
+				keywords,
+				province_id,
+				city_id,
+				district_id,
+				is_online,
+				src_id,
+			},
+			area: {provinces, cities, districts,} ,
+			actions } = this.props;
 		return(
 			<div className = 'panel search'>
 				<div className = 'panel-body form-inline'>
 					<SearchInput className = 'form-inline v-img space-right' placeholder = '项目名称' />
 					<Select default-text='所属渠道' className='space-right'/>
-					{/*<AddressSelector />*/}
+					<AddressSelector {...{ province_id, city_id, district_id, provinces, cities, districts, actions,
+						form: 'groupbuys_program_filter' }}/>
 					<Select default-text = '当前是否上线' className = 'space-right' />
 					<button className="btn btn-theme btn-xs">
 					  <i className="fa fa-search"></i>{' 搜索'}
@@ -45,6 +69,18 @@ class FilterHeader extends Component{
 			)
 	}
 }
+
+FilterHeader = reduxForm({
+	form: 'groupbuys_program_filter',
+	fields: [
+		'keywords',
+		'province_id',
+		'city_id',
+		'district_id',
+		'src_id',
+		'is_online',
+	]
+})( FilterHeader)
 
 var GroupbuyRow = React.createClass({
 	render(){
@@ -57,7 +93,13 @@ var GroupbuyRow = React.createClass({
 				<td>{props.src_name}</td>
 				<td>{props.online_time}</td>
 				<td><span className = 'bg-warning bordered'>{props.city}</span>{ ' ' + props.province}</td>
-				<td>{props.url}</td>
+				<td className='copy-col'>
+					<span ref='url'>{props.url}</span>
+					<button
+						onClick = {this.copyUrl}
+					    className="btn btn-default btn-xs space-left copy-btn">复制</button>
+					<a href='javascript:;' ></a>
+				</td>
 				<td>
 					<a href='javascript:;'>{'[查看]　'}</a>
 					<a href='javascript:;'>{'[编辑]　'}</a>
@@ -65,6 +107,18 @@ var GroupbuyRow = React.createClass({
 				</td>
 			</tr>
 			)
+	},
+	copyUrl(e){
+		/*var id = this.props.id + 'url';*/
+		var url = this.refs.url;
+		var range = document.createRange();
+		range.selectNode(url);
+		var selector = window.getSelection();
+		if(selector.rangeCount > 0){
+			selector.removeAllRanges();
+		}
+		selector.addRange(range);
+		document.execCommand('copy');
 	}
 })
 
@@ -119,6 +173,31 @@ class ManagePannel extends Component{
 
 	componentDidMount(){
 		this.props.actions.getGroupbuyProgramList({page_no: 0, page_size: this.state.page_size});
+	}
+}
+
+class GroupbuyInfoModal extends Component{
+	render(){
+		<StdModal title = '查看团购项目信息' >
+			<div className = 'form-group form-inline'>
+				<label>项目名称：</label>
+			</div>
+			<div className = 'form-group form-inline'>
+				<label>上线渠道：</label>
+			</div>
+			<div className = 'form-group form-inline'>
+				<label>所属城市：</label>
+			</div>
+			<div className = 'form-group form-inline'>
+				<label>上线时间：</label>
+			</div>
+			<div className = 'form-group form-inline'>
+				<label>团购商品列表：</label>
+			</div>
+			<div className = 'form-group form-inline'>
+				<label>预约网址：</label>
+			</div>
+		</StdModal>
 	}
 }
 

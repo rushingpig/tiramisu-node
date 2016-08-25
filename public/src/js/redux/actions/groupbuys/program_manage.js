@@ -6,7 +6,7 @@ import { getValues } from 'redux-form';
 export const GET_GROUPBUY_PROGRAM_LIST = 'GET_GROUPBUY_PROGRAM_LIST';
 export function getGroupbuyProgramList(form_data){
 	return (dispatch, getState) => {
-		var filter_data = getValues(getState().form.groupbuys_program_list);
+		var filter_data = getValues(getState().form.groupbuys_program_filter);
 		filter_data = formCompile(filter_data);
 
 		return TEST({

@@ -95,6 +95,15 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
         callback();
       });
       break;
+    case 'gm':
+      require.ensure([], require => {
+        components = {...components,
+          GroupbuyManagePannel:        require('../components/groupbuys/program_manage'),
+          ProgramFormManage:           require('../components/groupbuys/program_form_detail'),
+        };
+        callback();
+      });
+      break;
     default:
       break;
   }
@@ -176,6 +185,12 @@ const App = () => (
         </Route>
       </Route>
 
+      <Route path='gm' onEnter={getComponents('gm')}>
+        <Route path='pro'>
+          <IndexRoute getComponent={get('GroupbuyManagePannel')} onEnter={onEnter('GroupbuyProgramManageAccess')} />
+          <Route path='add' onEnter={onEnter('GroupbuyManageAdd')} getComponent={get('ProgramFormManage')} />
+        </Route>
+      </Route>
 
       <Redirect from="logout" to="/" />
       <Route path="403" component={NoPermission} />

@@ -202,7 +202,7 @@ var  InvoiceRow = React.createClass({
 				</td>
 				<td>
 					{
-						props.type ?
+						props.type == 0 ?
 						'增值税普通发票'
 						:
 						'增值税专用发票'

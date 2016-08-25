@@ -204,14 +204,14 @@ var RefundRow = React.createClass({
 					</span>
 				</td>
 					{ 
-						REFUND_WAY[props.way] == REFUND_WAY['CS']
+						props.way == 'CS'
 						?
 						<td className='text-left'>
 							<span>{'账户名：' + props.account_name}</span>
 							<br key='acount_info_br'/>
 							<span key='account_info_account_span'>
 							{
-								ACCOUNT_TYPE[props.account_type] == 'ALIPAY'
+								props.account_type == 'ALIPAY'
 								? 
 								<span>{'账户：' + props.account }</span>
 								:

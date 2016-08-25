@@ -58,6 +58,10 @@ const validate = (values, props) => {
     _v_text('account_name');
   }
 
+  if(values['reason_type'] == 0){
+    _v_text('reason');
+  }
+
   return errors;
 }
 
@@ -131,7 +135,7 @@ class RefundPannel extends Component{
           reason_type.value == 0 &&
           <div className='form-group form-inline'>
           <label key='reason_lbl'>{'其他原因：'}</label>
-          <input {...reason} key='reason_txt' type='text' className='form-control' style={{width: 390}} />
+          <input {...reason} key='reason_txt' type='text' className={`form-control ${reason.error}`} style={{width: 390}} />
           </div>
         }
         <div className = 'form-group form-inline'>

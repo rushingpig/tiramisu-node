@@ -1,6 +1,6 @@
 import { dateFormat, map } from 'utils/index';
 import { combineReducers } from 'redux';
-import { REQUEST, invoice_status, ACCESSORY_CATE_ID } from 'config/app.config';
+import { REQUEST, invoice_status, order_status, ACCESSORY_CATE_ID } from 'config/app.config';
 import { GOT_ORDER_SRCS } from 'actions/order_manage_form';
 
 import { area } from 'reducers/area_select';
@@ -45,7 +45,7 @@ var filter_state = {
 	search_ing : false,
 	all_order_srcs: [],
   	all_invoice_status: map(invoice_status, ({value}, id) => ({id, text: value})),
-
+  	all_order_status: map(order_status, ({value}, id) => ({id, text: value})),
 }
 
 function filter(state = filter_state, action){
@@ -114,7 +114,7 @@ function main(state = main_state, action){
 			data.recipient_province_id = option.province_id;
 			data.recipient_city_id = option.city_id;
 			data.recipient_regionalism_id = option.regionalism_id;
-			data.recipient_address = data.address;
+			data.recipient_address = option.address;
 			data.owner_name = option.owner_name;
 			data.owner_mobile = option.owner_mobile;
 
@@ -125,8 +125,14 @@ function main(state = main_state, action){
 		case Actions.INVOICE_DEL:
 			var {list, total} = state;
 			var {id } = action;
-			list = list.filter( m => m.id != id);
-			return {...state, list: list, total: total -1}
+			var {list } = state;
+			list = list.map( m => {
+				if(m.id ==  id){
+					m.status = 'CANCEL'
+				}
+				return m;
+			})
+			return {...state, list: list}
 		case Actions.INVOICE_APPLY_ING:
 			return {...state, save_ing: true}
 		case Actions.INVOICE_APPLY_FAIL:

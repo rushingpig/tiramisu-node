@@ -122,9 +122,13 @@ export default [{
   'link': [{
     'key': 'GroupbuyProgramManageAccess',
     'name': '团购项目管理',
-    'short_name': '团购项目',
     'icon': '',
-    'link': '/gm/pro',
+    'link': '/gm/pg',
+  }, {
+    'key': 'GroupbuyProductManageAccess',
+    'name': '团购商品管理',
+    'icon': '',
+    'link': '/gm/pd',
   }]
 }, {
   "key": "authority_manage",

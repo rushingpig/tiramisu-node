@@ -107,7 +107,7 @@ export default class ProductsModal extends Component{
 
 class ProductSelectedRow extends Component{
 	render(){
-		return {
+		return (
 			<tr>
 				<td></td>
 				<td></td>
@@ -116,6 +116,6 @@ class ProductSelectedRow extends Component{
 				<td></td>
 				<td></td>
 			</tr>
-		}
+		)
 	}
 }

@@ -10,7 +10,7 @@ import { SELECT_DEFAULT_VALUE } from 'config/app.config';
 import DatePicker from 'common/datepicker';
 import LineRouter from 'common/line_router';
 
-import ProgramProductsModal from './add_products_modal';
+import ProgramProductsModal from './program_add_products_modal';
 
 const validate = (values, props) => {
 	const errors = [];
@@ -39,7 +39,7 @@ class TopHeader extends Component{
 		return (
 			<div className='clearfix top-header'>
 				<LineRouter
-					routes={[{name: '团购项目管理', link: '/gm/pro'}, {name: title, link: ''}]}
+					routes={[{name: '团购项目管理', link: '/gm/pg'}, {name: title, link: ''}]}
 					className = 'pull-right'
 					/>
 			</div>

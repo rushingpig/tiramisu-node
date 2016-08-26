@@ -34,7 +34,7 @@ class TopHeader extends Component{
 		)
 	}
 	addProgram(){
-		history.push('/gm/pro/add');
+		history.push('/gm/pg/add');
 	}
 
 }
@@ -101,7 +101,7 @@ var GroupbuyRow = React.createClass({
 					<a href='javascript:;' ></a>
 				</td>
 				<td>
-					<a href='javascript:;'>{'[查看]　'}</a>
+					<a href='javascript:;' onClick = {this.viewGroupbuyInfoModal}>{'[查看]　'}</a>
 					<a href='javascript:;'>{'[编辑]　'}</a>
 					<a href='javascript:;'>{'[下架]'}</a>
 				</td>
@@ -119,7 +119,10 @@ var GroupbuyRow = React.createClass({
 		}
 		selector.addRange(range);
 		document.execCommand('copy');
-	}
+	},
+	viewGroupbuyInfoModal(){
+		this.props.viewGroupbuyInfoModal();
+	},
 })
 
 class ManagePannel extends Component{
@@ -128,6 +131,8 @@ class ManagePannel extends Component{
 		this.state = {
 			page_size: 10,
 		}
+
+		this.viewGroupbuyInfoModal = this.viewGroupbuyInfoModal.bind(this);
 	}
 	render(){
 		var { main, area, actions } = this.props;
@@ -135,7 +140,7 @@ class ManagePannel extends Component{
 
 		var content = list.map( (m, i) => {
 			return (
-				<GroupbuyRow key = {m.id + ' ' + i} {...{...this.props, ...m}} />
+				<GroupbuyRow key = {m.id + ' ' + i} {...{...this.props, ...m, viewGroupbuyInfoModal: this.viewGroupbuyInfoModal}} />
 				)
 		})
 		return(
@@ -167,6 +172,7 @@ class ManagePannel extends Component{
 				  total_count={total} 
 				  page_size={this.state.page_size} 
 				/>
+				<GroupbuyInfoModal ref='GroupbuyInfoModal' />
 			</div>
 			)
 	}
@@ -174,30 +180,43 @@ class ManagePannel extends Component{
 	componentDidMount(){
 		this.props.actions.getGroupbuyProgramList({page_no: 0, page_size: this.state.page_size});
 	}
+
+	viewGroupbuyInfoModal(){
+		this.refs.GroupbuyInfoModal.show();
+	}
 }
 
 class GroupbuyInfoModal extends Component{
 	render(){
-		<StdModal title = '查看团购项目信息' >
-			<div className = 'form-group form-inline'>
-				<label>项目名称：</label>
-			</div>
-			<div className = 'form-group form-inline'>
-				<label>上线渠道：</label>
-			</div>
-			<div className = 'form-group form-inline'>
-				<label>所属城市：</label>
-			</div>
-			<div className = 'form-group form-inline'>
-				<label>上线时间：</label>
-			</div>
-			<div className = 'form-group form-inline'>
-				<label>团购商品列表：</label>
-			</div>
-			<div className = 'form-group form-inline'>
-				<label>预约网址：</label>
-			</div>
-		</StdModal>
+		return(
+			<StdModal ref='modal' title = '查看团购项目信息' >
+				<div className = 'form-group form-inline'>
+					<label>项目名称：</label>
+				</div>
+				<div className = 'form-group form-inline'>
+					<label>上线渠道：</label>
+				</div>
+				<div className = 'form-group form-inline'>
+					<label>所属城市：</label>
+				</div>
+				<div className = 'form-group form-inline'>
+					<label>上线时间：</label>
+				</div>
+				<div className = 'form-group form-inline'>
+					<label>团购商品列表：</label>
+				</div>
+				<div className = 'form-group form-inline'>
+					<label>预约网址：</label>
+				</div>
+			</StdModal>
+			)
+		
+	}
+	show(){
+		this.refs.modal.show();
+	}
+	hide(){
+		this.refs.modal.hide();
 	}
 }
 

@@ -139,6 +139,10 @@ module.exports = {
   SQL_ERROR: {
     code: '2009',
     msg: 'Error happened when performing query'
+  },
+  REDUNDANCY_ERROR: {
+    code: '2010',
+    msg: 'Error order info redundancy'
   }
 };
 

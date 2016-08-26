@@ -26,6 +26,7 @@ module.exports = function (router) {
 //**********************
     router.post('/order',orderService.addOrder); // 添加订单
     router.post('/coupon',orderService.validateCoupon);
+    router.post('/order/:orderId/backup', orderService.orderBackup);
 
 //*********************
 //******** PUT ********

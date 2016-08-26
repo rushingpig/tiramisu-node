@@ -36,6 +36,7 @@ var toolUtils = require('../../../common/ToolUtils');
 var request = require('request');
 var co = require('co');
 var refundDao = dao.refund;
+var order_backup = require('../../../api/order_backup');
 
 function OrderService() {
 }
@@ -1234,5 +1235,16 @@ OrderService.prototype.editOrderRemarks = (req,res,next) => {
     res.api()
   });
   systemUtils.wrapService(res,next,promise);
+};
+
+OrderService.prototype.orderBackup = function (req, res, next) {
+  let promise = co(function*() {
+    let order_id = systemUtils.getDBOrderId(req.params.orderId);
+    let info = yield orderDao.findOrderBackupById(order_id);
+    yield order_backup.insert(info);
+  }).then(() => {
+    res.api();
+  });
+  systemUtils.wrapService(res, next, promise);
 };
 module.exports = new OrderService();

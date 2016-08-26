@@ -981,6 +981,7 @@ var SignedModal = React.createClass({
   filterHandler(e){
     var { value } = e.target;
     var { all_deliveryman } = this.state;
+    var {order_deliveryman: { current_id}} = this.props;
     var results = [];
     value = value.toUpperCase();
     if(value === ''){
@@ -994,7 +995,11 @@ var SignedModal = React.createClass({
     }else{ //中文全称
       results = all_deliveryman.filter(n => n.deliveryman_name.indexOf(value) != -1)
     }
-    this.setState({ filter_deliveryman_results: results, current_id: results.length && results[0].deliveryman_id });
+    if(value === ''){
+      this.setState({ current_id,  filter_deliveryman_results: results });
+    }else{
+      this.setState({ filter_deliveryman_results: results, current_id: results.length && results[0].deliveryman_id });
+    }
   },
   onSignInDateChange: function(value){
     this.setState({ signin_date: value })
@@ -1422,7 +1427,12 @@ class EditModal extends Component{
     }else{ //中文全称
       results = all_deliveryman.filter(n => n.deliveryman_name.indexOf(value) != -1)
     }
-    this.setState({ filter_deliveryman_results: results, deliveryman_id: results.length && results[0].deliveryman_id });
+    if(value === ''){
+      var { order_deliveryman : {current_id }} = this.props;
+      this.setState({ filter_deliveryman_results: results, deliveryman_id: current_id});
+    }else{
+      this.setState({ filter_deliveryman_results: results, deliveryman_id: results.length && results[0].deliveryman_id });     
+    }
   }
   componentWillReceiveProps(nextProps){
     var { D_ , order_deliveryman} = nextProps;

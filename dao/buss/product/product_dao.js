@@ -13,6 +13,7 @@ var baseDao = require('../../base_dao'),
     systemUtils = require('../../../common/SystemUtils'),
     config = require('../../../config');
 
+var co = require('co');
 const DEFAULT_TEMPLATE = 1;
 
 function ProductDao(){
@@ -134,6 +135,8 @@ ProductDao.prototype.findProductsByOrderId = function(orderId){
         'bos.greeting_card',
         'bos.custom_name',
         'bos.custom_desc',
+        'bos.sku',
+        'bos.spu',
         'if(bos.atlas=0,\'不需要\',\'需要\') as atlas'
     ].join(','),params = [];
     let sql = "select "+columns+" from ?? bos";
@@ -142,7 +145,25 @@ ProductDao.prototype.findProductsByOrderId = function(orderId){
     sql += " left join buss_product bp on bp.id = bps.product_id";
     sql += " where bos.order_id = ? and bos.del_flag = ?";
     params.push(tables.buss_order_sku,orderId,del_flag.SHOW);
-    return baseDao.select(sql,params);
+    return co(function* () {
+        let result = yield baseDao.select(sql, params);
+        result.forEach(curr=> {
+            if(curr.sku && curr.spu && curr.spc){
+                try{
+                    curr.sku = JSON.parse(curr.sku);
+                    curr.spu = JSON.parse(curr.spu);
+                    curr.name = curr.spu.name;
+                    curr.category_id = curr.spu.category_id;
+                    curr.size = curr.sku.size;
+                    delete curr.sku;
+                    delete curr.spu;
+                }catch (err){
+
+                }
+            }
+        });
+        return result;
+    });
 };
 
 ProductDao.prototype.findDeliveryPayRule = function () {

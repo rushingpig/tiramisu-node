@@ -72,7 +72,7 @@ class FilterHeader extends Component{
 	}
 	render(){
 		var {search_ing, search_by_keywords_ing} = this.state;
-		var {all_order_srcs, all_invoice_status } = this.props;
+		var {all_order_srcs, all_invoice_status, all_order_status } = this.props;
 		var {
 			fields:{
 				keywords,
@@ -84,6 +84,7 @@ class FilterHeader extends Component{
 				src_id,
 				delivery_id,
 				status,
+				order_status,
 			},
 			provinces,
 			cities,
@@ -111,6 +112,7 @@ class FilterHeader extends Component{
 					 }
 					<Select  options = {station_list} {...delivery_id} default-text = '请选择配送站' className='space-right'/>
 					<Select {...status}  options = {all_invoice_status}  default-text = '开票状态'  className='space-right'/>
+					<Select {...order_status}  options = {all_order_status}  default-text = '订单状态'  className='space-right'/>
 					{
 					  V( 'InvoiceManageChannelFilter' )
 					    ?<OrderSrcsSelects {...{all_order_srcs, src_id}} actions={this.props.actions} reduxFormName="invoice_manage_filter" />
@@ -178,6 +180,7 @@ FilterHeader = reduxForm({
 		'district_id',
 		'station_id',
 		'status',
+		'order_status',
 		'src_id',
 	],
 	destroyOnUnmount: false,

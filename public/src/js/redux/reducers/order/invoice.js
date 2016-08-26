@@ -1,6 +1,6 @@
 import { dateFormat, map } from 'utils/index';
 import { combineReducers } from 'redux';
-import { REQUEST, invoice_status, ACCESSORY_CATE_ID } from 'config/app.config';
+import { REQUEST, invoice_status, order_status, ACCESSORY_CATE_ID } from 'config/app.config';
 import { GOT_ORDER_SRCS } from 'actions/order_manage_form';
 
 import { area } from 'reducers/area_select';
@@ -45,7 +45,7 @@ var filter_state = {
 	search_ing : false,
 	all_order_srcs: [],
   	all_invoice_status: map(invoice_status, ({value}, id) => ({id, text: value})),
-
+  	all_order_status: map(order_status, ({value}, id) => ({id, text: value})),
 }
 
 function filter(state = filter_state, action){

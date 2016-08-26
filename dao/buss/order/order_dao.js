@@ -361,17 +361,32 @@ OrderDao.prototype.findProductById = function (tran, sku_id, cb) {
   let promise = co(function*() {
     let sql = `SELECT * FROM ?? WHERE id = ? `;
     let params = [tables.buss_product_sku, sku_id];
-    let sku = yield baseDao.select(sql, params);
+    let sku = yield new Promise((resolve, reject) => {
+      tran.query(sql, params, (err, result)=> {
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
     if (!sku || sku.length == 0) return Promise.reject(`not found sku id = ${sku}`);
     sku = sku[0];
 
     params = [tables.buss_product, sku.product_id];
-    let spu = yield baseDao.select(sql, params);
+    let spu = yield new Promise((resolve, reject) => {
+      tran.query(sql, params, (err, result)=> {
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
     if (!spu || spu.length == 0) return Promise.reject(`not found sku id = ${spu}`);
     spu = spu[0];
 
     params = [tables.buss_product_category, spu.category_id];
-    let spc = yield baseDao.select(sql, params);
+    let spc = yield new Promise((resolve, reject) => {
+      tran.query(sql, params, (err, result)=> {
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
     if (!spc || spc.length == 0) return Promise.reject(`not found sku id = ${spc}`);
     spc = spc[0];
 

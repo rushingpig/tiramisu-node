@@ -213,7 +213,7 @@ var RefundRow = React.createClass({
 							{
 								props.account_type == 'ALIPAY'
 								? 
-								<span>{'账户：' + props.account }</span>
+								<span>{'账号：' + props.account }</span>
 								:
 								<span>{'卡号：' + props.account }</span>
 						    }

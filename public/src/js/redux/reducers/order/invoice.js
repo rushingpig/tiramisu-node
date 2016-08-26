@@ -114,7 +114,7 @@ function main(state = main_state, action){
 			data.recipient_province_id = option.province_id;
 			data.recipient_city_id = option.city_id;
 			data.recipient_regionalism_id = option.regionalism_id;
-			data.recipient_address = data.address;
+			data.recipient_address = option.address;
 			data.owner_name = option.owner_name;
 			data.owner_mobile = option.owner_mobile;
 
@@ -125,8 +125,14 @@ function main(state = main_state, action){
 		case Actions.INVOICE_DEL:
 			var {list, total} = state;
 			var {id } = action;
-			list = list.filter( m => m.id != id);
-			return {...state, list: list, total: total -1}
+			var {list } = state;
+			list = list.map( m => {
+				if(m.id ==  id){
+					m.status = 'CANCEL'
+				}
+				return m;
+			})
+			return {...state, list: list}
 		case Actions.INVOICE_APPLY_ING:
 			return {...state, save_ing: true}
 		case Actions.INVOICE_APPLY_FAIL:

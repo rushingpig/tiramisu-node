@@ -19,5 +19,6 @@ public/lib/bootstrap-datepicker.min.js
 public/lib/chinese_py.min.js
 public/lib/plugins.min.js
 views/index.hbs
+logo.png
+public/images/qrcode.png
 .vscode
-version/

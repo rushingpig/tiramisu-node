@@ -558,16 +558,22 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                         status: RS.TREATED,
                         type: REFUND_TYPE.PART,
                         amount: refund_amount,
-                        way: 'CS',
-                        account_type: 'ALIPAY',
-                        account_name: '',
-                        account: '',
                         reason_type: 4,
                         reason: REASON_TYPE['4'],
                         linkman: 0,
                         linkman_name: _res[0].owner_name,
                         linkman_mobile: _res[0].owner_mobile
                     };
+                    if ([1, 2].indexOf(current_order.src_id) == -1) {  // 外部渠道
+                        refund_obj.way = 'THIRD_PARTY';
+                    } else {
+                        refund_obj.way = 'FINANCE';
+                        if (current_order.pay_modes_id == 13) { // 13微信支付
+                            refund_obj.account_type = 'WECHAT';
+                        } else {
+                            refund_obj.account_type = 'ALIPAY';
+                        }
+                    }
                     refund_history.option = `因减少配件自动生成退款\n退款金额为{${refund_obj.amount / 100}}\n`;
                     let order_history = {option: ''};
                     order_history.order_id = orderId;

@@ -106,6 +106,7 @@ RefundDao.prototype.findOptionByOrderId = function (order_id) {
         'bo.total_amount',
         'bo.total_discount_price',
         'bo.payment_amount',
+        'bo.status AS order_status',
         'br.name AS recipient_name',
         'br.mobile AS recipient_mobile',
         'bre.status AS refund_status'
@@ -133,6 +134,9 @@ RefundDao.prototype.findOptionByOrderId = function (order_id) {
             let _p = result.total_discount_price || 0;
             let _a = result.total_amount || 0;
             _res.payment_amount = _p - _a;
+        }
+        if (_res.order_status == 'COMPLETED') {
+            _res.payment_amount += result.total_amount;
         }
         return _res;
     });

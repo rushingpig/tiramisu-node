@@ -290,7 +290,7 @@ module.exports.addInvoice = function (req, res, next) {
         order_info = order_info[0];
         if (['CANCEL', 'EXCEPTION'].indexOf(order_info.status) != -1) return Promise.reject(new TiramisuError(res_obj.FAIL, '订单已取消或异常...'));
         let tmp_list = yield invoiceDao.findInvoiceByOrderId(order_id);
-        if (tmp_list && tmp_list.length != 0) return Promise.reject(new TiramisuError(res_obj.FAIL, '该订单已开发票...'));
+        if (tmp_list && tmp_list.length != 0) return Promise.reject(new TiramisuError(res_obj.FAIL, '该订单已开发票或正在开发票...'));
         let info = _.pick(req.body, [
             'type',
             'company_id',

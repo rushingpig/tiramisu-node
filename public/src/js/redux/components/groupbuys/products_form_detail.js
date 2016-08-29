@@ -8,6 +8,8 @@ import LineRouter from 'common/line_router';
 import ProductForm from './products_form';
 
 import * as FormActions from 'actions/form';
+import AreaActions from 'actions/area';
+import * as GroupbuysProductsFormActions from 'actions/groupbuys/products_form';
 
 class TopHeader extends Component{
 	render() {
@@ -24,15 +26,30 @@ class TopHeader extends Component{
 	}
 }
 
-export default class ProductFormDetail extends Component{
+class ProductFormDetail extends Component{
 	render(){
 		return (
 			<div>
 				<TopHeader />
 				<div className='panel'>
-					<ProductForm />
+					<ProductForm {...this.props}/>
 				</div>
 			</div>
 			)
 	}
 }
+
+function mapStateToProps(state){
+  return state.groupbuysProductsFormManage;
+}
+
+function mapDispatchToProps(dispatch){
+  return {
+    actions:bindActionCreators({
+      ...GroupbuysProductsFormActions,
+      ...FormActions,
+      ...AreaActions(),
+    },dispatch)};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProductFormDetail)

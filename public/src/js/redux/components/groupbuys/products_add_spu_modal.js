@@ -44,12 +44,14 @@ export default class ProductsModal extends Component{
 				<div ref="tableWrapper" className="table-responsive table-modal modal-list">
 				  <table className="table table-hover table-bordered table-click text-center">
 				  	<thead>
+				  		<tr>
 				  		<th></th>
 				  		<th>商品编号(SPU)</th>
 				  		<th>产品名称</th>
 				  		<th>官网上线</th>
 				  		<th>商品类型</th>
 				  		<th>管理操作</th>
+				  		</tr>
 				  	</thead>
 				  </table>
 				</div>

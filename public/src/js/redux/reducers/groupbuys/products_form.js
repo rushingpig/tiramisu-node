@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import * as Actions from 'actions/groupbuys/products_form';
 import { getGlobalStore, getGlobalState } from 'stores/getter';
 import { map, getDate } from 'utils/index';
+import { area } from '../area_select';
 
 var main_state = {
 	list: [],
@@ -18,4 +19,7 @@ function main(state = main_state, action){
 	}
 }
 
-export default main;
+export default combineReducers({
+	area: area(),
+	main,
+})

@@ -196,8 +196,19 @@ InvoiceDao.prototype.findInvoiceList = function (query) {
         params.push(query.end_time + ' 24:00~24:00');
     }
     if (query.status !== undefined) {
-        sql += `AND  bi.status = ? `;
-        params.push(query.status);
+        if (query.status == 'WAITING') {
+            sql += `AND bi.status = ? AND bo.status <> ? `;
+            params.push('UNTREATED');
+            params.push('COMPLETED');
+        } else {
+            sql += `AND bi.status = ? AND bo.status = ? `;
+            params.push(query.status);
+            params.push('COMPLETED');
+        }
+    }
+    if (query.order_status !== undefined) {
+        sql += `AND  bo.status = ? `;
+        params.push(query.order_status);
     }
     if (query.province_id) {
         sql += `AND dr2.parent_id = ? `;

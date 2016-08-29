@@ -201,8 +201,9 @@ InvoiceDao.prototype.findInvoiceList = function (query) {
             params.push('UNTREATED');
             params.push('COMPLETED');
         } else {
-            sql += `AND bi.status = ? `;
+            sql += `AND bi.status = ? AND bo.status = ? `;
             params.push(query.status);
+            params.push('COMPLETED');
         }
     }
     if (query.order_status !== undefined) {

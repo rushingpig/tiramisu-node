@@ -150,7 +150,8 @@ InvoiceDao.prototype.findInvoiceList = function (query) {
         'bds.name AS delivery_name',
         'bos.merge_name AS src_name',
         'su.name AS created_by',
-        'su2.name AS updated_by'
+        'su2.name AS updated_by',
+        'dr3.merger_name'
     ];
     let sql_info = `SELECT ${columns.join()} FROM `;
     let sql = `?? bi `;
@@ -182,6 +183,8 @@ InvoiceDao.prototype.findInvoiceList = function (query) {
     params.push(tables.sys_user);
     sql += `LEFT JOIN ?? su2 ON su2.id = bi.updated_by `;
     params.push(tables.sys_user);
+    sql += `INNER JOIN ?? dr3 on dr3.id = bi.regionalism_id `;
+    params.push(tables.dict_regionalism);
     sql += `WHERE bi.del_flag = ? `;
     params.push(del_flag.SHOW);
     if (query.begin_time) {
@@ -230,6 +233,12 @@ InvoiceDao.prototype.findInvoiceList = function (query) {
         _res.page_size = page_size;
         return _res;
     });
+};
+
+InvoiceDao.prototype.findInvoiceByOrderId = function (order_id) {
+    let sql = `SELECT * FROM ?? WHERE del_flag = 1 AND order_id = ? AND status <> 'CANCEL' `;
+    let params = [tables.buss_invoice, order_id];
+    return baseDao.select(sql, params);
 };
 
 InvoiceDao.prototype.insertInvoice = function (invoice_obj) {

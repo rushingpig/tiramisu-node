@@ -114,6 +114,15 @@ module.exports.editCompany = function (req, res, next) {
         let company_info = yield invoiceDao.findCompanyById(company_id);
         if (!company_info || company_info.length == 0) return Promise.reject(new TiramisuError(res_obj.INVALID_PARAMS, '公司信息不存在...'));
         company_info = company_info[0];
+        let invoice = yield invoiceDao.findInvoiceList({company_id: company_id});
+        let tmp_flag = false;
+        invoice.list.forEach(curr=> {
+            if (['UNTREATED'].indexOf(curr.status) != -1) {
+                tmp_flag = true;
+            }
+            if (tmp_flag) return false;
+        });
+        if (tmp_flag) return Promise.reject(new TiramisuError(res_obj.FAIL, '正在开具该公司发票中...'));
         let info = _.pick(req.body, [
             'name',
             'code',
@@ -131,6 +140,16 @@ module.exports.editCompany = function (req, res, next) {
         let history = {option: ''};
         history.bind_id = company_id;
         history.option += `编辑公司信息\n`;
+        if (info.name !== undefined && info.name != company_info.name) history.option += `修改名称为{${info.name}}\n`;
+        if (info.code !== undefined && info.code != company_info.code) history.option += `修改纳税人识别号为{${info.code}}\n`;
+        if (info.add !== undefined && info.add != company_info.add) history.option += `修改地址为{${info.add}}\n`;
+        if (info.tel !== undefined && info.tel != company_info.tel) history.option += `修改电话为{${info.tel}}\n`;
+        if (info.bank_name !== undefined && info.bank_name != company_info.bank_name) history.option += `修改账户名为{${info.bank_name}}\n`;
+        if (info.bank_account !== undefined && info.bank_account != company_info.bank_account) history.option += `修改账户为{${info.bank_account}}\n`;
+        if (info.img_1 !== undefined && info.img_1 != company_info.img_1) history.option += `修改营业执照\n`;
+        if (info.img_2 !== undefined && info.img_2 != company_info.img_2) history.option += `修改税务登记证\n`;
+        if (info.img_3 !== undefined && info.img_3 != company_info.img_3) history.option += `修改纳税人资格证\n`;
+        if (info.img_4 !== undefined && info.img_4 != company_info.img_4) history.option += `修改银行开户许可证\n`;
         yield invoiceDao.insertCompanyHistory(systemUtils.assembleInsertObj(req, history, true));
     }).then(()=> {
         res.api();
@@ -250,6 +269,10 @@ module.exports.getInvoiceList = function (req, res, next) {
             if (curr.order_status != 'COMPLETED') {
                 curr.status = IS.WAITING;
             }
+            let add = curr.merger_name.split(',');
+            add.push(curr.address);
+            add.shift();
+            curr.address = add.join();
             curr.order_id = systemUtils.getShowOrderId(curr.order_id, curr.order_created_time);
         });
         return _res;
@@ -265,6 +288,9 @@ module.exports.addInvoice = function (req, res, next) {
         let order_info = yield orderDao.findOrderById(order_id);
         if (!order_info || order_info.length == 0) return Promise.reject(new TiramisuError(res_obj.FAIL, '订单号不存在...'));
         order_info = order_info[0];
+        if (['CANCEL', 'EXCEPTION'].indexOf(order_info.status) != -1) return Promise.reject(new TiramisuError(res_obj.FAIL, '订单已取消或异常...'));
+        let tmp_list = yield invoiceDao.findInvoiceByOrderId(order_id);
+        if (tmp_list && tmp_list.length != 0) return Promise.reject(new TiramisuError(res_obj.FAIL, '该订单已开发票或正在开发票...'));
         let info = _.pick(req.body, [
             'type',
             'company_id',
@@ -334,6 +360,10 @@ module.exports.editInvoice = function (req, res, next) {
         history.bind_id = invoice_id;
         if (info.status == IS.UNTREATED) {
             history.option += `修改发票信息\n`;
+            if (info.type !== undefined && info.type != invoice_info.type) history.option += `修改为{${(info.type) ? '专用' : '普通'}}发票\n`;
+            if (info.title !== undefined && info.title != invoice_info.title) history.option += `修改title为{${info.title}}\n`;
+            if (info.amount !== undefined && info.amount != invoice_info.amount) history.option += `修改金额为{${info.amount}}\n`;
+            if (info.address !== undefined && info.address != invoice_info.address) history.option += `修改地址为{${info.address}}\n`;
         } else if (info.status == IS.COMPLETED) {
             history.option += `开具发票\n`;
         }

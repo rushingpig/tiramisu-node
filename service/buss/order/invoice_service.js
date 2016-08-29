@@ -360,7 +360,7 @@ module.exports.editInvoice = function (req, res, next) {
         history.bind_id = invoice_id;
         if (info.status == IS.UNTREATED) {
             history.option += `修改发票信息\n`;
-            if (info.type !== undefined && info.type != invoice_info.type) history.option += `修改为{${(info.type) ? '专用' : '普通'}}发票\n`;
+            if (info.type !== undefined && info.type != invoice_info.type) history.option += `修改为{${(info.type == '1') ? '专用' : '普通'}}发票\n`;
             if (info.title !== undefined && info.title != invoice_info.title) history.option += `修改title为{${info.title}}\n`;
             if (info.amount !== undefined && info.amount != invoice_info.amount) history.option += `修改金额为{${info.amount}}\n`;
             if (info.address !== undefined && info.address != invoice_info.address) history.option += `修改地址为{${info.address}}\n`;

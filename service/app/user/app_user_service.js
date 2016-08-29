@@ -24,6 +24,7 @@ var res_obj = require('../../../util/res_obj'),
     config = require('../../../config'),
     s = systemUtils.sanitizeAddress,
     toolUtils = require('../../../common/ToolUtils');
+var request = require('request');
 
 function AppUserService() {}
 /**
@@ -178,6 +179,37 @@ AppUserService.prototype.getUserLoginLogs = (req,res,next) => {
         res.api(data);
     });
     systemUtils.wrapService(res,next,promise);
+};
+/**
+ * 导出app用户excel列表
+ * @param req
+ * @param res
+ * @param next
+ */
+AppUserService.prototype.exportExcel = (req,res,next) => {
+    let q = req.query;
+    let query_data = {
+        keywords : q.keywords,
+        province_id : q.province_id,
+        city_id : q.city_id
+    };
+
+    let promise = appUserDao.findAppUsers(query_data,true).then((resObj) => {
+        if (!resObj) {
+            return res.api(res_obj.FAIL);
+        }
+        let uri = config.base_excel_host + '/users';
+        // 请求导出excel服务
+        request({
+            uri : uri,
+            method : 'post',
+            timeout : 120000, // 30s超时
+            json : true,
+            body : resObj
+        }).on('error', (err) => {
+            return res.api(res_obj.FAIL, err);
+        }).pipe(res || null);
+    });
 };
 
 module.exports = new AppUserService();

@@ -15,6 +15,7 @@ module.exports = function (router) {
     router.get('/app/users',appUserService.listAppUsers);   // 获取app用户列表
     router.get('/app/user/:uuid',appUserService.getAppUserInfo);    //  获取app用户详情
     router.get('/app/user/:uuid/loginLogs',appUserService.getUserLoginLogs);    // 获取app用户登录日志
+    router.get('/app/users/export',appUserService.exportExcel);
 
 //**********************
 //******** POST ********

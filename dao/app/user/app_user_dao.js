@@ -28,7 +28,7 @@ function AppUserDao() {
  * 根据条件查询app用户
  * @param query_data
  */
-AppUserDao.prototype.findAppUsers = function (query_data) {
+AppUserDao.prototype.findAppUsers = function (query_data,isExportExcel) {
     let columns = [
         'aup.*',
         'aua.auth_token',
@@ -67,6 +67,9 @@ AppUserDao.prototype.findAppUsers = function (query_data) {
         params.push(query_data.uuid);
     }
     sql += " order by aup.created_time desc";
+    if (isExportExcel){
+        return Promise.resolve({sql,params});
+    }
     return baseDao.select(dbHelper.replaceCountSql(sql),params).then(result => {
         return baseDao.select(dbHelper.paginate(sql, query_data.page_no, query_data.page_size), params).then((_result)=>{
             return {result,_result};

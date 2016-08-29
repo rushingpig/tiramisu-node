@@ -72,6 +72,28 @@ class FilterHeader extends Component{
 		''
 	]
 })*/
+
+class EditModal extends Component{
+	render(){
+		return (
+			<StdModal ref='modal' title = '编辑价格'>
+				<div className='form-group form-inline'>
+					<label>团购城市：</label>
+					<Select />
+					<Select />
+				</div>
+				<div className='form-group form-inline'>
+					<label>团购网站：</label>
+					<Select />
+				</div>
+				<div className='form-group form-inline'>
+					<label>所属项目：</label>
+					<Select />
+				</div>
+			</StdModal>
+			)
+	}
+}
 export default class ManagePannel extends Component{
 	constructor(props){
 		super(props);

@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import Select from 'common/select';
-import NumberPicker from 'common/number_picker';
 import Pagination from 'common/pagination';
 import SelectGroup from 'common/select_group';
 import { get_table_empty } from 'common/loading';

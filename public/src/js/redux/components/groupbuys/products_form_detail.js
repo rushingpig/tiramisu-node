@@ -30,9 +30,8 @@ export default class ProductFormDetail extends Component{
 			<div>
 				<TopHeader />
 				<div className='panel'>
-					
+					<ProductForm />
 				</div>
-				<ProductForm />
 			</div>
 			)
 	}

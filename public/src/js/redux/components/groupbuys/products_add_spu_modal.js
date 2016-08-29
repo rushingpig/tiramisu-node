@@ -30,15 +30,52 @@ class ProductSet extends Component{
 	}
 }
 
-export default class ProductsModal extends Component{
+class ProductRow extends Component{
 	render(){
+		return(
+				<tr>
+					<td>
+						
+					</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>
+						<a href='javascript:;' >[删除]</a>
+					</td>
+				</tr>
+			)
+	}	
+}
+
+export default class ProductsModal extends Component{
+	constructor(props){
+		super(props);
+		this.state = {
+			page_size: 10
+		}
+	}
+	render(){
+		var {list, page_no, total, pri_pd_cates, sec_pd_cates } = this.props;
+		var product_list = list.map( (n, i) => {
+			return (<ProductSet key = {n + ' ' + i} {...{n, ...this.props}} />)
+			}
+		)
+		var product_selected = list.map( (n, i) => {
+			return (<ProductRow key = {n + ' ' + i} {...{n, ...this.props}} />)
+		})
 		return (
 			<StdModal ref='modal' title = '选择商品' size='lg'>
 				<div className ='form-group form-inline'>
 					<input type = 'text' placeholder='商品名称' className='form-control input-xs space-right'/>
-					<Select default-text ='一级分类' className='space-right'/>
-					<Select default-text = '二级分类' className='space-right' />
-					<Select default-text = '官网上线' className = 'space-right'/>
+					<Select onChange = {this.onPriCateChange.bind(this)} options = {pri_pd_cates} default-text ='一级分类' className='space-right'/>
+					<Select options = {sec_pd_cates} default-text = '二级分类' className='space-right' />
+					<Select default-text = '官网上线'
+						options = {
+							[ {id: 1, text: '是'},
+							  {id: 0, text: '否'}
+							]
+						} className = 'space-right'/>
         			<button className="btn btn-xs btn-theme"><i className="fa fa-search"></i>{' 查询'}</button>
 				</div>
 				<div ref="tableWrapper" className="table-responsive table-modal modal-list">
@@ -53,9 +90,15 @@ export default class ProductsModal extends Component{
 				  		<th>管理操作</th>
 				  		</tr>
 				  	</thead>
+				  	{
+				    	product_list.length ? <tbody>{product_list}</tbody>: <tbody>{get_table_empty()}</tbody>
+				    }
 				  </table>
 				</div>
 				<Pagination 
+					total_count = {total}
+					page_no = {page_no}
+					page_size = {this.state.page_size}
 				/>
 
 				<hr className="dotted" />
@@ -72,8 +115,9 @@ export default class ProductsModal extends Component{
 				      <th>管理操作</th>
 				    </tr>
 				    </thead>
-				    <tbody>
-				    </tbody>
+				    {
+				    	product_selected.length ? <tbody>{product_selected}</tbody>: <tbody>{get_table_empty()}</tbody>
+				    }
 				  </table>
 				</div>
 			</StdModal>
@@ -82,8 +126,13 @@ export default class ProductsModal extends Component{
 
 	show(){
 		this.refs.modal.show();
+		this.props.searchProducts();
+		this.props.getCategories();
 	}
 	hide(){
 		this.refs.modal.show();
+	}
+	onPriCateChange(e){
+		this.props.getSecCategories(e.target.value);
 	}
 }

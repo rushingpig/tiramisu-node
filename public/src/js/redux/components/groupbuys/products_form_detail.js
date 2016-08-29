@@ -10,6 +10,7 @@ import ProductForm from './products_form';
 import * as FormActions from 'actions/form';
 import AreaActions from 'actions/area';
 import * as GroupbuysProductsFormActions from 'actions/groupbuys/products_form';
+import { getOrderSrcs } from 'actions/order_support';
 
 class TopHeader extends Component{
 	render() {
@@ -37,7 +38,12 @@ class ProductFormDetail extends Component{
 			</div>
 			)
 	}
+	componentDidMount(){
+		this.props.actions.getOrderSrcs();
+	}
 }
+
+
 
 function mapStateToProps(state){
   return state.groupbuysProductsFormManage;

@@ -16,7 +16,10 @@ import AddSpuModal from './products_add_spu_modal';
 
 export default class ManageForm extends Component{
 	render(){
-		var { area: { provinces, cities }} = this.props;
+		var { area: { provinces, cities }, main: { order_srcs, list, page_no, total, pri_pd_cates, sec_pd_cates, selected_list }} = this.props;
+		var {actions : {
+			searchProducts, getSecCategories, getCategories, selectProduct,
+		}} = this.props;
 		return(
 				<div>
 					<header className='panel-heading'>团购商品详情</header>
@@ -29,7 +32,7 @@ export default class ManageForm extends Component{
 						</div>
 						<div className='form-group form-inline'>
 							<label>团购网站：</label>
-							<Select />
+							<Select options={ order_srcs } default-text='团购网站'/>
 						</div>
 						<div className='form-group form-inline'>
 							<label>选择商品：</label>
@@ -45,7 +48,9 @@ export default class ManageForm extends Component{
 							  >提交</button>
 						</div>
 					</div>
-					<AddSpuModal ref='AddSpuModal' />
+					<AddSpuModal ref='AddSpuModal' 
+						{...{searchProducts, list, page_no, total, pri_pd_cates, sec_pd_cates, getCategories, 
+							getSecCategories, selected_list}}/>
 				</div>
 			)
 	}

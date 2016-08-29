@@ -160,6 +160,7 @@ const URL = (function() {
     customer: '/app/user/:uuid', //用户详情
     customer_logs: '/app/user/:uuid/loginLogs', //登录日志
     customer_black: '/app/user/:uuid', //加入黑名单
+    customer_export: '/app/users/export',
 
     //城市管理
     open_city_add : '/city',  //添加开通城市

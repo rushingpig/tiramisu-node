@@ -1,5 +1,6 @@
 import R from 'utils/request'; //Promise
 import Url from 'config/url';
+import Utils from 'utils/index';
 
 export const GET_CUSTOMER_LIST = 'GET_CUSTOMER_LIST';
 export function getCustomerList(data){
@@ -80,5 +81,12 @@ export const HIDE_DETAIL_MODAL = 'HIDE_DETAIL_MODAL';
 export function hideDetailModal(){
   return {
     type: HIDE_DETAIL_MODAL
+  }
+}
+
+export function exportCustomers(data){
+  return (dispatch, getState) => {
+    var export_url = Url.customer_export + '?' + Utils.url.toParams(data);
+    window.open(export_url);
   }
 }

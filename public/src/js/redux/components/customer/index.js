@@ -180,7 +180,7 @@ var Main = React.createClass({
           />
           <input valueLink={this.linkState('keywords')} type="text" className="form-control input-xs space-right" placeholder="用户名" />
           <button onClick={this.search.bind(this, 0)} className="btn btn-theme btn-xs space-right">搜索</button>
-          <button className="btn btn-theme btn-xs" disabled>导出</button>
+          <button onClick={this.exportExcel} className="btn btn-theme btn-xs">导出</button>
         </div>
         <p />
         <div className="panel">
@@ -254,6 +254,14 @@ var Main = React.createClass({
       keywords: state.keywords || undefined,
       page_size: state.page_size,
       page_no: page === undefined ? 0 : page
+    });
+  },
+  exportExcel(){
+    var { state } = this;
+    this.props.actions.exportCustomers({
+      province_id: state.province_id != SELECT_DEFAULT_VALUE ? state.province_id : undefined,
+      city_id: state.city_id !=SELECT_DEFAULT_VALUE ? state.city_id : undefined,
+      keywords: state.keywords || undefined,
     });
   },
   refresh(){

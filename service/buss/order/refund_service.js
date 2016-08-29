@@ -167,6 +167,9 @@ module.exports.getRefundInfo = function (req, res, next) {
         }
         delete option.order_created_time;
         delete option.refund_status;
+        if (info.reason_type != 0) {
+            delete info.reason;
+        }
         info.option = option;
         info.order_id = systemUtils.getShowOrderId(info.order_id, info.order_created_time);
         return info;

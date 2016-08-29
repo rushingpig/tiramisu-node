@@ -575,6 +575,7 @@ class InvoiceApplyPannel extends Component{
 			form_districts,
 			editable,
 			handleSubmit,
+			data,
 		} = this.props;
 		return(
 				<div>
@@ -587,14 +588,16 @@ class InvoiceApplyPannel extends Component{
 							<SearchInput {...order_id} searchHandler = {this.search.bind(this, 'search_by_keywords_ing')} className='form-inline v-img space-right' placeholder='搜索要开具发票的订单号' />				
 						}
 					</div>
-					<div className='form-group form-inline'>
+					{
+						!(!editable && !data) ?
+					[<div className='form-group form-inline' >
 						<label>{'发票类型：'}</label>
 						<label>
 						  <input {...type} value = {0} checked = {type.value == 0} type="radio"  /> 增值税普通发票</label>
 						{'　'}
 						<label>
 						  <input {...type} value = {1} checked = {type.value == 1} type="radio"   /> 增值税专用发票</label>
-					</div>
+					</div>,
 					
 					
 					<div className='form-group form-inline'>
@@ -605,7 +608,7 @@ class InvoiceApplyPannel extends Component{
 							:
 							<input {...title} className={`form-control input-xs ${title.error}`} type='text' placeholder='个人/公司全称' />
 						}
-					</div>
+					</div>,
 					<div className='form-group form-inline'>
 						<fieldset className='box-wrapper' style={{'border':'1px solid #ddd'}}>
           					<legend style={{'padding':'5px 10px','fontSize':'13','width':'auto','border':'0', marginBottom: 5}}>收票人信息</legend>
@@ -679,7 +682,7 @@ class InvoiceApplyPannel extends Component{
           					</div>
 
 						</fieldset>
-					</div>
+					</div>,
 					<div className='pull-right'>
 					<button
 						onClick = {this.onCancel.bind(this)}
@@ -697,7 +700,10 @@ class InvoiceApplyPannel extends Component{
 				    	onClick = {handleSubmit(this._check.bind(this, this.handleCreateInvoice))}
 					  >提交</button>
 					}
-					</div>
+					</div>]
+					:null
+
+				}
 				</div>
 			)
 	}

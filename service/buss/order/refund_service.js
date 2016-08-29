@@ -77,7 +77,7 @@ function joinHistory(curr_obj, new_obj, history) {
     if (new_obj.amount !== undefined && curr_obj.amount != new_obj.amount) {
         history.option += `修改退款金额为{${new_obj.amount / 100}}\n`;
     }
-    if (new_obj.reason_type !== undefined && curr_obj.reason_type != new_obj.reason_type) {
+    if (new_obj.reason !== undefined && curr_obj.reason != new_obj.reason) {
         history.option += `修改退款原因为{${new_obj.reason || ''}}\n`;
     }
     if (new_obj.linkman_name !== undefined && curr_obj.linkman_name != new_obj.linkman_name) {

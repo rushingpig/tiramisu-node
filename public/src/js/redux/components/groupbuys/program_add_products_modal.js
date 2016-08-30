@@ -35,7 +35,7 @@ class ProductSet extends Component{
 export default class ProductsModal extends Component{
 	render(){
 		var {list, total, page_no, page_size} = this.props;
-		var product_list = list.map( (m, i) => {
+		var product_list = (list || []).map( (m, i) => {
 			return(<ProductSet key = {m.product_id + ' ' + i} {...{...this.props, m}} />)
 		})
 		return(

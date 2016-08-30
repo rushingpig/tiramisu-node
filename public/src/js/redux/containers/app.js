@@ -191,6 +191,7 @@ const App = () => (
         <Route path='pg'>
           <IndexRoute getComponent={get('GroupbuyManagePannel')} onEnter={onEnter('GroupbuyProgramManageAccess')} />
           <Route path='add' onEnter={onEnter('GroupbuyManageAdd')} getComponent={get('ProgramFormManage')} />
+          <Route path='edit/:id' onEnter={onEnter('GroupbuyManageAdd')} getComponent={get('ProgramFormManage')} />
         </Route>
         <Route path='pd'>
           <IndexRoute getComponent={get('GroupbuyProductManagePannel')} onEnter={onEnter('GroupbuyProductManageAccess')} />

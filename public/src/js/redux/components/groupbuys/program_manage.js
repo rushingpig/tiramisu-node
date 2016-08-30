@@ -8,7 +8,6 @@ import SearchInput from 'common/search_input';
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import Pagination from 'common/pagination';
-import AddressSelector from 'common/address_selector';
 import { tableLoader, get_table_empty } from 'common/loading';
 import Linkers from 'common/linkers';
 import history from 'history_instance';
@@ -40,33 +39,51 @@ class TopHeader extends Component{
 }
 
 class FilterHeader extends Component{
-
+	constructor(props){
+		super(props);
+		this.state = {
+			search_ing: false,
+			search_by_keywords_ing: false,
+		}
+	}
 	render(){
 		var {
 			fields: {
 				keywords,
 				province_id,
 				city_id,
-				district_id,
 				is_online,
 				src_id,
 			},
-			area: {provinces, cities, districts,} ,
-			actions } = this.props;
+			area: {provinces, cities,} ,
+			actions, order_srcs } = this.props;
+		var {search_ing, search_by_keywords_ing} = this.props;
 		return(
 			<div className = 'panel search'>
 				<div className = 'panel-body form-inline'>
-					<SearchInput className = 'form-inline v-img space-right' placeholder = '项目名称' />
-					<Select default-text='所属渠道' className='space-right'/>
-					<AddressSelector {...{ province_id, city_id, district_id, provinces, cities, districts, actions,
-						form: 'groupbuys_program_filter' }}/>
-					<Select default-text = '当前是否上线' className = 'space-right' />
-					<button className="btn btn-theme btn-xs">
+					<SearchInput {...keywords} className = 'form-inline v-img space-right' placeholder = '项目名称'
+						searchHandler = {this.search.bind(this, 'search_by_keywords_ing')} />
+					<Select {...src_id} options = {order_srcs} default-text='所属渠道' className='space-right'/>
+					<Select options = {provinces} {...province_id} default-text = '选择省份' className='space-right' onChange = {this.onProvinceChange.bind(this)} />
+					<Select options = { cities } {...city_id} default-text = '选择城市' className='space-right' />
+					<Select options = {
+						[{id: 1, text: '是'}, {id: 0, text: '否'}]
+					} {...is_online} default-text = '当前是否上线' className = 'space-right' />
+					<button disabled = {search_ing} data-submitting = {search_ing} className="btn btn-theme btn-xs"
+						onClick = {this.search.bind(this, 'search_ing')}>
 					  <i className="fa fa-search"></i>{' 搜索'}
 					</button>
 				</div>
 			</div>
 			)
+	}
+	onProvinceChange(callback, e){
+		this.props.actions.getCityAndDistricts(e.target.value);
+		callback(e);
+	}
+	search(search_in_state){
+		this.setState({[search_in_state]: true});
+		this.props.actions.getGroupbuyProgramList({page_no: 0, page_size: this.props.page_size});
 	}
 }
 
@@ -76,7 +93,6 @@ FilterHeader = reduxForm({
 		'keywords',
 		'province_id',
 		'city_id',
-		'district_id',
 		'src_id',
 		'is_online',
 	]
@@ -91,7 +107,7 @@ var GroupbuyRow = React.createClass({
 					<a href={props.url} target='_blank' style={{textDecoration: 'underline'}}>{props.name}</a>
 				</td>
 				<td>{props.src_name}</td>
-				<td>{props.online_time}</td>
+				<td>{props.start_time + '~' + props.end_time}</td>
 				<td><span className = 'bg-warning bordered'>{props.city}</span>{ ' ' + props.province}</td>
 				<td className='copy-col'>
 					<span ref='url'>{props.url}</span>
@@ -102,7 +118,7 @@ var GroupbuyRow = React.createClass({
 				</td>
 				<td>
 					<a href='javascript:;' onClick = {this.viewGroupbuyInfoModal}>{'[查看]　'}</a>
-					<a href='javascript:;'>{'[编辑]　'}</a>
+					<a href='javascript:;' onClick = {this.editHandler}>{'[编辑]　'}</a>
 					<a href='javascript:;'>{'[下架]'}</a>
 				</td>
 			</tr>
@@ -121,7 +137,11 @@ var GroupbuyRow = React.createClass({
 		document.execCommand('copy');
 	},
 	viewGroupbuyInfoModal(){
+		this.props.actions.getGroupbuyProgramDetail(this.props.id);
 		this.props.viewGroupbuyInfoModal();
+	},
+	editHandler(){
+		history.push('/gm/pg/edit/' + this.props.id);
 	},
 })
 
@@ -136,7 +156,7 @@ class ManagePannel extends Component{
 	}
 	render(){
 		var { main, area, actions } = this.props;
-		var {list, page_no, refresh, total, loading } = main;
+		var {list, page_no, refresh, total, loading, order_srcs, program_info } = main;
 
 		var content = list.map( (m, i) => {
 			return (
@@ -146,7 +166,7 @@ class ManagePannel extends Component{
 		return(
 			<div className='order-manage'>
 				<TopHeader />
-				<FilterHeader {...{area, actions}}/>	
+				<FilterHeader {...{area, actions, order_srcs, page_size: this.state.page_size}}/>	
 				<div className = 'panel' >
           			<header className="panel-heading">团购项目列表</header>
           			<div className = 'panel-body'>
@@ -172,13 +192,15 @@ class ManagePannel extends Component{
 				  total_count={total} 
 				  page_size={this.state.page_size} 
 				/>
-				<GroupbuyInfoModal ref='GroupbuyInfoModal' />
+				<GroupbuyInfoModal ref='GroupbuyInfoModal' {...{program_info}}/>
 			</div>
 			)
 	}
 
 	componentDidMount(){
 		this.props.actions.getGroupbuyProgramList({page_no: 0, page_size: this.state.page_size});
+		this.props.actions.getOrderSrcs();
+		this.props.actions.getProvincesSignal();
 	}
 
 	viewGroupbuyInfoModal(){
@@ -188,25 +210,59 @@ class ManagePannel extends Component{
 
 class GroupbuyInfoModal extends Component{
 	render(){
+		var { program_info } = this.props;
+		var {products } = program_info;
+		var product_list = [];
+		if(products){
+			  product_list = products.map( (m, i) => {
+				return (<tr key={ m.id + ' ' + i}>
+							<td>{m.name}</td>
+							<td>{m.size}</td>
+							<td>{m.product_name}</td>
+							<td>{m.is_online == 1 ? '是':'否'}</td>
+							<td>￥{m.price / 100}</td>
+						</tr>)
+			})	
+		}
+		
 		return(
-			<StdModal ref='modal' title = '查看团购项目信息' >
+			<StdModal ref='modal' title = '查看团购项目信息' footer = {false}>
 				<div className = 'form-group form-inline'>
 					<label>项目名称：</label>
+					<span className='gray'>{program_info.name}</span>
 				</div>
 				<div className = 'form-group form-inline'>
 					<label>上线渠道：</label>
+					<span className = 'gray'>{program_info.src_name}</span>
 				</div>
 				<div className = 'form-group form-inline'>
 					<label>所属城市：</label>
+					<span className = 'gray'>{program_info.city_name + ' ' + program_info.province_name}</span>
 				</div>
 				<div className = 'form-group form-inline'>
 					<label>上线时间：</label>
+					<span className = 'gray'>{program_info.start_time + '~' + program_info.end_time}</span>
 				</div>
 				<div className = 'form-group form-inline'>
 					<label>团购商品列表：</label>
+					<table className = 'table table-responsive'>
+						<thead>
+							<tr>
+							<th>团购商品</th>
+							<th>规格</th>
+							<th>产品类型名称</th>
+							<th>商城上线</th>
+							<th>价格</th>
+							</tr>
+						</thead>
+						{
+						  	product_list.length ? <tbody>{product_list}</tbody>: <tbody>{get_table_empty()}</tbody>
+						}
+					</table>
 				</div>
 				<div className = 'form-group form-inline'>
 					<label>预约网址：</label>
+					<span className = 'gray'>{program_info.url}</span>
 				</div>
 			</StdModal>
 			)

@@ -139,7 +139,7 @@ var log4js_options = {
   cwd: './log/'
 };
 
-var sms_host = "http://xfxb-production:3000/sms/internal";
+var sms_host = "http://localhost:3000/sms/internal";
 
 var login_required = true;
 

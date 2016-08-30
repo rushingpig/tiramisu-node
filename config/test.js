@@ -141,7 +141,7 @@ var ping_xx = {
     apiKey: 'sk_test_ibbTe5jLGCi5rzfH4OqPW9KC'
 };
 
-var sms_host = "http://xfxb-production:3000/sms/internal";
+var sms_host = "http://localhost:3000/sms/internal";
 
 var login_required = true;
 

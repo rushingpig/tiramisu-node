@@ -20,6 +20,7 @@ const SMS_HOST = config.use_sms ? config.sms_host: null;
 var async = require('async');
 var request = require('request');
 var moment = require('moment');
+var backup = require('../../../api/backup');
 
 // TODO: 后面要考虑移动到其它地方   在跑多例的情况下，需要将根据name存到数据库中。
 // 锁构造方法
@@ -355,7 +356,11 @@ OrderDao.prototype.findShopByRegionId = function(districtId) {
  */
 OrderDao.prototype.updateOrder = function(orderObj, order_id) {
   let sql = this.base_update_sql + " where id = ?";
-  return baseDao.update(sql, [tables.buss_order, orderObj, order_id]);
+  return co(function*() {
+    let _res = yield baseDao.update(sql, [tables.buss_order, orderObj, order_id]);
+    backup.url_post(order_id, true);
+    return _res;
+  });
 };
 OrderDao.prototype.findProductById = function (tran, sku_id, cb) {
   let promise = co(function*() {
@@ -1026,6 +1031,7 @@ OrderDao.prototype.editOrder = function(order_obj, order_id, recipient_obj, reci
     }).then(ignore => {
       return new Promise((resolve, reject) => {
         transaction.commit(err => {
+          backup.url_post(order_id, true);
           transaction.release();
           if (err) return reject(err);
           resolve();
@@ -1167,6 +1173,7 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
     prefix_address = req.body.prefix_address,
     greeting_card = req.body.greeting_card,
     coupon = req.body.coupon;
+  let orderId;
   let recipientObj = {
     regionalism_id: regionalism_id,
     name: recipient_name,
@@ -1215,8 +1222,8 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
           if (order_err || !result.insertId) {
             return reject(order_err || new TiramisuError(errorMessage.FAIL));
           }
-          let orderId = result.insertId,
-            params = [];
+          orderId = result.insertId;
+          let params = [];
           products.forEach((curr) => {
             let arr = [];
             arr.push(orderId);
@@ -1269,6 +1276,7 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
     }).then(ignore => {
       return new Promise((resolve, reject) => {
         transaction.commit(err => {
+          backup.url_post(orderId, true);
           transaction.release();
           if (err) return reject(err);
           resolve();
@@ -1377,6 +1385,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
     coupon = req.body.coupon ? toolUtils.extractNumbers(req.body.coupon) : null,
     merchant_id = req.body.merchant_id,
     shop_id = req.body.shop_id;
+  let orderId;
   let recipientObj = {
     regionalism_id: regionalism_id,
     name: recipient_name,
@@ -1439,8 +1448,8 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
           if (!result.insertId) {
             return reject(new TiramisuError(errorMessage.FAIL));
           }
-          let orderId = result.insertId,
-            params = [];
+          orderId = result.insertId;
+          let params = [];
           products.forEach((curr) => {
             let arr = [];
             arr.push(orderId);
@@ -1491,6 +1500,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
     }).then(ignore => {
       return new Promise((resolve, reject) => {
         transaction.commit(err => {
+          backup.url_post(orderId, true);
           transaction.release();
           if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
           // TODO: move to submit when tiramisu is online

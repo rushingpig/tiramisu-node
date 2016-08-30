@@ -36,6 +36,7 @@ router.use('/i', routerI);
 routerI.post('/order', orderService.addExternalOrder);
 routerI.post('/order/error', orderService.addOrderError);
 routerI.put('/order/error', orderService.editOrderError);
+routerI.post('/order/:orderId/backup', orderService.orderBackup);
 //=====================router for business begin====================
 
 //*********************

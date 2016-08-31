@@ -173,7 +173,7 @@ module .exports = {
     img_host: img_host,
     excel_export_host : excel_export_host,
     backup_host: backup_host,
-    mongodb_uri: mongodb_uri
+    mongodb_uri: mongodb_uri,
     base_excel_host : base_excel_host
 };
 

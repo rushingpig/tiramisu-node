@@ -29,6 +29,7 @@ import productSKUSearch from './product_sku_search';
 import productViewInfo from './product_view_info';
 import productViewSpecifications from './product_view_specifications';
 import operationHomePageControl from './operation_home_page_control';
+import operationProductSizeManage from './operation_product_size_manage';
 
 const rootReducer = combineReducers({
   form,
@@ -61,6 +62,7 @@ const rootReducer = combineReducers({
   productViewInfo,
   productViewSpecifications,
   operationHomePageControl,
+  operationProductSizeManage
 });
 
 export default rootReducer

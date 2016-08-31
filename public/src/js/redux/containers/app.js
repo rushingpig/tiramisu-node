@@ -109,6 +109,15 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
         callback();
       })
       break;
+    case 'cosm':
+      require.ensure([], require => {
+        components = {
+          ...components,
+          CustomerManage: require('../components/customer')
+        }
+        callback();
+      });
+      break;
     default:
       break;
   }
@@ -201,6 +210,10 @@ const App = () => (
         <Route path="hpc" onEnter={onEnter('HomePageControlAccess')} getComponent={get('HomePageControl')} />
       </Route>
 
+      <Route path="cosm" onEnter={getComponents('cosm', onEnter('CustomerManageAccess'))}>
+        <IndexRoute getComponent={get('CustomerManage')} />
+        <Route path=":id" getComponent={get('CustomerManage')} />
+      </Route>
 
       <Redirect from="logout" to="/" />
       <Route path="403" component={NoPermission} />

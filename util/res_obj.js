@@ -143,6 +143,10 @@ module.exports = {
   REDUNDANCY_ERROR: {
     code: '2010',
     msg: 'Error order info redundancy'
+  },
+  ALREADY_IN_BLACKLIST: {
+    code: '2012',
+    msg: '该用户已经被加入到黑名单,请设置是否可用即可'
   }
 };
 

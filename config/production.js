@@ -68,7 +68,14 @@ var tables = {
     buss_invoice: 'buss_invoice',
 //=================Dict===================
     dict_regionalism : 'dict_regionalism',
-    delivery_pay_rule: 'delivery_pay_rule'
+    delivery_pay_rule: 'delivery_pay_rule',
+//=================APP===================
+    app_user_auths : 'app_user_auths',
+    app_user_blacklist : 'app_user_blacklist',
+    app_user_delivery_address : 'app_user_delivery_address',
+    app_user_favorites : 'app_user_favorites',
+    app_user_profiles : 'app_user_profiles',
+    logs_user_login : 'logs_user_login'
 };
 //  mysql config options
 var mysql_options = {
@@ -160,8 +167,10 @@ var tartetatin_host = 'http://127.0.0.1:3007';
 var img_host = 'http://qn.blissmall.net/';
 
 var login_required = true;
+
+var base_excel_host = 'http://localhost:8888/excel';
 // 导出excel的远程host
-var excel_export_host = 'http://localhost:8888/excel/order/';
+var excel_export_host = base_excel_host + '/order/';
 
 var backup_host = 'http://localhost:3001';
 var mongodb_uri = 'mongodb://cupcake:17F2wDwxI39w@localhost:27017/cupcake';
@@ -183,4 +192,5 @@ module .exports = {
     excel_export_host : excel_export_host,
     backup_host: backup_host,
     mongodb_uri: mongodb_uri
+    base_excel_host : base_excel_host
 };

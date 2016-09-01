@@ -522,6 +522,9 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                 option: '自动计算{配送工资}为{' + (delivery_pay_obj.delivery_pay / 100) + '}元\n'
             };
 
+            if (order_obj.total_amount > 0) {
+                order_obj.payment_amount = (order_obj.payment_amount || 0) + order_obj.total_amount;
+            }
             if (!is_change) {
                 add_skus = null;
                 delete_skuIds = null;

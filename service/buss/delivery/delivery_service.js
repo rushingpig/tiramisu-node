@@ -522,8 +522,13 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                 option: '自动计算{配送工资}为{' + (delivery_pay_obj.delivery_pay / 100) + '}元\n'
             };
 
+            if (order_obj.payment_amount !== 0 && !order_obj.payment_amount) {
+                let _p = _res[0].total_discount_price || 0;
+                let _a = _res[0].total_amount || 0;
+                order_obj.payment_amount = _p - _a;
+            }
             if (order_obj.total_amount > 0) {
-                order_obj.payment_amount = (order_obj.payment_amount || 0) + order_obj.total_amount;
+                order_obj.payment_amount += order_obj.total_amount;
             }
             if (!is_change) {
                 add_skus = null;

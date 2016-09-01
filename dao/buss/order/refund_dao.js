@@ -135,9 +135,6 @@ RefundDao.prototype.findOptionByOrderId = function (order_id) {
             let _a = result.total_amount || 0;
             _res.payment_amount = _p - _a;
         }
-        if (_res.order_status == 'COMPLETED') {
-            _res.payment_amount += result.total_amount;
-        }
         return _res;
     });
 };

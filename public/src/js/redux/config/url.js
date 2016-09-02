@@ -189,6 +189,7 @@ const URL = (function() {
     get_product_spu_list: '/group/buying/product/list', //获取团购可供选择商品列表，
     get_groupbuys_program_detail: '/group/buying/project/:projectId', //获取团购项目详情
     edit_groupbuy_pd: '/group/buying/sku/:skuId', //编辑团购商品
+    get_groupbuy_sku_list: '/group/buying/sku/list', //获取团购商品列表
   };
 
   for (var a in url) {

@@ -172,7 +172,7 @@ export default class ManageForm extends Component{
 	componentWillReceiveProps(nextProps){
 	  var { main } = nextProps;
 	  var {sku_size_list, sku_size_load_success} = main;
-	  if(sku_size_load_success && this.props.main.sku_size_list !== sku_size_list){
+	  if(sku_size_load_success && sku_size_list && this.props.main.sku_size_list !== sku_size_list){
 	    var list = sku_size_list;
 	    var build = function(){
 	      var new_data = list.map(function(n){

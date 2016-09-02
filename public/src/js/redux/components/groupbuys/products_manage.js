@@ -126,13 +126,13 @@ class ProductRow extends Component{
 		return (
 			<tr>
 				<td>{data.sku_id + '/' + data.spu_id}</td>
-				<td>{data.name}</td>
+				<td>{data.product_name}</td>
 				<td>{data.size}</td>
 				<td>￥{data.price / 100}</td>
 				<td>{data.src_name}</td>
 				<td>{data.project_name ? data.project_name : '/'}</td>
 				<td>{data.category_name}</td>
-				<td><span className = 'bg-warning bordered'>{data.city}</span>{ ' ' + data.province}</td>
+				<td><span className = 'bg-warning bordered'>{data.city_name}</span>{ ' ' + data.province_name}</td>
 				<td>{data.is_online == 1? '是': '否'}</td>
 				<td>
 					<a href='javascript:;' onClick = {this.viewEditModal.bind(this)}>[编辑价格]</a>{'　'}

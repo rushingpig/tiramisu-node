@@ -22,7 +22,7 @@ var main_state = {
 	sku_size_load_success: false,
 
 	save_ing: false,
-	save_success: true,
+	save_success: false,
 
 }
 
@@ -85,7 +85,7 @@ function main(state = main_state, action){
 		case Actions.CREATE_GROUPBUY_SKU_ING:
 			return {...state, save_ing: true, save_success: false}
 		case Actions.CREATE_GROUPBUY_SKU_SUCCESS:
-			var store = getGlobalStore;
+			var store = getGlobalStore();
 			store.dispatch(getProductList());
 			return {...state, save_ing: false, save_success: true}
 		case Actions.CREATE_GROUPBUY_SKU_FAIL:

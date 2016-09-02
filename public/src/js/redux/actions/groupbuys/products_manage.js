@@ -21,9 +21,15 @@ export function getProductList(query_data){
 	return (dispatch, getState) => {
 		var filter_data = getValues(getState().form.groupbuys_products_filter);
 		filter_data = formCompile(filter_data);
-
+		return get(Url.get_groupbuy_sku_list.toString(), {...query_data, filter_data })
+			.done( (data) => {
+				dispatch({
+					data: data,
+					type: GET_PRODUCT_LIST,
+				})
+			})
 		
-		return TEST({
+		/*return TEST({
 			list: [
 				{
 					sku_id: 234545,
@@ -53,7 +59,7 @@ export function getProductList(query_data){
 			],
 			total: 9,
 			page_no: 0,
-		}, GET_PRODUCT_LIST)(dispatch)
+		}, GET_PRODUCT_LIST)(dispatch)*/
 	}
 }
 

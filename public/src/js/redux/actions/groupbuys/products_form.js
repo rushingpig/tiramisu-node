@@ -77,7 +77,7 @@ export function addSize(size, price){
 	return {
 		type: ADD_SIZE,
 		size: size,
-		price: price,
+		price: price * 100,
 	}
 }
 
@@ -101,7 +101,7 @@ export function createGroupbuySKU(data){
 			type: CREATE_GROUPBUY_SKU_ING,
 		})
 		data.products = sku_list;
-		return post(Url.add_groupbuys_sku.toString, data)
+		return post(Url.add_groupbuys_sku.toString(), data)
 			.done(() => {
 				dispatch({
 					type: CREATE_GROUPBUY_SKU_SUCCESS,

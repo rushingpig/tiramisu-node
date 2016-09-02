@@ -79,7 +79,7 @@ app.use(/^((?!\/v1\/i\/).)*$/, session(config.exp_session_options(MySQLStore)));
 app.use('/v1/[a,i]/*',middleware.system.debugReqAndResParams);
 app.use(express.static(path.join(__dirname, 'public'),config.exp_static_options));
 if (config.login_required) {
-    // app.use(middleware.login.loginFilter);
+    app.use(middleware.login.loginFilter);
 }
 
 //  do authentication

@@ -367,7 +367,9 @@ GroupDao.prototype.findProjectById = function (project_id) {
         'dr.name AS city_name',
         'dr.level_type AS city_level_type',
         'dr.parent_id AS city_parent_id',
+        'dr2.name AS city_parent_name',
         'dr2.parent_id AS city_parent_parent_id',
+        'dr3.name AS city_parent_parent_name',
         'dr.id AS city_id',
         'dr.merger_name'
     ];
@@ -389,6 +391,8 @@ GroupDao.prototype.findProjectById = function (project_id) {
     sql += `INNER JOIN ?? dr on dr.id = bgp.regionalism_id `;
     params.push(tables.dict_regionalism);
     sql += `INNER JOIN ?? dr2 on dr2.id = dr.parent_id `;
+    params.push(tables.dict_regionalism);
+    sql += `INNER JOIN ?? dr3 on dr3.id = dr2.parent_id `;
     params.push(tables.dict_regionalism);
 
     sql += `WHERE bgp.del_flag = ${del_flag.SHOW} `;
@@ -414,8 +418,12 @@ GroupDao.prototype.findProjectById = function (project_id) {
             'regionalism_id',
             'regionalism_name'
         ]);
-        if (info[0].level_type == 3) {
-            _res.province_id = '';
+        if (info[0].city_level_type == 2) {
+            _res.province_id = info[0].city_parent_id;
+            _res.province_name = info[0].city_parent_name;
+        } else {
+            _res.province_id = info[0].city_parent_parent_id;
+            _res.province_name = info[0].city_parent_parent_name;
         }
         _res.products = [];
         info.forEach(curr=> {

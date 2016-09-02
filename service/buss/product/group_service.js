@@ -24,7 +24,8 @@ module.exports.getProductList = function (req, res, next) {
 
 module.exports.getSkuList = function (req, res, next) {
     let promise = co(function *() {
-        let query = req.query;
+        let query = Object.assign({}, req.query);
+        if (!query.city_id) query.city_id = query.regionalism_id;
         return yield groupDao.findSku(query);
     }).then(result=> {
         res.api(result);

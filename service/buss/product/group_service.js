@@ -29,9 +29,9 @@ module.exports.getSkuList = function (req, res, next) {
         let _res = yield groupDao.findSku(query);
         _res.list.forEach(curr=> {
             if (curr.group_project_id) {
-                curr.is_available = 1;
-            } else {
                 curr.is_available = 0;
+            } else {
+                curr.is_available = 1;
             }
         });
         return _res;

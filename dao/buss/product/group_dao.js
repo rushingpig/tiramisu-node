@@ -247,6 +247,7 @@ GroupDao.prototype.findSkuById = function (sku_id) {
         'bos.parent_id AS src_parent_id',
         'bos2.name AS src_parent_name',
         'bgp.id AS group_project_id',
+        'bgp.name AS group_project_name',
         'bp.id AS product_id',
         'bp.name AS product_name',
         'bp.category_id',

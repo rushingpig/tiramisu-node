@@ -271,14 +271,14 @@ GroupDao.prototype.findSkuById = function (sku_id) {
     params.push(tables.buss_order_src);
     sql += `LEFT JOIN ?? bos2 ON bos2.id = bos.parent_id `;
     params.push(tables.buss_order_src);
-    sql += `LEFT JOIN ?? bgp ON FIND_IN_SET(bps.id, bgp.skus) AND bps.del_flag = ${del_flag.SHOW} `;
+    sql += `LEFT JOIN ?? bgp ON FIND_IN_SET(bps.id, bgp.skus) AND bgp.del_flag = ${del_flag.SHOW} `;
     params.push(tables.buss_group_project);
 
-    sql += `INNER JOIN ?? dr on dr.id = bgp.regionalism_id `;
+    sql += `INNER JOIN ?? dr ON dr.id = bps.regionalism_id `;
     params.push(tables.dict_regionalism);
-    sql += `INNER JOIN ?? dr2 on dr2.id = dr.parent_id `;
+    sql += `INNER JOIN ?? dr2 ON dr2.id = dr.parent_id `;
     params.push(tables.dict_regionalism);
-    sql += `INNER JOIN ?? dr3 on dr3.id = dr2.parent_id `;
+    sql += `LEFT JOIN ?? dr3 ON dr3.id = dr2.parent_id `;
     params.push(tables.dict_regionalism);
 
     sql += `WHERE bps.del_flag = ${del_flag.SHOW} `;

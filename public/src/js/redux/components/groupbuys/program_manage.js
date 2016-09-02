@@ -12,6 +12,7 @@ import { tableLoader, get_table_empty } from 'common/loading';
 import Linkers from 'common/linkers';
 import history from 'history_instance';
 import StdModal from 'common/std_modal';
+import { triggerFormUpdate } from 'actions/form';
 
 import * as GroupbuysProgramActions from 'actions/groupbuys/program_manage';
 import AreaActions from 'actions/area';
@@ -63,12 +64,11 @@ class FilterHeader extends Component{
 				<div className = 'panel-body form-inline'>
 					<SearchInput {...keywords} className = 'form-inline v-img space-right' placeholder = '项目名称'
 						searchHandler = {this.search.bind(this, 'search_by_keywords_ing')} />
-					<Select {...src_id} options = {order_srcs} default-text='所属渠道' className='space-right'/>
-					<Select options = {provinces} {...province_id} default-text = '选择省份' className='space-right' onChange = {this.onProvinceChange.bind(this)} />
+					<Select {...src_id} options = {order_srcs} default-text='团购网站' className='space-right'/>
+					<Select options = {provinces} {...province_id} default-text = '选择省份' className='space-right' onChange = {this.onProvinceChange.bind(this, province_id.onChange)} />
 					<Select options = { cities } {...city_id} default-text = '选择城市' className='space-right' />
-					<Select options = {
-						[{id: 1, text: '是'}, {id: 0, text: '否'}]
-					} {...is_online} default-text = '当前是否上线' className = 'space-right' />
+					{'　商城已上线：'}
+					<input {...is_online} checked = {is_online.value == 1} onClick = {this.onIsOnlineChange.bind(this, is_online.onChange)} type = 'checkbox' />{'　'}
 					<button disabled = {search_ing} data-submitting = {search_ing} className="btn btn-theme btn-xs"
 						onClick = {this.search.bind(this, 'search_ing')}>
 					  <i className="fa fa-search"></i>{' 搜索'}
@@ -78,8 +78,13 @@ class FilterHeader extends Component{
 			)
 	}
 	onProvinceChange(callback, e){
-		this.props.actions.getCityAndDistricts(e.target.value);
+		this.props.actions.getCitiesSignal({province_id: e.target.value, is_standard_area: 0});
 		callback(e);
+	}
+	onIsOnlineChange(callback, e){
+		var {fields: { is_online }} = this.props;
+		var result = is_online.value == 1 ? 0: 1;
+		this.props.actions.triggerFormUpdate('groupbuys_program_filter','is_online',  result)
 	}
 	search(search_in_state){
 		this.setState({[search_in_state]: true});
@@ -108,7 +113,7 @@ var GroupbuyRow = React.createClass({
 				</td>
 				<td>{props.src_name}</td>
 				<td>{props.start_time + '~' + props.end_time}</td>
-				<td><span className = 'bg-warning bordered'>{props.city}</span>{ ' ' + props.province}</td>
+				<td><span className = 'bg-warning bordered'>{props.city_name}</span>{ ' ' + props.province_name}</td>
 				<td className='copy-col'>
 					<span ref='url'>{props.url}</span>
 					<button
@@ -174,7 +179,7 @@ class ManagePannel extends Component{
           					<thead>
           						<tr>
           							<th>项目名称</th>
-          							<th>所属渠道</th>
+          							<th>团购网站</th>
           							<th>上线时间段</th>
           							<th>城市</th>
           							<th>商城预约网址</th>
@@ -236,7 +241,7 @@ class GroupbuyInfoModal extends Component{
 					<span className='gray'>{program_info.name}</span>
 				</div>
 				<div className = 'form-group form-inline'>
-					<label>上线渠道：</label>
+					<label>团购网站：</label>
 					<span className = 'gray'>{program_info.src_name}</span>
 				</div>
 				<div className = 'form-group form-inline'>
@@ -288,6 +293,7 @@ function mapDispatchToProps(dispatch){
   return {
     actions:bindActionCreators({
       ...GroupbuysProgramActions,
+      triggerFormUpdate,
       ...AreaActions(),
     },dispatch)};
 }

@@ -13,7 +13,8 @@ export const getOrderSrcs = OrderSupport.getOrderSrcs;
 export const SERACH_PRODUCTS = 'SERACH_PRODUCTS';
 export function searchProducts(query_data){
 	/*return GET(Url.)*/
-	return TEST({
+	return GET(Url.get_product_spu_list.toString(), query_data, SERACH_PRODUCTS);
+	/*return TEST({
 		list:[
 			{spu_id: 23423, name: '卡通巧克力牌', is_online: 1, category_name: '慕斯蛋糕', category_parent_name:'蛋糕', is_available: 1,
 				sku_list: [
@@ -25,7 +26,7 @@ export function searchProducts(query_data){
 		],
 		total: 2,
 		page_no: 0,
-	}, SERACH_PRODUCTS)
+	}, SERACH_PRODUCTS)*/
 }
 
 export const GOT_CATEGORIES = OrderProducts.GOT_CATEGORIES;
@@ -100,7 +101,7 @@ export function createGroupbuySKU(data){
 			type: CREATE_GROUPBUY_SKU_ING,
 		})
 		data.products = sku_list;
-		return get(Url.add_groupbuys_sku.toString, data)
+		return post(Url.add_groupbuys_sku.toString, data)
 			.done(() => {
 				dispatch({
 					type: CREATE_GROUPBUY_SKU_SUCCESS,

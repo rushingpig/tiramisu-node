@@ -1,4 +1,4 @@
-import {post, GET, POST, PUT, TEST } from 'utils/request'; //Promise
+import {post, get, GET, POST, PUT, TEST } from 'utils/request'; //Promise
 import Url from 'config/url';
 import { Noty, formCompile, Utils, clone } from 'utils/index';
 import { getValues } from 'redux-form';
@@ -13,8 +13,14 @@ export function getGroupbuyProgramList(form_data){
 	return (dispatch, getState) => {
 		var filter_data = getValues(getState().form.groupbuys_program_filter);
 		filter_data = formCompile(filter_data);
-
-		return TEST({
+		return get(Url.get_program_list.toString(), {...filter_data, ...form_data})
+			.done( (data) => {
+				dispatch({
+					type: GET_GROUPBUY_PROGRAM_LIST,
+					data: data,
+				})
+			})
+		/*return TEST({
 			list: [
 				{
 					id: 1,
@@ -30,7 +36,7 @@ export function getGroupbuyProgramList(form_data){
 			],
 			total: 1,
 			page_no: 0,
-		}, GET_GROUPBUY_PROGRAM_LIST)(dispatch);
+		}, GET_GROUPBUY_PROGRAM_LIST)(dispatch);*/
 	}	
 }
 

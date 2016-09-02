@@ -180,6 +180,11 @@ const URL = (function() {
     add_groupbuys_sku: '/group/buying/sku', //添加团购sku,
     get_groupbuys_sku_list: '',
     groupbuy_sku_off_shelf: '/group/buying/sku/:skuId',
+    groupbuy_pg_add_sku_list: '/group/buying/sku/list',
+
+    add_program : '/group/buying/project', //添加团购项目,
+    get_program_list : '/group/buying/project/list', //获取团购项目列表,
+    get_product_spu_list: '/group/buying/product/list', //获取团购可供选择商品列表，
   };
 
   for (var a in url) {

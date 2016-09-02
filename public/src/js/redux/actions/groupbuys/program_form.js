@@ -1,6 +1,6 @@
 import {post, GET, POST, PUT, TEST } from 'utils/request'; //Promise
 import Url from 'config/url';
-import { Noty, formCompile, Utils, clone } from 'utils/index';
+import { Noty, formCompile, Utils, clone, dateFormat } from 'utils/index';
 import { getValues } from 'redux-form';
 
 import * as ProgramManageActions from './program_manage';
@@ -14,8 +14,8 @@ export const getOrderSrcs = OrderSupport.getOrderSrcs;
 
 export const SEARCH_GROUPBUYS_PRODUCTS = 'SEARCH_GROUPBUYS_PRODUCTS';
 export function searchGroupbuysProducts(query_data){
-
-  return TEST({
+    return GET(Url.groupbuy_pg_add_sku_list.toString(), query_data, SEARCH_GROUPBUYS_PRODUCTS);
+/*  return TEST({
     list: [
     	{
     		id: 1,
@@ -39,7 +39,7 @@ export function searchGroupbuysProducts(query_data){
     	},   	
     ],
     total: 8
-  }, SEARCH_GROUPBUYS_PRODUCTS);
+  }, SEARCH_GROUPBUYS_PRODUCTS);*/
 }
 
 export const SELECT_PRODUCT = 'SELECT_PRODUCT';
@@ -106,6 +106,36 @@ export const getCategories = ProductsManageFormActions.getCategories;
 
 export const GOT_SEC_CATEGORIES = ProductsManageFormActions.GOT_SEC_CATEGORIES;
 export const getSecCategories = ProductsManageFormActions.getSecCategories;
+
+export const CREATE_GROUPBUY_PROGRAM_ING = 'CREATE_GROUPBUY_PROGRAM_ING';
+export const CREATE_GROUPBUY_PROGRAM_SUCCESS = 'CREATE_GROUPBUY_PROGRAM_SUCCESS';
+export const CREATE_GROUPBUY_PROGRAM_FAIL = 'CREATE_GROUPBUY_PROGRAM_FAIL';
+
+export function creatGroupbuyProgram(){
+    return (dispatch, getState) => {
+        var pd_list = getState().groupbuysProgramFormManage.main.selected_list;
+        var pg_detail =getValues(getState().form.program_from);
+        pg_detail = formCompile(pg_detail);
+        pg_detail.start_time = dateFormat(pg_detail.start_time, 'yyyy-MM-dd hh:mm:ss');
+        pg_detail.end_time = dateFormat(pg_detail.end_time, 'yyyy-MM-dd hh:mm:ss');
+        dispatch({
+            type: CREATE_GROUPBUY_PROGRAM_ING,
+        })
+        pg_detail.products = pd_list.map ( m => m.id);
+        delete pg_detail.province_id;
+        return post(Url.add_program.toString(), pg_detail)
+                .done(() => {
+                    dispatch({
+                        type: CREATE_GROUPBUY_PROGRAM_SUCCESS,
+                    })
+                })
+                .fail( () => {
+                    dispatch({
+                        type: CREATE_GROUPBUY_PROGRAM_FAIL
+                    })
+                })
+    }    
+}
 
 
 

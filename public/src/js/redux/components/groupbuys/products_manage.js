@@ -73,9 +73,9 @@ class FilterHeader extends Component{
 					<Select {...province_id} default-text='选择省份' options = { provinces } className='space-right'/>
 					<Select {...city_id} default-text='选择城市' options = {cities} className='space-right'/>
 					{'　属于团购项目：'}
-					<input {...in_project} checked = {in_project.value == 1} onClick = {this.onIsProgramChange.bind(this, is_online.onChange)}  type ='checkbox' />
+					<input {...in_project} checked = {in_project.value == 1} onClick = {this.onIsProgramChange.bind(this, in_project.onChange)}  type ='checkbox' />
 					{'　商城已上线：'}
-					<input {...is_online} checked = {is_online.value == 1} onClick = {this.onIsOnlineChange.bind(this, in_project.onChange)} type = 'checkbox' />{'　'}
+					<input {...is_online} checked = {is_online.value == 1} onClick = {this.onIsOnlineChange.bind(this, is_online.onChange)} type = 'checkbox' />{'　'}
 					<button className="btn btn-theme btn-xs">
 					  <i className="fa fa-search"></i>{' 搜索'}
 					</button>

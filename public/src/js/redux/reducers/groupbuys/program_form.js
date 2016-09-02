@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import * as Actions from 'actions/groupbuys/program_form';
+
 import { getGlobalStore, getGlobalState } from 'stores/getter';
 import { map, getDate } from 'utils/index';
 import { SRC, SELECT_DEFAULT_VALUE } from 'config/app.config';
@@ -18,6 +19,9 @@ var main_state = {
 	pri_pd_cates: [],
 	sec_pd_cates: [],
 	selected_list: [],
+
+	save_ing: false,
+	save_success: false,
 }
 
 function main(state = main_state, action){
@@ -78,6 +82,12 @@ function main(state = main_state, action){
 			})
 			var new_selected_list = state.selected_list.filter( m => m.id !== action.id)
 			return {...state, selected_list: new_selected_list}
+		case Actions.CREATE_GROUPBUY_PROGRAM_ING:
+			return {...state, save_ing: true, save_success: false}
+		case Actions.CREATE_GROUPBUY_PROGRAM_SUCCESS:
+			return {...state, save_ing: false, save_success: true}
+		case Actions.CREATE_GROUPBUY_PROGRAM_FAIL:
+			return {...state, save_ing: false, save_success: false}
 		case Actions.CANCEL_SELECT_PRODUCT:
 			return {...state, selected_list: state.program_info.products}
 		default:

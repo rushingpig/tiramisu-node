@@ -18,7 +18,7 @@ class ProductSet extends Component{
 						<input type = 'checkbox' checked = {data.checked} />
 					</td>
 					<td>
-						{data.name}
+						{data.product_name}
 					</td>
 					<td>{data.size}</td>
 					<td>{data.src_name}</td>
@@ -44,10 +44,9 @@ export default class ProductsModal extends Component{
 	constructor(props){
 		super(props);
 		this.state = {
-			page_size : 4,
 			keywords: '',
-			pri_cate_id: SELECT_DEFAULT_VALUE,
-			sec_cate_id: SELECT_DEFAULT_VALUE,
+			category_parent_id: SELECT_DEFAULT_VALUE,
+			category_id: SELECT_DEFAULT_VALUE,
 		}
 	}
 	render(){
@@ -59,12 +58,13 @@ export default class ProductsModal extends Component{
 			return (<ProductSelectedRow key = {m.id + ' ' + i} data = {m} deleteProduct = {deleteProduct} />)
 		})
 		return(
-			<StdModal ref='modal' title='选择团购商品' size = 'lg' onConfirm = {this.onConfirm.bind(this)} onCancel = {this.onCancel.bind(this)}>
+			<StdModal ref='modal' title='选择团购商品' size = 'lg' onConfirm = {this.onConfirm.bind(this)} footer = {false}>
 				<div className = 'form-group form-inline'>
 					<input type='text' className = 'form-control input-xs space-right' placeholder='商品名称'/>
 					<Select default-text = '商品一级分类' className = 'space-right' options = {pri_pd_cates} onChange = {this.onPriCateChange.bind(this)}/>
 					<Select default-text = '商品二级分类' className = 'space-right' options = {sec_pd_cates} />
-        			<button className="btn btn-xs btn-default"><i className="fa fa-search"></i>{' 查询'}</button>
+        			<button className="btn btn-xs btn-default" 
+        				onClick = {this.search.bind(this)}><i className="fa fa-search"></i>{' 查询'}</button>
 				</div>
 				<div ref="tableWrapper" className="table-responsive table-modal modal-list">
 				  <table className="table table-hover table-bordered table-click text-center">
@@ -90,6 +90,7 @@ export default class ProductsModal extends Component{
 				  page_no={page_no} 
 				  total_count={total} 
 				  page_size={this.state.page_size} 
+				  onPageChange = {this.search.bind(this)}
 				/>
 
 				<hr className="dotted" />
@@ -114,6 +115,7 @@ export default class ProductsModal extends Component{
 				    }
 				  </table>
 				</div>
+				<button className = 'btn btn-theme btn-xs pull-right' onClick = {this.onConfirm.bind(this)}>确定</button>
 			</StdModal>
 			)
 
@@ -122,34 +124,29 @@ export default class ProductsModal extends Component{
 	show(){
 		this.refs.modal.show();
 	}
-	hide(){
-		this.refs.modal.hide();
-	}
 	onPriCateChange(e){
-		this.setState({pri_cate_id: e.target.value});
+		this.setState({category_parent_id: e.target.value});
 		this.props.getSecCategories(e.target.value);
 	}
 	onSecCateChange(e){
-		this.setState({sec_cate_id: e.target.value});
+		this.setState({category_id: e.target.value});
 	}
-	search(){
-		var query_data = {page_no: 0, page_size: this.state.page_size};
+	search(page){
+		page = typeof page == 'undefined' ? this.props.page_no: page;
+		var query_data = {page_no: 0, page_size: page, regionalism_id: this.props.regionalism_id,
+			src_id : this.props.src_id};
 		if(this.state.keywords.trim() !== ''){
 			query_data.keywords = this.state.keywords;
 		}
-		if(this.state.pri_cate_id !== SELECT_DEFAULT_VALUE){
-			query_data.pri_cate_id = this.state.pri_cate_id;
+		if(this.state.category_parent_id !== SELECT_DEFAULT_VALUE){
+			query_data.category_parent_id = this.state.category_parent_id;
 		}
-		if(this.state.sec_cate_id !== SELECT_DEFAULT_VALUE){
-			query_data.sec_cate_id = this.state.sec_cate_id;
+		if(this.state.category_id !== SELECT_DEFAULT_VALUE){
+			query_data.category_id = this.state.category_id;
 		}
 		this.props.searchGroupbuysProducts(query_data);
 	}
 	onConfirm(){
-		this.refs.modal.hide();
-	}
-	onCancel(){
-		this.props.cancelSelectProduct();
 		this.refs.modal.hide();
 	}
 }
@@ -160,7 +157,7 @@ class ProductSelectedRow extends Component{
 		return (
 			<tr>
 				<td></td>
-				<td>{data.name}</td>
+				<td>{data.product_name}</td>
 				<td>{data.size}</td>
 				<td>{data.src_name}</td>
 				<td>{data.category_name}</td>

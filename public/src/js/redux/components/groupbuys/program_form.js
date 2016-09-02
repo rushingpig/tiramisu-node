@@ -10,6 +10,7 @@ import { Noty, form as uForm, dateFormat, getDate } from 'utils/index';
 import { SELECT_DEFAULT_VALUE } from 'config/app.config';
 import DatePicker from 'common/datepicker';
 import LineRouter from 'common/line_router';
+import history from 'history_instance';
 
 import DateTimeRangePicker from 'react-bootstrap-datetimerange-picker';
 import ProgramProductsModal from './program_add_products_modal';
@@ -65,8 +66,7 @@ class ManageForm extends Component{
 	constructor(props){
 		super(props);
 		this.state = {
-			start_time: iNow,
-			end_time: new Date(getDate(iNow, 7)),
+			page_size: 8,
 		}
 	}
 	render(){
@@ -78,7 +78,8 @@ class ManageForm extends Component{
 				name,
 				start_time,
 				end_time,
-			} 
+			},
+			handleSubmit,
 		} = this.props;
 		var { actions: {searchGroupbuysProducts, changeOnlineTime, getCategories, getSecCategories, selectProduct, 
 				deleteProduct, cancelSelectProduct,
@@ -87,7 +88,7 @@ class ManageForm extends Component{
 		var product_list = [];
 		 product_list = selected_list.map( (m, i) => {
 			return (<tr key={ m.id + ' ' + i}>
-						<td>{m.name}</td>
+						<td>{m.product_name}</td>
 						<td>{m.size}</td>
 						<td>{m.category_name}</td>
 						<td>{m.src_name}</td>
@@ -110,7 +111,7 @@ class ManageForm extends Component{
 						<div className='form-group form-inline'>
 							<label>团购城市：</label>
 							<Select className = {` space-right ${province_id.error}`} {...province_id} default-text = '选择省份'
-								options = {provinces} onClick = {this.onProvinceChange.bind(this, province_id.onChange)}
+								options = {provinces} onChange = {this.onProvinceChange.bind(this, province_id.onChange)}
 								disabled = {editable} />
 							<Select disabled = {editable} className = {`${regionalism_id.error}`} {...regionalism_id} default-text = '选择城市' options = {cities} />
 						</div>
@@ -163,30 +164,51 @@ class ManageForm extends Component{
 						<div className = 'form-group'>
 							{'　　　　　'}<button 
 							  className="btn btn-theme btn-xs space-left"
-							  onClick = {this.submit.bind(this)}>提交</button>
+							  onClick = {handleSubmit(this._check.bind(this, this.onSubmit))}>提交</button>
 						</div>
 					</div>
 				</div>
-				<ProgramProductsModal ref='ProgramProductsModal' {...{searchGroupbuysProducts, getSecCategories, list, total, pri_pd_cates, sec_pd_cates, 
-					selected_list, selectProduct, deleteProduct, cancelSelectProduct}}/>
+				<ProgramProductsModal ref='ProgramProductsModal' {...{searchGroupbuysProducts, getSecCategories, list, total, page_no, pri_pd_cates, sec_pd_cates, 
+					selected_list, selectProduct, deleteProduct, cancelSelectProduct, src_id: src_id.value, regionalism_id: regionalism_id.value, page_size: this.state.page_size}}/>
 			</div>
 			)
 	}
-
+	_check(callback,form_data){
+	  setTimeout(()=>{
+	      var {errors} =this.props;
+	      if(!Object.keys(errors).length){
+	        callback.call(this,form_data);  //以callback来代替this 调用
+	      }else{
+	        Noty('warning','请填写完整');
+	      }
+	  },0);
+	}
+	onSubmit(){
+		this.props.actions.creatGroupbuyProgram()
+			.done( ()=> {
+				history.push('/gm/pg');
+				Noty('success', '添加成功')
+			}.bind(this))
+			.fail( (msg, code) => {
+				Noty('error', msg || '网络繁忙，请稍后再试');
+			})
+	}
 	addProducts(){
+		var { fields : {src_id, regionalism_id } } = this.props;
 		this.props.actions.getCategories();
-		this.props.actions.searchGroupbuysProducts();
+		this.props.actions.searchGroupbuysProducts({regionalism_id: regionalism_id.value, src_id: src_id.value, page_no: 0, page_size: this.state.page_size});
 		this.refs.ProgramProductsModal.show();
 	}
 	onProvinceChange(callback, e){
-		this.props.actions.getCityAndDistricts(e.target.value);
-		callback(e);
+			this.props.actions.getCitiesSignal({province_id: e.target.value, is_standard_area: 0})
+			callback(e);		
 	}
 	onTimeRangeChange(beginTime, endTime){
 		this.props.actions.triggerFormUpdate('program_from', 'start_time', beginTime);
 		this.props.actions.triggerFormUpdate('program_from', 'end_time', endTime);
 	}
 	componentDidMount(){
+		LazyLoad('noty');
 		LazyLoad('datetimerangepicker');	
 	}
 	componentWillReceiveProps(nextProps){

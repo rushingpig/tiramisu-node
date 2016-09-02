@@ -23,7 +23,7 @@ export default class ManageForm extends Component{
 		super(props);
 		this.state = {
 			province_id: SELECT_DEFAULT_VALUE,
-			city_id: SELECT_DEFAULT_VALUE,
+			regionalism_id: SELECT_DEFAULT_VALUE,
 			src_id: SELECT_DEFAULT_VALUE,
 
 			filter_sku_size_list: [],
@@ -36,8 +36,8 @@ export default class ManageForm extends Component{
 		var {actions : {
 			searchProducts, getSecCategories, getCategories, selectProduct, delSelectProduct, getAllSize, addSize
 		}} = this.props;
-		var { filter_sku_size_list, current_size, province_id, city_id, src_id } = this.state;
-		var add_btn_disabled = province_id === SELECT_DEFAULT_VALUE || city_id === SELECT_DEFAULT_VALUE || src_id === SELECT_DEFAULT_VALUE;
+		var { filter_sku_size_list, current_size, province_id, regionalism_id, src_id } = this.state;
+		var add_btn_disabled = province_id === SELECT_DEFAULT_VALUE || regionalism_id === SELECT_DEFAULT_VALUE || src_id === SELECT_DEFAULT_VALUE;
 		var submit_btn_disabled = !(selected_spu_info && selected_spu_info.spu_id);
 		var sku_size_content = filter_sku_size_list.map( (n, i) => {
 			return (<option key={n.id + ' ' + i} value = {n.text}>{n.text}</option>)
@@ -48,15 +48,15 @@ export default class ManageForm extends Component{
 					<div className='panel-body'>
 						<div className='form-group form-inline'>
 							<label>团购城市：</label>
-							<Select default-text = '选择省份' className = "space-right" options = {provinces} onClick={this.onProvinceChange.bind(this)}/>
-							<Select default-text = '选择城市' options = {cities}/>
+							<Select default-text = '选择省份' className = "space-right" options = {provinces} onChange={this.onProvinceChange.bind(this)}/>
+							<Select default-text = '选择城市' options = {cities} onChange = {this.onCityChange.bind(this)}/>
 						</div>
 						<div className ='form-group form-inline gray'>
 							{'　　备注：团购商品的预约时间是默认此商品SPU整体的提前预约时间，如需更改请前往商品管理编辑修改'}
 						</div>
 						<div className='form-group form-inline'>
 							<label>团购网站：</label>
-							<Select options={ order_srcs } default-text='团购网站'/>
+							<Select options={ order_srcs } default-text='团购网站' onChange = {this.onSrcChange.bind(this)}/>
 						</div>
 						<div className='form-group form-inline'>
 							<label>选择商品：</label>
@@ -130,13 +130,13 @@ export default class ManageForm extends Component{
 					</div>
 					<AddSpuModal ref='AddSpuModal' 
 						{...{searchProducts, list, page_no, total, pri_pd_cates, sec_pd_cates, getCategories, 
-							getSecCategories, selected_spu_info, selectProduct, delSelectProduct, province_id, city_id, src_id}}/>
+							getSecCategories, selected_spu_info, selectProduct, delSelectProduct, regionalism_id, src_id}}/>
 				</div>
 			)
 	}
 	onSubmit(){
-		var { city_id, src_id } = this.state;
-		var data = {regionalism_id: city_id, src_id}
+		var { regionalism_id, src_id } = this.state;
+		var data = {regionalism_id: regionalism_id, src_id}
 		this.props.actions.createGroupbuySKU(data)
 			.done( ()=> {
 				history.push('/gm/pd');
@@ -216,12 +216,19 @@ export default class ManageForm extends Component{
 	}
 	onProvinceChange(e){
 		var {value} = e.target;
-		this.props.actions.getCityAndDistricts(value);
+		this.setState({province_id: value})
+		this.props.actions.getCitiesSignal({province_id: value, is_standard_area: 0})
 		this.props.actions.resetProduct();
 
 	}
 	onCityChange(e){
 		var {value} = e.target;
+		this.setState({regionalism_id: value})
+		this.props.actions.resetProduct();
+	}
+	onSrcChange(e){
+		var {value } = e.target;
+		this.setState({src_id: value});
 		this.props.actions.resetProduct();
 	}
 }

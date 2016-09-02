@@ -246,6 +246,7 @@ GroupDao.prototype.findSkuById = function (sku_id) {
         'bos.name AS src_name',
         'bos.parent_id AS src_parent_id',
         'bos2.name AS src_parent_name',
+        'bgp.id AS group_project_id',
         'bp.id AS product_id',
         'bp.name AS product_name',
         'bp.category_id',
@@ -263,12 +264,16 @@ GroupDao.prototype.findSkuById = function (sku_id) {
     params.push(tables.buss_product_category);
     sql += `INNER JOIN ?? bos ON bos.id = bps.website `;  //  团购网站
     params.push(tables.buss_order_src);
-    sql += `LEFT JOIN ?? bos2 ON bos2.id = bos.parent_id `;  //  团购网站
+    sql += `LEFT JOIN ?? bos2 ON bos2.id = bos.parent_id `;
     params.push(tables.buss_order_src);
+    sql += `LEFT JOIN ?? bgp ON FIND_IN_SET(bps.id, bgp.skus) AND bps.del_flag = ${del_flag.SHOW} `;
+    params.push(tables.buss_group_project);
 
     sql += `WHERE bps.del_flag = ${del_flag.SHOW} `;
     sql += `AND bps.id = ? `;
     params.push(sku_id);
+
+    sql += `GROUP BY bps.id `;
 
     return baseDao.select(sql, params);
 };

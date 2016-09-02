@@ -26,7 +26,15 @@ module.exports.getSkuList = function (req, res, next) {
     let promise = co(function *() {
         let query = Object.assign({}, req.query);
         if (!query.city_id) query.city_id = query.regionalism_id;
-        return yield groupDao.findSku(query);
+        let _res = yield groupDao.findSku(query);
+        _res.list.forEach(curr=> {
+            if (curr.group_project_id) {
+                curr.is_available = 1;
+            } else {
+                curr.is_available = 0;
+            }
+        });
+        return _res;
     }).then(result=> {
         res.api(result);
     });

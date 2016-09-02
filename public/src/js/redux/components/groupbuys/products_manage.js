@@ -19,6 +19,7 @@ import StdModal from 'common/std_modal';
 
 import * as GroupbuysProductsActions from 'actions/groupbuys/products_manage';
 import AreaActions from 'actions/area';
+import LazyLoad from 'utils/lazy_load';
 
 class TopHeader extends Component{
 	render() {
@@ -162,12 +163,12 @@ class EditModal extends Component{
 		var {data, price} = this.state;
 		return (
 			<StdModal ref='modal' title = '编辑价格'>
-				<header className = 'panel-heading'>{'SKU(' +data.sku_id + ')　　　' +  data.name }</header>
+				<header className = 'panel-heading'>{'SKU(' +data.sku_id + ')　　　' +  data.product_name }</header>
 				<div className='panel-body'>
 				<div className='form-group form-inline'>
 					<label>团购城市：</label>
-					<input value = {data.city} className='form-control input-xs space-right' style = {{width: 100}} type = 'text' readOnly />
-					<input value = {data.province} className='form-control input-xs' style = {{width: 100}}  type = 'text' readOnly />
+					<input value = {data.city_name} className='form-control input-xs space-right' style = {{width: 100}} type = 'text' readOnly />
+					<input value = {data.province_name} className='form-control input-xs' style = {{width: 100}}  type = 'text' readOnly />
 				</div>
 				<div className='form-group form-inline'>
 					<label>团购网站：</label>
@@ -201,6 +202,15 @@ class EditModal extends Component{
 	}
 	onPriceChange(e){
 		this.setState({price: e.target.value * 100});
+	}
+	onConfirm(){
+		this.props.editSkuPrice(this.state.data.sku_id, this.state.price)
+			.done( () => {
+				Noty('success', '修改成功');
+			})
+			.fail(( msg, code) => {
+				Noty('error', msg || '网络故障，请稍后在试');
+			})
 	}
 }
 
@@ -293,6 +303,7 @@ class ManagePannel extends Component{
 			)
 	}
 	componentDidMount(){
+		LazyLoad('noty');
 		this.props.actions.getCategories();
 		this.props.actions.getOrderSrcs();
 		this.props.actions.getProvincesSignal();

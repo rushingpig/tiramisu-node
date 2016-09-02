@@ -14,6 +14,7 @@ import Linkers from 'common/linkers';
 import history from 'history_instance';
 import StdModal from 'common/std_modal';
 import { triggerFormUpdate } from 'actions/form';
+import LazyLoad from 'utils/lazy_load';
 
 import * as GroupbuysProgramActions from 'actions/groupbuys/program_manage';
 import AreaActions from 'actions/area';

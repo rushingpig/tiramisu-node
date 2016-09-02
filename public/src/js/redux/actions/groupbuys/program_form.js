@@ -1,4 +1,4 @@
-import {post, GET, POST, PUT, TEST } from 'utils/request'; //Promise
+import {post, put, GET, POST, PUT, TEST } from 'utils/request'; //Promise
 import Url from 'config/url';
 import { Noty, formCompile, Utils, clone, dateFormat } from 'utils/index';
 import { getValues } from 'redux-form';
@@ -52,6 +52,7 @@ export function selectProduct(sku_info){
 
 export const DELETE_SELECT_PRODUCT = 'DELETE_SELECT_PRODUCT';
 export function deleteProduct(id){
+
     return {
         type: DELETE_SELECT_PRODUCT,
         id: id
@@ -69,7 +70,7 @@ export function changeOnlineTime(beginTime, endTime){
 
 export const GET_GROUPBUY_PROGRAM_DETAIL = 'GET_GROUPBUY_PROGRAM_DETAIL';
 export function getGroupbuyProgramDetail(id){
-    return TEST({
+    /*return TEST({
         name: '幸福盒子一号',
         src_id: 39,
         src_name: '美团网',
@@ -84,7 +85,8 @@ export function getGroupbuyProgramDetail(id){
             {id: 2, name: '榴莲香雪', size: '约2磅', is_online: 0, product_name: '下午茶', price: 16800},
         ],
         url: 'http: //baidu.com',
-    }, GET_GROUPBUY_PROGRAM_DETAIL) 
+    }, GET_GROUPBUY_PROGRAM_DETAIL) */
+    return GET(Url.get_groupbuys_program_detail.toString(id), null, GET_GROUPBUY_PROGRAM_DETAIL);
     
 }
 
@@ -136,6 +138,27 @@ export function creatGroupbuyProgram(){
                     })
                 })
     }    
+}
+
+export const EDIT_GROUPBUY_PROGRAM_ING = 'EDIT_GROUPBUY_PROGRAM_ING';
+export const EDIT_GROUPBUY_PROGRAM_SUCCESS = 'EDIT_GROUPBUY_PROGRAM_SUCCESS';
+export function editGroupbuyProgram(id){
+    return (dispatch, getState) => {
+        var pd_list = getState().groupbuysProgramFormManage.main.selected_list;
+        var pg_detail = getValues(getState().form.program_from);
+        pg_detail = formCompile(pg_detail);
+        pg_detail.start_time = dateFormat(pg_detail.start_time, 'yyyy-MM-dd hh:mm:ss');
+        pg_detail.end_time = dateFormat(pg_detail.end_time, 'yyyy-MM-dd hh:mm:ss');
+        dispatch({
+         type: EDIT_GROUPBUY_PROGRAM_ING,
+        }) 
+        pg_detail.products = pd_list.map( m => m.id);
+        return put(Url.edit_program.toString(id), pg_detail)
+         .done(() => {
+             dispatch({type: EDIT_GROUPBUY_PROGRAM_SUCCESS})
+         })        
+    }
+ 
 }
 
 

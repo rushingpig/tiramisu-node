@@ -22,6 +22,8 @@ var main_state = {
 
 	save_ing: false,
 	save_success: false,
+
+	submit_ing: false,
 }
 
 function main(state = main_state, action){
@@ -88,6 +90,10 @@ function main(state = main_state, action){
 			return {...state, save_ing: false, save_success: true}
 		case Actions.CREATE_GROUPBUY_PROGRAM_FAIL:
 			return {...state, save_ing: false, save_success: false}
+		case Actions.EDIT_GROUPBUY_PROGRAM_ING:
+			return {...state, submit_ing: true}
+		case Actions.EDIT_GROUPBUY_PROGRAM_SUCCESS:
+			return {...state, submit_ing: false}
 		case Actions.CANCEL_SELECT_PRODUCT:
 			return {...state, selected_list: state.program_info.products}
 		default:

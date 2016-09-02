@@ -84,7 +84,7 @@ class ManageForm extends Component{
 		var { actions: {searchGroupbuysProducts, changeOnlineTime, getCategories, getSecCategories, selectProduct, 
 				deleteProduct, cancelSelectProduct,
 				}, area: {provinces, cities}, main, editable } = this.props;
-		var { order_srcs, program_info, list, total, page_no, pri_pd_cates, sec_pd_cates, selected_list } = main;
+		var { order_srcs, program_info, list, total, page_no, pri_pd_cates, sec_pd_cates, selected_list, submit_ing, save_ing, save_success } = main;
 		var product_list = [];
 		 product_list = selected_list.map( (m, i) => {
 			return (<tr key={ m.id + ' ' + i}>
@@ -162,9 +162,22 @@ class ManageForm extends Component{
 							/>
 						</div>
 						<div className = 'form-group'>
-							{'　　　　　'}<button 
-							  className="btn btn-theme btn-xs space-left"
-							  onClick = {handleSubmit(this._check.bind(this, this.onSubmit))}>提交</button>
+							{'　　　　　'}
+							{
+								editable ?
+								<button 
+									disabled = {submit_ing}
+									data-submitting = {submit_ing}
+								  className="btn btn-theme btn-xs space-left"
+								  onClick = {handleSubmit(this._check.bind(this, this.onEdit))}>提交</button>
+								  :
+								<button 
+								 disabled = {save_ing || save_success}
+									data-submitting = {save_ing}
+								  className="btn btn-theme btn-xs space-left"
+								  onClick = {handleSubmit(this._check.bind(this, this.onSubmit))}>提交</button>
+							}
+							
 						</div>
 					</div>
 				</div>
@@ -187,7 +200,19 @@ class ManageForm extends Component{
 		this.props.actions.creatGroupbuyProgram()
 			.done( ()=> {
 				history.push('/gm/pg');
-				Noty('success', '添加成功')
+				Noty('success', '添加成功');
+				this.props.actions.resetGroupbuyProgram();
+			}.bind(this))
+			.fail( (msg, code) => {
+				Noty('error', msg || '网络繁忙，请稍后再试');
+			})			
+	}
+	onEdit(){
+		this.props.actions.editGroupbuyProgram(this.props.params.id)
+			.done( () => {
+				history.push('/gm/pg');
+				Noty('success', '修改成功')
+				this.props.actions.resetGroupbuyProgram();
 			}.bind(this))
 			.fail( (msg, code) => {
 				Noty('error', msg || '网络繁忙，请稍后再试');

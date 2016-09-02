@@ -9,6 +9,7 @@ import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import Pagination from 'common/pagination';
 import { tableLoader, get_table_empty } from 'common/loading';
+import { Noty, form as uForm, dateFormat, getDate } from 'utils/index';
 import Linkers from 'common/linkers';
 import history from 'history_instance';
 import StdModal from 'common/std_modal';
@@ -124,7 +125,7 @@ var GroupbuyRow = React.createClass({
 				<td>
 					<a href='javascript:;' onClick = {this.viewGroupbuyInfoModal}>{'[查看]　'}</a>
 					<a href='javascript:;' onClick = {this.editHandler}>{'[编辑]　'}</a>
-					<a href='javascript:;'>{'[下架]'}</a>
+					<a href='javascript:;' onClick = {this.viewMsgModal}>{'[下架]'}</a>
 				</td>
 			</tr>
 			)
@@ -145,6 +146,9 @@ var GroupbuyRow = React.createClass({
 		this.props.actions.getGroupbuyProgramDetail(this.props.id);
 		this.props.viewGroupbuyInfoModal();
 	},
+	viewMsgModal(){
+		this.props.viewMsgModal({id: this.props.id ,name: this.props.name})
+	},
 	editHandler(){
 		history.push('/gm/pg/edit/' + this.props.id);
 	},
@@ -158,6 +162,7 @@ class ManagePannel extends Component{
 		}
 
 		this.viewGroupbuyInfoModal = this.viewGroupbuyInfoModal.bind(this);
+		this.viewMsgModal = this.viewMsgModal.bind(this);
 	}
 	render(){
 		var { main, area, actions } = this.props;
@@ -165,7 +170,9 @@ class ManagePannel extends Component{
 
 		var content = list.map( (m, i) => {
 			return (
-				<GroupbuyRow key = {m.id + ' ' + i} {...{...this.props, ...m, viewGroupbuyInfoModal: this.viewGroupbuyInfoModal}} />
+				<GroupbuyRow key = {m.id + ' ' + i} {...{...this.props, ...m, viewGroupbuyInfoModal: this.viewGroupbuyInfoModal,
+					viewMsgModal: this.viewMsgModal,
+				}} />
 				)
 		})
 		return(
@@ -199,6 +206,7 @@ class ManagePannel extends Component{
 				  onPageChange = {this.search.bind(this)}
 				/>
 				<GroupbuyInfoModal ref='GroupbuyInfoModal' {...{program_info, resetGroupbuyProgram: this.props.actions.resetGroupbuyProgram}}/>
+				<MsgModal ref='MsgModal' {...{programOffShelf: this.props.actions.programOffShelf}} />
 			</div>
 			)
 	}
@@ -215,6 +223,41 @@ class ManagePannel extends Component{
 	viewGroupbuyInfoModal(){
 		this.refs.GroupbuyInfoModal.show();
 	}
+	viewMsgModal(data){
+		this.refs.MsgModal.show(data);
+	}
+}
+
+class MsgModal extends Component{
+	constructor(props){
+		super(props);
+		this.state = {
+			data: {},
+		}
+	}
+	render(){
+		var {data} = this.state;
+		return(
+			<StdModal title = '下架确认' ref ='modal' onConfirm = {this.onConfirm.bind(this)}>
+				<header className = 'panel-heading'>{  data.name }</header>
+				<div className='panel-body'><span className = 'bg-warning bordered'>提示</span>{'　请确认是否下架当前项目，该项目下架后，其下的团购商品可被其他项目选中'}</div>
+			</StdModal>
+			)
+	}
+	show(data){
+		this.setState({data})
+		this.refs.modal.show();
+	}
+	onConfirm(){
+		this.props.programOffShelf(this.state.data.id)
+			.done( () => {
+				this.refs.modal.hide();
+				Noty('success', '下架成功')
+			})
+			.fail( (code, msg) => {
+				Noty('error', msg || '下架失败')
+			})
+	}
 }
 
 class GroupbuyInfoModal extends Component{
@@ -225,9 +268,9 @@ class GroupbuyInfoModal extends Component{
 		if(products){
 			  product_list = products.map( (m, i) => {
 				return (<tr key={ m.id + ' ' + i}>
-							<td>{m.name}</td>
-							<td>{m.size}</td>
 							<td>{m.product_name}</td>
+							<td>{m.size}</td>
+							<td>{m.category_name}</td>
 							<td>{m.is_online == 1 ? '是':'否'}</td>
 							<td>￥{m.price / 100}</td>
 						</tr>)

@@ -1,4 +1,4 @@
-import {post, get, GET, POST, PUT, TEST } from 'utils/request'; //Promise
+import {post, del, get, GET, POST, PUT, TEST } from 'utils/request'; //Promise
 import Url from 'config/url';
 import { Noty, formCompile, Utils, clone } from 'utils/index';
 import { getValues } from 'redux-form';
@@ -46,5 +46,17 @@ export const getGroupbuyProgramDetail = ProgramManageFormActions.getGroupbuyProg
 export const RESET_GROUPBUY_PROGRAM = ProgramManageFormActions.RESET_GROUPBUY_PROGRAM;
 export const resetGroupbuyProgram = ProgramManageFormActions.resetGroupbuyProgram;
 
-
+export const PROGRAM_OFF_SHELF = 'PROGRAM_OFF_SHELF';
+export function programOffShelf(id){
+	return dispatch => {
+		return del(Url.del_program.toString(id), null)
+			.done( () => {
+				dispatch({
+					type: PROGRAM_OFF_SHELF,
+					id: id,
+				})
+				
+			})
+	}
+}
 

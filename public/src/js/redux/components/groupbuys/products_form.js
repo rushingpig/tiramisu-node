@@ -81,7 +81,7 @@ export default class ManageForm extends Component{
 								</thead>
 								<tbody>
 									{
-										spu_sku_list.length ?
+										spu_sku_list && spu_sku_list.length ?
 										spu_sku_list.map( (m, i) => {
 											return (<tr key={i + ' '}>
 												<td>{m.size}</td>

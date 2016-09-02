@@ -3,6 +3,7 @@ import * as Actions from 'actions/groupbuys/program_manage';
 import { getGlobalStore, getGlobalState } from 'stores/getter';
 import { map, getDate } from 'utils/index';
 import { SRC, SELECT_DEFAULT_VALUE } from 'config/app.config';
+import { getValues } from 'redux-form';
 
 import { area } from '../area_select';
 
@@ -13,6 +14,7 @@ var main_state = {
 	list: [],
 	total: 0,
 	page_no: 0,
+	page_size: 10,
 	loading: true,
 	refresh: false,
 	order_srcs: [],
@@ -33,6 +35,10 @@ function main(state = main_state, action){
 			return {...state, program_info: action.data}
 		case Actions.RESET_GROUPBUY_PROGRAM:
 			return {...state, program_info: {}}
+		case Actions.PROGRAM_OFF_SHELF:
+			var store = getGlobalStore();
+			store.dispatch(Actions.getGroupbuyProgramList({page_no: state.page_no, page_size: state.page_size}));
+			return state;
 		default:
 			return state;
 	}

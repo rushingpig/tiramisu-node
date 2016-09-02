@@ -39,27 +39,70 @@ class FilterHeader extends Component{
 		}
 	}
 	render(){
-		<div className='panel search'>
-			<div className = 'panel-body form-inline'>
-				<SearchInput {...keywords} className = 'form-inline v-img space-right' placeholder = '项目名称'
-					searchHandler = {this.search.bind(this, 'search_by_keywords_ing')} />
-				{'开始时间'}
-				<DatePicker editable 
-					redux-form = {begin_time}
-					className="short-input" />
-				{' 结束时间'}
-				<DatePicker editable 
-					redux-form = {end_time}
-				  className="short-input space-right" />
-				<Select default-text='团购网站' />
-				<Select default-text ='选择省份' />
-				<Select default-text = '选择城市' />
-				<button disabled = {search_ing} data-submitting = {search_ing} className="btn btn-theme btn-xs"
-					onClick = {this.search.bind(this, 'search_ing')}>
-				  <i className="fa fa-search"></i>{' 搜索'}
-				</button>
+		var { fields: {
+			coupon,
+			begin_time,
+			end_time,
+			src_id,
+			province_id,
+			city_id,
+
+		}} = this.props;
+		var {search_ing, search_by_keywords_ing} = this.state;
+		return (
+			<div className='panel search'>
+				<div className = 'panel-body form-inline'>
+					<SearchInput {...coupon} className = 'form-inline v-img space-right' placeholder = '项目名称'
+						searchHandler = {this.search.bind(this, 'search_by_keywords_ing')} />
+					{'开始时间'}
+					<DatePicker editable 
+						redux-form = {begin_time}
+						className="short-input" />
+					{' 结束时间'}
+					<DatePicker editable 
+						redux-form = {end_time}
+					  className="short-input space-right" />
+					<Select default-text='团购网站' />
+					<Select default-text ='选择省份' />
+					<Select default-text = '选择城市' />
+					<button disabled = {search_ing} data-submitting = {search_ing} className="btn btn-theme btn-xs"
+						onClick = {this.search.bind(this, 'search_ing')}>
+					  <i className="fa fa-search"></i>{' 搜索'}
+					</button>
+				</div>
 			</div>
-		</div>
+			)
+		
+	}
+
+	search(){
+
+	}
+}
+
+FilterHeader = reduxForm({
+	form: 'groupbuys_coupon_filter',
+	fields: [
+		'coupon',
+		'begin_time',
+		'end_time',
+		'src_id',
+		'province_id',
+		'city_id',
+	]
+})(FilterHeader)
+
+export default class CouponManagePannel extends Component{
+	render(){
+		return(
+			<div className = 'order-manage'>
+				<TopHeader />
+				<FilterHeader />
+				<div className = 'panel'>
+					<header className = 'panel-heading'>团购券列表</header>
+				</div>
+			</div>
+			)
 	}
 }
 

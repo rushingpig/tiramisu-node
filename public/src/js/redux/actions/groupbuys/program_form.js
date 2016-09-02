@@ -85,6 +85,7 @@ export function getGroupbuyProgramDetail(id){
         ],
         url: 'http: //baidu.com',
     }, GET_GROUPBUY_PROGRAM_DETAIL) 
+    
 }
 
 export const RESET_GROUPBUY_PROGRAM = 'RESET_GROUPBUY_PROGRAM';

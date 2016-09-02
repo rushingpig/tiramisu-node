@@ -76,7 +76,7 @@ GroupDao.prototype.findProduct = function (query, only_total) {
         params.push(`%${query.keywords}%`);
     }
 
-    sql += `ORDER BY bp.id ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+    sql += `GROUP BY bp.id ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
 
     return co(function*() {
         let ids = yield baseDao.select(sql, params);
@@ -93,10 +93,10 @@ GroupDao.prototype.findProduct = function (query, only_total) {
         for (let i = 0; i < ids.length; i++) {
             let id = ids[i].id;
             let info = yield GroupDao.prototype.findProductById(id);
-            if (!info || info.length == 0) continue;
-            info[0].sku_id = info[0].id;
-            info[0].spu_id = info[0].product_id;
-            _res.list.push(info[0]);
+            if (!info) continue;
+            info.sku_id = info.id;
+            info.spu_id = info.product_id;
+            _res.list.push(info);
         }
         return _res;
     });
@@ -150,7 +150,7 @@ GroupDao.prototype.findProductById = function (product_id) {
             tmp.id = curr.sku_id;
             tmp.price = curr.sku_price;
             tmp.size = curr.sku_size;
-            _res.products.push(tmp);
+            _res.sku_list.push(tmp);
         });
         return _res;
     });

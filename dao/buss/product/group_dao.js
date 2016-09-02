@@ -252,7 +252,12 @@ GroupDao.prototype.findSkuById = function (sku_id) {
         'bp.category_id',
         'bpc.name AS category_name',
         'bpc.parent_id AS category_parent_id',
-        'bpc2.name AS category_parent_name'
+        'bpc2.name AS category_parent_name',
+        'dr.level_type AS city_level_type',
+        'dr.id AS city_id',
+        'dr.name AS city_name',
+        'IF(dr.level_type = 2, dr2.id, dr3.id) AS province_id',
+        'IF(dr.level_type = 2, dr2.name, dr3.name) AS province_name'
     ];
     let sql = `SELECT ${columns.join()} FROM ?? bps `;
     let params = [tables.buss_product_sku];
@@ -268,6 +273,13 @@ GroupDao.prototype.findSkuById = function (sku_id) {
     params.push(tables.buss_order_src);
     sql += `LEFT JOIN ?? bgp ON FIND_IN_SET(bps.id, bgp.skus) AND bps.del_flag = ${del_flag.SHOW} `;
     params.push(tables.buss_group_project);
+
+    sql += `INNER JOIN ?? dr on dr.id = bgp.regionalism_id `;
+    params.push(tables.dict_regionalism);
+    sql += `INNER JOIN ?? dr2 on dr2.id = dr.parent_id `;
+    params.push(tables.dict_regionalism);
+    sql += `INNER JOIN ?? dr3 on dr3.id = dr2.parent_id `;
+    params.push(tables.dict_regionalism);
 
     sql += `WHERE bps.del_flag = ${del_flag.SHOW} `;
     sql += `AND bps.id = ? `;
@@ -375,7 +387,6 @@ GroupDao.prototype.findProjectById = function (project_id) {
         'dr2.name AS city_parent_name',
         'dr2.parent_id AS city_parent_parent_id',
         'dr3.name AS city_parent_parent_name',
-        'dr.id AS city_id',
         'dr.merger_name'
     ];
     let sql = `SELECT ${columns.join()} FROM ?? bgp `;

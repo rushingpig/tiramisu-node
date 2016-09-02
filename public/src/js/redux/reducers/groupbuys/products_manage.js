@@ -40,6 +40,15 @@ function main(state = main_state, action){
 		case Actions.GET_PRODUCT_LIST:
 			var query_data = action.query_data;
 			return {...state, ...action.data};
+		case Actions.EDIT_SKU_PRICE:
+			var {list } = state;
+			var {sku_id, price} = action;
+			list.forEach( m => {
+				if(m.sku_id == sku_id ){
+					m.price = price
+				}
+			}) 
+			return {...state, list: list}
 		case Actions.OFF_SHELF:
 			var {getProductList} = Actions;
 			store.dispatch(getProductList(state.query_data));break;

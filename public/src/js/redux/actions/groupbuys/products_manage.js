@@ -59,7 +59,16 @@ export function getProductList(query_data){
 
 export const EDIT_SKU_PRICE = 'EDIT_SKU_PRICE';
 export function editSkuPrice(sku_id, price){
-	
+	return dispatch => {
+		return put(Url.edit_groupbuy_pd.toString(sku_id), {price: price})
+				.done( () => {
+					dispatch({
+						type: 'EDIT_SKU_PRICE',
+						price: price,
+						sku_id: sku_id,
+					})
+				})
+	}
 }
 
 export const OFF_SHELF = 'OFF_SHELF';

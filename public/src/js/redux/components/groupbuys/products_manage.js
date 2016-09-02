@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import { reduxForm } from 'redux-form';
 
 import { triggerFormUpdate } from 'actions/form';
+import { Noty, form as uForm, dateFormat, getDate } from 'utils/index';
 
 import SearchInput from 'common/search_input';
 import DatePicker from 'common/datepicker';
@@ -214,7 +215,7 @@ class MsgModal extends Component{
 		var {data} = this.state;
 		return(
 			<StdModal title = '下架确认' ref ='modal' onConfirm = {this.onConfirm.bind(this)}>
-				<header className = 'panel-heading'>{'SKU(' +data.sku_id + ')　　　' +  data.name }</header>
+				<header className = 'panel-heading'>{'SKU(' +data.sku_id + ')　　　' +  data.product_name }</header>
 				<div className='panel-body'><span className = 'bg-warning bordered'>提示</span>{'　请确认是否下架当前商品， 若商品属于团购项目，且该团购项目只有此商品则会将团购项目一同下架'}</div>
 			</StdModal>
 			)
@@ -224,7 +225,7 @@ class MsgModal extends Component{
 		this.refs.modal.show();
 	}
 	onConfirm(){
-		this.props.offShelf(this.data.sku_id)
+		this.props.offShelf(this.state.data.sku_id)
 			.done( () => {
 				this.refs.modal.hide();
 				Noty('success', '下架成功')

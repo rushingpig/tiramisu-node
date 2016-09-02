@@ -51,7 +51,8 @@ function main(state = main_state, action){
 			return {...state, list: list}
 		case Actions.OFF_SHELF:
 			var {getProductList} = Actions;
-			store.dispatch(getProductList(state.query_data));break;
+			store.dispatch(getProductList(state.query_data));
+			return state;
 		default:
 			return state;
 	}

@@ -126,7 +126,7 @@ class ProductRow extends Component{
 		var {data} = this.props;
 		return (
 			<tr>
-				<td>{data.sku_id + '/' + data.spu_id}</td>
+				<td>{data.spu_id + '/' + data.sku_id}</td>
 				<td>{data.product_name}</td>
 				<td>{data.size}</td>
 				<td>￥{data.price / 100}</td>

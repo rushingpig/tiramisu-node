@@ -174,6 +174,12 @@ const URL = (function() {
     move_img: '/image/move',
     rename_img: '/image/name',
     all_img_dir: '/image/dir',
+
+    //团购
+    sku_size: '/product/sku/size', //所有已存在size
+    add_groupbuys_sku: '/group/buying/sku', //添加团购sku,
+    get_groupbuys_sku_list: '',
+    groupbuy_sku_off_shelf: '/group/buying/sku/:skuId',
   };
 
   for (var a in url) {

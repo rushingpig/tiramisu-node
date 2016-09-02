@@ -191,8 +191,9 @@ class ManagePannel extends Component{
 				  page_no={page_no} 
 				  total_count={total} 
 				  page_size={this.state.page_size} 
+				  onPageChange = {this.search.bind(this)}
 				/>
-				<GroupbuyInfoModal ref='GroupbuyInfoModal' {...{program_info}}/>
+				<GroupbuyInfoModal ref='GroupbuyInfoModal' {...{program_info, resetGroupbuyProgram: this.props.actions.resetGroupbuyProgram}}/>
 			</div>
 			)
 	}
@@ -202,7 +203,10 @@ class ManagePannel extends Component{
 		this.props.actions.getOrderSrcs();
 		this.props.actions.getProvincesSignal();
 	}
-
+	search(page){
+		page = typeof page == 'undefined' ? this.props.main.page_no: page;
+		this.props.actions.getGroupbuyProgramList({page_no: page, page_size: this.state.page_size});
+	}
 	viewGroupbuyInfoModal(){
 		this.refs.GroupbuyInfoModal.show();
 	}
@@ -226,7 +230,7 @@ class GroupbuyInfoModal extends Component{
 		}
 		
 		return(
-			<StdModal ref='modal' title = '查看团购项目信息' footer = {false}>
+			<StdModal ref='modal' title = '查看团购项目信息' footer = {false} onCancel = {this.hide.bind(this)}>
 				<div className = 'form-group form-inline'>
 					<label>项目名称：</label>
 					<span className='gray'>{program_info.name}</span>
@@ -272,7 +276,7 @@ class GroupbuyInfoModal extends Component{
 		this.refs.modal.show();
 	}
 	hide(){
-		this.refs.modal.hide();
+		this.props.resetGroupbuyProgram();
 	}
 }
 

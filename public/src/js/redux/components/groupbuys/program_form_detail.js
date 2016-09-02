@@ -23,7 +23,6 @@ class ProgramFormDetail extends Component{
 	}
 	componentDidMount(){
 		var {params, actions } = this.props;
-		actions.searchGroupbuysProducts();
 		actions.getProvincesSignal();
 		actions.getOrderSrcs();
 		if(params && params.id){

@@ -129,6 +129,10 @@ export default [{
     'name': '团购商品管理',
     'icon': '',
     'link': '/gm/pd',
+  },{
+    'key': 'GroupbuyCouponManageAccess',
+    'name': '团购券管理',
+    'link': '/gm/cp',
   }]
 }, {
   "key": "authority_manage",

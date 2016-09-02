@@ -31,6 +31,8 @@ function main(state = main_state, action){
 			return {...state, order_srcs: group_sites.map(({id, name}) => ({id, text: name}))};
 		case Actions.GET_GROUPBUY_PROGRAM_DETAIL:
 			return {...state, program_info: action.data}
+		case Actions.RESET_GROUPBUY_PROGRAM:
+			return {...state, program_info: {}}
 		default:
 			return state;
 	}

@@ -102,6 +102,7 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
           ProgramFormManage:           require('../components/groupbuys/program_form_detail'),
           GroupbuyProductManagePannel: require('../components/groupbuys/products_manage'),
           ProductFormMange:            require('../components/groupbuys/products_form_detail'),
+          CouponManagePannel:          require('../components/groupbuys/coupon_manage'),
         };
         callback();
       });
@@ -197,6 +198,7 @@ const App = () => (
           <IndexRoute getComponent={get('GroupbuyProductManagePannel')} onEnter={onEnter('GroupbuyProductManageAccess')} />
           <Route path='add' onEnter={onEnter('GroupbuyProductManageAdd')} getComponent={get('ProductFormMange')} />
         </Route>
+        <Route path='cp' onEnter={onEnter('GroupbuyCouponManageAccess')} getComponent={get('CouponManagePannel')} />
       </Route>
 
       <Redirect from="logout" to="/" />

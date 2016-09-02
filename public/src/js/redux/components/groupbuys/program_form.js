@@ -14,6 +14,7 @@ import LineRouter from 'common/line_router';
 import DateTimeRangePicker from 'react-bootstrap-datetimerange-picker';
 import ProgramProductsModal from './program_add_products_modal';
 
+
 const validate = (values, props) => {
 	const errors = [];
 	var msg = 'error';
@@ -33,7 +34,7 @@ const validate = (values, props) => {
 
 	_v_select('province_id');
 
-	_v_select('city_id');
+	_v_select('regionalism_id');
 
 	_v_select('src_id');
 
@@ -58,53 +59,48 @@ class TopHeader extends Component{
 		)
 	}
 }
-
 const iNow = new Date();
 
 class ManageForm extends Component{
 	constructor(props){
 		super(props);
 		this.state = {
-			/*start_time: iNow,
-			end_time: new Date(getDate(iNow, 7)),*/
+			start_time: iNow,
+			end_time: new Date(getDate(iNow, 7)),
 		}
 	}
 	render(){
 		var {
 			fields: {
 				province_id, 
-				city_id,
+				regionalism_id,
 				src_id,
 				name,
+				start_time,
+				end_time,
 			} 
 		} = this.props;
-		var { actions: {searchGroupbuysProducts, changeOnlineTime }, list, total, area: {provinces, cities}, main, editable } = this.props;
-		var { order_srcs, program_info } = main;
-		var { products } = program_info;
+		var { actions: {searchGroupbuysProducts, changeOnlineTime, getCategories, getSecCategories, selectProduct, 
+				deleteProduct, cancelSelectProduct,
+				}, area: {provinces, cities}, main, editable } = this.props;
+		var { order_srcs, program_info, list, total, page_no, pri_pd_cates, sec_pd_cates, selected_list } = main;
 		var product_list = [];
-		if(products){
-			  product_list = products.map( (m, i) => {
-				return (<tr key={ m.id + ' ' + i}>
-							<td>{m.name}</td>
-							<td>{m.size}</td>
-							<td>{m.product_name}</td>
-							<td>{program_info.src_name}</td>
-							<td>￥{m.price / 100}</td>
-							<td>{m.is_online == 1 ? '是':'否'}</td>
-							<td><a href='javascript:;'>[删除]</a></td>
-						</tr>)
-			})	
-		}
-		var start_time = program_info.start_time;
-		var end_time = program_info.end_time;
-		if(start_time && end_time){
-			start_time = start_time.replace(/-/g, '/');
-			end_time = end_time.replace(/-/g, '/');
-			start_time = new Date(getDate(start_time));
-			end_time = new Date(end_time);
-		}
-		var endTime = end_time;
-		
+		 product_list = selected_list.map( (m, i) => {
+			return (<tr key={ m.id + ' ' + i}>
+						<td>{m.name}</td>
+						<td>{m.size}</td>
+						<td>{m.category_name}</td>
+						<td>{m.src_name}</td>
+						<td>￥{m.price / 100}</td>
+						<td>{m.is_online == 1 ? '是':'否'}</td>
+						<td>
+							<a href='javascript:;' onClick={this.onDeleteProduct.bind(this, m.id)}>[删除]</a>
+						</td>
+					</tr>)
+		})
+		var add_btn_disabled = !province_id.value || province_id.value == SELECT_DEFAULT_VALUE ||
+								!regionalism_id.value || regionalism_id.value == SELECT_DEFAULT_VALUE ||
+								!src_id.value || src_id.value == SELECT_DEFAULT_VALUE			
 		return (
 			<div>
 				<TopHeader />
@@ -113,32 +109,35 @@ class ManageForm extends Component{
 					<div className = 'panel-body'>
 						<div className='form-group form-inline'>
 							<label>团购城市：</label>
-							<Select className = {`${province_id.error}`} {...province_id} default-text = '选择省份' options = {provinces} onClick = {this.onProvinceChange.bind(this, province_id.onChange)} />
-							<Select className = {`${city_id.error}`} {...city_id} default-text = '选择城市' options = {cities} />
+							<Select className = {` space-right ${province_id.error}`} {...province_id} default-text = '选择省份'
+								options = {provinces} onClick = {this.onProvinceChange.bind(this, province_id.onChange)}
+								disabled = {editable} />
+							<Select disabled = {editable} className = {`${regionalism_id.error}`} {...regionalism_id} default-text = '选择城市' options = {cities} />
 						</div>
 						<div className = 'form-group form-inline'>
 							<label>团购网站：</label>
-							<Select className = {`${src_id.error}`} {...src_id} options = {order_srcs } default-text = '团购网站'/>
+							<Select disabled = {editable} className = {`${src_id.error}`} {...src_id} options = {order_srcs } default-text = '团购网站'/>
 						</div>
 						<div  className = 'form-group form-inline'>
 							<label>项目名称：</label>
-							<input value={this.state.tmp_name} type = 'text' className = {`form-control input-xs ${name.error}`} />
+							<input {...name} type = 'text' className = {`form-control input-xs ${name.error}`} />
 						</div>
 						<div className = 'form-group form-inline'>
-							<label>选择产品：</label>
+							<label>选择商品：</label>
 							<button 
+								disabled = {add_btn_disabled}
 								onClick = {this.addProducts.bind(this)}
 								className = 'btn btn-default btn-xs'>
 								<i className = 'fa fa-plus'></i>{' 添加'}</button>
 						</div>
 						{
-							editable ?
+							selected_list.length ?
 						<table className = 'table table-responsive' style={{maxWidth: 600}}>
 							<thead>
 								<tr>
-								<th>产品名称</th>
+								<th>商品名称</th>
 								<th>规格</th>
-								<th>产品类型名称</th>
+								<th>商品类型名称</th>
 								<th>渠道</th>
 								<th>价格</th>
 								<th>商城上线</th>
@@ -156,8 +155,8 @@ class ManageForm extends Component{
 							<DateTimeRangePicker
 							    className="form-control input-xs"
 							    style={pickerStyle}
-							    beginTime={start_time}
-							    endTime={endTime}
+							    beginTime={start_time.value}
+							    endTime={end_time.value}
 							    onChange = {this.onTimeRangeChange.bind(this)}
 							/>
 						</div>
@@ -168,12 +167,15 @@ class ManageForm extends Component{
 						</div>
 					</div>
 				</div>
-				<ProgramProductsModal ref='ProgramProductsModal' {...{searchGroupbuysProducts, list, total}}/>
+				<ProgramProductsModal ref='ProgramProductsModal' {...{searchGroupbuysProducts, getSecCategories, list, total, pri_pd_cates, sec_pd_cates, 
+					selected_list, selectProduct, deleteProduct, cancelSelectProduct}}/>
 			</div>
 			)
 	}
 
 	addProducts(){
+		this.props.actions.getCategories();
+		this.props.actions.searchGroupbuysProducts();
 		this.refs.ProgramProductsModal.show();
 	}
 	onProvinceChange(callback, e){
@@ -181,10 +183,11 @@ class ManageForm extends Component{
 		callback(e);
 	}
 	onTimeRangeChange(beginTime, endTime){
-		var m = 0;
+		this.props.actions.triggerFormUpdate('program_from', 'start_time', beginTime);
+		this.props.actions.triggerFormUpdate('program_from', 'end_time', endTime);
 	}
 	componentDidMount(){
-		LazyLoad('datetimerangepicker');				
+		LazyLoad('datetimerangepicker');	
 	}
 	componentWillReceiveProps(nextProps){
 		var {editable, main: {program_info}} = this.props;
@@ -192,8 +195,6 @@ class ManageForm extends Component{
 			if(editable){
 				var start_time = nextProps.main.program_info.start_time;
 				var end_time = nextProps.main.program_info.end_time;
-				start_time = start_time.replace(/-/g, '/');
-				end_time = end_time.replace(/-/g, '/');
 				start_time = new Date(start_time);
 				end_time = new Date(end_time);
 				this.setState({
@@ -201,12 +202,14 @@ class ManageForm extends Component{
 					end_time: end_time,
 				})	
 			}	
-			var m = '';
 		}
 	}
 	submit(){
 		var m = $(findDOMNode(this.refs.datej));
 		var a= 1-1;
+	}
+	onDeleteProduct(id){
+		this.props.actions.deleteProduct(id);
 	}
 }
 
@@ -214,7 +217,7 @@ ManageForm = reduxForm({
 	form: 'program_from',
 	fields: [
 		'province_id',
-		'city_id',
+		'regionalism_id',
 		'src_id',
 		'name',
 		'start_time',
@@ -235,7 +238,7 @@ export default ManageForm;
 	    form: 'program_from',
 	    fields: [
 	    	'province_id',
-	    	'city_id',
+	    	'regionalism_id',
 	    	'src_id',
 	    	'begin_time',
 	    	'end_time',

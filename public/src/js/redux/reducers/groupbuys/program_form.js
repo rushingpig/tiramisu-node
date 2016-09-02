@@ -7,24 +7,44 @@ import { area } from '../area_select';
 import clone from 'clone';
 
 var main_state = {
+	
+	program_info: {},
+	order_srcs: [],
+
 	list: [],
 	total: 0,
 	page_no: 0,
-	program_info: {},
-	order_srcs: [],
+	pd_cates: [],
+	pri_pd_cates: [],
+	sec_pd_cates: [],
+	selected_list: [],
 }
 
 function main(state = main_state, action){
 	switch(action.type){
 		case Actions.SEARCH_GROUPBUYS_PRODUCTS:
-			return {...state, ...action.data}
+			var {list } = action.data;
+			list = list.map( m => {
+				if(state.selected_list.every( n => n.id !== m.id)){
+					m.checked = false;
+				}else{
+					m.checked = true;
+				}
+				return m;
+			})
+			return {...state, ...action.data, list: list}
 		case Actions.GET_GROUPBUY_PROGRAM_DETAIL:
-			/*var data = clone(action.data);
-			var start_time = data.start_time.replace(/-/g, '/');
-			var end_time = data.end_time.replace(/-/g, '/');
-			data.start_time = new Date(start_time);
-			data.end_time = new Date(end_time);*/
-			return {...state, program_info: action.data}
+			var data = clone(action.data);
+			var iNow = new Date();
+			data.start_time = new Date(data.start_time);
+			data.end_time = new Date(data.end_time);
+			data.products = data.products.map ( m => {
+				m.is_new = 0;
+				return m;
+			})
+			return {...state, program_info: data, selected_list: data.products}
+		case Actions.RESET_GROUPBUY_PROGRAM:
+			return {...state, program_info: {}, selected_list: []}
 		case Actions.GOT_ORDER_SRCS:
 			var {data} = action;
 			var group_site_id = SRC.group_site;
@@ -33,6 +53,33 @@ function main(state = main_state, action){
 		case Actions.CHANGE_ONLINE_TIME:
 			var {beginTime, endTime } = action;
 			return state;
+		case Actions.GOT_CATEGORIES:
+			var {data} = action;
+			var pri_pd_cates = data.filter( m => m.parent_id == 0);
+			return {...state, pri_pd_cates: pri_pd_cates.map( m => ({id: m.id, text: m.name})), pd_cates: data}
+		case Actions.GOT_SEC_CATEGORIES:
+			var {id } = action;
+			var sec_pd_cates = state.pd_cates.filter( m => m.parent_id == id);
+			return {...state, sec_pd_cates: sec_pd_cates.map( m => ({id: m.id, text: m.name}))}
+		case Actions.SELECT_PRODUCT:
+			var {list } = state;
+			list.forEach( m => {
+				if(m.id == action.data.id){
+					m.checked = !m.checked;
+				}
+			})
+			return {...state, selected_list: [...state.selected_list, action.data], list: list}
+		case Actions.DELETE_SELECT_PRODUCT:
+			var {list} = state;
+			list.forEach( m => {
+				if(m.id === action.id){
+					m.checked = !m.checked;
+				}
+			})
+			var new_selected_list = state.selected_list.filter( m => m.id !== action.id)
+			return {...state, selected_list: new_selected_list}
+		case Actions.CANCEL_SELECT_PRODUCT:
+			return {...state, selected_list: state.program_info.products}
 		default:
 			return state;
 	}

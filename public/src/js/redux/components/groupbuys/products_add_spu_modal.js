@@ -20,7 +20,7 @@ class ProductSet extends Component{
 					<td>
 						{data.spu_id}
 					</td>
-					<td>{data.name}</td>
+					<td>{data.product_name}</td>
 					<td>{data.is_online == 1 ? '是' : '否'}</td>
 					<td>{data.category_name + '/' + data.category_parent_name}</td>
 					<td>
@@ -110,7 +110,7 @@ export default class ProductsModal extends Component{
 				    			<td>
 				    				
 				    			</td>
-				    			<td>{selected_spu_info.name}</td>
+				    			<td>{selected_spu_info.product_name}</td>
 				    			<td>{selected_spu_info.spu_id}</td>
 				    			<td>{selected_spu_info.category_name + '/' + selected_spu_info.category_parent_name}</td>
 				    			<td>{selected_spu_info.is_online ===1 ? '是':'否'}</td>

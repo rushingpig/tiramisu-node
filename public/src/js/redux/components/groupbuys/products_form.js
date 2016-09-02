@@ -70,7 +70,7 @@ export default class ManageForm extends Component{
 						{
 							selected_spu_info && selected_spu_info.spu_id ?
 						[<div key='size_list_div' className = 'form-group form-inline'>
-							<header style = {{marginLeft: 60, marginBottom: 5, fontWeight: 'bold'}}>{'SPU(' + selected_spu_info.spu_id + ')　　' +selected_spu_info.name}</header>
+							<header style = {{marginLeft: 60, marginBottom: 5, fontWeight: 'bold'}}>{'SPU(' + selected_spu_info.spu_id + ')　　' +selected_spu_info.product_name}</header>
 							<table className='table text-center' style = {{width: 240, marginLeft: 60}}>
 								<thead>
 									<tr>

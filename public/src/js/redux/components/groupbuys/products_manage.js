@@ -49,13 +49,20 @@ class TopHeader extends Component{
 }
 
 class FilterHeader extends Component{
+	constructor(props){
+		super(props);
+		this.state = {
+			search_ing: false,
+			search_by_keywords_ing: false,
+		}
+	}
 	render(){
 		var { 
 			fields: {
 				keywords,
 				src_id,
-				pri_pd_cate,
-				sec_pd_cate,
+				category_parent_id,
+				category_id,
 				province_id,
 				city_id,
 				in_project,
@@ -68,17 +75,18 @@ class FilterHeader extends Component{
 		return(
 			<div className='panel panel-search'>
 				<div className='panel-body form-inline'>
-					<SearchInput {...keywords} placeholder = '商品名称' className = 'inline-block space-right'/> 
+					<SearchInput {...keywords} placeholder = '商品名称' searchHandler = {this.search.bind(this, 'search_by_keywords_ing')} className = 'inline-block space-right'/> 
 					<Select {...src_id} default-text='团购网站' options = {order_srcs} className='space-right'/>
-					<Select {...pri_pd_cate} default-text='一级分类' options = {pri_pd_cates} className='space-right' onChange = {this.onPriCateChange.bind(this)}/>
-					<Select {...sec_pd_cate} default-text='二级分类' options = {sec_pd_cates} className='space-right'/>
+					<Select {...category_parent_id} default-text='一级分类' options = {pri_pd_cates} className='space-right' onChange = {this.onPriCateChange.bind(this, category_parent_id.onChange)}/>
+					<Select {...category_id} default-text='二级分类' options = {sec_pd_cates} className='space-right'/>
 					<Select {...province_id} default-text='选择省份' options = { provinces } className='space-right'/>
 					<Select {...city_id} default-text='选择城市' options = {cities} className='space-right'/>
 					{'　属于团购项目：'}
 					<input {...in_project} checked = {in_project.value == 1} onClick = {this.onIsProgramChange.bind(this, in_project.onChange)}  type ='checkbox' />
 					{'　商城已上线：'}
 					<input {...is_online} checked = {is_online.value == 1} onClick = {this.onIsOnlineChange.bind(this, is_online.onChange)} type = 'checkbox' />{'　'}
-					<button className="btn btn-theme btn-xs">
+					<button className="btn btn-theme btn-xs"
+						onClick = {this.search.bind(this, 'search_ing')}>
 					  <i className="fa fa-search"></i>{' 搜索'}
 					</button>
 				</div>
@@ -100,10 +108,12 @@ class FilterHeader extends Component{
 		callback(e)
 	}
 	onPriCateChange(callback, e){
-		var {fields: { in_project }} = this.props;
-		var result = in_project.value === 1 ? 0: 1;
-		this.props.triggerFormUpdate('groupbuys_products_filter', 'in_project' ,result);
+		this.props.getSecCategories(e.target.value)
 		callback(e)
+	}
+	search(search_in_state){
+		this.setState({[search_in_state]: true});
+		this.props.getProductList({page_no: 0 ,page_size: 10,})
 	}
 
 }
@@ -113,8 +123,8 @@ FilterHeader = reduxForm({
 	fields: [
 		'keywords',
 		'src_id',
-		'pri_pd_cate',
-		'sec_pd_cate',
+		'category_parent_id',
+		'category_id',
 		'province_id',
 		'city_id',
 		'in_project',
@@ -162,7 +172,7 @@ class EditModal extends Component{
 	render(){
 		var {data, price} = this.state;
 		return (
-			<StdModal ref='modal' title = '编辑价格'>
+			<StdModal ref='modal' title = '编辑价格' onConfirm = {this.onConfirm.bind(this)}>
 				<header className = 'panel-heading'>{'SKU(' +data.sku_id + ')　　　' +  data.product_name }</header>
 				<div className='panel-body'>
 				<div className='form-group form-inline'>
@@ -207,6 +217,7 @@ class EditModal extends Component{
 		this.props.editSkuPrice(this.state.data.sku_id, this.state.price)
 			.done( () => {
 				Noty('success', '修改成功');
+				this.refs.modal.hide();
 			})
 			.fail(( msg, code) => {
 				Noty('error', msg || '网络故障，请稍后在试');
@@ -266,7 +277,7 @@ class ManagePannel extends Component{
 		return(
 			<div className='order-manage'>
 				<TopHeader />
-				<FilterHeader {...{pri_pd_cates, sec_pd_cates, order_srcs, area, getSecCategories, triggerFormUpdate}}/>
+				<FilterHeader {...{pri_pd_cates, sec_pd_cates, order_srcs, area, getSecCategories, triggerFormUpdate, getProductList}}/>
 				<div className='panel'>
           			<header className="panel-heading">团购商品列表</header>
           			<div className='panel-body'>

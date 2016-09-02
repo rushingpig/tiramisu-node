@@ -100,7 +100,7 @@ export default class CouponManagePannel extends Component{
 		}
 	}
 	render(){
-		var { total, page_no, list } = this.props.main;
+		/*var { total, page_no, list } = this.props.main;*/
 		return(
 			<div className = 'order-manage'>
 				<TopHeader />
@@ -127,12 +127,12 @@ export default class CouponManagePannel extends Component{
           				</table>
           			</div>
 				</div>
-				<Pagination 
+				{/*<Pagination 
 				  page_no={page_no} 
 				  total_count={total} 
 				  page_size={this.state.page_size} 
 				  onPageChange = {this.search.bind(this)}
-				/>					
+				/>*/}					
 				</div>
 			</div>
 			)

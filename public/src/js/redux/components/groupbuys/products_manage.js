@@ -114,6 +114,9 @@ class FilterHeader extends Component{
 	search(search_in_state){
 		this.setState({[search_in_state]: true});
 		this.props.getProductList({page_no: 0 ,page_size: 10,})
+			.always(()=>{
+			  this.setState({[search_in_state]: false});
+			});
 	}
 
 }

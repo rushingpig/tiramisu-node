@@ -29,6 +29,7 @@ import groupbuysProgramManage from './groupbuys/program_manage';
 import groupbuysProgramFormManage from './groupbuys/program_form';
 import groupbuysProductsManage from './groupbuys/products_manage';
 import groupbuysProductsFormManage from './groupbuys/products_form';
+import groupbuysCouponManage from './groupbuys/coupon_manage';
 
 const rootReducer = combineReducers({
   form,
@@ -61,6 +62,7 @@ const rootReducer = combineReducers({
   groupbuysProgramFormManage,
   groupbuysProductsManage,
   groupbuysProductsFormManage,
+  groupbuysCouponManage,
 });
 
 export default rootReducer

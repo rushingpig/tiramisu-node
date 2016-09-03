@@ -90,7 +90,10 @@ class FilterHeader extends Component{
 	}
 	search(search_in_state){
 		this.setState({[search_in_state]: true});
-		this.props.actions.getGroupbuyProgramList({page_no: 0, page_size: this.props.page_size});
+		this.props.actions.getGroupbuyProgramList({page_no: 0, page_size: this.props.page_size})
+			.always(()=>{
+			  this.setState({[search_in_state]: false});
+			});
 	}
 }
 

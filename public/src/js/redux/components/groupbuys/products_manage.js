@@ -142,7 +142,7 @@ class ProductRow extends Component{
 				<td>{data.size}</td>
 				<td>￥{data.price / 100}</td>
 				<td>{data.src_name}</td>
-				<td>{data.project_name ? data.project_name : '/'}</td>
+				<td>{data.group_project ? data.group_project : '/'}</td>
 				<td>{data.category_name}</td>
 				<td><span className = 'bg-warning bordered'>{data.city_name}</span>{ ' ' + data.province_name}</td>
 				<td>{data.is_online == 1? '是': '否'}</td>

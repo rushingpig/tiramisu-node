@@ -92,6 +92,22 @@ FilterHeader = reduxForm({
 	]
 })(FilterHeader)
 
+class CouponRow extends Component{
+	render(){
+		var {props} = this;
+		return (
+			<tr>
+				<td>{props.coupon}</td>
+				<td>{props.src_name}</td>
+				<td>{props.order_id}</td>
+				<td>{props.create_time}</td>
+				<td>{props.city_name}</td>
+				<td><a href='javascript:;'>[查看状态]</a></td>
+			</tr>
+			)
+	}
+}
+
 export default class CouponManagePannel extends Component{
 	constructor(props){
 		super(props);
@@ -121,9 +137,9 @@ export default class CouponManagePannel extends Component{
           							<th>操作</th>
           						</tr>
           					</thead>
-          					<tbody>
+          					{/*<tbody>
           						{tableLoader(loading || refresh, content)}
-          					</tbody>
+          					</tbody>*/}
           				</table>
           			</div>
 				</div>

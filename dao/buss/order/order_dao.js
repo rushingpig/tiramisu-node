@@ -801,7 +801,7 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
     }
   }
   if (query_data.src_id) {
-    sql += " and (src_id = ? or bos.parent_id = ?)";
+    sql += " and (bos.id = ? or bos.parent_id = ?)";
     params.push(query_data.src_id);
     params.push(query_data.src_id);
   }

@@ -399,7 +399,8 @@ class Main extends Component {
                       editAuth.push(
                         <Anchor
                           key="CategoryManageCheckPrimaryCategoryComment"
-                          data-category-id={props.id} onClick={props.showCommentHandler}
+                          data-category-id={primaryCategory.id}
+                          onClick={props.showComment.bind(null, primaryCategory.id)}
                         >
                           备注
                         </Anchor>

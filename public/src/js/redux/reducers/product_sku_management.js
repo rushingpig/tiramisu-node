@@ -26,11 +26,12 @@ const initialState = {
   citiesOptions:          new Map(),  // 城市配置缓存表
 
   orderSource:   new Map([[0, 'PC商城'], [1, '手机APP'], [2, '美团外卖']]),
+  originOrderSource: undefined, //备份
   provincesData: new Map(),
   citiesData:    new Map(),
   districtsData: new Map(),
 
-  specSet: new Set(),
+  specSet: [],
 
   selectedProvince: 0,
   selectedCity:     0,
@@ -168,42 +169,59 @@ const getCategoriesMap = categoriesData => {
 
 const getOrderSourcesMap = orderSourceData => {
   let orderSource = new Map();
-
-  orderSourceData.forEach(src => {
-    // src.id !== 1
+  var l1 = [], l2 = [];
+  orderSourceData.forEach(n => {
+    if(n.level == 1){
+      l1.push(n);
     // id为1是PC官网，禁止1是为了防止渠道设置里重复设置PC官网的渠道的规格
-    if (src.id !== 1 && src.level === 2) {
-      orderSource.set(src.id, src.name);
+    }else if(n.id !== 1 && n.level === 2){
+      l2.push(n);
     }
-  });
+  })
+  l2.forEach(n => {
+    for( var i = 0,len = l1.length; i < len; i++){
+      if( l1[i].id == n.parent_id ){
+        l1[i].srcs = [...(l1[i].srcs || []), n];
+        break;
+      }
+    }
+  })
+  // orderSourceData.forEach(src => {
+  //   // src.id !== 1
+  //   // id为1是PC官网，禁止1是为了防止渠道设置里重复设置PC官网的渠道的规格
+  //   if (src.id !== 1 && src.level === 2) {
+  //     orderSource.set(src.id, src.name);
+  //   }
+  // });
 
-  return orderSource;
+  // return orderSource;
+  return l1;
 }
 
-const resetSpecSet = state => {
-  let dataSet = new Set();
-  let getSpec = opt => dataSet.add(opt.spec);
+// const resetSpecSet = state => {
+//   let dataSet = new Set();
+//   let getSpec = opt => dataSet.add(opt.spec);
 
-  state.tempOptions.shopSpecifications.forEach(getSpec);
+//   state.tempOptions.shopSpecifications.forEach(getSpec);
 
-  [...state.tempOptions.sourceSpecifications.values()].forEach(arr => {
-    arr.forEach(getSpec);
-  });
+//   [...state.tempOptions.sourceSpecifications.values()].forEach(arr => {
+//     arr.forEach(getSpec);
+//   });
 
-  [...state.citiesOptions.values()].forEach(cityOpt => {
-    cityOpt.shopSpecifications.forEach(getSpec);
+//   [...state.citiesOptions.values()].forEach(cityOpt => {
+//     cityOpt.shopSpecifications.forEach(getSpec);
 
-    [...cityOpt.sourceSpecifications.values()].forEach(arr => {
-      arr.forEach(getSpec);
-    });
-  });
+//     [...cityOpt.sourceSpecifications.values()].forEach(arr => {
+//       arr.forEach(getSpec);
+//     });
+//   });
 
-  state.specSet = new Set([...state.specSet, ...dataSet]);
+//   state.specSet = [...state.specSet, ...dataSet];
 
-  return state;
-}
+//   return state;
+// }
 
-const getSizeArr = data => data.map(obj => obj.size);
+const getSizeArr = data => data.map((obj, i) => obj.size && ({id: i, text: obj.size})).filter(n => n);
 
 const switchType = {
   [ActionTypes.LOADED_BASIC_DATA]: (state, { categoriesData, orderSourceData, skuSizeData }) => {
@@ -215,13 +233,14 @@ const switchType = {
 
     return {
       ...initialState,
+      originOrderSource: orderSourceData,
       orderSource,
       basicDataLoadStatus: 'success',
       primaryCategories: primaryCategoriesMap,
       secondaryCategories: secondaryCategoriesMap,
       selectPrimaryCategory: firstID,
       selectSecondaryCategory: secondaryCategoriesMap.get(firstID)[0].id,
-      specSet: new Set(getSizeArr(skuSizeData))
+      specSet: getSizeArr(skuSizeData)
     };
   },
 
@@ -291,6 +310,7 @@ const switchType = {
       citiesOptionApplyRange: 1,
 
       orderSource,
+      originOrderSource: orderSourceData,
       provincesData,
       citiesData,
       districtsData,
@@ -298,7 +318,7 @@ const switchType = {
       cityOptionSavable: true,
       cityOptionSaved: true,
 
-      specSet: new Set(getSizeArr(skuSizeData))
+      specSet: getSizeArr(skuSizeData)
     }
 
     const setShopSpecification = sku => ({
@@ -375,7 +395,7 @@ const switchType = {
       state.tempOptions.selectedSource = [...state.tempOptions.sourceSpecifications.keys()][0];
     }
 
-    return resetSpecSet(state);
+    return state;
   },
 
   [ActionTypes.CHANGE_PRODUCT_NAME]: (state, { name }) => {
@@ -490,28 +510,30 @@ const switchType = {
 
     const citiesOptionsKeySet = new Set([...state.citiesOptions.keys()]);
 
-    const citiesDataKeySet = new Set([...citiesData.keys()]);
-    const diff = [...citiesOptionsKeySet].filter(x => !citiesDataKeySet.has(x) && x !== 'all');
+    //删除暂存区数据
+    // const citiesDataKeySet = new Set([...citiesData.keys()]);
+    // const diff = [...citiesOptionsKeySet].filter(x => !citiesDataKeySet.has(x) && x !== 'all');
 
-    diff.forEach(deleteId => {
-      const deletedOption = clone(state.citiesOptions.get(deleteId));
-      let deletedSku = [];
+    // diff.forEach(deleteId => {
+    //   const deletedOption = clone(state.citiesOptions.get(deleteId));
+    //   let deletedSku = [];
 
-      const getSkuID = data => {
-        if (data.id !== 0) {
-          deletedSku.push(data.id);
-        }
-      }
+    //   const getSkuID = data => {
+    //     if (data.id !== 0) {
+    //       deletedSku.push(data.id);
+    //     }
+    //   }
 
-      deletedOption.shopSpecifications.forEach(getSkuID);
-      [...deletedOption.sourceSpecifications.values()].forEach(
-        data => data.forEach(getSkuID)
-      );
+    //   deletedOption.shopSpecifications.forEach(getSkuID);
+    //   [...deletedOption.sourceSpecifications.values()].forEach(
+    //     data => data.forEach(getSkuID)
+    //   );
 
-      state.deletedSku = [...state.deletedSku, ...deletedSku];
-      state.citiesOptions.delete(deleteId);
-    });
+    //   state.deletedSku = [...state.deletedSku, ...deletedSku];
+    //   state.citiesOptions.delete(deleteId);
+    // });
 
+    //显示默认值
     if (state.citiesOptions.has(selectedCity)) {
       state.tempOptions = clone(state.citiesOptions.get(selectedCity));
       state.cityOptionSaved = true;
@@ -719,19 +741,15 @@ const switchType = {
       cost: 0.01,
       hasEvent: false,
       eventCost: 0.01,
-      eventTime: [now, new Date(getDate(now, 7))]
-    }
-
-    if (shopSpecifications.length > 0) {
-      newShopSpecifications = clone(shopSpecifications[shopSpecifications.length - 1]);
-      newShopSpecifications.id = 0;
+      eventTime: [now, new Date(getDate(now, 7))],
+      _new: true, //代表新增
     }
 
     shopSpecifications.push(newShopSpecifications);
 
     state.cityOptionSaved = false;
 
-    return state;
+    return tempOptionsValidator(state);
   },
 
   [ActionTypes.CHANGE_SHOP_SPECIFICATIONS]: (state, { index, spec }) => {
@@ -824,18 +842,14 @@ const switchType = {
     let sourceSpec = {
       id: 0,
       spec: '',
-      cost: 0.01
+      cost: 0.01,
+      _new: true, //代表新增
     };
-
-    if (source.length > 0) {
-      sourceSpec = clone(source[source.length - 1]);
-      sourceSpec.id = 0;
-    }
 
     source.push(sourceSpec);
     state.cityOptionSaved = false;
 
-    return state;
+    return tempOptionsValidator(state);
   },
 
   [ActionTypes.REMOVE_SOURCE_SPEC]: (state, { index }) => {
@@ -864,7 +878,7 @@ const switchType = {
     return tempOptionsValidator(state);
   },
 
-  [ActionTypes.RESET_SPEC_SET]: resetSpecSet,
+  // [ActionTypes.RESET_SPEC_SET]: resetSpecSet,
 
   [ActionTypes.SAVE_CITIY_OPTION]: state => {
 

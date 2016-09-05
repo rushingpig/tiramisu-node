@@ -275,6 +275,10 @@ const changeActiveCitiesOption = option => (
         citiesSelectorState: clone(getState().citiesSelector),
         isSelectedAllCity: true
       });
+    }else{
+      dispatch({
+        type: CitiesSelectorActionTypes.RESTORE_CHECKED_CITIES
+      })
     }
   }
 );
@@ -478,11 +482,11 @@ const createShopSpecifications = () => {
   }
 }
 
-const changeShopSpecifications = (index, spec) => {
+const changeShopSpecifications = (index, specInfo) => {
   return {
     type: ActionTypes.CHANGE_SHOP_SPECIFICATIONS,
     index,
-    spec
+    spec: specInfo.text
   }
 }
 
@@ -573,11 +577,11 @@ const removeSourceSpec = index => {
   }
 }
 
-const changeSourceSpec = (index, spec) => {
+const changeSourceSpec = (index, specInfo) => {
   return {
     type: ActionTypes.CHANGE_SOURCE_SPEC,
     index,
-    spec
+    spec: specInfo.text
   }
 }
 
@@ -732,51 +736,54 @@ const saveOption = () => (
       });
 
     } else { // state.citiesOptionApplyRange === 1
-      [...state.citiesOptions].forEach(([cityId, cityOption]) => {
-        if (cityId === 'all')
-          return;
+      let checkedCities = [...citiesSelectorState.checkedCities];
+      [...state.citiesOptions]
+        .filter( ([cityId]) => checkedCities.some(id => id == cityId) )
+        .forEach(([cityId, cityOption]) => {
+          if (cityId === 'all')
+            return;
 
-        const shangjiaOpt = cityOption.isPreSale ? transformShangjiaOption(cityOption) : {};
+          const shangjiaOpt = cityOption.isPreSale ? transformShangjiaOption(cityOption) : {};
 
-        if (state.citiesOptionApplyRange === 1 && cityOption.hasSecondaryBookingTime) {
-          shangjiaOpt.secondary_booktimes = [...cityOption.applyDistrict].map(
-            districtCode => ({
-              book_time: cityOption.secondaryBookingTime,
-              regionalism_id: Number(districtCode)
-            })
-          );
-        }
-
-        let sourceSpecifications = [];
-
-        [...cityOption.sourceSpecifications]
-          .map(transformSourceSpecificationOption)
-          .forEach(srcArr => {
-            srcArr.map(
-              opt => sourceSpecifications.push({
-                ...shangjiaOpt,
-                ...opt
+          if (state.citiesOptionApplyRange === 1 && cityOption.hasSecondaryBookingTime) {
+            shangjiaOpt.secondary_booktimes = [...cityOption.applyDistrict].map(
+              districtCode => ({
+                book_time: cityOption.secondaryBookingTime,
+                regionalism_id: Number(districtCode)
               })
-            )
+            );
+          }
+
+          let sourceSpecifications = [];
+
+          [...cityOption.sourceSpecifications]
+            .map(transformSourceSpecificationOption)
+            .forEach(srcArr => {
+              srcArr.map(
+                opt => sourceSpecifications.push({
+                  ...shangjiaOpt,
+                  ...opt
+                })
+              )
+            });
+
+          let shopSpecifications = [];
+
+          shopSpecifications = cityOption.shopSpecifications
+            .map(transformShopSpecificationOption)
+            .map( opt => ({ ...shangjiaOpt, ...opt }) );
+
+          const addCityOption = opt => ({
+            regionalism_id: cityId,
+            book_time: cityOption.bookingTime,
+            ...opt
           });
 
-        let shopSpecifications = [];
+          const specifications = [...shopSpecifications, ...sourceSpecifications];
 
-        shopSpecifications = cityOption.shopSpecifications
-          .map(transformShopSpecificationOption)
-          .map( opt => ({ ...shangjiaOpt, ...opt }) );
-
-        const addCityOption = opt => ({
-          regionalism_id: cityId,
-          book_time: cityOption.bookingTime,
-          ...opt
+          editSku = [...specifications.filter(opt => opt.id !== 0).map(addCityOption), ...editSku];
+          newSku = [...specifications.filter(opt => opt.id === 0).map(addCityOption), ...newSku];
         });
-
-        const specifications = [...shopSpecifications, ...sourceSpecifications];
-
-        editSku = [...specifications.filter(opt => opt.id !== 0).map(addCityOption), ...editSku];
-        newSku = [...specifications.filter(opt => opt.id === 0).map(addCityOption), ...newSku];
-      });
     }
 
     if (addMode) {
@@ -801,7 +808,7 @@ const saveOption = () => (
         dispatch({
           type: ActionTypes.SAVE_OPTION,
           saveStatus: 'success',
-          newProductId: data.productId,
+          newProductId: addMode ? data.productId : undefined,
         });
       }
     ).catch(

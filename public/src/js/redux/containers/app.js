@@ -105,6 +105,7 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
       require.ensure([], require => {
         components = {...components,
           HomePageControl:          require('../components/operation/home_page_control_pannel'),
+          ProductSizeManage:        require('../components/operation/product_size_manage'),
         }
         callback();
       })
@@ -208,6 +209,7 @@ const App = () => (
 
       <Route path="opm" onEnter={getComponents('opm')}>
         <Route path="hpc" onEnter={onEnter('HomePageControlAccess')} getComponent={get('HomePageControl')} />
+        <Route path="psm" onEnter={onEnter('ProductSizeManageAccess')} getComponent={get('ProductSizeManage')} />
       </Route>
 
       <Route path="cosm" onEnter={getComponents('cosm', onEnter('CustomerManageAccess'))}>

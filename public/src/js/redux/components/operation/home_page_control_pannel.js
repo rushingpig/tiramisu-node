@@ -39,7 +39,6 @@ const TopHeader = getTopHeader(
 );
 
 const ApplicationRange = props => {
-  const hasCached = props.cached.some(n => n.city_id == props.city_id);
   return (
     <div 
       className="panel"
@@ -79,16 +78,16 @@ const ApplicationRange = props => {
                   value={props.city_id}
                   className="space-right"
                   list={props.cities}
-                  onChange={(value) => {props.actions.selectCity(value);props.getProductInfo(value)}}
+                  onChange={props.actions.selectCity}
                 />
                 <button
                   onClick={props.actions.cacheInfo}
-                  disabled={!props.city_id || hasCached}
+                  disabled={!props.city_id || props.has_cached || !props.submitable}
                   className="btn btn-xs btn-theme"
                   >
-                  {hasCached ? '已缓存' : '保存城市配置'}
+                  {props.has_cached ? '已缓存' : '保存城市配置'}
                 </button>
-                {hasCached ? null : <span>（暂存当前城市设置）</span>}
+                {props.has_cached ? null : <span>（暂存当前城市设置）</span>}
               </FormGroup>
             : null
         }
@@ -262,17 +261,6 @@ class Main extends Component {
     //which用以区分是添加哪里的图片
     this.refs.selectImgModal.show(which);
   }
-  // getProductInfo(city_id){
-  //   var product_id = this.props.params.productId;
-  //   var regionalism_id = city_id || this.props.applicationRange.city_id;
-  //   if(!product_id || !regionalism_id){
-  //     Noty('error', '页面有错误！'); return;
-  //   }
-  //   if(this.__getProInfoReques){
-  //     this.__getProInfoReques.abort(); //取消上一次数据请求
-  //   }
-  //   this.__getProInfoReques = this.props.actions.getProductInfo({ product_id, regionalism_id })
-  // }
   
   submit(){
     const { props, props: { banners } } = this;

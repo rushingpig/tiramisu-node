@@ -117,6 +117,7 @@ const switchType = {
             selectedProvince: 0,
             checkedProvinces,
             checkedCities,
+            originCheckedProvinces: new Set([...checkedProvinces]),
             originCheckedCities: new Set([...checkedCities])
         };
     },
@@ -281,6 +282,8 @@ const switchType = {
 
         return {
             ...state,
+            originCheckedProvinces: state.checkedProvinces,
+            originCheckedCities: state.checkedCities,
             checkedCities,
             checkedProvinces
         };
@@ -291,6 +294,15 @@ const switchType = {
             ...state,
             checkedCities: new Set(),
             checkedProvinces: new Set()
+        };
+    },
+
+    [ActionTypes.RESTORE_CHECKED_CITIES]: state => {
+        return {
+            ...state,
+            selectedProvince: initialState.selectedProvince,
+            checkedCities: clone(state.originCheckedCities),
+            checkedProvinces: clone(state.originCheckedProvinces),
         };
     },
 };

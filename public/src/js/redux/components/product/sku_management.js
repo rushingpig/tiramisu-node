@@ -7,6 +7,7 @@ import DateTimeRangePicker from 'react-bootstrap-datetimerange-picker';
 import MessageBox, { MessageBoxIcon, MessageBoxType } from 'common/message_box';
 import CitiesSelector from 'common/cities_selector';
 import DropDownMenu from 'common/dropdown';
+import SearchList from 'common/search_list';
 import getTopHeader from '../top_header';
 import LazyLoad from 'utils/lazy_load';
 
@@ -32,6 +33,10 @@ const Col = props => {
     className += (' col-xs-' + props.xs);
   if (props.offset)
     className += (' col-xs-offset-' + props.offset);
+  if (props.lg)
+    className += (' col-lg-' + props.lg);
+  if (props.lgOffset)
+    className += (' col-lg-offset-' + props.lgOffset);
 
   return (<div className={className.trim()} {...props} />);
 }
@@ -62,7 +67,7 @@ const tabContentBoxStyle = {
   borderTop: 'none',
   boxShadow: 'none'
 }
-const pickerStyle = { width: 260, textAlign: 'center' }
+const pickerStyle = { width: 270, textAlign: 'center' }
 const inputStyle = { width: 70 }
 const redBorder = { borderColor: "#f00" }
 const warningInputStyle = { width: 70, ...redBorder }
@@ -91,8 +96,16 @@ class BasicOptions extends Component {
       <FormHorizontal>
         <FormGroup>
           <ControlLabel xs='2'>商品名称：</ControlLabel>
-          <Col xs="4">
-            <Input type="text" autoFocus={true} onChange={getDOMValue(Action.changeProductName)} value={state.productName} />
+          <Col xs="3">
+            <FormInline>
+              <Input
+                type="text"
+                autoFocus={true}
+                disabled={!state.addMode}
+                value={state.productName}
+                onChange={getDOMValue(Action.changeProductName)}
+              />
+            </FormInline>
           </Col>
         </FormGroup>
         <FormGroup>
@@ -263,12 +276,12 @@ class ShopSpecificationsOptions extends Component {
 
     return (
       <FormGroup>
-        <ControlLabel xs='2'>
+        <ControlLabel xs='2' lg="2">
           商城规格：
           <br/>
           <small className="text-muted">原价为商城详情页显示价格，价格栏为商城实际销售价格</small>
         </ControlLabel>
-        <Col xs="9">
+        <Col xs="9" lg="7">
           <table className="table table-bordered table-striped">
             <thead>
               <tr>
@@ -290,13 +303,11 @@ class ShopSpecificationsOptions extends Component {
                     <tr key={index}>
                       <td>
                         <center>
-                          <Input
-                            type="text"
-                            style={detail.spec.trim() === "" ? warningInputStyle : inputStyle}
-                            list="spec"
-                            onBlur={Action.resetSpecSet}
+                          <SearchList
                             value={detail.spec}
-                            onChange={getSpecInputValue(index, Action.changeShopSpecifications)}
+                            disabled={!state.addMode && !detail._new}
+                            onChoose={Action.changeShopSpecifications.bind(null, index)}
+                            data={state.specSet}
                           />
                         </center>
                       </td>
@@ -402,7 +413,7 @@ class SourceOptions extends Component {
     return (
       <FormGroup>
         <ControlLabel xs='2'>渠道设置：</ControlLabel>
-        <Col xs="2">
+        <Col xs="3" lg="2">
           <div className="list-group">
             {
               [...tempOptions.sourceSpecifications].map(
@@ -414,7 +425,7 @@ class SourceOptions extends Component {
                       onClick={e => Action.changeSelectedSource(sid)}
                     >
                       <span style={pointCursor}>
-                        {state.orderSource.get(sid)}
+                        {state.originOrderSource.find(n => n.id == sid).name}
                       </span>
                       <span className="pull-right">
                         <i
@@ -431,9 +442,19 @@ class SourceOptions extends Component {
             <div className="list-group-item" style={{display:'flex'}}>
               <select className="form-control input-xs" style={{flex:1, marginRight:10}} ref='sourceList'>
                 {
-                  [...state.orderSource].map(([id, name]) => (
-                    <option key={id} value={id}>{name}</option>
-                  ))
+                  state.orderSource.map(({id, name, srcs}) => {
+                    if(srcs && srcs.length){
+                      return (
+                        <optgroup key={id} label={name}>
+                          {
+                            srcs.map( n => <option key={n.id} value={n.id}>{n.name}</option> )
+                          }
+                        </optgroup>
+                      )
+                    }else{
+                      return <option key={id} value={id}>{name}</option>
+                    }
+                  })
                 }
               </select>
               <button className="btn btn-default btn-xs" onClick={this.handleAddSource}>
@@ -442,7 +463,7 @@ class SourceOptions extends Component {
             </div>
           </div>
         </Col>
-        <Col xs="5">
+        <Col xs="6" lg="5">
           <div className="panel">
             <div className="panel-heading">
               <div className="panel-title">
@@ -478,21 +499,22 @@ class SourceOptions extends Component {
                     sourceSpecification.map((detail, index) => (
                       <tr key={index}>
                         <td>
-                          <Input
-                            type='text'
+                          <SearchList
                             value={detail.spec}
-                            list="spec"
-                            onBlur={Action.resetSpecSet}
-                            onChange={this.handleChangeSourceSpec.bind(this, index)}
+                            disabled={!state.addMode && !detail._new}
+                            onChoose={Action.changeSourceSpec.bind(null, index)}
+                            data={state.specSet}
                           />
                         </td>
                         <td>
-                          <Input
-                            step="0.01"
-                            min="0.01"
-                            value={detail.cost}
-                            onChange={this.handleChangeSourceSpecCost.bind(this, index)}
-                          />
+                          <div className="inline-block">
+                            <Input
+                              step="0.01"
+                              min="0.01"
+                              value={detail.cost}
+                              onChange={this.handleChangeSourceSpecCost.bind(this, index)}
+                            />
+                          </div>
                         </td>
                         <td>
                           <Anchor onClick={Action.removeSourceSpec.bind(undefined, index)}>
@@ -602,35 +624,39 @@ class CitiesOptions extends Component {
 
     return (
       <FormHorizontal>
-        <FormGroup>
-          <ControlLabel xs='2'>应用范围：</ControlLabel>
-          <Col xs='10'>
-            <p>
-              <RadioInline key="radio">
-                <Radio
-                  disabled={!state.addMode}
-                  name="citiesOptionApplyRange"
-                  value="0"
-                  checked={state.citiesOptionApplyRange === 0}
-                  readOnly={state.citiesOptionApplyRange === 0}
-                  {...state.citiesOptionApplyRange === 0 ? {} : {onChange: getDOMValue(Action.changeCitiesOptionApplyRange)}}
-                />
-                {' 全部一致'}
-              </RadioInline>
-              <RadioInline>
-                <Radio
-                  disabled={!state.addMode}
-                  name="citiesOptionApplyRange"
-                  value="1"
-                  checked={state.citiesOptionApplyRange === 1}
-                  readOnly={state.citiesOptionApplyRange === 1}
-                  {...state.citiesOptionApplyRange === 1 ? {} : {onChange: getDOMValue(Action.changeCitiesOptionApplyRange)}}
-                />
-                {' 独立配置'}
-              </RadioInline>
-            </p>
-          </Col>
-        </FormGroup>
+        {
+          state.addMode
+            ? <FormGroup>
+                <ControlLabel xs='2'>应用范围：</ControlLabel>
+                <Col xs='10'>
+                  <p>
+                    <RadioInline key="radio">
+                      <Radio
+                        disabled={!state.addMode}
+                        name="citiesOptionApplyRange"
+                        value="0"
+                        checked={state.citiesOptionApplyRange === 0}
+                        readOnly={state.citiesOptionApplyRange === 0}
+                        {...state.citiesOptionApplyRange === 0 ? {} : {onChange: getDOMValue(Action.changeCitiesOptionApplyRange)}}
+                      />
+                      {' 全部一致'}
+                    </RadioInline>
+                    <RadioInline>
+                      <Radio
+                        disabled={!state.addMode}
+                        name="citiesOptionApplyRange"
+                        value="1"
+                        checked={state.citiesOptionApplyRange === 1}
+                        readOnly={state.citiesOptionApplyRange === 1}
+                        {...state.citiesOptionApplyRange === 1 ? {} : {onChange: getDOMValue(Action.changeCitiesOptionApplyRange)}}
+                      />
+                      {' 独立配置'}
+                    </RadioInline>
+                  </p>
+                </Col>
+              </FormGroup>
+            : null
+        }
         {
           state.citiesOptionApplyRange === 0 ? null : (
             <FormGroup>
@@ -653,13 +679,11 @@ class CitiesOptions extends Component {
                 />
                 {'　'}
                 {
-                  (state.selectedCity !== 0 && state.cityOptionSavable) ? state.cityOptionSaved ? (
-                    <button className="btn btn-default btn-xs" disabled={true}>已保存</button>
-                  ) : (
-                    <button className="btn btn-theme btn-xs" onClick={Action.saveCityOption}>保存城市设置</button>
-                  ) : (
-                    <button className="btn btn-default btn-xs" disabled={true}>保存城市设置</button>
-                  )
+                  (state.selectedCity !== 0 && state.cityOptionSavable)
+                    ? state.cityOptionSaved
+                      ? <button className="btn btn-default btn-xs" disabled={true}>已保存</button>
+                      : <button className="btn btn-theme btn-xs" onClick={Action.saveCityOption}>保存城市设置</button>
+                    : <button className="btn btn-default btn-xs" disabled={true}>保存城市设置</button>
                 }
                 {'　'}
                 <small className="text-muted">（暂存当前城市配置）</small>
@@ -769,6 +793,10 @@ class Main extends Component {
       enableSaveButton = false;
     }
 
+    if (!state.cityOptionSavable) {
+      enableSaveButton = false;
+    }
+
     const TopHeader = switchTopHeader(state.addMode);
 
     return (
@@ -825,11 +853,6 @@ class Main extends Component {
             </div>
           </div>
         </div>
-        <datalist id="spec">
-          {
-            [...state.specSet].map(name => (<option key={name} value={name} />))
-          }
-        </datalist>
       </div>
     );
   }
@@ -869,7 +892,7 @@ class Main extends Component {
             city_id = [...state.citiesOptions.keys()][1];
           }
         }
-        history.push(`/pm/sku_manage/edit_website/${state.newProductId+'#'+city_id}`);
+        history.push(`/pm/sku_manage/edit_website/${state.addMode ? state.newProductId : state.productId +'#'+city_id}`);
         Action.resetSaveStatus();
       }, () => {
         Action.resetSaveStatus();

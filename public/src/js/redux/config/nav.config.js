@@ -129,6 +129,11 @@ export default [{
     "name": "首页运营控制",
     "icon": "",
     "link": "/opm/hpc"
+  }, {
+    "key": "ProductSizeManageAccess",
+    "name": "规格配置管理",
+    "icon": "",
+    "link": "/opm/psm"
   }]
 }, {
   "key": "authority_manage",

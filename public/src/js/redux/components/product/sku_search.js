@@ -18,6 +18,7 @@ const Input = props => (<input type="text" className="form-control input-xs" {..
 const getDOMValue = func => (event, ...args) => func.apply(undefined, [event.currentTarget.value, ...args]);
 const underlineStyle = { textDecoration:'underline' };
 const Anchor = props => (<a style={underlineStyle} href="javascript:;" {...props} />);
+const Span = props => (<span className="theme">{props.children}</span>);
 
 const TopHeader = getTopHeader([{name: '产品管理', link: ''}, {name: '搜索商品', link: '/pm/sku_manage'}]);
 
@@ -305,10 +306,10 @@ class Main extends Component {
                     <tr key={i}>
                       <td><CheckBox checked={state.checkedRow.has(i)} onChange={e => Action.selectRow(i)} /></td>
                       <td>{row.spu}</td>
-                      <td><Anchor>{row.name}</Anchor></td>
+                      <td><span className="">{row.name}</span></td>
                       <td>{'¥ '}{(row.price/100).toFixed(2)}</td>
                       <td>
-                        <span className="text-primary">{row.primary_cate_name}</span><br/>
+                        <span className="">{row.primary_cate_name}</span><br/>
                         <span className="text-muted">{row.secondary_cate_name}</span>
                       </td>
                       <td>
@@ -317,9 +318,9 @@ class Main extends Component {
                       <td>
                         {
                           row.isMall ? (
-                            <span className="text-primary">是</span>
+                            <span className="">是</span>
                           ) : (
-                            <span className="text-primary">否</span>
+                            <span className="">否</span>
                           )
                         }
                       </td>
@@ -329,14 +330,14 @@ class Main extends Component {
                       <td>
                         {
                           row.isActivity ? (
-                            <span className="text-primary">是</span>
+                            <span className="">是</span>
                           ) : (
-                            <span className="text-primary">否</span>
+                            <span className="">否</span>
                           )
                         }
                       </td>
                       <td>
-                        <span className="text-primary">{row.province_name}</span>
+                        <span className="">{row.province_name}</span>
                         <br/>
                         {row.city_name}
                       </td>

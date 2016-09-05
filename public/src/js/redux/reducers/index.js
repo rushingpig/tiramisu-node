@@ -33,6 +33,7 @@ import invoiceManage from './order/invoice';
 import invoiceVATManage from './order/invoice_VAT';
 import operationHomePageControl from './operation_home_page_control';
 import customerManage from './customer_manage';
+import operationProductSizeManage from './operation_product_size_manage';
 
 const rootReducer = combineReducers({
   form,
@@ -68,7 +69,8 @@ const rootReducer = combineReducers({
   invoiceManage,
   invoiceVATManage,
   operationHomePageControl,
-  customerManage
+  customerManage,
+  operationProductSizeManage
 });
 
 export default rootReducer

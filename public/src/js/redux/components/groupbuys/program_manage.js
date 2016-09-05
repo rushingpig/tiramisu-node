@@ -15,6 +15,7 @@ import history from 'history_instance';
 import StdModal from 'common/std_modal';
 import { triggerFormUpdate } from 'actions/form';
 import LazyLoad from 'utils/lazy_load';
+import V from 'utils/acl';
 
 import * as GroupbuysProgramActions from 'actions/groupbuys/program_manage';
 import AreaActions from 'actions/area';
@@ -23,11 +24,17 @@ class TopHeader extends Component{
 	render() {
 		return (
 			<div className='clearfix top-header'>
-				<button
-				 onClick = {this.addProgram}
-				 className="btn btn-theme btn-xs pull-left">
-				   添加
-				</button>
+				{
+					V('GroupbuyProgramManageAdd')
+					?
+					<button
+					 onClick = {this.addProgram}
+					 className="btn btn-theme btn-xs pull-left">
+					   添加
+					</button>
+					:null
+				}
+				
 				<Linkers
 				  data={['团购管理', '团购项目列表']}
 				  active="团购项目列表"
@@ -126,10 +133,24 @@ var GroupbuyRow = React.createClass({
 					    className="btn btn-default btn-xs space-left copy-btn">复制</button>
 					<a href='javascript:;' ></a>
 				</td>
-				<td>
-					<a href='javascript:;' onClick = {this.viewGroupbuyInfoModal}>{'[查看]　'}</a>
-					<a href='javascript:;' onClick = {this.editHandler}>{'[编辑]　'}</a>
-					<a href='javascript:;' onClick = {this.viewMsgModal}>{'[下架]'}</a>
+				<td>{
+						V('GroupbuyProgramManageView')
+						?
+						<a href='javascript:;' onClick = {this.viewGroupbuyInfoModal}>{'[查看]　'}</a>
+						:null
+					}
+					{
+						V('GroupbuyProgramManageEdit')
+						?
+						<a href='javascript:;' onClick = {this.editHandler}>{'[编辑]　'}</a>
+						:null
+					}
+					{
+						V('GroupbuyProgramManageOffShelf')
+						?
+						<a href='javascript:;' onClick = {this.viewMsgModal}>{'[下架]'}</a>
+						:null
+					}
 				</td>
 			</tr>
 			)

@@ -20,21 +20,33 @@ import StdModal from 'common/std_modal';
 import * as GroupbuysProductsActions from 'actions/groupbuys/products_manage';
 import AreaActions from 'actions/area';
 import LazyLoad from 'utils/lazy_load';
+import V from 'utils/acl';
 
 class TopHeader extends Component{
 	render() {
 		return (
 			<div className='clearfix top-header'>
-				<button
-				 onClick = {this.addProduct.bind(this)}
-				 className="btn btn-theme btn-xs pull-left">
-				   添加
-				</button>				
-				<button
-				 style = {{marginLeft: 20}}
-				 className="btn btn-theme btn-xs pull-right">
-				   导出
-				</button>
+				{
+					V('GroupbuyProductManageAdd')
+					?
+					<button
+					 onClick = {this.addProduct.bind(this)}
+					 className="btn btn-theme btn-xs pull-left">
+					   添加
+					</button>
+					:null
+				}
+				{
+					V('GroupbuyProductManageExportExcel')
+					?
+					<button
+					 style = {{marginLeft: 20}}
+					 className="btn btn-theme btn-xs pull-right">
+					   导出
+					</button>
+					:null
+				}				
+				
 				<Linkers
 				  data={['团购管理', '团购商品列表']}
 				  active="团购商品列表"
@@ -150,8 +162,19 @@ class ProductRow extends Component{
 				<td><span className = 'bg-warning bordered'>{data.city_name}</span>{ ' ' + data.province_name}</td>
 				<td>{data.is_online == 1? '是': '否'}</td>
 				<td>
-					<a href='javascript:;' onClick = {this.viewEditModal.bind(this)}>[编辑价格]</a>{'　'}
-					<a href='javascript:;' onClick = {this.viewMsgModal.bind(this)}>[下架]</a>
+					{
+						V('GroupbuyProductManageEditPrice')
+						?
+						<a href='javascript:;' onClick = {this.viewEditModal.bind(this)}>[编辑价格]</a>
+						:null
+					}
+					{'　'}
+					{
+						V('GroupbuyProductManageOffshelf')
+						?
+						<a href='javascript:;' onClick = {this.viewMsgModal.bind(this)}>[下架]</a>
+						:null
+					}
 				</td>
 			</tr>
 			)
@@ -268,9 +291,9 @@ class ManagePannel extends Component{
 		}
 	}
 	render(){
-		var {page_no , total, main, actions, area, triggerFormUpdate} = this.props;
+		var {page_no , total, main, actions, area, } = this.props;
 		var { pri_pd_cates, sec_pd_cates, order_srcs, list, refresh, loading, total, page_no } = main;
-		var { getSecCategories, getProductList, editSkuPrice, offShelf } = actions;
+		var { getSecCategories, getProductList, editSkuPrice, offShelf, triggerFormUpdate } = actions;
 		var content = list.map( (m, i) => {
 			return (<ProductRow data = {m} key= {m.sku_id + ' ' + i} 
 				viewEditModal={ this.viewEditModal.bind(this)}

@@ -7,9 +7,13 @@ import { SRC, SELECT_DEFAULT_VALUE } from 'config/app.config';
 import { area } from '../area_select';
 import clone from 'clone';
 
+const iNow = new Date();
 var main_state = {
 	
-	program_info: {},
+	program_info: {
+		start_time: iNow,
+		end_time: new Date(getDate(iNow, 7))
+	},
 	order_srcs: [],
 
 	list: [],
@@ -41,7 +45,6 @@ function main(state = main_state, action){
 			return {...state, ...action.data, list: list}
 		case Actions.GET_GROUPBUY_PROGRAM_DETAIL:
 			var data = clone(action.data);
-			var iNow = new Date();
 			data.start_time = new Date(data.start_time);
 			data.end_time = new Date(data.end_time);
 			data.products = data.products.map ( m => {
@@ -50,7 +53,7 @@ function main(state = main_state, action){
 			})
 			return {...state, program_info: data, selected_list: data.products}
 		case Actions.RESET_GROUPBUY_PROGRAM:
-			return {...state, program_info: {}, selected_list: []}
+			return {...state, program_info: {start_time :iNow, end_time: new Date(getDate(iNow, 7))}, selected_list: []}
 		case Actions.GOT_ORDER_SRCS:
 			var {data} = action;
 			var group_site_id = SRC.group_site;

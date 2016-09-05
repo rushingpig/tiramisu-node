@@ -11,6 +11,7 @@ import Pagination from 'common/pagination';
 import { tableLoader, get_table_empty } from 'common/loading';
 import Linkers from 'common/linkers';
 import { Noty, dom } from 'utils/index';
+import V from 'utils/acl';
 
 import {SRC, SELECT_DEFAULT_VALUE } from 'config/app.config';
 
@@ -62,7 +63,7 @@ class FilterHeader extends Component{
 		return (
 			<div className='panel search'>
 				<div className = 'panel-body form-inline'>
-					<SearchInput {...coupon} className = 'form-inline v-img space-right' placeholder = '项目名称'
+					<SearchInput {...coupon} className = 'form-inline v-img space-right' placeholder = '团购券码'
 						searchHandler = {this.search.bind(this, 'search_by_keywords_ing')} />
 					{'开始时间'}
 					<DatePicker editable 
@@ -121,7 +122,14 @@ class CouponRow extends Component{
 				<td>{props.order_id}</td>
 				<td>{props.created_time}</td>
 				<td><span className = 'bg-warning bordered'>{props.city}</span>{ ' ' + props.province}</td>
-				<td><a href='javascript:;'>[查看状态]</a></td>
+				<td>
+					{
+						V('GroupbuyCouponManageViewStatus')
+						?
+						<a href='javascript:;'>[查看状态]</a>
+						:null
+					}
+				</td>
 			</tr>
 			)
 	}

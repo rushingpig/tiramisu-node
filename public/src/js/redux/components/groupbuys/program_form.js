@@ -23,7 +23,7 @@ const validate = (values, props) => {
 	var {form} = props;
 
 	function _v_text(key){
-	  if(form[key] && form[key].touched && (values[key] === undefined || values[key] == '')){
+	  if(form[key] && form[key].touched && (values[key] === undefined || values[key].trim() == '')){
 	    errors[key] = msg;
 	  }
 	}
@@ -39,7 +39,7 @@ const validate = (values, props) => {
 
 	_v_select('src_id');
 
-	_v_text('')
+	_v_text('name')
 
 	return errors;
 }
@@ -60,7 +60,6 @@ class TopHeader extends Component{
 		)
 	}
 }
-const iNow = new Date();
 
 class ManageForm extends Component{
 	constructor(props){
@@ -188,9 +187,13 @@ class ManageForm extends Component{
 	}
 	_check(callback,form_data){
 	  setTimeout(()=>{
-	      var {errors} =this.props;
+	      var {errors, main} =this.props;
+	      var {selected_list } = main;
 	      if(!Object.keys(errors).length){
-	        callback.call(this,form_data);  //以callback来代替this 调用
+	      	if(selected_list && selected_list.length)
+	        	callback.call(this,form_data);  //以callback来代替this 调用
+	        else
+	        	Noty('warning', '请选择商品')
 	      }else{
 	        Noty('warning','请填写完整');
 	      }

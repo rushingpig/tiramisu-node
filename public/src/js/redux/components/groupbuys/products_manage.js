@@ -154,6 +154,7 @@ class ProductRow extends Component{
 			<tr>
 				<td>{data.spu_id + '/' + data.sku_id}</td>
 				<td>{data.product_name}</td>
+				<td>{data.spu_name}</td>
 				<td>{data.size}</td>
 				<td>￥{data.price / 100}</td>
 				<td>{data.src_name}</td>
@@ -312,6 +313,7 @@ class ManagePannel extends Component{
           						<tr>
 	          						<th>spu编号/sku编号</th>
 	          						<th>团购商品名称</th>
+	          						<th>spu名称</th>
 	          						<th>规格</th>
 	          						<th>出售价格</th>
 	          						<th>团购网站</th>

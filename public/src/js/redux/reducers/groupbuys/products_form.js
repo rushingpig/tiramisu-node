@@ -47,11 +47,13 @@ function main(state = main_state, action){
 			var {id } = action;
 			var sec_pd_cates = state.pd_cates.filter( m => m.parent_id == id);
 			return {...state, sec_pd_cates: sec_pd_cates.map( m => ({id: m.id, text: m.name}))}
-		case Actions.SELECT_PRODUCT:
+		case Actions.SELECT_PRODUCT_SPU:
 			var {list} = state;
 			list .forEach( m => {
 				if(m.spu_id === action.data.spu_id){
 					m.checked = true;
+				}else{
+					m.checked = false;
 				}
 			})
 			var {sku_list} = action.data;

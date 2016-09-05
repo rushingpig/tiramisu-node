@@ -25,6 +25,7 @@ export default class ManageForm extends Component{
 			province_id: SELECT_DEFAULT_VALUE,
 			regionalism_id: SELECT_DEFAULT_VALUE,
 			src_id: SELECT_DEFAULT_VALUE,
+			product_name: '',
 
 			filter_sku_size_list: [],
 			sku_size_list: [],
@@ -36,7 +37,7 @@ export default class ManageForm extends Component{
 		var {actions : {
 			searchProducts, getSecCategories, getCategories, selectProduct, delSelectProduct, getAllSize, addSize
 		}} = this.props;
-		var { filter_sku_size_list, current_size, province_id, regionalism_id, src_id } = this.state;
+		var { filter_sku_size_list, current_size, province_id, regionalism_id, src_id, product_name } = this.state;
 		var add_btn_disabled = province_id === SELECT_DEFAULT_VALUE || regionalism_id === SELECT_DEFAULT_VALUE || src_id === SELECT_DEFAULT_VALUE;
 		var submit_btn_disabled = !(selected_spu_info && selected_spu_info.spu_id);
 		var sku_size_content = filter_sku_size_list.map( (n, i) => {
@@ -47,19 +48,19 @@ export default class ManageForm extends Component{
 					<header className='panel-heading'>团购商品详情</header>
 					<div className='panel-body'>
 						<div className='form-group form-inline'>
-							<label>团购城市：</label>
+							<label>{'　　团购城市：'}</label>
 							<Select default-text = '选择省份' className = "space-right" options = {provinces} onChange={this.onProvinceChange.bind(this)}/>
 							<Select default-text = '选择城市' options = {cities} onChange = {this.onCityChange.bind(this)}/>
 						</div>
 						<div className ='form-group form-inline gray'>
-							{'　　备注：团购商品的预约时间是默认此商品SPU整体的提前预约时间，如需更改请前往商品管理编辑修改'}
+							{'　　　　备注：团购商品的预约时间是默认此商品SPU整体的提前预约时间，如需更改请前往商品管理编辑修改'}
 						</div>
 						<div className='form-group form-inline'>
-							<label>团购网站：</label>
+							<label>{'　　团购网站：'}</label>
 							<Select options={ order_srcs } default-text='团购网站' onChange = {this.onSrcChange.bind(this)}/>
 						</div>
 						<div className='form-group form-inline'>
-							<label>选择商品：</label>
+							<label>{'　　选择商品：'}</label>
 							<button
 								disabled = {add_btn_disabled}
 							  	onClick = {this.add_spu.bind(this)}
@@ -69,7 +70,12 @@ export default class ManageForm extends Component{
 						</div>
 						{
 							selected_spu_info && selected_spu_info.spu_id ?
-						[<div key='size_list_div' className = 'form-group form-inline'>
+						[
+						<div key='product_name_div' className = 'form-group form-inline'>
+							<label>团购商品名称：</label>
+							<input type='text' value = {product_name}  className = 'form-control input-xs' onChange = {this.onProductNameChange.bind(this)} />
+						</div>,
+						<div key='size_list_div' className = 'form-group form-inline'>
 							<header style = {{marginLeft: 60, marginBottom: 5, fontWeight: 'bold'}}>{'SPU(' + selected_spu_info.spu_id + ')　　' +selected_spu_info.product_name}</header>
 							<table className='table text-center' style = {{width: 240, marginLeft: 60}}>
 								<thead>
@@ -100,10 +106,10 @@ export default class ManageForm extends Component{
 							</table>
 						</div>,
 						<div key='add_new_div' className='form-group form-inline'>
-							<label>新增SKU：</label>
+							<label>{'　　新增SKU：'}</label>
 							<input className = 'form-control input-xs space-right' style ={{marginBottom: 8}} type = 'text' 
 								onChange = {this.filterHandler.bind(this)} placeholder='输入关键字搜索规格'/><br />
-							{'　　规格：'}<select ref='size' className = 'form-control input-xs ' value = {current_size} onChange = {this.onSizeChange.bind(this)}>
+							{'　　　　规格：'}<select ref='size' className = 'form-control input-xs ' value = {current_size} onChange = {this.onSizeChange.bind(this)}>
 								{
 									sku_size_content.length?
 									sku_size_content:
@@ -135,8 +141,8 @@ export default class ManageForm extends Component{
 			)
 	}
 	onSubmit(){
-		var { regionalism_id, src_id } = this.state;
-		var data = {regionalism_id: regionalism_id, src_id}
+		var { regionalism_id, src_id, product_name } = this.state;
+		var data = {regionalism_id: regionalism_id, src_id, product_name}
 		this.props.actions.createGroupbuySKU(data)
 			.done( ()=> {
 				history.push('/gm/pd');
@@ -163,14 +169,20 @@ export default class ManageForm extends Component{
 	componentDidMount(){
 		LazyLoad('noty');
     	LazyLoad('chinese_py');
+    	this.props.actions.resetProduct();
 		this.props.actions.getProvincesSignal();
 		this.props.actions.getAllSize();
 	}
 	onSizeChange(e){
 		this.setState({current_size: e.target.value})
 	}
+	onProductNameChange(e){
+		this.setState({product_name: e.target.value});
+	}
 	componentWillReceiveProps(nextProps){
 	  var { main } = nextProps;
+	  var {selected_spu_info} = main;
+	  this.setState({product_name: selected_spu_info.product_name})
 	  var {sku_size_list, sku_size_load_success} = main;
 	  if(sku_size_load_success && sku_size_list && this.props.main.sku_size_list !== sku_size_list){
 	    var list = sku_size_list;

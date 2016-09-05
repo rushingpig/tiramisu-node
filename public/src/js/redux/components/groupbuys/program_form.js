@@ -237,7 +237,8 @@ class ManageForm extends Component{
 	}
 	componentDidMount(){
 		LazyLoad('noty');
-		LazyLoad('datetimerangepicker');	
+		LazyLoad('datetimerangepicker');
+		this.props.actions.resetGroupbuyProgram();	
 	}
 	componentWillReceiveProps(nextProps){
 		var {editable, main: {program_info}} = this.props;

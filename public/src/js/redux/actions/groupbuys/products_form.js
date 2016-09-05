@@ -40,7 +40,7 @@ export function getSecCategories(id){
 	}
 }
 
-export const SELECT_PRODUCT = 'SELECT_PRODUCT';
+export const SELECT_PRODUCT_SPU = 'SELECT_PRODUCT';
 export function selectProduct(spu_info){
 	/*return dispatch => {
 		return TEST({
@@ -48,7 +48,7 @@ export function selectProduct(spu_info){
 		}, SELECT_PRODUCT);
 	}*/
   return {
-    type: SELECT_PRODUCT,
+    type: SELECT_PRODUCT_SPU,
     data: spu_info,
   }
 }

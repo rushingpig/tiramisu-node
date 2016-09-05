@@ -15,7 +15,7 @@ class ProductSet extends Component{
 		return(
 				<tr className={data.is_available === 0 || data.checked ? 'gray': ''}>
 					<td>
-						<input checked = {data.checked} disabled = {data.is_available === 0 } type = 'radio' />
+						<input checked = {data.checked} disabled = {true} type = 'radio' />
 					</td>
 					<td>
 						{data.spu_id}

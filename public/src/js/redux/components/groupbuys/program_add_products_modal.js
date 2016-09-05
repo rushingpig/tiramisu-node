@@ -15,7 +15,7 @@ class ProductSet extends Component{
 		return(
 				<tr  className={data.is_available === 0 || data.checked ? 'gray' : ''} >
 					<td>
-						<input type = 'checkbox' checked = {data.checked} />
+						<input type = 'checkbox' checked = {data.checked} disabled = {true}/>
 					</td>
 					<td>
 						{data.product_name}

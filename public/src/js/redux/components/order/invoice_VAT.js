@@ -128,7 +128,7 @@ var CompanyRow = React.createClass({
 					{
 						V('InvoiceVATManageDel')
 						?
-						<a onClick = {this.delCompany} key='companyDel' >[删除]</a>
+						<a onClick = {this.delCompany} key='companyDel' href='javascript:;' >[删除]</a>
 						: null
 					}
 				</td>

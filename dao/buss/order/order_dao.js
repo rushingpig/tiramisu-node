@@ -1428,8 +1428,8 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
   return baseDao.trans().then(transaction => {
     return new Promise((resolve, reject) => {
       // 检查是否存在此merchant_id且非EXCEPTION的订单，返回错误
-      let sql = this.base_select_sql + 'and merchant_id = ? and status <> ?';
-      transaction.query(sql, [['id'], tables.buss_order, del_flag.SHOW, merchant_id, 'EXCEPTION'], (exist_err, result) => {
+      let sql = this.base_select_sql + 'and merchant_id = ? ';
+      transaction.query(sql, [['id'], tables.buss_order, del_flag.SHOW, merchant_id], (exist_err, result) => {
         if (exist_err) {
             return reject(new TiramisuError(errorMessage.SQL_ERROR, exist_err.message));
         }

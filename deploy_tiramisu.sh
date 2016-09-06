@@ -12,8 +12,9 @@ npm=`which npm`
 
 function init(){
 #export LD_LIBRARY_PATH=/opt/glibc-2.14/lib:$LD_LIBRARY_PATH
-  ${git} checkout -- . && \
+  ${git} stash && \
   ${git} pull && \
+  ${git} stash pop && \
   cd public && \
   ${npm} install && \
   cd .. && \

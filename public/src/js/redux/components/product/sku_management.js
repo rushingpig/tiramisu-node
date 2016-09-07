@@ -184,6 +184,7 @@ class BasicOptions extends Component {
               <Radio
                 name="aaa"
                 value="1"
+                onClick={e => this.setState({ showCitiesSelector: true })}
                 onChange={getDOMValue(Action.changeActiveCitiesOption)}
                 checked={state.activeCitiesOption === 1}
               />
@@ -776,6 +777,10 @@ class Main extends Component {
     if (
       state.productName.trim() === ''
     ) {
+      enableSaveButton = false;
+    }
+    
+    if(!state.citiesData.size){
       enableSaveButton = false;
     }
 

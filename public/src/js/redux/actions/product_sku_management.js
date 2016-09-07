@@ -269,17 +269,16 @@ const changeActiveCitiesOption = option => (
       dispatch({
         type: CitiesSelectorActionTypes.CHECK_ALL_CITIES
       });
-
-      dispatch({
-        type: CitiesSelectorActionTypes.CHANGED_CHECK_CITIES,
-        citiesSelectorState: clone(getState().citiesSelector),
-        isSelectedAllCity: true
-      });
     }else{
       dispatch({
         type: CitiesSelectorActionTypes.RESTORE_CHECKED_CITIES
       })
     }
+    dispatch({
+      type: CitiesSelectorActionTypes.CHANGED_CHECK_CITIES,
+      citiesSelectorState: clone(getState().citiesSelector),
+      isSelectedAllCity: Number(option) === 0
+    });
   }
 );
 

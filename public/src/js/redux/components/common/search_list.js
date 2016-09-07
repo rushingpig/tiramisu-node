@@ -14,6 +14,11 @@
       this.onChange = this.onChange.bind(this);
       this.onChoose = this.onChoose.bind(this);
     }
+    componentWillReceiveProps(nextProps){
+      if(nextProps.value != this.props.value){
+        this.setState({ value: nextProps.value })
+      }
+    }
     show(){
       if(this.props.disabled){ return; }
       this.setState({show: true, error: false});

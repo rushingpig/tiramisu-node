@@ -811,7 +811,7 @@ const switchType = {
       if (state.buyEntry === 0) {
         sourceSpec = state.tempOptions.shopSpecifications.map(
           ({ spec, cost }) => ({ id: 0, spec, cost })
-        );
+        ).filter(n => n.spec );
       }
 
       state.tempOptions.sourceSpecifications.set(sourceId, sourceSpec);

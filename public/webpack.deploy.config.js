@@ -35,4 +35,8 @@ const config = {
   plugins: plugins.concat(baseConfig.plugins)
 }
 
+if(ENV != 'production'){
+  config.devtool = 'source-map';
+}
+
 module.exports = assign({}, baseConfig, config);

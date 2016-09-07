@@ -32,7 +32,7 @@
         .eng .logo{ font-size: 15px; line-height: 16px;}
         .logo-brand{ font-size: 17px; margin-left:15px; }
         .eng .logo-brand{ font-size: 13px; margin-left: 28px;}
-        .title-container{ float: left; width: 419px; }
+        .title-container{ float: left; width: 419px; text-align: center; }
         .title{ font-size: 30px; font-weight: bold; line-height: 40px; height: 40px; font-family: '华文中宋'; }
         .eng .title{ font-size: 20px; line-height: 33px; font-family: inherit;}
         .box{ display: -webkit-box; -webkit-box-align: center; }
@@ -101,6 +101,7 @@
     </script>
     <script src="/lib/vendor/jquery-1.11.3.min.js"></script>
     <script src="/lib/vendor/template-native.js"></script>
+    <script src="/lib/chinese_tify.js"></script>
     <script src="/plugins/barcode/jsbarcode.all.min.js"></script>
     <script type="text/javascript">
         Date.prototype.format = function(format) {
@@ -143,7 +144,7 @@
             <div class="clearfix">
                 <div class="logo-container">
                     <div class="logo"><%= lan.logo %></div>
-                    <div class="logo-brand">BLISS CAKE</div>
+                    <div class="logo-brand"><%= lan.logo_c %></div>
                 </div>
                 <div class="title-container">
                     <span class="title"><%= lan.title %></span>
@@ -159,7 +160,7 @@
                         <td class="col-order-time"><%= lan.order_time %></td>
                         <td class="col-order-time-value" colspan="2">{{created_time}}</td>
                         <td class="col-order-src"><%= lan.order_src %></td>
-                        <td class="col-order-src-value" colspan="3">{{merge_name}}</td>
+                        <td class="col-order-src-value trad" colspan="3">{{merge_name}}</td>
                     </tr>
 
                     <tr>
@@ -172,7 +173,7 @@
                         <td colspan="2">{{owner_mobile}}</td>
                         <td><%= lan.recipient_name %></td>
                         <td>{{recipient_name}}</td>
-                        <td><%= lan.recipient_mobile %></td>
+                        <td style="width: 80px"><%= lan.recipient_mobile %></td>
                         <td>{{recipient_mobile}}</td>
                     </tr>
 
@@ -184,7 +185,7 @@
                     </tr>
                     <tr>
                         <td><%= lan.pay_name %></td>
-                        <td colspan="4">
+                        <td colspan="4" class="trad">
                             {{pay_name}}
                         </td>
                         <td><%= lan.delivery_time %></td>
@@ -277,7 +278,9 @@
                             <% } %>
                         </td>
                         <td style="border-left:none;">
-                            <img src="{{../baseHref}}/src/images/qrcode.jpg" style="width: 89px; height: 89px;vertical-align: middle;">
+                            <% if(lan.qrcode){ %>
+                                <img src="{{../baseHref}}/src/images/qrcode.jpg" style="width: 89px; height: 89px;vertical-align: middle;">
+                            <% } %>
                         </td>
                     </tr>
                     <% if(lan.footer_info){ %>
@@ -314,6 +317,7 @@
     var LAN = {
         zh: {
             logo: '幸福西饼',
+            logo_c: 'BLISS CAKE',
             title: '幸福西饼网络商城配送签收单',
             order_id: '订单号',
             order_time: '下单时间',
@@ -359,12 +363,14 @@
                 '就敢送：迟到30分钟免费赠送！',
                 '<strong>幸福承诺</strong>受理期限：签收当日起7天内反馈有效，微信扫描右方二维码可评价或反馈；'
             ],
+            qrcode: true,
             footer_info: '&nbsp;幸福热线：400-999-6666&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;官网订购：www.xfxb.net&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;微信订购：扫描右上方二维码或添加xfxbsz',
             right_side_info: '生产︵白︶客户︵红︶财务︵蓝︶物流︵黄︶'
         },
         zh_hk: {
             logo: '幸福密語',
-            title: '幸福西餅网络商城配送簽收單',
+            logo_c: 'BLISS BAKERY',
+            title: '幸福密語送貨單',
             order_id: '訂單號',
             order_time: '下單時間',
             order_src: '訂單來源',
@@ -373,7 +379,7 @@
             recipient_name: '收貨人',
             recipient_mobile: '收貨人電話',
             recipient_address: '送貨地址',
-            pay_name: '支付方式',
+            pay_name: '付款方式',
             delivery_time: '送達時間',
 
             product_name: '商品名稱',
@@ -382,7 +388,7 @@
             product_num: '數量',
             product_discount_price: '實際售價',
             product_amount: '應收金額',
-            product_choco_board: '巧克力牌內容',
+            product_choco_board: '朱古力牌內容',
 
             total: '合计',
             currency_symbol: '$',
@@ -393,24 +399,26 @@
             verification_code: '驗證碼',
             last_op_cs_name: '接單人',
             cake_baker: '蛋糕師傅',
-            deliveryman: '配送員',
+            deliveryman: '送货員',
             customer_signature: '顧客簽字',
             signin_time: '簽收時間',
-            delivery_fee: '配送費用',
+            delivery_fee: '送货費用',
 
             warm_tips: ' 溫馨提示：',
             tips: [
                 '烘焙產品對環境溫度敏感度不同，容易影響各種口感，建議收貨時間與食用時間間隔30分鐘；',
                 '保存條件：0-4℃冷藏保存一天，4小時內5℃食用最佳；',
-                '就敢退：實物不對版，退款不退貨！',
-                '就敢減：約定時間，遲到一分鐘減一元！',
-                '就敢送：遲到30分鐘免費贈送！'
+                '承诺退：實物不對版，退款不退貨！',
+                '承诺減：約定時間，遲到一分鐘減一元！',
+                '承诺送：遲到30分鐘免費贈送！'
             ],
+            qrcode: false,
             right_side_info: '生產︵白︶客戶︵紅︶財務︵藍︶物流︵黃︶',
             footer_info: '',
         },
         en_us: {
             logo: 'BLISS BAKERY',
+            logo_c: 'BLISS CAKE',
             title: 'Delivery Receipt of BLISS BAKERY E-shop',
             order_id: 'Order No.',
             order_time: 'Ordering Time',
@@ -453,6 +461,7 @@
                 'Promised Reduction: Each minute late in delivery is compensated by 1 HK dollar less in the price of the delivered item!',
                 'Promised Free Charge: You can enjoy the item free of charge if it is delivered 30 minutes late!'
             ],
+            qrcode: false,
             right_side_info: false,
             footer_info: '',
         }
@@ -476,6 +485,14 @@
             $this.get(0).src = canvas.toDataURL("image/png");
         })
     }
+
+    //部分数据内容也需要转换为繁体
+    function toTrad(){
+        $('.trad').each(function(){
+            var $this = $(this);
+            $this.text( $.toTrad($this.html()) );
+        })
+    }
     
     //CN 或 HK
     if($('body').data('ip') == 'CN'){
@@ -483,6 +500,8 @@
     }else{
         $('.change-lan').show();
         render( LAN.zh_hk );
+        
+        toTrad();
     }
 
     var lan = [LAN.en_us, LAN.zh_hk];
@@ -491,6 +510,8 @@
         $('#container').toggleClass('eng');
         render( lan[lan_index % 2] );
         $(this).data('lan_index', ++lan_index);
+
+        toTrad();
     });
 
     var font = ["'Segoe UI', Verdana, Helvetica, Sans-Serif", "\"微软雅黑\", \"华文细黑\", \"黑体\", \"宋体\""];

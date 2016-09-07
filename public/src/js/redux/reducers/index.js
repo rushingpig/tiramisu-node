@@ -34,6 +34,11 @@ import invoiceVATManage from './order/invoice_VAT';
 import operationHomePageControl from './operation_home_page_control';
 import customerManage from './customer_manage';
 import operationProductSizeManage from './operation_product_size_manage';
+import groupbuysProgramManage from './groupbuys/program_manage';
+import groupbuysProgramFormManage from './groupbuys/program_form';
+import groupbuysProductsManage from './groupbuys/products_manage';
+import groupbuysProductsFormManage from './groupbuys/products_form';
+import groupbuysCouponManage from './groupbuys/coupon_manage';
 
 const rootReducer = combineReducers({
   form,
@@ -70,7 +75,12 @@ const rootReducer = combineReducers({
   invoiceVATManage,
   operationHomePageControl,
   customerManage,
-  operationProductSizeManage
+  operationProductSizeManage,
+  groupbuysProgramManage,
+  groupbuysProgramFormManage,
+  groupbuysProductsManage,
+  groupbuysProductsFormManage,
+  groupbuysCouponManage,
 });
 
 export default rootReducer

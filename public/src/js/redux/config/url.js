@@ -216,6 +216,22 @@ const URL = (function() {
     move_img: '/image/move',
     rename_img: '/image/name',
     all_img_dir: '/image/dir',
+
+    //团购
+    sku_size: '/product/sku/size', //所有已存在size
+    add_groupbuys_sku: '/group/buying/sku', //添加团购sku,
+    get_groupbuys_sku_list: '',
+    groupbuy_sku_off_shelf: '/group/buying/sku/:skuId',
+    groupbuy_pg_add_sku_list: '/group/buying/sku/list',
+
+    add_program : '/group/buying/project', //添加团购项目,
+    edit_program: '/group/buying/project/:projectId', //编辑团购项目，
+    del_program:  '/group/buying/project/:projectId', //下架团购项目，
+    get_program_list : '/group/buying/project/list', //获取团购项目列表,
+    get_product_spu_list: '/group/buying/product/list', //获取团购可供选择商品列表，
+    get_groupbuys_program_detail: '/group/buying/project/:projectId', //获取团购项目详情
+    edit_groupbuy_pd: '/group/buying/sku/:skuId', //编辑团购商品
+    get_groupbuy_sku_list: '/group/buying/sku/list', //获取团购商品列表
   };
 
   for (var a in url) {

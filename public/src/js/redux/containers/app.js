@@ -117,6 +117,18 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
           CustomerManage: require('../components/customer')
         }
         callback();
+      })
+      break;
+    case 'gm':
+      require.ensure([], require => {
+        components = {...components,
+          GroupbuyManagePannel:        require('../components/groupbuys/program_manage'),
+          ProgramFormManage:           require('../components/groupbuys/program_form_detail'),
+          GroupbuyProductManagePannel: require('../components/groupbuys/products_manage'),
+          ProductFormMange:            require('../components/groupbuys/products_form_detail'),
+          CouponManagePannel:          require('../components/groupbuys/coupon_manage'),
+        };
+        callback();
       });
       break;
     default:
@@ -215,6 +227,19 @@ const App = () => (
       <Route path="cosm" onEnter={getComponents('cosm', onEnter('CustomerManageAccess'))}>
         <IndexRoute getComponent={get('CustomerManage')} />
         <Route path=":id" getComponent={get('CustomerManage')} />
+      </Route>
+      
+      <Route path='gm' onEnter={getComponents('gm')}>
+        <Route path='pg'>
+          <IndexRoute getComponent={get('GroupbuyManagePannel')} onEnter={onEnter('GroupbuyProgramManageAccess')} />
+          <Route path='add' onEnter={onEnter('GroupbuyProgramManageAdd')} getComponent={get('ProgramFormManage')} />
+          <Route path='edit/:id' onEnter={onEnter('GroupbuyProgramManageEdit')} getComponent={get('ProgramFormManage')} />
+        </Route>
+        <Route path='pd'>
+          <IndexRoute getComponent={get('GroupbuyProductManagePannel')} onEnter={onEnter('GroupbuyProductManageAccess')} />
+          <Route path='add' onEnter={onEnter('GroupbuyProductManageAdd')} getComponent={get('ProductFormMange')} />
+        </Route>
+        <Route path='cp' onEnter={onEnter('GroupbuyCouponManageAccess')} getComponent={get('CouponManagePannel')} />
       </Route>
 
       <Redirect from="logout" to="/" />

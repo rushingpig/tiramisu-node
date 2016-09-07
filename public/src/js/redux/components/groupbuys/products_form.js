@@ -188,7 +188,8 @@ export default class ManageForm extends Component{
 	    var list = sku_size_list;
 	    var build = function(){
 	      var new_data = list.map(function(n){
-	        n.py = window.makePy(n.text);
+	      	if(typeof n.text === 'string' )
+	        	n.py = window.makePy(n.text);
 	        return n;
 	      })
 	      this.setState({

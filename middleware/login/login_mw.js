@@ -44,6 +44,9 @@ LoginMiddleware.loginFilter = function (req, res, next) {
             req.session = {};
             req.session.user = {data_scopes: []};
         }
+        if (!req.session.user) {
+            req.session.user = {data_scopes: []};
+        }
         return next();
     }
     if(config.exclude_paths.indexOf(req.path) !== -1 || /^(\/v1\/i)+.*/.test(req.path)){  //  exclude the login path and Router => "/v1/i/"

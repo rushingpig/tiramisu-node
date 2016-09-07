@@ -795,3 +795,6 @@ CREATE TABLE `buss_product_template_data` (
     `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='详情页模板数据表';
+
+ALTER TABLE `buss_product_category_regionalism` 
+CHANGE COLUMN `channel` `channel` INT(10) NOT NULL DEFAULT 1 COMMENT '渠道id，默认PC' ;

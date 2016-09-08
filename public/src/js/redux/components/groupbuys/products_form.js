@@ -39,7 +39,8 @@ export default class ManageForm extends Component{
 		}} = this.props;
 		var { filter_sku_size_list, current_size, province_id, regionalism_id, src_id, product_name } = this.state;
 		var add_btn_disabled = province_id === SELECT_DEFAULT_VALUE || regionalism_id === SELECT_DEFAULT_VALUE || src_id === SELECT_DEFAULT_VALUE;
-		var submit_btn_disabled = !(selected_spu_info && selected_spu_info.spu_id);
+		var new_sku_size_list = spu_sku_list.filter( m => m.is_new)
+		var submit_btn_disabled = !(selected_spu_info && selected_spu_info.spu_id && new_sku_size_list.length);
 		var sku_size_content = filter_sku_size_list.map( (n, i) => {
 			return (<option key={n.id + ' ' + i} value = {n.text}>{n.text}</option>)
 		})
@@ -106,14 +107,14 @@ export default class ManageForm extends Component{
 							</table>
 						</div>,
 						<div key='add_new_div' className='form-group form-inline'>
-							<label>{'　　新增SKU：'}</label>
-							<input className = 'form-control input-xs space-right' style ={{marginBottom: 8}} type = 'text' 
-								onChange = {this.filterHandler.bind(this)} placeholder='输入关键字搜索规格'/><br />
-							{'　　　　规格：'}<select ref='size' className = 'form-control input-xs ' value = {current_size} onChange = {this.onSizeChange.bind(this)}>
+							{'　　　　规格：'}
+							<input className = 'form-control input-xs' type = 'text' 
+								onChange = {this.filterHandler.bind(this)} placeholder='输入关键字搜索规格'/>
+							<select ref='size' className = 'form-control input-xs ' value = {current_size} onChange = {this.onSizeChange.bind(this)}>
 								{
 									sku_size_content.length?
 									sku_size_content:
-									<option key='none'>无</option>
+									<option key='none' value='无'>无</option>
 								}
 							</select>
 							{'　价格：'}<input ref='price' className = 'form-control input-xs space-right' />
@@ -159,6 +160,8 @@ export default class ManageForm extends Component{
 		var price = this.refs.price.value.trim();
 		if(!uForm.isNumber(price)){
 			Noty('warning', '请填写正确格式的价格')
+		}else if(this.state.current_size === SELECT_DEFAULT_VALUE || this.state.current_size === 0){
+			Noty('warning', '请选择规格')
 		}else{
 			this.props.actions.addSize(this.state.current_size, price);			
 		}
@@ -188,11 +191,10 @@ export default class ManageForm extends Component{
 	    var list = sku_size_list;
 	    var build = function(){
 	      var new_data = list.map(function(n){
-	      	if(typeof n.text === 'string' ){
-	      		n.py = window.makePy(n.text);
-	      	}else{
-	      		n.py =[];
+	      	if(typeof n.text != 'string' ){
+	      		n.text = '';
 	      	}
+	      		n.py = window.makePy(n.text);
 	        	return n;
 	      })
 	      this.setState({

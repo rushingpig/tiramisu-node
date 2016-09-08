@@ -9,6 +9,8 @@ import { area } from '../area_select';
 
 import clone from 'clone';
 
+const iNow = new Date();
+
 
 var main_state = {
 	list: [],
@@ -32,7 +34,17 @@ function main(state = main_state, action){
 			var group_sites = data.filter( m => m.parent_id == group_site_id);
 			return {...state, order_srcs: group_sites.map(({id, name}) => ({id, text: name}))};
 		case Actions.GET_GROUPBUY_PROGRAM_DETAIL:
-			return {...state, program_info: action.data}
+			var data = clone(action.data);
+			var start_time = new Date(data.start_time);
+			var end_time = new Date(data.end_time);
+			var is_online = 0;
+			if( iNow <= end_time && iNow >= start_time){
+				is_online = 1;
+			}data.products = data.products.map ( m => {
+				m.is_online = is_online;
+				return m;
+			})
+			return {...state, program_info: data}
 		case Actions.RESET_GROUPBUY_PROGRAM:
 			return {...state, program_info: {}}
 		case Actions.PROGRAM_OFF_SHELF:

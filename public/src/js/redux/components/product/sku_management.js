@@ -301,7 +301,7 @@ class ShopSpecificationsOptions extends Component {
                   <tr><td colSpan='7'>没有规格</td></tr>
                 ) : (
                   state.tempOptions.shopSpecifications.map((detail, index) => (
-                    <tr key={index}>
+                    <tr key={detail._key || detail.id}>
                       <td>
                         <center>
                           <SearchList
@@ -498,7 +498,7 @@ class SourceOptions extends Component {
                     </tr>
                   ) : (
                     sourceSpecification.map((detail, index) => (
-                      <tr key={index}>
+                      <tr key={detail._key || detail.id}>
                         <td>
                           <SearchList
                             value={detail.spec}

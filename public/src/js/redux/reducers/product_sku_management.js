@@ -1,6 +1,7 @@
 import { ActionTypes } from 'actions/product_sku_management';
 import { ActionTypes as CitiesSelectorActionTypes } from 'actions/cities_selector';
 import { clone, dateFormat, getDate } from 'utils/index';
+import uuid from 'uuid';
 
 const iNow = new Date();
 
@@ -743,6 +744,7 @@ const switchType = {
       eventCost: 0.01,
       eventTime: [now, new Date(getDate(now, 7))],
       _new: true, //代表新增
+      _key: uuid.v1(),
     }
 
     shopSpecifications.push(newShopSpecifications);
@@ -810,7 +812,7 @@ const switchType = {
 
       if (state.buyEntry === 0) {
         sourceSpec = state.tempOptions.shopSpecifications.map(
-          ({ spec, cost }) => ({ id: 0, spec, cost })
+          ({ spec, cost }) => ({ id: 0, spec, cost, _key: uuid.v1(), _new: true })
         ).filter(n => n.spec );
       }
 
@@ -844,6 +846,7 @@ const switchType = {
       spec: '',
       cost: 0.01,
       _new: true, //代表新增
+      _key: uuid.v1()
     };
 
     source.push(sourceSpec);

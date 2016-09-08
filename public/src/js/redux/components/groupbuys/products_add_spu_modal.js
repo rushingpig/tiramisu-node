@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { render, findDOMNode } from 'react-dom';
 import Select from 'common/select';
 import Pagination from 'common/pagination';
 import SelectGroup from 'common/select_group';
@@ -15,7 +16,12 @@ class ProductSet extends Component{
 		return(
 				<tr className={data.is_available === 0 || data.checked ? 'gray': ''}>
 					<td>
+					{
+						data.is_available === 0 || data.checked ?
 						<input checked = {data.checked} disabled = {true} type = 'radio' />
+						:
+						<input checked = {data.checked} onClick = {this.onSelectProduct.bind(this)} type = 'radio' />
+					}
 					</td>
 					<td>
 						{data.spu_id}
@@ -143,11 +149,11 @@ export default class ProductsModal extends Component{
 		if(keywords != ''){
 			query_data.keywords = keywords;
 		}
-		var category_parent_id = this.refs.category_parent.value;
+		var category_parent_id = $(findDOMNode(this.refs.category_parent))[0].value;
 		if(category_parent_id != SELECT_DEFAULT_VALUE){
 			query_data.category_parent_id = category_parent_id;
 		}
-		var category_id = this.refs.category.value;
+		var category_id = $(findDOMNode(this.refs.category)).value;
 		if(category_id != SELECT_DEFAULT_VALUE){
 			query_data.category_id = category_id;
 		}

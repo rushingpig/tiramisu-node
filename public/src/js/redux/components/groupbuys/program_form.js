@@ -66,6 +66,7 @@ class ManageForm extends Component{
 		super(props);
 		this.state = {
 			page_size: 8,
+			add_btn_disabled: true
 		}
 	}
 	render(){
@@ -98,9 +99,10 @@ class ManageForm extends Component{
 						</td>
 					</tr>)
 		})
-		var add_btn_disabled = !province_id.value || province_id.value == SELECT_DEFAULT_VALUE ||
-								!regionalism_id.value || regionalism_id.value == SELECT_DEFAULT_VALUE ||
-								!src_id.value || src_id.value == SELECT_DEFAULT_VALUE			
+		/*var add_btn_disabled = !(province_id.value && province_id.value !== SELECT_DEFAULT_VALUE &&
+								regionalism_id.value && regionalism_id.value !== SELECT_DEFAULT_VALUE &&
+								src_id.value && src_id.value !== SELECT_DEFAULT_VALUE)	*/
+		var {add_btn_disabled } = this.state;	
 		return (
 			<div>
 				<TopHeader />
@@ -112,11 +114,13 @@ class ManageForm extends Component{
 							<Select className = {` space-right ${province_id.error}`} {...province_id} default-text = '选择省份'
 								options = {provinces} onChange = {this.onProvinceChange.bind(this, province_id.onChange)}
 								disabled = {editable} />
-							<Select disabled = {editable} className = {`${regionalism_id.error}`} {...regionalism_id} default-text = '选择城市' options = {cities} />
+							<Select disabled = {editable} className = {`${regionalism_id.error}`} {...regionalism_id} default-text = '选择城市' options = {cities}
+								onChange = {this.onCityChange.bind(this, regionalism_id.onChange)} />
 						</div>
 						<div className = 'form-group form-inline'>
 							<label>团购网站：</label>
-							<Select disabled = {editable} className = {`${src_id.error}`} {...src_id} options = {order_srcs } default-text = '团购网站'/>
+							<Select disabled = {editable} className = {`${src_id.error}`} {...src_id} options = {order_srcs } default-text = '团购网站'
+								onChange = {this.onSrcIdChange.bind(this, src_id.onChange)}/>
 						</div>
 						<div  className = 'form-group form-inline'>
 							<label>项目名称：</label>
@@ -124,11 +128,12 @@ class ManageForm extends Component{
 						</div>
 						<div className = 'form-group form-inline'>
 							<label>选择商品：</label>
-							<button 
-								disabled = {add_btn_disabled}
-								onClick = {this.addProducts.bind(this)}
-								className = 'btn btn-default btn-xs'>
-								<i className = 'fa fa-plus'></i>{' 添加'}</button>
+								<button 
+									disabled = {add_btn_disabled}
+									onClick = {this.addProducts.bind(this)}
+									className = 'btn btn-default btn-xs'>
+									<i className = 'fa fa-plus'></i>{' 添加'}</button>
+							
 						</div>
 						{
 							selected_list.length ?
@@ -228,8 +233,35 @@ class ManageForm extends Component{
 		this.refs.ProgramProductsModal.show();
 	}
 	onProvinceChange(callback, e){
+			var { fields: {src_id, regionalism_id }} = this.props;
 			this.props.actions.getCitiesSignal({province_id: e.target.value, is_standard_area: 0})
+			if(e.target.value !== SELECT_DEFAULT_VALUE && regionalism_id.value !== SELECT_DEFAULT_VALUE
+			&&	src_id.value !== SELECT_DEFAULT_VALUE){
+				this.setState({add_btn_disabled: false})
+			}else{
+				this.setState({add_btn_disabled: true})
+			}
 			callback(e);		
+	}
+	onCityChange(callback, e){
+		var { fields: {province_id, src_id }} = this.props;
+		if(e.target.value !== SELECT_DEFAULT_VALUE && province_id.value !== SELECT_DEFAULT_VALUE
+				&& src_id.value !== SELECT_DEFAULT_VALUE){
+			this.setState({add_btn_disabled: false})
+		}else{
+			this.setState({add_btn_disabled: true})
+		}
+		callback(e);
+	}
+	onSrcIdChange(callback, e){
+		var { fields: {province_id, regionalism_id }} = this.props;
+		if(e.target.value !== SELECT_DEFAULT_VALUE && regionalism_id.value !== SELECT_DEFAULT_VALUE 
+			&& province_id.value !== SELECT_DEFAULT_VALUE){
+			this.setState({add_btn_disabled: false})
+		}else{
+			this.setState({add_btn_disabled: true})
+		}
+		callback(e);
 	}
 	onTimeRangeChange(beginTime, endTime){
 		this.props.actions.triggerFormUpdate('program_from', 'start_time', beginTime);
@@ -238,7 +270,10 @@ class ManageForm extends Component{
 	componentDidMount(){
 		LazyLoad('noty');
 		LazyLoad('datetimerangepicker');
-		this.props.actions.resetGroupbuyProgram();	
+		this.props.actions.resetGroupbuyProgram();
+		if(this.props.editable){
+			this.setState({add_btn_disabled: false})
+		}
 	}
 	componentWillReceiveProps(nextProps){
 		var {editable, main: {program_info}} = this.props;

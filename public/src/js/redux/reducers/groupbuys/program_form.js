@@ -6,13 +6,19 @@ import { map, getDate } from 'utils/index';
 import { SRC, SELECT_DEFAULT_VALUE } from 'config/app.config';
 import { area } from '../area_select';
 import clone from 'clone';
+import AreaActions from 'actions/area';
 
 const iNow = new Date();
+
 var main_state = {
 	
 	program_info: {
 		start_time: iNow,
-		end_time: new Date(getDate(iNow, 7))
+		end_time: new Date(getDate(iNow, 7)),
+		src_id: SELECT_DEFAULT_VALUE,
+		regionalism_id: SELECT_DEFAULT_VALUE,
+		name: '',
+		province_id: SELECT_DEFAULT_VALUE,
 	},
 	order_srcs: [],
 
@@ -45,15 +51,15 @@ function main(state = main_state, action){
 			return {...state, ...action.data, list: list}
 		case Actions.GET_GROUPBUY_PROGRAM_DETAIL:
 			var data = clone(action.data);
+			var store = getGlobalStore();
+			var { getCitiesSignal } = AreaActions();
+			store.dispatch(getCitiesSignal({province_id: data.province_id, is_standard_area: 0}))
 			data.start_time = new Date(data.start_time);
 			data.end_time = new Date(data.end_time);
-			data.products = data.products.map ( m => {
-				m.is_new = 0;
-				return m;
-			})
 			return {...state, program_info: data, selected_list: data.products}
 		case Actions.RESET_GROUPBUY_PROGRAM:
-			return {...state, program_info: {start_time :iNow, end_time: new Date(getDate(iNow, 7))}, selected_list: []}
+			/*program_info: {start_time :iNow, end_time: new Date(getDate(iNow, 7))}*/
+			return {...state, program_info: main_state.program_info , selected_list: []}
 		case Actions.GOT_ORDER_SRCS:
 			var {data} = action;
 			var group_site_id = SRC.group_site;
@@ -74,7 +80,7 @@ function main(state = main_state, action){
 			var {list } = state;
 			list.forEach( m => {
 				if(m.id == action.data.id){
-					m.checked = !m.checked;
+					m.checked = true;
 				}
 			})
 			return {...state, selected_list: [...state.selected_list, action.data], list: list}
@@ -82,7 +88,7 @@ function main(state = main_state, action){
 			var {list} = state;
 			list.forEach( m => {
 				if(m.id === action.id){
-					m.checked = !m.checked;
+					m.checked = false;
 				}
 			})
 			var new_selected_list = state.selected_list.filter( m => m.id !== action.id)

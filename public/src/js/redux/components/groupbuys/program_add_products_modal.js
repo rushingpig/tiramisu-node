@@ -15,7 +15,12 @@ class ProductSet extends Component{
 		return(
 				<tr  className={data.is_available === 0 || data.checked ? 'gray' : ''} >
 					<td>
-						<input type = 'checkbox' checked = {data.checked} disabled = {true}/>
+						{
+							data.is_available === 0 || data.checked ?
+							<input type = 'checkbox' checked = {data.checked} disabled = {true}/>
+							:
+							<input type = 'checkbox' checked = {data.checked} onClick = {this.onSelect.bind(this)}/>
+						}
 					</td>
 					<td>
 						{data.product_name}
@@ -27,7 +32,7 @@ class ProductSet extends Component{
 					<td>{data.is_online ? '是' : '否'}</td>
 					<td>
 						{
-							data.is_available === 0?
+							data.is_available === 0 || data.checked ?
 							<span className = 'gray'>[选择]</span>
 							:<a href='javascript:;' onClick = {this.onSelect.bind(this)} >[选择]</a>
 						}

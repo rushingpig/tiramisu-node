@@ -24,12 +24,13 @@
       color: $theme-color
     &.has-sub
       > a
-        &:after
-          //content: '\f067'
-          content: '+'
-          color: $theme-black
-          float: right
-          margin-right: 10px
+        background: transparent url(/images/plus.png) no-repeat 93% center;
+        // &:after
+        //   //content: '\f067'
+        //   content: '+'
+        //   color: $theme-black
+        //   float: right
+        //   margin-right: 10px
     a
       font-size: 18px
       font-weight: bold
@@ -38,7 +39,7 @@
       padding: 8px 15px
       line-height: 20px
       padding-left: 16px
-      transition: background-color 0.1s ease-in 0s, color 0.2s ease-in 0s
+      transition: background-color 0.1s ease-in 0s
       &:hover, &:active, &:focus
         @extend .menu-list-active
         // background-color: lighten($theme-light-color, 50)
@@ -47,6 +48,7 @@
       text-indent: 30px
     a.short-menu
       display: none
+      transition: background-color 0.1s ease-in 0s, color 0.2s ease-in 0s
     i
       font-size: 15px
       margin-right: 10px
@@ -54,6 +56,7 @@
       text-align: center
   .menu-list
     &.active
+      background: #F5E6CE
       >a
         @extend .menu-list-active
     &.open
@@ -61,9 +64,10 @@
         @extend .menu-list-active
     &.open.has-sub
       >a
-        &:after
-          content: '_'
-          margin-top: -6px
+        background: transparent url(/images/minus.png) no-repeat 93% center;
+        // &:after
+        //   content: '_'
+        //   margin-top: -6px
   .sub-menu-list
     list-style: none
     display: none
@@ -133,6 +137,7 @@
           text-indent: 0
           color: #fff
           padding: 0
+          background: none !important
           &:after
             display: none
           span

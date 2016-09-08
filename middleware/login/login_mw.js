@@ -40,8 +40,13 @@ LoginMiddleware.loginFilter = function (req, res, next) {
         if (req.method == 'OPTIONS') { // 针对跨域预检  必须要返回200让预检通过
             return res.status(200).end();
         }
-        if (!req.session) req.session = {};
-        req.session.user = {data_scopes: []};
+        if (!req.session) {
+            req.session = {};
+            req.session.user = {data_scopes: []};
+        }
+        if (!req.session.user) {
+            req.session.user = {data_scopes: []};
+        }
         return next();
     }
     if(config.exclude_paths.indexOf(req.path) !== -1 || /^(\/v1\/i)+.*/.test(req.path)){  //  exclude the login path and Router => "/v1/i/"

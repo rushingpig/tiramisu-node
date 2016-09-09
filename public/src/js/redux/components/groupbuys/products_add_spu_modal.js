@@ -137,7 +137,7 @@ export default class ProductsModal extends Component{
 	show(){
 		this.refs.modal.show();
 		var {regionalism_id, src_id } = this.props
-		this.props.searchProducts({regionalism_id, src_id, page_no: 0, page_size: this.state.page_size});
+		this.props.searchProducts({regionalism_id, page_no: 0, page_size: this.state.page_size});
 		this.props.getCategories();
 	}
 	search(page){

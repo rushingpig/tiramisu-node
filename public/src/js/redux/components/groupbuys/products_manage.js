@@ -166,7 +166,7 @@ class ProductRow extends Component{
 					{
 						V('GroupbuyProductManageEditPrice')
 						?
-						<a href='javascript:;' onClick = {this.viewEditModal.bind(this)}>[编辑价格]</a>
+						<a href='javascript:;' onClick = {this.viewEditModal.bind(this)}>[编辑]</a>
 						:null
 					}
 					{'　'}
@@ -194,13 +194,14 @@ class EditModal extends Component{
 		this.state = {
 			data: {},
 			price: 0,
+			product_name: '',
 		}
 	}
 	render(){
-		var {data, price} = this.state;
+		var {data, price, product_name} = this.state;
 		return (
 			<StdModal ref='modal' title = '编辑价格' onConfirm = {this.onConfirm.bind(this)}>
-				<header className = 'panel-heading'>{'SKU(' +data.sku_id + ')　　　' +  data.product_name }</header>
+				<header className = 'panel-heading'>{'SKU(' +data.sku_id + ')　　　' +  data.spu_name }</header>
 				<div className='panel-body'>
 				<div className='form-group form-inline'>
 					<label>团购城市：</label>
@@ -215,16 +216,18 @@ class EditModal extends Component{
 					<label>所属项目：</label>
 					<input value = {data.project_name}  className='form-control input-xs' type = 'text' readOnly />
 				</div>
-				<table className = 'table table-responsive text-center' style = {{maxWidth: 240}}>
+				<table className = 'table table-responsive text-center' style = {{maxWidth: 500, border: '1px solid #ddd'}}>
 					<thead>
 						<tr>
+							<th>名称</th>
 							<th>规格</th>
 							<th>价格（元）</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td>{data.size}</td>
+							<td style={{borderRight: '2px solid #ddd'}}><input type = 'text' className='form-control input-xs' value = {product_name} onChange = {this.onProductNameChange.bind(this)} /></td>
+							<td style={{borderRight: '2px solid #ddd'}}><input type = 'text' className='form-control input-xs' readOnly value = {data.size} /></td>
 							<td><input onChange = {this.onPriceChange.bind(this)} value = {price / 100} type='text' className = 'form-control input-xs inline-block' style = {{width: 120, marginLeft: 10}} /></td>
 						</tr>
 					</tbody>
@@ -237,14 +240,17 @@ class EditModal extends Component{
 			)
 	}
 	show(data){
-		this.setState({data, price: data.price})
+		this.setState({data, price: data.price, product_name: data.product_name})
 		this.refs.modal.show();
 	}
 	onPriceChange(e){
 		this.setState({price: e.target.value * 100});
 	}
+	onProductNameChange(e){
+		this.setState({product_name: e.target.value});
+	}
 	onConfirm(){
-		this.props.editSkuPrice(this.state.data.sku_id, this.state.price)
+		this.props.editSkuPrice(this.state.data.sku_id, this.state.price, this.state.product_name)
 			.done( () => {
 				Noty('success', '修改成功');
 				this.refs.modal.hide();

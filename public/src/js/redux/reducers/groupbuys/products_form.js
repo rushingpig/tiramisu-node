@@ -58,6 +58,7 @@ function main(state = main_state, action){
 			})
 			var {sku_list} = action.data;
 			(sku_list || []).forEach( m => {
+				m.product_name = action.data.product_name;
 				m.is_new = false;
 			})
 			return {...state, selected_spu_info: action.data, list:list, spu_sku_list: sku_list}
@@ -74,9 +75,9 @@ function main(state = main_state, action){
 			data = data.map( (n, i) => {return {id: i, text: n.size}})
 			return {...state, sku_size_list: data, sku_size_load_success: true}
 		case Actions.ADD_SIZE:
-			var {size, price} = action;
+			var {size, price, product_name} = action;
 			var {spu_sku_list } = state;
-			var sku = {size: size, price: price, is_new: true}
+			var sku = {size: size, price: price, is_new: true, product_name: product_name}
 			spu_sku_list.push(sku);
 			return {...state, spu_sku_list: spu_sku_list}
 		case Actions.DEL_SIZE:

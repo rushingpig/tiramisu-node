@@ -25,7 +25,9 @@ GroupDao.prototype.findProduct = function (query, only_total) {
     let page_size = query.page_size || 10;
     let sort_type = query.sort_type || 'DESC';
 
-    let sql = `SELECT bp.id FROM ?? bps `;
+    let sql_total = `SELECT count(bp.id) AS total `;
+    let sql_info = `SELECT bp.id `;
+    let sql = `FROM ?? bps `;
     let params = [tables.buss_product_sku];
     sql += `INNER JOIN ?? bp ON bp.id = bps.product_id `;
     params.push(tables.buss_product);
@@ -76,16 +78,22 @@ GroupDao.prototype.findProduct = function (query, only_total) {
         params.push(`%${query.keywords}%`);
     }
 
-    sql += `GROUP BY bp.id ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+    sql += `GROUP BY bp.id `;
 
     return co(function*() {
-        let ids = yield baseDao.select(sql, params);
         let _res = {
-            total: ids.length,
+            total: 0,
             page_no: page_no,
             page_size: page_size,
             list: []
         };
+        let total = yield baseDao.select(sql_total + sql, params);
+        console.log(total);
+        if (total.length == 0) return _res;
+        _res.total = total.length;
+
+        sql += `ORDER BY bp.id ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+        let ids = yield baseDao.select(sql_info + sql, params);
         if (only_total) {
             _res.list = ids;
             return _res;
@@ -163,7 +171,7 @@ GroupDao.prototype.findSku = function (query, only_total) {
     let sort_type = query.sort_type || 'DESC';
 
     let sql_total = `SELECT count(bps.id) AS total `;
-    let sql_info = `SELECT bps.id, bps.created_time `;
+    let sql_info = `SELECT bps.id `;
     let sql = `FROM ?? bps `;
     let params = [tables.buss_product_sku];
     sql += `INNER JOIN ?? bp ON bp.id = bps.product_id `;
@@ -215,7 +223,7 @@ GroupDao.prototype.findSku = function (query, only_total) {
         params.push(`%${query.keywords}%`);
     }
 
-    sql += `ORDER BY bp.created_time ${sort_type} `;
+    sql += `GROUP BY bps.id `;
 
     return co(function*() {
         let _res = {
@@ -225,10 +233,10 @@ GroupDao.prototype.findSku = function (query, only_total) {
             list: []
         };
         let total = yield baseDao.select(sql_total + sql, params);
-        if (total[0].total == 0) return _res;
-        _res.total = total[0].total;
+        if (total.length == 0) return _res;
+        _res.total = total.length;
 
-        sql += `LIMIT ${page_no * page_size},${page_size} `;
+        sql += `ORDER BY bps.id ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
         let ids = yield baseDao.select(sql_info + sql, params);
         if (only_total) {
             _res.list = ids;
@@ -314,7 +322,9 @@ GroupDao.prototype.findProject = function (query, only_total) {
     let page_size = query.page_size || 10;
     let sort_type = query.sort_type || 'DESC';
 
-    let sql = `SELECT bgp.id, bgp.created_time FROM ?? bgp `;
+    let sql_total = `SELECT count(bgp.id) AS total `;
+    let sql_info = `SELECT bgp.id `;
+    let sql = `FROM ?? bgp `;
     let params = [tables.buss_group_project];
     sql += `LEFT JOIN ?? bos ON bos.id = bgp.src_id `;
     params.push(tables.buss_order_src);
@@ -358,16 +368,21 @@ GroupDao.prototype.findProject = function (query, only_total) {
         params.push(`%${query.keywords}%`);
     }
 
-    sql += `ORDER BY bgp.created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+    sql += `GROUP BY bgp.id `;
 
     return co(function*() {
-        let ids = yield baseDao.select(sql, params);
         let _res = {
-            total: ids.length,
+            total: 0,
             page_no: page_no,
             page_size: page_size,
             list: []
         };
+        let total = yield baseDao.select(sql_total + sql, params);
+        if (total.length == 0) return _res;
+        _res.total = total.length;
+
+        sql += `ORDER BY bgp.id ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+        let ids = yield baseDao.select(sql_info + sql, params);
         for (let i = 0; i < ids.length; i++) {
             let id = ids[i].id;
             let info = yield GroupDao.prototype.findProjectById(id);

@@ -435,7 +435,7 @@ class ManageAddForm extends Component {
       }
     }
     //特殊逻辑
-    var total_discount_price = +this.props.products.confirm_list.reduce((c, p) => c + p.discount_price, 0);
+    var total_discount_price = +this.props.products.confirm_list.reduce((c, p) => c + (+p.discount_price), 0);
     if( total_discount_price > 0 && total_discount_price < 38){
       Confirm('总实际售价为 ￥' + total_discount_price + '，请与渠道部或客服部负责人确定是否正常。是否继续提交？')
         .done(submitOrder);

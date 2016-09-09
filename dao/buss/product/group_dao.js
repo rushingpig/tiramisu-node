@@ -162,7 +162,9 @@ GroupDao.prototype.findSku = function (query, only_total) {
     let page_size = query.page_size || 10;
     let sort_type = query.sort_type || 'DESC';
 
-    let sql = `SELECT bps.id, bps.created_time FROM ?? bps `;
+    let sql_total = `SELECT count(bps.id) AS total `;
+    let sql_info = `SELECT bps.id, bps.created_time `;
+    let sql = `FROM ?? bps `;
     let params = [tables.buss_product_sku];
     sql += `INNER JOIN ?? bp ON bp.id = bps.product_id `;
     params.push(tables.buss_product);
@@ -213,16 +215,21 @@ GroupDao.prototype.findSku = function (query, only_total) {
         params.push(`%${query.keywords}%`);
     }
 
-    sql += `ORDER BY bp.created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+    sql += `ORDER BY bp.created_time ${sort_type} `;
 
     return co(function*() {
-        let ids = yield baseDao.select(sql, params);
         let _res = {
-            total: ids.length,
+            total: 0,
             page_no: page_no,
             page_size: page_size,
             list: []
         };
+        let total = yield baseDao.select(sql_total + sql, params);
+        if (total[0].total == 0) return _res;
+        _res.total = total[0].total;
+
+        sql += `LIMIT ${page_no * page_size},${page_size} `;
+        let ids = yield baseDao.select(sql_info + sql, params);
         if (only_total) {
             _res.list = ids;
             return _res;

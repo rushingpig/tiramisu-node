@@ -38,9 +38,9 @@ export default class ManageForm extends Component{
 			searchProducts, getSecCategories, getCategories, selectProduct, delSelectProduct, getAllSize, addSize
 		}} = this.props;
 		var { filter_sku_size_list, current_size, province_id, regionalism_id, src_id, product_name } = this.state;
-		var add_btn_disabled = province_id === SELECT_DEFAULT_VALUE || regionalism_id === SELECT_DEFAULT_VALUE || src_id === SELECT_DEFAULT_VALUE;
+		var add_btn_disabled = province_id === SELECT_DEFAULT_VALUE || regionalism_id === SELECT_DEFAULT_VALUE ;
 		var new_sku_size_list = spu_sku_list.filter( m => m.is_new)
-		var submit_btn_disabled = !(selected_spu_info && selected_spu_info.spu_id && new_sku_size_list.length);
+		var submit_btn_disabled = !(selected_spu_info && selected_spu_info.spu_id && new_sku_size_list.length );
 		var sku_size_content = filter_sku_size_list.map( (n, i) => {
 			return (<option key={n.id + ' ' + i} value = {n.text}>{n.text}</option>)
 		})
@@ -58,7 +58,7 @@ export default class ManageForm extends Component{
 						</div>
 						<div className='form-group form-inline'>
 							<label>{'　　团购网站：'}</label>
-							<Select options={ order_srcs } default-text='团购网站' onChange = {this.onSrcChange.bind(this)}/>
+							<Select ref='src' options={ order_srcs } default-text='团购网站' onChange = {this.onSrcChange.bind(this)}/>
 						</div>
 						<div className='form-group form-inline'>
 							<label>{'　　选择商品：'}</label>
@@ -72,21 +72,19 @@ export default class ManageForm extends Component{
 						{
 							selected_spu_info && selected_spu_info.spu_id ?
 						[
-						<div key='product_name_div' className = 'form-group form-inline'>
-							<label>团购商品名称：</label>
-							<input type='text' value = {product_name}  className = 'form-control input-xs' onChange = {this.onProductNameChange.bind(this)} />
-						</div>,
 						<div key='size_list_div' className = 'form-group form-inline'>
-							<table className='table text-center text-center' style = {{ marginLeft: 60, width: '50%', border: '2px solid #ddd', minWidth: 600}}>
+							<table className='table text-center text-center' style = {{ marginLeft: 60, width: '70%', border: '2px solid #ddd', minWidth: 720}}>
 								<thead>
 									<tr>
-										<td style={{textAlign: 'right', fontWeight: 'bold'}}>
+										<th></th>
+										<th>
 											{'SPU(' + selected_spu_info.spu_id + ')　　' +selected_spu_info.product_name}
-										</td>
-										<td></td>
-										<td></td>
+										</th>
+										<th></th>
+										<th></th>
 									</tr>
 									<tr>
+									<th>团购商品名称</th>
 									<th>规格</th>
 									<th>价格（元）</th>
 									<th>操作</th>
@@ -97,6 +95,7 @@ export default class ManageForm extends Component{
 										spu_sku_list && spu_sku_list.length ?
 										spu_sku_list.map( (m, i) => {
 											return (<tr key={i + ' '} style={{border: 0}}>
+												<td style ={{borderRight: '2px solid #ddd'}}><input type='text' className='form-control input-xs' readOnly value = {m.product_name}/></td>
 												<td style ={{borderRight: '2px solid #ddd'}}><input type='text' className='form-control input-xs' readOnly value = {m.size}/></td>
 												<td style ={{borderRight: '2px solid #ddd'}}><input type='text' className='form-control input-xs' readOnly value = {m.price / 100} /></td>
 												<td>
@@ -110,6 +109,10 @@ export default class ManageForm extends Component{
 										:null
 									}
 									<tr>
+										<td style = {{borderRight: '2px solid #ddd'}}>
+											<input ref='product_name' className = 'form-control input-xs' type = 'text'
+												 value={this.state.product_name} placeholder='团购商品名称' onChange = {this.onProductNameChange.bind(this)} />
+										</td>
 										<td style = {{borderRight: '2px solid #ddd'}}>
 											<input className = 'form-control input-xs' type = 'text' 
 												onChange = {this.filterHandler.bind(this)} placeholder='输入关键字搜索规格'/>
@@ -148,33 +151,42 @@ export default class ManageForm extends Component{
 					</div>
 					<AddSpuModal ref='AddSpuModal' 
 						{...{searchProducts, list, page_no, total, pri_pd_cates, sec_pd_cates, getCategories, 
-							getSecCategories, selected_spu_info, selectProduct, delSelectProduct, regionalism_id, src_id}}/>
+							getSecCategories, selected_spu_info, selectProduct, delSelectProduct, regionalism_id}}/>
 				</div>
 			)
 	}
 	onSubmit(){
 		var { regionalism_id, src_id, product_name } = this.state;
 		var data = {regionalism_id: regionalism_id, src_id, product_name}
-		this.props.actions.createGroupbuySKU(data)
-			.done( ()=> {
-				history.push('/gm/pd');
-				Noty('success', '添加成功')
-			}.bind(this))
-			.fail( (msg, code) => {
-				Noty('error', msg || '网络繁忙，请稍后再试');
-			})
+		var src_value = $(findDOMNode(this.refs.src))[0].value
+		if(src_value === SELECT_DEFAULT_VALUE){
+			Noty('warning', '请选择团购网站')
+		}else{
+			this.props.actions.createGroupbuySKU(data)
+				.done( ()=> {
+					history.push('/gm/pd');
+					Noty('success', '添加成功')
+				}.bind(this))
+				.fail( (msg, code) => {
+					Noty('error', msg || '网络繁忙，请稍后再试');
+				})			
+		}
+
 	}
 	add_spu(){
 		this.refs.AddSpuModal.show();
 	}
 	addSize(){
 		var price = this.refs.price.value.trim();
-		if(!uForm.isNumber(price)){
+		if(this.state.product_name.trim === ''){
+			Noty('warning', '请填写团购商品名称');
+		}
+		else if(!uForm.isNumber(price)){
 			Noty('warning', '请填写正确格式的价格')
 		}else if(this.state.current_size === SELECT_DEFAULT_VALUE || this.state.current_size === 0){
 			Noty('warning', '请选择规格')
 		}else{
-			this.props.actions.addSize(this.state.current_size, price);			
+			this.props.actions.addSize(this.state.product_name , this.state.current_size, price);			
 		}
 	}
 	delSize(index){
@@ -258,6 +270,5 @@ export default class ManageForm extends Component{
 	onSrcChange(e){
 		var {value } = e.target;
 		this.setState({src_id: value});
-		this.props.actions.resetProduct();
 	}
 }

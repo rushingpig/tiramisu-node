@@ -40,7 +40,7 @@ export function getSecCategories(id){
 	}
 }
 
-export const SELECT_PRODUCT_SPU = 'SELECT_PRODUCT';
+export const SELECT_PRODUCT_SPU = 'SELECT_PRODUCT_SPU';
 export function selectProduct(spu_info){
 	/*return dispatch => {
 		return TEST({
@@ -73,9 +73,10 @@ export function getAllSize(){
 }
 
 export const ADD_SIZE = 'ADD_SIZE';
-export function addSize(size, price){
+export function addSize(product_name, size, price){
 	return {
 		type: ADD_SIZE,
+		product_name: product_name,
 		size: size,
 		price: price * 100,
 	}

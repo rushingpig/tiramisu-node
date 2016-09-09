@@ -12,6 +12,8 @@ export function getCouponOrderList(data){
 	 return (dispatch, getState) => {
     var filter_data = getValues(getState().form.groupbuys_coupon_filter);
     filter_data = formCompile(filter_data);
+    if(filter_data)
+      if(!filter_data.coupon) filter_data.coupon = '';
     return GET(Url.orders.toString() + '?v=' + new Date().getTime(), {...data, ...filter_data}, GET_COUPON_ORDER_LIST)(dispatch)
   }
 }

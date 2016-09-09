@@ -122,6 +122,8 @@ export function creatGroupbuyProgram(){
         pg_detail.start_time = dateFormat(pg_detail.start_time, 'yyyy-MM-dd hh:mm:ss');
         if(pg_detail.end_time != "Infinite")
             pg_detail.end_time = dateFormat(pg_detail.end_time, 'yyyy-MM-dd hh:mm:ss');
+        else
+            delete pg_detail.end_time
         dispatch({
             type: CREATE_GROUPBUY_PROGRAM_ING,
         })

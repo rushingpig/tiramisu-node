@@ -77,9 +77,15 @@ export default class ManageForm extends Component{
 							<input type='text' value = {product_name}  className = 'form-control input-xs' onChange = {this.onProductNameChange.bind(this)} />
 						</div>,
 						<div key='size_list_div' className = 'form-group form-inline'>
-							<header style = {{marginLeft: 60, marginBottom: 5, fontWeight: 'bold'}}>{'SPU(' + selected_spu_info.spu_id + ')　　' +selected_spu_info.product_name}</header>
-							<table className='table text-center' style = {{width: 240, marginLeft: 60}}>
+							<table className='table text-center text-center' style = {{ marginLeft: 60, width: '50%', border: '2px solid #ddd', minWidth: 600}}>
 								<thead>
+									<tr>
+										<td style={{textAlign: 'right', fontWeight: 'bold'}}>
+											{'SPU(' + selected_spu_info.spu_id + ')　　' +selected_spu_info.product_name}
+										</td>
+										<td></td>
+										<td></td>
+									</tr>
 									<tr>
 									<th>规格</th>
 									<th>价格（元）</th>
@@ -90,9 +96,9 @@ export default class ManageForm extends Component{
 									{
 										spu_sku_list && spu_sku_list.length ?
 										spu_sku_list.map( (m, i) => {
-											return (<tr key={i + ' '}>
-												<td>{m.size}</td>
-												<td>{m.price / 100}</td>
+											return (<tr key={i + ' '} style={{border: 0}}>
+												<td style ={{borderRight: '2px solid #ddd'}}><input type='text' className='form-control input-xs' readOnly value = {m.size}/></td>
+												<td style ={{borderRight: '2px solid #ddd'}}><input type='text' className='form-control input-xs' readOnly value = {m.price / 100} /></td>
 												<td>
 													{m.is_new ?
 														<a href='javascript:;' onClick = {this.delSize.bind(this, i)}>[删除]</a>
@@ -103,26 +109,31 @@ export default class ManageForm extends Component{
 										})
 										:null
 									}
+									<tr>
+										<td style = {{borderRight: '2px solid #ddd'}}>
+											<input className = 'form-control input-xs' type = 'text' 
+												onChange = {this.filterHandler.bind(this)} placeholder='输入关键字搜索规格'/>
+											<select ref='size' className = 'form-control input-xs ' value = {current_size} onChange = {this.onSizeChange.bind(this)}>
+												{
+													sku_size_content.length?
+													sku_size_content:
+													<option key='none' value='无'>无</option>
+												}
+											</select>
+										</td>
+										<td  style ={{borderRight: '2px solid #ddd'}}>
+											<input ref='price' className = 'form-control input-xs space-right' />
+										</td>
+										<td>
+											<button className = 'btn btn-default btn-xs space-left'
+												onClick = {this.addSize.bind(this)}>
+												<fa className = 'fa fa-plus'></fa>{' 添加'}
+											</button>
+										</td>
+									</tr>
 								</tbody>
 							</table>
 						</div>,
-						<div key='add_new_div' className='form-group form-inline'>
-							{'　　　　规格：'}
-							<input className = 'form-control input-xs' type = 'text' 
-								onChange = {this.filterHandler.bind(this)} placeholder='输入关键字搜索规格'/>
-							<select ref='size' className = 'form-control input-xs ' value = {current_size} onChange = {this.onSizeChange.bind(this)}>
-								{
-									sku_size_content.length?
-									sku_size_content:
-									<option key='none' value='无'>无</option>
-								}
-							</select>
-							{'　价格：'}<input ref='price' className = 'form-control input-xs space-right' />
-							<button className = 'btn btn-default btn-xs space-left'
-								onClick = {this.addSize.bind(this)}>
-								<fa className = 'fa fa-plus'></fa>{' 添加'}
-							</button>
-						</div>
 						]
 						:null}
 						

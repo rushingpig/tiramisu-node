@@ -91,7 +91,7 @@ class ManageForm extends Component{
 						<td>{m.product_name}</td>
 						<td>{m.size}</td>
 						<td>{m.category_name}</td>
-						<td>{m.src_name}</td>
+						<td>{program_info.src_name}</td>
 						<td>￥{m.price / 100}</td>
 						<td>{m.is_online == 1 ? '是':'否'}</td>
 						<td>
@@ -143,7 +143,7 @@ class ManageForm extends Component{
 								<th>商品名称</th>
 								<th>规格</th>
 								<th>商品类型名称</th>
-								<th>渠道</th>
+								<th>团购网站</th>
 								<th>价格</th>
 								<th>商城上线</th>
 								<th>操作</th>

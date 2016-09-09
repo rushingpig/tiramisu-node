@@ -74,7 +74,7 @@ class FilterHeader extends Component{
 						redux-form = {end_time}
 					  className="short-input space-right" />
 					<Select default-text='团购网站' {...src_id} className='space-right' options = {order_srcs} />
-					<Select default-text ='选择省份' {...province_id} className = 'space-right' options = {provinces} />
+					<Select default-text ='选择省份' {...province_id} onChange = {this.onProvinceChange.bind(this, province_id.onChange)} className = 'space-right' options = {provinces} />
 					<Select default-text = '选择城市' {...city_id} className = 'space-right' options = {cities} />
 					<button disabled = {search_ing} data-submitting = {search_ing} className="btn btn-theme btn-xs"
 						onClick = {this.search.bind(this, 'search_ing')}>

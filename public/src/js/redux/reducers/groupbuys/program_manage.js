@@ -31,7 +31,7 @@ function main(state = main_state, action){
 			var is_online = 0;
 			list.map( m => {
 				var start_time = new Date(m.start_time);
-				if(m.end_time == 'Infinite'){
+				if(!m.end_time){
 					if(iNow >= start_time){
 						m.is_online = 1;
 					}else{
@@ -58,7 +58,7 @@ function main(state = main_state, action){
 			var data = clone(action.data);
 			var start_time = new Date(data.start_time);
 			var is_online = 0;
-			if(end_time == 'Infinite'){
+			if(!end_time ){
 				if(iNow >= start_time) is_online = 1;
 				data.end_time = '∞'
 			}else{

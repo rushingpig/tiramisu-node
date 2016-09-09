@@ -55,7 +55,10 @@ function main(state = main_state, action){
 			var { getCitiesSignal } = AreaActions();
 			store.dispatch(getCitiesSignal({province_id: data.province_id, is_standard_area: 0}))
 			data.start_time = new Date(data.start_time);
-			data.end_time = new Date(data.end_time);
+			if(!data.end_time){
+				data.end_time = 'Infinite';
+			}else
+				data.end_time = new Date(data.end_time);
 			return {...state, program_info: data, selected_list: data.products}
 		case Actions.RESET_GROUPBUY_PROGRAM:
 			/*program_info: {start_time :iNow, end_time: new Date(getDate(iNow, 7))}*/

@@ -124,7 +124,7 @@ var GroupbuyRow = React.createClass({
 					<a href={props.url} target='_blank' style={{textDecoration: 'underline'}}>{props.name}</a>
 				</td>
 				<td>{props.src_name}</td>
-				<td>{props.start_time + '~' + props.end_time}</td>
+				<td>{props.start_time + '　~　' + props.end_time}</td>
 				<td><span className = 'bg-warning bordered'>{props.city_name}</span>{ ' ' + props.province_name}</td>
 				<td className='copy-col'>
 					<span ref='url'>{props.url}</span>
@@ -322,7 +322,7 @@ class GroupbuyInfoModal extends Component{
 				</div>
 				<div className = 'form-group form-inline'>
 					<label>上线时间：</label>
-					<span className = 'gray'>{program_info.start_time + '~' + program_info.end_time}</span>
+					<span className = 'gray'>{program_info.start_time + '　~　' + program_info.end_time}</span>
 				</div>
 				<div className = 'form-group form-inline'>
 					<label>团购商品列表：</label>

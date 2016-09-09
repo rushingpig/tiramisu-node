@@ -15,7 +15,12 @@ const res_obj = require('../../../util/res_obj');
 module.exports.getProductList = function (req, res, next) {
     let promise = co(function *() {
         let query = req.query;
-        return yield groupDao.findProduct(query);
+        let _res = yield groupDao.findProduct(query);
+        _res.list.forEach(curr=> {
+            curr.is_online = 0;
+            if (curr.website_sku_id) curr.is_online = 1;
+        });
+        return _res;
     }).then(result=> {
         res.api(result);
     });
@@ -28,11 +33,10 @@ module.exports.getSkuList = function (req, res, next) {
         if (!query.city_id) query.city_id = query.regionalism_id;
         let _res = yield groupDao.findSku(query);
         _res.list.forEach(curr=> {
-            if (curr.group_project_id) {
-                curr.is_available = 0;
-            } else {
-                curr.is_available = 1;
-            }
+            curr.is_available = 1;
+            curr.is_online = 0;
+            if (curr.group_project_id) curr.is_available = 0;
+            if (curr.website_sku_id) curr.is_online = 1;
         });
         return _res;
     }).then(result=> {

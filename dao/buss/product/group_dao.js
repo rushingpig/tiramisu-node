@@ -25,7 +25,9 @@ GroupDao.prototype.findProduct = function (query, only_total) {
     let page_size = query.page_size || 10;
     let sort_type = query.sort_type || 'DESC';
 
-    let sql = `SELECT bp.id FROM ?? bps `;
+    let sql_total = `SELECT count(bp.id) AS total `;
+    let sql_info = `SELECT bp.id `;
+    let sql = `FROM ?? bps `;
     let params = [tables.buss_product_sku];
     sql += `INNER JOIN ?? bp ON bp.id = bps.product_id `;
     params.push(tables.buss_product);
@@ -34,16 +36,15 @@ GroupDao.prototype.findProduct = function (query, only_total) {
     sql += `INNER JOIN ?? bos ON bos.id = bps.website AND bos.parent_id = 3 `;  //  团购网站
     params.push(tables.buss_order_src);
     if (query.province_id || query.city_id) {
-        sql += `INNER JOIN ?? dr2 ON dr2.id = bps.regionalism_id `;
+        sql += `INNER JOIN ?? sc ON sc.regionalism_id = bps.regionalism_id `;
+        params.push(tables.sys_city);
+        sql += `INNER JOIN ?? dr ON dr.id = bps.regionalism_id `;
         params.push(tables.dict_regionalism);
-        if (query.city_id) {
-            sql += `LEFT JOIN ?? sc ON sc.regionalism_id = dr2.id `;
-            params.push(tables.sys_city);
-        }
     }
     if (query.province_id) {
-        sql += `INNER JOIN ?? dr3 ON dr3.id = dr2.parent_id and dr3.parent_id = ? `;
+        sql += `INNER JOIN ?? dr2 ON dr2.id = dr.parent_id AND (dr2.id = ? OR dr2.parent_id = ? ) `;
         params.push(tables.dict_regionalism);
+        params.push(query.province_id);
         params.push(query.province_id);
     }
 
@@ -54,10 +55,10 @@ GroupDao.prototype.findProduct = function (query, only_total) {
     }
     if (query.city_id) {
         if (query.is_standard_area == '1') {
-            sql += `AND dr2.parent_id = ? `;
+            sql += `AND (dr.id = ? OR dr.parent_id = ? ) `;
             params.push(query.city_id);
         } else {
-            sql += `AND sc.is_city = 1 AND dr2.id = ? `;
+            sql += `AND sc.is_city = 1 AND bps.regionalism_id = ? `;
             params.push(query.city_id);
         }
     }
@@ -76,16 +77,22 @@ GroupDao.prototype.findProduct = function (query, only_total) {
         params.push(`%${query.keywords}%`);
     }
 
-    sql += `GROUP BY bp.id ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+    sql += `GROUP BY bp.id `;
 
     return co(function*() {
-        let ids = yield baseDao.select(sql, params);
         let _res = {
-            total: ids.length,
+            total: 0,
             page_no: page_no,
             page_size: page_size,
             list: []
         };
+        let total = yield baseDao.select(sql_total + sql, params);
+        console.log(total);
+        if (total.length == 0) return _res;
+        _res.total = total.length;
+
+        sql += `ORDER BY bp.id ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+        let ids = yield baseDao.select(sql_info + sql, params);
         if (only_total) {
             _res.list = ids;
             return _res;
@@ -112,7 +119,8 @@ GroupDao.prototype.findProductById = function (product_id) {
         'bp.category_id',
         'bpc.name AS category_name',
         'bpc.parent_id AS category_parent_id',
-        'bpc2.name AS category_parent_name'
+        'bpc2.name AS category_parent_name',
+        'bps2.id AS website_sku_id'
     ];
     let sql = `SELECT ${columns.join()} FROM ?? bps `;
     let params = [tables.buss_product_sku];
@@ -126,6 +134,8 @@ GroupDao.prototype.findProductById = function (product_id) {
     params.push(tables.buss_order_src);
     sql += `LEFT JOIN ?? bos2 ON bos2.id = bos.parent_id `;  //  团购网站
     params.push(tables.buss_order_src);
+    sql += `LEFT JOIN ?? bps2 ON bps2.del_flag = ${del_flag.SHOW} AND bps2.product_id = bps.product_id AND bps2.website = 1 `;  // PC官网
+    params.push(tables.buss_product_sku);
 
     sql += `WHERE bps.del_flag = ${del_flag.SHOW} `;
     sql += `AND bp.id = ? `;
@@ -162,7 +172,9 @@ GroupDao.prototype.findSku = function (query, only_total) {
     let page_size = query.page_size || 10;
     let sort_type = query.sort_type || 'DESC';
 
-    let sql = `SELECT bps.id, bps.created_time FROM ?? bps `;
+    let sql_total = `SELECT count(bps.id) AS total `;
+    let sql_info = `SELECT bps.id `;
+    let sql = `FROM ?? bps `;
     let params = [tables.buss_product_sku];
     sql += `INNER JOIN ?? bp ON bp.id = bps.product_id `;
     params.push(tables.buss_product);
@@ -171,17 +183,24 @@ GroupDao.prototype.findSku = function (query, only_total) {
     sql += `INNER JOIN ?? bos ON bos.id = bps.website AND bos.parent_id = 3 `;  //  团购网站
     params.push(tables.buss_order_src);
     if (query.province_id || query.city_id) {
-        sql += `INNER JOIN ?? dr2 ON dr2.id = bps.regionalism_id `;
+        sql += `INNER JOIN ?? sc ON sc.regionalism_id = bps.regionalism_id `;
+        params.push(tables.sys_city);
+        sql += `INNER JOIN ?? dr ON dr.id = bps.regionalism_id `;
         params.push(tables.dict_regionalism);
-        if (query.city_id) {
-            sql += `LEFT JOIN ?? sc ON sc.regionalism_id = dr2.id `;
-            params.push(tables.sys_city);
-        }
     }
     if (query.province_id) {
-        sql += `INNER JOIN ?? dr3 ON dr3.id = dr2.parent_id and dr3.parent_id = ? `;
+        sql += `INNER JOIN ?? dr2 ON dr2.id = dr.parent_id AND (dr2.id = ? OR dr2.parent_id = ? ) `;
         params.push(tables.dict_regionalism);
         params.push(query.province_id);
+        params.push(query.province_id);
+    }
+    if (query.is_online == '1') {
+        sql += `INNER JOIN ?? bps2 ON bps2.del_flag = ${del_flag.SHOW} AND bps2.product_id = bps.product_id AND bps2.website = 1 `;  // PC官网
+        params.push(tables.buss_product_sku);
+    }
+    if (query.in_project == '1') {
+        sql += `INNER JOIN ?? bgp ON bgp.del_flag = ${del_flag.SHOW} AND FIND_IN_SET(bps.id, bgp.skus) `;
+        params.push(tables.buss_group_project);
     }
 
     sql += `WHERE bps.del_flag = 1 `;
@@ -191,10 +210,10 @@ GroupDao.prototype.findSku = function (query, only_total) {
     }
     if (query.city_id) {
         if (query.is_standard_area == '1') {
-            sql += `AND dr2.parent_id = ? `;
+            sql += `AND (dr.id = ? OR dr.parent_id = ? ) `;
             params.push(query.city_id);
         } else {
-            sql += `AND sc.is_city = 1 AND dr2.id = ? `;
+            sql += `AND sc.is_city = 1 AND bps.regionalism_id = ? `;
             params.push(query.city_id);
         }
     }
@@ -213,16 +232,21 @@ GroupDao.prototype.findSku = function (query, only_total) {
         params.push(`%${query.keywords}%`);
     }
 
-    sql += `ORDER BY bp.created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+    sql += `GROUP BY bps.id `;
 
     return co(function*() {
-        let ids = yield baseDao.select(sql, params);
         let _res = {
-            total: ids.length,
+            total: 0,
             page_no: page_no,
             page_size: page_size,
             list: []
         };
+        let total = yield baseDao.select(sql_total + sql, params);
+        if (total.length == 0) return _res;
+        _res.total = total.length;
+
+        sql += `ORDER BY bps.id ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+        let ids = yield baseDao.select(sql_info + sql, params);
         if (only_total) {
             _res.list = ids;
             return _res;
@@ -258,7 +282,8 @@ GroupDao.prototype.findSkuById = function (sku_id) {
         'dr.id AS city_id',
         'dr.name AS city_name',
         'IF(dr.level_type = 2, dr2.id, dr3.id) AS province_id',
-        'IF(dr.level_type = 2, dr2.name, dr3.name) AS province_name'
+        'IF(dr.level_type = 2, dr2.name, dr3.name) AS province_name',
+        'bps2.id AS website_sku_id'
     ];
     let sql = `SELECT ${columns.join()} FROM ?? bps `;
     let params = [tables.buss_product_sku];
@@ -281,6 +306,9 @@ GroupDao.prototype.findSkuById = function (sku_id) {
     params.push(tables.dict_regionalism);
     sql += `LEFT JOIN ?? dr3 ON dr3.id = dr2.parent_id `;
     params.push(tables.dict_regionalism);
+
+    sql += `LEFT JOIN ?? bps2 ON bps2.del_flag = ${del_flag.SHOW} AND bps2.product_id = bps.product_id AND bps2.website = 1 `;  // PC官网
+    params.push(tables.buss_product_sku);
 
     sql += `WHERE bps.del_flag = ${del_flag.SHOW} `;
     sql += `AND bps.id = ? `;
@@ -307,21 +335,24 @@ GroupDao.prototype.findProject = function (query, only_total) {
     let page_size = query.page_size || 10;
     let sort_type = query.sort_type || 'DESC';
 
-    let sql = `SELECT bgp.id, bgp.created_time FROM ?? bgp `;
+    let sql_total = `SELECT count(bgp.id) AS total `;
+    let sql_info = `SELECT bgp.id `;
+    let sql = `FROM ?? bgp `;
     let params = [tables.buss_group_project];
+    sql += `INNER JOIN ?? bps ON bps.del_flag = ${del_flag.SHOW} AND FIND_IN_SET(bps.id, bgp.skus)  `;
+    params.push(tables.buss_product_sku);
     sql += `LEFT JOIN ?? bos ON bos.id = bgp.src_id `;
     params.push(tables.buss_order_src);
     if (query.province_id || query.city_id) {
-        sql += `INNER JOIN ?? dr2 on dr2.id = bgp.regionalism_id `;
+        sql += `INNER JOIN ?? sc ON sc.regionalism_id = bps.regionalism_id `;
+        params.push(tables.sys_city);
+        sql += `INNER JOIN ?? dr ON dr.id = bps.regionalism_id `;
         params.push(tables.dict_regionalism);
-        if (query.city_id) {
-            sql += `LEFT JOIN ?? sc on sc.regionalism_id = dr2.id `;
-            params.push(tables.sys_city);
-        }
     }
     if (query.province_id) {
-        sql += `INNER JOIN ?? dr3 on dr3.id = dr2.parent_id and dr3.parent_id = ? `;
+        sql += `INNER JOIN ?? dr2 ON dr2.id = dr.parent_id AND (dr2.id = ? OR dr2.parent_id = ? ) `;
         params.push(tables.dict_regionalism);
+        params.push(query.province_id);
         params.push(query.province_id);
     }
 
@@ -332,10 +363,10 @@ GroupDao.prototype.findProject = function (query, only_total) {
     }
     if (query.city_id) {
         if (query.is_standard_area == '1') {
-            sql += `AND dr2.parent_id = ? `;
+            sql += `AND (dr.id = ? OR dr.parent_id = ? ) `;
             params.push(query.city_id);
         } else {
-            sql += `AND sc.is_city = 1 AND dr2.id = ? `;
+            sql += `AND sc.is_city = 1 AND bps.regionalism_id = ? `;
             params.push(query.city_id);
         }
     }
@@ -351,16 +382,21 @@ GroupDao.prototype.findProject = function (query, only_total) {
         params.push(`%${query.keywords}%`);
     }
 
-    sql += `ORDER BY bgp.created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+    sql += `GROUP BY bgp.id `;
 
     return co(function*() {
-        let ids = yield baseDao.select(sql, params);
         let _res = {
-            total: ids.length,
+            total: 0,
             page_no: page_no,
             page_size: page_size,
             list: []
         };
+        let total = yield baseDao.select(sql_total + sql, params);
+        if (total.length == 0) return _res;
+        _res.total = total.length;
+
+        sql += `ORDER BY bgp.id ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+        let ids = yield baseDao.select(sql_info + sql, params);
         for (let i = 0; i < ids.length; i++) {
             let id = ids[i].id;
             let info = yield GroupDao.prototype.findProjectById(id);

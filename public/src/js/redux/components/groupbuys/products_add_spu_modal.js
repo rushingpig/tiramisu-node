@@ -151,12 +151,13 @@ export default class ProductsModal extends Component{
 		}
 		var category_parent_id = $(findDOMNode(this.refs.category_parent))[0].value;
 		if(category_parent_id != SELECT_DEFAULT_VALUE){
-			query_data.category_parent_id = category_parent_id;
+			query_data.category_id = category_parent_id;
 		}
-		var category_id = $(findDOMNode(this.refs.category)).value;
+		var category_id = $(findDOMNode(this.refs.category))[0].value;
 		if(category_id != SELECT_DEFAULT_VALUE){
 			query_data.category_id = category_id;
 		}
+		if(query_data.category_parent_id) delete query_data.category_parent_id
 		this.props.searchProducts(query_data);
 	}
 	onPriCateChange(e){

@@ -24,6 +24,12 @@ export function getProductList(query_data){
 		if(filter_data){
 			filter_data.in_project = filter_data.in_project ? '1': '0';
 			filter_data.is_online = filter_data.is_online ? '1':'0';
+			if(!filter_data.category_id && filter_data.category_parent_id){
+			    filter_data.category_id = filter_data.category_parent_id 
+			} 
+			if(filter_data.category_parent_id){
+			    delete filter_data.category_parent_id
+			}
 		}
 		return get(Url.get_groupbuy_sku_list.toString(), {...query_data, ...filter_data })
 			.done( (data) => {

@@ -69,7 +69,7 @@ export default class ProductsModal extends Component{
 					<Select default-text = '商品一级分类' className = 'space-right' options = {pri_pd_cates} onChange = {this.onPriCateChange.bind(this)}/>
 					<Select default-text = '商品二级分类' className = 'space-right' options = {sec_pd_cates} />
         			<button className="btn btn-xs btn-default" 
-        				onClick = {this.search.bind(this)}><i className="fa fa-search"></i>{' 查询'}</button>
+        				onClick = {this.onSearch.bind(this)}><i className="fa fa-search"></i>{' 查询'}</button>
 				</div>
 				<div ref="tableWrapper" className="table-responsive table-modal modal-list">
 				  <table className="table table-hover table-bordered table-click text-center">
@@ -95,7 +95,7 @@ export default class ProductsModal extends Component{
 				  page_no={page_no} 
 				  total_count={total} 
 				  page_size={this.state.page_size} 
-				  onPageChange = {this.search.bind(this)}
+				  onPageChange = {this.onPageChange.bind(this)}
 				/>
 
 				<hr className="dotted" />
@@ -136,9 +136,15 @@ export default class ProductsModal extends Component{
 	onSecCateChange(e){
 		this.setState({category_id: e.target.value});
 	}
+	onSearch(){
+		this.search();
+	}
+	onPageChange(page){
+		this.search(page);
+	}
 	search(page){
 		page = typeof page == 'undefined' ? this.props.page_no: page;
-		var query_data = {page_no: 0, page_size: page, regionalism_id: this.props.regionalism_id,
+		var query_data = {page_no: page, page_size: this.props.page_size, regionalism_id: this.props.regionalism_id,
 			src_id : this.props.src_id};
 		if(this.state.keywords.trim() !== ''){
 			query_data.keywords = this.state.keywords;

@@ -74,6 +74,7 @@ class ManageOrderDetailPannel extends Component {
                     area={area} 
                     editable={editable}
                     order_id={params.id}
+                    products={products}
                     actions={actions}>
                       {manageOrderProducts}
                   </ManageOrderFormEdit>

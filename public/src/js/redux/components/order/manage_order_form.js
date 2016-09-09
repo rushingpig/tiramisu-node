@@ -5,6 +5,7 @@ import { reduxForm } from 'redux-form';
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
 import Pagination from 'common/pagination';
+import { Confirm } from 'common/message_box';
 import LazyLoad from 'utils/lazy_load';
 import { Noty, form as uForm, dateFormat } from 'utils/index';
 import history from 'history_instance';
@@ -421,15 +422,25 @@ class ManageAddForm extends Component {
     if(!form_data.delivery_id){
       Noty('warning', '请选择配送中心'); return;
     }
-    if(!this._insurance_){
-      this._insurance_ = true;
-      this.props.actions.submitOrder(form_data).done(() => {
-        this._insurance_ = undefined;
-        history.push('/om/index');
-        Noty('success', '已成功提交！');
-      }).fail(function(msg){
-        Noty('error', msg || '网络繁忙，请稍后再试');
-      });
+    const submitOrder = () => {
+      if(!this._insurance_){
+        this._insurance_ = true;
+        this.props.actions.submitOrder(form_data).done(() => {
+          this._insurance_ = undefined;
+          history.push('/om/index');
+          Noty('success', '已成功提交！');
+        }).fail(function(msg){
+          Noty('error', msg || '网络繁忙，请稍后再试');
+        });
+      }
+    }
+    //特殊逻辑
+    var total_discount_price = +this.props.products.confirm_list.reduce((c, p) => c + p.discount_price, 0);
+    if( total_discount_price > 0 && total_discount_price < 38){
+      Confirm('总实际售价为 ￥' + total_discount_price + '，请与渠道部或客服部负责人确定是否正常。是否继续提交？')
+        .done(submitOrder);
+    }else{
+      submitOrder();
     }
   }
   componentDidMount(){

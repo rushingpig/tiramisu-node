@@ -133,6 +133,9 @@ var GroupbuyRow = React.createClass({
 					    className="btn btn-default btn-xs space-left copy-btn">复制</button>
 					<a href='javascript:;' ></a>
 				</td>
+				<td>
+					{props.is_online == 1 ? '是': '否'}
+				</td> 
 				<td>{
 						V('GroupbuyProgramManageView')
 						?
@@ -215,6 +218,7 @@ class ManagePannel extends Component{
           							<th>上线时间段</th>
           							<th>城市</th>
           							<th>商城预约网址</th>
+          							<th>商城是否上线</th>
           							<th>操作</th>
           						</tr>
           					</thead>

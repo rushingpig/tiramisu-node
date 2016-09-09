@@ -120,7 +120,8 @@ export function creatGroupbuyProgram(){
         var pg_detail =getValues(getState().form.program_from);
         pg_detail = formCompile(pg_detail);
         pg_detail.start_time = dateFormat(pg_detail.start_time, 'yyyy-MM-dd hh:mm:ss');
-        pg_detail.end_time = dateFormat(pg_detail.end_time, 'yyyy-MM-dd hh:mm:ss');
+        if(pg_detail.end_time != "Infinite")
+            pg_detail.end_time = dateFormat(pg_detail.end_time, 'yyyy-MM-dd hh:mm:ss');
         dispatch({
             type: CREATE_GROUPBUY_PROGRAM_ING,
         })

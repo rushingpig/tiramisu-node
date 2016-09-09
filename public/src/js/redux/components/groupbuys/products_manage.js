@@ -229,6 +229,9 @@ class EditModal extends Component{
 						</tr>
 					</tbody>
 				</table>
+				<div className = 'form-group form-inline'>
+					<span className='pull-right'>操作人：{data.updated_by || '-'}</span>
+				</div>
 				</div>
 			</StdModal>
 			)

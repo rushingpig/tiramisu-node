@@ -46,6 +46,7 @@ function main(state = main_state, action){
 			list.forEach( m => {
 				if(m.sku_id == sku_id ){
 					m.price = price
+					m.updated_by = window.xfxb.user.username || '-'
 				}
 			}) 
 			return {...state, list: list}

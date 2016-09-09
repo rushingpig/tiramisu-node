@@ -27,6 +27,27 @@ var main_state = {
 function main(state = main_state, action){
 	switch(action.type){
 		case Actions.GET_GROUPBUY_PROGRAM_LIST:
+			var {list } = action.data;
+			var is_online = 0;
+			list.map( m => {
+				var start_time = new Date(m.start_time);
+				if(m.end_time == 'Infinite'){
+					if(iNow >= start_time){
+						m.is_online = 1;
+					}else{
+						m.is_online = 0;
+					}
+					m.end_time = '∞'
+				}else{
+					var end_time = new Date (m.end_time);
+					if( iNow <= end_time && iNow >= start_time){
+						m.is_online = 1;
+					}else{
+						m.is_online =0;
+					}					
+				}
+				return m;
+			})		
 			return {...state, ...action.data, loading: false, refresh: false}
 		case Actions.GOT_ORDER_SRCS:
 			var {data} = action;
@@ -36,11 +57,17 @@ function main(state = main_state, action){
 		case Actions.GET_GROUPBUY_PROGRAM_DETAIL:
 			var data = clone(action.data);
 			var start_time = new Date(data.start_time);
-			var end_time = new Date(data.end_time);
 			var is_online = 0;
-			if( iNow <= end_time && iNow >= start_time){
-				is_online = 1;
-			}data.products = data.products.map ( m => {
+			if(end_time == 'Infinite'){
+				if(iNow >= start_time) is_online = 1;
+				data.end_time = '∞'
+			}else{
+				var end_time = new Date(data.end_time);
+				if( iNow <= end_time && iNow >= start_time){
+					is_online = 1;
+				}
+			}			
+			data.products = data.products.map ( m => {
 				m.is_online = is_online;
 				return m;
 			})

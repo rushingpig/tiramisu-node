@@ -119,7 +119,8 @@ GroupDao.prototype.findProductById = function (product_id) {
         'bp.category_id',
         'bpc.name AS category_name',
         'bpc.parent_id AS category_parent_id',
-        'bpc2.name AS category_parent_name'
+        'bpc2.name AS category_parent_name',
+        'bps2.id AS website_sku_id'
     ];
     let sql = `SELECT ${columns.join()} FROM ?? bps `;
     let params = [tables.buss_product_sku];
@@ -133,6 +134,8 @@ GroupDao.prototype.findProductById = function (product_id) {
     params.push(tables.buss_order_src);
     sql += `LEFT JOIN ?? bos2 ON bos2.id = bos.parent_id `;  //  团购网站
     params.push(tables.buss_order_src);
+    sql += `LEFT JOIN ?? bps2 ON bps2.del_flag = ${del_flag.SHOW} AND bps2.product_id = bps.product_id AND bps2.website = 1 `;  // PC官网
+    params.push(tables.buss_product_sku);
 
     sql += `WHERE bps.del_flag = ${del_flag.SHOW} `;
     sql += `AND bp.id = ? `;
@@ -192,11 +195,11 @@ GroupDao.prototype.findSku = function (query, only_total) {
         params.push(query.province_id);
     }
     if (query.is_online == '1') {
-        sql += `INNER JOIN ?? dps2 ON dps2.del_flag = ${del_flag.SHOW} AND dps2.id = bps.product_id AND bps.website = 1 `;  // PC官网
+        sql += `INNER JOIN ?? bps2 ON bps2.del_flag = ${del_flag.SHOW} AND bps2.product_id = bps.product_id AND bps2.website = 1 `;  // PC官网
         params.push(tables.buss_product_sku);
     }
     if (query.in_project == '1') {
-        sql += `INNER JOIN ?? bgp ON bgp.del_flag = ${del_flag.SHOW} AND FIND_IN_SET(bps.id, bgp.skus) `;  // PC官网
+        sql += `INNER JOIN ?? bgp ON bgp.del_flag = ${del_flag.SHOW} AND FIND_IN_SET(bps.id, bgp.skus) `;
         params.push(tables.buss_group_project);
     }
 
@@ -280,7 +283,7 @@ GroupDao.prototype.findSkuById = function (sku_id) {
         'dr.name AS city_name',
         'IF(dr.level_type = 2, dr2.id, dr3.id) AS province_id',
         'IF(dr.level_type = 2, dr2.name, dr3.name) AS province_name',
-        'dps2.id AS website_sku_id'
+        'bps2.id AS website_sku_id'
     ];
     let sql = `SELECT ${columns.join()} FROM ?? bps `;
     let params = [tables.buss_product_sku];
@@ -304,7 +307,7 @@ GroupDao.prototype.findSkuById = function (sku_id) {
     sql += `LEFT JOIN ?? dr3 ON dr3.id = dr2.parent_id `;
     params.push(tables.dict_regionalism);
 
-    sql += `LEFT JOIN ?? dps2 ON dps2.del_flag = ${del_flag.SHOW} AND dps2.id = bps.product_id AND bps.website = 1 `;  // PC官网
+    sql += `LEFT JOIN ?? bps2 ON bps2.del_flag = ${del_flag.SHOW} AND bps2.product_id = bps.product_id AND bps2.website = 1 `;  // PC官网
     params.push(tables.buss_product_sku);
 
     sql += `WHERE bps.del_flag = ${del_flag.SHOW} `;

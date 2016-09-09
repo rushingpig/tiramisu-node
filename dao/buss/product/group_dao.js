@@ -191,6 +191,14 @@ GroupDao.prototype.findSku = function (query, only_total) {
         params.push(query.province_id);
         params.push(query.province_id);
     }
+    if (query.is_online == '1') {
+        sql += `INNER JOIN ?? dps2 ON dps2.del_flag = ${del_flag.SHOW} AND dps2.id = bps.product_id AND bps.website = 1 `;  // PC官网
+        params.push(tables.buss_product_sku);
+    }
+    if (query.in_project == '1') {
+        sql += `INNER JOIN ?? bgp ON bgp.del_flag = ${del_flag.SHOW} AND FIND_IN_SET(bps.id, bgp.skus) `;  // PC官网
+        params.push(tables.buss_group_project);
+    }
 
     sql += `WHERE bps.del_flag = 1 `;
     if (query.id) {
@@ -271,7 +279,8 @@ GroupDao.prototype.findSkuById = function (sku_id) {
         'dr.id AS city_id',
         'dr.name AS city_name',
         'IF(dr.level_type = 2, dr2.id, dr3.id) AS province_id',
-        'IF(dr.level_type = 2, dr2.name, dr3.name) AS province_name'
+        'IF(dr.level_type = 2, dr2.name, dr3.name) AS province_name',
+        'dps2.id AS website_sku_id'
     ];
     let sql = `SELECT ${columns.join()} FROM ?? bps `;
     let params = [tables.buss_product_sku];
@@ -294,6 +303,9 @@ GroupDao.prototype.findSkuById = function (sku_id) {
     params.push(tables.dict_regionalism);
     sql += `LEFT JOIN ?? dr3 ON dr3.id = dr2.parent_id `;
     params.push(tables.dict_regionalism);
+
+    sql += `LEFT JOIN ?? dps2 ON dps2.del_flag = ${del_flag.SHOW} AND dps2.id = bps.product_id AND bps.website = 1 `;  // PC官网
+    params.push(tables.buss_product_sku);
 
     sql += `WHERE bps.del_flag = ${del_flag.SHOW} `;
     sql += `AND bps.id = ? `;

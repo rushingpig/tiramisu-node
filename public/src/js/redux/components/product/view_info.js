@@ -69,6 +69,12 @@ class Main extends Component {
         <TopHeader />
         <Row>
           <Col xs="4"><label>{'　　'}产品名称：</label><TextMuted>{state.productName}</TextMuted></Col>
+        </Row>
+        <Row>
+          <Col xs="4">
+            <label>{'　　'}商城展示名：</label>
+            <TextMuted>{state.productDisplayName}</TextMuted>
+          </Col>
           <Col xs="4">
             <label>{'　　'}商城购买：</label>
             <TextMuted>{state.canBuyInOfficialSite ? "是" : "否"}</TextMuted>

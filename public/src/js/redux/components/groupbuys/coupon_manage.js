@@ -22,11 +22,15 @@ class TopHeader extends Component{
 	render() {
 		return (
 			<div className='clearfix top-header'>
-				<button
+			{
+				V('GroupbuyCouponManageExportExcel')
+				?<button
 				 style = {{marginLeft: 20}}
 				 className="btn btn-theme btn-xs pull-right">
 				   导出
 				</button>
+				:null
+			}	
 				<Linkers
 				  data={['团购管理', '团购券列表']}
 				  active="团购券列表"

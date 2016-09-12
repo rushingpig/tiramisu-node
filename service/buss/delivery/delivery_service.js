@@ -550,22 +550,32 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
             }
             yield orderDao.batchInsertOrderHistory(historyArr);
 
-            if (refund_amount > 0) {
+            if (refund_amount > 0 || order_obj.payfor_type === Constant.PFT.CASH || order_obj.payfor_type === Constant.PFT.FULL_REFUND) {
                 let refund_obj = {};
                 let refund_history = {option: ''};
                 let refund_info = yield refundDao.findLastRefundByOrderId(orderId);
                 if (refund_info && [RS.CANCEL, RS.COMPLETED].indexOf(refund_info.status) == -1) {
-                    refund_obj.amount = refund_info.amount + refund_amount;
                     refund_obj.status = RS.TREATED;
-                    refund_history.option = `因减少配件修改退款金额为{${refund_obj.amount / 100}}`;
                     refund_history.bind_id = refund_info.id;
+                    refund_obj.amount = refund_info.amount;
+                    if (refund_amount > 0) {
+                        refund_obj.amount += refund_amount;
+                        refund_history.option = `因减少配件修改退款金额为:{${refund_obj.amount / 100}}\n`;
+                    }
+                    if (order_obj.payfor_type === Constant.PFT.CASH) {
+                        refund_obj.amount += order_obj.payfor_amount;
+                        refund_history.option = `因幸福承诺修改退款金额为:{${refund_obj.amount / 100}}\n`;
+                    } else if (order_obj.payfor_type === Constant.PFT.FULL_REFUND) {
+                        refund_obj.amount += order_obj.payfor_amount;
+                        refund_history.option = `因幸福承诺全额退款修改退款金额为:{${refund_obj.amount / 100}}\n`;
+                    }
                     yield refundDao.updateRefund(refund_info.id, systemUtils.assembleInsertObj(req, refund_obj));
                 } else {
                     refund_obj = {
                         order_id: orderId,
                         status: RS.TREATED,
                         type: REFUND_TYPE.PART,
-                        amount: refund_amount,
+                        amount: 0,
                         reason_type: 4,
                         reason: REASON_TYPE['4'],
                         linkman: 0,
@@ -582,7 +592,18 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                             refund_obj.account_type = 'ALIPAY';
                         }
                     }
-                    refund_history.option = `因减少配件自动生成退款\n退款金额为{${refund_obj.amount / 100}}\n`;
+                    if (refund_amount > 0) {
+                        refund_obj.amount += refund_amount;
+                        refund_history.option = `因减少配件自动生成退款\n退款金额为:{${refund_obj.amount / 100}}\n`;
+                    }
+                    if (order_obj.payfor_type === Constant.PFT.CASH) {
+                        refund_obj.amount += order_obj.payfor_amount;
+                        refund_history.option = `因幸福承诺:{${refund_obj.amount / 100}}\n`;
+                    } else if (order_obj.payfor_type === Constant.PFT.FULL_REFUND) {
+                        refund_obj.type = REFUND_TYPE.FULL;
+                        refund_obj.amount = order_obj.payfor_amount;
+                        refund_history.option = `因幸福承诺全额退款:{${refund_obj.amount / 100}}\n`;
+                    }
                     let order_history = {option: ''};
                     order_history.order_id = orderId;
                     order_history.option += refund_history.option;

@@ -76,8 +76,9 @@ class FilterHeader extends Component{
 					<Select {...src_id} options = {order_srcs} default-text='团购网站' className='space-right'/>
 					<Select options = {provinces} {...province_id} default-text = '选择省份' className='space-right' onChange = {this.onProvinceChange.bind(this, province_id.onChange)} />
 					<Select options = { cities } {...city_id} default-text = '选择城市' className='space-right' />
-					{'　商城已上线：'}
-					<input {...is_online} checked = {is_online.value == 1} onClick = {this.onIsOnlineChange.bind(this, is_online.onChange)} type = 'checkbox' />{'　'}
+					<Select {...is_online} options = {[
+														{id: 1, text: '是'},
+														{id: 0, text: '否'}]} default-text='商城是否上线' className='space-right' />
 					<button disabled = {search_ing} data-submitting = {search_ing} className="btn btn-theme btn-xs"
 						onClick = {this.search.bind(this, 'search_ing')}>
 					  <i className="fa fa-search"></i>{' 搜索'}
@@ -89,11 +90,6 @@ class FilterHeader extends Component{
 	onProvinceChange(callback, e){
 		this.props.actions.getCitiesSignal({province_id: e.target.value, is_standard_area: 0});
 		callback(e);
-	}
-	onIsOnlineChange(callback, e){
-		var {fields: { is_online }} = this.props;
-		var result = is_online.value == 1 ? 0: 1;
-		this.props.actions.triggerFormUpdate('groupbuys_program_filter','is_online',  result)
 	}
 	search(search_in_state){
 		this.setState({[search_in_state]: true});

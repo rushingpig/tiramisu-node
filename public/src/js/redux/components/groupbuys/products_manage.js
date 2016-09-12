@@ -93,10 +93,8 @@ class FilterHeader extends Component{
 					<Select {...category_id} default-text='二级分类' options = {sec_pd_cates} className='space-right'/>
 					<Select {...province_id} default-text='选择省份' options = { provinces } className='space-right'/>
 					<Select {...city_id} default-text='选择城市' options = {cities} className='space-right'/>
-					{'　属于团购项目：'}
-					<input {...in_project} checked = {in_project.value == 1} onClick = {this.onIsProgramChange.bind(this, in_project.onChange)}  type ='checkbox' />
-					{'　商城已上线：'}
-					<input {...is_online} checked = {is_online.value == 1} onClick = {this.onIsOnlineChange.bind(this, is_online.onChange)} type = 'checkbox' />{'　'}
+					<Select {...in_project} default-text='是否属于团购商品' className='space-right' options={[{id: 1, text: '是'}, {id: 0, text: '否'}]} />
+					<Select {...is_online} default-text='商城是否上线' className='space-right' options={[{id: 1, text: '是'}, {id: 0, text: '否'}]} />
 					<button className="btn btn-theme btn-xs"
 						onClick = {this.search.bind(this, 'search_ing')}>
 					  <i className="fa fa-search"></i>{' 搜索'}
@@ -109,15 +107,6 @@ class FilterHeader extends Component{
 	onProvinceChange(callback, e){
 		this.props.getCityAndDistricts(e.target.value);
 		callback(e);
-	}
-	onIsProgramChange(){
-		this.setState({in_project: !this.state.in_project})
-	}
-	onIsOnlineChange(callback, e){
-		var {fields: { is_online }} = this.props;
-		var result = is_online.value == 1 ? 0: 1;
-		this.props.triggerFormUpdate('groupbuys_products_filter','is_online',  result)
-		callback(e)
 	}
 	onPriCateChange(callback, e){
 		this.props.getSecCategories(e.target.value)

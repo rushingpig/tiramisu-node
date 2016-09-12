@@ -372,7 +372,7 @@ OrderDao.prototype.findProductById = function (tran, sku_id, cb) {
         resolve(result);
       });
     });
-    if (!sku || sku.length == 0) return Promise.reject(`not found sku id = ${sku}`);
+    if (!sku || sku.length == 0) return Promise.reject(`not found sku_id = ${sku_id}`);
     sku = sku[0];
 
     params = [tables.buss_product, sku.product_id];
@@ -382,7 +382,7 @@ OrderDao.prototype.findProductById = function (tran, sku_id, cb) {
         resolve(result);
       });
     });
-    if (!spu || spu.length == 0) return Promise.reject(`not found sku id = ${spu}`);
+    if (!spu || spu.length == 0) return Promise.reject(`not found product_id = ${sku.product_id} (sku_id = ${sku_id})`);
     spu = spu[0];
 
     params = [tables.buss_product_category, spu.category_id];
@@ -392,7 +392,7 @@ OrderDao.prototype.findProductById = function (tran, sku_id, cb) {
         resolve(result);
       });
     });
-    if (!spc || spc.length == 0) return Promise.reject(`not found sku id = ${spc}`);
+    if (!spc || spc.length == 0) return Promise.reject(`not found category_id = ${spu.category_id} (sku_id = ${sku_id}) (product_id = ${sku.product_id})`);
     spc = spc[0];
 
     return {

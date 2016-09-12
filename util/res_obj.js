@@ -141,7 +141,7 @@ module.exports = {
     msg: 'Error happened when performing query'
   },
   REDUNDANCY_ERROR: {
-    code: '2010',
+    code: '2013',
     msg: 'Error order info redundancy'
   },
   ALREADY_IN_BLACKLIST: {

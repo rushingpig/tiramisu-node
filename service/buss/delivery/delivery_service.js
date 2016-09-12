@@ -597,10 +597,12 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                         refund_history.option = `因减少配件自动生成退款\n退款金额为:{${refund_obj.amount / 100}}\n`;
                     }
                     if (order_obj.payfor_type === Constant.PFT.CASH) {
+                        refund_obj.reason_type = 5;
                         refund_obj.amount += order_obj.payfor_amount;
                         refund_history.option = `因幸福承诺:{${refund_obj.amount / 100}}\n`;
                     } else if (order_obj.payfor_type === Constant.PFT.FULL_REFUND) {
                         refund_obj.type = REFUND_TYPE.FULL;
+                        refund_obj.reason_type = 5;
                         refund_obj.amount = order_obj.payfor_amount;
                         refund_history.option = `因幸福承诺全额退款:{${refund_obj.amount / 100}}\n`;
                     }

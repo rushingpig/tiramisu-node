@@ -1485,7 +1485,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
           transaction.query(skus_sql, [params], err => {
             if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
             OrderDao.prototype.redundancySku(transaction, orderId, err=> {
-              if (err) return reject(new TiramisuError(errorMessage.REDUNDANCY_ERROR, err.message));
+              if (err) return reject(new TiramisuError(errorMessage.REDUNDANCY_ERROR, err));
               transaction.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], err => {
                 if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
                 transaction.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], err => {

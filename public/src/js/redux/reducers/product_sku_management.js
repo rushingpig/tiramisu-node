@@ -13,6 +13,7 @@ const initialState = {
   productId:   0,
   newProductId: undefined, //新建商品返回的id
   productName: '', // 商品名称
+  productDisplayName: '', //商品商城展示名
   buyEntry:    0,  // 购买方式 0:商城可购买 1:外部渠道可购买
 
   primaryCategories:   new Map(), // 一级分类
@@ -298,6 +299,7 @@ const switchType = {
       addMode: false,
 
       productName: productData.product.product_name,
+      productDisplayName: (productData.sku.find(s => s.website == 1) || {}).display_name || '',
       buyEntry: productData.sku.some(isOfficialShopSource) ? 0 : 1,
 
       primaryCategories: primaryCategoriesMap,
@@ -403,6 +405,13 @@ const switchType = {
     return {
       ...state,
       productName: name
+    };
+  },
+
+  [ActionTypes.CHANGE_PRODUCT_DISPLAY_NAME]: (state, { name }) => {
+    return {
+      ...state,
+      productDisplayName: name
     };
   },
 

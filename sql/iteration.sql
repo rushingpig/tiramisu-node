@@ -829,3 +829,6 @@ CREATE TABLE `buss_product_template_data` (
 
 ALTER TABLE `buss_product_category_regionalism` 
 CHANGE COLUMN `channel` `channel` INT(10) NOT NULL DEFAULT 1 COMMENT '渠道id，默认PC' ;
+
+ALTER TABLE `buss_product_sku` 
+ADD COLUMN `display_name` VARCHAR(50) NULL COMMENT '外部展示名称' AFTER `size`;

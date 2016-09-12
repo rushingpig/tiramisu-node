@@ -225,10 +225,12 @@ ProductDao.prototype.insertProductWithSku = function (req, data) {
         };
         return self.insertProduct(req, product_data, connection)
             .then(productId => {
+                let display_name = data.display_name;
                 let promises = data.sku.map(sku => {
                     let sku_data = {
                         product_id: productId,
                         size: sku.size,
+                        display_name: display_name,
                         website: sku.website,
                         original_price: sku.original_price,
                         price: sku.price,
@@ -468,6 +470,7 @@ ProductDao.prototype.getSkuWithBooktimeByProductAndCity = function (data) {
     let columns = [
         'sku.id as id',
         'sku.size as size',
+        'sku.display_name as display_name',
         'sku.website as website',
         'sku.original_price as original_price',
         'sku.price as price',
@@ -535,6 +538,7 @@ ProductDao.prototype.getSkuByProductWithRegion = function (productId) {
     let columns = [
         'sku.id as id',
         'sku.size as size',
+        'sku.display_name as display_name',
         'sku.website as website',
         'sku.regionalism_id as regionalism_id',
         'sku.original_price as original_price',
@@ -630,6 +634,7 @@ ProductDao.prototype.modifyProductAndSku = function (req, data) {
     let self = this;
     return baseDao.trans().then(connection => {
         let productId = data.product.id;
+        let display_name = data.product.display_name;
         let promise = Promise.resolve();
         // 修改product
         if (data.product) {
@@ -648,6 +653,7 @@ ProductDao.prototype.modifyProductAndSku = function (req, data) {
                 let sku_data = {
                     product_id: productId,
                     size: sku.size,
+                    display_name: display_name,
                     website: sku.website,
                     original_price: sku.original_price,
                     price: sku.price,
@@ -676,6 +682,7 @@ ProductDao.prototype.modifyProductAndSku = function (req, data) {
                     let sku_data = {
                         product_id: productId,
                         size: sku.size,
+                        display_name: display_name,
                         website: sku.website,
                         original_price: sku.original_price,
                         price: sku.price,

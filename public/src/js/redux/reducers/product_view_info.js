@@ -6,6 +6,7 @@ const initialState = {
   failedMsg: '',
 
   productName: '',
+  productDisplayName: '',
   position: '',
   canBuyInOfficialSite: false,
   productCategory: [],
@@ -31,6 +32,7 @@ const switchType = {
           position: provincesData[spu.product.province_id] + ' ' + spu.product.city_name,
           basicDataLoadStatus: 'success',
           productName: spu.product.product_name,
+          productDisplayName: (spu.skus.find(sku => sku.website === "1") || {}).display_name || '',
           canBuyInOfficialSite: spu.skus.some(sku => sku.website === "1"), // 编号1代表官方商城购买渠道
           productCategory: [spu.product.primary_cate_name, spu.product.secondary_cate_name],
           isPreSale: spu.product.isPresell,

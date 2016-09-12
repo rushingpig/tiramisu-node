@@ -42,7 +42,14 @@ export function refund_data(state = initial_state, action){
 			data.amount = data.amount / 100;
 			var {option } = data;
 			data.id = action.refundId;
-			return {...state, refund_apply_data: {...data, ...option} }
+      if(data.linkman == 1){
+        data.recipient_name = data.linkman_name;
+        data.recipient_mobile = data.linkman_mobile;
+      }else{
+        data.owner_name = data.linkman_name;
+        data.owner_mobile = data.linkman_mobile;
+      }
+			return {...state, refund_apply_data: {...option, ...data} }
 		case ACTIONS.REFUND_APPLY_ING:
 			return {...state, save_ing: true}
 		case ACTIONS.REFUND_APPLY_SUCCESS:

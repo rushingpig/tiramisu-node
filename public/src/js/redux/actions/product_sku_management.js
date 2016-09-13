@@ -9,6 +9,7 @@ const ActionTypes = {
   LOADED_PRODUCT_DATA: Symbol('LOADED_PRODUCT_DATA'),
 
   CHANGE_PRODUCT_NAME:                Symbol('CHANGE_PRODUCT_NAME'),
+  CHANGE_PRODUCT_DISPLAY_NAME:        Symbol('CHANGE_PRODUCT_DISPLAY_NAME'),
   CHANGE_BUY_ENTRY:                   Symbol('CHANGE_BUY_ENTRY'),
   CHANGE_SELECTED_PRIMARY_CATEGORY:   Symbol('CHANGE_SELECTED_PRIMARY_CATEGORY'),
   CHANGE_SELECTED_SECONDARY_CATEGORY: Symbol('CHANGE_SELECTED_SECONDARY_CATEGORY'),
@@ -200,6 +201,14 @@ const loadBasicData = (productId = 0) => (
 const changeProductName = name => {
   return {
     type: ActionTypes.CHANGE_PRODUCT_NAME,
+    name
+  };
+};
+
+// 修改商品商城展示名
+const changeProductDisplayName = name => {
+  return {
+    type: ActionTypes.CHANGE_PRODUCT_DISPLAY_NAME,
     name
   };
 };
@@ -624,7 +633,8 @@ const saveOption = () => (
 
     let postData = {
       category_id: state.selectSecondaryCategory,
-      name: state.productName.trim()
+      name: state.productName.trim(),
+      display_name: state.productDisplayName.trim(),
     };
 
     let newSku = [];
@@ -831,6 +841,7 @@ export { ActionTypes }
 export default {
   loadBasicData,
   changeProductName,
+  changeProductDisplayName,
   changeBuyEntry,
   changeSelectedPrimaryCategory,
   changeSelectedSecondaryCategory,

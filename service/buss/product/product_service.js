@@ -346,7 +346,8 @@ ProductService.prototype.getProductAndSku = (req, res, next)=> {
                             activity_price: item.activity_price,
                             activity_start: item.activity_start,
                             activity_end: item.activity_end,
-                            website: item.website
+                            website: item.website,
+                            display_name: item.display_name
                         });
                         sku_ids.push(item.id);
                     });
@@ -417,6 +418,7 @@ ProductService.prototype.getProductAndSkuWithRegions = (req, res, next)=> {
                 format_data[item.id] = {
                     id: item.id,
                     size: item.size,
+                    display_name: item.display_name,
                     website: item.website,
                     regionalism_id: item.regionalism_id,
                     original_price: item.original_price,

@@ -276,6 +276,21 @@ class ShopSpecificationsOptions extends Component {
     const { state, Action } = this.props;
 
     return (
+    <div>
+      <FormGroup>
+        <ControlLabel xs='2' lg="2">
+          商城展示名：
+        </ControlLabel>
+        <Col xs="9" lg="7">
+          <FormInline>
+            <Input
+              type="text"
+              value={state.productDisplayName}
+              onChange={getDOMValue(Action.changeProductDisplayName)}
+            />
+          </FormInline>
+        </Col>
+      </FormGroup>
       <FormGroup>
         <ControlLabel xs='2' lg="2">
           商城规格：
@@ -388,6 +403,7 @@ class ShopSpecificationsOptions extends Component {
           <button className="btn btn-xs btn-default" onClick={Action.createShopSpecifications}>新增规格</button>
         </Col>
       </FormGroup>
+    </div>
     );
   }
 }
@@ -775,7 +791,8 @@ class Main extends Component {
     let enableSaveButton = true;
 
     if (
-      state.productName.trim() === ''
+      state.productName.trim() === '' ||
+      state.productDisplayName.trim() === ''
     ) {
       enableSaveButton = false;
     }

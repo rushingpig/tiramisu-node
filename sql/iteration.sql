@@ -832,3 +832,7 @@ CHANGE COLUMN `channel` `channel` INT(10) NOT NULL DEFAULT 1 COMMENT '渠道id�
 
 ALTER TABLE `buss_product_sku` 
 ADD COLUMN `display_name` VARCHAR(50) NULL COMMENT '外部展示名称' AFTER `size`;
+
+ALTER TABLE `buss_order_sku` ADD COLUMN `sku` varchar(2048) DEFAULT NULL COMMENT '原始sku信息';
+ALTER TABLE `buss_order_sku` ADD COLUMN `spu` varchar(2048) DEFAULT NULL COMMENT '原始spu信息';
+ALTER TABLE `buss_order_sku` ADD COLUMN `spc` varchar(2048) DEFAULT NULL COMMENT '原始spc信息';

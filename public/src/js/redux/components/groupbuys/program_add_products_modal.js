@@ -94,7 +94,7 @@ export default class ProductsModal extends Component{
 				<Pagination 
 				  page_no={page_no} 
 				  total_count={total} 
-				  page_size={this.state.page_size} 
+				  page_size={page_size} 
 				  onPageChange = {this.onPageChange.bind(this)}
 				/>
 

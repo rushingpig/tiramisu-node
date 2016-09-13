@@ -49,7 +49,7 @@ export default class ProductsModal extends Component{
 		super(props);
 		this.state = {
 			page_size: 10,
-			is_online: false,
+			is_online: SELECT_DEFAULT_VALUE,
 		}
 	}
 	render(){
@@ -65,8 +65,8 @@ export default class ProductsModal extends Component{
 					<input ref='keywords' type = 'text' placeholder='商品名称' className='form-control input-xs space-right'/>
 					<Select ref='category_parent' onChange = {this.onPriCateChange.bind(this)} options = {pri_pd_cates} default-text ='一级分类' className='space-right'/>
 					<Select ref='category' options = {sec_pd_cates} default-text = '二级分类' className='space-right' />
-					{'　商城已上线：'}
-					<input checked = {is_online} onClick = {this.onIsOnlineChange.bind(this)} type = 'checkbox' />{'　'}
+					<Select default-text='商城是否上线' className='space-right' onChange = {this.onIsOnlineChange.bind(this)} 
+							options={[{id: 1, text: '是'}, {id: 0, text: '否'}]} />{'　'}
         			<button className="btn btn-xs btn-theme"
         				onClick = {this.search.bind(this, 0)}><i className="fa fa-search"></i>{' 查询'}</button>
 				</div>
@@ -91,7 +91,7 @@ export default class ProductsModal extends Component{
 					total_count = {total}
 					page_no = {page_no}
 					page_size = {this.state.page_size}
-					onPageChage = {this.search.bind(this)}
+					onPageChange = {this.search.bind(this)}
 				/>
 
 				<hr className="dotted" />
@@ -142,9 +142,8 @@ export default class ProductsModal extends Component{
 	}
 	search(page){
 		var {is_online, page_size } = this.state;
-		is_online = is_online ? 1 : 0;
 		var page_no = typeof page == 'undefined' ? this.props.main.page_no : page;
-		var query_data = {regionalism_id: this.props.regionalism_id, src_id: this.props.src_id, is_online, page_no, page_size }
+		var query_data = {regionalism_id: this.props.regionalism_id, src_id: this.props.src_id, page_no, page_size }
 		var keywords = this.refs.keywords.value.trim();
 		if(keywords != ''){
 			query_data.keywords = keywords;
@@ -157,15 +156,18 @@ export default class ProductsModal extends Component{
 		if(category_id != SELECT_DEFAULT_VALUE){
 			query_data.category_id = category_id;
 		}
+		if(is_online != SELECT_DEFAULT_VALUE)
+			query_data.is_online = is_online
 		if(query_data.category_parent_id) delete query_data.category_parent_id
 		this.props.searchProducts(query_data);
 	}
 	onPriCateChange(e){
 		this.props.getSecCategories(e.target.value);
 	}
-	onIsOnlineChange(){
+	onIsOnlineChange(e){
+		var {value} = e.target;
 		this.setState({
-			is_online: !this.state.is_online
+			is_online: value
 		})
 	}
 	onDelSelectedProduct(){

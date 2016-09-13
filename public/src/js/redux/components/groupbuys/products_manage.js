@@ -91,7 +91,7 @@ class FilterHeader extends Component{
 					<Select {...src_id} default-text='团购网站' options = {order_srcs} className='space-right'/>
 					<Select {...category_parent_id} default-text='一级分类' options = {pri_pd_cates} className='space-right' onChange = {this.onPriCateChange.bind(this, category_parent_id.onChange)}/>
 					<Select {...category_id} default-text='二级分类' options = {sec_pd_cates} className='space-right'/>
-					<Select {...province_id} default-text='选择省份' options = { provinces } className='space-right'/>
+					<Select {...province_id} default-text='选择省份' onChange={this.onProvinceChange.bind(this, province_id.onChange)} options = { provinces } className='space-right'/>
 					<Select {...city_id} default-text='选择城市' options = {cities} className='space-right'/>
 					<Select {...in_project} default-text='是否属于团购商品' className='space-right' options={[{id: 1, text: '是'}, {id: 0, text: '否'}]} />
 					<Select {...is_online} default-text='商城是否上线' className='space-right' options={[{id: 1, text: '是'}, {id: 0, text: '否'}]} />
@@ -105,7 +105,7 @@ class FilterHeader extends Component{
 	}
 
 	onProvinceChange(callback, e){
-		this.props.getCityAndDistricts(e.target.value);
+		this.props.getCitiesSignal({province_id: e.target.value, is_standard_area: 0});
 		callback(e);
 	}
 	onPriCateChange(callback, e){
@@ -292,7 +292,7 @@ class ManagePannel extends Component{
 	render(){
 		var {page_no , total, main, actions, area, } = this.props;
 		var { pri_pd_cates, sec_pd_cates, order_srcs, list, refresh, loading, total, page_no } = main;
-		var { getSecCategories, getProductList, editSkuPrice, offShelf, triggerFormUpdate } = actions;
+		var { getSecCategories, getProductList, editSkuPrice, offShelf, triggerFormUpdate, getCitiesSignal } = actions;
 		var content = list.map( (m, i) => {
 			return (<ProductRow data = {m} key= {m.sku_id + ' ' + i} 
 				viewEditModal={ this.viewEditModal.bind(this)}
@@ -302,7 +302,7 @@ class ManagePannel extends Component{
 		return(
 			<div className='order-manage'>
 				<TopHeader />
-				<FilterHeader {...{pri_pd_cates, sec_pd_cates, order_srcs, area, getSecCategories, triggerFormUpdate, getProductList}}/>
+				<FilterHeader {...{pri_pd_cates, sec_pd_cates, order_srcs, area, getSecCategories, triggerFormUpdate, getProductList, getCitiesSignal}}/>
 				<div className='panel'>
           			<header className="panel-heading">团购商品列表</header>
           			<div className='panel-body'>

@@ -152,7 +152,7 @@ ProductDao.prototype.findProductsByOrderId = function(orderId){
                 try{
                     curr.sku = JSON.parse(curr.sku);
                     curr.spu = JSON.parse(curr.spu);
-                    curr.name = curr.spu.name;
+                    curr.name = curr.sku.display_name || curr.spu.name;
                     curr.category_id = curr.spu.category_id;
                     curr.size = curr.sku.size;
                     delete curr.sku;

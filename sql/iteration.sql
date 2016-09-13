@@ -795,3 +795,7 @@ CREATE TABLE `buss_product_template_data` (
     `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='详情页模板数据表';
+
+ALTER TABLE `buss_order_sku` ADD COLUMN `sku` varchar(2048) DEFAULT NULL COMMENT '原始sku信息';
+ALTER TABLE `buss_order_sku` ADD COLUMN `spu` varchar(2048) DEFAULT NULL COMMENT '原始spu信息';
+ALTER TABLE `buss_order_sku` ADD COLUMN `spc` varchar(2048) DEFAULT NULL COMMENT '原始spc信息';

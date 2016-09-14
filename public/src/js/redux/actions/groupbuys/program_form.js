@@ -161,7 +161,10 @@ export function editGroupbuyProgram(id){
         var pg_detail = getValues(getState().form.program_from);
         pg_detail = formCompile(pg_detail);
         pg_detail.start_time = dateFormat(pg_detail.start_time, 'yyyy-MM-dd hh:mm:ss');
-        pg_detail.end_time = dateFormat(pg_detail.end_time, 'yyyy-MM-dd hh:mm:ss');
+        if(pg_detail.end_time != "Infinite")
+            pg_detail.end_time = dateFormat(pg_detail.end_time, 'yyyy-MM-dd hh:mm:ss');
+        else
+            delete pg_detail.end_time
         pg_detail.name = pg_detail.program_name;
         delete pg_detail.program_name;
         dispatch({

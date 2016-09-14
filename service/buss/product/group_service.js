@@ -14,7 +14,8 @@ const res_obj = require('../../../util/res_obj');
 
 module.exports.getProductList = function (req, res, next) {
     let promise = co(function *() {
-        let query = req.query;
+        let query = Object.assign({}, req.query);
+        if (!query.city_id) query.city_id = query.regionalism_id;
         let _res = yield groupDao.findProduct(query);
         _res.list.forEach(curr=> {
             curr.is_online = 0;
@@ -60,14 +61,18 @@ module.exports.getSkuInfo = function (req, res, next) {
 module.exports.addSku = function (req, res, next) {
     let promise = co(function *() {
         let body = req.body;
-        let sku_info = {
-            product_id: body.product_id,
-            size: body.size,
-            website: body.src_id,
-            regionalism_id: body.regionalism_id,
-            price: body.price
-        };
-        return yield groupDao.insertSku(sku_info);
+        for (let i = 0; i < req.body.products.length; i++){
+            let curr = req.body.products[i];
+            let sku_info = {
+                product_id: body.product_id,
+                size: curr.size,
+                display_name: curr.product_name,
+                website: body.src_id,
+                regionalism_id: body.regionalism_id,
+                price: curr.price
+            };
+            yield groupDao.insertSku(systemUtils.assembleInsertObj(req, sku_info));
+        }
     }).then(result=> {
         res.api(result);
     });
@@ -80,7 +85,7 @@ module.exports.delSku = function (req, res, next) {
         let sku_info = {
             del_flag: 0
         };
-        return yield groupDao.updateSku(sku_id, sku_info);
+        return yield groupDao.updateSku(sku_id, systemUtils.assembleUpdateObj(req, sku_info));
     }).then(result=> {
         res.api(result);
     });
@@ -90,10 +95,10 @@ module.exports.delSku = function (req, res, next) {
 module.exports.editSku = function (req, res, next) {
     let promise = co(function *() {
         let sku_id = req.params.skuId;
-        let sku_info = {
-            price: req.body.price
-        };
-        return yield groupDao.updateSku(sku_id, sku_info);
+        let sku_info = {};
+        if (req.body.price) sku_info.price = req.body.price;
+        if (req.body.display_name) sku_info.display_name = req.body.name;
+        return yield groupDao.updateSku(sku_id, systemUtils.assembleUpdateObj(req, sku_info));
     }).then(result=> {
         res.api(result);
     });

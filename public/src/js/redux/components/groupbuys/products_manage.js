@@ -141,14 +141,14 @@ class ProductRow extends Component{
 		var {data} = this.props;
 		return (
 			<tr>
-				<td>{data.spu_id + '/' + data.sku_id}</td>
+				<td>{data.spu_id + ' / ' + data.sku_id}</td>
 				<td>{data.product_name}</td>
 				<td>{data.spu_name}</td>
 				<td>{data.size}</td>
 				<td>￥{data.price / 100}</td>
 				<td>{data.src_name}</td>
-				<td>{data.group_project ? data.group_project : '/'}</td>
-				<td>{data.category_name}</td>
+				<td>{data.group_project_name ? data.group_project_name : '/'}</td>
+				<td>{data.category_parent_name + ' / ' + data.category_name}</td>
 				<td><span className = 'bg-warning bordered'>{data.city_name}</span>{ ' ' + data.province_name}</td>
 				<td>{data.is_online == 1? '是': '否'}</td>
 				<td>

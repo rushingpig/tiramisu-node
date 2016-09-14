@@ -14,14 +14,6 @@ export const getOrderSrcs = OrderSupport.getOrderSrcs;
 
 export const SEARCH_GROUPBUYS_PRODUCTS = 'SEARCH_GROUPBUYS_PRODUCTS';
 export function searchGroupbuysProducts(query_data){
-    if(query_data){
-        if(!query_data.category_id && query_data.category_parent_id){
-            query_data.category_id = query_data.category_parent_id 
-        } 
-        if(query_data.category_parent_id){
-            delete query_data.category_parent_id
-        }
-    }
     return GET(Url.groupbuy_pg_add_sku_list.toString(), query_data, SEARCH_GROUPBUYS_PRODUCTS);
 /*  return TEST({
     list: [

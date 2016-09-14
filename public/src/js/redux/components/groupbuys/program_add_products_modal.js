@@ -67,7 +67,7 @@ export default class ProductsModal extends Component{
 				<div className = 'form-group form-inline'>
 					<input type='text' className = 'form-control input-xs space-right' placeholder='商品名称'/>
 					<Select default-text = '商品一级分类' className = 'space-right' options = {pri_pd_cates} onChange = {this.onPriCateChange.bind(this)}/>
-					<Select default-text = '商品二级分类' className = 'space-right' options = {sec_pd_cates} />
+					<Select default-text = '商品二级分类' className = 'space-right' options = {sec_pd_cates} onChange = {this.onSecCateChange.bind(this)} />
         			<button className="btn btn-xs btn-default" 
         				onClick = {this.onSearch.bind(this)}><i className="fa fa-search"></i>{' 查询'}</button>
 				</div>
@@ -150,7 +150,7 @@ export default class ProductsModal extends Component{
 			query_data.keywords = this.state.keywords;
 		}
 		if(this.state.category_parent_id !== SELECT_DEFAULT_VALUE){
-			query_data.category_parent_id = this.state.category_parent_id;
+			query_data.category_id = this.state.category_parent_id;
 		}
 		if(this.state.category_id !== SELECT_DEFAULT_VALUE){
 			query_data.category_id = this.state.category_id;

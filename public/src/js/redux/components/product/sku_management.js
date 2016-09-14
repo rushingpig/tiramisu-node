@@ -19,13 +19,53 @@ LazyLoad('datetimerangepicker');
 const FormHorizontal = props => (<div className="form-horizontal" {...props} />)
 const FormGroup = props => (<div className="form-group" {...props} />);
 const FormInline = props => (<div className="form-inline" {...props} />);
-const Input = props => (<input type="number" className="form-control input-xs" {...props} />);
+// const Input = props => (<input type="number" className="form-control input-xs" {...props} />);
 const CheckBox = props => (<input type="checkbox" {...props} />);
 const Radio = props => (<input type="radio" {...props} />);
 const Row = props => (<div className="row" {...props} />);
 const RadioInline = props => (<label className="radio-inline" {...props} />);
 const ControlLabel = props => (<label className={"control-label" + (props.xs ? (" col-xs-" + props.xs) : "")} {...props} />);
 
+class Input extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      error: true
+    }
+    this.onChange = this.onChange.bind(this);
+    this.onBlur = this.onBlur.bind(this);
+  }
+  render(){
+    return (
+      <div className="inline-block">
+        <input
+          type="number"
+          {...this.props}
+          onChange={this.onChange}
+          onBlur={this.onBlur}
+          className={`form-control input-xs ${this.props.className}`}
+        />
+        {
+          this.props.required && this.state.error
+            ? <span className="space-left text-danger">（必填）</span>
+            : null
+        }
+      </div>
+    )
+  }
+  onChange(e){
+    if(e.target.value.trim()){
+      this.setState({ error: false })
+    }
+    this.props.onChange && this.props.onChange(e);
+  }
+  onBlur(e){
+    if(!e.target.value.trim()){
+      this.setState({ error: true })
+    }
+    this.props.onBlur && this.props.onBlur(e);
+  }
+}
 const Col = props => {
   let className = '';
 
@@ -100,7 +140,7 @@ class BasicOptions extends Component {
             <FormInline>
               <Input
                 type="text"
-                autoFocus={true}
+                required
                 disabled={!state.addMode}
                 value={state.productName}
                 onChange={getDOMValue(Action.changeProductName)}
@@ -285,12 +325,20 @@ class ShopSpecificationsOptions extends Component {
           <FormInline>
             <Input
               type="text"
+              required
               value={state.productDisplayName}
               onChange={getDOMValue(Action.changeProductDisplayName)}
             />
           </FormInline>
         </Col>
       </FormGroup>
+      {
+        !state.cityOptionSavable
+          ? <FormGroup>
+              <div style={{margin: '17px 0 0 124px'}} className="text-danger">商城规格、渠道设置必须选择一项</div>
+            </FormGroup>
+          : null
+      }
       <FormGroup>
         <ControlLabel xs='2' lg="2">
           商城规格：
@@ -429,6 +477,11 @@ class SourceOptions extends Component {
 
     return (
       <FormGroup>
+        {
+          state.buyEntry == 1 && !state.cityOptionSavable
+            ? <p className="text-danger" style={{marginLeft: 124}}>（必填）</p>
+            : null
+        }
         <ControlLabel xs='2'>渠道设置：</ControlLabel>
         <Col xs="3" lg="2">
           <div className="list-group">
@@ -791,7 +844,13 @@ class Main extends Component {
     let enableSaveButton = true;
 
     if (
-      state.productName.trim() === '' ||
+      state.productName.trim() === ''
+    ) {
+      enableSaveButton = false;
+    }
+
+    if (
+      state.buyEntry == 0 &&
       state.productDisplayName.trim() === ''
     ) {
       enableSaveButton = false;

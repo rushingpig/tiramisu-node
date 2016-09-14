@@ -132,6 +132,10 @@ const tempOptionsValidator = state => {
     }
   }
 
+  if(state.buyEntry == 1 && ssArr.length == 0){
+    vaild = false;
+  }
+
   return {
     ...state,
     cityOptionSavable: vaild
@@ -416,10 +420,10 @@ const switchType = {
   },
 
   [ActionTypes.CHANGE_BUY_ENTRY]: (state, { entry }) => {
-    return {
+    return tempOptionsValidator({
       ...state,
       buyEntry: entry
-    };
+    });
   },
 
   [ActionTypes.CHANGE_SELECTED_PRIMARY_CATEGORY]: (state, { id }) => {

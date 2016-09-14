@@ -157,7 +157,8 @@ export default class ManageForm extends Component{
 	}
 	onSubmit(){
 		var { regionalism_id, src_id, product_name } = this.state;
-		var data = {regionalism_id: regionalism_id, src_id, product_name}
+		var product_id = this.props.main.selected_spu_info.spu_id
+		var data = {regionalism_id: regionalism_id, src_id, product_name, product_id}
 		var src_value = $(findDOMNode(this.refs.src))[0].value
 		if(src_value === SELECT_DEFAULT_VALUE){
 			Noty('warning', '请选择团购网站')

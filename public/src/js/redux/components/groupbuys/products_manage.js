@@ -142,8 +142,8 @@ class ProductRow extends Component{
 		return (
 			<tr>
 				<td>{data.spu_id + ' / ' + data.sku_id}</td>
+				<td>{data.display_name}</td>
 				<td>{data.product_name}</td>
-				<td>{data.spu_name}</td>
 				<td>{data.size}</td>
 				<td>￥{data.price / 100}</td>
 				<td>{data.src_name}</td>

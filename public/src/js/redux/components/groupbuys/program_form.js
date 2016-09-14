@@ -75,7 +75,7 @@ class ManageForm extends Component{
 				province_id, 
 				regionalism_id,
 				src_id,
-				name,
+				program_name,
 				start_time,
 				end_time,
 			},
@@ -124,7 +124,7 @@ class ManageForm extends Component{
 						</div>
 						<div  className = 'form-group form-inline'>
 							<label>项目名称：</label>
-							<input {...name} type = 'text' className = {`form-control input-xs ${name.error}`} />
+							<input {...program_name} type = 'text' className = {`form-control input-xs ${name.error}`} />
 						</div>
 						<div className = 'form-group form-inline'>
 							<label>选择商品：</label>
@@ -305,7 +305,7 @@ ManageForm = reduxForm({
 		'province_id',
 		'regionalism_id',
 		'src_id',
-		'name',
+		'program_name',
 		'start_time',
 		'end_time',
 	],

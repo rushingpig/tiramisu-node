@@ -21,6 +21,7 @@ import * as RefundManageActions from 'actions/refund';
 import AreaActions from 'actions/area';
 import { AreaActionTypes1 } from 'actions/action_types';
 import * as RefundActions from 'actions/refund_modal';
+import {initForm} from 'actions/form';
 
 import LazyLoad from 'utils/lazy_load';
 import V from 'utils/acl';
@@ -356,7 +357,7 @@ class ManagePannel extends Component{
 	render(){
 		var { RefundManage, getOrderOptRecord, resetOrderOptRecord, refund_data , bindOrderRecord, area,
 			 getProvincesSignal, getCitiesSignal, getDistrictsAndCity, resetCities, resetDistricts, getRefundList, getRefundApplyDetail,
-			 editRefundChangeStatus, refundEdit, getBindOrders, resetBindOrders, addRemark, refundComplete_CS  } = this.props;
+			 editRefundChangeStatus, refundEdit, getBindOrders, resetBindOrders, addRemark, refundComplete_CS, initForm  } = this.props;
 		var { list, total, loading, refresh, page_no, check_order_info, active_order_id, operationRecord, all_refund_status, all_refund_way, all_refund_reasons } = RefundManage;
 		var { viewOperationRecordModal, viewRefundModal, viewRefundCredential, viewRemarkModal, viewBindOrderRecord } = this;
 		var content = list.map((n) => {
@@ -431,6 +432,7 @@ class ManagePannel extends Component{
         			 all_refund_reasons = {all_refund_reasons} 
         			 editRefundChangeStatus = {editRefundChangeStatus}
         			 refundEdit = {refundEdit}
+        			 initForm = {initForm}
         			 />
         		<RefundCredentials ref='viewRefundCredential' editable = {true} editRefundChangeStatus = {editRefundChangeStatus} refundComplete_CS = {refundComplete_CS}/>
         		<RemarkModal ref='viewRemarkModal' addRemark = {addRemark} />
@@ -496,6 +498,7 @@ function mapDispatchToProps(dispatch){
 		...AreaActions(AreaActionTypes1),
 		...RefundManageActions,
 		...RefundActions,
+		initForm,
 	},dispatch);
 	actions.dispatch = dispatch;
 	return actions;

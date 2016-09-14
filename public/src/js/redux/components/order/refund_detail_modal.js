@@ -37,6 +37,11 @@ class RefundModal extends Component{
   show(){
     if(!this.props.editable){
       this.props.getRefundReasons();
+    }else{
+      var {refund_data} = this.props;
+      var {refund_apply_data} = refund_data;
+      //modal显示时，数据重新绑定，
+      this.props.initForm('refund_apply', refund_apply_data);
     }
     this.refs.modal.show();
   }

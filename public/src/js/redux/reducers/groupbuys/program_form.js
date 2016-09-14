@@ -59,6 +59,7 @@ function main(state = main_state, action){
 				data.end_time = 'Infinite';
 			}else
 				data.end_time = new Date(data.end_time);
+				data.program_name = data.name
 			return {...state, program_info: data, selected_list: data.products}
 		case Actions.RESET_GROUPBUY_PROGRAM:
 			/*program_info: {start_time :iNow, end_time: new Date(getDate(iNow, 7))}*/

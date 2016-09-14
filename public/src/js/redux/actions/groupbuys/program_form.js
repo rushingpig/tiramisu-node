@@ -136,6 +136,8 @@ export function creatGroupbuyProgram(){
             type: CREATE_GROUPBUY_PROGRAM_ING,
         })
         pg_detail.products = pd_list.map ( m => m.id);
+        pg_detail.name = pg_detail.program_name;  //program_name装换为name 避免输入框出现遗留错误提示
+        delete pg_detail.program_name
         delete pg_detail.province_id;
         return post(Url.add_program.toString(), pg_detail)
                 .done(() => {
@@ -160,6 +162,8 @@ export function editGroupbuyProgram(id){
         pg_detail = formCompile(pg_detail);
         pg_detail.start_time = dateFormat(pg_detail.start_time, 'yyyy-MM-dd hh:mm:ss');
         pg_detail.end_time = dateFormat(pg_detail.end_time, 'yyyy-MM-dd hh:mm:ss');
+        pg_detail.name = pg_detail.program_name;
+        delete pg_detail.program_name;
         dispatch({
          type: EDIT_GROUPBUY_PROGRAM_ING,
         }) 

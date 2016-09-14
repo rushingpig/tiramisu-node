@@ -91,7 +91,7 @@ ProductService.prototype.listProducts = (req, res, next) => {
                 };
             }
             let sku_obj = {
-                original_price: curr.price,
+                original_price: curr.original_price,
                 discount_price: curr.price,
                 is_delivery: curr.is_delivery,
                 is_local_site: curr.is_local_site,

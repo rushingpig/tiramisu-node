@@ -16,12 +16,7 @@ module.exports.getProductList = function (req, res, next) {
     let promise = co(function *() {
         let query = Object.assign({}, req.query);
         if (!query.city_id) query.city_id = query.regionalism_id;
-        let _res = yield groupDao.findProduct(query);
-        _res.list.forEach(curr=> {
-            curr.is_online = 0;
-            if (curr.website_sku_id) curr.is_online = 1;
-        });
-        return _res;
+        return yield groupDao.findProduct(query);
     }).then(result=> {
         res.api(result);
     });

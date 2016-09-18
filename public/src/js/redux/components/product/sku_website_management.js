@@ -822,7 +822,7 @@ class Main extends Component {
       detail_top_copy: proProperties.briefIntro_1,
       detail_template_copy: proProperties.briefIntro_2,
       detail_template_copy_end: proProperties.briefIntro_3,
-      spec: clone(proProperties.spec),
+      spec: clone(proProperties.spec).filter(n => n.value), //过滤出有效的
       detail_img_1: proIntro.intro_img_1,
       detail_img_2: proIntro.intro_img_2,
       detail_img_3: proIntro.intro_img_3,

@@ -6,7 +6,7 @@
       super(props);
       this.state = {
         show: false,
-        value: props.value,
+        value: props.value || '',
         error: false,
       }
       this.show = this.show.bind(this);

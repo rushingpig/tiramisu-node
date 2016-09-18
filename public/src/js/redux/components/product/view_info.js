@@ -88,7 +88,7 @@ class Main extends Component {
           <Col xs="4">
             <label>{'　　'}是否预售：</label>
             <TextMuted>
-              {state.isPreSale ? ("是  ( " + state.onSaleTime[0] + ' ~ ' + state.onSaleTime[1] + ' )') : "否"}
+              {state.isPreSale ? ("是  ( " + (state.onSaleTime[0] || '∞') + ' ~ ' + (state.onSaleTime[1] || '∞') + ' )') : "否"}
             </TextMuted>
           </Col>
         </Row>

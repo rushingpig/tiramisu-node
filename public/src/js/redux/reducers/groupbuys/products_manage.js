@@ -47,7 +47,7 @@ function main(state = main_state, action){
 				if(m.sku_id == sku_id ){
 					m.price = price
 					m.display_name = display_name;
-					m.updated_by = window.xfxb.user.username || '-'
+					m.updated_by = window.xfxb.user.name || '-'
 				}
 			}) 
 			return {...state, list: list}

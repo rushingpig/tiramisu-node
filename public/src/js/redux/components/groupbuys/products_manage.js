@@ -183,11 +183,11 @@ class EditModal extends Component{
 		this.state = {
 			data: {},
 			price: 0,
-			product_name: '',
+			display_name: '',
 		}
 	}
 	render(){
-		var {data, price, product_name} = this.state;
+		var {data, price, display_name} = this.state;
 		return (
 			<StdModal ref='modal' title = '编辑价格' onConfirm = {this.onConfirm.bind(this)}>
 				<header className = 'panel-heading'>{'SKU(' +data.sku_id + ')　　　' +  data.product_name }</header>
@@ -215,7 +215,7 @@ class EditModal extends Component{
 					</thead>
 					<tbody>
 						<tr>
-							<td style={{borderRight: '2px solid #ddd'}}><input type = 'text' className='form-control input-xs' value = {product_name} onChange = {this.onProductNameChange.bind(this)} /></td>
+							<td style={{borderRight: '2px solid #ddd'}}><input type = 'text' className='form-control input-xs' value = {display_name} onChange = {this.onProductNameChange.bind(this)} /></td>
 							<td style={{borderRight: '2px solid #ddd'}}><input type = 'text' className='form-control input-xs' readOnly value = {data.size} /></td>
 							<td><input onChange = {this.onPriceChange.bind(this)} value = {price / 100} type='text' className = 'form-control input-xs inline-block' style = {{width: 120, marginLeft: 10}} /></td>
 						</tr>
@@ -229,17 +229,17 @@ class EditModal extends Component{
 			)
 	}
 	show(data){
-		this.setState({data, price: data.price, product_name: data.product_name})
+		this.setState({data, price: data.price, display_name: data.display_name})
 		this.refs.modal.show();
 	}
 	onPriceChange(e){
 		this.setState({price: e.target.value * 100});
 	}
 	onProductNameChange(e){
-		this.setState({product_name: e.target.value});
+		this.setState({display_name: e.target.value});
 	}
 	onConfirm(){
-		this.props.editSkuPrice(this.state.data.sku_id, this.state.price, this.state.product_name)
+		this.props.editSkuPrice(this.state.data.sku_id, this.state.price, this.state.display_name)
 			.done( () => {
 				Noty('success', '修改成功');
 				this.refs.modal.hide();
@@ -261,7 +261,7 @@ class MsgModal extends Component{
 		var {data} = this.state;
 		return(
 			<StdModal title = '下架确认' ref ='modal' onConfirm = {this.onConfirm.bind(this)}>
-				<header className = 'panel-heading'>{'SKU(' +data.sku_id + ')　　　' +  data.product_name }</header>
+				<header className = 'panel-heading'>{'SKU(' +data.sku_id + ')　　　团购商品名称：' +  data.display_name }</header>
 				<div className='panel-body'><span className = 'bg-warning bordered'>提示</span>{'　请确认是否下架当前商品， 若商品属于团购项目，且该团购项目只有此商品则会将团购项目一同下架'}</div>
 			</StdModal>
 			)

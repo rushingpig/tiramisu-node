@@ -210,7 +210,7 @@ GroupDao.prototype.findProductById = function (product_id, query) {
             tmp.size = curr.sku_size;
             tmp.regionalism_id = curr.regionalism_id;
             tmp.src_id = curr.website;
-            tmp.name = curr.display_name;
+            tmp.display_name = curr.display_name;
             _res.sku_list.push(tmp);
         });
         _res.is_online = yield GroupDao.prototype.isOnline(Object.assign({spu_id: product_id}, query));

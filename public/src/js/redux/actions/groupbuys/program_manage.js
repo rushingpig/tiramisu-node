@@ -18,6 +18,7 @@ export function getGroupbuyProgramList(form_data){
 				dispatch({
 					type: GET_GROUPBUY_PROGRAM_LIST,
 					data: data,
+					query_data: filter_data,
 				})
 			})
 		/*return TEST({

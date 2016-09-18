@@ -17,7 +17,7 @@ var main_state = {
 		end_time: new Date(getDate(iNow, 7)),
 		src_id: SELECT_DEFAULT_VALUE,
 		regionalism_id: SELECT_DEFAULT_VALUE,
-		name: '',
+		program_name: '',
 		province_id: SELECT_DEFAULT_VALUE,
 	},
 	order_srcs: [],
@@ -60,10 +60,13 @@ function main(state = main_state, action){
 			}else
 				data.end_time = new Date(data.end_time);
 				data.program_name = data.name
+				data.products.forEach( m => {
+					m.src_name = data.src_name;
+				})
 			return {...state, program_info: data, selected_list: data.products}
 		case Actions.RESET_GROUPBUY_PROGRAM:
 			/*program_info: {start_time :iNow, end_time: new Date(getDate(iNow, 7))}*/
-			return {...state, program_info: main_state.program_info , selected_list: []}
+			return {...state, program_info: main_state.program_info , selected_list: [], save_ing: false, save_success: false}
 		case Actions.GOT_ORDER_SRCS:
 			var {data} = action;
 			var group_site_id = SRC.group_site;
@@ -97,6 +100,8 @@ function main(state = main_state, action){
 			})
 			var new_selected_list = state.selected_list.filter( m => m.id !== action.id)
 			return {...state, selected_list: new_selected_list}
+		case Actions.RESET_SELECTED_LIST:
+			return {...state, selected_list: []}
 		case Actions.CREATE_GROUPBUY_PROGRAM_ING:
 			return {...state, save_ing: true, save_success: false}
 		case Actions.CREATE_GROUPBUY_PROGRAM_SUCCESS:

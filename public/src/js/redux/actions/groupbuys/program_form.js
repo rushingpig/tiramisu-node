@@ -97,6 +97,13 @@ export function resetGroupbuyProgram(){
     }
 }
 
+export const RESET_SELECTED_LIST = 'RESET_SELECTED_LIST';
+export function resetSelectedList(){
+    return {
+        type: RESET_SELECTED_LIST,
+    }
+}
+
 export const CANCEL_SELECT_PRODUCT = 'CANCEL_SELECT_PRODUCT';
 export function cancelSelectProduct(){
     return {

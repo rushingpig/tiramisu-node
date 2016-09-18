@@ -22,6 +22,7 @@ var main_state = {
 	order_srcs: [],
 
 	program_info: {},
+	query_data: {},
 }
 
 function main(state = main_state, action){
@@ -47,8 +48,9 @@ function main(state = main_state, action){
 					}					
 				}
 				return m;
-			})		
-			return {...state, ...action.data, loading: false, refresh: false}
+			})	
+			var query_data = action.query_data;	
+			return {...state, ...action.data, query_data, loading: false, refresh: false}
 		case Actions.GOT_ORDER_SRCS:
 			var {data} = action;
 			var group_site_id = SRC.group_site;
@@ -76,7 +78,9 @@ function main(state = main_state, action){
 			return {...state, program_info: {}}
 		case Actions.PROGRAM_OFF_SHELF:
 			var store = getGlobalStore();
-			store.dispatch(Actions.getGroupbuyProgramList({page_no: state.page_no, page_size: state.page_size}));
+			var {query_data, page_no, page_size, total } = state;
+			page_no = (total - page_no * page_size) === 1 ? page_no -1 : page_no;
+			store.dispatch(Actions.getGroupbuyProgramList({ ...query_data, page_no, page_size}));
 			return state;
 		default:
 			return state;

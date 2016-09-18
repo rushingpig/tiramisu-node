@@ -61,7 +61,7 @@ module.exports.addSku = function (req, res, next) {
             let sku_info = {
                 product_id: body.product_id,
                 size: curr.size,
-                display_name: curr.product_name,
+                display_name: curr.display_name,
                 website: body.src_id,
                 regionalism_id: body.regionalism_id,
                 price: curr.price

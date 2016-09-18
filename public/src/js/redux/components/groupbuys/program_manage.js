@@ -237,6 +237,7 @@ class ManagePannel extends Component{
 	}
 
 	componentDidMount(){
+		LazyLoad('noty');
 		this.props.actions.getGroupbuyProgramList({page_no: 0, page_size: this.state.page_size});
 		this.props.actions.getOrderSrcs();
 		this.props.actions.getProvincesSignal();

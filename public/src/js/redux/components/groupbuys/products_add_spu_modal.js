@@ -28,7 +28,7 @@ class ProductSet extends Component{
 					</td>
 					<td>{data.product_name}</td>
 					<td>{data.is_online == 1 ? '是' : '否'}</td>
-					<td>{data.category_name + '/' + data.category_parent_name}</td>
+					<td>{data.category_parent_name + '/' + data.category_name}</td>
 					<td>
 					{
 						data.is_available ===0 || data.checked ? 
@@ -76,7 +76,7 @@ export default class ProductsModal extends Component{
 				  		<tr>
 				  		<th></th>
 				  		<th>商品编号(SPU)</th>
-				  		<th>产品名称</th>
+				  		<th>商品名称</th>
 				  		<th>官网上线</th>
 				  		<th>商品类型</th>
 				  		<th>管理操作</th>
@@ -103,7 +103,7 @@ export default class ProductsModal extends Component{
 				    <tr>
 				      <th></th>
 				      <th>商品名称</th>
-				      <th>商品编号</th>
+				      <th>商品编号(SPU)</th>
 				      <th>商品类型</th>
 				      <th>商城是否上线</th>
 				      <th>管理操作</th>

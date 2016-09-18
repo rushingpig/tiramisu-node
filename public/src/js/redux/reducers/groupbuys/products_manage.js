@@ -39,7 +39,7 @@ function main(state = main_state, action){
 			return {...state, order_srcs: group_sites.map(({id, name}) => ({id, text: name}))};
 		case Actions.GET_PRODUCT_LIST:
 			var query_data = action.query_data;
-			return {...state, ...action.data};
+			return {...state, ...action.data, query_data};
 		case Actions.EDIT_SKU_PRICE:
 			var {list } = state;
 			var {sku_id, price, product_name} = action;
@@ -53,7 +53,9 @@ function main(state = main_state, action){
 			return {...state, list: list}
 		case Actions.OFF_SHELF:
 			var {getProductList} = Actions;
-			store.dispatch(getProductList(state.query_data));
+			var { query_data, page_size, page_no, total } = state;
+			page_no = (total - page_no * page_size) === 1 ? page_no -1 : page_no;
+			store.dispatch(getProductList({...query_data, page_no, page_size}));
 			return state;
 		default:
 			return state;

@@ -39,7 +39,7 @@ const validate = (values, props) => {
 
 	_v_select('src_id');
 
-	_v_text('name')
+	_v_text('program_name');
 
 	return errors;
 }
@@ -91,7 +91,7 @@ class ManageForm extends Component{
 						<td>{m.product_name}</td>
 						<td>{m.size}</td>
 						<td>{m.category_name}</td>
-						<td>{program_info.src_name}</td>
+						<td>{m.src_name}</td>
 						<td>￥{m.price / 100}</td>
 						<td>{m.is_online == 1 ? '是':'否'}</td>
 						<td>
@@ -124,7 +124,7 @@ class ManageForm extends Component{
 						</div>
 						<div  className = 'form-group form-inline'>
 							<label>项目名称：</label>
-							<input {...program_name} type = 'text' className = {`form-control input-xs ${name.error}`} />
+							<input {...program_name} type = 'text' className = {`form-control input-xs ${program_name.error}`} />
 						</div>
 						<div className = 'form-group form-inline'>
 							<label>选择商品：</label>
@@ -241,6 +241,7 @@ class ManageForm extends Component{
 			}else{
 				this.setState({add_btn_disabled: true})
 			}
+			this.props.actions.resetSelectedList();
 			callback(e);		
 	}
 	onCityChange(callback, e){
@@ -251,6 +252,7 @@ class ManageForm extends Component{
 		}else{
 			this.setState({add_btn_disabled: true})
 		}
+		this.props.actions.resetSelectedList();
 		callback(e);
 	}
 	onSrcIdChange(callback, e){
@@ -261,6 +263,7 @@ class ManageForm extends Component{
 		}else{
 			this.setState({add_btn_disabled: true})
 		}
+		this.props.actions.resetSelectedList();
 		callback(e);
 	}
 	onTimeRangeChange(beginTime, endTime){

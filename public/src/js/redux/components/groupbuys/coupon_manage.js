@@ -125,7 +125,7 @@ class CouponRow extends Component{
 				<td>{src_names[1]}</td>
 				<td>{props.order_id}</td>
 				<td>{props.created_time}</td>
-				<td><span className = 'bg-warning bordered'>{props.city}</span>{ ' ' + props.province_name}</td>
+				<td><span className = 'bg-warning bordered'>{!!props.city ? props.city : '无'}</span>{ ' ' + !!props.province_name ? props.province_name: ''}</td>
 				<td>
 					{
 						V('GroupbuyCouponManageViewStatus')

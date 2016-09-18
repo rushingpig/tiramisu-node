@@ -29,7 +29,7 @@ class ProductSet extends Component{
 					<td>{data.src_name}</td>
 					<td>{data.category_name}</td>
 					<td>￥{data.price / 100}</td>
-					<td>{data.is_online ? '是' : '否'}</td>
+					<td>{data.is_online == 1 ? '是' : '否'}</td>
 					<td>
 						{
 							data.is_available === 0 || data.checked ?
@@ -173,7 +173,7 @@ class ProductSelectedRow extends Component{
 				<td>{data.src_name}</td>
 				<td>{data.category_name}</td>
 				<td>￥{data.price / 100}</td>
-				<td>{data.is_online ? '是' : '否'}</td>
+				<td>{data.is_online == 1 ? '是' : '否'}</td>
 				<td><a href="javascript:;" onClick = {this.onDelete.bind(this)}>[删除]</a></td>
 			</tr>
 		)

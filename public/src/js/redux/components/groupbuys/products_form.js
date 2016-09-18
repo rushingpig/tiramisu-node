@@ -25,7 +25,7 @@ export default class ManageForm extends Component{
 			province_id: SELECT_DEFAULT_VALUE,
 			regionalism_id: SELECT_DEFAULT_VALUE,
 			src_id: SELECT_DEFAULT_VALUE,
-			product_name: '',
+			display_name: '',
 
 			filter_sku_size_list: [],
 			sku_size_list: [],
@@ -37,7 +37,7 @@ export default class ManageForm extends Component{
 		var {actions : {
 			searchProducts, getSecCategories, getCategories, selectProduct, delSelectProduct, getAllSize, addSize
 		}} = this.props;
-		var { filter_sku_size_list, current_size, province_id, regionalism_id, src_id, product_name } = this.state;
+		var { filter_sku_size_list, current_size, province_id, regionalism_id, src_id, display_name } = this.state;
 		var add_btn_disabled = province_id === SELECT_DEFAULT_VALUE || regionalism_id === SELECT_DEFAULT_VALUE ;
 		var new_sku_size_list = spu_sku_list.filter( m => m.is_new)
 		var submit_btn_disabled = !(selected_spu_info && selected_spu_info.spu_id && new_sku_size_list.length );
@@ -95,7 +95,7 @@ export default class ManageForm extends Component{
 										spu_sku_list && spu_sku_list.length ?
 										spu_sku_list.map( (m, i) => {
 											return (<tr key={i + ' '} style={{border: 0}}>
-												<td style ={{borderRight: '2px solid #ddd'}}><input type='text' className='form-control input-xs' readOnly value = {m.product_name}/></td>
+												<td style ={{borderRight: '2px solid #ddd'}}><input type='text' className='form-control input-xs' readOnly value = {m.display_name ? m.display_name : selected_spu_info.product_name}/></td>
 												<td style ={{borderRight: '2px solid #ddd'}}><input type='text' className='form-control input-xs' readOnly value = {m.size}/></td>
 												<td style ={{borderRight: '2px solid #ddd'}}><input type='text' className='form-control input-xs' readOnly value = {m.price / 100} /></td>
 												<td>
@@ -111,7 +111,7 @@ export default class ManageForm extends Component{
 									<tr>
 										<td style = {{borderRight: '2px solid #ddd'}}>
 											<input ref='product_name' className = 'form-control input-xs' type = 'text'
-												 value={this.state.product_name} placeholder='团购商品名称' onChange = {this.onProductNameChange.bind(this)} />
+												 value={this.state.display_name} placeholder='团购商品名称' onChange = {this.onProductNameChange.bind(this)} />
 										</td>
 										<td style = {{borderRight: '2px solid #ddd'}}>
 											<input className = 'form-control input-xs' type = 'text' 
@@ -156,9 +156,9 @@ export default class ManageForm extends Component{
 			)
 	}
 	onSubmit(){
-		var { regionalism_id, src_id, product_name } = this.state;
+		var { regionalism_id, src_id, display_name } = this.state;
 		var product_id = this.props.main.selected_spu_info.spu_id
-		var data = {regionalism_id: regionalism_id, src_id, product_name, product_id}
+		var data = {regionalism_id: regionalism_id, src_id, display_name, product_id}
 		var src_value = $(findDOMNode(this.refs.src))[0].value
 		if(src_value === SELECT_DEFAULT_VALUE){
 			Noty('warning', '请选择团购网站')
@@ -179,7 +179,7 @@ export default class ManageForm extends Component{
 	}
 	addSize(){
 		var price = this.refs.price.value.trim();
-		if(this.state.product_name.trim === ''){
+		if(this.state.display_name.trim === ''){
 			Noty('warning', '请填写团购商品名称');
 		}
 		else if(!uForm.isNumber(price)){
@@ -187,7 +187,7 @@ export default class ManageForm extends Component{
 		}else if(this.state.current_size === SELECT_DEFAULT_VALUE || this.state.current_size === 0){
 			Noty('warning', '请选择规格')
 		}else{
-			this.props.actions.addSize(this.state.product_name , this.state.current_size, price);			
+			this.props.actions.addSize(this.state.display_name , this.state.current_size, price);			
 		}
 	}
 	delSize(index){
@@ -204,12 +204,12 @@ export default class ManageForm extends Component{
 		this.setState({current_size: e.target.value})
 	}
 	onProductNameChange(e){
-		this.setState({product_name: e.target.value});
+		this.setState({display_name: e.target.value});
 	}
 	componentWillReceiveProps(nextProps){
 	  var { main } = nextProps;
 	  var {selected_spu_info} = main;
-	  this.setState({product_name: selected_spu_info.product_name})
+	  this.setState({display_name: selected_spu_info.product_name})
 	  var {sku_size_list, sku_size_load_success} = main;
 	  if(sku_size_load_success && sku_size_list && this.props.main.sku_size_list !== sku_size_list){
 	    var list = sku_size_list;

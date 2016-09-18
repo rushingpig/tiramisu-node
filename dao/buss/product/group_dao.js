@@ -65,7 +65,7 @@ GroupDao.prototype.findProduct = function (query, only_total) {
     sql += `INNER JOIN ?? bpc ON bpc.id = bp.category_id `;
     params.push(tables.buss_product_category);
     // sql += `INNER JOIN ?? bos ON bos.id = bps.website AND bos.parent_id = 3 `;  //  团购网站
-    sql += `INNER JOIN ?? bos ON bos.id = bps.website `;  //  团购网站
+    sql += `INNER JOIN ?? bos ON bos.id = bps.website `;
     params.push(tables.buss_order_src);
     if (query.province_id || query.city_id) {
         sql += `INNER JOIN ?? sc ON sc.regionalism_id = bps.regionalism_id `;
@@ -165,7 +165,8 @@ GroupDao.prototype.findProductById = function (product_id, query) {
     params.push(tables.buss_product_category);
     sql += `LEFT JOIN ?? bpc2 ON bpc2.id = bpc.parent_id `;
     params.push(tables.buss_product_category);
-    sql += `INNER JOIN ?? bos ON bos.id = bps.website AND bos.parent_id = 3 `;  //  团购网站
+    // sql += `INNER JOIN ?? bos ON bos.id = bps.website AND bos.parent_id = 3 `;  //  团购网站
+    sql += `INNER JOIN ?? bos ON bos.id = bps.website `;
     params.push(tables.buss_order_src);
     sql += `LEFT JOIN ?? bos2 ON bos2.id = bos.parent_id `;  //  团购网站
     params.push(tables.buss_order_src);
@@ -209,7 +210,7 @@ GroupDao.prototype.findProductById = function (product_id, query) {
             tmp.size = curr.sku_size;
             tmp.regionalism_id = curr.regionalism_id;
             tmp.src_id = curr.website;
-            tmp.name = curr.display_name;
+            tmp.display_name = curr.display_name;
             _res.sku_list.push(tmp);
         });
         _res.is_online = yield GroupDao.prototype.isOnline(Object.assign({spu_id: product_id}, query));

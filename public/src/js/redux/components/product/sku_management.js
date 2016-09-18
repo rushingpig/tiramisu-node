@@ -30,7 +30,7 @@ class Input extends Component {
   constructor(props){
     super(props);
     this.state = {
-      error: true
+      error: !props.value
     }
     this.onChange = this.onChange.bind(this);
     this.onBlur = this.onBlur.bind(this);

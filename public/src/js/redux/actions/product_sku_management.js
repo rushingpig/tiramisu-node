@@ -746,6 +746,7 @@ const saveOption = () => (
 
     } else { // state.citiesOptionApplyRange === 1
       let checkedCities = [...citiesSelectorState.checkedCities];
+      debugger
       [...state.citiesOptions]
         .filter( ([cityId]) => checkedCities.some(id => id == cityId) )
         .forEach(([cityId, cityOption]) => {

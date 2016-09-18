@@ -116,7 +116,7 @@ const tempOptionsValidator = state => {
     }
 
     for (let y in ss) {
-      if (ss[y].spec.trim() === "") {
+      if (!ss[y].spec || ss[y].spec.trim() === "") {
         vaild = false
         break;
       }

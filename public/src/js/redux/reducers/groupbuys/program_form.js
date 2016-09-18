@@ -48,6 +48,20 @@ function main(state = main_state, action){
 				}
 				return m;
 			})
+			//编辑团购项目时，删除的商品可再被选中
+			var { program_info, selected_list } = state;
+			var { products } = program_info;
+			if(products){
+				products.forEach( m => {
+					if(selected_list.every( n => n.id !== m.id)){
+						list = list.map	( o => {
+							if(o.id == m.id )
+								o.is_available = 1;
+							return o;
+						})
+					}
+				})
+			}
 			return {...state, ...action.data, list: list}
 		case Actions.GET_GROUPBUY_PROGRAM_DETAIL:
 			var data = clone(action.data);

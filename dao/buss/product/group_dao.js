@@ -64,7 +64,8 @@ GroupDao.prototype.findProduct = function (query, only_total) {
     params.push(tables.buss_product);
     sql += `INNER JOIN ?? bpc ON bpc.id = bp.category_id `;
     params.push(tables.buss_product_category);
-    sql += `INNER JOIN ?? bos ON bos.id = bps.website AND bos.parent_id = 3 `;  //  团购网站
+    // sql += `INNER JOIN ?? bos ON bos.id = bps.website AND bos.parent_id = 3 `;  //  团购网站
+    sql += `INNER JOIN ?? bos ON bos.id = bps.website `;  //  团购网站
     params.push(tables.buss_order_src);
     if (query.province_id || query.city_id) {
         sql += `INNER JOIN ?? sc ON sc.regionalism_id = bps.regionalism_id `;

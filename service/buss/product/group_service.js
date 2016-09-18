@@ -92,7 +92,7 @@ module.exports.editSku = function (req, res, next) {
         let sku_id = req.params.skuId;
         let sku_info = {};
         if (req.body.price) sku_info.price = req.body.price;
-        if (req.body.product_name) sku_info.display_name = req.body.product_name;
+        if (req.body.display_name) sku_info.display_name = req.body.display_name;
         return yield groupDao.updateSku(sku_id, systemUtils.assembleUpdateObj(req, sku_info));
     }).then(result=> {
         res.api(result);

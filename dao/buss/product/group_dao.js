@@ -440,7 +440,18 @@ GroupDao.prototype.findProject = function (query, only_total) {
             params.push(query.city_id);
         }
     }
-    if (query.online) {
+    if (query.is_online) {
+        if (query.is_online == '1') {
+            sql += `AND (bgp.start_time IS NULL OR bgp.start_time < NOW() ) `;
+            sql += `AND (bgp.end_time IS NULL OR bgp.end_time > NOW() ) `;
+        } else {
+            sql += `AND ( `;
+            sql += `( (bgp.start_time IS NOT NULL AND bgp.start_time > NOW() ) AND (bgp.end_time IS NOT NULL AND bgp.end_time < NOW() ) ) `;
+            sql += `OR (bgp.start_time IS NULL AND bgp.end_time IS NULL AND 1 = 1 ) `;
+            sql += `OR (bgp.start_time IS NULL AND bgp.end_time < NOW() ) `;
+            sql += `OR (bgp.end_time IS NOT NULL AND bgp.start_time > NOW() ) `;
+            sql += `) `;
+        }
     }
     if (query.src_id) {
         sql += `AND (bos.id = ? OR bos.parent_id = ?) `;
@@ -494,7 +505,8 @@ GroupDao.prototype.findProjectById = function (project_id) {
         'dr2.name AS city_parent_name',
         'dr2.parent_id AS city_parent_parent_id',
         'dr3.name AS city_parent_parent_name',
-        'dr.merger_name'
+        'dr.merger_name',
+        `IF((bgp.start_time IS NULL OR bgp.start_time < NOW()) AND (bgp.end_time IS NULL OR bgp.end_time > NOW() ), 1, 0) AS is_online`
     ];
     let sql = `SELECT ${columns.join()} FROM ?? bgp `;
     let params = [tables.buss_group_project];
@@ -530,6 +542,7 @@ GroupDao.prototype.findProjectById = function (project_id) {
         _res = _.pick(info[0], [
             'id',
             'name',
+            'is_online',
             'start_time',
             'end_time',
             'src_id',

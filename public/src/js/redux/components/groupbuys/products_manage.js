@@ -190,7 +190,7 @@ class EditModal extends Component{
 		var {data, price, product_name} = this.state;
 		return (
 			<StdModal ref='modal' title = '编辑价格' onConfirm = {this.onConfirm.bind(this)}>
-				<header className = 'panel-heading'>{'SKU(' +data.sku_id + ')　　　' +  data.spu_name }</header>
+				<header className = 'panel-heading'>{'SKU(' +data.sku_id + ')　　　' +  data.product_name }</header>
 				<div className='panel-body'>
 				<div className='form-group form-inline'>
 					<label>团购城市：</label>
@@ -203,7 +203,7 @@ class EditModal extends Component{
 				</div>
 				<div className='form-group form-inline'>
 					<label>所属项目：</label>
-					<input value = {data.project_name}  className='form-control input-xs' type = 'text' readOnly />
+					<input value = {data.group_project_name}  className='form-control input-xs' type = 'text' readOnly />
 				</div>
 				<table className = 'table table-responsive text-center' style = {{maxWidth: 500, border: '1px solid #ddd'}}>
 					<thead>

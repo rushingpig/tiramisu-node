@@ -42,11 +42,11 @@ function main(state = main_state, action){
 			return {...state, ...action.data, query_data};
 		case Actions.EDIT_SKU_PRICE:
 			var {list } = state;
-			var {sku_id, price, product_name} = action;
+			var {sku_id, price, display_name} = action;
 			list.forEach( m => {
 				if(m.sku_id == sku_id ){
 					m.price = price
-					m.product_name = product_name;
+					m.display_name = display_name;
 					m.updated_by = window.xfxb.user.username || '-'
 				}
 			}) 

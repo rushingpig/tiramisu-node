@@ -65,7 +65,7 @@ export default class ProductsModal extends Component{
 		return(
 			<StdModal ref='modal' title='选择团购商品' size = 'lg' onConfirm = {this.onConfirm.bind(this)} footer = {false}>
 				<div className = 'form-group form-inline'>
-					<input type='text' className = 'form-control input-xs space-right' placeholder='商品名称'/>
+					<input value={this.state.keywords} onChange={this.onKeywordsChange.bind(this)} type='text' className = 'form-control input-xs space-right' placeholder='商品名称'/>
 					<Select default-text = '商品一级分类' className = 'space-right' options = {pri_pd_cates} onChange = {this.onPriCateChange.bind(this)}/>
 					<Select default-text = '商品二级分类' className = 'space-right' options = {sec_pd_cates} onChange = {this.onSecCateChange.bind(this)} />
         			<button className="btn btn-xs btn-default" 
@@ -135,6 +135,9 @@ export default class ProductsModal extends Component{
 	}
 	onSecCateChange(e){
 		this.setState({category_id: e.target.value});
+	}
+	onKeywordsChange(e){
+		this.setState({keywords: e.target.value});
 	}
 	onSearch(){
 		this.search();

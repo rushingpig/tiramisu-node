@@ -146,6 +146,7 @@ GroupDao.prototype.findProductById = function (product_id, query) {
         'bps.size AS sku_size',
         'bps.price AS sku_price',
         'bps.regionalism_id',
+        'bps.display_name',
         'bps.website',
         'bp.id AS product_id',
         'bp.name AS product_name',
@@ -207,6 +208,7 @@ GroupDao.prototype.findProductById = function (product_id, query) {
             tmp.size = curr.sku_size;
             tmp.regionalism_id = curr.regionalism_id;
             tmp.src_id = curr.website;
+            tmp.name = curr.display_name;
             _res.sku_list.push(tmp);
         });
         _res.is_online = yield GroupDao.prototype.isOnline(Object.assign({spu_id: product_id}, query));

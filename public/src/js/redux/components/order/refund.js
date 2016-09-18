@@ -582,15 +582,20 @@ class RemarkModal extends Component{
 		this.setState({remark: e.target.value});
 	}
 	submitHandler(){
-		this.props.addRemark(this.state.id,this.state.remark)
-			.done(function(){
-				this.setState({remark: ''});
-				Noty('success', '添加成功');
-				this.refs.modal.hide();
-			}.bind(this))
-			.fail(function(msg, code){
-				Noty('error', msg || '添加失败');
-			})
+    if(this.state.remark.trim() === ''){
+      Noty('warning', '请填写备注');
+    }else{
+      this.props.addRemark(this.state.id,this.state.remark)
+        .done(function(){
+          this.setState({remark: ''});
+          Noty('success', '添加成功');
+          this.refs.modal.hide();
+        }.bind(this))
+        .fail(function(msg, code){
+          Noty('error', msg || '添加失败');
+        })
+    }
+		
 	}
 }
 

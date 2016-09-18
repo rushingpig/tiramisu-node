@@ -881,7 +881,10 @@ class RemarksModal extends Component{
 		this.setState({remark: e.target.value})
 	}
 	addRemark(){
-		this.props.addRemark(this.state.invoiceId, this.state.remark)
+		if(this.state.remark === ''){
+			Noty('warning', '请填写备注');
+		}else{
+			this.props.addRemark(this.state.invoiceId, this.state.remark)
 			.done(() => {
 				Noty('success', '添加备注成功');
 				this.refs.modal.hide();
@@ -889,6 +892,8 @@ class RemarksModal extends Component{
 			.fail((msg, code) => {
 				Noty('error', msg || '操作失败');
 			})
+		}
+		
 	}
 }
 

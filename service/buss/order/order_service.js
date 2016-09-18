@@ -649,7 +649,8 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
         is_greeting_card: req.query.is_greeting_card,
         is_standard_area: req.query.is_standard_area,
         user : req.session.user,
-        order_by : req.query.order_by || 'created_time'
+        order_by : req.query.order_by || 'created_time',
+        coupon: req.query.coupon
       };
     }
 

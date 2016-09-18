@@ -225,7 +225,7 @@ CategoryService.prototype.modifySecondaryCategory = (req,res,next)=>{
         hasCategory = true;
         category.remarks = body.remarks;
     }
-    if (body.isAddition) {
+    if (body.isAddition !== undefined) {
         hasCategory = true;
         category.isAddition = body.isAddition;
     }

@@ -564,7 +564,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                     }
                     if (order_obj.payfor_type === Constant.PFT.FULL_REFUND) {
                         refund_obj.type = REFUND_TYPE.FULL;
-                        refund_obj.amount = order_obj.payfor_amount;
+                        refund_obj.amount = order_obj.payment_amount;
                         refund_history.option = `因幸福承诺全额退款修改退款金额为:{${refund_obj.amount / 100}}\n`;
                     }
                     yield refundDao.updateRefund(refund_info.id, systemUtils.assembleInsertObj(req, refund_obj));
@@ -597,7 +597,7 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                     if (order_obj.payfor_type === Constant.PFT.FULL_REFUND) {
                         refund_obj.type = REFUND_TYPE.FULL;
                         refund_obj.reason_type = 5;
-                        refund_obj.amount = order_obj.payfor_amount;
+                        refund_obj.amount = order_obj.payment_amount;
                         refund_history.option = `因幸福承诺全额退款:{${refund_obj.amount / 100}}\n`;
                     }
                     let order_history = {option: ''};

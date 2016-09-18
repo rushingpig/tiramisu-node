@@ -19,6 +19,37 @@ function GroupDao(table) {
     this.base_select_sql = `SELECT * FROM ?? `;
 }
 
+GroupDao.prototype.isOnline = function (query) {
+    if (!query) query = {};
+    let sql = 'SELECT bps.id FROM ?? bp ';
+    let params = [];
+    params.push(tables.buss_product);
+    sql += `INNER JOIN ?? bps ON bps.del_flag = ${del_flag.SHOW} AND bps.product_id = bp.id AND bps.website = 1 `;  // PC官网
+    params.push(tables.buss_product_sku);
+    if (query.sku_id) {
+        sql += `INNER JOIN bps1 ?? ON bps1.product_id = bp.id AND bps1.id = ? `;
+        params.push(tables.buss_product_sku);
+        params.push(tables.sku_id);
+    }
+
+    sql += `WHERE 1 = 1 `;
+    if (query.spu_id) {
+        sql += `AND bp.id = ? `;
+        params.push(query.spu_id);
+    }
+
+    if (query.city_id) {
+        sql += `AND bps.regionalism_id = ? `;
+        params.push(query.city_id);
+    }
+
+    return co(function *() {
+        let info = yield baseDao.select(sql, params);
+        if (!info || info.length == 0) return 1;
+        return 0
+    });
+};
+
 GroupDao.prototype.findProduct = function (query, only_total) {
     if (!query) query = {};
     let page_no = query.page_no || 0;
@@ -115,6 +146,7 @@ GroupDao.prototype.findProductById = function (product_id, query) {
         'bps.size AS sku_size',
         'bps.price AS sku_price',
         'bps.regionalism_id',
+        'bps.display_name',
         'bps.website',
         'bp.id AS product_id',
         'bp.name AS product_name',
@@ -176,8 +208,10 @@ GroupDao.prototype.findProductById = function (product_id, query) {
             tmp.size = curr.sku_size;
             tmp.regionalism_id = curr.regionalism_id;
             tmp.src_id = curr.website;
+            tmp.name = curr.display_name;
             _res.sku_list.push(tmp);
         });
+        _res.is_online = yield GroupDao.prototype.isOnline(Object.assign({spu_id: product_id}, query));
         return _res;
     });
 };
@@ -210,12 +244,12 @@ GroupDao.prototype.findSku = function (query, only_total) {
         params.push(query.province_id);
         params.push(query.province_id);
     }
-    if (query.is_online == '1') {
-        sql += `INNER JOIN ?? bps2 ON bps2.del_flag = ${del_flag.SHOW} AND bps2.product_id = bps.product_id AND bps2.website = 1 `;  // PC官网
+    if (query.is_online) {
+        sql += `LEFT JOIN ?? bps2 ON bps2.del_flag = ${del_flag.SHOW} AND bps2.product_id = bps.product_id AND bps2.website = 1 `;  // PC官网
         params.push(tables.buss_product_sku);
     }
-    if (query.in_project == '1') {
-        sql += `INNER JOIN ?? bgp ON bgp.del_flag = ${del_flag.SHOW} AND FIND_IN_SET(bps.id, bgp.skus) `;
+    if (query.in_project) {
+        sql += `LEFT JOIN ?? bgp ON bgp.del_flag = ${del_flag.SHOW} AND FIND_IN_SET(bps.id, bgp.skus) `;
         params.push(tables.buss_group_project);
     }
 
@@ -248,6 +282,20 @@ GroupDao.prototype.findSku = function (query, only_total) {
         params.push(`%${query.keywords}%`);
         params.push(`%${query.keywords}%`);
         params.push(query.keywords);
+    }
+    if (query.is_online) {
+        if (query.is_online == '1') {
+            sql += `AND bps2.id IS NOT NULL `;
+        } else {
+            sql += `AND bps2.id IS NULL `;
+        }
+    }
+    if (query.in_project) {
+        if (query.in_project == '1') {
+            sql += `AND bgp.id IS NOT NULL `;
+        } else {
+            sql += `AND bgp.id IS NULL `;
+        }
     }
 
     sql += `GROUP BY bps.id `;

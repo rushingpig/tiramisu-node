@@ -16,12 +16,7 @@ module.exports.getProductList = function (req, res, next) {
     let promise = co(function *() {
         let query = Object.assign({}, req.query);
         if (!query.city_id) query.city_id = query.regionalism_id;
-        let _res = yield groupDao.findProduct(query);
-        _res.list.forEach(curr=> {
-            curr.is_online = 0;
-            if (curr.website_sku_id) curr.is_online = 1;
-        });
-        return _res;
+        return yield groupDao.findProduct(query);
     }).then(result=> {
         res.api(result);
     });
@@ -97,7 +92,7 @@ module.exports.editSku = function (req, res, next) {
         let sku_id = req.params.skuId;
         let sku_info = {};
         if (req.body.price) sku_info.price = req.body.price;
-        if (req.body.display_name) sku_info.display_name = req.body.name;
+        if (req.body.product_name) sku_info.display_name = req.body.product_name;
         return yield groupDao.updateSku(sku_id, systemUtils.assembleUpdateObj(req, sku_info));
     }).then(result=> {
         res.api(result);

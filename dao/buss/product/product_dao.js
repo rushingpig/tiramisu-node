@@ -225,8 +225,8 @@ ProductDao.prototype.insertProductWithSku = function (req, data) {
         };
         return self.insertProduct(req, product_data, connection)
             .then(productId => {
-                let display_name = data.display_name;
                 let promises = data.sku.map(sku => {
+                    let display_name = sku.website == 1 ? data.display_name : data.name;
                     let sku_data = {
                         product_id: productId,
                         size: sku.size,

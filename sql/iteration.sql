@@ -827,7 +827,7 @@ CREATE TABLE `buss_product_template_data` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='详情页模板数据表';
 
-ALTER TABLE `buss_product_category_regionalism` 
+ALTER TABLE `buss_product_category_regionalism`
 CHANGE COLUMN `channel` `channel` INT(10) NOT NULL DEFAULT 1 COMMENT '渠道id，默认PC' ;
 
 ALTER TABLE `buss_product_sku` 
@@ -836,3 +836,20 @@ ADD COLUMN `display_name` VARCHAR(50) NULL COMMENT '外部展示名称' AFTER `s
 ALTER TABLE `buss_order_sku` ADD COLUMN `sku` varchar(2048) DEFAULT NULL COMMENT '原始sku信息';
 ALTER TABLE `buss_order_sku` ADD COLUMN `spu` varchar(2048) DEFAULT NULL COMMENT '原始spu信息';
 ALTER TABLE `buss_order_sku` ADD COLUMN `spc` varchar(2048) DEFAULT NULL COMMENT '原始spc信息';
+
+# 团购项目
+CREATE TABLE `buss_group_project` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '纪录id',
+  `name` varchar(255) DEFAULT '' COMMENT '团购项目名称',
+  `regionalism_id` int(11) NOT NULL COMMENT '行政区域id',
+  `src_id` int(11) NOT NULL COMMENT '渠道id',
+  `start_time` datetime DEFAULT NULL COMMENT '上线时间',
+  `end_time` datetime DEFAULT NULL COMMENT '下线时间',
+  `skus` varchar(255) DEFAULT '' COMMENT '产品id列表',
+  `created_by` int(11) NOT NULL COMMENT '创建人id',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
+  `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+  `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+  `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+  PRIMARY KEY `IDX_ID` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='团购项目';

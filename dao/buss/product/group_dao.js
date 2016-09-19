@@ -45,8 +45,8 @@ GroupDao.prototype.isOnline = function (query) {
 
     return co(function *() {
         let info = yield baseDao.select(sql, params);
-        if (!info || info.length == 0) return 1;
-        return 0
+        if (!info || info.length == 0) return 0;
+        return 1;
     });
 };
 
@@ -79,6 +79,8 @@ GroupDao.prototype.findProduct = function (query, only_total) {
         params.push(query.province_id);
         params.push(query.province_id);
     }
+    sql += `LEFT JOIN ?? bps2 ON bps2.del_flag = ${del_flag.SHOW} AND bps2.product_id = bps.product_id AND bps2.website = 1 `;  // PC官网
+    params.push(tables.buss_product_sku);
 
     sql += `WHERE bps.del_flag = 1 `;
     if (query.id) {
@@ -103,6 +105,13 @@ GroupDao.prototype.findProduct = function (query, only_total) {
         sql += `AND (bos.id = ? OR bos.parent_id = ?) `;
         params.push(query.src_id);
         params.push(query.src_id);
+    }
+    if (query.is_online) {
+        if (query.is_online == '1') {
+            sql += `AND bps2.id IS NOT NULL `;
+        } else {
+            sql += `AND bps2.id IS NULL `;
+        }
     }
     if (query.keywords) {
         sql += `AND bp.name LIKE ? `;

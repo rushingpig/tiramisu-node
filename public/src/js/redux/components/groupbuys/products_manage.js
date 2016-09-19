@@ -93,7 +93,7 @@ class FilterHeader extends Component{
 					<Select {...category_id} default-text='二级分类' options = {sec_pd_cates} className='space-right'/>
 					<Select {...province_id} default-text='选择省份' onChange={this.onProvinceChange.bind(this, province_id.onChange)} options = { provinces } className='space-right'/>
 					<Select {...city_id} default-text='选择城市' options = {cities} className='space-right'/>
-					<Select {...in_project} default-text='是否属于团购商品' className='space-right' options={[{id: 1, text: '是'}, {id: 0, text: '否'}]} />
+					<Select {...in_project} default-text='是否属于团购项目' className='space-right' options={[{id: 1, text: '是'}, {id: 0, text: '否'}]} />
 					<Select {...is_online} default-text='商城是否上线' className='space-right' options={[{id: 1, text: '是'}, {id: 0, text: '否'}]} />
 					<button className="btn btn-theme btn-xs"
 						onClick = {this.search.bind(this, 'search_ing')}>

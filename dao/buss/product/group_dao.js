@@ -45,8 +45,8 @@ GroupDao.prototype.isOnline = function (query) {
 
     return co(function *() {
         let info = yield baseDao.select(sql, params);
-        if (!info || info.length == 0) return 1;
-        return 0
+        if (!info || info.length == 0) return 0;
+        return 1;
     });
 };
 

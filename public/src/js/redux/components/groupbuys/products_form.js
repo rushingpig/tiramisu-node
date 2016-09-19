@@ -39,6 +39,7 @@ export default class ManageForm extends Component{
 		}} = this.props;
 		var { filter_sku_size_list, current_size, province_id, regionalism_id, src_id, display_name } = this.state;
 		var add_btn_disabled = province_id === SELECT_DEFAULT_VALUE || regionalism_id === SELECT_DEFAULT_VALUE ;
+		spu_sku_list = spu_sku_list.filter( m => m.src_id == this.state.src_id);
 		var new_sku_size_list = spu_sku_list.filter( m => m.is_new)
 		var submit_btn_disabled = !(selected_spu_info && selected_spu_info.spu_id && new_sku_size_list.length );
 		var sku_size_content = filter_sku_size_list.map( (n, i) => {

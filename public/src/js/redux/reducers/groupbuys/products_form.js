@@ -32,7 +32,8 @@ function main(state = main_state, action){
 			return {...state, selected_spu_info: [], spu_sku_list: [], save_success: false, save_ing: false}
 		case Actions.SERACH_PRODUCTS:
 			var {list} = action.data
-			list.forEach( m => {m.checked == false})
+			var { selected_spu_info } = state;
+			list.forEach( m => {m.checked == false; if(m.spu_id == selected_spu_info.spu_id){m.checked = true}})
 			return {...state, ...action.data, list: list}
 		case Actions.GOT_ORDER_SRCS:
 			var {data} = action;

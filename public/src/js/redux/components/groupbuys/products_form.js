@@ -188,7 +188,7 @@ export default class ManageForm extends Component{
 		}else if(this.state.current_size === SELECT_DEFAULT_VALUE || this.state.current_size === 0){
 			Noty('warning', '请选择规格')
 		}else{
-			this.props.actions.addSize(this.state.display_name , this.state.current_size, price);			
+			this.props.actions.addSize(this.state.display_name , this.state.current_size, price, this.state.src_id);			
 		}
 	}
 	delSize(index){

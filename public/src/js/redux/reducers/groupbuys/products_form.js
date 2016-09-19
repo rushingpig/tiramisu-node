@@ -76,9 +76,9 @@ function main(state = main_state, action){
 			data = data.map( (n, i) => {return {id: i, text: n.size}})
 			return {...state, sku_size_list: data, sku_size_load_success: true}
 		case Actions.ADD_SIZE:
-			var {size, price, display_name} = action;
+			var {size, price, display_name, src_id} = action;
 			var {spu_sku_list } = state;
-			var sku = {size: size, price: price, is_new: true, display_name: display_name}
+			var sku = {size: size, price: price, is_new: true, display_name: display_name, src_id}
 			spu_sku_list.push(sku);
 			return {...state, spu_sku_list: spu_sku_list}
 		case Actions.DEL_SIZE:

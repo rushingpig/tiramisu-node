@@ -806,7 +806,7 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
     params.push(query_data.src_id);
   }
   if (query_data.coupon) {
-    sql += " and bo.coupon <> '' and bo.coupon like ? ";
+    sql += " and bo.coupon is not null and bo.coupon <> '' and bo.coupon like ? ";
     params.push(`%${query_data.coupon}%`);
   }
   if (query_data.status) {

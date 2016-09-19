@@ -84,10 +84,11 @@ export function addSize(display_name, size, price, src_id){
 }
 
 export const DEL_SIZE = 'DEL_SIZE';
-export function delSize(index){
+export function delSize(index, src_id){
 	return {
 		type: DEL_SIZE,
 		index: index,
+		src_id: src_id,
 	}
 }
 

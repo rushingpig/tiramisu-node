@@ -82,8 +82,9 @@ function main(state = main_state, action){
 			spu_sku_list.push(sku);
 			return {...state, spu_sku_list: spu_sku_list}
 		case Actions.DEL_SIZE:
-			var {index} = action;
+			var {index, src_id} = action;
 			var {spu_sku_list } = state;
+			spu_sku_list = spu_sku_list.filter( m => m.src_id == src_id);
 			spu_sku_list.splice(index, 1);
 			return {...state, spu_sku_list: spu_sku_list}
 		case Actions.CREATE_GROUPBUY_SKU_ING:

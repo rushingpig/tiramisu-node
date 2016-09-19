@@ -192,7 +192,7 @@ export default class ManageForm extends Component{
 		}
 	}
 	delSize(index){
-		this.props.actions.delSize(index);
+		this.props.actions.delSize(index, this.state.src_id);
 	}
 	componentDidMount(){
 		LazyLoad('noty');

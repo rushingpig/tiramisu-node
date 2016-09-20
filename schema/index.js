@@ -40,5 +40,9 @@ module.exports = {
   moveDir: require('./buss/image/move_dir'),
   renameDir: require('./buss/image/rename_dir'),
   addProductInfo: require('./buss/product/add_product_info'),
-  modifyProductInfo: require('./buss/product/modify_product_info')
+  modifyProductInfo: require('./buss/product/modify_product_info'),
+  addSkuSize: require('./buss/product/add_sku_size'),
+  modifySkuSizeValidation: require('./buss/product/modify_sku_size_validation'),
+  modifySkuSizeSpec: require('./buss/product/modify_sku_size_spec'),
+  modifySkuSizeSort: require('./buss/product/modify_sku_size_sort')
 };

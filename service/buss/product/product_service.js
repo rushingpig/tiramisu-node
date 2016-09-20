@@ -625,4 +625,122 @@ ProductService.prototype.modifyProductInfo = function (req, res, next) {
         });
     systemUtils.wrapService(res, next, promise);
 }
+ProductService.prototype.getSkuSize = function (req, res, next) {
+    let promise = productDao.getSkuSize()
+        .then(rows => {
+            let map = new Map();
+            rows.forEach(row => {
+                let data;
+                let id = row.id;
+                let spec = {
+                    spec_key: row.spec_key,
+                    spec_value: row.spec_value
+                };
+                if (map.has(id)) {
+                    data = map.get(id);
+                    data.specs.push(spec);
+                } else {
+                    data = {
+                        id: id,
+                        name: row.name,
+                        isOnline: row.isOnline,
+                        specs: [{
+                            spec_key: row.spec_key,
+                            spec_value: row.spec_value
+                        }]
+                    };
+                }
+                map.set(id, data);
+            });
+            let result = [];
+            for (let value of map.values()) {
+                result.push(value);
+            }
+            res.api(result);
+        });
+    systemUtils.wrapService(res, next, promise);
+}
+ProductService.prototype.addSkuSize = function (req, res, next) {
+    req.checkBody(schema.addSkuSize);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let promise = productDao.addSkuSizeAndSpec(req, req.body)
+        .then(() => {
+            res.api();
+        });
+    systemUtils.wrapService(res, next, promise);
+}
+ProductService.prototype.modifySkuSizeValidation = function (req, res, next) {
+    req.checkBody(schema.modifySkuSizeValidation);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let data = {
+        del_flag: req.body.isOnline
+    };
+    let promise = productDao.modifySkuSize(req, req.body.id, data)
+        .then(() => {
+            res.api();
+        });
+    systemUtils.wrapService(res, next, promise);
+}
+ProductService.prototype.modifySkuSizeSpec = function (req, res, next) {
+    req.checkBody(schema.modifySkuSizeSpec);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let promise = productDao.modifySkuSizeSpec(req, req.body.id, req.body.specs)
+        .then(() => {
+            res.api();
+        });
+    systemUtils.wrapService(res, next, promise);
+}
+ProductService.prototype.modifySkuSizeSort = function (req, res, next) {
+    req.checkBody(schema.modifySkuSizeSort);
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let promise = productDao.modifySkuSizeSort(req, req.body)
+        .then(() => {
+            res.api();
+        });
+    systemUtils.wrapService(res, next, promise);
+}
+ProductService.prototype.getSkuSizeByName = function (req, res, next) {
+    req.checkQuery('name', 'name can not be null').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS, errors);
+        return;
+    }
+    let promise = productDao.getSkuSizeByName(req.query.name)
+        .then(rows => {
+            let data;
+            rows.forEach(row => {
+                if (!data) {
+                    data = {
+                        id: row.id,
+                        name: row.name,
+                        isOnline: row.isOnline,
+                        specs: []
+                    };
+                }
+                data.specs.push({
+                    spec_key: row.spec_key,
+                    spec_value: row.spec_value
+                });
+            });
+            res.api(data);
+        });
+    systemUtils.wrapService(res, next, promise);
+}
 module.exports = new ProductService();

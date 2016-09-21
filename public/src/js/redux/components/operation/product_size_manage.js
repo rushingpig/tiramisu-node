@@ -1,9 +1,10 @@
 import React, {Component, PropTypes} from 'react';
-import { render } from 'react-dom';
+import { render, findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import LinkedStateMixin from 'react-addons-linked-state-mixin';
 import classNames from 'classnames';
+import { getGlobalStore, getGlobalState } from 'stores/getter';
 
 import DatePicker from 'common/datepicker';
 import { Confirm } from 'common/message_box';
@@ -29,10 +30,20 @@ const FormGroup = props => <div className="form-group form-inline">{props.childr
 class Main extends Component {
   constructor(props){
     super(props);
+    this.state = {
+      search_by_name_ing: false,
+    }
+    this.submitSize = this.submitSize.bind(this);
   }
   render(){
     var { props } = this;
-    var list = props.list.map( n => (
+    var list = [];
+    if(props.list && props.list.length){
+      list = props.list;
+    }else if(props.list.id){
+      list = [...list, props.list];
+    }
+    list = list.map( n => (
       <tr
         key={n.id}
         className={`clickable ${props.selected_id == n.id ? 'active' : ''}`}
@@ -42,7 +53,7 @@ class Main extends Component {
         <td>
           <a onClick={props.actions.editRow.bind(null, n.id)} href="javascript:;" className="space">[编辑]</a>
           {
-            n.enable == 1
+            n.isOnline == 1
               ? <a onClick={props.actions.disableSize.bind(null, n.id)} href="javascript:;" className="space">[下架]</a>
               : <a onClick={props.actions.enableSize.bind(null, n.id)} href="javascript:;" className="space">[上架]</a>
           }
@@ -55,7 +66,7 @@ class Main extends Component {
         <div className="row">
           <div className="col-lg-6 col-md-6">
             <FormGroup>
-              <SearchInput className="inline-block" placeholder="规格名称" />
+              <SearchInput searchIng = {this.state.search_by_name_ing} ref='name' className="inline-block" placeholder="规格名称" searchHandler = {this.search.bind(this)} />
               <button
                 disabled={props.is_add}
                 onClick={props.actions.addProductSize}
@@ -92,7 +103,8 @@ class Main extends Component {
               <div className="col-lg-5 col-lg-offset-1 col-md-6" style={{paddingTop: 5}}>
                 {
                   props.edit_size
-                    ? <SizeDetail {...props.edit_size} add={props.is_add} actions={props.actions} />
+                    ? <SizeDetail {...props.edit_size} add={props.is_add} submitSize = {this.submitSize}
+                      actions={props.actions} />
                     : null
                 }
               </div>
@@ -105,6 +117,47 @@ class Main extends Component {
   componentDidMount() {
     LazyLoad('noty');
     this.props.actions.getAllSizeData().fail( (msg) => Noty('error', msg || '网络繁忙，请稍后再试'));
+  }
+  submitSize(){
+    var {selected_id} = this.props;
+    var edit_size = getGlobalState().operationProductSizeManage.edit_size;
+    if(edit_size.name.trim() == '' ){
+      Noty('warning', '请填写完整');
+      return;
+    }else{
+      edit_size.specs.forEach( m => {
+        if(m.spec_value.trim() == '') {
+          Noty('warning', '请填写完整');
+          return;
+        }
+      })
+    }
+    if(!selected_id){
+      this.props.actions.postAddProductSize()
+        .done(() => {
+          Noty('success', '添加成功')
+        })
+        .fail((msg) => {
+          Noty('error', msg || '操作异常');
+        })      
+    }else{
+      this.props.actions.updateProuctSize(this.props.selected_id)
+        .done(() => {
+          Noty('success', '修改成功')
+        })
+        .fail((msg) => {
+          Noty('error', msg || '操作异常');
+        })
+    }
+
+  }
+  search(value){
+    this.setState({search_by_name_ing: true})
+    this.props.actions.getAllSizeData(value)
+      .fail( (msg) => Noty('error', msg || '网络繁忙，请稍后再试'))
+      .always(() => {
+        this.setState({search_by_name_ing: false});
+      })
   }
 }
 
@@ -196,7 +249,7 @@ const SizeDetail = props => {
         <span className="theme font-lg">规格配置</span>
         <p className="inline-block font-sm">（展示在商品详情页页面，非必填项，若不填则不显示）</p>
         <button
-          disabled={props.data.length >= 5 || props.data.some( n => n.editable )}
+          disabled={props.specs.length >= 5 || props.specs.some( n => n.isOnline )}
           onClick={props.actions.addProperty}
           className="btn btn-xs btn-default pull-right">
           <i className="fa fa-plus"></i> 添加属性
@@ -206,20 +259,21 @@ const SizeDetail = props => {
         <label>规格名称：</label>
         <input
           type="text"
+          disabled = {!props.add}
           value={props.name}
-          className="form-control input-xs long-input"
+          className={`form-control input-xs long-input ${props.name_error}`}
           onChange={props.actions.onFormChange.bind(null, 'size_name')}
         />
       </FormGroup>
       <p className="gray">
-        { props.data.length >= 5 ? '最多5条' : <span>&nbsp;</span>}
+        { props.specs.length >= 5 ? '最多5条' : <span>&nbsp;</span>}
       </p>
       {
-        props.data.map( (n, i) => 
+        props.specs.map( (n, i) => 
           <FormCol
             key={i}
-            label={n.key}
-            value={n.value}
+            label={n.spec_key}
+            value={n.spec_value}
             editable={n.editable}
             propertyOk={props.actions.propertyOk}
             propertyChange={props.actions.propertyChange}
@@ -229,7 +283,7 @@ const SizeDetail = props => {
         )
       }
       <div className="mgt-20">
-        <button className="btn btn-theme btn-sm">{props.add ? '创建' : '保存'}</button>
+        <button className="btn btn-theme btn-sm" onClick = {props.submitSize}>{props.add ? '创建' : '保存'}</button>
       </div>
     </div>
   )

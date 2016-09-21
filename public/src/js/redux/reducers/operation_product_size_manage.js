@@ -3,6 +3,7 @@ import clone from 'clone';
 
 import * as Actions from 'actions/operation_product_size_manage';
 import { FORM_CHANGE } from 'actions/common';
+import { getGlobalStore, getGlobalState } from 'stores/getter';
 
 import { map, some, del } from 'utils/index';
 import createReducer from 'utils/create_reducer';
@@ -13,13 +14,17 @@ export default createReducer({
   selected_id: undefined, //选中的规格id
   edit_size: undefined, //正在编辑的规格信息
   is_add: false, //新添加?
+
+  submit_ing: false,
+  create_ing: false,
+  create_success: false,
 }, {
 
   [ UPDATE_PATH ] : (state, action, initial_state) => initial_state,
 
-  [ Actions.GET_ALL_SIZE_DATA] : (state, action) => ({...state, loading: false, list: action.data}),
+  [ Actions.GET_ALL_SIZE_DATA] : (state, action) => ({...state, loading: false, list: action.data || []}),
 
-  [ Actions.ACTIVE_ROW ] : (state, action) => ({...state, selected_id: action.id }),
+  [ Actions.ACTIVE_ROW ] : (state, action) => ({...state, selected_id: action.id, is_add: false }),
 
   [ Actions.MOVE_UP ] : (state, action) => {
     if(state.selected_id){
@@ -46,7 +51,7 @@ export default createReducer({
   [ Actions.ENABLE_SIZE ] : (state, action) => {
     state.list.forEach( n => {
       if(n.id == action.id){
-        n.enable = 1;
+        n.isOnline = 1;
       }
     })
     return {...state, list: [...state.list]}
@@ -55,7 +60,7 @@ export default createReducer({
   [ Actions.DISABLE_SIZE ] : (state, action) => {
     state.list.forEach( n => {
       if(n.id == action.id){
-        n.enable = 0;
+        n.isOnline = 0;
       }
     })
     return {...state, list: [...state.list]}
@@ -65,26 +70,26 @@ export default createReducer({
 
   [ Actions.ADD_PROPERTY ] : (state, action) => ({
     ...state,
-    edit_size: { ...state.edit_size, data: [...state.edit_size.data, {key: '', value: '', editable: true}] }
+    edit_size: { ...state.edit_size, specs: [...state.edit_size.specs, {spec_key: '', spec_value: '', editable: true}] }
   }),
 
   [ Actions.DEL_PROPERTY ] : (state, action) => {
-    state.edit_size.data.splice(action.index, 1);
+    state.edit_size.specs.splice(action.index, 1);
     return {...state, list: [...state.list]}
   },
 
   [ Actions.PROPERTY_OK ] : (state, action) => {
-    var d = state.edit_size.data;
+    var d = state.edit_size.specs;
     delete d[d.length - 1].editable;
     return {...state, list: [...state.list]}
   },
 
   [ Actions.PROPERTY_CHANGE ] : (state, action) => {
-    var d = state.edit_size.data;
+    var d = state.edit_size.specs;
     if(action.index == -1){ //-1表示新添加项的key值变化了
-      d[d.length - 1].key = action.value;
+      d[d.length - 1].spec_key = action.value;
     }else{
-      d[action.index].value = action.value;
+      d[action.index].spec_value = action.value;
     }
     return {...state, list: [...state.list]}
   },
@@ -93,18 +98,35 @@ export default createReducer({
     state.edit_size.name = action.value;
     return {...state, list: [...state.list]}
   },
-  
   [ Actions.ADD_PRODUCT_SIZE ] : (state, action) => ({
     ...state,
     is_add: true,
     edit_size: {
       id: -1,
       name: '',
-      data: [
-        {key: '尺寸', value: ''},
-        {key: '人数', value: ''},
-        {key: '餐具', value: ''}
+      specs: [
+        {spec_key: '尺寸', spec_value: ''},
+        {spec_key: '人数', spec_value: ''},
+        {spec_key: '餐具', spec_value: ''}
       ]
     }
+  }),
+  [Actions.UPDATE_EDIT_SIZE]: (state, action) => ({
+    ...state,
+    edit_size: action.edit_size     
+  }),
+  [ Actions.POST_ADD_PRODUCT_SIZE_ING] : (state, action) => ({
+    ...state, create_ing: true,
+  }),
+  [ Actions.POST_ADD_PRODUCT_SIZE_SUCCESS] : (state, action) => {
+    var store = getGlobalStore();
+    store.dispatch(Actions.getAllSizeData());
+    return {...state, create_ing: false, create_success: true, is_add: false, edit_size: undefined}
+  },
+  [ Actions.POST_ADD_PRODUCT_SIZE_FAIL] : (state, action) => ({
+    ...state, create_ing: false, create_success: false,
+  }),
+  [ Actions.UPDATE_PRODUCT_SIZE_SUCCESS] : (state, action) => ({
+    ...state, is_add: false, edit_size: undefined
   })
 })

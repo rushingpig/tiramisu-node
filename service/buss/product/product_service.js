@@ -97,7 +97,7 @@ ProductService.prototype.listProducts = (req, res, next) => {
                 is_local_site: curr.is_local_site,
                 sku_id: curr.id,
                 img_url: '',  // TODO: 未确定产品图片来源
-                website: curr.website,
+                website: curr.website_name,
                 regionalism_name : curr.regionalism_name
             };
             temp_obj[key].skus.push(sku_obj);
@@ -214,7 +214,7 @@ ProductService.prototype.addProductWithSku = (req, res, next)=> {
  * @param next
  */
 ProductService.prototype.getAllSize = (req, res, next)=> {
-    let promise = productDao.getAllSkuByParams(['distinct(size) as size'])
+    let promise = productDao.getAllSkuSize()
         .then((results) => {
             if(toolUtils.isEmptyArray(results)){
                 throw new TiramisuError(res_obj.NO_MORE_RESULTS);
@@ -628,6 +628,9 @@ ProductService.prototype.modifyProductInfo = function (req, res, next) {
 ProductService.prototype.getSkuSize = function (req, res, next) {
     let promise = productDao.getSkuSize()
         .then(rows => {
+            if (toolUtils.isEmptyArray(rows)) {
+                throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+            }
             let map = new Map();
             rows.forEach(row => {
                 let data;
@@ -724,6 +727,9 @@ ProductService.prototype.getSkuSizeByName = function (req, res, next) {
     }
     let promise = productDao.getSkuSizeByName(req.query.name)
         .then(rows => {
+            if (toolUtils.isEmptyArray(rows)) {
+                throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+            }
             let data;
             rows.forEach(row => {
                 if (!data) {

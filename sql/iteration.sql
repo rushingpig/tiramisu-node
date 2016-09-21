@@ -831,3 +831,6 @@ CREATE TABLE `buss_product_sku_size_spec` (
     `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '隐藏',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='规格说明表';
+
+ALTER TABLE `buss_product_sku` 
+ADD COLUMN `size_id` INT(10) NULL COMMENT '管理规格id' AFTER `size`;

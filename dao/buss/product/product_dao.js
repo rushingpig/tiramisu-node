@@ -251,9 +251,9 @@ ProductDao.prototype.insertProductWithSku = function (req, data) {
             });
     });
 }
-ProductDao.prototype.getAllSkuByParams = function(params){
-    let sql = 'select ' + params.join(',') + ' from ?? where 1=1';
-    return baseDao.select(sql, [config.tables.buss_product_sku]);
+ProductDao.prototype.getAllSkuSize = function(params){
+    let sql = "select id,name as size from ?? where del_flag = ? order by sort";
+    return baseDao.select(sql, [config.tables.buss_product_sku_size, del_flag.SHOW]);
 };
 ProductDao.prototype.getProductDetailByParams = function (req, data) {
     let columns = [

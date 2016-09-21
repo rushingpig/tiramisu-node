@@ -214,7 +214,7 @@ ProductService.prototype.addProductWithSku = (req, res, next)=> {
  * @param next
  */
 ProductService.prototype.getAllSize = (req, res, next)=> {
-    let promise = productDao.getAllSkuByParams(['distinct(size) as size'])
+    let promise = productDao.getAllSkuSize()
         .then((results) => {
             if(toolUtils.isEmptyArray(results)){
                 throw new TiramisuError(res_obj.NO_MORE_RESULTS);

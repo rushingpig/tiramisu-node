@@ -853,3 +853,36 @@ CREATE TABLE `buss_group_project` (
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
   PRIMARY KEY `IDX_ID` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='团购项目';
+
+# 规格表
+DROP TABLE IF EXISTS `buss_product_sku_size`;
+CREATE TABLE `buss_product_sku_size` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `name` varchar(255) NOT NULL COMMENT '规格名称',
+    `sort` int(10) unsigned NOT NULL DEFAULT '4294967295' COMMENT '排序权重',
+    `created_by` int(11) NOT NULL COMMENT '创建人id',
+    `created_time` datetime NOT NULL COMMENT '创建时间',
+    `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+    `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+    `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '隐藏',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `UNI_NAME` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='规格表';
+
+# 规格说明表
+DROP TABLE IF EXISTS `buss_product_sku_size_spec`;
+CREATE TABLE `buss_product_sku_size_spec` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `size_id` int(10) unsigned NOT NULL COMMENT '规格id',
+    `spec_key` varchar(255) NOT NULL COMMENT '说明key',
+    `spec_value` varchar(255) NOT NULL COMMENT '说明value',
+    `created_by` int(11) NOT NULL COMMENT '创建人id',
+    `created_time` datetime NOT NULL COMMENT '创建时间',
+    `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+    `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+    `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '隐藏',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='规格说明表';
+
+ALTER TABLE `buss_product_sku` 
+ADD COLUMN `size_id` INT(10) NULL COMMENT '管理规格id' AFTER `size`;

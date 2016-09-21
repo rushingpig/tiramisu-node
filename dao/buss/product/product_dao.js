@@ -22,6 +22,7 @@ function ProductDao(){
     this.base_insert_sql = 'insert into ?? set ?';
     this.base_select_sql = 'select ?? from ?? where 1=1 and del_flag = ? ';
     this.base_update_sql = 'update ?? set ?';
+    this.base_delete_sql = 'delete from ?? ';
 }
 //TODO: check sql after table confirmed
 /**
@@ -100,10 +101,11 @@ ProductDao.prototype.findProductsCount = function(product_name,category_id,regio
  */
 ProductDao.prototype.findProducts = function(preSql, preParams, page_no, page_size, regionalism_id, is_standard_area){
     let params = [];
-    let sql = "select t.name,t.category_name,bps2.*,dr.name as regionalism_name from (";
+    let sql = "select t.name,t.category_name,bps2.*,dr.name as regionalism_name,src.name as website_name from (";
     sql += dbHelper.paginate(preSql,page_no,page_size);
     sql += ")t left join  buss_product_sku bps2 on t.id = bps2.product_id and t.size = bps2.size and bps2.del_flag = 1 ";
     sql += " left join dict_regionalism dr on dr.id = bps2.regionalism_id ";
+    sql += " left join buss_order_src src on bps2.website = src.id ";
     sql += " where 1 = 1 ";
     if (regionalism_id) {
         if (is_standard_area) {
@@ -230,6 +232,7 @@ ProductDao.prototype.insertProductWithSku = function (req, data) {
                     let sku_data = {
                         product_id: productId,
                         size: sku.size,
+                        size_id: sku.size_id,
                         display_name: display_name,
                         website: sku.website,
                         original_price: sku.original_price,
@@ -271,9 +274,9 @@ ProductDao.prototype.insertProductWithSku = function (req, data) {
             });
     });
 }
-ProductDao.prototype.getAllSkuByParams = function(params){
-    let sql = 'select ' + params.join(',') + ' from ?? where 1=1';
-    return baseDao.select(sql, [config.tables.buss_product_sku]);
+ProductDao.prototype.getAllSkuSize = function(params){
+    let sql = "select id,name as size from ?? where del_flag = ? order by sort";
+    return baseDao.select(sql, [config.tables.buss_product_sku_size, del_flag.SHOW]);
 };
 ProductDao.prototype.getProductDetailByParams = function (req, data) {
     let columns = [
@@ -653,6 +656,7 @@ ProductDao.prototype.modifyProductAndSku = function (req, data) {
                 let sku_data = {
                     product_id: productId,
                     size: sku.size,
+                    size_id: sku.size_id,
                     display_name: display_name,
                     website: sku.website,
                     original_price: sku.original_price,
@@ -682,6 +686,7 @@ ProductDao.prototype.modifyProductAndSku = function (req, data) {
                     let sku_data = {
                         product_id: productId,
                         size: sku.size,
+                        size_id: sku.size_id,
                         display_name: display_name,
                         website: sku.website,
                         original_price: sku.original_price,
@@ -1122,5 +1127,167 @@ ProductDao.prototype.modifyProductInfo = function (req, data) {
                 });
             });;
     });
+}
+ProductDao.prototype.getSkuSize = function () {
+    let sql = "select size.id as id,size.name as name,size.del_flag as isOnline,size_spec.spec_key as spec_key,size_spec.spec_value as spec_value"
+         + " from ?? size left join ?? size_spec on size.id = size_spec.size_id order by size.sort asc";
+    return baseDao.select(sql, [config.tables.buss_product_sku_size, config.tables.buss_product_sku_size_spec]);
+}
+ProductDao.prototype.getSkuSizeMaxSort = function () {
+    let sql = "select max(sort) as sort from ??";
+    return baseDao.select(sql, [config.tables.buss_product_sku_size])
+        .then(result => {
+            let sort = 1;
+            if (result && result[0] && result[0].sort) {
+                sort = ++result[0].sort;
+            }
+            return Promise.resolve(sort);
+        });
+}
+ProductDao.prototype.addSkuSize = function (data, req, connection) {
+    let self = this;
+    let sql = this.base_insert_sql;
+    return self.getSkuSizeMaxSort()
+        .then(sort => {
+            data.sort = sort;
+            if(connection){
+                return baseDao.insertWithConnection(connection, sql, [config.tables.buss_product_sku_size, systemUtils.assembleInsertObj(req, data, true)]);
+            } else {
+                return baseDao.insert(sql, [config.tables.buss_product_sku_size, systemUtils.assembleInsertObj(req, data, true)]);
+            }
+        });
+}
+ProductDao.prototype.addSkuSizeSpec = function (sizeId, specs, req, connection) {
+    let sql = this.base_insert_sql;
+    let promises = specs.map(spec => {
+        spec.size_id = sizeId;
+        if(connection){
+            return baseDao.insertWithConnection(connection, sql, [config.tables.buss_product_sku_size_spec, systemUtils.assembleInsertObj(req, spec, true)]);
+        } else {
+            return baseDao.insert(sql, [config.tables.buss_product_sku_size_spec, systemUtils.assembleInsertObj(req, spec, true)]);
+        }
+    });
+    return Promise.all(promises);
+}
+ProductDao.prototype.addSkuSizeAndSpec = function (req, data) {
+    let self = this;
+    let sku = {
+        name: data.name
+    };
+    let specs = data.specs;
+    return baseDao.trans()
+        .then(connection => {
+            return self.addSkuSize(sku, req, connection)
+                .then(sizeId => {
+                    return self.addSkuSizeSpec(sizeId, specs, req, connection);
+                }).then(() => {
+                    return new Promise((resolve, reject) => {
+                        connection.commit(err => {
+                            connection.release();
+                            if (err) return reject(err);
+                            resolve();
+                        });
+                    });
+                }).catch(err => {
+                    return new Promise((resolve, reject) => {
+                        connection.rollback(rollbackErr => {
+                            connection.release();
+                            if (rollbackErr) return reject(rollbackErr);
+                            reject(err);
+                        });
+                    });
+                });
+        });
+}
+ProductDao.prototype.modifySkuSize = function (req, id, data) {
+    let sql = this.base_update_sql  + ' where id = ?';
+    return baseDao.update(sql, [config.tables.buss_product_sku_size, systemUtils.assembleUpdateObj(req, data, true), id]);
+}
+ProductDao.prototype.deleteSkuSizeSpecById = function (id, connection) {
+    let sql = this.base_delete_sql + ' where size_id = ?';
+    if(connection){
+        return baseDao.execWithConnection(connection, sql, [config.tables.buss_product_sku_size_spec, id]);
+    } else {
+        return baseDao.delete(sql, [config.tables.buss_product_sku_size_spec, id]);
+    }
+}
+ProductDao.prototype.modifySkuSizeSpec = function (req, id, data) {
+    let self = this;
+    return baseDao.trans()
+        .then(connection => {
+            return self.deleteSkuSizeSpecById(id, connection)
+                .then(() => {
+                    return self.addSkuSizeSpec(id, data, req, connection);
+                }).then(() => {
+                    return new Promise((resolve, reject) => {
+                        connection.commit(err => {
+                            connection.release();
+                            if (err) return reject(err);
+                            resolve();
+                        });
+                    });
+                }).catch(err => {
+                    return new Promise((resolve, reject) => {
+                        connection.rollback(rollbackErr => {
+                            connection.release();
+                            if (rollbackErr) return reject(rollbackErr);
+                            reject(err);
+                        });
+                    });
+                });
+        });
+}
+ProductDao.prototype.getSkuSizeSort = function (id) {
+    let sql = "select sort from ?? where id = ?";
+    return baseDao.select(sql, [config.tables.buss_product_sku_size, id])
+        .then(result => {
+            return Promise.resolve(result[0].sort);
+        });
+}
+ProductDao.prototype.modifySkuSizeSort = function (req, data) {
+    let self = this;
+    return baseDao.trans()
+        .then(connection => {
+            let sort_a,sort_b;
+            let id_a = data.id_a;
+            let id_b = data.id_b;
+            return self.getSkuSizeSort(id_a)
+                .then(sort => {
+                    sort_a = sort;
+                    return self.getSkuSizeSort(id_b)
+                }).then(sort => {
+                    sort_b = sort;
+                    let data = {
+                        sort: sort_b
+                    };
+                    return self.modifySkuSize(req, id_a, data);
+                }).then(() => {
+                    let data = {
+                        sort: sort_a
+                    };
+                    return self.modifySkuSize(req, id_b, data);
+                }).then(() => {
+                    return new Promise((resolve, reject) => {
+                        connection.commit(err => {
+                            connection.release();
+                            if (err) return reject(err);
+                            resolve();
+                        });
+                    });
+                }).catch(err => {
+                    return new Promise((resolve, reject) => {
+                        connection.rollback(rollbackErr => {
+                            connection.release();
+                            if (rollbackErr) return reject(rollbackErr);
+                            reject(err);
+                        });
+                    });
+                });
+        });
+}
+ProductDao.prototype.getSkuSizeByName = function (name) {
+    let sql = "select size.id as id,size.name as name,size.del_flag as isOnline,size_spec.spec_key as spec_key,size_spec.spec_value as spec_value"
+         + " from ?? size left join ?? size_spec on size.id = size_spec.size_id where size.name = ?";
+    return baseDao.select(sql, [config.tables.buss_product_sku_size, config.tables.buss_product_sku_size_spec, name]);
 }
 module.exports = ProductDao;

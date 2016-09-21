@@ -42,5 +42,9 @@ module.exports = {
   addProductInfo: require('./buss/product/add_product_info'),
   modifyProductInfo: require('./buss/product/modify_product_info'),
   listAppUsers : require('./app/user/list_app_users'),
-  listAppUserLoginLogs:require('./app/user/list_user_loginLogs')
+  listAppUserLoginLogs:require('./app/user/list_user_loginLogs'),
+  addSkuSize: require('./buss/product/add_sku_size'),
+  modifySkuSizeValidation: require('./buss/product/modify_sku_size_validation'),
+  modifySkuSizeSpec: require('./buss/product/modify_sku_size_spec'),
+  modifySkuSizeSort: require('./buss/product/modify_sku_size_sort')
 };

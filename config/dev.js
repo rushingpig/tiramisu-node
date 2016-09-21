@@ -67,6 +67,8 @@ var tables = {
     buss_company: 'buss_company',
     buss_invoice: 'buss_invoice',
     buss_group_project: 'buss_group_project',
+    buss_product_sku_size: 'buss_product_sku_size',
+    buss_product_sku_size_spec: 'buss_product_sku_size_spec',
 //=================Dict===================
     dict_regionalism : 'dict_regionalism',
     delivery_pay_rule: 'delivery_pay_rule',

@@ -635,23 +635,22 @@ ProductService.prototype.getSkuSize = function (req, res, next) {
             rows.forEach(row => {
                 let data;
                 let id = row.id;
-                let spec = {
-                    spec_key: row.spec_key,
-                    spec_value: row.spec_value
-                };
+                let spec;
                 if (map.has(id)) {
                     data = map.get(id);
-                    data.specs.push(spec);
                 } else {
                     data = {
                         id: id,
                         name: row.name,
                         isOnline: row.isOnline,
-                        specs: [{
-                            spec_key: row.spec_key,
-                            spec_value: row.spec_value
-                        }]
+                        specs: []
                     };
+                }
+                if (row.spec_key && row.spec_value) {
+                    data.specs.push({
+                        spec_key: row.spec_key,
+                        spec_value: row.spec_value
+                    });
                 }
                 map.set(id, data);
             });
@@ -740,10 +739,12 @@ ProductService.prototype.getSkuSizeByName = function (req, res, next) {
                         specs: []
                     };
                 }
-                data.specs.push({
-                    spec_key: row.spec_key,
-                    spec_value: row.spec_value
-                });
+                if (row.spec_key && row.spec_value) {
+                    data.specs.push({
+                        spec_key: row.spec_key,
+                        spec_value: row.spec_value
+                    });
+                }
             });
             res.api(data);
         });

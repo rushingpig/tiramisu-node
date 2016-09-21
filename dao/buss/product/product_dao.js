@@ -1266,7 +1266,7 @@ ProductDao.prototype.modifySkuSizeSort = function (req, data) {
 }
 ProductDao.prototype.getSkuSizeByName = function (name) {
     let sql = "select size.id as id,size.name as name,size.del_flag as isOnline,size_spec.spec_key as spec_key,size_spec.spec_value as spec_value"
-         + " from ?? size left join ?? size_spec on size.id = size_spec.size_id and size.name = ?";
+         + " from ?? size left join ?? size_spec on size.id = size_spec.size_id where size.name = ?";
     return baseDao.select(sql, [config.tables.buss_product_sku_size, config.tables.buss_product_sku_size_spec, name]);
 }
 module.exports = ProductDao;

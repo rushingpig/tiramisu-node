@@ -210,6 +210,7 @@ ProductDao.prototype.insertProductWithSku = function (req, data) {
                     let sku_data = {
                         product_id: productId,
                         size: sku.size,
+                        size_id: sku.size_id,
                         display_name: display_name,
                         website: sku.website,
                         original_price: sku.original_price,
@@ -633,6 +634,7 @@ ProductDao.prototype.modifyProductAndSku = function (req, data) {
                 let sku_data = {
                     product_id: productId,
                     size: sku.size,
+                    size_id: sku.size_id,
                     display_name: display_name,
                     website: sku.website,
                     original_price: sku.original_price,
@@ -662,6 +664,7 @@ ProductDao.prototype.modifyProductAndSku = function (req, data) {
                     let sku_data = {
                         product_id: productId,
                         size: sku.size,
+                        size_id: sku.size_id,
                         display_name: display_name,
                         website: sku.website,
                         original_price: sku.original_price,

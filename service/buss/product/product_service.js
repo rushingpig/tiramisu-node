@@ -628,6 +628,9 @@ ProductService.prototype.modifyProductInfo = function (req, res, next) {
 ProductService.prototype.getSkuSize = function (req, res, next) {
     let promise = productDao.getSkuSize()
         .then(rows => {
+            if (toolUtils.isEmptyArray(rows)) {
+                throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+            }
             let map = new Map();
             rows.forEach(row => {
                 let data;
@@ -724,6 +727,9 @@ ProductService.prototype.getSkuSizeByName = function (req, res, next) {
     }
     let promise = productDao.getSkuSizeByName(req.query.name)
         .then(rows => {
+            if (toolUtils.isEmptyArray(rows)) {
+                throw new TiramisuError(res_obj.NO_MORE_RESULTS);
+            }
             let data;
             rows.forEach(row => {
                 if (!data) {

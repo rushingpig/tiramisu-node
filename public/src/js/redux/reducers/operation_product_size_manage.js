@@ -111,10 +111,6 @@ export default createReducer({
       ]
     }
   }),
-  [Actions.UPDATE_EDIT_SIZE]: (state, action) => ({
-    ...state,
-    edit_size: action.edit_size     
-  }),
   [ Actions.POST_ADD_PRODUCT_SIZE_ING] : (state, action) => ({
     ...state, create_ing: true,
   }),

@@ -45,6 +45,14 @@ export function editRow(id){
   }
 }
 
+export const VIEW_ROW = 'PSM_VIEW_ROW';
+export function viewRow(id){
+  return {
+    type: VIEW_ROW,
+    id,
+  }
+}
+
 export const MOVE_UP = 'PSM_MOVE_UP';
 export function moveUp(selected_id){
 /*  return {

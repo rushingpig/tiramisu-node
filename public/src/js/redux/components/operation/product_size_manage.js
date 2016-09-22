@@ -51,7 +51,16 @@ class Main extends Component {
         >
         <td>{n.name}</td>
         <td>
-          <a onClick={props.actions.editRow.bind(null, n.id)} href="javascript:;" className="space">[编辑]</a>
+          <a onClick={props.actions.viewRow.bind(null, n.id)} href="javascript:;" className="space">[查看]</a>
+          <a onClick={props.actions.editRow.bind(null, n.id)} href="javascript:;" className="space">
+          {
+            n.specs.length === 0 ?
+            '[添加]'
+            :
+            '[编辑]'
+          }
+          
+          </a>
           {
             n.isOnline == 1
               ? <a onClick={props.actions.disableSize.bind(null, n.id)} href="javascript:;" className="space">[下架]</a>
@@ -103,7 +112,7 @@ class Main extends Component {
               <div className="col-lg-5 col-lg-offset-1 col-md-6" style={{paddingTop: 5}}>
                 {
                   props.edit_size
-                    ? <SizeDetail {...props.edit_size} add={props.is_add} submitSize = {this.submitSize}
+                    ? <SizeDetail {...props.edit_size} view={props.is_view} add={props.is_add} submitSize = {this.submitSize}
                       actions={props.actions} />
                     : null
                 }
@@ -121,34 +130,38 @@ class Main extends Component {
   submitSize(){
     var {selected_id} = this.props;
     var edit_size = getGlobalState().operationProductSizeManage.edit_size;
+    var flag = true;
     if(edit_size.name.trim() == '' ){
       Noty('warning', '请填写完整');
-      return;
+      flag = false;
     }else{
       edit_size.specs.forEach( m => {
         if(m.spec_value.trim() == '') {
           Noty('warning', '请填写完整');
-          return;
+          flag = false;
         }
       })
     }
-    if(!selected_id){
-      this.props.actions.postAddProductSize()
-        .done(() => {
-          Noty('success', '添加成功')
-        })
-        .fail((msg) => {
-          Noty('error', msg || '操作异常');
-        })      
-    }else{
-      this.props.actions.updateProuctSize(this.props.selected_id)
-        .done(() => {
-          Noty('success', '修改成功')
-        })
-        .fail((msg) => {
-          Noty('error', msg || '操作异常');
-        })
+    if(flag){
+      if(!selected_id){
+        this.props.actions.postAddProductSize()
+          .done(() => {
+            Noty('success', '添加成功')
+          })
+          .fail((msg) => {
+            Noty('error', msg || '操作异常');
+          })      
+      }else{
+        this.props.actions.updateProuctSize(this.props.selected_id)
+          .done(() => {
+            Noty('success', '修改成功')
+          })
+          .fail((msg) => {
+            Noty('error', msg || '操作异常');
+          })
+      }      
     }
+
 
   }
   search(value){
@@ -191,14 +204,21 @@ class FormCol extends Component {
         ? <div className="form-group form-inline">
             <label><span>{str.join('')}</span>：</label>
             <input
+              disabled = {props.view}
               value={props.value}
               onChange={props.onChange}
               className="form-control input-xs long-input"
+              placeholder = {props.placeholder ? props.placeholder : ''}
             />
-            <i
-              onClick={props.delProperty}
-              className="fa fa-lg fa-times space-left cursor-pointer hover-effect"
-              ></i>
+            {
+              !props.view
+              ?
+              <i
+                onClick={props.delProperty}
+                className="fa fa-lg fa-times space-left cursor-pointer hover-effect"
+                ></i>
+                :null
+            }
           </div>
         : <div ref="main" className="form-group form-inline relative">
             <input
@@ -248,12 +268,17 @@ const SizeDetail = props => {
       <div className="clearfix">
         <span className="theme font-lg">规格配置</span>
         <p className="inline-block font-sm">（展示在商品详情页页面，非必填项，若不填则不显示）</p>
-        <button
-          disabled={props.specs.length >= 5 || props.specs.some( n => n.isOnline )}
-          onClick={props.actions.addProperty}
-          className="btn btn-xs btn-default pull-right">
-          <i className="fa fa-plus"></i> 添加属性
-        </button>
+        {
+          !props.view ?
+          <button
+            disabled={props.specs.length >= 5 || props.specs.some( n => n.editable )}
+            onClick={props.actions.addProperty}
+            className="btn btn-xs btn-default pull-right">
+            <i className="fa fa-plus"></i> 添加属性
+          </button>
+          :null
+        }
+        
       </div>
       <FormGroup>
         <label>规格名称：</label>
@@ -275,16 +300,25 @@ const SizeDetail = props => {
             label={n.spec_key}
             value={n.spec_value}
             editable={n.editable}
+            view = {props.view}
             propertyOk={props.actions.propertyOk}
             propertyChange={props.actions.propertyChange}
             onChange={props.actions.propertyChange.bind(null, i)}
             delProperty={props.actions.delProperty.bind(null, i)}
+            placeholder={n.placeholder}
           />
         )
       }
-      <div className="mgt-20">
-        <button className="btn btn-theme btn-sm" onClick = {props.submitSize}>{props.add ? '创建' : '保存'}</button>
-      </div>
+      {
+        !props.view
+        ?
+        <div className="mgt-20">
+          <button className="btn btn-theme btn-sm" onClick = {props.submitSize}>{props.add ? '创建' : '保存'}</button>
+        </div>
+        :
+        null
+      }
+      
     </div>
   )
 }

@@ -98,7 +98,8 @@ ProductService.prototype.listProducts = (req, res, next) => {
                 sku_id: curr.id,
                 img_url: '',  // TODO: 未确定产品图片来源
                 website: curr.website_name,
-                regionalism_name : curr.regionalism_name
+                regionalism_name : curr.regionalism_name,
+                display_name: curr.display_name
             };
             temp_obj[key].skus.push(sku_obj);
         });
@@ -672,6 +673,13 @@ ProductService.prototype.addSkuSize = function (req, res, next) {
     let promise = productDao.addSkuSizeAndSpec(req, req.body)
         .then(() => {
             res.api();
+        }).catch(err => {
+            // 唯一索引
+            if (err.code == 'ER_DUP_ENTRY' && err.errno == 1062) {
+                res.api(res_obj.DUPLICATE_SKU_SIZE, err);
+                return;
+            }
+            throw err;
         });
     systemUtils.wrapService(res, next, promise);
 }

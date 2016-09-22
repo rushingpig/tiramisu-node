@@ -49,6 +49,9 @@ class Main extends Component {
         className={`clickable ${props.selected_id == n.id ? 'active' : ''}`}
         onClick={props.actions.activeRow.bind(null, n.id)}
         >
+        <td>
+          <input type = 'radio' checked = {props.selected_id == n.id} />
+        </td>
         <td>{n.name}</td>
         <td>
           <a onClick={props.actions.viewRow.bind(null, n.id)} href="javascript:;" className="space">[查看]</a>
@@ -93,6 +96,7 @@ class Main extends Component {
                   <table className="table table-hover table-click text-center">
                     <thead>
                       <tr>
+                        <th></th>
                         <th>
                           &nbsp;&nbsp;&nbsp;&nbsp;规格名称　
                           <span className={props.selected_id ? '' : 'visibility-hidden'}>
@@ -132,15 +136,7 @@ class Main extends Component {
     var edit_size = getGlobalState().operationProductSizeManage.edit_size;
     var flag = true;
     if(edit_size.name.trim() == '' ){
-      Noty('warning', '请填写完整');
       flag = false;
-    }else{
-      edit_size.specs.forEach( m => {
-        if(m.spec_value.trim() == '') {
-          Noty('warning', '请填写完整');
-          flag = false;
-        }
-      })
     }
     if(flag){
       if(!selected_id){
@@ -148,8 +144,12 @@ class Main extends Component {
           .done(() => {
             Noty('success', '添加成功')
           })
-          .fail((msg) => {
-            Noty('error', msg || '操作异常');
+          .fail((msg, code) => {
+            if(code == '2016'){
+              Noty('error', '该规格名已存在！')
+            }else{
+              Noty('error', msg || '操作异常');
+            }
           })      
       }else{
         this.props.actions.updateProuctSize(this.props.selected_id)
@@ -160,6 +160,8 @@ class Main extends Component {
             Noty('error', msg || '操作异常');
           })
       }      
+    }else{
+          Noty('warning', '请填写完整');
     }
 
 
@@ -251,9 +253,9 @@ class FormCol extends Component {
     )
   }
   componentDidMount(){
-    if(this.props.editable){
+    /*if(this.props.editable){
       this.refs.editKey.style.width = $(this.refs.main).prev().find('label span').width() + 'px';
-    }
+    }*/
   }
   propertyOk(){
     if(this.refs.editKey.value.trim() && this.refs.editValue.value.trim()){
@@ -271,7 +273,7 @@ const SizeDetail = props => {
         {
           !props.view ?
           <button
-            disabled={props.specs.length >= 5 || props.specs.some( n => n.editable )}
+            disabled={props.specs.length > 5 || props.specs.some( n => n.editable )}
             onClick={props.actions.addProperty}
             className="btn btn-xs btn-default pull-right">
             <i className="fa fa-plus"></i> 添加属性

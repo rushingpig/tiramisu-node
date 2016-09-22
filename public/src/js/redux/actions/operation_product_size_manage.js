@@ -195,6 +195,7 @@ export function postAddProductSize(){
         type: POST_ADD_PRODUCT_SIZE_ING
       })
       var edit_size = getState().operationProductSizeManage.edit_size;
+      edit_size.specs = edit_size.specs.filter( m => m.spec_value.trim() != '' && m.spec_key.trim() != '') 
       return R.post(Url.manage_size_add.toString(), edit_size)
               .done(() => {
                   dispatch({
@@ -218,8 +219,8 @@ export function updateProuctSize(id){
       type: UPDATE_PRODUCT_SIZE_ING,
     })
     var edit_size = getState().operationProductSizeManage.edit_size;
-    var specs = edit_size.specs.map( m => ({ spec_key: m.spec_key, spec_value: m.spec_value }));
-    return R.put(Url.manage_size_edit.toString(), {id, specs})
+    edit_size.specs = edit_size.specs.filter( m => m.spec_value.trim() != '' && m.spec_key.trim() != '') 
+    return R.put(Url.manage_size_edit.toString(), {id, specs:edit_size.specs})
       .done(() => {
         dispatch({
           type: UPDATE_PRODUCT_SIZE_SUCCESS

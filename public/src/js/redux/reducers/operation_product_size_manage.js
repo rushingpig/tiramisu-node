@@ -104,6 +104,7 @@ export default createReducer({
   [ Actions.ADD_PRODUCT_SIZE ] : (state, action) => ({
     ...state,
     is_add: true,
+    selected_id: undefined,
     is_view: false,
     edit_size: {
       id: -1,

@@ -141,7 +141,7 @@ function products_choosing(state = products_choosing_state, action){
       if(state.selected_list.some(n => n.sku_id == sku_id)){
         return state;
       }
-      /*****  这个地方已突变，应该使用 immutablejs *****/
+      /*****  这个地方已突变 *****/
       state.search_results.list.forEach(function(n){
         n.skus.forEach(function(m){
           if(m.sku_id == sku_id){

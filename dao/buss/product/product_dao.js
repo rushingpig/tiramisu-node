@@ -616,7 +616,6 @@ ProductDao.prototype.modifyProductAndSku = function (req, data) {
     let self = this;
     return baseDao.trans().then(connection => {
         let productId = data.product.id;
-        let display_name = data.product.display_name;
         let promise = Promise.resolve();
         // 修改product
         if (data.product) {
@@ -632,6 +631,7 @@ ProductDao.prototype.modifyProductAndSku = function (req, data) {
         if (data.sku) {
             let promises = data.sku.map(sku => {
                 let sku_id = sku.id;
+                let display_name = sku.website == 1 ? data.product.display_name : data.product.name;
                 let sku_data = {
                     product_id: productId,
                     size: sku.size,
@@ -662,6 +662,7 @@ ProductDao.prototype.modifyProductAndSku = function (req, data) {
         if (data.new_sku) {
             promise.then(() => {
                 let promises = data.new_sku.map(sku => {
+                    let display_name = sku.website == 1 ? data.product.display_name : data.product.name;
                     let sku_data = {
                         product_id: productId,
                         size: sku.size,

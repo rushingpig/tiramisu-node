@@ -494,7 +494,8 @@ const changeShopSpecifications = (index, specInfo) => {
   return {
     type: ActionTypes.CHANGE_SHOP_SPECIFICATIONS,
     index,
-    spec: specInfo.text
+    spec: specInfo.text,
+    spec_id: specInfo.id,
   }
 }
 
@@ -589,7 +590,8 @@ const changeSourceSpec = (index, specInfo) => {
   return {
     type: ActionTypes.CHANGE_SOURCE_SPEC,
     index,
-    spec: specInfo.text
+    spec: specInfo.text,
+    spec_id : specInfo.id,
   }
 }
 
@@ -664,6 +666,7 @@ const saveOption = () => (
     const transformShopSpecificationOption = option => {
       let transformedOption = {
         size: option.spec.trim(),
+        size_id: option.spec_id,
         original_price: parseInt(option.originalCost * 100),
         price: parseInt(option.cost * 100),
         website: 1 // 商城商品，渠道固定为1
@@ -691,6 +694,7 @@ const saveOption = () => (
         id: opt.id,
         website: sourceId,
         size: opt.spec.trim(),
+        size_id: opt.spec_id,
         price: parseInt(opt.cost * 100)
       })
     );

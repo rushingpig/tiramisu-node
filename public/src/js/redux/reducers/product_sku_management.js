@@ -227,7 +227,7 @@ const getOrderSourcesMap = orderSourceData => {
 //   return state;
 // }
 
-const getSizeArr = data => data.map((obj, i) => obj.size && ({id: i, text: obj.size})).filter(n => n);
+const getSizeArr = data => data.map(obj => obj.size && ({id: obj.id, text: obj.size})).filter(n => n);
 
 const switchType = {
   [ActionTypes.LOADED_BASIC_DATA]: (state, { categoriesData, orderSourceData, skuSizeData }) => {
@@ -767,8 +767,9 @@ const switchType = {
     return tempOptionsValidator(state);
   },
 
-  [ActionTypes.CHANGE_SHOP_SPECIFICATIONS]: (state, { index, spec }) => {
+  [ActionTypes.CHANGE_SHOP_SPECIFICATIONS]: (state, { index, spec, spec_id }) => {
     state.tempOptions.shopSpecifications[index].spec = spec;
+    state.tempOptions.shopSpecifications[index].spec_id = spec_id;
 
     state.cityOptionSaved = false;
     return tempOptionsValidator(state);
@@ -880,8 +881,9 @@ const switchType = {
     return tempOptionsValidator(state);
   },
 
-  [ActionTypes.CHANGE_SOURCE_SPEC]: (state, { index, spec }) => {
+  [ActionTypes.CHANGE_SOURCE_SPEC]: (state, { index, spec, spec_id }) => {
     state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource)[index].spec = spec;
+    state.tempOptions.sourceSpecifications.get(state.tempOptions.selectedSource)[index].spec_id = spec_id;
 
     state.cityOptionSaved = false;
     return tempOptionsValidator(state);

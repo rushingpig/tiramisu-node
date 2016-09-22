@@ -14,6 +14,7 @@ export default createReducer({
   selected_id: undefined, //选中的规格id
   edit_size: undefined, //正在编辑的规格信息
   is_add: false, //新添加?
+  is_view: false, //查看
 
   submit_ing: false,
   create_ing: false,
@@ -66,7 +67,9 @@ export default createReducer({
     return {...state, list: [...state.list]}
   },
 
-  [ Actions.EDIT_ROW ] : (state, action) => ({...state, edit_size: clone( state.list.find(n => n.id == action.id) )}),
+  [ Actions.EDIT_ROW ] : (state, action) => ({...state, edit_size: clone( state.list.find(n => n.id == action.id) ), is_view: false}),
+
+  [ Actions.VIEW_ROW ] : (state, action) => ({...state, edit_size: clone( state.list.find(n => n.id == action.id) ), is_view: true}),
 
   [ Actions.ADD_PROPERTY ] : (state, action) => ({
     ...state,
@@ -101,13 +104,14 @@ export default createReducer({
   [ Actions.ADD_PRODUCT_SIZE ] : (state, action) => ({
     ...state,
     is_add: true,
+    is_view: false,
     edit_size: {
       id: -1,
       name: '',
       specs: [
-        {spec_key: '尺寸', spec_value: ''},
-        {spec_key: '人数', spec_value: ''},
-        {spec_key: '餐具', spec_value: ''}
+        {spec_key: '尺寸', spec_value: '', placeholder: '18*18cm'},
+        {spec_key: '人数', spec_value: '', placeholder: '适合6-8人分享'},
+        {spec_key: '餐具', spec_value: '', placeholder: '1刀 + 10盘 + 10叉 + 10湿巾'}
       ]
     }
   }),
@@ -122,7 +126,9 @@ export default createReducer({
   [ Actions.POST_ADD_PRODUCT_SIZE_FAIL] : (state, action) => ({
     ...state, create_ing: false, create_success: false,
   }),
-  [ Actions.UPDATE_PRODUCT_SIZE_SUCCESS] : (state, action) => ({
-    ...state, is_add: false, edit_size: undefined
-  })
+  [ Actions.UPDATE_PRODUCT_SIZE_SUCCESS] : (state, action) => {
+    var store = getGlobalStore();
+    store.dispatch(Actions.getAllSizeData());
+    return {...state, is_add: false, edit_size: undefined}
+  }
 })

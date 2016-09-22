@@ -29,7 +29,8 @@ export default class ManageForm extends Component{
 
 			filter_sku_size_list: [],
 			sku_size_list: [],
-			current_size: SELECT_DEFAULT_VALUE,
+			current_size: '',
+			current_size_id: SELECT_DEFAULT_VALUE,
 		}
 	}
 	render(){
@@ -37,13 +38,13 @@ export default class ManageForm extends Component{
 		var {actions : {
 			searchProducts, getSecCategories, getCategories, selectProduct, delSelectProduct, getAllSize, addSize
 		}} = this.props;
-		var { filter_sku_size_list, current_size, province_id, regionalism_id, src_id, display_name } = this.state;
+		var { filter_sku_size_list, current_size, current_size_id, province_id, regionalism_id, src_id, display_name } = this.state;
 		var add_btn_disabled = province_id === SELECT_DEFAULT_VALUE || regionalism_id === SELECT_DEFAULT_VALUE ;
 		spu_sku_list = spu_sku_list.filter( m => m.src_id == this.state.src_id);
 		var new_sku_size_list = spu_sku_list.filter( m => m.is_new)
 		var submit_btn_disabled = !(selected_spu_info && selected_spu_info.spu_id && new_sku_size_list.length );
 		var sku_size_content = filter_sku_size_list.map( (n, i) => {
-			return (<option key={n.id + ' ' + i} value = {n.text}>{n.text}</option>)
+			return (<option key={n.id + ' ' + i} value = {n.id}>{n.text}</option>)
 		})
 		return(
 				<div>
@@ -117,7 +118,7 @@ export default class ManageForm extends Component{
 										<td style = {{borderRight: '2px solid #ddd'}}>
 											<input className = 'form-control input-xs' type = 'text' 
 												onChange = {this.filterHandler.bind(this)} placeholder='输入关键字搜索规格'/>
-											<select ref='size' className = 'form-control input-xs ' value = {current_size} onChange = {this.onSizeChange.bind(this)}>
+											<select ref='size' className = 'form-control input-xs ' value = {current_size_id} onChange = {this.onSizeChange.bind(this)}>
 												{
 													sku_size_content.length?
 													sku_size_content:
@@ -188,7 +189,7 @@ export default class ManageForm extends Component{
 		}else if(this.state.current_size === SELECT_DEFAULT_VALUE || this.state.current_size === 0){
 			Noty('warning', '请选择规格')
 		}else{
-			this.props.actions.addSize(this.state.display_name , this.state.current_size, price, this.state.src_id);			
+			this.props.actions.addSize(this.state.display_name ,this.state.current_size_id, this.state.current_size, price, this.state.src_id);			
 		}
 	}
 	delSize(index){
@@ -202,7 +203,14 @@ export default class ManageForm extends Component{
 		this.props.actions.getAllSize();
 	}
 	onSizeChange(e){
-		this.setState({current_size: e.target.value})
+		var current_size = '';
+		var { filter_sku_size_list } = this.state;
+		filter_sku_size_list.forEach( m => {
+			if(m.id == e.target.value) {
+				current_size = m.text;
+			}
+		})
+		this.setState({current_size_id: e.target.value, current_size})
 	}
 	onProductNameChange(e){
 		this.setState({display_name: e.target.value});
@@ -223,7 +231,8 @@ export default class ManageForm extends Component{
 	        	return n;
 	      })
 	      this.setState({
-	        sku_size_list: list, filter_sku_size_list: new_data, current_size: new_data.length && new_data[0].text
+	        sku_size_list: list, filter_sku_size_list: new_data, current_size_id: new_data.length && new_data[0].id,
+	        current_size: new_data.length && new_data[0].text
 	      })
 	    }.bind(this);
 

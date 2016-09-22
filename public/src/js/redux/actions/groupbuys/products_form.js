@@ -73,10 +73,11 @@ export function getAllSize(){
 }
 
 export const ADD_SIZE = 'ADD_SIZE';
-export function addSize(display_name, size, price, src_id){
+export function addSize(display_name,size_id, size, price, src_id){
 	return {
 		type: ADD_SIZE,
 		display_name: display_name,
+		size_id,
 		size: size,
 		price: price * 100,
 		src_id: src_id,

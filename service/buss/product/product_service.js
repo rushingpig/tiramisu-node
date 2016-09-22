@@ -673,6 +673,13 @@ ProductService.prototype.addSkuSize = function (req, res, next) {
     let promise = productDao.addSkuSizeAndSpec(req, req.body)
         .then(() => {
             res.api();
+        }).catch(err => {
+            // 唯一索引
+            if (err.code == 'ER_DUP_ENTRY' && err.errno == 1062) {
+                res.api(res_obj.DUPLICATE_SKU_SIZE, err);
+                return;
+            }
+            throw err;
         });
     systemUtils.wrapService(res, next, promise);
 }

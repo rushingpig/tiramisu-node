@@ -424,7 +424,8 @@ module.exports.setInvoiceExpress = function (req, res, next) {
             'express_no'
         ]);
         info.status = IS.DELIVERY;
-        if (!isInvoiceCanUpdateStatus(invoice_info.status, info.status)) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
+        // 要允许修改运单号,暂不做判断
+        // if (!isInvoiceCanUpdateStatus(invoice_info.status, info.status)) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED));
         yield invoiceDao.updateInvoice(invoice_id, systemUtils.assembleUpdateObj(req, info));
         let history = {option: ''};
         history.bind_id = invoice_id;

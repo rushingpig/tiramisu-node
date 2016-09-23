@@ -273,7 +273,7 @@ const SizeDetail = props => {
         {
           !props.view ?
           <button
-            disabled={props.specs.length > 5 || props.specs.some( n => n.editable )}
+            disabled={props.specs.length >= 5 }
             onClick={props.actions.addProperty}
             className="btn btn-xs btn-default pull-right">
             <i className="fa fa-plus"></i> 添加属性

@@ -441,7 +441,7 @@ var m_post = function(url, params){
 
 export const GET_DELIVERY_TRACE = 'GET_DELIVERY_TRACE';
 export function getDeliveryTrace(express_no, express_type){
-  return GET(Url.invoice_delivery_trace.toString(), {express_no: '00000000201609210', express_type: 'STO'}, GET_DELIVERY_TRACE);
+  return GET(Url.invoice_delivery_trace.toString(), {express_no, express_type}, GET_DELIVERY_TRACE);
 /*  return TEST([
       {
         'acceptTime': '2016-09-22 13:25:31',

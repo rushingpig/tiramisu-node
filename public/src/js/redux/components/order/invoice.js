@@ -198,7 +198,8 @@ var  InvoiceRow = React.createClass({
 							[<a key='InvoiceManageEdit' onClick = {this.viewInvoiceEditModal} href='javascript:;' >[编辑]</a>,<br key='edit_br' />],
 							[<a key='InvoiceManageLogistics' href='javascript:;'  onClick = {this.viewDeliveryModal}>[物流填写]</a>,<br key = 'logistics_br' />],
 							[<a key='InvoiceManageCancel' onClick = {this.onInvoiceDel} href='javascript:;' >[取消]</a>,<br key='cancel_br' />],
-							[<a key='InvoiceManageAddRemarks' onClick = {this.viewRemarkModal} href='javascript:;' >[添加备注]</a>,<br key= 'remark' />]
+							[<a key='InvoiceManageLogistics2' onClick = {this.viewDeliveryModal2} href='javascript:;' >[物流修改]</a>,<br key= 'remark' />],
+							[<a key='InvoiceManageAddRemarks' onClick = {this.viewRemarkModal} href='javascript:;' >[添加备注]</a>,<br key= 'remark' />],
 						)
 					}
 				</td>
@@ -245,7 +246,7 @@ var  InvoiceRow = React.createClass({
 					{props.order_id}
 				</td>
 				<td>
-					<a href='javascript:;' onClick={this.viewDeliveryTraceModal}>{DELIVERY_COMPANIES[props.express_no] ? DELIVERY_COMPANIES[props.express_type].express_name: ''}</a>
+					<a href='javascript:;' onClick={this.viewDeliveryTraceModal}>{props.express_no}</a>
 				</td>
 				<td>
 					{props.created_by}
@@ -273,7 +274,7 @@ var  InvoiceRow = React.createClass({
 				roles = ['InvoiceManageLogistics', 'InvoiceManageCancel'];break;
 			case 'CANCEL':
 			case 'DELIVERY':
-				roles = ['InvoiceManageAddRemarks'];break;
+				roles = ['InvoiceManageAddRemarks', 'InvoiceManageLogistics2'];break;
 			default:
 				roles = [];break;
 		}
@@ -305,7 +306,11 @@ var  InvoiceRow = React.createClass({
 			})
 	},
 	viewDeliveryModal(){
-		this.props.viewDeliveryModal(this.props.id, this.props.express_no, this.props.express_type);
+		this.props.viewDeliveryModal(this.props.id, this.props.express_no, this.props.express_type, true);
+	},
+	//在已有物流基础上修改物流
+	viewDeliveryModal2(){
+		this.props.viewDeliveryModal(this.props.id, this.props.express_no, this.props.express_type, false);
 	},
 	viewRemarkModal(){
 		this.props.viewRemarkModal(this.props.id, this.props.remarks);
@@ -442,9 +447,9 @@ class ManagePannel extends Component{
 	viewInvoiceEditModal(id){
 		this.refs.InvoiceModal.show({id: id, editable: true});
 	}
-	viewDeliveryModal(invoice_id, express_no, express_type){
+	viewDeliveryModal(invoice_id, express_no, express_type, editable){
 		/*this.props.getExpressCompany();*/
-		this.refs.DeliveryModal.show(invoice_id, express_no, express_type);
+		this.refs.DeliveryModal.show(invoice_id, express_no, express_type, editable);
 	}
 	viewRemarkModal(invoice_id, remarks){
 		this.refs.RemarksModal.show(invoice_id, remarks);
@@ -835,16 +840,17 @@ class DeliveryModal extends Component{
 			express_type: -1,
 			express_no: '',
 			invoiceId: '',
+			editable: true,
 		}
 	}
 	render(){
-		var { express_no, express_type} = this.state;
+		var { express_no, express_type, editable} = this.state;
 		var {express_companies} = this.props;
 		return(
 			<StdModal ref = 'modal' title = '物流信息填写' onConfirm = {this.submit.bind(this)}>
 				<div className ='form-group form-inline'>
 					<label>快递公司：</label>
-					<Select options = {express_companies} value = {express_type} onChange = {this.onDeliveryCompanyIdChange.bind(this)} default-text = '--请选择快递公司--'/>
+					<Select disabled = {!editable} options = {express_companies} value = {express_type} onChange = {this.onDeliveryCompanyIdChange.bind(this)} default-text = '--请选择快递公司--'/>
 				</div>
 				<div className ='form-group form-inline'>
 					<label>快递单号：</label>
@@ -859,8 +865,8 @@ class DeliveryModal extends Component{
 	onDeliveryCompanyIdChange(e){
 		this.setState({express_type: e.target.value});
 	}
-	show(id, express_no, express_type){
-		this.setState({invoiceId: id, express_no: express_no, express_type: express_type});
+	show(id, express_no, express_type, editable){
+		this.setState({invoiceId: id, express_no: express_no, express_type: express_type, editable});
 		this.refs.modal.show();
 	}
 	submit(){
@@ -960,11 +966,18 @@ class DeliveryTraceModal extends Component{
 				<div className='form-group form-inline'>
 					<label>快递单号：</label><span>{express_no}</span><br />
 					<label>收票人信息：</label><span>{recipient_name + '　' + recipient_mobile}</span>
-					<table className='table text-center'>
+					
+				</div>
+				<div className = 'form-group form-inline'>
+					{
+						content.length ?
+						<table className='table text-center'>
 							<tbody>
-								{content}
+								{ content }
 							</tbody>
-					</table>
+						</table>
+						: <div className='text-center' style={{fontSize: '16px'}} >无物流信息</div>
+					}
 				</div>
 			</StdModal>
 			)

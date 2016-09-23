@@ -195,7 +195,8 @@ export function postAddProductSize(){
         type: POST_ADD_PRODUCT_SIZE_ING
       })
       var edit_size = getState().operationProductSizeManage.edit_size;
-      edit_size.specs = edit_size.specs.filter( m => m.spec_value.trim() != '' && m.spec_key.trim() != '') 
+      edit_size.specs = edit_size.specs.filter( m => m.spec_value.trim() != '' && m.spec_key.trim() != '')
+                        .map( m => ({spec_key: m.spec_key, spec_value: m.spec_value})) 
       return R.post(Url.manage_size_add.toString(), edit_size)
               .done(() => {
                   dispatch({

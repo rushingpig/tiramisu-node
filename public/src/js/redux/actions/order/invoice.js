@@ -414,3 +414,39 @@ export function resetOrderOptRecord(){
   }
 }
 
+/*function _post(url, data) {
+  return new Promise(function(resolve, reject) {
+    req.post(url)
+      .send(data)
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .end(_end_callback(resolve, reject));
+  });
+}*/
+
+var m_post = function(url, params){
+  return $.ajax({
+    url: url,
+    type: 'get',
+    contentType: "application/json",
+    data: JSON.stringify(params),
+    dataType: "json",
+    success: function(data){
+      alert('成功'+data);
+    },
+    error: function(msg){
+      alert('失败'+msg);
+    }
+  })
+}
+
+export const GET_DELIVERY_TRACE = 'GET_DELIVERY_TRACE';
+export function getDeliveryTrace(express_no, express_type){
+  /*return m_post('http://192.168.31.195:8080/blissmall-express-web/express/get', {expressno: '00000000201609210', expresscode: 'STO'})*/
+          /*.done( () => {
+            dispatch({
+              type: GET_DELIVERY_TRACE,
+            })
+          })*/
+  return GET(Url.invoice_delivery_trace.toString(), {express_no : '00000000201609210', express_type: 'STO'}, GET_DELIVERY_TRACE);
+}
+

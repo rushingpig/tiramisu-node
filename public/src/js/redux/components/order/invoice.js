@@ -245,7 +245,7 @@ var  InvoiceRow = React.createClass({
 					{props.order_id}
 				</td>
 				<td>
-					<a href='javascript:;'>{props.express_no}</a>
+					<a href='javascript:;' onClick={this.viewDeliveryTraceModal}>{props.express_no}xxxxxx</a>
 				</td>
 				<td>
 					{props.created_by}
@@ -319,6 +319,14 @@ var  InvoiceRow = React.createClass({
 			owner_mobile: this.props.owner_mobile,
 			id: this.props.id,
 		})
+	},
+	viewDeliveryTraceModal(){
+		var {express_no, express_type} = this.props;
+		/*this.props.getDeliveryTrace(express_no, express_type);*/
+		this.props.viewDeliveryTraceModal();
+	},
+	getDeliveryTrace(){
+		this.props.getDeliveryTrace();
 	}
 })
 
@@ -333,7 +341,7 @@ class ManagePannel extends Component{
 		var {area, filter, stations, dispatch, getStationListByScopeSignal, resetStationListWhenScopeChange,
 			getInvoiceList, getOrderInvoiceInfo, getInvoiceCompany, gotRegionalismLetter,
 			resetFormCities, resetFormDistricts, submitExpress,getInvoiceInfo, getOrderOptRecord, resetOrderOptRecord,
-			invoiceApply, invoiceEdit, addRemark,  resetInvoiceData, triggerFormUpdate,
+			invoiceApply, invoiceEdit, addRemark,  resetInvoiceData, triggerFormUpdate, 
 			main: {list, page_no, total, loading, refresh, active_order_id, check_order_info, order_invoice_info, 
 					company_data, form_provinces, form_cities, form_districts, express_companies},
 			operationRecord,
@@ -344,6 +352,7 @@ class ManagePannel extends Component{
 		  			viewRemarkModal = {this.viewRemarkModal.bind(this)}
 		  			viewInvoiceEditModal = {this.viewInvoiceEditModal.bind(this)}
 		  			viewOperationRecordModal = {this.viewOperationRecordModal.bind(this)}
+		  			viewDeliveryTraceModal = {this.viewDeliveryTraceModal.bind(this)}
 		  		/>
 		})
 		return (
@@ -424,7 +433,7 @@ class ManagePannel extends Component{
 					addRemark = {addRemark}
 					/>
         		<OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
-				
+				<DeliveryTraceModal ref='DeliveryTraceModal' />
 			</div>
 			)
 	}
@@ -445,6 +454,9 @@ class ManagePannel extends Component{
 	}
 	viewOperationRecordModal(order){
 		this.refs.OperationRecordModal.show(order);
+	}
+	viewDeliveryTraceModal(){
+		this.refs.DeliveryTraceModal.show();
 	}
 	componentDidMount(){
 		this.search();
@@ -906,6 +918,66 @@ class RemarksModal extends Component{
 			})
 		}
 		
+	}
+}
+
+class TraceRow extends Component{
+	render(){
+		var {props} = this;
+		return (
+			<tr>
+				<td>
+					<span style={{fontSize: '16px'}}>{props.acceptTimeDate}</span>{'　'}
+					<span style={{fontSize: '18px', fontWeight: 'bold'}}>{ props.acceptTimeHour}</span>
+				</td>
+				<td style = {{fontSize: '20px', fontWeight: 'bold'}}>
+					<i className='fa fa-angle-double-up'></i>
+				</td>
+				<td style={{float: 'right'}}>
+					<span>{props.acceptStation}</span>
+					<span>{props.acceptDeliveryManInfo}</span>
+				</td>
+			</tr>
+			)
+	}
+}
+
+class DeliveryTraceModal extends Component{
+	constructor(props){
+		super(props);
+	}
+	render(){
+		var list = [
+			{acceptTimeDate: '2016.08.01',
+			acceptTimeHour: '17:16',
+			acceptStation:  '深圳市横岗速递营销部已收件',
+			acceptDeliveryManInfo: '揽投员姓名：钟某某;联系电话：18000000000',
+			},
+			{acceptTimeDate: '2016.08.01',
+			acceptTimeHour: '17:16',
+			acceptStation:  '深圳市横岗速递营销部已收件',
+			acceptDeliveryManInfo: '揽投员姓名：钟某某;联系电话：18000000000',
+			},
+		]
+		var content = list.map((m ,i) => {
+			return <TraceRow key={'deliverytrace' + i} {...m}/>
+		})
+		return(
+			<StdModal ref='modal' title='物流信息追踪' >
+				<div className='form-group form-inline'>
+					<label>快递单号：</label><span></span><br />
+					<label>收票人信息：</label><span></span>
+					<table className='table text-center'>
+							<tbody>
+								{content}
+							</tbody>
+					</table>
+				</div>
+			</StdModal>
+			)
+	}
+	show(){
+		this.refs.modal.show();
 	}
 }
 

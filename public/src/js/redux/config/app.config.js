@@ -92,8 +92,9 @@ export default {
     NO: 0
   },
   DELIVERY_COMPANIES: [
-    {express_type: '1110', exppress_name: '中通物流'},
-    {express_type: '1111', exppress_name: '顺丰快递'},
+    {express_type: '1', exppress_name: '优速'},
+    {express_type: '2', exppress_name: '顺丰'},
+    {express_type: '3', exppress_name: '韵达'},
   ],
   YES_OR_NO: [{id: 1, text: '是'}, {id: 0, text: '否'}],
 

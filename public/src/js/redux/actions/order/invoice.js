@@ -266,7 +266,21 @@ export const GET_EXPRESS_COMPANY = 'GET_EXPRESS_COMPANY';
 export function getExpressCompany(){
 	/*return GET(Url.invoice_get_company.toString(), null ,GET_EXPRESS_COMPANY);*/
 	return TEST({1: '中通快递', 2: '申通快递'}, GET_EXPRESS_COMPANY)
-}	
+}
+
+/*export const EDIT_DELIVERY = 'INVOICE_EDIT_DELIVERY';
+export function editDelivery(invoiceId, express_type, express_no){
+  return dispatch => {
+    return put(Url.invoice_express_edit.toString(invoiceId), {express_type, express_no})
+            .done( () => {
+              dispatch({
+                type: EDIT_DELIVERY,
+                invoiceId,
+                express_no,
+              })
+            })
+  }
+}*/
 
 
 export const GOT_REGIONALISM_LETTER = 'GOT_REGIONALISM_LETTER';
@@ -302,9 +316,16 @@ export const SUBMIT_EXPRESS_SUCCESS = 'SUBMIT_EXPRESS_SUCCESS';
 export const SUBMIT_EXPRESS_FAIL = 'SUBMIT_EXPRESS_FAIL';
 
 export function submitExpress(invoiceId, express_no, express_type){
-	return {
-		type: SUBMIT_EXPRESS_SUCCESS
-	}
+  return dispatch => {
+    return put(Url.invoice_express_edit.toString(invoiceId), {express_type, express_no})
+            .done( () => {
+              dispatch({
+                type: SUBMIT_EXPRESS_SUCCESS,
+                invoiceId,
+                express_no,
+              })
+            })
+  }
 }
 
 export const ADD_REMARK = 'ADD_REMARK';
@@ -391,5 +412,45 @@ export function resetOrderOptRecord(){
   return {
     type: RESET_ORDER_OPT_RECORD,
   }
+}
+
+/*function _post(url, data) {
+  return new Promise(function(resolve, reject) {
+    req.post(url)
+      .send(data)
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .end(_end_callback(resolve, reject));
+  });
+}*/
+
+var m_post = function(url, params){
+  return $.ajax({
+    url: url,
+    type: 'get',
+    contentType: "application/json",
+    data: JSON.stringify(params),
+    dataType: "json",
+    success: function(data){
+      alert('成功'+data);
+    },
+    error: function(msg){
+      alert('失败'+msg);
+    }
+  })
+}
+
+export const GET_DELIVERY_TRACE = 'GET_DELIVERY_TRACE';
+export function getDeliveryTrace(express_no, express_type){
+  return GET(Url.invoice_delivery_trace.toString(), {express_no, express_type}, GET_DELIVERY_TRACE);
+/*  return TEST([
+      {
+        'acceptTime': '2016-09-22 13:25:31',
+        'acceptStation': '深圳市横岗速递营销部已收件，（揽投员姓名：钟某某;联系电话：18000000000）',
+      },
+      {
+        'acceptTime': '2016-09-22 13:25:31',
+        'acceptStation': '深圳市横岗速递营销部已收件，（揽投员姓名：钟某某;联系电话：18000000000）',
+      },
+    ])*/
 }
 

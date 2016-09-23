@@ -167,6 +167,8 @@ var excel_export_host = base_excel_host + '/order/';
 var backup_host = 'http://localhost:3001';
 var mongodb_uri = 'mongodb://cupcake_qa:17F2wDwxI39w@120.76.25.32:27017/cupcake';
 
+var express_host = 'http://192.168.31.195:8080/blissmall-express-web/express/get';
+
 module .exports = {
     exp_static_options : exp_static_options,
     exp_session_options : exp_session_options,
@@ -185,6 +187,7 @@ module .exports = {
     excel_export_host : excel_export_host,
     backup_host: backup_host,
     mongodb_uri: mongodb_uri,
-    base_excel_host : base_excel_host
+    base_excel_host : base_excel_host,
+    express_host : express_host
 };
 

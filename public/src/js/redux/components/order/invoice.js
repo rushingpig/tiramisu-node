@@ -22,7 +22,7 @@ import Pagination from 'common/pagination';
 import RadioGroup from 'common/radio_group';
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderSrcsSelects from 'common/order_srcs_selects';
-import { SELECT_DEFAULT_VALUE, invoice_status as INVOICE_STATUS, order_status } from 'config/app.config';
+import { SELECT_DEFAULT_VALUE, invoice_status as INVOICE_STATUS, order_status, DELIVERY_COMPANIES } from 'config/app.config';
 import RecipientInfo from 'common/recipient_info';
 
 import { getOrderSrcs, getDeliveryStations, autoGetDeliveryStations } from 'actions/order_manage_form';
@@ -198,7 +198,8 @@ var  InvoiceRow = React.createClass({
 							[<a key='InvoiceManageEdit' onClick = {this.viewInvoiceEditModal} href='javascript:;' >[编辑]</a>,<br key='edit_br' />],
 							[<a key='InvoiceManageLogistics' href='javascript:;'  onClick = {this.viewDeliveryModal}>[物流填写]</a>,<br key = 'logistics_br' />],
 							[<a key='InvoiceManageCancel' onClick = {this.onInvoiceDel} href='javascript:;' >[取消]</a>,<br key='cancel_br' />],
-							[<a key='InvoiceManageAddRemarks' onClick = {this.viewRemarkModal} href='javascript:;' >[添加备注]</a>,<br key= 'remark' />]
+							[<a key='InvoiceManageLogistics2' onClick = {this.viewDeliveryModal2} href='javascript:;' >[物流修改]</a>,<br key= 'remark' />],
+							[<a key='InvoiceManageAddRemarks' onClick = {this.viewRemarkModal} href='javascript:;' >[添加备注]</a>,<br key= 'remark' />],
 						)
 					}
 				</td>
@@ -244,9 +245,13 @@ var  InvoiceRow = React.createClass({
 				<td>
 					{props.order_id}
 				</td>
-				<td></td>
+				<td>
+					<a href='javascript:;' onClick={this.viewDeliveryTraceModal}>{props.express_no}</a>
+				</td>
 				<td>
 					{props.created_by}
+					<br />
+					{props.created_time}
 				</td>
 				<td>{props.updated_by}</td>
 				<td>
@@ -269,7 +274,7 @@ var  InvoiceRow = React.createClass({
 				roles = ['InvoiceManageLogistics', 'InvoiceManageCancel'];break;
 			case 'CANCEL':
 			case 'DELIVERY':
-				roles = ['InvoiceManageAddRemarks'];break;
+				roles = ['InvoiceManageAddRemarks', 'InvoiceManageLogistics2'];break;
 			default:
 				roles = [];break;
 		}
@@ -301,7 +306,11 @@ var  InvoiceRow = React.createClass({
 			})
 	},
 	viewDeliveryModal(){
-		this.props.viewDeliveryModal(this.props.id);
+		this.props.viewDeliveryModal(this.props.id, this.props.express_no, this.props.express_type, true);
+	},
+	//在已有物流基础上修改物流
+	viewDeliveryModal2(){
+		this.props.viewDeliveryModal(this.props.id, this.props.express_no, this.props.express_type, false);
 	},
 	viewRemarkModal(){
 		this.props.viewRemarkModal(this.props.id, this.props.remarks);
@@ -315,6 +324,11 @@ var  InvoiceRow = React.createClass({
 			owner_mobile: this.props.owner_mobile,
 			id: this.props.id,
 		})
+	},
+	viewDeliveryTraceModal(){
+		var {express_no, express_type, recipient_name, recipient_mobile} = this.props;
+		this.props.getDeliveryTrace(express_no, express_type);
+		this.props.viewDeliveryTraceModal({recipient_mobile, recipient_name, express_no});
 	}
 })
 
@@ -329,9 +343,9 @@ class ManagePannel extends Component{
 		var {area, filter, stations, dispatch, getStationListByScopeSignal, resetStationListWhenScopeChange,
 			getInvoiceList, getOrderInvoiceInfo, getInvoiceCompany, gotRegionalismLetter,
 			resetFormCities, resetFormDistricts, submitExpress,getInvoiceInfo, getOrderOptRecord, resetOrderOptRecord,
-			invoiceApply, invoiceEdit, addRemark,  resetInvoiceData, triggerFormUpdate,
+			invoiceApply, invoiceEdit, addRemark,  resetInvoiceData, triggerFormUpdate, 
 			main: {list, page_no, total, loading, refresh, active_order_id, check_order_info, order_invoice_info, 
-					company_data, form_provinces, form_cities, form_districts, express_companies},
+					company_data, form_provinces, form_cities, form_districts, express_companies, delivery_traces},
 			operationRecord,
 		} = this.props;
 		var content = list.map((n, i) => {
@@ -340,6 +354,7 @@ class ManagePannel extends Component{
 		  			viewRemarkModal = {this.viewRemarkModal.bind(this)}
 		  			viewInvoiceEditModal = {this.viewInvoiceEditModal.bind(this)}
 		  			viewOperationRecordModal = {this.viewOperationRecordModal.bind(this)}
+		  			viewDeliveryTraceModal = {this.viewDeliveryTraceModal.bind(this)}
 		  		/>
 		})
 		return (
@@ -420,7 +435,7 @@ class ManagePannel extends Component{
 					addRemark = {addRemark}
 					/>
         		<OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
-				
+				<DeliveryTraceModal ref='DeliveryTraceModal' delivery_traces = {delivery_traces} />
 			</div>
 			)
 	}
@@ -432,15 +447,18 @@ class ManagePannel extends Component{
 	viewInvoiceEditModal(id){
 		this.refs.InvoiceModal.show({id: id, editable: true});
 	}
-	viewDeliveryModal(invoice_id){
-		this.props.getExpressCompany();
-		this.refs.DeliveryModal.show(invoice_id);
+	viewDeliveryModal(invoice_id, express_no, express_type, editable){
+		/*this.props.getExpressCompany();*/
+		this.refs.DeliveryModal.show(invoice_id, express_no, express_type, editable);
 	}
 	viewRemarkModal(invoice_id, remarks){
 		this.refs.RemarksModal.show(invoice_id, remarks);
 	}
 	viewOperationRecordModal(order){
 		this.refs.OperationRecordModal.show(order);
+	}
+	viewDeliveryTraceModal(data){
+		this.refs.DeliveryTraceModal.show(data);
 	}
 	componentDidMount(){
 		this.search();
@@ -822,16 +840,17 @@ class DeliveryModal extends Component{
 			express_type: -1,
 			express_no: '',
 			invoiceId: '',
+			editable: true,
 		}
 	}
 	render(){
-		var { express_no, express_type} = this.state;
+		var { express_no, express_type, editable} = this.state;
 		var {express_companies} = this.props;
 		return(
 			<StdModal ref = 'modal' title = '物流信息填写' onConfirm = {this.submit.bind(this)}>
 				<div className ='form-group form-inline'>
 					<label>快递公司：</label>
-					<Select options = {express_companies} value = {express_type} onChange = {this.onDeliveryCompanyIdChange.bind(this)} default-text = '--请选择快递公司--'/>
+					<Select disabled = {!editable} options = {express_companies} value = {express_type} onChange = {this.onDeliveryCompanyIdChange.bind(this)} default-text = '--请选择快递公司--'/>
 				</div>
 				<div className ='form-group form-inline'>
 					<label>快递单号：</label>
@@ -846,12 +865,20 @@ class DeliveryModal extends Component{
 	onDeliveryCompanyIdChange(e){
 		this.setState({express_type: e.target.value});
 	}
-	show(id){
-		this.setState({invoiceId: id});
+	show(id, express_no, express_type, editable){
+		this.setState({invoiceId: id, express_no: express_no, express_type: express_type, editable});
 		this.refs.modal.show();
 	}
 	submit(){
-		this.props.submitExpress(...this.state);
+		var {invoiceId, express_type, express_no} = this.state;
+		this.props.submitExpress(invoiceId, express_no, express_type)
+			.done( () => {
+				Noty('success', '物流填写成功');
+				this.refs.modal.hide();
+			})
+			.fail( (msg) => {
+				Noty('error', msg || '操作异常')
+			})
 	}
 }
 
@@ -894,6 +921,70 @@ class RemarksModal extends Component{
 			})
 		}
 		
+	}
+}
+
+class TraceRow extends Component{
+	render(){
+		var {props} = this;
+		return (
+			<tr>
+				<td>
+					<span style={{fontSize: '16px'}}>{props.acceptDate}</span>
+					<br />
+					<span style={{fontSize: '18px', fontWeight: 'bold'}}>{ props.acceptHour}</span>
+				</td>
+				<td style = {{fontSize: '20px', fontWeight: 'bold'}}>
+					<i className='fa fa-angle-double-up'></i>
+				</td>
+				<td>
+					<span style={{ fontSize: '14px'}}>{props.acceptStatus}</span><br />
+					<span>{props.acceptDeliveryman}</span>
+				</td>
+			</tr>
+			)
+	}
+}
+
+class DeliveryTraceModal extends Component{
+	constructor(props){
+		super(props);
+		this.state = {
+			express_no: '',
+			recipient_name: '',
+			recipient_mobile: '',
+		}
+	}
+	render(){
+		var { delivery_traces} = this.props;
+		var content = delivery_traces.map((m ,i) => {
+			return <TraceRow key={'deliverytrace' + i} {...m}/>
+		})
+		var {express_no, recipient_name, recipient_mobile } = this.state;
+		return(
+			<StdModal ref='modal' title='物流信息追踪' footer = {false} >
+				<div className='form-group form-inline'>
+					<label>快递单号：</label><span>{express_no}</span><br />
+					<label>收票人信息：</label><span>{recipient_name + '　' + recipient_mobile}</span>
+					
+				</div>
+				<div className = 'form-group form-inline'>
+					{
+						content.length ?
+						<table className='table text-center'>
+							<tbody>
+								{ content }
+							</tbody>
+						</table>
+						: <div className='text-center' style={{fontSize: '16px'}} >无物流信息</div>
+					}
+				</div>
+			</StdModal>
+			)
+	}
+	show(data){
+		this.setState({...data})
+		this.refs.modal.show();
 	}
 }
 

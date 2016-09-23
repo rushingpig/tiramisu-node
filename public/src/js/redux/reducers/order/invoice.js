@@ -3,6 +3,9 @@ import { combineReducers } from 'redux';
 import { REQUEST, invoice_status, order_status, ACCESSORY_CATE_ID } from 'config/app.config';
 import { GOT_ORDER_SRCS } from 'actions/order_manage_form';
 
+import { DELIVERY_COMPANIES } from 'config/app.config';
+
+
 import { area } from 'reducers/area_select';
 import * as OrderSupportReducers from 'reducers/order_support';
 import stations from 'reducers/stations';
@@ -25,7 +28,6 @@ var main_state = {
     form_provinces: [],
     form_cities: [],
     form_districts: [],
-    express_companies: [],
 
     save_ing: false,
     save_success: true,
@@ -35,6 +37,9 @@ var main_state = {
     handle_invoice_status: '',
     order_invoice_info: null,
   	company_data: [],
+
+  express_companies: map(DELIVERY_COMPANIES, ({exppress_name} , id) => ({id, text: exppress_name})),
+  delivery_traces: [],
 }
 
 function _t(data){
@@ -158,6 +163,38 @@ function main(state = main_state, action){
 				return m;
 			})
 			return {...state, handle_invoice_status: 'success', list: list}
+		case Actions.SUBMIT_EXPRESS_SUCCESS:
+			var {invoiceId, exppress_no, express_type} = action;
+			var {list } = state;
+			list = list.map( m => {
+				if(m.id ==  invoiceId){
+					m.exppress_no = exppress_no ;
+					m.express_type = express_type;
+				}
+				return m;
+			})
+			return {...state, list: list}
+		case Actions.GET_DELIVERY_TRACE:
+			var {data} = action;
+			data = data.reverse();
+			data = data.map( m => {
+				var time = m.acceptTime.split(' ');
+				if(time.length == 2){
+					m.acceptDate = time[0];
+					m.acceptHour = time[1];
+					var index = m.acceptStation.indexOf('（');
+					if(index != -1){
+						var acceptStation_li = m.acceptStation.split('（');
+						m.acceptStatus = acceptStation_li[0];
+						m.acceptDeliveryman = '（' + acceptStation_li[1];
+					}else{
+						m.acceptStatus = m.acceptStation;
+						m.acceptDeliveryman = '';
+					}
+				}
+				return m;
+			})
+			return {...state, delivery_traces: data}
 		case Actions.ADD_REMARK:
 			var {invoiceId, remarks} = action;
 			var {list } = state;
@@ -168,8 +205,8 @@ function main(state = main_state, action){
 				return m;
 			})
 			return {...state, list: list}
-		case Actions.GET_EXPRESS_COMPANY:
-			return {...state, express_companies: _t(action.data)}
+/*		case Actions.GET_EXPRESS_COMPANY:
+			return {...state, express_companies: _t(action.data)}*/
 		case Actions.GET_FORM_PROVINCES:
 			return {...state, form_provinces: _t(action.data)}
 		case Actions.RESET_FORM_PROVINCES:

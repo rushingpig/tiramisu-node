@@ -82,6 +82,8 @@ const URL = (function() {
     invoice_opt_history: '/invoice/:invoiceId/history', //获取发票历史记录
     invoice_del:         '/invoice/:invoiceId',         //删除发票
     add_invoice_remarks: '/invoice/:invoiceId/remarks', //添加备注
+    invoice_express_edit: '/invoice/:invoiceId/express', //编辑物流
+    invoice_delivery_trace: '/express/info', //追踪物流
 
     add_company:       '/company',   //添加开发票的公司
     edit_company:      '/company/:companyId', // 编辑开发票公司

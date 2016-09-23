@@ -8,6 +8,11 @@ var dao = require('../../../dao');
 var invoiceDao = dao.invoice;
 var orderDao = new dao.order();
 
+var request = require('request');
+var logger = require('../../../common/LogHelper').systemLog();
+var config = require('../../../config');
+var toolUtils = require('../../../common/ToolUtils');
+
 const schema = require('../../../schema');
 const systemUtils = require('../../../common/SystemUtils');
 const TiramisuError = require('../../../error/tiramisu_error');
@@ -468,4 +473,31 @@ module.exports.delInvoice = function (req, res, next) {
         res.api(result);
     });
     systemUtils.wrapService(res, next, promise);
+};
+/**
+ * 根据快递单号和快递公司代号后去快递信息
+ * @param req
+ * @param res
+ * @param next
+ */
+module.exports.getExressInfo = function (req, response, next) {
+    let express_obj = _.pick(req.query,['express_type', 'express_no']);
+    let body = {
+        expressno : [express_obj.express_no],
+        expresscode : express_obj.express_type
+    };
+    request.post({
+        url : config.express_host,
+        body : body,
+        json : true
+    },(err,res,body)=>{
+        if(err || res.statusCode !== 200){
+            logger.error('获取快递单号[' + express_obj.express_no + ']时异常 -> ',err);
+        }
+        if (body.data && toolUtils.isArray && body.data.length > 0){
+            response.api(JSON.parse(body.data[0].traces));
+        }else{
+            response.api(res_obj.NO_MORE_RESULTS);
+        }
+    });
 };

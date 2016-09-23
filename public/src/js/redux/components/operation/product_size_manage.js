@@ -293,7 +293,7 @@ const SizeDetail = props => {
         />
       </FormGroup>
       <p className="gray">
-        { props.specs.length >= 5 ? '最多5条' : <span>&nbsp;</span>}
+        { props.specs.length > 5 ? '最多5条' : <span>&nbsp;</span>}
       </p>
       {
         props.specs.map( (n, i) => 

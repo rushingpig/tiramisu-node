@@ -268,12 +268,19 @@ export function getExpressCompany(){
 	return TEST({1: '中通快递', 2: '申通快递'}, GET_EXPRESS_COMPANY)
 }
 
-export const EDIT_DELIVERY = 'INVOICE_EDIT_DELIVERY';
+/*export const EDIT_DELIVERY = 'INVOICE_EDIT_DELIVERY';
 export function editDelivery(invoiceId, express_type, express_no){
   return dispatch => {
-    return put(Url.invoice_express_edit)
+    return put(Url.invoice_express_edit.toString(invoiceId), {express_type, express_no})
+            .done( () => {
+              dispatch({
+                type: EDIT_DELIVERY,
+                invoiceId,
+                express_no,
+              })
+            })
   }
-}
+}*/
 
 
 export const GOT_REGIONALISM_LETTER = 'GOT_REGIONALISM_LETTER';
@@ -309,9 +316,16 @@ export const SUBMIT_EXPRESS_SUCCESS = 'SUBMIT_EXPRESS_SUCCESS';
 export const SUBMIT_EXPRESS_FAIL = 'SUBMIT_EXPRESS_FAIL';
 
 export function submitExpress(invoiceId, express_no, express_type){
-	return {
-		type: SUBMIT_EXPRESS_SUCCESS
-	}
+  return dispatch => {
+    return put(Url.invoice_express_edit.toString(invoiceId), {express_type, express_no})
+            .done( () => {
+              dispatch({
+                type: SUBMIT_EXPRESS_SUCCESS,
+                invoiceId,
+                express_no,
+              })
+            })
+  }
 }
 
 export const ADD_REMARK = 'ADD_REMARK';

@@ -249,6 +249,8 @@ var  InvoiceRow = React.createClass({
 				</td>
 				<td>
 					{props.created_by}
+					<br />
+					{props.created_time}
 				</td>
 				<td>{props.updated_by}</td>
 				<td>
@@ -303,7 +305,7 @@ var  InvoiceRow = React.createClass({
 			})
 	},
 	viewDeliveryModal(){
-		this.props.viewDeliveryModal(this.props.id);
+		this.props.viewDeliveryModal(this.props.id, this.props.express_no, this.props.express_type);
 	},
 	viewRemarkModal(){
 		this.props.viewRemarkModal(this.props.id, this.props.remarks);
@@ -434,9 +436,9 @@ class ManagePannel extends Component{
 	viewInvoiceEditModal(id){
 		this.refs.InvoiceModal.show({id: id, editable: true});
 	}
-	viewDeliveryModal(invoice_id){
+	viewDeliveryModal(invoice_id, express_no, express_type){
 		/*this.props.getExpressCompany();*/
-		this.refs.DeliveryModal.show(invoice_id);
+		this.refs.DeliveryModal.show(invoice_id, express_no, express_type);
 	}
 	viewRemarkModal(invoice_id, remarks){
 		this.refs.RemarksModal.show(invoice_id, remarks);
@@ -848,12 +850,20 @@ class DeliveryModal extends Component{
 	onDeliveryCompanyIdChange(e){
 		this.setState({express_type: e.target.value});
 	}
-	show(id){
-		this.setState({invoiceId: id});
+	show(id, express_no, express_type){
+		this.setState({invoiceId: id, express_no: express_no, express_type: express_type});
 		this.refs.modal.show();
 	}
 	submit(){
-		this.props.submitExpress(...this.state);
+		var {invoiceId, express_type, express_no} = this.state;
+		this.props.submitExpress(invoiceId, express_no, express_type)
+			.done( () => {
+				Noty('success', '物流填写成功');
+				this.refs.modal.hide();
+			})
+			.fail( (msg) => {
+				Noty('error', msg || '操作异常')
+			})
 	}
 }
 

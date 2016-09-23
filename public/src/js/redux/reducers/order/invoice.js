@@ -162,6 +162,17 @@ function main(state = main_state, action){
 				return m;
 			})
 			return {...state, handle_invoice_status: 'success', list: list}
+		case Actions.SUBMIT_EXPRESS_SUCCESS:
+			var {invoiceId, exppress_no, express_type} = action;
+			var {list } = state;
+			list = list.map( m => {
+				if(m.id ==  invoiceId){
+					m.exppress_no = exppress_no ;
+					m.express_type = express_type;
+				}
+				return m;
+			})
+			return {...state, list: list}
 		case Actions.ADD_REMARK:
 			var {invoiceId, remarks} = action;
 			var {list } = state;

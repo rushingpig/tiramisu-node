@@ -451,16 +451,10 @@ GroupDao.prototype.findProject = function (query, only_total) {
         }
     }
     if (query.is_online) {
-        if (query.is_online == '1') {
-            sql += `AND (bgp.start_time IS NULL OR bgp.start_time < NOW() ) `;
-            sql += `AND (bgp.end_time IS NULL OR bgp.end_time > NOW() ) `;
-        } else {
-            sql += `AND ( `;
-            sql += `( (bgp.start_time IS NOT NULL AND bgp.start_time > NOW() ) AND (bgp.end_time IS NOT NULL AND bgp.end_time < NOW() ) ) `;
-            sql += `OR (bgp.start_time IS NULL AND bgp.end_time IS NULL AND 1 = 1 ) `;
-            sql += `OR (bgp.start_time IS NULL AND bgp.end_time < NOW() ) `;
-            sql += `OR (bgp.end_time IS NOT NULL AND bgp.start_time > NOW() ) `;
-            sql += `) `;
+        if (query.is_online == '0') {
+            sql += `AND (bgp.end_time < NOW())`;
+        } else if (query.is_online == '1') {
+            sql += `AND (bgp.start_time <= NOW() AND bgp.end_time >= NOW() )`;
         }
     }
     if (query.src_id) {
@@ -579,6 +573,7 @@ GroupDao.prototype.findProjectById = function (project_id) {
             tmp.category_name = curr.category_name;
             tmp.price = curr.price;
             tmp.size = curr.size;
+            tmp.is_online = curr.is_online;
             _res.products.push(tmp);
         });
         return _res;

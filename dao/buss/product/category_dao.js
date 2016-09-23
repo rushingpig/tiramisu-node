@@ -453,10 +453,66 @@ CategoryDao.prototype.getCategoryRegionsById = function(data) {
     return baseDao.select(sql, params);
 }
 
+
+/**
+ * find categories list by multiple condition without regions
+ */
+CategoryDao.prototype.findCategoriesListWithoutRegion = function(req, data) {
+
+    // primary_id、secondary_id两个参数，要求只能传一个或者都不传
+    // province_id、city_id两个参数，要求只能传一个或者都不传
+    let columns = [
+        'count(distinct tab.id) as count',
+        'cate_primary.id as primary_id',
+        'cate_primary.name as primary_name',
+        'cate_secondary.id as secondary_id',
+        'cate_secondary.name as secondary_name',
+    ];
+
+    // inner sql: product join sku join regionalism
+    let inner_table_sql = 'select product.id as id,product.category_id as category_id,sku.regionalism_id as regionalism_id from ?? product join ?? sku on product.id = sku.product_id and product.del_flag = ? and sku.del_flag = ? ';
+
+    let select_sql = ' from ?? cate_primary join ?? cate_secondary on cate_primary.id = cate_secondary.parent_id and cate_primary.del_flag = ? and cate_secondary.del_flag = ? ' +
+        ' left join (' + inner_table_sql + ') tab on cate_secondary.id = tab.category_id ';
+    let select_params = [
+        'buss_product_category',
+        'buss_product_category',
+        del_flag.SHOW,
+        del_flag.SHOW,
+        'buss_product',
+        'buss_product_sku',
+        del_flag.SHOW,
+        del_flag.SHOW
+    ];
+
+    let where_sql = ' where 1 = 1 ';
+    let where_params = [];
+
+    let group_sql = ' group by cate_primary.id,cate_secondary.id ';
+
+    if (data.primary_id) {
+        where_sql += ' and cate_primary.id = ? ';
+        where_params.push(data.primary_id);
+    }
+    if (data.secondary_id) {
+        where_sql += ' and cate_secondary.id = ? ';
+        where_params.push(data.secondary_id);
+    }
+
+    let sql = 'select ' + columns.join(',') + select_sql + where_sql + group_sql;
+    let params = select_params.concat(where_params);
+    return baseDao.select(sql, params);
+}
 /**
  * find categories list by multiple condition
  */
 CategoryDao.prototype.findCategoriesList = function(req, data) {
+
+    // 优化分支
+    // 如果是区域无关且的查询条件，则走向优化sql
+    if (!data.city_id && !data.province_id && req.session.user.is_headquarters) {
+        return this.findCategoriesListWithoutRegion(req, data);
+    }
 
     // primary_id、secondary_id两个参数，要求只能传一个或者都不传
     // province_id、city_id两个参数，要求只能传一个或者都不传

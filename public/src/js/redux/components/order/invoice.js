@@ -244,7 +244,9 @@ var  InvoiceRow = React.createClass({
 				<td>
 					{props.order_id}
 				</td>
-				<td></td>
+				<td>
+					<a href='javascript:;'>{props.express_no}</a>
+				</td>
 				<td>
 					{props.created_by}
 				</td>
@@ -433,7 +435,7 @@ class ManagePannel extends Component{
 		this.refs.InvoiceModal.show({id: id, editable: true});
 	}
 	viewDeliveryModal(invoice_id){
-		this.props.getExpressCompany();
+		/*this.props.getExpressCompany();*/
 		this.refs.DeliveryModal.show(invoice_id);
 	}
 	viewRemarkModal(invoice_id, remarks){

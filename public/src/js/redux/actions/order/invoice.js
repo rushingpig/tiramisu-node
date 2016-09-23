@@ -266,7 +266,14 @@ export const GET_EXPRESS_COMPANY = 'GET_EXPRESS_COMPANY';
 export function getExpressCompany(){
 	/*return GET(Url.invoice_get_company.toString(), null ,GET_EXPRESS_COMPANY);*/
 	return TEST({1: '中通快递', 2: '申通快递'}, GET_EXPRESS_COMPANY)
-}	
+}
+
+export const EDIT_DELIVERY = 'INVOICE_EDIT_DELIVERY';
+export function editDelivery(invoiceId, express_type, express_no){
+  return dispatch => {
+    return put(Url.invoice_express_edit)
+  }
+}
 
 
 export const GOT_REGIONALISM_LETTER = 'GOT_REGIONALISM_LETTER';

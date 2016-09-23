@@ -91,6 +91,10 @@ export default {
     YES: 1,
     NO: 0
   },
+  DELIVERY_COMPANIES: [
+    {express_type: '1110', exppress_name: '中通物流'},
+    {express_type: '1111', exppress_name: '顺丰快递'},
+  ],
   YES_OR_NO: [{id: 1, text: '是'}, {id: 0, text: '否'}],
 
   PRINT_REVIEW_STATUS: {

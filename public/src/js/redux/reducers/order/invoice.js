@@ -3,6 +3,9 @@ import { combineReducers } from 'redux';
 import { REQUEST, invoice_status, order_status, ACCESSORY_CATE_ID } from 'config/app.config';
 import { GOT_ORDER_SRCS } from 'actions/order_manage_form';
 
+import { DELIVERY_COMPANIES } from 'config/app.config';
+
+
 import { area } from 'reducers/area_select';
 import * as OrderSupportReducers from 'reducers/order_support';
 import stations from 'reducers/stations';
@@ -25,7 +28,6 @@ var main_state = {
     form_provinces: [],
     form_cities: [],
     form_districts: [],
-    express_companies: [],
 
     save_ing: false,
     save_success: true,
@@ -35,6 +37,8 @@ var main_state = {
     handle_invoice_status: '',
     order_invoice_info: null,
   	company_data: [],
+
+  express_companies: map(DELIVERY_COMPANIES, (m) => ({id: m.express_type, text: m.exppress_name})), 
 }
 
 function _t(data){
@@ -168,8 +172,8 @@ function main(state = main_state, action){
 				return m;
 			})
 			return {...state, list: list}
-		case Actions.GET_EXPRESS_COMPANY:
-			return {...state, express_companies: _t(action.data)}
+/*		case Actions.GET_EXPRESS_COMPANY:
+			return {...state, express_companies: _t(action.data)}*/
 		case Actions.GET_FORM_PROVINCES:
 			return {...state, form_provinces: _t(action.data)}
 		case Actions.RESET_FORM_PROVINCES:

@@ -315,6 +315,7 @@ OrderService.prototype.getOrderDetail = (req, res, next) => {
           num: curr.num,
           original_price: curr.original_price,
           name: curr.product_name,
+          display_name: curr.display_name,
           atlas: curr.atlas,
           size: curr.size,
           amount: curr.amount,

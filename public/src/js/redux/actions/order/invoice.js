@@ -441,12 +441,16 @@ var m_post = function(url, params){
 
 export const GET_DELIVERY_TRACE = 'GET_DELIVERY_TRACE';
 export function getDeliveryTrace(express_no, express_type){
-  /*return m_post('http://192.168.31.195:8080/blissmall-express-web/express/get', {expressno: '00000000201609210', expresscode: 'STO'})*/
-          /*.done( () => {
-            dispatch({
-              type: GET_DELIVERY_TRACE,
-            })
-          })*/
-  return GET(Url.invoice_delivery_trace.toString(), {express_no : '00000000201609210', express_type: 'STO'}, GET_DELIVERY_TRACE);
+  return GET(Url.invoice_delivery_trace.toString(), {express_no: '00000000201609210', express_type: 'STO'}, GET_DELIVERY_TRACE);
+/*  return TEST([
+      {
+        'acceptTime': '2016-09-22 13:25:31',
+        'acceptStation': '深圳市横岗速递营销部已收件，（揽投员姓名：钟某某;联系电话：18000000000）',
+      },
+      {
+        'acceptTime': '2016-09-22 13:25:31',
+        'acceptStation': '深圳市横岗速递营销部已收件，（揽投员姓名：钟某某;联系电话：18000000000）',
+      },
+    ])*/
 }
 

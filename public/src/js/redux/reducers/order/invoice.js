@@ -38,7 +38,8 @@ var main_state = {
     order_invoice_info: null,
   	company_data: [],
 
-  express_companies: map(DELIVERY_COMPANIES, (m) => ({id: m.express_type, text: m.exppress_name})), 
+  express_companies: map(DELIVERY_COMPANIES, ({exppress_name} , id) => ({id, text: exppress_name})),
+  delivery_traces: [],
 }
 
 function _t(data){
@@ -173,6 +174,27 @@ function main(state = main_state, action){
 				return m;
 			})
 			return {...state, list: list}
+		case Actions.GET_DELIVERY_TRACE:
+			var {data} = action;
+			data = data.reverse();
+			data = data.map( m => {
+				var time = m.acceptTime.split(' ');
+				if(time.length == 2){
+					m.acceptDate = time[0];
+					m.acceptHour = time[1];
+					var index = m.acceptStation.indexOf('（');
+					if(index != -1){
+						var acceptStation_li = m.acceptStation.split('（');
+						m.acceptStatus = acceptStation_li[0];
+						m.acceptDeliveryman = '（' + acceptStation_li[1];
+					}else{
+						m.acceptStatus = m.acceptStation;
+						m.acceptDeliveryman = '';
+					}
+				}
+				return m;
+			})
+			return {...state, delivery_traces: data}
 		case Actions.ADD_REMARK:
 			var {invoiceId, remarks} = action;
 			var {list } = state;

@@ -22,7 +22,7 @@ import Pagination from 'common/pagination';
 import RadioGroup from 'common/radio_group';
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderSrcsSelects from 'common/order_srcs_selects';
-import { SELECT_DEFAULT_VALUE, invoice_status as INVOICE_STATUS, order_status } from 'config/app.config';
+import { SELECT_DEFAULT_VALUE, invoice_status as INVOICE_STATUS, order_status, DELIVERY_COMPANIES } from 'config/app.config';
 import RecipientInfo from 'common/recipient_info';
 
 import { getOrderSrcs, getDeliveryStations, autoGetDeliveryStations } from 'actions/order_manage_form';
@@ -245,7 +245,7 @@ var  InvoiceRow = React.createClass({
 					{props.order_id}
 				</td>
 				<td>
-					<a href='javascript:;' onClick={this.viewDeliveryTraceModal}>{props.express_no}xxxxxx</a>
+					<a href='javascript:;' onClick={this.viewDeliveryTraceModal}>{DELIVERY_COMPANIES[props.express_no] ? DELIVERY_COMPANIES[props.express_type].express_name: ''}</a>
 				</td>
 				<td>
 					{props.created_by}
@@ -321,12 +321,9 @@ var  InvoiceRow = React.createClass({
 		})
 	},
 	viewDeliveryTraceModal(){
-		var {express_no, express_type} = this.props;
-		/*this.props.getDeliveryTrace(express_no, express_type);*/
-		this.props.viewDeliveryTraceModal();
-	},
-	getDeliveryTrace(){
-		this.props.getDeliveryTrace();
+		var {express_no, express_type, recipient_name, recipient_mobile} = this.props;
+		this.props.getDeliveryTrace(express_no, express_type);
+		this.props.viewDeliveryTraceModal({recipient_mobile, recipient_name, express_no});
 	}
 })
 
@@ -343,7 +340,7 @@ class ManagePannel extends Component{
 			resetFormCities, resetFormDistricts, submitExpress,getInvoiceInfo, getOrderOptRecord, resetOrderOptRecord,
 			invoiceApply, invoiceEdit, addRemark,  resetInvoiceData, triggerFormUpdate, 
 			main: {list, page_no, total, loading, refresh, active_order_id, check_order_info, order_invoice_info, 
-					company_data, form_provinces, form_cities, form_districts, express_companies},
+					company_data, form_provinces, form_cities, form_districts, express_companies, delivery_traces},
 			operationRecord,
 		} = this.props;
 		var content = list.map((n, i) => {
@@ -433,7 +430,7 @@ class ManagePannel extends Component{
 					addRemark = {addRemark}
 					/>
         		<OperationRecordModal ref="OperationRecordModal" {...{getOrderOptRecord, resetOrderOptRecord, ...operationRecord}} />
-				<DeliveryTraceModal ref='DeliveryTraceModal' />
+				<DeliveryTraceModal ref='DeliveryTraceModal' delivery_traces = {delivery_traces} />
 			</div>
 			)
 	}
@@ -455,8 +452,8 @@ class ManagePannel extends Component{
 	viewOperationRecordModal(order){
 		this.refs.OperationRecordModal.show(order);
 	}
-	viewDeliveryTraceModal(){
-		this.refs.DeliveryTraceModal.show();
+	viewDeliveryTraceModal(data){
+		this.refs.DeliveryTraceModal.show(data);
 	}
 	componentDidMount(){
 		this.search();
@@ -927,15 +924,16 @@ class TraceRow extends Component{
 		return (
 			<tr>
 				<td>
-					<span style={{fontSize: '16px'}}>{props.acceptTimeDate}</span>{'　'}
-					<span style={{fontSize: '18px', fontWeight: 'bold'}}>{ props.acceptTimeHour}</span>
+					<span style={{fontSize: '16px'}}>{props.acceptDate}</span>
+					<br />
+					<span style={{fontSize: '18px', fontWeight: 'bold'}}>{ props.acceptHour}</span>
 				</td>
 				<td style = {{fontSize: '20px', fontWeight: 'bold'}}>
 					<i className='fa fa-angle-double-up'></i>
 				</td>
-				<td style={{float: 'right'}}>
-					<span>{props.acceptStation}</span>
-					<span>{props.acceptDeliveryManInfo}</span>
+				<td>
+					<span style={{ fontSize: '14px'}}>{props.acceptStatus}</span><br />
+					<span>{props.acceptDeliveryman}</span>
 				</td>
 			</tr>
 			)
@@ -945,28 +943,23 @@ class TraceRow extends Component{
 class DeliveryTraceModal extends Component{
 	constructor(props){
 		super(props);
+		this.state = {
+			express_no: '',
+			recipient_name: '',
+			recipient_mobile: '',
+		}
 	}
 	render(){
-		var list = [
-			{acceptTimeDate: '2016.08.01',
-			acceptTimeHour: '17:16',
-			acceptStation:  '深圳市横岗速递营销部已收件',
-			acceptDeliveryManInfo: '揽投员姓名：钟某某;联系电话：18000000000',
-			},
-			{acceptTimeDate: '2016.08.01',
-			acceptTimeHour: '17:16',
-			acceptStation:  '深圳市横岗速递营销部已收件',
-			acceptDeliveryManInfo: '揽投员姓名：钟某某;联系电话：18000000000',
-			},
-		]
-		var content = list.map((m ,i) => {
+		var { delivery_traces} = this.props;
+		var content = delivery_traces.map((m ,i) => {
 			return <TraceRow key={'deliverytrace' + i} {...m}/>
 		})
+		var {express_no, recipient_name, recipient_mobile } = this.state;
 		return(
-			<StdModal ref='modal' title='物流信息追踪' >
+			<StdModal ref='modal' title='物流信息追踪' footer = {false} >
 				<div className='form-group form-inline'>
-					<label>快递单号：</label><span></span><br />
-					<label>收票人信息：</label><span></span>
+					<label>快递单号：</label><span>{express_no}</span><br />
+					<label>收票人信息：</label><span>{recipient_name + '　' + recipient_mobile}</span>
 					<table className='table text-center'>
 							<tbody>
 								{content}
@@ -976,7 +969,8 @@ class DeliveryTraceModal extends Component{
 			</StdModal>
 			)
 	}
-	show(){
+	show(data){
+		this.setState({...data})
 		this.refs.modal.show();
 	}
 }

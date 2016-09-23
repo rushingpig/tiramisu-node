@@ -91,11 +91,11 @@ export default {
     YES: 1,
     NO: 0
   },
-  DELIVERY_COMPANIES: [
-    {express_type: '1', exppress_name: '优速'},
-    {express_type: '2', exppress_name: '顺丰'},
-    {express_type: '3', exppress_name: '韵达'},
-  ],
+  DELIVERY_COMPANIES: {
+   'UC': {express_type: 'UC', exppress_name: '优速'},
+   'SF': {express_type: 'SF', exppress_name: '顺丰'},
+   'YD': {express_type: 'YD', exppress_name: '韵达'},
+  },
   YES_OR_NO: [{id: 1, text: '是'}, {id: 0, text: '否'}],
 
   PRINT_REVIEW_STATUS: {

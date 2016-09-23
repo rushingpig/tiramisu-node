@@ -497,7 +497,7 @@ module.exports.getExressInfo = function (req, response, next) {
         if (body.data && toolUtils.isArray && body.data.length > 0){
             response.api(JSON.parse(body.data[0].traces));
         }else{
-            response.fail();
+            response.api(res_obj.NO_MORE_RESULTS);
         }
     });
 };

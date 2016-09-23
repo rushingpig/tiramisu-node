@@ -55,6 +55,8 @@ export default createReducer({
         n.isOnline = 1;
       }
     })
+    var store = getGlobalStore();
+    store.dispatch(Actions.getAllSizeData());
     return {...state, list: [...state.list]}
   },
 
@@ -64,6 +66,8 @@ export default createReducer({
         n.isOnline = 0;
       }
     })
+    var store = getGlobalStore();
+    store.dispatch(Actions.getAllSizeData());
     return {...state, list: [...state.list]}
   },
 

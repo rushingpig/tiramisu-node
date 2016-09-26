@@ -721,10 +721,19 @@ const saveOption = () => (
         .map(transformShopSpecificationOption)
         .map( opt => ({ ...shangjiaOpt, ...opt }) );
 
+        //2016-09-26 revised xionghong 外部渠道可购买时，去掉商城规格设置
+        let specifications = [];
+        if(state.buyEntry === 1){
+          specifications = sourceSpecifications;
+        }else{
+          specifications = [...shopSpecifications, ...sourceSpecifications];
+        }
+        //end
+
       [...citiesSelectorState.checkedCities].forEach(cityId => {
         newSku = [
           ...newSku,
-          ...[...shopSpecifications, ...sourceSpecifications].map(
+          ...specifications.map(
             opt => ({
               regionalism_id: cityId,
               book_time: state.tempOptions.bookingTime,
@@ -793,8 +802,15 @@ const saveOption = () => (
             ...opt
           });
 
-          const specifications = [...shopSpecifications, ...sourceSpecifications];
-
+          //2016-09-26 revised xionghong 外部渠道可购买时，去掉商城规格设置
+          let specifications = []
+          if(state.buyEntry === 1){
+            specifications = sourceSpecifications;
+          }else{
+            specifications = [...shopSpecifications, ...sourceSpecifications];
+          }
+          //end
+          
           editSku = [...specifications.filter(opt => opt.id !== 0).map(addCityOption), ...editSku];
           newSku = [...specifications.filter(opt => opt.id === 0).map(addCityOption), ...newSku];
         });

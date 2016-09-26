@@ -150,9 +150,10 @@ export function delProperty(index){
 }
 
 export const PROPERTY_OK = 'PSM_PROPERTY_OK';
-export function propertyOk(){
+export function propertyOk(index){
   return {
-    type: PROPERTY_OK
+    type: PROPERTY_OK,
+    index,
   }
 }
 

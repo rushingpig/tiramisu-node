@@ -87,7 +87,8 @@ export default createReducer({
 
   [ Actions.PROPERTY_OK ] : (state, action) => {
     var d = state.edit_size.specs;
-    delete d[d.length - 1].editable;
+    var {index} = action;
+    delete d[index].editable;
     return {...state, list: [...state.list]}
   },
 

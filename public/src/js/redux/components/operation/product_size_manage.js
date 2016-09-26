@@ -260,7 +260,7 @@ class FormCol extends Component {
   }
   propertyOk(){
     if(this.refs.editKey.value.trim() && this.refs.editValue.value.trim()){
-      this.props.propertyOk();
+      this.props.propertyOk(this.props.index);
     }
   }
 }

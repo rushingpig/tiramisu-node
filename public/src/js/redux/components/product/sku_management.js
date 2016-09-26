@@ -65,6 +65,11 @@ class Input extends Component {
     }
     this.props.onBlur && this.props.onBlur(e);
   }
+  componentWillReceiveProps(nextProps){
+    if(nextProps.value != this.props.value){
+      this.setState({error: !nextProps.value})
+    }
+  }
 }
 const Col = props => {
   let className = '';

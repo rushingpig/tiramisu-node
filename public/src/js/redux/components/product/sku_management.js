@@ -46,7 +46,7 @@ class Input extends Component {
           className={`form-control input-xs ${this.props.className}`}
         />
         {
-          this.props.required && this.state.error
+          this.props.required && this.state.error && !this.props.disabled
             ? <span className="space-left text-danger">（必填）</span>
             : null
         }
@@ -477,11 +477,6 @@ class SourceOptions extends Component {
 
     return (
       <FormGroup>
-        {
-          state.buyEntry == 1 && !state.cityOptionSavable
-            ? <p className="text-danger" style={{marginLeft: 124}}>（必填）</p>
-            : null
-        }
         <ControlLabel xs='2'>渠道设置：</ControlLabel>
         <Col xs="3" lg="2">
           <div className="list-group">
@@ -599,6 +594,11 @@ class SourceOptions extends Component {
             </table>
           </div>
         </Col>
+        {
+          state.buyEntry == 1 && !state.cityOptionSavable
+            ? <p className="text-danger" style={{marginLeft: 124}}>（渠道设置必填）</p>
+            : null
+        }
       </FormGroup>
     );
   }

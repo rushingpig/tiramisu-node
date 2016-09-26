@@ -230,7 +230,7 @@ const searchWithFilter = (pageNum = 0, isPageChange = false) => (
   }
 )
 
-const searchWithLastSearchFilter = () => (
+const searchWithLastSearchFilter = (pageNum) => (
   (dispatch, getState) => {
     dispatch({
       type: ActionTypes.SEARCH_PRODCUT,
@@ -252,7 +252,7 @@ const searchWithLastSearchFilter = () => (
       ...filterSrc.selectedSecondaryCategory === 0 ? {} : {secondary_cate: filterSrc.selectedSecondaryCategory},
       isActivity: filterSrc.searchIsEvent ? 1 : 0,
       isMall: filterSrc.searchHasActive ? 1 : 0,
-      pageno: filterSrc.pageNum,
+      pageno: !!pageNum? pageNum : filterSrc.pageNum,
       pagesize: state.pageSize
     }
 
@@ -261,7 +261,7 @@ const searchWithLastSearchFilter = () => (
       status: 'success',
       searchWithProductName: state.searchWithProductName,
       result,
-      pageNum: filterSrc.pageNum,
+      pageNum: !!pageNum ? pageNum: filterSrc.pageNum,
       isPageChange: false
     })).catch(e => dispatch({
       type: ActionTypes.SEARCH_PRODCUT,
@@ -316,11 +316,23 @@ const deleteRow = (reset = false, isMultiRow = false, deleteIndex = 0) => (
     }];
 
     return deleteProduct(deleteList).then(
-      () => dispatch({
+      () =>{
+      //2016-09-26 revised xiaohong,删除一些列后，重新拉取列表
+       var { pageNum, totalItem, pageSize} = getState().productSKUSearch;
+       var deleteCount = isMultiRow ?  deleteList.length : 1;
+       if( (pageNum * pageSize + deleteCount) === totalItem){
+        if(pageNum != 0)
+          searchWithLastSearchFilter(pageNum -1 )(dispatch, getState)
+       }else{
+          searchWithLastSearchFilter(pageNum)(dispatch, getState)
+       }
+       //end
+       dispatch({
         type: ActionTypes.DELETE_ROW,
         status: 'success',
         deletedIndex: isMultiRow ? -1 : deleteIndex
       })
+     }
     ).catch(
       e => dispatch({
         type: ActionTypes.DELETE_ROW,
@@ -331,7 +343,7 @@ const deleteRow = (reset = false, isMultiRow = false, deleteIndex = 0) => (
 );
 
 export { ActionTypes }
-
+export { searchWithLastSearchFilter }
 export default {
   loadBasicData,
   changeSearchProductName,

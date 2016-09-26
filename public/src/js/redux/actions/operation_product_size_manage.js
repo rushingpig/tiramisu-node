@@ -157,10 +157,11 @@ export function propertyOk(){
 }
 
 export const PROPERTY_CHANGE = 'PSM_PROPERTY_CHANGE';
-export function propertyChange(index, e){
+export function propertyChange(index, name,  e){
   return {
     type: PROPERTY_CHANGE,
     index,
+    name,
     value: e.target.value
   }
 }
@@ -220,7 +221,8 @@ export function updateProuctSize(id){
       type: UPDATE_PRODUCT_SIZE_ING,
     })
     var edit_size = getState().operationProductSizeManage.edit_size;
-    edit_size.specs = edit_size.specs.filter( m => m.spec_value.trim() != '' && m.spec_key.trim() != '') 
+    edit_size.specs = edit_size.specs.filter( m => m.spec_value.trim() != '' && m.spec_key.trim() != '')
+                        .map( m => ({spec_key: m.spec_key, spec_value: m.spec_value}))
     return R.put(Url.manage_size_edit.toString(), {id, specs:edit_size.specs})
       .done(() => {
         dispatch({

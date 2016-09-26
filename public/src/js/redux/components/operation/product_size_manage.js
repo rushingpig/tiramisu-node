@@ -201,6 +201,7 @@ class FormCol extends Component {
     //默认4个汉字长度
     var str = new Array(props.length || 4).fill('　');
     str.splice(0, label.length, ...label);
+    var {index } = props;
     return (
       !props.editable
         ? <div className="form-group form-inline">
@@ -228,7 +229,7 @@ class FormCol extends Component {
               ref="editKey"
               value={props.label}
               className="form-control input-xs v-top"
-              onChange={props.propertyChange.bind(null, -1)}
+              onChange={props.propertyChange.bind(null, index, 'key')}
             />
             ：
             <input
@@ -299,13 +300,14 @@ const SizeDetail = props => {
         props.specs.map( (n, i) => 
           <FormCol
             key={i}
+            index = {i}
             label={n.spec_key}
             value={n.spec_value}
             editable={n.editable}
             view = {props.view}
             propertyOk={props.actions.propertyOk}
             propertyChange={props.actions.propertyChange}
-            onChange={props.actions.propertyChange.bind(null, i)}
+            onChange={props.actions.propertyChange.bind(null, i, 'value')}
             delProperty={props.actions.delProperty.bind(null, i)}
             placeholder={n.placeholder}
           />

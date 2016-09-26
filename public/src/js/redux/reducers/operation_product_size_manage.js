@@ -93,8 +93,8 @@ export default createReducer({
 
   [ Actions.PROPERTY_CHANGE ] : (state, action) => {
     var d = state.edit_size.specs;
-    if(action.index == -1){ //-1表示新添加项的key值变化了
-      d[d.length - 1].spec_key = action.value;
+    if(action.name == 'key'){ // name = 'key' 表示是spec_value
+      d[action.index].spec_key = action.value;
     }else{
       d[action.index].spec_value = action.value;
     }

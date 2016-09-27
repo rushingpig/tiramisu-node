@@ -54,18 +54,29 @@ class Main extends Component {
         </td>
         <td>{n.name}</td>
         <td>
-          <a onClick={props.actions.viewRow.bind(null, n.id)} href="javascript:;" className="space">[查看]</a>
-          <a onClick={props.actions.editRow.bind(null, n.id)} href="javascript:;" className="space">
           {
-            n.specs.length === 0 ?
-            '[添加]'
+            V('ProductSizeManageView')
+            ?
+            <a onClick={props.actions.viewRow.bind(null, n.id)} href="javascript:;" className="space">[查看]</a>
             :
-            '[编辑]'
+            null
           }
-          
-          </a>
           {
-            n.isOnline == 1
+            V('ProductSizeManageEdit')
+            ?
+            <a onClick={props.actions.editRow.bind(null, n.id)} href="javascript:;" className="space">
+              {
+                n.specs.length === 0 ?
+                '[添加]'
+                :
+                '[编辑]'
+              }
+            </a>
+            :
+            null
+          }          
+          {
+            V('ProductSizeManageOnline') && n.isOnline == 1
               ? <a onClick={props.actions.disableSize.bind(null, n.id)} href="javascript:;" className="space">[下架]</a>
               : <a onClick={props.actions.enableSize.bind(null, n.id)} href="javascript:;" className="space">[上架]</a>
           }
@@ -79,12 +90,19 @@ class Main extends Component {
           <div className="col-lg-6 col-md-6">
             <FormGroup>
               <SearchInput searchIng = {this.state.search_by_name_ing} ref='name' className="inline-block" placeholder="规格名称" searchHandler = {this.search.bind(this)} />
-              <button
-                disabled={props.is_add}
-                onClick={props.actions.addProductSize}
-                className="btn btn-xs btn-theme pull-right">
-                <i className="fa fa-plus"></i> 添加
-              </button>
+              {
+                V('ProductSizeManageAdd')
+                ?
+                <button
+                  disabled={props.is_add}
+                  onClick={props.actions.addProductSize}
+                  className="btn btn-xs btn-theme pull-right">
+                  <i className="fa fa-plus"></i> 添加
+                </button>
+                :
+                null
+              }
+              
             </FormGroup>
           </div>
         </div>
@@ -100,8 +118,17 @@ class Main extends Component {
                         <th>
                           &nbsp;&nbsp;&nbsp;&nbsp;规格名称　
                           <span className={props.selected_id ? '' : 'visibility-hidden'}>
-                            <a onClick={props.actions.moveUp} href="javascript:;"><i className="fa fa-long-arrow-up space-right"></i></a>
-                            <a onClick={props.actions.moveDown} href="javascript:;"><i className="fa fa-long-arrow-down"></i></a>
+                            {
+                              V('ProductSizeManageMove')
+                              ?
+                              [
+                                <a onClick={props.actions.moveUp} key='moveUp' href="javascript:;"><i className="fa fa-long-arrow-up space-right"></i></a>,
+                                <a onClick={props.actions.moveDown} key='moveDown' href="javascript:;"><i className="fa fa-long-arrow-down"></i></a>
+                              ]
+                              :
+                              null
+                            }
+                            
                           </span>
                         </th>
                         <th>操作</th>

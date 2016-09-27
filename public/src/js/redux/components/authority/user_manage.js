@@ -110,7 +110,10 @@ class FilterHeader extends Component {
       }
     }*/
     var {fields: {uname_or_name, province_id, city_id, district_id}} = this.props;
-    data.uname_or_name = uname_or_name.value;
+    if(uname_or_name && uname_or_name.value && uname_or_name.value.trim != '')
+      data.uname_or_name = uname_or_name.value.trim();
+    else
+      delete data.uname_or_name
     if(district_id && district_id.value && district_id.value != SELECT_DEFAULT_VALUE){
       data.city_id = district_id.value;
       delete data.is_standard_area;
@@ -220,8 +223,7 @@ class UserManagePannel extends Component{
     super(props);
     this.state={
       page_size:10,
-      /*      dept_id:0,
-       uname_or_name:'',*/
+      active_org_id: 0,
     }
     this.viewDeleteUserModal = this.viewDeleteUserModal.bind(this);
     this.viewUsableAlterModal = this.viewUsableAlterModal.bind(this);
@@ -230,16 +232,14 @@ class UserManagePannel extends Component{
   render(){
     // var { loading ,refresh } = this.props;
     // console.log(this.props.deptListManage.list);
-    var {filterdata,dept_id,uname_or_name,total,loading,refresh,list}= this.props.UserListManage;
+    var { filterdata, active_org_id, uname_or_name,total,loading,refresh,list}= this.props.UserListManage;
     var page_no = filterdata == undefined ? 0 : filterdata.page_no;
     var {userDelete,usableAlter, getUserList, dispatch, dept_role, area} = this.props;
     var {depts} = dept_role;
-
     var depts_active = depts.map(e => {
-      e.id == dept_id ? e.chosen = true:e.chosen = false;
+      e.id == active_org_id ? e.chosen = true:e.chosen = false;
       return e;
     })
-
     var content = list.map((n,i)=>{
       return <UserRow key= {n.id} {...n}
                       viewDeleteUserModal={this.viewDeleteUserModal}
@@ -321,23 +321,24 @@ class UserManagePannel extends Component{
     LazyLoad('noty');
     setTimeout(()=>{
       var {getUserList,getDeptsSignal} = this.props;
-      var {filterdata} = this.props.UserListManage;
+      var {filterdata, list} = this.props.UserListManage;
       filterdata.page_no = 0;
       filterdata.page_size = this.state.page_size;
       var dept_id=0;
       getDeptsSignal('authority');
       getUserList(filterdata);
+      this.setState({userlist: list});
+
       //this.search();
     },0)
   }
 
   onToggleDept(dept_id){
-    //this.props.actions.getDepts(dept_id);
-    var {filterdata} = this.props.UserListManage;
-    filterdata.page_no = 0;
+    var filterdata = {};
     filterdata.org_id = dept_id;
+    filterdata.page_no = 0;
     filterdata.page_size = this.state.page_size;
-    this.props.getUserList(filterdata);
+    this.props.toggleDept(filterdata);
   }
 }
 

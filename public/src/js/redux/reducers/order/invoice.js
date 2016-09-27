@@ -168,7 +168,7 @@ function main(state = main_state, action){
 			var {list } = state;
 			list = list.map( m => {
 				if(m.id ==  invoiceId){
-					m.exppress_no = express_no ;
+					m.express_no = express_no ;
 					m.express_type = express_type;
 					m.status = 'DELIVERY';
 				}

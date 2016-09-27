@@ -323,6 +323,7 @@ export function submitExpress(invoiceId, express_no, express_type){
                 type: SUBMIT_EXPRESS_SUCCESS,
                 invoiceId,
                 express_no,
+                express_type,
               })
             })
   }

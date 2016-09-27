@@ -349,7 +349,7 @@ class ManagePannel extends Component{
 			operationRecord,
 		} = this.props;
 		var content = list.map((n, i) => {
-		  return <InvoiceRow {...{...n, ...this.props}} key={n.invoice_id} 
+		  return <InvoiceRow {...{...n, ...this.props}} key={n.id + ' ' + i} 
 		  			viewDeliveryModal = {this.viewDeliveryModal.bind(this)}
 		  			viewRemarkModal = {this.viewRemarkModal.bind(this)}
 		  			viewInvoiceEditModal = {this.viewInvoiceEditModal.bind(this)}

@@ -76,9 +76,13 @@ class Main extends Component {
             null
           }          
           {
-            V('ProductSizeManageOnline') && n.isOnline == 1
+            V('ProductSizeManageOnline')
+            ?
+              n.isOnline == 1
               ? <a onClick={props.actions.disableSize.bind(null, n.id)} href="javascript:;" className="space">[下架]</a>
               : <a onClick={props.actions.enableSize.bind(null, n.id)} href="javascript:;" className="space">[上架]</a>
+            :
+            null
           }
         </td>
       </tr>

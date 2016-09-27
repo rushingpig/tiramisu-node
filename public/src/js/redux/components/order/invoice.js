@@ -273,6 +273,7 @@ var  InvoiceRow = React.createClass({
 			case 'COMPLETED':
 				roles = ['InvoiceManageLogistics', 'InvoiceManageCancel'];break;
 			case 'CANCEL':
+				roles = ['InvoiceManageAddRemarks'];break;
 			case 'DELIVERY':
 				roles = ['InvoiceManageAddRemarks', 'InvoiceManageLogistics2'];break;
 			default:

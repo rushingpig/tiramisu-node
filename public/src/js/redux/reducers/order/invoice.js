@@ -108,21 +108,37 @@ function main(state = main_state, action){
 		case Actions.GET_INVOICE_INFO:
 			var {gotRegionalismLetter} = Actions;
 			var {data} = action;
-			data._recipient_name = data.recipient_name;
-			data._recipient_mobile = data.recipient_mobile;
+			var { option } = data;
+			
+
 			if(data.recipient == 2) {
+				data._recipient_name = data.recipient_name;
+				data._recipient_mobile = data.recipient_mobile;
 				data.origin_name = data.recipient_name;
-				data.origin_mobile = data.recipient_name;
+				data.origin_mobile = data.recipient_mobile;
+			}else if(data.recipient == 0){
+				data._recipient_name = option.owner_name;
+				data._recipient_mobile = option.owner_mobile;
+				data.origin_name = '';
+				data.origin_mobile = '';
+			}else if(data.recipient == 1){
+				data._recipient_name = option.recipient_name;
+				data._recipient_mobile = option.recipient_mobile;
+				data.origin_name = '';
+				data.origin_mobile = '';
 			}
 			data.amount = data.amount / 100;
-			var { option } = data;
 
 			data.recipient_province_id = option.province_id;
 			data.recipient_city_id = option.city_id;
 			data.recipient_regionalism_id = option.regionalism_id;
 			data.recipient_address = option.address;
+			//将收货人 和下单人地址放到外面
 			data.owner_name = option.owner_name;
 			data.owner_mobile = option.owner_mobile;
+
+			data.recipient_name = option.recipient_name;
+			data.recipient_mobile = option.recipient_mobile;
 
 			store.dispatch(gotRegionalismLetter({type: 'city', parent_id: data.province_id}));
 			store.dispatch(gotRegionalismLetter({type: 'district', parent_id: data.city_id}));

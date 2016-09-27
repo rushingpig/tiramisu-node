@@ -1006,7 +1006,7 @@ OrderService.prototype.exceptionOrder = (req,res,next)=>{
     return;
   }
   let orderId = systemUtils.getDBOrderId(req.params.orderId),updated_time = req.body.updated_time;
-  refundDao.getRefundInfoByOrderId(orderId).then((res) => {
+  let order_promise = refundDao.getRefundInfoByOrderId(orderId).then((res) => {
     if (res && res[0]) {
       if (['COMPLETED', 'CANCEL'].indexOf(res[0].status) === -1) {
         throw new TiramisuError(res_obj.ABORTED_BY_REFUND);

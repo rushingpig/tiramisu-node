@@ -27,6 +27,7 @@ var res_obj = require('../../../util/res_obj'),
   dao = require('../../../dao'),
   OrderDao = dao.order,
   orderDao = new OrderDao(),
+  refundDAo = dao.refund,
   util = require('util'),
   _ = require('lodash'),
   config = require('../../../config'),
@@ -808,7 +809,14 @@ OrderService.prototype.cancelOrder = (req, res, next) => {
     return;
   }
   let orderId = systemUtils.getDBOrderId(req.params.orderId),updated_time = req.body.updated_time;
-  let order_promise = orderDao.findOrderById(orderId).then((_res) => {
+  let refund_promise = refundDao.getRefundInfoByOrderId(orderId).then((res) => {
+    if (res && res[0]) {
+      if (['COMPLETED', 'CANCEL'].indexOf(res[0].status) === -1) {
+        throw new TiramisuError(res_obj.ABORTED_BY_REFUND);
+      }
+    }
+    return orderDao.findOrderById(orderId);
+  }).then((_res) => {
     if (toolUtils.isEmptyArray(_res)) {
       throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
     } else if (updated_time !== _res[0].updated_time) {
@@ -836,7 +844,7 @@ OrderService.prototype.cancelOrder = (req, res, next) => {
     option : '取消订单'
   };
   let history_promise = orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
-  let promise = Promise.all([order_promise,history_promise]).then(()=>res.api());
+  let promise = Promise.all([refund_promise,history_promise]).then(()=>res.api());
   systemUtils.wrapService(res,next,promise);
 };
 

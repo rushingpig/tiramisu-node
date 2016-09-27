@@ -279,6 +279,16 @@ RefundDao.prototype.isBind = function (order_id) {
         return Promise.resolve(true);
     });
 };
+/**
+ * 根据订单号获取退款状态
+ * @param order_id
+ * @returns {Promise}
+ */
+RefundDao.prototype.getRefundInfoByOrderId = function (order_id) {
+    let sql = "select status from ?? where order_id = ?";
+    let params = [this.table,order_id];
+    return baseDao.select(sql, params);
+};
 
 
 function doFullText(query_data) {

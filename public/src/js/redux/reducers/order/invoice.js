@@ -164,36 +164,42 @@ function main(state = main_state, action){
 			})
 			return {...state, handle_invoice_status: 'success', list: list}
 		case Actions.SUBMIT_EXPRESS_SUCCESS:
-			var {invoiceId, exppress_no, express_type} = action;
+			var {invoiceId, express_no, express_type} = action;
 			var {list } = state;
 			list = list.map( m => {
 				if(m.id ==  invoiceId){
-					m.exppress_no = exppress_no ;
+					m.exppress_no = express_no ;
 					m.express_type = express_type;
+					m.status = 'DELIVERY';
 				}
 				return m;
 			})
 			return {...state, list: list}
 		case Actions.GET_DELIVERY_TRACE:
 			var {data} = action;
-			data = data.reverse();
-			data = data.map( m => {
-				var time = m.acceptTime.split(' ');
-				if(time.length == 2){
-					m.acceptDate = time[0];
-					m.acceptHour = time[1];
-					var index = m.acceptStation.indexOf('（');
-					if(index != -1){
-						var acceptStation_li = m.acceptStation.split('（');
-						m.acceptStatus = acceptStation_li[0];
-						m.acceptDeliveryman = '（' + acceptStation_li[1];
-					}else{
-						m.acceptStatus = m.acceptStation;
-						m.acceptDeliveryman = '';
+			if(data.code != '9998'){
+				data = data.reverse();
+				data = data.map( m => {
+					var time = m.acceptTime.split(' ');
+					if(time.length == 2){
+						m.acceptDate = time[0];
+						m.acceptHour = time[1];
+						var index = m.acceptStation.indexOf('（');
+						if(index != -1){
+							var acceptStation_li = m.acceptStation.split('（');
+							m.acceptStatus = acceptStation_li[0];
+							m.acceptDeliveryman = '（' + acceptStation_li[1];
+						}else{
+							m.acceptStatus = m.acceptStation;
+							m.acceptDeliveryman = '';
+						}
 					}
-				}
-				return m;
-			})
+					return m;
+				})
+			}else{
+				data = []
+			}
+			
 			return {...state, delivery_traces: data}
 		case Actions.ADD_REMARK:
 			var {invoiceId, remarks} = action;

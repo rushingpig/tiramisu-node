@@ -243,8 +243,9 @@ Constant.REFUND = {
 };
 
 Constant.EXPRESS = {
-    '1': '顺丰快递',
-    '2': '中通快递'
+    'SF': '顺丰快递',
+    'UC': '优速快递',
+    'YD': '韵达快递'
 };
 
 Constant.INVOICE = {

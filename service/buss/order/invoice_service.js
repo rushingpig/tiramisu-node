@@ -369,6 +369,8 @@ module.exports.editInvoice = function (req, res, next) {
             if (info.title !== undefined && info.title != invoice_info.title) history.option += `修改title为{${info.title}}\n`;
             if (info.amount !== undefined && info.amount != invoice_info.amount) history.option += `修改金额为{${info.amount}}\n`;
             if (info.address !== undefined && info.address != invoice_info.address) history.option += `修改地址为{${info.address}}\n`;
+            if (info.recipient_name !== undefined && info.recipient_name != invoice_info.recipient_name) history.option += `修改收票人为{${info.recipient_name}\n`;
+            if (info.recipient_mobile !== undefined && info.recipient_mobile != invoice_info.recipient_mobile) history.option += `修改收票人手机号为{${info.recipient_mobile}\n`;
         } else if (info.status == IS.COMPLETED) {
             history.option += `开具发票\n`;
         }

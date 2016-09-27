@@ -1001,7 +1001,14 @@ OrderService.prototype.exceptionOrder = (req,res,next)=>{
     return;
   }
   let orderId = systemUtils.getDBOrderId(req.params.orderId),updated_time = req.body.updated_time;
-  let order_promise = orderDao.findOrderById(orderId).then((_res) => {
+  refundDao.getRefundInfoByOrderId(orderId).then((res) => {
+    if (res && res[0]) {
+      if (['COMPLETED', 'CANCEL'].indexOf(res[0].status) === -1) {
+        throw new TiramisuError(res_obj.ABORTED_BY_REFUND);
+      }
+    }
+    return orderDao.findOrderById(orderId);
+  }).then((_res) => {
     if (toolUtils.isEmptyArray(_res)) {
       throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
     } else if (updated_time !== _res[0].updated_time) {

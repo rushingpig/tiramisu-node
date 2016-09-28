@@ -13,6 +13,7 @@ const systemUtils = require('../../../common/SystemUtils');
 const toolUtils = require('../../../common/ToolUtils');
 const TiramisuError = require('../../../error/tiramisu_error');
 const res_obj = require('../../../util/res_obj');
+const request = require('request');
 
 const REFUND_TYPE = Constant.REFUND.TYPE;
 const RS = Constant.REFUND.STATUS;
@@ -355,3 +356,30 @@ module.exports.delRefund = function (req, res, next) {
     });
     systemUtils.wrapService(res, next, promise);
 };
+/**
+ * 导出发票列表
+ * @param req
+ * @param res
+ * @param next
+ */
+module.exports.excelExport = function (req,res,next) {
+    let query = Object.assign({}, req.query);
+    if (req.query.keywords && isNaN(parseInt(req.query.keywords))) {
+        query.keywords = systemUtils.encodeForFulltext(req.query.keywords);
+    } else {
+        query.keywords = req.query.keywords;
+    }
+    let promise =  refundDao.findRefund(query,true).then((body) => {
+        let uri = config.base_excel_host + '/refunds';
+        request({
+            uri : uri,
+            method : 'post',
+            timeout : 120000,
+            json : true,
+            body : body
+        }).on('error',(err) => {
+            return res.api(res_obj.FAIL,err);
+        }).pipe(res || null);
+    });
+};
+

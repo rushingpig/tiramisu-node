@@ -619,7 +619,9 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
           curr.spu = JSON.parse(curr.spu);
           curr.spc = JSON.parse(curr.spc);
           curr.product_name = curr.spu.name;
-          curr.display_name = curr.sku.display_name;
+          if (curr.sku.display_name) {
+            curr.display_name = curr.sku.display_name;
+          }
           curr.category_id = curr.spu.category_id;
           curr.isAddition = curr.spc.isAddition;
           curr.size = curr.sku.size;

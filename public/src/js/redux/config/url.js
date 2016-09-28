@@ -68,6 +68,7 @@ const URL = (function() {
     refund_list:              '/refund/list',  //获取退款列表
     edit_refund_remark:       '/refund/:refundId/remarks',  //修改退款备注
     refund_reasons:           '/refund/reason/type', //获取退款原因
+    refund_export:            '/refund/export', //退款导出
 
     //产品
     categories: '/product/categories',

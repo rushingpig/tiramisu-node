@@ -47,7 +47,7 @@ export const GET_REFUND_LIST = 'GET_REFUND_LIST';
 export function getRefundList(filter_data){
   return (dispatch, getState) => {
     var _filter_data = getValues(getState().form.refund_list_filter);
-    _filter_data = formCompile(_filter_data);
+    _filter_data = Utils.formCompile(_filter_data);
     return get(Url.refund_list.toString(), {..._filter_data, ...filter_data})
             .done( (data) => {
               dispatch({
@@ -130,6 +130,18 @@ export function getRefundList(filter_data){
       GET_REFUND_LIST)(dispatch)*/
   }
 
+}
+
+export function exportExcel(){
+  return (dispatch, getState) => {
+    var data = getValues( getState().form.refund_list_filter ) || {};
+    data = Utils.formCompile(data);
+    if(!data.begin_time && !data.end_time){
+      Utils.Noty('warning', '请选定时间');return;
+    }
+    var export_url = Url.refund_export + '?' + Utils.url.toParams({...data, entrance: 'LIST'});
+    window.open(export_url);
+  }
 }
 
 export const HANDLE_REFUND_SUCCESS = 'HANDLE_REFUND_SUCCESS';

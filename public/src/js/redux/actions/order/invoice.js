@@ -1,6 +1,6 @@
 import {post, get, put, del,GET, POST, PUT, TEST } from 'utils/request'; //Promise
 import Url from 'config/url';
-import { Noty, formCompile, Utils, clone } from 'utils/index';
+import Utils from 'utils/index';
 import { getValues } from 'redux-form';
 
 export const ACTIVE_ORDER = 'ACTIVE_ORDER';  // 激活订单，用于查阅该订单详情
@@ -98,7 +98,7 @@ export const GET_INVOICE_LIST = 'GET_INVOICE_LIST';
 export function getInvoiceList(data){
 	return (dispatch, getState) => {
 		var filter_data = getValues(getState().form.invoice_manage_filter);
-		filter_data = formCompile(filter_data);
+		filter_data = Utils.formCompile(filter_data);
 
 		return get(Url.get_invoice_list.toString(), {...filter_data, ...data})
 				.done((_data) => {
@@ -148,6 +148,18 @@ export function getInvoiceList(data){
 	}, GET_INVOICE_LIST)*/
 }
 
+export function exportExcel(){
+  return (dispatch, getState) => {
+    var data = getValues( getState().form.invoice_manage_filter ) || {};
+    data = Utils.formCompile(data);
+    if(!data.begin_time && !data.end_time){
+      Utils.Noty('warning', '请选定时间');return;
+    }
+    var export_url = Url.invoice_export + '?' + Utils.url.toParams({...data, entrance: 'LIST'});
+    window.open(export_url);
+  }
+}
+
 function _getFormdata(getState){
 	var invoice_data = getValues(getState().form.invoice_apply_pannel);
 	if(invoice_data){
@@ -157,10 +169,13 @@ function _getFormdata(getState){
 			invoice_data.regionalism_id = invoice_data.recipient_regionalism_id;
 			invoice_data.address = invoice_data.recipient_address;
 		}
-		if(invoice_data.recipient == 2){
-			invoice_data.recipient_name = invoice_data._recipient_name;
-			invoice_data.recipient_mobile =invoice_data._recipient_mobile;
-		}
+
+		invoice_data.recipient_name = invoice_data._recipient_name;
+		invoice_data.recipient_mobile =invoice_data._recipient_mobile;
+
+    delete invoice_data._recipient_name;
+    delete invoice_data._recipient_mobile;
+
 		if(invoice_data.type == '0'){
 			delete invoice_data.company_id;
 		}else{
@@ -454,4 +469,3 @@ export function getDeliveryTrace(express_no, express_type){
       },
     ])*/
 }
-

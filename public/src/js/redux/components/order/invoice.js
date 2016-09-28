@@ -194,12 +194,12 @@ var  InvoiceRow = React.createClass({
 				<td>
 					{
 						this.ACL(
-							[<a key='InvoiceManageTreat' onClick= {this.onTreat} href='javascript:;' >[开具发票]</a>,<br key='treat_br' />],
-							[<a key='InvoiceManageEdit' onClick = {this.viewInvoiceEditModal} href='javascript:;' >[编辑]</a>,<br key='edit_br' />],
-							[<a key='InvoiceManageLogistics' href='javascript:;'  onClick = {this.viewDeliveryModal}>[物流填写]</a>,<br key = 'logistics_br' />],
-							[<a key='InvoiceManageCancel' onClick = {this.onInvoiceDel} href='javascript:;' >[取消]</a>,<br key='cancel_br' />],
-							[<a key='InvoiceManageLogistics2' onClick = {this.viewDeliveryModal2} href='javascript:;' >[物流修改]</a>,<br key= 'remark' />],
-							[<a key='InvoiceManageAddRemarks' onClick = {this.viewRemarkModal} href='javascript:;' >[添加备注]</a>,<br key= 'remark' />],
+							[<a key='InvoiceManageTreat' onClick= {this.onTreat} href='javascript:;' className='nowrap' >[开具发票]</a>,<br key='treat_br' />],
+							[<a key='InvoiceManageEdit' onClick = {this.viewInvoiceEditModal} href='javascript:;' className='nowrap' >[编辑]</a>,<br key='edit_br' />],
+							[<a key='InvoiceManageLogistics' href='javascript:;'  onClick = {this.viewDeliveryModal} className='nowrap'>[物流填写]</a>,<br key = 'logistics_br' />],
+							[<a key='InvoiceManageCancel' onClick = {this.onInvoiceDel} href='javascript:;' className='nowrap' >[取消]</a>,<br key='cancel_br' />],
+							[<a key='InvoiceManageLogistics2' onClick = {this.viewDeliveryModal2} href='javascript:;' className='nowrap' >[物流修改]</a>,<br key= 'remark' />],
+							[<a key='InvoiceManageAddRemarks' onClick = {this.viewRemarkModal} href='javascript:;' className='nowrap' >[添加备注]</a>,<br key= 'remark' />],
 						)
 					}
 				</td>

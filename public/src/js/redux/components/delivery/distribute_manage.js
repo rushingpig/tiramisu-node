@@ -552,7 +552,7 @@ var PartRow = React.createClass({
       <tr>
         <td>{ props.name }</td>
         <td>{ '￥ ' + (props.unit_price/100).toString() }</td>
-        <td>{ props.sub }</td>
+        <td>{ props.size }</td>
         <td>
         <button 
           className='btn btn-sm btn-default' 

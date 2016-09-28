@@ -12,7 +12,7 @@ class ProductRow extends Component {
     var product = this.props;
     return (
       <tr key={product.sku_id}>
-        <td>{product.name}</td>
+        <td>{product.display_name}</td>
         <td>￥{product.original_price/100} * {product.num}</td>
         <td>{product.size}</td>
         <td>{product.num}</td>

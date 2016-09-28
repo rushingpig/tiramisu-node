@@ -9,7 +9,8 @@ import { order_status, REQUEST } from 'config/app.config';
 import { area } from 'reducers/area_select';
 import delivery_stations from 'reducers/delivery_stations';
 import stations from 'reducers/stations';
-import { orders, operationRecord } from 'reducers/orders';
+import { refund_data, bindOrderRecord } from 'reducers/refund_modal';
+import { orders, operationRecord  } from 'reducers/orders';
 import { core } from 'utils/index';
 
 var filter_state = {
@@ -74,8 +75,10 @@ export default combineReducers({
   area: area(),
   orders: orders(true),
   operationRecord,
+  bindOrderRecord,
   stations,
   main,
   alter_delivery_area: area(AreaActionTypes2), //修改配送摸态框中的地址选择器
   delivery_stations,
+  refund_data,
 })

@@ -79,6 +79,20 @@ const URL = (function() {
     get_company_list:  '/company/list', //获取公司列表
     company_opt_history: '/company/:companyId/history', //获取公司操作记录
     company_invoice_history: '/company/:companyId/invoice/history', //公司开票历史记录
+
+    //退款
+    refund_apply:             '/refund',  //申请退款
+    get_refund_apply_data:    '/order/:orderId/refund/option',  //获取申请退款需要的数据
+    get_refund_detail:        '/refund/:refundId',  //获取退款详情
+    bind_orders:              '/order/:orderId/relate/list',  //获取订单关联历史记录
+    refund_history:           '/refund/:refundId/history',  //获取退款历史记录
+    handle_refund:            '/refund/:refundId',  //编辑/审核/完成退款
+    cancel_refund:            'refund/:refundId',  //取消退款
+    refund_list:              '/refund/list',  //获取退款列表
+    edit_refund_remark:       '/refund/:refundId/remarks',  //修改退款备注
+    refund_reasons:           '/refund/reason/type', //获取退款原因
+    refund_export:            '/refund/export', //退款导出
+
     //产品
     categories: '/product/categories',
     products:   '/products',

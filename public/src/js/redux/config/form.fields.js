@@ -60,5 +60,22 @@ export default {
     'first_open_regions',
     'sec_open_regions',
     'sec_order_time',
+  ],
+  refund_apply: [
+    'type',
+    'amount',
+    'reason_type',
+    'linkman',
+    'owner_name',
+    'owner_mobile',
+    'recipient_name',
+    'recipient_mobile',
+    'reason',
+    'way',
+    'account_type',
+    'account',
+    'account_name',
+    'is_urgent',
+    'payment_amount',
   ]
 }

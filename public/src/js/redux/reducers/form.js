@@ -206,6 +206,26 @@ export default formReducer.plugin({
         }
       }
     }
+        return state;
+  },
+  refund_apply:(state,action) =>{
+    if(action && action.form == 'refund_apply'){
+      if(action.field == 'type'){
+        if(action.type == actionTypes.CHANGE){
+          if(state.type.value == 'FULL'){
+            state.amount = {value: state.payment_amount.value / 100}
+          }
+        }
+      }else if(action.field == 'way'){
+        if(action.type == actionTypes.CHANGE){
+          if(state.way.value == 'THIRD_PARTY'){
+            state.account_type = {value: ''}
+          }else {
+            state.account_type = {value : 'ALIPAY'}
+          }
+        }
+      }
+    }
     return state;
   }
 });

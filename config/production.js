@@ -167,7 +167,7 @@ var login_required = true;
 var excel_export_host = 'http://localhost:8888/excel/order/';
 
 var backup_host = 'http://localhost:3001';
-var mongodb_uri = 'mongodb://cupcake:17F2wDwxI39w@localhost:27017/cupcake';
+var mongodb_uri = 'mongodb://cupcake:17F2wDwxI39w@10.46.89.45:27017/tiramisu';
 var express_host = 'http://exp.blissmall.net/express/get';
 
 module .exports = {

@@ -651,7 +651,8 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
         is_greeting_card: req.query.is_greeting_card,
         is_standard_area: req.query.is_standard_area,
         user : req.session.user,
-        order_by : req.query.order_by || 'created_time'
+        order_by : req.query.order_by || 'created_time',
+        coupon: req.query.coupon
       };
     }
 
@@ -707,6 +708,7 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
           cancel_reason: curr.cancel_reason,
           recipient_landmark: curr.landmark,
           city: city_name,
+          province_name: delivery_adds[0],
           created_by: curr.created_by,
           created_time: curr.created_time,
           delivery_time: curr.delivery_time,

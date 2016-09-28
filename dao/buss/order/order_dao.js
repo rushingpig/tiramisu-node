@@ -802,9 +802,13 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
     }
   }
   if (query_data.src_id) {
-    sql += " and (src_id = ? or bos.parent_id = ?)";
+    sql += " and (bos.id = ? or bos.parent_id = ?)";
     params.push(query_data.src_id);
     params.push(query_data.src_id);
+  }
+  if (query_data.coupon) {
+    sql += " and bo.coupon is not null and bo.coupon <> '' and bo.coupon like ? ";
+    params.push(`%${query_data.coupon}%`);
   }
   if (query_data.status) {
     if (Array.isArray(query_data.status)) {

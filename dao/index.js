@@ -16,6 +16,7 @@ module.exports = {
     invoice : require('./buss/order/invoice_dao'),
     refund : require('./buss/order/refund_dao'),
     product : require('./buss/product/product_dao'),
+    group : require('./buss/product/group_dao'),
     org : require('./sys/org_dao'),
     role : require('./sys/role_dao'),
     category : require('./buss/product/category_dao'),

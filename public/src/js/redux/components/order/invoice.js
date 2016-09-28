@@ -48,7 +48,7 @@ class TopHeader extends Component{
 				{
 				  V( 'InvoiceManageExportExcel' )
 				    ?
-				    <button className="btn btn-theme btn-xs pull-right" style={{marginLeft: 20}}>
+				    <button className="btn btn-theme btn-xs pull-right" style={{marginLeft: 20}} onClick={this.props.exportExcel}>
 				      <i className="fa fa-download"></i> 导出
 				    </button>
 				    :null            
@@ -344,7 +344,7 @@ class ManagePannel extends Component{
 		var {area, filter, stations, dispatch, getStationListByScopeSignal, resetStationListWhenScopeChange,
 			getInvoiceList, getOrderInvoiceInfo, getInvoiceCompany, gotRegionalismLetter,
 			resetFormCities, resetFormDistricts, submitExpress,getInvoiceInfo, getOrderOptRecord, resetOrderOptRecord,
-			invoiceApply, invoiceEdit, addRemark,  resetInvoiceData, triggerFormUpdate, 
+			invoiceApply, invoiceEdit, addRemark,  resetInvoiceData, triggerFormUpdate, exportExcel, 
 			main: {list, page_no, total, loading, refresh, active_order_id, check_order_info, order_invoice_info, 
 					company_data, form_provinces, form_cities, form_districts, express_companies, delivery_traces},
 			operationRecord,
@@ -361,7 +361,8 @@ class ManagePannel extends Component{
 		return (
 			<div className='order-manage'>
 				<TopHeader 
-					viewInvoiceApplyModal= {this.viewInvoiceApplyModal.bind(this)} />
+					viewInvoiceApplyModal= {this.viewInvoiceApplyModal.bind(this)}
+					exportExcel = {exportExcel} />
 				<FilterHeader {...{...area, ...filter, stations, page_size:this.state.page_size}}
 					getStationListByScopeSignal = {getStationListByScopeSignal}
 					resetStationListWhenScopeChange = {resetStationListWhenScopeChange}

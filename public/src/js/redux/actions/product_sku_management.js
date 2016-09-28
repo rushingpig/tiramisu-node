@@ -718,6 +718,12 @@ const saveOption = () => (
       })
     );
 
+    const getDeletedSkuId = opt => {
+      if (opt.id && opt.id !== 0) {
+        deletedSku.push(opt.id);
+      }
+    }
+
     if (state.citiesOptionApplyRange === 0) {
 
       const shangjiaOpt = state.tempOptions.isPreSale ? transformShangjiaOption(state.tempOptions) : {};
@@ -743,6 +749,7 @@ const saveOption = () => (
         //2016-09-26 revised xionghong 外部渠道可购买时，去掉商城规格设置
         let specifications = [];
         if(state.buyEntry === 1){
+          shopSpecifications.forEach(getDeletedSkuId);
           specifications = sourceSpecifications;
         }else{
           specifications = [...shopSpecifications, ...sourceSpecifications];
@@ -770,7 +777,6 @@ const saveOption = () => (
 
       // Array.from(state.citiesOptions.values()).forEach(cityOpt => {
       //   cityOpt.shopSpecifications.forEach(getDeletedSkuId);
-
       //   [...cityOpt.sourceSpecifications.values()].forEach(ssArr => {
       //     ssArr.forEach(getDeletedSkuId);
       //   });
@@ -834,6 +840,7 @@ const saveOption = () => (
           //2016-09-26 revised xionghong 外部渠道可购买时，去掉商城规格设置
           let specifications = []
           if(state.buyEntry === 1){
+            shopSpecifications.forEach(getDeletedSkuId);
             specifications = sourceSpecifications;
           }else{
             specifications = [...shopSpecifications, ...sourceSpecifications];

@@ -257,9 +257,9 @@ DeliveryService.prototype.auditReprintApply = (req,res,next)=>{
         return;
     }
     const validate_code = systemUtils.genValidateCode(),
-          order_id = req.body.order_id,
-          applicant_mobile = req.body.applicant_mobile,
-          order_update_obj = {};
+        order_id = req.body.order_id,
+        applicant_mobile = req.body.applicant_mobile,
+        order_update_obj = {};
     let update_obj = {
         validate_code : validate_code,
         audit_opinion : req.body.audit_opinion,
@@ -838,9 +838,9 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
 
     let order_id = systemUtils.getDBOrderId(req.params.orderId),
         order_history_obj = {
-        order_id : order_id,
-        option : '重新打印订单'
-    };
+            order_id : order_id,
+            option : '重新打印订单'
+        };
 
     let reprint_apply_update_obj = {
         is_reprint : 1,
@@ -995,7 +995,7 @@ DeliveryService.prototype.print = (req,res,next)=>{
             }else if (print_status === Constant.PS.AUDITING){
                 throw new TiramisuError(res_obj.ORDER_AUDITING);
             }
-             if (!systemUtils.checkOrderDataScopes(req.session.user, curr) || !systemUtils.isOrderCanUpdateStatus(curr.status, Constant.OS.INLINE)) {
+            if (!systemUtils.checkOrderDataScopes(req.session.user, curr) || !systemUtils.isOrderCanUpdateStatus(curr.status, Constant.OS.INLINE)) {
                 throw new TiramisuError(res_obj.OPTION_EXPIRED);
             }
         });
@@ -1218,6 +1218,11 @@ DeliveryService.prototype.getRecord = (req, res, next)=>{
 
     let query = Object.assign({user: req.session.user}, req.query);
     if (query.isCOD !== undefined) query.is_COD = (query.isCOD == '1');
+    if (req.query.keywords && isNaN(parseInt(req.query.keywords))) {
+        query.keywords = systemUtils.encodeForFulltext(req.query.keywords);
+    } else {
+        query.keywords = req.query.keywords;
+    }
     let promise = co(function *() {
         let count = yield deliveryDao.findDeliveryRecordCount(query);
         let result = Object.assign({}, _.omit(count, ['order_ids']));

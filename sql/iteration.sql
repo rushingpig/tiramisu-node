@@ -702,7 +702,7 @@ then
     # 删除二级分类
     update buss_product_sku 
     set del_flag = 0 
-    where product_id in (
+    where regionalism_id = old.regionalism_id and product_id in (
         select product.id as id 
         from buss_product_category category join buss_product product 
         on category.id = product.category_id and category.id = old.category_id

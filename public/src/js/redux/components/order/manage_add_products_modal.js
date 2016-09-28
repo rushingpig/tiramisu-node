@@ -286,7 +286,7 @@ class ProductSelectedRow extends Component {
     var { yes_or_no } = this;
     return (
       <tr>
-        <td>{data.display_name}</td>
+        <td>{data.display_name || '-'}</td>
         <td>{data.size}</td>
         <td>{data.category_name}</td>
         <td>{data.regionalism_name}</td>

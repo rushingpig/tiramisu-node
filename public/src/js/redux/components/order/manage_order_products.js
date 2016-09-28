@@ -86,7 +86,7 @@ var AddedProductsRow = React.createClass({
       discount_price, amount, choco_board, greeting_card, atlas, custom_name, custom_desc } = this.props.data;
     return (
       <tr className="form-inline">
-        <td>{display_name}</td>
+        <td>{display_name || '-'}</td>
         <td>{size}</td>
         <td>￥{original_price/100} * {num}</td>
         <td>{num}</td>

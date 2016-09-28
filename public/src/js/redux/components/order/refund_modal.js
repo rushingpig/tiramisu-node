@@ -269,7 +269,7 @@ class RefundPannel extends Component{
     var form_data = {order_id : this.props.order_id}
     this.props.refundApply(form_data)
       .done(function(){
-        Noty('success', '保存成功');
+        Noty('success', '申请成功');
         this.props.onCancel();
       }.bind(this))
       .fail(function(msg){

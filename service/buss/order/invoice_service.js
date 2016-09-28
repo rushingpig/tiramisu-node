@@ -504,3 +504,24 @@ module.exports.getExressInfo = function (req, response, next) {
         }
     });
 };
+/**
+ * 导出发票列表
+ * @param req
+ * @param res
+ * @param next
+ */
+module.exports.exportInvoices = function (req,res,next) {
+    let promise = invoiceDao.findInvoiceList(req.query,true).then((body) => {
+            let uri = config.base_excel_host + '/invoices';
+            request({
+                uri : uri,
+                method : 'post',
+                timeout : 120000,
+                json : true,
+                body : body
+            }).on('error',(err) => {
+                return res.api(res_obj.FAIL,err);
+            }).pipe(res || null);
+    });
+};
+

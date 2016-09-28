@@ -135,7 +135,7 @@ InvoiceDao.prototype.findCompanyById = function (company_id) {
     return baseDao.select(sql, params);
 };
 
-InvoiceDao.prototype.findInvoiceList = function (query) {
+InvoiceDao.prototype.findInvoiceList = function (query,excel) {
     if (!query) query = {};
     let page_no = query.page_no || 0;
     let page_size = query.page_size || 10;
@@ -239,6 +239,10 @@ InvoiceDao.prototype.findInvoiceList = function (query) {
         _res.total = total[0].total;
 
         sql += `ORDER BY bi.created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+        if (excel){
+            sql = sql_info + sql.substring(0,sql.indexOf('LIMIT'));
+            return {sql,params};
+        }
         _res.list = yield baseDao.select(sql_info + sql, params);
         _res.page_no = page_no;
         _res.page_size = page_size;

@@ -19,6 +19,7 @@ module.exports = function (router) {
     router.get('/invoice/:invoiceId/history', invoiceService.getInvoiceHistory);  // 获取发票信息修改记录
 
     router.get('/express/info',invoiceService.getExressInfo);   // 获取物流信息
+    router.get('/invoices/export',invoiceService.exportInvoices);   // 导出发票信息列表
 
 
 //**********************

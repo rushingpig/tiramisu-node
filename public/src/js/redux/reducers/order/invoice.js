@@ -92,7 +92,7 @@ function main(state = main_state, action){
 			data.enable_recipient_address = 1;
 			data.amount = data.amount / 100;
 			data.type = 0;
-			data.title = '';
+			data.title_name = '';
 			data.recipient_province_id = data.province_id;
 			data.recipient_city_id = data.city_id;
 			data.recipient_regionalism_id = data.regionalism_id;
@@ -139,7 +139,7 @@ function main(state = main_state, action){
 
 			data.recipient_name = option.recipient_name;
 			data.recipient_mobile = option.recipient_mobile;
-
+			data.title_name = data.title
 			store.dispatch(gotRegionalismLetter({type: 'city', parent_id: data.province_id}));
 			store.dispatch(gotRegionalismLetter({type: 'district', parent_id: data.city_id}));
 			

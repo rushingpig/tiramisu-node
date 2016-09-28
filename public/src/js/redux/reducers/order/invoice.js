@@ -1,5 +1,6 @@
 import { dateFormat, map } from 'utils/index';
 import { combineReducers } from 'redux';
+import { UPDATE_PATH } from 'redux-simple-router';
 import { REQUEST, invoice_status, order_status, ACCESSORY_CATE_ID } from 'config/app.config';
 import { GOT_ORDER_SRCS } from 'actions/order_manage_form';
 
@@ -75,6 +76,8 @@ function filter(state = filter_state, action){
 function main(state = main_state, action){
   	var store = getGlobalStore();
 	switch(action.type){
+		case	UPDATE_PATH:
+			return main_state;
 		case Actions.ACTIVE_ORDER:
 			return {...state,active_order_id: action.active_order_id}
 		case Actions.GET_INVOICE_LIST:

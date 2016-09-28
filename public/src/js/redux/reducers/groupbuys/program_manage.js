@@ -1,3 +1,4 @@
+import { UPDATE_PATH } from 'redux-simple-router';
 import { combineReducers } from 'redux';
 import * as Actions from 'actions/groupbuys/program_manage';
 import { getGlobalStore, getGlobalState } from 'stores/getter';
@@ -27,6 +28,8 @@ var main_state = {
 
 function main(state = main_state, action){
 	switch(action.type){
+		case UPDATE_PATH:
+			return main_state;
 		case Actions.GET_GROUPBUY_PROGRAM_LIST:
 			var {list } = action.data;
 			var is_online = 0;

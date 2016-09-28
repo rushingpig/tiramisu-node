@@ -533,6 +533,7 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
     'bo.greeting_card as greeting_card_order',
     'bo.is_pos_pay',
     'bp.`name` as product_name',
+    'bps.display_name as display_name',
     'bp.category_id',
     'bpc.isAddition',
     'bos.amount',

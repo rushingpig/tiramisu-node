@@ -538,7 +538,7 @@ const validate = (values, props) => {
 	}
 
 	if(values['type'] == 0){
-		_v_text('title');
+		_v_text('title_name');
 	}else{
 		_v_select('company_id');
 	}
@@ -576,7 +576,7 @@ class InvoiceApplyPannel extends Component{
 				recipient_mobile,
 				recipient_name,
 				remarks,
-				title,
+				title_name,
 				type,
 				enable_recipient_address,
 				recipient,
@@ -623,7 +623,7 @@ class InvoiceApplyPannel extends Component{
 							type.value == 1 ?
 							<Select {...company_id} className= {`${company_id.error}`} default-text='请选择已审核公司' options = {company_data}/>
 							:
-							<input {...title} className={`form-control input-xs ${title.error}`} type='text' placeholder='个人/公司全称' />
+							<input {...title_name} className={`form-control input-xs ${title_name.error}`} type='text' placeholder='个人/公司全称' />
 						}
 					</div>
 					<div className='form-group form-inline'>
@@ -818,7 +818,7 @@ InvoiceApplyPannel = reduxForm({
 		'recipient_regionalism_id',
 		'recipient_address',
 		'remarks',
-		'title',
+		'title_name',
 		'type',
 		'enable_recipient_address',
 		'province_id',

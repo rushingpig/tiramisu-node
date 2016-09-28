@@ -173,6 +173,9 @@ function _getFormdata(getState){
 		invoice_data.recipient_name = invoice_data._recipient_name;
 		invoice_data.recipient_mobile =invoice_data._recipient_mobile;
 
+    invoice_data.title = invoice_data.title_name;
+    delete invoice_data.title_name;
+
     delete invoice_data._recipient_name;
     delete invoice_data._recipient_mobile;
 

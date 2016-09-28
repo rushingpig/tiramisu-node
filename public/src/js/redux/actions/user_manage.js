@@ -6,16 +6,19 @@ import Utils from 'utils/index';
 import {Noty} from 'utils/index';
 
 
-/*export const TOGGLE_DEPT = 'TOGGLE_DEPT';
-export function toggleDept( org_id ,uname_or_name,page_no,page_size){
-  var data = {page_size:page_size,page_no:page_no};
-  if(org_id != 0){
-    data={...data,org_id:org_id};
-  }else if(uname_or_name != ""){
-    data = {...data,uname_or_name:uname_or_name};
-  }
-  return GET(Url.user_list_info.toString(),data,TOGGLE_DEPT);
-}*/
+export const TOGGLE_DEPT_U = 'TOGGLE_DEPT_U';
+export function toggleDept(filterdata){
+  return (dispatch) => {
+      return get(Url.user_list_info.toString(), filterdata)
+        .done((data) => {
+          dispatch({
+            type: TOGGLE_DEPT_U,
+            filterdata : filterdata,
+            data: data,
+          })
+        })
+      }
+}
 
 export const GET_ROLE_LIST = 'GET_ROLE_LIST';
 export function getRoleList(dept_id){
@@ -45,6 +48,7 @@ export function getDeptList(){
 /*  return (dispatch,getState) =>{
     return GET(Url.dept_list_info.toString(),GET_DEPT_LIST);  
   }*/
+
 
 export const GET_USER_LIST = 'GET_USER_LIST';
 export function getUserList(filterdata){

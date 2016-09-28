@@ -31,18 +31,18 @@ const Anchor = props => {
 
 /**
  *
- * CategoryManageAddSecondaryCategory 新建二级分类
+ * CategoryManageAddSecondaryCategory              新建二级分类
  * CategoryManageEditSecondaryCategoryActiveCities 编辑二级分类上线城市
- * CategoryManageCheckSecondaryCategoryComment 检查二级分类备注
- * CategoryManageEditSecondaryCategory 编辑二级分类
- * CategoryManageDeleteSecondaryCategory 删除二级分类
- * CategoryManageSortSecondaryCategory 对二级分类进行排序
+ * CategoryManageCheckSecondaryCategoryComment     检查二级分类备注
+ * CategoryManageEditSecondaryCategory             编辑二级分类
+ * CategoryManageDeleteSecondaryCategory           删除二级分类
+ * CategoryManageSortSecondaryCategory             对二级分类进行排序
  *
- * CategoryManageAddPrimaryCategory 新建一级分类
+ * CategoryManageAddPrimaryCategory              新建一级分类
  * CategoryManageEditPrimaryCategoryActiveCities 编辑一级分类上线城市
- * CategoryManageCheckPrimaryCategoryComment 检查一级分类备注
- * CategoryManageEditPrimaryCategory 编辑一级分类
- * CategoryManageDeletePrimaryCategory 删除一级分类
+ * CategoryManageCheckPrimaryCategoryComment     检查一级分类备注
+ * CategoryManageEditPrimaryCategory             编辑一级分类
+ * CategoryManageDeletePrimaryCategory           删除一级分类
  *
  **/
 
@@ -78,6 +78,7 @@ class Main extends Component {
 
     this.handleConfirmDeleteCategory  = this.handleConfirmDeleteCategory.bind(this);
     this.handleCancelDeleteCategory   = this.handleCancelDeleteCategory.bind(this);
+    this.handleSaveCityConfig         = this.handleSaveCityConfig.bind(this);
 
     this.state = {
       modalShow: false,
@@ -85,7 +86,8 @@ class Main extends Component {
       selectedFirstCategory:  0,
       selectedSecondCategory: 0,
 
-      readyToDeleteCategory: 0
+      readyToDeleteCategory: 0,
+      saveCityConfirm: 0
     }
   }
 
@@ -132,13 +134,14 @@ class Main extends Component {
             type="text"
             className="form-control input-xs"
             placeholder="类型名称"
+            onChange={e => this.forceUpdate()}
             onKeyPress={this.handleNameSearchKeyPress}
           />
           {'　'}
           {
             (state.searchState === "success" || state.searchState === "failed")
             ? (
-              <Button className="btn btn-theme btn-xs" onClick={this.handleClickNameSearch}>
+              <Button disabled={this.refs.categoryName ? this.refs.categoryName.value.trim() === '' : false} className="btn btn-theme btn-xs" onClick={this.handleClickNameSearch}>
                 <Icon icon="search" />{' 搜索'}
               </Button>
             ) : (
@@ -182,7 +185,7 @@ class Main extends Component {
           {
             (state.searchState === "success" || state.searchState === "failed")
             ? (
-              <Button className="btn btn-theme btn-xs" onClick={props.searchCategories}>
+              <Button className="btn btn-theme btn-xs" onClick={e => props.searchCategories()}>
                 <Icon icon="search" />{' 搜索'}
               </Button>
             ) : (
@@ -386,7 +389,7 @@ class Main extends Component {
                         >
                           PC端上线城市
                         </Anchor>
-                        );
+                      );
                     }
 
                     if (V("CategoryManageCheckPrimaryCategoryComment")) {
@@ -396,11 +399,12 @@ class Main extends Component {
                       editAuth.push(
                         <Anchor
                           key="CategoryManageCheckPrimaryCategoryComment"
-                          data-category-id={props.id} onClick={props.showCommentHandler}
+                          data-category-id={primaryCategory.id}
+                          onClick={props.showComment.bind(null, primaryCategory.id)}
                         >
                           备注
                         </Anchor>
-                        );
+                      );
                     }
 
                     if (V("CategoryManageEditPrimaryCategory")) {
@@ -414,7 +418,7 @@ class Main extends Component {
                         >
                           编辑
                         </Link>
-                        );
+                      );
                     }
 
                     if (V("CategoryManageDeletePrimaryCategory")) {
@@ -428,7 +432,7 @@ class Main extends Component {
                         >
                           删除
                         </Anchor>
-                        );
+                      );
                     }
 
                     if (editAuth.length === 0) {
@@ -501,11 +505,13 @@ class Main extends Component {
                     {
                       state.secondCategoriesList.filter(
                         ({ id, parentId }) => (
-                          id !== state.willDeleteCategory
-                          && id !== 0
-                          && parentId !== 0
-                          && parentId === state.willTranslateFirstCategory
-                          || (state.willTranslateFirstCategory === 0 && id !== 0)
+                          id !== Number(componentState.readyToDeleteCategory)
+                          && (
+                            id !== 0
+                            && parentId !== 0
+                            && parentId === state.willTranslateFirstCategory
+                            || (state.willTranslateFirstCategory === 0 && id !== 0)
+                          )
                         )
                       ).map(renderOption)
                     }
@@ -516,8 +522,8 @@ class Main extends Component {
           )
         }
         {
-          state.showActiveCities === 0 ? undefined : (
-            <Modal title="编辑PC端上线城市" onConfirm={props.saveData} onClose={props.hideActiveCities}>
+          componentState.saveCityConfirm === 1 || (state.showActiveCities === 0) ? undefined : (
+            <Modal title="编辑PC端上线城市" onConfirm={this.handleSaveCityConfig} onClose={props.hideActiveCities}>
               <CitiesSelector {...props} />
             </Modal>
           )
@@ -527,10 +533,17 @@ class Main extends Component {
   }
 
   componentDidMount() {
-    if (this.props.state.toJS().basicDataLoadStatus === 'success')
-      return;
+    const { props } = this;
+    const state = props.state.toJS();
+    const { lastSearchFilter } = state;
 
-    this.handleLoadData();
+    if (state.basicDataLoadStatus === 'success') {
+      return state.searchWithName
+      ? props.searchCategoriesWithName(lastSearchFilter.name)
+      : props.searchCategories(true)
+    }
+
+    return this.handleLoadData();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -630,6 +643,29 @@ class Main extends Component {
     this.setState({
       readyToDeleteCategory: 0
     }, this.props.resetDeleteCategory);
+  }
+
+  handleSaveCityConfig() {
+    const that = this;
+
+    that.setState({
+      saveCityConfirm: 1
+    }, () => {
+      return MessageBox({
+        title: "保存确认",
+        btnType: MessageBoxType.OKCancel,
+        icon: MessageBoxIcon.Warning,
+        text: "修改上线城市将会影响旗下商品的下架与否。如果确认数据无误，点击“确定”保存"
+      }).then(() => {
+        return that.setState({
+          saveCityConfirm: 0
+        }, that.props.saveData);
+      }, () => {
+        that.setState({
+          saveCityConfirm: 0
+        });
+      });
+    });
   }
 }
 

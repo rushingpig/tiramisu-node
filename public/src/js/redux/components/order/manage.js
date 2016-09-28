@@ -24,6 +24,7 @@ import { tableLoader, get_table_empty } from 'common/loading';
 import StdModal from 'common/std_modal';
 import RecipientInfo from 'common/recipient_info';
 import ToolTip from 'common/tooltip';
+import AddressSelector from 'common/address_selector';
 
 import LazyLoad from 'utils/lazy_load';
 import { colour, Noty, core, dom } from 'utils/index';
@@ -90,7 +91,8 @@ class FilterHeader extends Component {
       selected_order_src_level1_id: SELECT_DEFAULT_VALUE,
       search_ing: false,
       search_by_keywords_ing: false,
-    }
+    };
+    this.AddressSelectorHook = this.AddressSelectorHook.bind(this);
   }
   render(){
     var { 
@@ -103,15 +105,18 @@ class FilterHeader extends Component {
         src_id,
         province_id,
         city_id,
+        district_id,
         delivery_id,
         status,
         order_by
       },
       provinces,
       cities,
+      districts,
       stations: {station_list},
       all_order_srcs,
       all_order_status,
+      actions
     } = this.props;
     var { search_ing, search_by_keywords_ing, all_order_bys } = this.state;
 
@@ -128,16 +133,16 @@ class FilterHeader extends Component {
           <Select {...is_deal} options={this.state.deal_opts} default-text="是否处理" className="space-right"/>
           {
             V( 'OrderManageChannelFilter' )
-              ?<OrderSrcsSelects {...{all_order_srcs, src_id}} actions={this.props.actions} reduxFormName="order_manage_filter" />
-              :null
+              ? <OrderSrcsSelects {...{all_order_srcs, src_id, actions}} reduxFormName="order_manage_filter" />
+              : null
           }
           
           {
             V( 'OrderManageAddressFilter' )
-              ? [
-                  <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" key="province" className="space-right"/>,
-                  <Select {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>
-                ]
+              ? <AddressSelector
+                  {...{ province_id, city_id, district_id, provinces, cities, districts, actions,
+                   AddressSelectorHook: this.AddressSelectorHook, form: 'order_manage_filter' }}
+                />
               : null
           }
           { 
@@ -156,42 +161,23 @@ class FilterHeader extends Component {
   }
   componentDidMount(){
     setTimeout(()=>{
-      var { getProvincesSignal, getCitiesSignal, getOrderSrcs  } = this.props.actions;
-      var { fields: { province_id, city_id }, getStationListByScopeSignal } = this.props;
-      getProvincesSignal('authority');
-      province_id.value && getCitiesSignal( province_id.value, 'authority' );
+      var { getOrderSrcs  } = this.props.actions;
+      var { fields: { province_id, city_id, district_id }, getStationListByScopeSignal } = this.props;
       var data = {};
-      data.signal = 'authority';
       if(province_id.value != SELECT_DEFAULT_VALUE)
         data.province_id = province_id.value;
       if(city_id.value != SELECT_DEFAULT_VALUE)
         data.city_id = city_id.value;
+      if(city_id.value != SELECT_DEFAULT_VALUE)
+        data.city_id = district_id.value;
       getStationListByScopeSignal(data);
       getOrderSrcs();
       LazyLoad('noty');
-    },0)
+    }, 0);
   }
-  onProvinceChange(callback, e){
-    var {value} = e.target;
-    this.props.actions.resetCities();
-    if(value != this.refs.province.props['default-value']){
-      var $city = $(findDOMNode(this.refs.city));
-      this.props.getStationListByScopeSignal({ province_id: value ,signal:'authority'});
-      this.props.actions.getCitiesSignal(value, 'authority').done(() => {
-        $city.trigger('focus'); //聚焦已使city_id的值更新
-      });}else{
-        this.props.resetStationListWhenScopeChange();
-      }
-    callback(e);
-  }
-  onCityChange(callback, e){
-    var {value} = e.target;
-    if(value != this.refs.city.props['default-value'])
-      this.props.getStationListByScopeSignal({ city_id: value, signal: 'authority' });
-    else{
-      this.props.resetStationListWhenScopeChange();     
-    }
-    callback(e);
+  AddressSelectorHook(e, data){
+    this.props.resetStationListWhenScopeChange('order_manage_filter');
+    this.props.getStationListByScopeSignal({ ...data });
   }
   search(search_in_state){
     this.setState({[search_in_state]: true});
@@ -215,6 +201,7 @@ FilterHeader = reduxForm({
     'src_id',
     'province_id',
     'city_id',
+    'district_id',
     'order_by',
     'status',
     'delivery_id',
@@ -349,16 +336,16 @@ var OrderRow = React.createClass({
   activeOrder(){
     var { 
       order_id, active_order_id, activeOrder, prepareDeliveryDataOK,
-      getProvincesSignal, getCitiesSignal, getDistricts, getDeliveryShops, getDeliveryStations
+      getProvincesSignal, getStandardCitiesSignal, getStandardDistricts, getDeliveryShops, getDeliveryStations
     } = this.props;
     if(order_id != active_order_id){
       activeOrder(order_id).done(function(data){
         //这里拉取数据完全是为了给“修改配送”modal使用
         setTimeout(function(){
           $.when(
-            getProvincesSignal('authority'),
-            getCitiesSignal(data.province_id, 'authority'),
-            getDistricts(data.city_id),
+            getProvincesSignal(),
+            getStandardCitiesSignal({ province_id: data.province_id }),
+            getStandardDistricts(data.city_id),
             getDeliveryShops(data.regionalism_id),
             getDeliveryStations({city_id: data.city_id})
           ).done(prepareDeliveryDataOK)

@@ -76,6 +76,6 @@ export default combineReducers({
   operationRecord,
   stations,
   main,
-  alter_delivery_area: area(AreaActionTypes2),
+  alter_delivery_area: area(AreaActionTypes2), //修改配送摸态框中的地址选择器
   delivery_stations,
 })

@@ -17,6 +17,7 @@ import StdModal from 'common/std_modal';
 import TreeNav from 'common/tree_nav';
 import Pagination from 'common/pagination';
 import Select from 'common/select';
+import AddressSelector from 'common/address_selector';
 
 import { tableLoader, get_table_empty } from 'common/loading';
 import history from 'history_instance';
@@ -26,48 +27,45 @@ class FilterHeader extends Component {
   constructor(props){
     super(props);
     this.state = {search_ing:false}
+    this.AddressSelectorHook = this.AddressSelectorHook.bind(this);
   }
   render(){
     var {search_ing} = this.state;
-    var {area } = this.props;
-    var {provinces, cities} = area;
+    var {
+      fields: {
+        province_id,
+        city_id,
+        district_id,
+        uname_or_name,
+      },
+      area,
+      actions,
+    } = this.props;
+    var {provinces, cities, districts} = area;
     return (
         <div className="panel search">
           <div className="panel-body form-inline">
-{/*          {
-            V('UserManageSearch')?
+         {
             [
               V('UserManageUnameOrNameFilter')
               &&
-              <input ref='name' key='input-username'  className="form-control input-xs v-mg space-right" placeholder='用戶名/姓名'/>,
-              V('UserManageProvinceFilter')
+              <input {...uname_or_name} ref='name' key='input-username'  className="form-control input-xs v-mg space-right" placeholder='用戶名/姓名'/>,
+              V('UserManageAddressFilter')
               &&
-              <Select ref='province' key='province' 
-                onChange = {this.onProvinceChange.bind(this)}
-                options={provinces} 
-                default-text='--请选择省份--' 
-                className='form-control space-right'/>,
-              V('UserManageProvinceFilter')&&V('UserManageCityFilter')&&
-              <Select ref='city' key='city' options={cities} default-text='--请选择城市--' className='form-control space-right' />, 
-              <button key='searchBtn' disabled={search_ing} data-submitting={search_ing}  className="btn btn-theme btn-xs space-left" onClick={this.search.bind(this)}>
+              <AddressSelector key='address-selector'
+                                {...{ province_id, city_id, district_id, provinces, cities, districts, actions, AddressSelectorHook:this.AddressSelectorHook }} />,
+              V('UserManageHeadquarterFilter')
+              &&
+              <label>
+                <input ref='is_headquarters' type='checkbox' />
+                <label style={{fontWeight:'normal', fontSize: '12px', marginRight: '5px'}}>{'不包括总部'}</label>
+              </label>,
+              V('UserManageUnameOrNameFilter') && V('UserManageAddressFilter') && 
+              <button key='searchBtn' disabled={search_ing} data-submitting={search_ing}  className="btn btn-theme btn-xs space-left " onClick={this.search.bind(this)}>
                 <i className="fa fa-search"></i>{' 查詢'}
               </button>            
-            ]:null
-
-          }*/}  
-          {
-            V('UserManageUnameOrNameFilter')
-                ?
-                <div  style={{float:'left',}}>
-                  <span className="">{' 用戶名/姓名:'}</span>
-                  <input ref='name'  className="form-control input-xs v-mg" />
-                  <button disabled={search_ing} data-submitting={search_ing}  className="btn btn-theme btn-xs space-left" onClick={this.search.bind(this)}>
-                    <i className="fa fa-search"></i>{' 查詢'}
-                  </button>
-                </div>
-                :
-                null
-          }                                 
+            ]
+          }                                   
           {
             V('UserManageAddUser')
                 ?
@@ -88,19 +86,12 @@ class FilterHeader extends Component {
     //console.log("hahahah");
     history.push('/am/user/add');
   }
-  onProvinceChange(e){
-    var {value} = e.target;
-    if(value != this.refs.province.props['default-value'])
-      var $city = $(findDOMNode(this.refs.city));
-
-      this.props.getCitiesSignal(value, 'authority').done(() => {
-        $city.trigger('focus'); //聚焦已使city_id的值更新
-      });
-  }
+  AddressSelectorHook(e, data){}
   search(){
     this.setState({search_ing: true});
-    var data ={ page_no:0, page_size: this.props.page_size}
-    if(this.refs.name){
+    var data = this.props.filterdata;
+    data.page_no = 0;
+/*    if(this.refs.name){
       var name = this.refs.name.value;
       if (name != '')
         data.uname_or_name = name;
@@ -117,8 +108,32 @@ class FilterHeader extends Component {
       if($city[0].value != SELECT_DEFAULT_VALUE){
         data.city_id = $city[0].value;
       }
+    }*/
+    var {fields: {uname_or_name, province_id, city_id, district_id}} = this.props;
+    if(uname_or_name && uname_or_name.value && uname_or_name.value.trim != '')
+      data.uname_or_name = uname_or_name.value.trim();
+    else
+      delete data.uname_or_name
+    if(district_id && district_id.value && district_id.value != SELECT_DEFAULT_VALUE){
+      data.city_id = district_id.value;
+      delete data.is_standard_area;
+    }else if(city_id && city_id.value && city_id.value != SELECT_DEFAULT_VALUE){
+      data.city_id = city_id.value;
+      data.is_standard_area = 1;
     }
-    this.props.getUserList(data)
+    if(province_id && province_id.value && province_id.value != SELECT_DEFAULT_VALUE){
+      data.province_id = province_id.value;
+    }
+    if(this.refs.is_headquarters){
+      if(this.refs.is_headquarters.checked){
+        data.is_headquarters = 0;
+      }else{
+        data.is_headquarters = 1;
+      }
+    }else{
+      data.is_headquarters = 0;
+    }
+    this.props.actions.getUserList(data)
         .always(()=>{
           this.setState({search_ing: false});
         });
@@ -131,7 +146,10 @@ FilterHeader.propTypes = {
 FilterHeader = reduxForm({
   form: 'user_manage_filter',
   fields: [
-    'name'
+    'province_id',
+    'city_id',
+    'district_id',
+    'uname_or_name',
   ],
   destroyOnUnmount: false,
 })( FilterHeader );
@@ -205,8 +223,7 @@ class UserManagePannel extends Component{
     super(props);
     this.state={
       page_size:10,
-      /*      dept_id:0,
-       uname_or_name:'',*/
+      active_org_id: 0,
     }
     this.viewDeleteUserModal = this.viewDeleteUserModal.bind(this);
     this.viewUsableAlterModal = this.viewUsableAlterModal.bind(this);
@@ -215,17 +232,14 @@ class UserManagePannel extends Component{
   render(){
     // var { loading ,refresh } = this.props;
     // console.log(this.props.deptListManage.list);
-    var {filterdata,dept_id,uname_or_name,total,loading,refresh,list}= this.props.UserListManage;
+    var { filterdata, active_org_id, uname_or_name,total,loading,refresh,list}= this.props.UserListManage;
     var page_no = filterdata == undefined ? 0 : filterdata.page_no;
-    var {dept_role, area, } = this.props;
-    var {userDelete,usableAlter, getCitiesSignal} = this.props.actions;
+    var {userDelete,usableAlter, getUserList, dispatch, dept_role, area} = this.props;
     var {depts} = dept_role;
-
     var depts_active = depts.map(e => {
-      e.id == dept_id ? e.chosen = true:e.chosen = false;
+      e.id == active_org_id ? e.chosen = true:e.chosen = false;
       return e;
     })
-
     var content = list.map((n,i)=>{
       return <UserRow key= {n.id} {...n}
                       viewDeleteUserModal={this.viewDeleteUserModal}
@@ -233,9 +247,9 @@ class UserManagePannel extends Component{
     })
     return (
         <div className="">
-          <FilterHeader area = {area} page_size={this.state.page_size} 
-            getUserList={this.props.actions.getUserList}
-            getCitiesSignal = {getCitiesSignal}/>
+          <FilterHeader area = {area} page_size={this.state.page_size} filterdata = {filterdata}
+            actions = {{...bindActionCreators({...AreaActions()}, dispatch), getUserList}} 
+            />
 
           <div className="authority-manage">
             <div className="panel pull-left navbar" style={{paddingTop:'15px',paddingLeft:'15px',paddingBottom:'15px'}}>
@@ -292,7 +306,7 @@ class UserManagePannel extends Component{
     var {page_no} = filterdata;
     page = typeof page == 'undefined' ? page_no : page;
     filterdata.page_no = page;
-    this.props.actions.getUserList(filterdata);
+    this.props.getUserList(filterdata);
   }
 
   viewDeleteUserModal(id){
@@ -302,28 +316,29 @@ class UserManagePannel extends Component{
   viewUsableAlterModal(id,is_usable){
     this.refs.usableAlter.show(id,is_usable);
   }
-
+  
   componentDidMount(){
     LazyLoad('noty');
     setTimeout(()=>{
-      var {getUserList,getDeptsSignal, getProvincesSignal} = this.props.actions;
-      var {filterdata} = this.props.UserListManage;
+      var {getUserList,getDeptsSignal} = this.props;
+      var {filterdata, list} = this.props.UserListManage;
       filterdata.page_no = 0;
       filterdata.page_size = this.state.page_size;
       var dept_id=0;
       getDeptsSignal('authority');
-      getProvincesSignal('authority');
       getUserList(filterdata);
+      this.setState({userlist: list});
+
       //this.search();
     },0)
   }
 
   onToggleDept(dept_id){
-    //this.props.actions.getDepts(dept_id);
-    var {filterdata} = this.props.UserListManage;
-    filterdata.page_no = 0;
+    var filterdata = {};
     filterdata.org_id = dept_id;
-    this.props.actions.getUserList(filterdata);
+    filterdata.page_no = 0;
+    filterdata.page_size = this.state.page_size;
+    this.props.toggleDept(filterdata);
   }
 }
 
@@ -395,13 +410,13 @@ function mapStateToProps(state){
 }
 
 function mapDispatchToProps(dispatch){
-  return {
-    actions:bindActionCreators({
+  var actions =  bindActionCreators({
       ...UserManageActions,
       ...DeptRoleActions(),
       ...AreaActions(AreaActionTypes1)
-    },dispatch)};
-  /*return bindActionCreators({...UserManageActions, ...AreaActions(AreaActionTypes2)},dispatch);*/
+    },dispatch);
+  actions.dispatch = dispatch;
+  return actions;
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserManagePannel);

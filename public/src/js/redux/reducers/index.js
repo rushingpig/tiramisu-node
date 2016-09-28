@@ -24,7 +24,12 @@ import categorySearch from './category_search';
 import categoryManage from './category_manage';
 import citiesSelector from './cities_selector';
 import productSKUManagement from './product_sku_management';
+import productSKUWebsiteManagement from './product_sku_website_manage';
 import productSKUSearch from './product_sku_search';
+import productViewInfo from './product_view_info';
+import productViewSpecifications from './product_view_specifications';
+import operationHomePageControl from './operation_home_page_control';
+import operationProductSizeManage from './operation_product_size_manage';
 
 const rootReducer = combineReducers({
   form,
@@ -52,7 +57,12 @@ const rootReducer = combineReducers({
   categoryManage,
   citiesSelector,
   productSKUManagement,
-  productSKUSearch
+  productSKUWebsiteManagement,
+  productSKUSearch,
+  productViewInfo,
+  productViewSpecifications,
+  operationHomePageControl,
+  operationProductSizeManage
 });
 
 export default rootReducer

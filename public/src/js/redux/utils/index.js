@@ -175,8 +175,26 @@ function del(target, cb){
     var index = target.findIndex(cb);
     target.splice(index, 1);
   }
+  return target;
 }
-
+function some(target, cb){
+  if (target && typeof target === 'object') {
+    if (core_isArray(target)) {
+      //target.forEach(target, cb);
+      for (var i = 0, len = target.length; i < len; i++){
+        if( cb(target[i], i) ){
+          return true
+        }
+      }
+    } else {
+      for (var a in target){
+        if( cb(target[a], a) ){
+          return true
+        }
+      }
+    }
+  }
+}
 
 function toFixed(target, digit){
   var t = parseFloat(target);
@@ -315,6 +333,21 @@ function dom_lock( dom ){
   }
 }
 
+function dom_fixed({ $container = $('#app-container'), dom, offsetTop} ){
+  var scrollTop = undefined; //临界点
+  var scrollFunc = e => {
+    if($container.scrollTop() < scrollTop){
+      dom.style.position = 'static';
+    }else if($(dom).offset().top <= offsetTop){
+      !scrollTop && ( scrollTop = $container.scrollTop() ); //获取临界点，只需要一次
+      dom.style.position = 'fixed';
+      dom.style.top = offsetTop + 'px';
+    }
+  }
+  $container.on('scroll', scrollFunc);
+  return () => $container.off('scroll', scrollFunc)
+}
+
 export default {
   core: {
     isArray: core_isArray,
@@ -341,7 +374,8 @@ export default {
     toParams: url_toParams, //将一个对象转化为url参数
   },
   dom: {
-    lock: dom_lock       //锁定dom，显示数据正在加载（解锁为其返回值）
+    lock: dom_lock,       //锁定dom，显示数据正在加载（解锁为其返回值）
+    fixed: dom_fixed      //使一个dom悬浮(固定位置，不受滚动条影响)
   },
   dateFormat,
   getDate,
@@ -350,6 +384,7 @@ export default {
   mapValues,
   each,
   map,
+  some,
   del,
 
   clone,

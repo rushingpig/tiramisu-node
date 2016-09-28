@@ -112,8 +112,7 @@ ADD COLUMN `isAddition` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '是否为附加
 
 ALTER TABLE `tiramisu`.`buss_product` 
 DROP COLUMN `original_price`,
-ADD COLUMN `detail_page` varchar(255) NULL COMMENT '商品网站详情页' AFTER `category_id`,
-ADD COLUMN `created_by` INT(255) NULL DEFAULT NULL COMMENT '创建人' AFTER `detail_page`,
+ADD COLUMN `created_by` INT(255) NULL DEFAULT NULL COMMENT '创建人' AFTER `category_id`,
 ADD COLUMN `created_time` DATETIME NULL DEFAULT NULL AFTER `created_by`,
 ADD COLUMN `updated_by` INT(255) NULL DEFAULT NULL COMMENT '更新人' AFTER `created_time`,
 ADD COLUMN `updated_time` DATETIME NULL DEFAULT NULL AFTER `updated_by`,
@@ -125,58 +124,28 @@ DROP COLUMN `is_local_site`,
 DROP COLUMN `is_delivery`,
 CHANGE COLUMN `del_flag` `del_flag` TINYINT(1) NULL DEFAULT 1,
 ADD COLUMN `original_price` INT(8) NULL DEFAULT '0' COMMENT '产品原价（单位：分）' AFTER `price`,
-ADD COLUMN `book_time` INT(4) NOT NULL DEFAULT '0' COMMENT '第一预约时间' AFTER `original_price`,
+ADD COLUMN `book_time` DOUBLE NOT NULL DEFAULT '0' COMMENT '第一预约时间' AFTER `original_price`,
 ADD COLUMN `presell_start` DATETIME NULL DEFAULT NULL COMMENT '预售上架开始时间' AFTER `book_time`,
 ADD COLUMN `presell_end` DATETIME NULL DEFAULT NULL COMMENT '预售上架结束时间' AFTER `presell_start`,
 ADD COLUMN `send_start` DATETIME NULL DEFAULT NULL COMMENT '预售发货开始时间' AFTER `presell_end`,
 ADD COLUMN `send_end` DATETIME NULL DEFAULT NULL COMMENT '预售发货结束时间' AFTER `send_start`,
 ADD COLUMN `activity_price` INT(8) NULL DEFAULT NULL COMMENT '活动价格' AFTER `send_end`,
-ADD COLUMN `ref` INT(10) NULL DEFAULT NULL COMMENT '活动前原skuid' AFTER `activity_price`,
-ADD COLUMN `activity_start` DATETIME NULL DEFAULT NULL COMMENT '活动开始时间' AFTER `ref`,
-ADD COLUMN `activity_end` DATETIME NULL DEFAULT NULL COMMENT '活动结束时间' AFTER `activity_start`,
-ADD COLUMN `expire_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '过期标记，1为当前有效，0为过期失效' AFTER `activity_end`;
+ADD COLUMN `activity_start` DATETIME NULL DEFAULT NULL COMMENT '活动开始时间' AFTER `activity_price`,
+ADD COLUMN `activity_end` DATETIME NULL DEFAULT NULL COMMENT '活动结束时间' AFTER `activity_start`;
 
 DROP TABLE IF EXISTS `buss_product_sku_booktime`;
 CREATE TABLE `buss_product_sku_booktime` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sku_id` int(10) NOT NULL COMMENT 'skuid',
-  `book_time` int(4) NOT NULL COMMENT '预约时间',
+  `book_time` DOUBLE NOT NULL COMMENT '预约时间',
   `regionalism_id` int(10) NOT NULL COMMENT '区域id',
+  `created_by` INT(255) NULL DEFAULT NULL COMMENT '创建人',
+  `created_time` DATETIME NULL DEFAULT NULL,
+	`updated_by` INT(255) NULL DEFAULT NULL COMMENT '更新人',
+	`updated_time` DATETIME NULL DEFAULT NULL,
+	`del_flag` TINYINT(1) NULL DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='sku第二预约时间';
-
-SET GLOBAL event_scheduler = ON;
-
-DROP EVENT IF EXISTS Expire_Activity_Time;
-CREATE EVENT Expire_Activity_Time
-On SCHEDULE EVERY 1 MINUTE
-COMMENT '定时结束活动sku，开启原有sku'
-DO
-BEGIN
-  DECLARE done INT DEFAULT FALSE;
-  DECLARE sku_id,ref_id INT;
-  DECLARE cur CURSOR FOR SELECT id,ref FROM buss_product_sku where activity_start > now() or activity_end < now() and expire_flag = 1 and del_flag = 1;
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-  OPEN cur;
-  read_loop: LOOP
-    FETCH cur into sku_id,ref_id;
-    IF done THEN
-      LEAVE read_loop;
-    END IF;
-    update buss_product_sku set expire_flag = 0 where id = sku_id;
-    update buss_product_sku set expire_flag = 1 where id = ref_id;
-  END LOOP;
-  CLOSE cur;
-END;
-
-DROP EVENT IF EXISTS Expire_Presell_Time;
-CREATE EVENT Expire_Presell_Time
-On SCHEDULE EVERY 1 MINUTE
-COMMENT '定时结束预售sku'
-DO
-BEGIN
-  update buss_product_sku set expire_flag = 0 where presell_start > now() or presell_end < now() and expire_flag = 1 and del_flag = 1;
-END;
 
 DROP TABLE IF EXISTS `buss_product_pic`;
 CREATE TABLE `buss_product_pic` (
@@ -607,8 +576,39 @@ insert into `dict_regionalism` VALUES
 ('440119','萝岗区',440100,'萝岗','3','020','','中国,广东省,广州市,增城区','','','Luogang','1',null,null);
 COMMIT;
 
+-- ----------------------------
+--  Table structure for `sys_history`
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_history`;
+CREATE TABLE `sys_history` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `type` int(10) NOT NULL COMMENT '记录类型id',
+  `option` varchar(2000) NOT NULL COMMENT '操作记录',
+  `remarks` varchar(255) NOT NULL COMMENT '备注',
+  `created_by` varchar(255) NOT NULL COMMENT '创建人',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
+  `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统操作记录';
+
+-- ----------------------------
+--  Table structure for `sys_history_type`
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_history_type`;
+CREATE TABLE `sys_history_type` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `name` varchar(255) NOT NULL COMMENT '操作名称',
+  `created_by` varchar(255) NOT NULL COMMENT '创建人',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
+  `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统操作记录类型';
+
+INSERT INTO `tiramisu`.`sys_history_type` (`name`, `created_by`, `created_time`) VALUES ('编辑产品', '1', '2016-06-20 12:00:00');
+
 # 2016-06-15 Wei Zhao
 # 创建开通城市表
+DROP TABLE IF EXISTS `sys_city`;
 CREATE TABLE `sys_city` (
     `regionalism_id` int(11) NOT NULL COMMENT '区域id',
     `is_city` int(11) DEFAULT '0' COMMENT '不为0时表示是开通的地级市/县级市',
@@ -627,6 +627,89 @@ CREATE TABLE `sys_city` (
     PRIMARY KEY `IDX_UNQ_UID` (`regionalism_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='开通城市表';
 
+# 触发器：删除sku下的二级配送时间
+DROP TRIGGER IF EXISTS `cascade_delete_sku_booktime`;
+CREATE TRIGGER cascade_delete_sku_booktime after UPDATE ON buss_product_sku
+for each row 
+begin 
+if new.del_flag = 0 
+then
+UPDATE buss_product_sku_booktime 
+SET 
+    del_flag = 0
+WHERE
+    sku_id = new.id;
+end if;
+end;
+
+# 触发器：删除产品下的sku
+# 触发器：修改产品所属分类，则删除产品下不属于二级分类区域的sku
+# 后续触发cascade_delete_sku_booktime
+DROP TRIGGER IF EXISTS `cascade_delete_sku`;
+CREATE TRIGGER cascade_delete_sku after UPDATE ON buss_product
+for each row 
+begin 
+# 触发器：删除产品下的sku
+if new.del_flag = 0 
+then
+UPDATE buss_product_sku 
+SET 
+    del_flag = 0
+WHERE
+    product_id = new.id;
+end if;
+# 触发器：修改产品所属分类，则删除产品下不属于二级分类区域的sku
+if new.category_id <> old.category_id
+then
+    update buss_product_sku
+    set del_flag = 0 
+    where product_id = old.id and regionalism_id not in (
+        select regionalism_id from buss_product_category_regionalism region
+        where region.category_id = new.category_id
+    );
+end if;
+end;
+
+# 触发器：删除分类下的产品
+# 后续触发cascade_delete_sku、cascade_delete_sku_booktime
+DROP TRIGGER IF EXISTS `cascade_delete_category_product_sku`;
+CREATE TRIGGER cascade_delete_category_product_sku after UPDATE ON buss_product_category
+for each row 
+begin 
+if new.del_flag = 0
+then
+update buss_product_category_regionalism set del_flag = 0 where category_id = old.id;
+UPDATE buss_product 
+SET 
+    del_flag = 0
+WHERE
+    category_id = old.id;
+end if;
+end;
+
+# 触发器：删除二级分类下的产品关联区域
+# 删除一级分类区域，会先删除二级分类区域，因为触发器不能使用递归，所以在代码层面实现删除
+DROP TRIGGER IF EXISTS `cascade_delete_product_sku_about_region`;
+CREATE TRIGGER cascade_delete_product_sku_about_region after UPDATE ON buss_product_category_regionalism
+for each row 
+begin 
+DECLARE x INT;
+if new.del_flag = 0
+then
+SET x = (select parent_id from buss_product_category where id = old.category_id);
+if x <> 0
+then 
+    # 删除二级分类
+    update buss_product_sku 
+    set del_flag = 0 
+    where product_id in (
+        select product.id as id 
+        from buss_product_category category join buss_product product 
+        on category.id = product.category_id and category.id = old.category_id
+    );
+end if;
+end if;
+end;
 # 创建图片目录表
 DROP TABLE IF EXISTS `buss_directory`;
 CREATE TABLE `buss_directory` (
@@ -643,3 +726,111 @@ CREATE TABLE `buss_directory` (
   `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '删除标志',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='系统图片表';
+
+# 产品详情表
+DROP TABLE IF EXISTS `buss_product_detail`;
+CREATE TABLE `buss_product_detail` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `product_id` int(10) DEFAULT NULL COMMENT '产品id',
+    `regionalism_id` int(10) NOT NULL COMMENT '区域id',
+    `list_img` varchar(255) NOT NULL COMMENT '列表页图片',
+    `list_copy` varchar(255) NOT NULL COMMENT '列表页文案',
+    `detail_top_copy` varchar(255) NOT NULL COMMENT '详情页顶部商品描述',
+    `detail_template_copy` varchar(255) NOT NULL COMMENT '详情页模板上方的包装文案',
+    `detail_template_copy_end` varchar(255) NOT NULL COMMENT '详情页模板上方的结束标题',
+    `detail_img_1` varchar(255) NOT NULL COMMENT '缩略展示图1',
+    `detail_img_2` varchar(255) NOT NULL COMMENT '缩略展示图2',
+    `detail_img_3` varchar(255) NOT NULL COMMENT '缩略展示图3',
+    `detail_img_4` varchar(255) NOT NULL COMMENT '缩略展示图4',
+    `consistency` int(1) COMMENT '是否全部一致',
+    `created_by` int(11) NOT NULL COMMENT '创建人id',
+    `created_time` datetime NOT NULL COMMENT '创建时间',
+    `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+    `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+    `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='产品详情表';
+
+# 产品详情说明表
+DROP TABLE IF EXISTS `buss_product_detail_spec`;
+CREATE TABLE `buss_product_detail_spec` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `detail_id` int(10) DEFAULT NULL COMMENT '产品详情id',
+    `key` varchar(255) NOT NULL COMMENT '说明key',
+    `value` varchar(255) NOT NULL COMMENT '说明value',
+    `created_by` int(11) NOT NULL COMMENT '创建人id',
+    `created_time` datetime NOT NULL COMMENT '创建时间',
+    `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+    `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+    `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='产品详情说明表';
+
+# 详情页模板表
+DROP TABLE IF EXISTS `buss_product_template`;
+CREATE TABLE `buss_product_template` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `name` varchar(255) NOT NULL COMMENT '模板名称',
+    `created_by` int(11) NOT NULL COMMENT '创建人id',
+    `created_time` datetime NOT NULL COMMENT '创建时间',
+    `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+    `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+    `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='详情页模板表';
+INSERT INTO `tiramisu`.`buss_product_template` (`name`,`created_by`,`created_time`) VALUES ('默认模板','1','2016-08-08 12:00:00');
+
+# 详情页模板数据表
+DROP TABLE IF EXISTS `buss_product_template_data`;
+CREATE TABLE `buss_product_template_data` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `detail_id` int(10) DEFAULT NULL COMMENT '产品详情id',
+    `template_id` int(10) NOT NULL COMMENT '模板id',
+    `position_id` int(10) NOT NULL COMMENT '位置id',
+    `value` varchar(255) NOT NULL COMMENT '值',
+    `created_by` int(11) NOT NULL COMMENT '创建人id',
+    `created_time` datetime NOT NULL COMMENT '创建时间',
+    `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+    `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+    `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '软删除标志',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='详情页模板数据表';
+
+ALTER TABLE `buss_product_category_regionalism` 
+CHANGE COLUMN `channel` `channel` INT(10) NOT NULL DEFAULT 1 COMMENT '渠道id，默认PC' ;
+
+ALTER TABLE `buss_product_sku` 
+ADD COLUMN `display_name` VARCHAR(50) NULL COMMENT '外部展示名称' AFTER `size`;
+
+# 规格表
+DROP TABLE IF EXISTS `buss_product_sku_size`;
+CREATE TABLE `buss_product_sku_size` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `name` varchar(255) NOT NULL COMMENT '规格名称',
+    `sort` int(10) unsigned NOT NULL DEFAULT '4294967295' COMMENT '排序权重',
+    `created_by` int(11) NOT NULL COMMENT '创建人id',
+    `created_time` datetime NOT NULL COMMENT '创建时间',
+    `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+    `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+    `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '隐藏',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `UNI_NAME` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='规格表';
+
+# 规格说明表
+DROP TABLE IF EXISTS `buss_product_sku_size_spec`;
+CREATE TABLE `buss_product_sku_size_spec` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `size_id` int(10) unsigned NOT NULL COMMENT '规格id',
+    `spec_key` varchar(255) NOT NULL COMMENT '说明key',
+    `spec_value` varchar(255) NOT NULL COMMENT '说明value',
+    `created_by` int(11) NOT NULL COMMENT '创建人id',
+    `created_time` datetime NOT NULL COMMENT '创建时间',
+    `updated_by` int(11) DEFAULT NULL COMMENT '记录更新操作者id',
+    `updated_time` datetime DEFAULT NULL COMMENT '记录更新时间',
+    `del_flag` tinyint(1) NOT NULL DEFAULT '1' COMMENT '隐藏',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='规格说明表';
+
+ALTER TABLE `buss_product_sku` 
+ADD COLUMN `size_id` INT(10) NULL COMMENT '管理规格id' AFTER `size`;

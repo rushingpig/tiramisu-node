@@ -18,6 +18,21 @@ import ReactDOM from 'react-dom';
  *
 ***/
 
+const triangle = document.createElement('div');
+
+Object.assign(triangle.style, {
+  position: 'absolute',
+  width: '0',
+  height: '0',
+  borderStyle: 'solid',
+  borderWidth: '7px 8px 0 8px',
+  borderColor: 'rgba(0, 0, 0, 0)',
+  borderTopColor: '#333',
+  left: '50%',
+  top: '100%',
+  transform: 'translateX(-50%)'
+});
+
 const Tooltip = React.createClass({
   getDefaultProps() {
     return {
@@ -33,6 +48,10 @@ const Tooltip = React.createClass({
   render() {
     return this.props.children;
   },
+  componentWillReceiveProps(nextProps) {
+    this.wrap.innerText = nextProps.msg;
+    this.wrap.appendChild(triangle);
+  },
   componentDidMount() {
 
     if (!this.props.msg) {
@@ -41,23 +60,9 @@ const Tooltip = React.createClass({
 
     this.target = ReactDOM.findDOMNode(this);
     this.wrap = document.createElement('div');
-    const triangle = document.createElement('div');
 
     this.wrap.innerText = this.props.msg;
     this.wrap.appendChild(triangle);
-
-    Object.assign(triangle.style, {
-      position: 'absolute',
-      width: '0',
-      height: '0',
-      borderStyle: 'solid',
-      borderWidth: '7px 8px 0 8px',
-      borderColor: 'rgba(0, 0, 0, 0)',
-      borderTopColor: '#333',
-      left: '50%',
-      top: '100%',
-      transform: 'translateX(-50%)'
-    });
 
     window.addEventListener('mousewheel', this.handleMouseWheel);
     this.target.addEventListener('mouseenter', this.handleMouseEnter);

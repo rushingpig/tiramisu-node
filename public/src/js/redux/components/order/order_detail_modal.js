@@ -47,7 +47,12 @@ export default class DetailModal extends Component {
         </div>
         <div className="form-group form-inline">
           <label>{'收货人地址：'}</label>
-          <span className="gray">{data.province_name + data.city_name + data.recipient_address}</span>
+          <span className="gray">{
+            (data.province_name || '') + ' ' +
+            (data.city_name || '') + ' ' +
+            (data.regionalism_name || '') + ' ' +
+            (data.recipient_address || '')
+          }</span>
         </div>
         {
           data.delivery_type == DELIVERY_TO_HOME //送货上门

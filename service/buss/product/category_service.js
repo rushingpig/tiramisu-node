@@ -66,7 +66,7 @@ CategoryService.prototype.listCategoriesByName = (req,res,next)=>{
     let data = {
         name : req.query.name
     };
-    let promise = categoryDao.findCategoriesByName(data).then((results)=>{
+    let promise = categoryDao.findCategoriesByName(req, data).then((results)=>{
         if(toolUtils.isEmptyArray(results)){
             throw new TiramisuError(res_obj.NO_MORE_RESULTS_ARR);
         }
@@ -139,7 +139,7 @@ CategoryService.prototype.listCategoriesByMultipleCondition = (req,res,next)=>{
         res.api(res_obj.INVALID_PARAMS,errors);
         return;
     }
-    let promise = categoryDao.findCategoriesList(req.query).then(results => {
+    let promise = categoryDao.findCategoriesList(req, req.query).then(results => {
         if(toolUtils.isEmptyArray(results)){
             throw new TiramisuError(res_obj.NO_MORE_RESULTS_ARR);
         }
@@ -177,7 +177,7 @@ CategoryService.prototype.modifyPrimaryCategory = (req,res,next)=>{
         hasCategory = true;
         category.remarks = body.remarks;
     }
-    if (body.isAddition) {
+    if (body.isAddition !== undefined) {
         hasCategory = true;
         category.isAddition = body.isAddition;
     }
@@ -225,7 +225,7 @@ CategoryService.prototype.modifySecondaryCategory = (req,res,next)=>{
         hasCategory = true;
         category.remarks = body.remarks;
     }
-    if (body.isAddition) {
+    if (body.isAddition !== undefined) {
         hasCategory = true;
         category.isAddition = body.isAddition;
     }
@@ -323,6 +323,29 @@ CategoryService.prototype.rankCategoris = (req,res,next)=>{
             res.api();
         });
     systemUtils.wrapService(res,next,promise);
+};
+
+/**
+ * 删除指定分类，并移动分类下产品到指定分类
+ * @param req
+ * @param res
+ * @param next
+ */
+CategoryService.prototype.deleteCategory = (req, res, next)=>{
+    req.checkBody('new_category').notEmpty();
+    req.checkParams('id').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let new_category = req.body.new_category;
+    let delete_category = req.params.id;
+    let promise = categoryDao.deleteCategoryById(req, delete_category, new_category)
+        .then(() => {
+            res.api();
+        });
+    systemUtils.wrapService(res, next, promise);
 };
 
 module.exports = new CategoryService();

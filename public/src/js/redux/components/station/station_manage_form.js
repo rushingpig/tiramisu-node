@@ -163,23 +163,24 @@ class StationManageForm extends Component {
   }
   componentDidMount(){
     var { getProvincesSignal } = this.props.actions;
-    getProvincesSignal('authority');
+    getProvincesSignal();
     var city = this.findSelectedOptionText('city');
     this.setState({ city });
     LazyLoad('noty');
   }
   onProvinceChange(callback, e){
     var {value} = e.target;
-    this.props.actions.resetCities();
+    this.props.actions.resetCities('station_manage_form');
+    this.props.actions.resetDistricts('station_manage_form');
     if(value != this.refs.province.props['default-value'])
-      this.props.actions.getCitiesSignal(value, 'authority');
+      this.props.actions.getStandardCitiesSignal({ province_id: value });
     callback(e);
   }
   onCityChange(callback, e) {
     var { value } = e.target;
-    this.props.actions.resetDistricts();
+    this.props.actions.resetDistricts('station_manage_form');
     if(value != this.refs.city.props['default-value'])
-      this.props.actions.getDistricts(value);
+      this.props.actions.getStandardDistricts(value);
     callback(e);
   }
   handleCreateStationInfo(form_data){

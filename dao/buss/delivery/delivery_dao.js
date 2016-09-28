@@ -28,19 +28,32 @@ function DeliveryDao(){
  */
 DeliveryDao.prototype.findAllStations = function(query_data){
     if (!query_data) query_data = {};
-    let sql = "select bds.* from ?? bds";
+    let sql = `SELECT bds.* FROM ?? bds `;
     let params = [];
     params.push(tables.buss_delivery_station);
+    sql += `INNER JOIN ?? dr ON dr.id = bds.regionalism_id `;  // 区
+    params.push(tables.dict_regionalism);
+    sql += `INNER JOIN ?? sc ON sc.regionalism_id = dr.id `;
+    params.push(tables.sys_city);
     if(query_data && query_data.city_id){
-        sql += " inner join ?? dr on dr.id = bds.regionalism_id and (dr.parent_id = ? or bds.is_national > 0)";
-        params.push(tables.dict_regionalism);
-        params.push(query_data.city_id);
+        if (query_data.is_standard_area == '1') {
+            sql += `AND (dr.parent_id = ? OR bds.is_national > 0) `;
+            params.push(query_data.city_id);
+        } else {
+            sql += `AND ( (dr.id = ? AND sc.is_city = 1 ) OR (dr.parent_id = ? AND sc.is_city = 0 ) OR bds.is_national > 0 ) `;
+            params.push(query_data.city_id);
+            params.push(query_data.city_id);
+        }
     }
     if(query_data && query_data.city_ids){
-        sql += " inner join ?? dr on dr.id = bds.regionalism_id and (dr.parent_id in "+dbHelper.genInSql(query_data.city_ids)+"  or bds.is_national > 0)";
-        params.push(tables.dict_regionalism);
+        let city_ids_str = dbHelper.genInSql(query_data.city_ids);
+        if (query_data.is_standard_area == '1') {
+            sql += `AND (dr.parent_id IN ${city_ids_str} OR bds.is_national > 0) `;
+        } else {
+            sql += `AND ( (dr.id IN ${city_ids_str} AND sc.is_city = 1 ) OR (dr.parent_id IN ${city_ids_str} AND sc.is_city = 0 ) OR bds.is_national > 0 ) `;
+        }
     }
-    sql += " where bds.del_flag = ? ";
+    sql += `WHERE bds.del_flag = ? `;
     params.push(del_flag.SHOW);
     if (query_data.is_national !== undefined) {
         sql += `AND bds.is_national = ? `;
@@ -282,17 +295,11 @@ DeliveryDao.prototype.findStationById = function(station_id){
     let params = [3, del_flag.SHOW, station_id];
     return baseDao.select(sql,params);
 };
-DeliveryDao.prototype.findDeliveryRecordCount = function (query) {
-    if (!query) query = {};
-    let count_columns = [
-        'COUNT(*) AS total',
-        'SUM(bo.total_amount) AS total_amount',
-        'SUM(bdr.delivery_pay) AS delivery_pay',
-        'SUM(IF(bo.COD_amount IS NUll, bo.total_amount, bo.COD_amount)) AS COD_amount',
-        'SUM(IF(bo.is_pos_pay = 1, IF(bo.COD_amount IS NUll, bo.total_amount, bo.COD_amount), 0)) AS POS_amount'
-    ];
+
+function joinDeliveryRecordSql(query, need_city_name) {
     let sql = `FROM ?? bo `;
     let params = [tables.buss_order];
+    let need_ds_flag = systemUtils.isDoOrderDataFilter(query);
     if (query.begin_time || query.end_time)
         sql += `force index(IDX_DELIVERY_TIME) `;
     // 配送地址
@@ -303,10 +310,22 @@ DeliveryDao.prototype.findDeliveryRecordCount = function (query) {
     // 配送站
     sql += `INNER JOIN ?? bds ON bds.id = bo.delivery_id `;
     params.push(tables.buss_delivery_station);
-    sql += `INNER JOIN ?? dr1 ON dr1.id = bds.regionalism_id `;
-    params.push(tables.dict_regionalism);
-    sql += `INNER JOIN ?? dr2 ON dr2.id = dr1.parent_id `;
-    params.push(tables.dict_regionalism);
+    if (query.province_id || query.city_id || need_ds_flag || need_city_name) {
+        sql += `INNER JOIN ?? dr2 ON dr2.id = bds.regionalism_id `;
+        params.push(tables.dict_regionalism);
+        if (query.city_id || need_ds_flag || need_city_name) {
+            sql += `INNER JOIN ?? sc ON sc.regionalism_id = dr2.id `;
+            params.push(tables.sys_city);
+        }
+    }
+    if (query.province_id || need_city_name) {
+        sql += `INNER JOIN ?? dr3 ON dr3.id = dr2.parent_id `;
+        params.push(tables.dict_regionalism);
+        if (query.province_id) {
+            sql += `AND dr3.parent_id = ? `;
+            params.push(query.province_id);
+        }
+    }
     // 配送员
     sql += `INNER JOIN ?? su ON su.id = bo.deliveryman_id `;
     params.push(tables.sys_user);
@@ -314,21 +333,17 @@ DeliveryDao.prototype.findDeliveryRecordCount = function (query) {
     params.push(tables.buss_delivery_record);
 
     sql += `WHERE bo.status IN ('${constant.OS.COMPLETED}', '${constant.OS.EXCEPTION}') `;
-    if (!query.user.is_admin) {
+    if (need_ds_flag) {
+        sql += `AND ( `;
         let tmp_sql = '';
         query.user.data_scopes.forEach(curr=> {
             if (curr == constant.DS.STATION.id) {
                 tmp_sql += `OR bo.delivery_id in ${dbHelper.genInSql(query.user.station_ids)} `;
             } else if (curr == constant.DS.CITY.id) {
-                if (query.user.is_headquarters)
-                    tmp_sql += `OR 1 = 1 `;
-                else
-                    tmp_sql += `OR dr1.parent_id in ${dbHelper.genInSql(query.user.city_ids)} `;
+                tmp_sql += `OR sc.regionalism_id in ${dbHelper.genInSql(query.user.city_ids)} `;
             } else if (curr == constant.DS.SELF_DELIVERY.id) {
                 tmp_sql += `OR bo.deliveryman_id = ? `;
                 params.push(query.user.id);
-            } else if (curr == constant.DS.ALLCOMPANY.id) {
-                tmp_sql += `OR 1 = 1 `;
             } else if (curr == constant.DS.SELF_CHANNEL.id) {
                 tmp_sql += `OR bo.src_id in ${dbHelper.genInSql(query.user.src_ids)} `;
             }
@@ -347,13 +362,15 @@ DeliveryDao.prototype.findDeliveryRecordCount = function (query) {
         sql += `AND bo.delivery_time <= ? `;
         params.push(query.end_time + ' 24:00~24:00');
     }
-    if (query.province_id) {
-        sql += `AND dr2.parent_id = ? `;
-        params.push(query.province_id);
-    }
     if (query.city_id) {
-        sql += `AND dr1.parent_id = ? `;
-        params.push(query.city_id);
+        if (query.is_standard_area == '1') {
+            sql += " and dr2.parent_id = ?";
+            params.push(query.city_id);
+        }else {
+            sql += " and ((sc.is_city = 1 and dr2.id = ? ) or (sc.is_city = 0 and dr2.parent_id = ? ))";
+            params.push(query.city_id);
+            params.push(query.city_id);
+        }
     }
     if (query.delivery_id) {
         sql += `AND bo.delivery_id = ? `;
@@ -374,15 +391,28 @@ DeliveryDao.prototype.findDeliveryRecordCount = function (query) {
         // params.push(`%${query.keywords}%`);
     }
 
+    return mysql.format(sql, params);
+}
+
+DeliveryDao.prototype.findDeliveryRecordCount = function (query) {
+    if (!query) query = {};
+    let count_columns = [
+        'COUNT(*) AS total',
+        'SUM(bo.total_amount) AS total_amount',
+        'SUM(bdr.delivery_pay) AS delivery_pay',
+        'SUM(IF(bo.COD_amount IS NUll, bo.total_amount, bo.COD_amount)) AS COD_amount',
+        'SUM(IF(bo.is_pos_pay = 1, IF(bo.COD_amount IS NUll, bo.total_amount, bo.COD_amount), 0)) AS POS_amount'
+    ];
+    let sql = joinDeliveryRecordSql(query);
     return co(function *() {
         let page_no = query.page_no || 0;
         let page_size = query.page_size || 10;
         let count_sql = `SELECT ${count_columns.join()} ` + sql;
         let id_sql = `SELECT bo.id ` + sql + `LIMIT ${page_no * page_size},${page_size} `;
-        let count = yield baseDao.select(count_sql, params);
+        let count = yield baseDao.select(count_sql);
         let result = Object.assign({}, count[0]);
 
-        let order_ids = yield baseDao.select(id_sql, params);
+        let order_ids = yield baseDao.select(id_sql);
         result.order_ids = [];
         order_ids.forEach(curr=> {
             result.order_ids.push(curr.id);
@@ -527,7 +557,7 @@ DeliveryDao.prototype.joinPaySQL = function (query) {
         'bo.created_time',
         'bo.delivery_time',
         'bo.total_amount',
-        'if(bo.COD_amount IS NULL, bo.total_amount, bo.COD_amount) AS COD_amount',
+        'IF(bo.COD_amount IS NULL, bo.total_amount, bo.COD_amount) AS COD_amount',
         'bo.owner_name',
         'bo.owner_mobile',
         'bo.signin_time',
@@ -537,7 +567,7 @@ DeliveryDao.prototype.joinPaySQL = function (query) {
         'br.address',
         'dr.merger_name',
 
-        'dr2.name AS city_name',
+        'IF(sc.is_city = 1, dr2.name, dr3.name) AS city_name',
         'bds.name AS delivery_name',
 
         'su.name AS deliveryman_name',
@@ -550,89 +580,12 @@ DeliveryDao.prototype.joinPaySQL = function (query) {
         'bp.name AS product_name',
         'bps.size AS size'
     ];
-    let sql = `SELECT ${columns.join(',')} FROM ?? bo `;
-    let params = [tables.buss_order];
-    if (query.begin_time || query.end_time)
-        sql += `force index(IDX_DELIVERY_TIME) `;
-    // 配送地址
-    sql += `INNER JOIN ?? br ON br.id = bo.recipient_id `;
-    params.push(tables.buss_recipient);
-    sql += `INNER JOIN ?? dr ON dr.id = br.regionalism_id `;
-    params.push(tables.dict_regionalism);
-    // 配送站
-    sql += `INNER JOIN ?? bds ON bds.id = bo.delivery_id `;
-    params.push(tables.buss_delivery_station);
-    sql += `INNER JOIN ?? dr1 ON dr1.id = bds.regionalism_id `;
-    params.push(tables.dict_regionalism);
-    sql += `INNER JOIN ?? dr2 ON dr2.id = dr1.parent_id `;
-    params.push(tables.dict_regionalism);
-    // 配送员
-    sql += `INNER JOIN ?? su ON su.id = bo.deliveryman_id `;
-    params.push(tables.sys_user);
-    // 产品
-    sql += `INNER JOIN ?? bos ON bos.order_id = bo.id `;
-    params.push(tables.buss_order_sku);
-    sql += `INNER JOIN ?? bps ON bps.id = bos.sku_id `;
-    params.push(tables.buss_product_sku);
-    sql += `INNER JOIN ?? bp ON bp.id = bps.product_id `;
-    params.push(tables.buss_product);
-    sql += `LEFT JOIN ?? bdr ON bdr.order_id = bo.id `;
-    params.push(tables.buss_delivery_record);
-
-    sql += `WHERE bo.status IN ('${constant.OS.COMPLETED}', '${constant.OS.EXCEPTION}') `;
-    if (!query.user.is_admin) {
-        let tmp_sql = '';
-        query.user.data_scopes.forEach(curr=> {
-            if (curr == constant.DS.STATION.id) {
-                tmp_sql += `OR bo.delivery_id in ${dbHelper.genInSql(query.user.station_ids)} `;
-            } else if (curr == constant.DS.CITY.id) {
-                if (query.user.is_headquarters)
-                    tmp_sql += `OR 1 = 1 `;
-                else
-                    tmp_sql += `OR dr1.parent_id in ${dbHelper.genInSql(query.user.city_ids)} `;
-            } else if (curr == constant.DS.SELF_DELIVERY.id) {
-                tmp_sql += `OR bo.deliveryman_id = ? `;
-                params.push(query.user.id);
-            } else if (curr == constant.DS.ALLCOMPANY.id) {
-                tmp_sql += `OR 1 = 1 `;
-            } else if (curr == constant.DS.SELF_CHANNEL.id) {
-                tmp_sql += `OR bo.src_id in ${dbHelper.genInSql(query.user.src_ids)} `;
-            }
-        });
-        if (tmp_sql !== '') {
-            sql += `AND ( ${tmp_sql.replace(/^OR/, '')} )`;
-        } else {
-            sql += `AND 1 = 0 `;
-        }
-    }
-    if (query.begin_time) {
-        sql += `AND bo.delivery_time >= ? `;
-        params.push(query.begin_time + ' 00:00~00:00');
-    }
-    if(query.end_time){
-        sql += `AND bo.delivery_time <= ? `;
-        params.push(query.end_time + ' 24:00~24:00');
-    }
-    if (query.city_id) {
-        sql += `AND dr1.parent_id = ? `;
-        params.push(query.city_id);
-    }
-    if (query.delivery_id) {
-        sql += `AND bo.delivery_id = ? `;
-        params.push(query.delivery_id);
-    }
-    if (query.deliveryman_id) {
-        sql += `AND bo.deliveryman_id = ? `;
-        params.push(query.deliveryman_id);
-    }
-    if (query.is_COD !== undefined && query.is_COD !== null) {
-        if (query.is_COD)
-            sql += `AND bo.total_amount > 0 `;
-        else
-            sql += `AND bo.total_amount = 0 `;
-    }
-
-    return mysql.format(sql, params);
+    let inner_sql = '';
+    inner_sql += `INNER JOIN ${tables.buss_order_sku} bos ON bos.order_id = bo.id `;
+    inner_sql += `INNER JOIN ${tables.buss_product_sku} bps ON bps.id = bos.sku_id `;
+    inner_sql += `INNER JOIN ${tables.buss_product} bp ON bp.id = bps.product_id `;
+    inner_sql += `WHERE`;
+    return `SELECT ${columns.join(',')} ` + joinDeliveryRecordSql(query, true).replace('WHERE', inner_sql);
 };
 DeliveryDao.prototype.joinCODSQL = function (query) {
     if (!query) query = {};
@@ -645,87 +598,12 @@ DeliveryDao.prototype.joinCODSQL = function (query) {
         'if(bo.is_pos_pay = 1, "POS", "现金") AS pay_modes_name',
         'bdr.remark',
 
-        'dr2.name AS city_name',
+        'IF(sc.is_city = 1, dr2.name, dr3.name) AS city_name',
         'bds.name AS delivery_name',
 
         'su.name AS deliveryman_name',
         'su.mobile AS deliveryman_mobile'
     ];
-    let sql = `SELECT ${columns.join(',')} FROM ?? bo `;
-    let params = [tables.buss_order];
-    if (query.begin_time || query.end_time)
-        sql += `force index(IDX_DELIVERY_TIME) `;
-    // 配送地址
-    sql += `INNER JOIN ?? br ON br.id = bo.recipient_id `;
-    params.push(tables.buss_recipient);
-    sql += `INNER JOIN ?? dr ON dr.id = br.regionalism_id `;
-    params.push(tables.dict_regionalism);
-    // 配送站
-    sql += `INNER JOIN ?? bds ON bds.id = bo.delivery_id `;
-    params.push(tables.buss_delivery_station);
-    sql += `INNER JOIN ?? dr1 ON dr1.id = bds.regionalism_id `;
-    params.push(tables.dict_regionalism);
-    sql += `INNER JOIN ?? dr2 ON dr2.id = dr1.parent_id `;
-    params.push(tables.dict_regionalism);
-    // 配送员
-    sql += `INNER JOIN ?? su ON su.id = bo.deliveryman_id `;
-    params.push(tables.sys_user);
-    sql += `LEFT JOIN ?? bdr ON bdr.order_id = bo.id `;
-    params.push(tables.buss_delivery_record);
-
-    sql += `WHERE bo.status IN ('${constant.OS.COMPLETED}', '${constant.OS.EXCEPTION}') `;
-    if (!query.user.is_admin) {
-        let tmp_sql = '';
-        query.user.data_scopes.forEach(curr=> {
-            if (curr == constant.DS.STATION.id) {
-                tmp_sql += `OR bo.delivery_id in ${dbHelper.genInSql(query.user.station_ids)} `;
-            } else if (curr == constant.DS.CITY.id) {
-                if (query.user.is_headquarters)
-                    tmp_sql += `OR 1 = 1 `;
-                else
-                    tmp_sql += `OR dr1.parent_id in ${dbHelper.genInSql(query.user.city_ids)} `;
-            } else if (curr == constant.DS.SELF_DELIVERY.id) {
-                tmp_sql += `OR bo.deliveryman_id = ? `;
-                params.push(query.user.id);
-            } else if (curr == constant.DS.ALLCOMPANY.id) {
-                tmp_sql += `OR 1 = 1 `;
-            } else if (curr == constant.DS.SELF_CHANNEL.id) {
-                tmp_sql += `OR bo.src_id in ${dbHelper.genInSql(query.user.src_ids)} `;
-            }
-        });
-        if (tmp_sql !== '') {
-            sql += `AND ( ${tmp_sql.replace(/^OR/, '')} )`;
-        } else {
-            sql += `AND 1 = 0 `;
-        }
-    }
-    if (query.begin_time) {
-        sql += `AND bo.delivery_time >= ? `;
-        params.push(query.begin_time + ' 00:00~00:00');
-    }
-    if(query.end_time){
-        sql += `AND bo.delivery_time <= ? `;
-        params.push(query.end_time + ' 24:00~24:00');
-    }
-    if (query.city_id) {
-        sql += `AND dr1.parent_id = ? `;
-        params.push(query.city_id);
-    }
-    if (query.delivery_id) {
-        sql += `AND bo.delivery_id = ? `;
-        params.push(query.delivery_id);
-    }
-    if (query.deliveryman_id) {
-        sql += `AND bo.deliveryman_id = ? `;
-        params.push(query.deliveryman_id);
-    }
-    if (query.is_COD !== undefined && query.is_COD !== null) {
-        if (query.is_COD)
-            sql += `AND bo.total_amount > 0 `;
-        else
-            sql += `AND bo.total_amount = 0 `;
-    }
-
-    return mysql.format(sql, params);
+    return `SELECT ${columns.join(',')} ` + joinDeliveryRecordSql(query, true);
 };
 module.exports = DeliveryDao;

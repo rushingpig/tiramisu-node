@@ -37,6 +37,7 @@ const URL = (function() {
     provinces:                '/provinces',
     cities:                   '/province/:provinceId/cities',
     districts:                '/city/:cityId/districts',
+    districts_and_city:       '/city/:cityId/cities',
     pay_modes:                '/pay/modes',
     order_sign:               '/order/:orderId/signin',
     order_unsign:             '/order/:orderId/unsignin',
@@ -70,9 +71,11 @@ const URL = (function() {
     editPrimaryCategory:      '/product/category/primary',
     addSecondaryCategory:     '/product/categories/secondary',
     editSecondaryCategory:    '/product/category/secondary',
+    deleteSecondaryCategory:  '/product/categories/:id',
     getCategoryDetail:        '/product/category/:id/details',
     sortCategories:           '/product/categories/sort',
     activatedCity:            '/product/category/:id/regions/pc',
+    getAllSkuSize:            '/product/sku/size',
     addSku:                   '/product/sku',
     saveEditSku:              '/product/sku',
     getSku:                   '/product/skus/details',
@@ -81,7 +84,9 @@ const URL = (function() {
     viewSkuSpec:              '/product/skus/price',
     deleteSku:                '/product/skus',
     exportSkuDetail:          '/product/skus/details',
-
+    product_cities:           '/product/info/cities',
+    product_info:             '/product/info',
+    
     //送货管理
     order_exchange:     '/orders/exchange', //订单转送单列表
     order_delivery:     '/orders/delivery', //送货单管理列表
@@ -173,6 +178,14 @@ const URL = (function() {
     move_img: '/image/move',
     rename_img: '/image/name',
     all_img_dir: '/image/dir',
+
+    //运营管理
+    manage_product_sizes: '/product/skus/sizes', //获取产品所有规格
+    manage_size_add: '/product/skus/sizes', //新增管理规格
+    manage_size_edit: '/product/skus/sizes/specs', //编辑规格管理
+    manage_product_sizes_by_name: '/product/skus/sizes/name', //根据名字获取产品规格
+    manage_size_online: '/product/skus/sizes/online', //上架
+    manage_size_move: '/product/skus/sizes/sort', //规格移动
   };
 
   for (var a in url) {

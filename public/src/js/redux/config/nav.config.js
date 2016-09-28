@@ -98,12 +98,12 @@ export default [{
     "link": "/cm/img"
   }]
 }, {
-  "key": "ProductionManageAccess",
+  "key": "ProductionManage",
   "name": "产品管理",
   "short_name": "产品",
   "icon": "",
   "link": [{
-    "key": "ProductionManage",
+    "key": "ProductionManageAccess",
     "name": "商品管理",
     "icon": "",
     "link": "/pm/sku_manage"
@@ -113,6 +113,22 @@ export default [{
     "short_name": "类型",
     "icon": "",
     "link": "/pm/cam"
+  }]
+}, {
+  "key": "operation_manage",
+  "name": "运营管理",
+  "short_name": "运营",
+  "icon": "",
+  "link": [{
+    "key": "HomePageControlAccess",
+    "name": "首页运营控制",
+    "icon": "",
+    "link": "/opm/hpc"
+  }, {
+    "key": "ProductSizeManageAccess",
+    "name": "规格配置管理",
+    "icon": "",
+    "link": "/opm/psm"
   }]
 }, {
   "key": "authority_manage",

@@ -7,6 +7,17 @@ if (process.env.NODE_ENV === 'production') {
   //生产环境不需要logger
   var createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 } else {
+
+  // 为了让redux-dev-tools能够显示Map和Set格式的数据
+  Map.prototype.toJSON = function() {
+    var obj = {};
+    this.forEach((value, key) => obj[key] = value);
+    return obj;
+  }
+  Set.prototype.toJSON = function() {
+    return Array.from(this);
+  }
+
   const logger = createLogger({
     actionTransformer: action => {
       let loggerAction = {};
@@ -28,7 +39,13 @@ if (process.env.NODE_ENV === 'production') {
   });
   var createStoreWithMiddleware = compose(
     applyMiddleware(thunk, logger),
-    window.devToolsExtension ? window.devToolsExtension() : f => f
+    // 为了让redux-dev-tools能够显示Symbol格式的Action数据
+    window.devToolsExtension ? window.devToolsExtension({
+      serializeAction: (key, value) => {
+        if (typeof(value) === 'symbol') return String(value);
+        return value;
+      }
+    }) : f => f
   )(createStore);
 }
 

@@ -87,9 +87,9 @@ function mainForm(state = initial_state, action) {
         }
 
         //
-        var {getCities, getDistricts, getDeliveryShops} = AreaActions();
-        store.dispatch(getCities(data.province_id));
-        store.dispatch(getDistricts(data.city_id));
+        var {getStandardCities, getStandardDistricts, getDeliveryShops} = AreaActions();
+        store.dispatch(getStandardCities(data.province_id));
+        store.dispatch(getStandardDistricts(data.city_id));
         store.dispatch(getDeliveryShops(data.regionalism_id));
         store.dispatch(FormActions.getDeliveryStations({city_id: data.city_id}));
         
@@ -141,7 +141,7 @@ function products_choosing(state = products_choosing_state, action){
       if(state.selected_list.some(n => n.sku_id == sku_id)){
         return state;
       }
-      /*****  这个地方已突变，应该使用 immutablejs *****/
+      /*****  这个地方已突变 *****/
       state.search_results.list.forEach(function(n){
         n.skus.forEach(function(m){
           if(m.sku_id == sku_id){

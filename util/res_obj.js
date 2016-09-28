@@ -139,6 +139,10 @@ module.exports = {
   SQL_ERROR: {
     code: '2009',
     msg: 'Error happened when performing query'
+  },
+  DUPLICATE_SKU_SIZE: {
+    code: '2016',
+    msg: '规格名称重复'
   }
 };
 

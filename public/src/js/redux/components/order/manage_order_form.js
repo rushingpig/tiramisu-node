@@ -124,7 +124,7 @@ class ManageAddForm extends Component {
 
     var { save_ing, save_success, submit_ing, 
       all_delivery_time, all_pay_status, all_order_srcs, 
-      delivery_stations, all_pay_modes, data: { merchant_id, bind_order_id, operatorType, payment_amount }} = this.props['form-data'];
+      delivery_stations, all_pay_modes, data: { bind_order_id, operatorType, payment_amount }} = this.props['form-data'];
     var {provinces, cities, districts, delivery_shops} = this.props.area;
     var {invoices, selected_order_src_level1_id = src_id.value, groupbuy_psd, groupbuy_check_ing, groupbuy_msg, groupbuy_success, auto_match_ing} = this.state;
 

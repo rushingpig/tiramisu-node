@@ -27,6 +27,7 @@ var res_obj = require('../../../util/res_obj'),
   dao = require('../../../dao'),
   OrderDao = dao.order,
   orderDao = new OrderDao(),
+  refundDAo = dao.refund,
   util = require('util'),
   _ = require('lodash'),
   config = require('../../../config'),
@@ -36,6 +37,8 @@ var toolUtils = require('../../../common/ToolUtils');
 var request = require('request');
 var co = require('co');
 var order_backup = require('../../../api/order_backup');
+var refundDao = dao.refund;
+
 function OrderService() {
 }
 /**
@@ -109,7 +112,32 @@ OrderService.prototype.addOrder = (req, res, next) => {
   if (errors) {
     return res.api(res_obj.INVALID_PARAMS, errors);
   }
-  let promise = orderDao.insertOrderInTransaction(req).then(()=>{res.api()});
+  let promise = co(function *() {
+    if (req.body.bind_order_id) {
+      let bind_order_id = systemUtils.getDBOrderId(req.body.bind_order_id);
+      // 判断是否能被绑定
+      if (!(yield orderDao.isCanBind(bind_order_id))) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED, '所选订单号不能被绑定...'));
+      // 判断是否处在退款流程中
+      let option = yield refundDao.findOptionByOrderId(bind_order_id);
+      if (!option) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED, '所选订单号不存在...'));
+      if (option.refund_status) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED, '所选订单号处于退款流程中,不能被绑定...'));
+      req.body._bind_order_id = bind_order_id;
+      req.body.origin_order_id = option.origin_order_id;
+      req.body.payment_amount = option.payment_amount;
+      if (!req.body.origin_order_id || req.body.origin_order_id == '0') {
+        req.body.origin_order_id = bind_order_id;
+      }
+    }
+    let order_id = yield orderDao.insertOrderInTransaction(req);
+    let show_order_id = yield orderDao.joinOrderId(order_id);
+    let order_history = {
+      order_id: req.body._bind_order_id,
+      option: `当前订单被新订单{${show_order_id}}关联`
+    };
+    yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history, true));
+  }).then(()=> {
+    res.api();
+  });
   systemUtils.wrapService(res, next, promise);
 };
 
@@ -269,6 +297,13 @@ OrderService.prototype.getOrderDetail = (req, res, next) => {
         data.total_discount_price = curr.total_discount_price;  // 总实际售价
         data.total_original_price = curr.total_original_price;  // 总原价
         data.is_POS = curr.is_pos_pay;
+        if (curr.bind_order_id != '0') {
+          data.bind_order_id = curr.bind_order_id;
+        }
+        data.payment_amount = curr.payment_amount;
+        if (data.payment_amount === null) {
+          data.payment_amount = curr.total_discount_price - curr.total_amount;
+        }
       }
       if (curr.sku_id) {
         let product_obj = {
@@ -647,7 +682,8 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
       delete query_data.order_sorted_rules;
     }
 
-    let promise = orderDao.findOrderList(systemUtils.assemblePaginationObj(req, query_data)).then((resObj) => {
+    let promise = co(function *() {
+      let resObj = yield orderDao.findOrderList(systemUtils.assemblePaginationObj(req, query_data));
       if (!resObj._result) {
         throw new TiramisuError(res_obj.FAIL);
       } else if (toolUtils.isEmptyArray(resObj._result)) {
@@ -705,9 +741,21 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
           signin_time: curr.signin_time,
           greeting_card: curr.greeting_card
         };
-
+        if (curr.bind_order_id && curr.bind_order_id != '0') {
+          list_obj.bind_order_id = systemUtils.getShowOrderId(curr.bind_order_id, curr.bind_created_time);
+        }
+        if (curr.by_bind_order_id) {
+          list_obj.is_bind = 1;
+          list_obj.by_bind_order_id = systemUtils.getShowOrderId(curr.by_bind_order_id, curr.by_bind_created_time);
+        }
+        let refund_obj = yield refundDao.findLastRefundByOrderId(curr.id);
+        if (refund_obj) {
+          list_obj.refund_status = refund_obj.status;
+        }
         data.list.push(list_obj);
       }
+      return data;
+    }).then(data=> {
       res.api(data);
     });
     systemUtils.wrapService(res, next, promise);
@@ -764,7 +812,14 @@ OrderService.prototype.cancelOrder = (req, res, next) => {
     return;
   }
   let orderId = systemUtils.getDBOrderId(req.params.orderId),updated_time = req.body.updated_time;
-  let order_promise = orderDao.findOrderById(orderId).then((_res) => {
+  let refund_promise = refundDao.getRefundInfoByOrderId(orderId).then((res) => {
+    if (res && res[0]) {
+      if (['COMPLETED', 'CANCEL'].indexOf(res[0].status) === -1) {
+        throw new TiramisuError(res_obj.ABORTED_BY_REFUND);
+      }
+    }
+    return orderDao.findOrderById(orderId);
+  }).then((_res) => {
     if (toolUtils.isEmptyArray(_res)) {
       throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
     } else if (updated_time !== _res[0].updated_time) {
@@ -792,7 +847,7 @@ OrderService.prototype.cancelOrder = (req, res, next) => {
     option : '取消订单'
   };
   let history_promise = orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
-  let promise = Promise.all([order_promise,history_promise]).then(()=>res.api());
+  let promise = Promise.all([refund_promise,history_promise]).then(()=>res.api());
   systemUtils.wrapService(res,next,promise);
 };
 
@@ -949,7 +1004,14 @@ OrderService.prototype.exceptionOrder = (req,res,next)=>{
     return;
   }
   let orderId = systemUtils.getDBOrderId(req.params.orderId),updated_time = req.body.updated_time;
-  let order_promise = orderDao.findOrderById(orderId).then((_res) => {
+  let order_promise = refundDao.getRefundInfoByOrderId(orderId).then((res) => {
+    if (res && res[0]) {
+      if (['COMPLETED', 'CANCEL'].indexOf(res[0].status) === -1) {
+        throw new TiramisuError(res_obj.ABORTED_BY_REFUND);
+      }
+    }
+    return orderDao.findOrderById(orderId);
+  }).then((_res) => {
     if (toolUtils.isEmptyArray(_res)) {
       throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
     } else if (updated_time !== _res[0].updated_time) {

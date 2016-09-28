@@ -82,6 +82,10 @@ module.exports = {
     code: '2011',
     msg: '无效的一级来源渠道id...'
   },
+  ABORTED_BY_REFUND: {
+    code: '2012',
+    msg: '该订单有未处理的退款请求，请先取消退款'
+  },
   NO_OPTIONAL_STATION: {
     code: '3001',
     msg: '没有可选的配送站...'

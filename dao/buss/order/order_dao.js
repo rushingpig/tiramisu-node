@@ -504,6 +504,9 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
   let columns = ['br.delivery_type',
     'bo.owner_name',
     'bo.id',
+    'bo.bind_order_id',
+    'bo.origin_order_id',
+    'bo.payment_amount',
     'bo.owner_mobile',
     'br.id as recipient_id',
     'br.`name` as recipient_name',
@@ -674,7 +677,11 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
     'su3.mobile as deliveryman_mobile',
     'su4.name as last_opt_cs',
     'bo.updated_time',
-    'bo.greeting_card'
+    'bo.greeting_card',
+    'bob1.id as bind_order_id',
+    'bob1.created_time as bind_created_time',
+    'bob2.id as by_bind_order_id',
+    'bob2.created_time as by_bind_created_time'
   ];
   if (query_data.list_products) {
     columns_arr = columns_arr.concat(['bp.`name` as product_name',
@@ -755,6 +762,10 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
   params.push(tables.sys_user);
   sql += " left join ?? bpm on bpm.id = bo.pay_modes_id";
   params.push(tables.buss_pay_modes);
+  sql += " left join ?? bob1 on bob1.id = bo.bind_order_id";
+  params.push(tables.buss_order);
+  sql += " left join ?? bob2 on bob2.bind_order_id = bo.id";
+  params.push(tables.buss_order);
 
   sql += " where 1=1";
   if (query_data.owner_mobile) {
@@ -1176,6 +1187,9 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
     coupon = req.body.coupon,
     merchant_id = req.body.merchant_id;
   let orderId;
+  let bind_order_id = req.body._bind_order_id;
+  let origin_order_id = req.body.origin_order_id;
+  let payment_amount = req.body.payment_amount;
   let recipientObj = {
     regionalism_id: regionalism_id,
     name: recipient_name,
@@ -1220,6 +1234,11 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
           last_opt_cs: req.session.user.id,
           merchant_id: merchant_id
         };
+        if (bind_order_id) {
+          orderObj.bind_order_id = bind_order_id;
+          orderObj.origin_order_id = origin_order_id;
+          orderObj.payment_amount = payment_amount;
+        }
         // order
         transaction.query(this.base_insert_sql, [tables.buss_order, systemUtils.assembleInsertObj(req, orderObj)], (order_err, result) => {
           if (order_err || !result.insertId) {
@@ -1260,6 +1279,9 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
             order_id: orderId,
             option: '添加订单'
           };
+          if (req.body.bind_order_id) {
+            order_history_obj.option += `\n当前订单关联于旧订单{${req.body.bind_order_id}}`;
+          }
           let skus_sql = "insert into " + tables.buss_order_sku + "(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price,amount) values ?";
           transaction.query(skus_sql, [params], err => {
             if (err) return reject(err);
@@ -1283,7 +1305,7 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
           backup.url_post(orderId, true);
           transaction.release();
           if (err) return reject(err);
-          resolve();
+          resolve(orderId);
         });
       });
     }).catch(err => {
@@ -1604,6 +1626,76 @@ OrderDao.prototype.findOrderBackupById = function (order_id) {
     order_info.products = order_sku;
     order_info.recipient = order_recipient;
     return order_info;
+  });
+}
+
+OrderDao.prototype.findRelateListById = function (query) {
+  let page_no = query.page_no || 0;
+  let page_size = query.page_size || 10;
+  let sort_type = query.sort_type || 'DESC';
+  let columns = [
+    'bo.id',
+    'su.name AS created_by',
+    'bo.created_time'
+  ];
+  let sql_info = `SELECT ${columns.join()} FROM `;
+  let sql = `?? bo `;
+  let params = [tables.buss_order];
+  sql += `LEFT JOIN ?? su ON su.id = bo.created_by `;
+  params.push(tables.sys_user);
+  sql += `WHERE bo.id = ? OR bo.origin_order_id = ? `;
+  params.push(query.order_id);
+  params.push(query.order_id);
+
+  return co(function *() {
+    let total_sql = `SELECT count(*) AS total FROM ` + sql;
+    let _res = {};
+    let total = yield baseDao.select(total_sql, params);
+    _res.total = total[0].total;
+
+    sql += `ORDER BY created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+    _res.list = yield baseDao.select(sql_info + sql, params);
+    _res.page_no = page_no;
+    _res.page_size = page_size;
+    return _res;
+  });
+};
+
+OrderDao.prototype.isCanBind = function (order_id) {
+  return co(function *() {
+    let sql = `SELECT bo.id FROM ?? bo `;
+    let params = [tables.buss_order];
+    sql += `WHERE (bo.id = ? AND bo.status != 'CANCEL' AND bo.status != 'EXCEPTION' ) `;
+    params.push(order_id);
+    sql += `OR bo.bind_order_id = ? `;
+    params.push(order_id);
+    let info = yield baseDao.select(sql, params);
+    if (!info || info.length == 0) return Promise.resolve(true);
+    return Promise.resolve(false);
+  });
+};
+
+OrderDao.prototype.isBind = function (order_id) {
+  return co(function *() {
+    let sql = `SELECT bo.id FROM ?? bo `;
+    let params = [tables.buss_order];
+    sql += `WHERE bo.bind_order_id = ? `;
+    params.push(order_id);
+    let info = yield baseDao.select(sql, params);
+    if (!info || info.length == 0) return Promise.resolve(false);
+    return Promise.resolve(true);
+  });
+};
+
+OrderDao.prototype.joinOrderId = function (order_id) {
+  let sql = `SELECT bo.id, bo.created_time FROM ?? bo WHERE bo.id = ? `;
+  let params = [tables.buss_order, order_id];
+
+  return co(function *() {
+    let info = yield baseDao.select(sql, params);
+    if (!info || info.length == 0) return Promise.reject('not found order_id');
+    info = info[0];
+    return systemUtils.getShowOrderId(info.id, info.created_time);
   });
 };
 

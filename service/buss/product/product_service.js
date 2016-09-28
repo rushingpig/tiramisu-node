@@ -107,31 +107,31 @@ ProductService.prototype.listProducts = (req, res, next) => {
             res_data.list.push(temp_obj[o]);
         }
         // TODO: 在获取订单可选的产品列表时，每种产品sku只返回一个
-        if (req.query.__only_accessory__) {
-            let existProduct = [];
-            let selectStr = ['蛋糕帽', '蜡烛', '数字蜡烛', '餐具'];
-            let tmpList = [];
-            for (let i = 0; i < res_data.list.length; i++) {
-                let tmpP = res_data.list[i];
-                // TODO: 餐具模糊匹配
-                if (tmpP.name && tmpP.name.indexOf('餐具') != -1 && existProduct.indexOf('餐具') == -1) {
-                    tmpP.skus = [tmpP.skus[0]];
-                    tmpList.push(tmpP);
-                    existProduct.push('餐具');
-                    continue;
-                }
-                selectStr.forEach(str=> {
-                    if(tmpP.name == str && existProduct.indexOf(str) == -1){
-                        tmpP.skus = [tmpP.skus[0]];
-                        tmpList.push(tmpP);
-                        existProduct.push(str);
-                        return false;
-                    }
-                });
-            }
-            res_data.list = tmpList;
-            res_data.total = tmpList.length;
-        }
+        // if (req.query.__only_accessory__) {
+        //     let existProduct = [];
+        //     let selectStr = ['蛋糕帽', '蜡烛', '数字蜡烛', '餐具'];
+        //     let tmpList = [];
+        //     for (let i = 0; i < res_data.list.length; i++) {
+        //         let tmpP = res_data.list[i];
+        //         // TODO: 餐具模糊匹配
+        //         if (tmpP.name && tmpP.name.indexOf('餐具') != -1 && existProduct.indexOf('餐具') == -1) {
+        //             tmpP.skus = [tmpP.skus[0]];
+        //             tmpList.push(tmpP);
+        //             existProduct.push('餐具');
+        //             continue;
+        //         }
+        //         selectStr.forEach(str=> {
+        //             if(tmpP.name == str && existProduct.indexOf(str) == -1){
+        //                 tmpP.skus = [tmpP.skus[0]];
+        //                 tmpList.push(tmpP);
+        //                 existProduct.push(str);
+        //                 return false;
+        //             }
+        //         });
+        //     }
+        //     res_data.list = tmpList;
+        //     res_data.total = tmpList.length;
+        // }
         res.api(res_data);
     });
     systemUtils.wrapService(res,next, promise);

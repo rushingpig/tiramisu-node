@@ -1,0 +1,7 @@
+tiramisu:
+  build: .
+  container_name: tiramisu
+  ports:
+    - 13001:3001
+  volumes:
+    - "../:/project/tiramisu"

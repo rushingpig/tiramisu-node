@@ -67,6 +67,7 @@ var tables = {
     buss_product_sku_size_spec: 'buss_product_sku_size_spec',
     buss_company: 'buss_company',
     buss_invoice: 'buss_invoice',
+    buss_refund: 'buss_refund',
 //=================Dict===================
     dict_regionalism : 'dict_regionalism',
     delivery_pay_rule: 'delivery_pay_rule'
@@ -164,12 +165,9 @@ var login_required = true;
 // 导出excel的远程host
 var excel_export_host = 'http://localhost:8888/excel/order/';
 
-<<<<<<< HEAD
 var backup_host = 'http://localhost:3001';
 var mongodb_uri = 'mongodb://cupcake:17F2wDwxI39w@localhost:27017/cupcake';
-=======
 var express_host = 'http://exp.blissmall.net/express/get';
->>>>>>> dev_Invoice
 
 module .exports = {
     exp_static_options : exp_static_options,
@@ -186,10 +184,7 @@ module .exports = {
     tartetatin_host: tartetatin_host,
     img_host: img_host,
     excel_export_host : excel_export_host,
-<<<<<<< HEAD
     backup_host: backup_host,
-    mongodb_uri: mongodb_uri
-=======
+    mongodb_uri: mongodb_uri,
     express_host : express_host
->>>>>>> dev_Invoice
 };

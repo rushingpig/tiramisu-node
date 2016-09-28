@@ -357,7 +357,7 @@ class ManagePannel extends Component{
 	render(){
 		var { RefundManage, getOrderOptRecord, resetOrderOptRecord, refund_data , bindOrderRecord, area,
 			 getProvincesSignal, getCitiesSignal, getDistrictsAndCity, resetCities, resetDistricts, getRefundList, getRefundApplyDetail,
-			 editRefundChangeStatus, refundEdit, getBindOrders, resetBindOrders, addRemark, refundComplete_CS, initForm  } = this.props;
+			 editRefundChangeStatus, refundEdit, getBindOrders, resetBindOrders, addRemark, refundComplete_CS, initForm, exportExcel  } = this.props;
 		var { list, total, loading, refresh, page_no, check_order_info, active_order_id, operationRecord, all_refund_status, all_refund_way, all_refund_reasons } = RefundManage;
 		var { viewOperationRecordModal, viewRefundModal, viewRefundCredential, viewRemarkModal, viewBindOrderRecord } = this;
 		var content = list.map((n) => {
@@ -366,7 +366,7 @@ class ManagePannel extends Component{
 		})
 		return (
 			<div className='order-manage'>
-				<TopHeader />
+				<TopHeader exportExcel = {exportExcel} />
 				<FilterHeader 
 				  all_refund_way = {all_refund_way}
 				  all_refund_status = {all_refund_status}

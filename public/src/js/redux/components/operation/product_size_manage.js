@@ -236,7 +236,7 @@ class FormCol extends Component {
     return (
       !props.editable
         ? <div className="form-group form-inline">
-            <label><span>{str.join('')}</span>：</label>
+            <label><span style={{width: '60px', display: 'inline-block', wordBreak: 'break-all'}}>{str.join('')}</span>：</label>
             <input
               disabled = {props.view}
               value={props.value}

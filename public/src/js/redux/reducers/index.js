@@ -33,6 +33,11 @@ import operationHomePageControl from './operation_home_page_control';
 import operationProductSizeManage from './operation_product_size_manage';
 import invoiceManage from './order/invoice';
 import invoiceVATManage from './order/invoice_VAT';
+import groupbuysProgramManage from './groupbuys/program_manage';
+import groupbuysProgramFormManage from './groupbuys/program_form';
+import groupbuysProductsManage from './groupbuys/products_manage';
+import groupbuysProductsFormManage from './groupbuys/products_form';
+import groupbuysCouponManage from './groupbuys/coupon_manage';
 
 const rootReducer = combineReducers({
   form,
@@ -69,6 +74,11 @@ const rootReducer = combineReducers({
   productSKUSearch,
   invoiceManage,
   invoiceVATManage,
+  groupbuysProgramManage,
+  groupbuysProgramFormManage,
+  groupbuysProductsManage,
+  groupbuysProductsFormManage,
+  groupbuysCouponManage,
 });
 
 export default rootReducer

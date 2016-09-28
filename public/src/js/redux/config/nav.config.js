@@ -135,6 +135,26 @@ export default [{
     "icon": "",
     "link": "/opm/psm"
   }]
+},{
+  "key": 'GroupbuyManageAccess',
+  'name': '团购管理',
+  'short_name': '团购',
+  'icon': '',
+  'link': [{
+    'key': 'GroupbuyProgramManageAccess',
+    'name': '团购项目管理',
+    'icon': '',
+    'link': '/gm/pg',
+  }, {
+    'key': 'GroupbuyProductManageAccess',
+    'name': '团购商品管理',
+    'icon': '',
+    'link': '/gm/pd',
+  },{
+    'key': 'GroupbuyCouponManageAccess',
+    'name': '团购券管理',
+    'link': '/gm/cp',
+  }]
 }, {
   "key": "authority_manage",
   "name": "权限管理",

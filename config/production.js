@@ -161,6 +161,9 @@ var login_required = true;
 // 导出excel的远程host
 var excel_export_host = 'http://localhost:8888/excel/order/';
 
+var backup_host = 'http://localhost:3001';
+var mongodb_uri = 'mongodb://cupcake:17F2wDwxI39w@localhost:27017/cupcake';
+
 module .exports = {
     exp_static_options : exp_static_options,
     exp_session_options : exp_session_options,
@@ -175,5 +178,7 @@ module .exports = {
     coupon_host : coupon_host,
     tartetatin_host: tartetatin_host,
     img_host: img_host,
-    excel_export_host : excel_export_host
+    excel_export_host : excel_export_host,
+    backup_host: backup_host,
+    mongodb_uri: mongodb_uri
 };

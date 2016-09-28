@@ -143,6 +143,10 @@ module.exports = {
   DUPLICATE_SKU_SIZE: {
     code: '2016',
     msg: '规格名称重复'
+  },
+  REDUNDANCY_ERROR: {
+    code: '2013',
+    msg: 'Error order info redundancy'
   }
 };
 

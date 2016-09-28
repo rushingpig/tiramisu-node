@@ -20,6 +20,7 @@ const SMS_HOST = config.use_sms ? config.sms_host: null;
 var async = require('async');
 var request = require('request');
 var moment = require('moment');
+var backup = require('../../../api/backup');
 
 // TODO: 后面要考虑移动到其它地方   在跑多例的情况下，需要将根据name存到数据库中。
 // 锁构造方法
@@ -355,14 +356,128 @@ OrderDao.prototype.findShopByRegionId = function(districtId) {
  */
 OrderDao.prototype.updateOrder = function(orderObj, order_id) {
   let sql = this.base_update_sql + " where id = ?";
-  return baseDao.update(sql, [tables.buss_order, orderObj, order_id]);
+  return co(function*() {
+    let _res = yield baseDao.update(sql, [tables.buss_order, orderObj, order_id]);
+    backup.url_post(order_id, true);
+    return _res;
+  });
 };
-/**
- * new order-sku record
- * @param order_sku_obj
- */
-OrderDao.prototype.insertOrderSku = function(order_sku_obj) {
-  return baseDao.insert(this.base_insert_sql, [tables.buss_order_sku, order_sku_obj]);
+OrderDao.prototype.findProductById = function (tran, sku_id, cb) {
+  let promise = co(function*() {
+    let sql = `SELECT * FROM ?? WHERE id = ? `;
+    let params = [tables.buss_product_sku, sku_id];
+    let sku = yield new Promise((resolve, reject) => {
+      tran.query(sql, params, (err, result)=> {
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
+    if (!sku || sku.length == 0) return Promise.reject(`not found sku_id = ${sku_id}`);
+    sku = sku[0];
+
+    params = [tables.buss_product, sku.product_id];
+    let spu = yield new Promise((resolve, reject) => {
+      tran.query(sql, params, (err, result)=> {
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
+    if (!spu || spu.length == 0) return Promise.reject(`not found product_id = ${sku.product_id} (sku_id = ${sku_id})`);
+    spu = spu[0];
+
+    params = [tables.buss_product_category, spu.category_id];
+    let spc = yield new Promise((resolve, reject) => {
+      tran.query(sql, params, (err, result)=> {
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
+    if (!spc || spc.length == 0) return Promise.reject(`not found category_id = ${spu.category_id} (sku_id = ${sku_id}) (product_id = ${sku.product_id})`);
+    spc = spc[0];
+
+    return {
+      sku: sku,
+      spu: spu,
+      spc: spc
+    };
+  });
+
+  if (typeof cb == 'function') {
+    promise.then(result=> {
+      cb(null, result);
+    }).catch(cb);
+  } else {
+    return promise;
+  }
+};
+OrderDao.prototype.redundancySku = function (tran, order_id, cb) {
+  let promise = co(function*() {
+    let sql = `SELECT id, sku_id FROM ?? WHERE del_flag = 1 AND order_id = ? `;
+    let params = [tables.buss_order_sku, order_id];
+    let _p = yield new Promise((resolve, reject)=> {
+      tran.query(sql, params, (err, result)=> {
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
+    for (let i = 0; i < _p.length; i++) {
+      let obj = _p[i];
+      let result = yield OrderDao.prototype.findProductById(tran, obj.sku_id);
+      let tmp_obj = {};
+      try {
+        tmp_obj.sku = JSON.stringify(result.sku);
+        tmp_obj.spu = JSON.stringify(result.spu);
+        tmp_obj.spc = JSON.stringify(result.spc);
+      } catch (err) {
+        return Promise.reject('JSON.stringify ERROR');
+      }
+      yield new Promise((resolve, reject) => {
+        let update_sql = `update ?? set ? where id = ? `;
+        tran.query(update_sql, [tables.buss_order_sku, tmp_obj, obj.id], function (err) {
+          if (err)return reject(err);
+          resolve();
+        });
+      });
+    }
+  });
+  if (typeof cb == 'function') {
+    promise.then(result=> {
+      cb(null, result);
+    }).catch(cb);
+  } else {
+    return promise;
+  }
+};
+OrderDao.prototype.insertOrderSku = function (tran, obj, cb) {
+  let promise = co(function*() {
+    let result = yield OrderDao.prototype.findProductById(tran, obj.sku_id);
+    let tmp_obj = Object.assign(obj);
+    try {
+      // tmp_obj.isAddition = result.spc.isAddition;
+      // tmp_obj.product_id = result.spu.id;
+      // tmp_obj.category_id = result.spc.id;
+      tmp_obj.sku = JSON.stringify(result.sku);
+      tmp_obj.spu = JSON.stringify(result.spu);
+      tmp_obj.spc = JSON.stringify(result.spc);
+    } catch (err) {
+
+    } finally {
+      yield new Promise((resolve, reject) => {
+        let insert_sql = `insert into ?? set ?`;
+        tran.query(insert_sql, [tables.buss_order_sku, tmp_obj], function (err) {
+          if (err)return reject(err);
+          resolve();
+        });
+      });
+    }
+  });
+  if (typeof cb == 'function') {
+    promise.then(result=> {
+      cb(null, result);
+    }).catch(cb);
+  } else {
+    return promise;
+  }
 };
 OrderDao.prototype.batchInsertOrderSku = function(params) {
   let sql = "insert into " + tables.buss_order_sku + "(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price,amount) values ?";
@@ -419,6 +534,9 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
     'bpc.isAddition',
     'bos.amount',
     'bos.num',
+    'bos.sku',
+    'bos.spu',
+    'bos.spc',
     'bps.size',
     'bps.price',
     'bps.original_price',
@@ -488,7 +606,31 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
     params.push(orderIdOrIds);
   }
 
-  return baseDao.select(sql, params);
+  return co(function* () {
+    let result = yield baseDao.select(sql, params);
+    result.forEach(curr=> {
+      if(curr.sku && curr.spu && curr.spc){
+        try{
+          curr.sku = JSON.parse(curr.sku);
+          curr.spu = JSON.parse(curr.spu);
+          curr.spc = JSON.parse(curr.spc);
+          curr.product_name = curr.spu.name;
+          curr.display_name = curr.sku.display_name;
+          curr.category_id = curr.spu.category_id;
+          curr.isAddition = curr.spc.isAddition;
+          curr.size = curr.sku.size;
+          curr.price = curr.sku.price;
+          curr.original_price = curr.sku.original_price;
+          delete curr.sku;
+          delete curr.spu;
+          delete curr.spc;
+        }catch (err){
+
+        }
+      }
+    });
+    return result;
+  });
 };
 /**
  * query for the order list by the given terms
@@ -850,7 +992,7 @@ OrderDao.prototype.editOrder = function(order_obj, order_id, recipient_obj, reci
           async.each(
               add_skus,
               (curr, cb) => {
-                transaction.query(this.base_insert_sql, [tables.buss_order_sku, curr], cb);
+                OrderDao.prototype.insertOrderSku(transaction, curr, cb);
               },
               err => {
                 if (err) return reject(err);
@@ -890,6 +1032,7 @@ OrderDao.prototype.editOrder = function(order_obj, order_id, recipient_obj, reci
     }).then(ignore => {
       return new Promise((resolve, reject) => {
         transaction.commit(err => {
+          backup.url_post(order_id, true);
           transaction.release();
           if (err) return reject(err);
           resolve();
@@ -1032,6 +1175,7 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
     greeting_card = req.body.greeting_card,
     coupon = req.body.coupon,
     merchant_id = req.body.merchant_id;
+  let orderId;
   let recipientObj = {
     regionalism_id: regionalism_id,
     name: recipient_name,
@@ -1081,8 +1225,8 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
           if (order_err || !result.insertId) {
             return reject(order_err || new TiramisuError(errorMessage.FAIL));
           }
-          let orderId = result.insertId,
-            params = [];
+          orderId = result.insertId;
+          let params = [];
           products.forEach((curr) => {
             let arr = [];
             arr.push(orderId);
@@ -1119,11 +1263,14 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
           let skus_sql = "insert into " + tables.buss_order_sku + "(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price,amount) values ?";
           transaction.query(skus_sql, [params], err => {
             if (err) return reject(err);
-            transaction.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], err => {
+            OrderDao.prototype.redundancySku(transaction, orderId, err=>{
               if (err) return reject(err);
-              transaction.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], err => {
+              transaction.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], err => {
                 if (err) return reject(err);
-                resolve();
+                transaction.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], err => {
+                  if (err) return reject(err);
+                  resolve();
+                });
               });
             });
           });
@@ -1133,6 +1280,7 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
     }).then(ignore => {
       return new Promise((resolve, reject) => {
         transaction.commit(err => {
+          backup.url_post(orderId, true);
           transaction.release();
           if (err) return reject(err);
           resolve();
@@ -1241,6 +1389,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
     coupon = req.body.coupon ? toolUtils.extractNumbers(req.body.coupon) : null,
     merchant_id = req.body.merchant_id,
     shop_id = req.body.shop_id;
+  let orderId;
   let recipientObj = {
     regionalism_id: regionalism_id,
     name: recipient_name,
@@ -1302,15 +1451,8 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
           };
           // order
           transaction.query(this.base_insert_sql, [tables.buss_order, systemUtils.assembleInsertObj(req, orderObj)], (order_err, result) => {
-            if (order_err) {
-              if (order_err.code === 'ER_DUP_ENTRY') {
-                return reject(new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, orderObj.merchant_id));
-              } else {
-                return reject(new TiramisuError(errorMessage.SQL_ERROR, order_err.message));
-              }
-            }
-            if (!result.insertId) {
-              return reject(new TiramisuError(errorMessage.FAIL));
+            if (order_err || !result.insertId) {
+              return reject(order_err || new TiramisuError(errorMessage.FAIL));
             }
             let orderId = result.insertId,
               params = [];
@@ -1337,7 +1479,10 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
               recipient_mobile: recipient_mobile,
               recipient_address: systemUtils.encodeForFulltext(recipient_address),
               landmark: systemUtils.encodeForFulltext(recipient_landmark),
-              merchant_id: merchant_id
+              merchant_id: merchant_id,
+              // coupon : coupon,
+              owner_mobile_suffix : owner_mobile.substring(owner_mobile.length - 5),
+              recipient_mobile_suffix : recipient_mobile.substring(recipient_mobile.length - 5)
             };
             if(coupon) order_fulltext_obj.coupon = coupon;
             let order_history_obj = {
@@ -1347,7 +1492,9 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
             };
             let skus_sql = "insert into " + tables.buss_order_sku + "(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price,amount) values ?";
             transaction.query(skus_sql, [params], err => {
-              if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
+            if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
+            OrderDao.prototype.redundancySku(transaction, orderId, err=> {
+              if (err) return reject(new TiramisuError(errorMessage.REDUNDANCY_ERROR, err));
               transaction.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], err => {
                 if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
                 transaction.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], err => {
@@ -1362,6 +1509,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
     }).then(ignore => {
       return new Promise((resolve, reject) => {
         transaction.commit(err => {
+          backup.url_post(orderId, true);
           transaction.release();
           if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
           // TODO: move to submit when tiramisu is online
@@ -1391,7 +1539,8 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
       });
     });
   });
-};
+});
+}
 /**
  * batch update order_fulltext records
  * @param orderIds
@@ -1424,5 +1573,38 @@ function doFullText(query_data) {
     return true;
   }
 }
+
+OrderDao.prototype.findOrderBackupById = function (order_id) {
+  return co(function*() {
+    let sql = `SELECT * FROM ?? WHERE id = ? `;
+    let params = [tables.buss_order, order_id];
+
+    let order_info = yield baseDao.select(sql, params);
+    if (!order_info || order_info.length == 0) return Promise.reject(`not found order_id: ${order_id}`);
+    order_info = order_info[0];
+
+    params = [tables.buss_recipient, order_info.recipient_id];
+    let order_recipient = yield baseDao.select(sql, params);
+    order_recipient = order_recipient[0];
+
+    let sku_sql = `SELECT * FROM ?? WHERE del_flag = 1 AND order_id = ? `;
+    params = [tables.buss_order_sku, order_id];
+    let order_sku = yield baseDao.select(sku_sql, params);
+    order_sku.forEach(curr=> {
+      if (curr.sku && curr.spu && curr.spc) {
+        try {
+          curr.sku = JSON.parse(curr.sku);
+          curr.spu = JSON.parse(curr.spu);
+          curr.spc = JSON.parse(curr.spc);
+        } catch (err) {
+        }
+      }
+    });
+
+    order_info.products = order_sku;
+    order_info.recipient = order_recipient;
+    return order_info;
+  });
+};
 
 module.exports = OrderDao;

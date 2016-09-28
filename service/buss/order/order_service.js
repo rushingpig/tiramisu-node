@@ -34,6 +34,8 @@ var res_obj = require('../../../util/res_obj'),
   xlsx = require('node-xlsx');
 var toolUtils = require('../../../common/ToolUtils');
 var request = require('request');
+var co = require('co');
+var order_backup = require('../../../api/order_backup');
 function OrderService() {
 }
 /**
@@ -279,6 +281,7 @@ OrderService.prototype.getOrderDetail = (req, res, next) => {
           num: curr.num,
           original_price: curr.original_price,
           name: curr.product_name,
+          display_name: curr.display_name,
           atlas: curr.atlas,
           size: curr.size,
           amount: curr.amount,
@@ -1186,5 +1189,19 @@ OrderService.prototype.editOrderRemarks = (req,res,next) => {
     res.api()
   });
   systemUtils.wrapService(res,next,promise);
+};
+
+OrderService.prototype.orderBackup = function (req, res, next) {
+  let promise = co(function*() {
+    let order_id = req.params.orderId || '';
+    if(order_id.length >= 16){
+      order_id = systemUtils.getDBOrderId(order_id);
+    }
+    let info = yield orderDao.findOrderBackupById(order_id);
+    yield order_backup.insert(info);
+  }).then(() => {
+    res.api();
+  });
+  systemUtils.wrapService(res, next, promise);
 };
 module.exports = new OrderService();

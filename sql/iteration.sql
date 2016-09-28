@@ -834,3 +834,7 @@ CREATE TABLE `buss_product_sku_size_spec` (
 
 ALTER TABLE `buss_product_sku` 
 ADD COLUMN `size_id` INT(10) NULL COMMENT '管理规格id' AFTER `size`;
+
+ALTER TABLE `buss_order_sku` ADD COLUMN `sku` varchar(2048) DEFAULT NULL COMMENT '原始sku信息';
+ALTER TABLE `buss_order_sku` ADD COLUMN `spu` varchar(2048) DEFAULT NULL COMMENT '原始spu信息';
+ALTER TABLE `buss_order_sku` ADD COLUMN `spc` varchar(2048) DEFAULT NULL COMMENT '原始spc信息';

@@ -178,6 +178,7 @@ function main(state = main_state, action){
 			list = list.map( m => {
 				if(m.id ==  invoiceId){
 					m.status = handleActionName
+					m.updated_by = window.xfxb.user.name || '-'
 				}
 				return m;
 			})
@@ -190,6 +191,7 @@ function main(state = main_state, action){
 					m.express_no = express_no ;
 					m.express_type = express_type;
 					m.status = 'DELIVERY';
+					m.updated_by = window.xfxb.user.name || '-'
 				}
 				return m;
 			})
@@ -226,6 +228,7 @@ function main(state = main_state, action){
 			list = list.map( m => {
 				if(m.id ==  invoiceId){
 					m.remarks = remarks
+					m.updated_by = window.xfxb.user.name || '-'
 				}
 				return m;
 			})

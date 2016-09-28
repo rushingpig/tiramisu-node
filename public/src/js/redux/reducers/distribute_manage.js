@@ -1,4 +1,3 @@
-import { UPDATE_PATH } from 'redux-simple-router';
 import { dateFormat, map } from 'utils/index';
 import { combineReducers } from 'redux';
 import { REQUEST, order_status, ACCESSORY_CATE_ID } from 'config/app.config';

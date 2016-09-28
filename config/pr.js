@@ -2,6 +2,8 @@
 
 module.exports = require('./qa');
 
+let mysql_options = module.exports.mysql_options;
+
 //  mysql config options
 module.exports.mysql_options = {
   acquireTimeout: 10000,

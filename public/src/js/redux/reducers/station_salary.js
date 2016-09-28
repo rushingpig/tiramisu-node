@@ -1,3 +1,4 @@
+import { UPDATE_PATH } from 'redux-simple-router';
 import { combineReducers } from 'redux';
 import * as Actions from 'actions/station_salary';
 
@@ -35,6 +36,8 @@ var main_state = {
 }
 function main(state = main_state, action){
 	switch (action.type){
+		case UPDATE_PATH:
+			return main_state;
 		case Actions.ACTIVE_ORDER:
 			return {...state,active_order_id: action.active_order_id}
 		case Actions.GET_DELIVERY_RECORD:

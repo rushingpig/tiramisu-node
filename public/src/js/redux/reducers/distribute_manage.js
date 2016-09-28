@@ -1,3 +1,4 @@
+import { UPDATE_PATH } from 'redux-simple-router';
 import { dateFormat, map } from 'utils/index';
 import { combineReducers } from 'redux';
 import { REQUEST, order_status, ACCESSORY_CATE_ID } from 'config/app.config';
@@ -36,6 +37,8 @@ var main_state = {
 }
 function main(state = main_state, action){
   switch (action.type) {
+    case UPDATE_PATH:
+      return main_state;
     case Actions.SIGN_ORDER:
     case Actions.UNSIGN_ORDER:
       if(action.key == REQUEST.ING){

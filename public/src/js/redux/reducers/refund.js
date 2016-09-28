@@ -1,5 +1,6 @@
 import { map } from 'utils/index';
 import { combineReducers } from 'redux';
+import { UPDATE_PATH } from 'redux-simple-router';
 import { area } from './area_select';
 import clone from 'clone';
 
@@ -30,6 +31,8 @@ function _t(data){
 
 function RefundManage(state = initial_state, action){
 	switch(action.type){
+		case UPDATE_PATH:
+			return initial_state;
 		case REFUNDACTIONS.GET_REFUND_REASONS:
 			return {...state, all_refund_reasons: _t(action.data)}
 		case REFUNDACTIONS.ACTIVE_ORDER:

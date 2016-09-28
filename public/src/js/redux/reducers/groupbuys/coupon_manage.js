@@ -1,3 +1,4 @@
+import { UPDATE_PATH } from 'redux-simple-router';
 import { combineReducers } from 'redux';
 import * as Actions from 'actions/groupbuys/coupon_manage';
 import { getGlobalStore, getGlobalState } from 'stores/getter';
@@ -16,6 +17,8 @@ var main_state = {
 }
 function main(state = main_state, action){
 	switch (action.type){
+        case UPDATE_PATH:
+            return main_state;
 		case Actions.GET_COUPON_ORDER_LIST:
         	return {...state, ...action.data, loading: false, refresh: false }
         case Actions.GOT_ORDER_SRCS:

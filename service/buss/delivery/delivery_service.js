@@ -29,6 +29,10 @@ var dao = require('../../../dao'),
     calculator = require('../../../api/calculator'),
     async = require('async');
 
+var refundDao = dao.refund;
+const REFUND_TYPE = Constant.REFUND.TYPE;
+const RS = Constant.REFUND.STATUS;
+const REASON_TYPE = Constant.REFUND.REASON_TYPE;
 const sms = require('../../../api/sms');
 const img_host = config.img_host;
 
@@ -253,9 +257,9 @@ DeliveryService.prototype.auditReprintApply = (req,res,next)=>{
         return;
     }
     const validate_code = systemUtils.genValidateCode(),
-          order_id = req.body.order_id,
-          applicant_mobile = req.body.applicant_mobile,
-          order_update_obj = {};
+        order_id = req.body.order_id,
+        applicant_mobile = req.body.applicant_mobile,
+        order_update_obj = {};
     let update_obj = {
         validate_code : validate_code,
         audit_opinion : req.body.audit_opinion,
@@ -371,10 +375,10 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
             products = order.products || [];
             order_obj.total_amount = current_order.total_amount;
             order_obj.total_original_price = 0;
-            order_obj.total_discount_price = 0;
+            // order_obj.total_discount_price = 0;
             for (let i = 0; i < products.length; i++) {
                 order_obj.total_original_price += products[i].original_price * products[i].num;
-                order_obj.total_discount_price += products[i].discount_price;
+                // order_obj.total_discount_price += products[i].discount_price;
                 let isAdd = true;
                 for (let j = 0; j < _res.length; j++) {
                     if (products[i].sku_id == _res[j].sku_id) {
@@ -518,6 +522,14 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
                 option: '自动计算{配送工资}为{' + (delivery_pay_obj.delivery_pay / 100) + '}元\n'
             };
 
+            if (order_obj.payment_amount !== 0 && !order_obj.payment_amount) {
+                let _p = _res[0].total_discount_price || 0;
+                let _a = _res[0].total_amount || 0;
+                order_obj.payment_amount = _p - _a;
+            }
+            if (order_obj.total_amount > 0) {
+                order_obj.payment_amount += order_obj.total_amount;
+            }
             if (!is_change) {
                 add_skus = null;
                 delete_skuIds = null;
@@ -538,12 +550,64 @@ DeliveryService.prototype.signinOrder = (req,res,next)=>{
             }
             yield orderDao.batchInsertOrderHistory(historyArr);
 
-            // if (refund_amount > 0) {
-            //     return yield tartetatin.refund(refund_amount, current_order.id, current_order.id)
-            //         .catch(err=> {
-            //             return Promise.resolve(err);
-            //         });
-            // }
+            if (refund_amount > 0 || order_obj.payfor_type === Constant.PFT.FULL_REFUND) {
+                let refund_obj = {};
+                let refund_history = {option: ''};
+                let refund_info = yield refundDao.findLastRefundByOrderId(orderId);
+                if (refund_info && [RS.CANCEL, RS.COMPLETED].indexOf(refund_info.status) == -1) {
+                    refund_obj.status = RS.TREATED;
+                    refund_history.bind_id = refund_info.id;
+                    refund_obj.amount = refund_info.amount;
+                    if (refund_amount > 0) {
+                        refund_obj.amount += refund_amount;
+                        refund_history.option = `因减少配件修改退款金额为:{${refund_obj.amount / 100}}\n`;
+                    }
+                    if (order_obj.payfor_type === Constant.PFT.FULL_REFUND) {
+                        refund_obj.type = REFUND_TYPE.FULL;
+                        refund_obj.amount = order_obj.payment_amount;
+                        refund_history.option = `因幸福承诺全额退款修改退款金额为:{${refund_obj.amount / 100}}\n`;
+                    }
+                    yield refundDao.updateRefund(refund_info.id, systemUtils.assembleInsertObj(req, refund_obj));
+                } else {
+                    refund_obj = {
+                        order_id: orderId,
+                        status: RS.TREATED,
+                        type: REFUND_TYPE.PART,
+                        amount: 0,
+                        reason_type: 4,
+                        reason: REASON_TYPE['4'],
+                        linkman: 0,
+                        linkman_name: _res[0].owner_name,
+                        linkman_mobile: _res[0].owner_mobile
+                    };
+                    if ([1, 2].indexOf(current_order.src_id) == -1) {  // 外部渠道
+                        refund_obj.way = 'THIRD_PARTY';
+                    } else {
+                        refund_obj.way = 'FINANCE';
+                        if (current_order.pay_modes_id == 13) { // 13微信支付
+                            refund_obj.account_type = 'WECHAT';
+                        } else {
+                            refund_obj.account_type = 'ALIPAY';
+                        }
+                    }
+                    if (refund_amount > 0) {
+                        refund_obj.amount += refund_amount;
+                        refund_history.option = `因减少配件自动生成退款\n退款金额为:{${refund_obj.amount / 100}}\n`;
+                    }
+                    if (order_obj.payfor_type === Constant.PFT.FULL_REFUND) {
+                        refund_obj.type = REFUND_TYPE.FULL;
+                        refund_obj.reason_type = 5;
+                        refund_obj.amount = order_obj.payment_amount;
+                        refund_history.option = `因幸福承诺全额退款:{${refund_obj.amount / 100}}\n`;
+                    }
+                    let order_history = {option: ''};
+                    order_history.order_id = orderId;
+                    order_history.option += refund_history.option;
+                    refund_history.bind_id = yield refundDao.insertRefund(systemUtils.assembleInsertObj(req, refund_obj));
+                    yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history, true));
+                }
+                yield refundDao.insertHistory(systemUtils.assembleInsertObj(req, refund_history, true));
+            }
         });
     }).then(refund_result => {
         if (refund_result) return res.api({refund_result: refund_result});
@@ -774,9 +838,9 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
 
     let order_id = systemUtils.getDBOrderId(req.params.orderId),
         order_history_obj = {
-        order_id : order_id,
-        option : '重新打印订单'
-    };
+            order_id : order_id,
+            option : '重新打印订单'
+        };
 
     let reprint_apply_update_obj = {
         is_reprint : 1,
@@ -931,7 +995,7 @@ DeliveryService.prototype.print = (req,res,next)=>{
             }else if (print_status === Constant.PS.AUDITING){
                 throw new TiramisuError(res_obj.ORDER_AUDITING);
             }
-             if (!systemUtils.checkOrderDataScopes(req.session.user, curr) || !systemUtils.isOrderCanUpdateStatus(curr.status, Constant.OS.INLINE)) {
+            if (!systemUtils.checkOrderDataScopes(req.session.user, curr) || !systemUtils.isOrderCanUpdateStatus(curr.status, Constant.OS.INLINE)) {
                 throw new TiramisuError(res_obj.OPTION_EXPIRED);
             }
         });
@@ -1154,6 +1218,11 @@ DeliveryService.prototype.getRecord = (req, res, next)=>{
 
     let query = Object.assign({user: req.session.user}, req.query);
     if (query.isCOD !== undefined) query.is_COD = (query.isCOD == '1');
+    if (req.query.keywords && isNaN(parseInt(req.query.keywords))) {
+        query.keywords = systemUtils.encodeForFulltext(req.query.keywords);
+    } else {
+        query.keywords = req.query.keywords;
+    }
     let promise = co(function *() {
         let count = yield deliveryDao.findDeliveryRecordCount(query);
         let result = Object.assign({}, _.omit(count, ['order_ids']));

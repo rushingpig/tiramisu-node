@@ -1,17 +1,18 @@
 'use strict';
 var baseDao = require('../../base_dao'),
-  util = require('util'),
-  co = require('co'),
-  toolUtils = require('../../../common/ToolUtils'),
-  systemUtils = require('../../../common/SystemUtils'),
-  Constant = require('../../../common/Constant'),
-  dbHelper = require('../../../common/DBHelper'),
-  logger = require('../../../common/LogHelper').systemLog(),
-  constant = require('../../../common/Constant'),
-  del_flag = baseDao.del_flag,
-  errorMessage = require('../../../util/res_obj'),
-  TiramisuError = require('../../../error/tiramisu_error'),
-  res_obj = require('../../../util/res_obj');
+    util = require('util'),
+    _ = require('lodash'),
+    co = require('co'),
+    toolUtils = require('../../../common/ToolUtils'),
+    systemUtils = require('../../../common/SystemUtils'),
+    Constant = require('../../../common/Constant'),
+    dbHelper = require('../../../common/DBHelper'),
+    logger = require('../../../common/LogHelper').systemLog(),
+    constant = require('../../../common/Constant'),
+    del_flag = baseDao.del_flag,
+    errorMessage = require('../../../util/res_obj'),
+    TiramisuError = require('../../../error/tiramisu_error'),
+    res_obj = require('../../../util/res_obj');
 var config = require('../../../config');
 const tables = config.tables;
 // TODO: should just check sms or add setting for every single sms type
@@ -19,6 +20,7 @@ const SMS_HOST = config.use_sms ? config.sms_host: null;
 var async = require('async');
 var request = require('request');
 var moment = require('moment');
+var backup = require('../../../api/backup');
 
 // TODO: 后面要考虑移动到其它地方   在跑多例的情况下，需要将根据name存到数据库中。
 // 锁构造方法
@@ -63,9 +65,9 @@ OrderDao.prototype.findAllOrderSrc = function() {
 
 OrderDao.prototype.insertOrderSrc = function(orderSrcObj) {
   let _this = this,
-    transaction,
-    isLocked = false,
-    isTrans = false;
+      transaction,
+      isLocked = false,
+      isTrans = false;
   return new Promise((resolve, reject) => {
     co(function*() {
       orderSrcObj.merge_name = orderSrcObj.name;
@@ -125,9 +127,9 @@ OrderDao.prototype.insertOrderSrc = function(orderSrcObj) {
 
 OrderDao.prototype.updateOrderSrc = function(orderSrcId, orderSrcObj) {
   let _this = this,
-    transaction,
-    isLocked = false,
-    isTrans = false;
+      transaction,
+      isLocked = false,
+      isTrans = false;
   return new Promise((resolve, reject) => {
     co(function*() {
       transaction = yield baseDao.trans();
@@ -246,33 +248,33 @@ OrderDao.prototype.checkDataScopes = function (user, order) {
  */
 OrderDao.prototype.insertOrder = function(orderObj) {
   return baseDao
-    .insert(this.base_insert_sql, [tables.buss_order, orderObj])
-    .then(result => {
-      return new Promise((resolve, reject) => resolve(result));
-    })
-    .catch(err => {
-      if (err.code === 'ER_DUP_ENTRY') {
-        throw new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, orderObj.merchant_id);
-      }
-      throw err;
-    });
+      .insert(this.base_insert_sql, [tables.buss_order, orderObj])
+      .then(result => {
+        return new Promise((resolve, reject) => resolve(result));
+      })
+      .catch(err => {
+        if (err.code === 'ER_DUP_ENTRY') {
+          throw new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, orderObj.merchant_id);
+        }
+        throw err;
+      });
 };
 
 OrderDao.prototype.addOrderError = function(orderErrorObj) {
   return baseDao
-    .insert(this.base_insert_sql, [tables.buss_order_error, orderErrorObj])
-    .catch(err => {
-      if (err.code === 'ER_DUP_ENTRY') {
-        throw new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, orderErrorObj.merchant_id);
-      }
-      throw err;
-    });
+      .insert(this.base_insert_sql, [tables.buss_order_error, orderErrorObj])
+      .catch(err => {
+        if (err.code === 'ER_DUP_ENTRY') {
+          throw new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, orderErrorObj.merchant_id);
+        }
+        throw err;
+      });
 };
 
 OrderDao.prototype.editOrderError = function(orderErrorObj, merchant_id, src_id) {
   const updateSQL = this.base_update_sql + ' WHERE merchant_id = ? AND src_id = ?';
   return baseDao
-    .update(updateSQL, [tables.buss_order_error, orderErrorObj, merchant_id, src_id]);
+      .update(updateSQL, [tables.buss_order_error, orderErrorObj, merchant_id, src_id]);
 };
 
 OrderDao.prototype.findOrderErrors = function(query_data) {
@@ -354,14 +356,128 @@ OrderDao.prototype.findShopByRegionId = function(districtId) {
  */
 OrderDao.prototype.updateOrder = function(orderObj, order_id) {
   let sql = this.base_update_sql + " where id = ?";
-  return baseDao.update(sql, [tables.buss_order, orderObj, order_id]);
+  return co(function*() {
+    let _res = yield baseDao.update(sql, [tables.buss_order, orderObj, order_id]);
+    backup.url_post(order_id, true);
+    return _res;
+  });
 };
-/**
- * new order-sku record
- * @param order_sku_obj
- */
-OrderDao.prototype.insertOrderSku = function(order_sku_obj) {
-  return baseDao.insert(this.base_insert_sql, [tables.buss_order_sku, order_sku_obj]);
+OrderDao.prototype.findProductById = function (tran, sku_id, cb) {
+  let promise = co(function*() {
+    let sql = `SELECT * FROM ?? WHERE id = ? `;
+    let params = [tables.buss_product_sku, sku_id];
+    let sku = yield new Promise((resolve, reject) => {
+      tran.query(sql, params, (err, result)=> {
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
+    if (!sku || sku.length == 0) return Promise.reject(`not found sku_id = ${sku_id}`);
+    sku = sku[0];
+
+    params = [tables.buss_product, sku.product_id];
+    let spu = yield new Promise((resolve, reject) => {
+      tran.query(sql, params, (err, result)=> {
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
+    if (!spu || spu.length == 0) return Promise.reject(`not found product_id = ${sku.product_id} (sku_id = ${sku_id})`);
+    spu = spu[0];
+
+    params = [tables.buss_product_category, spu.category_id];
+    let spc = yield new Promise((resolve, reject) => {
+      tran.query(sql, params, (err, result)=> {
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
+    if (!spc || spc.length == 0) return Promise.reject(`not found category_id = ${spu.category_id} (sku_id = ${sku_id}) (product_id = ${sku.product_id})`);
+    spc = spc[0];
+
+    return {
+      sku: sku,
+      spu: spu,
+      spc: spc
+    };
+  });
+
+  if (typeof cb == 'function') {
+    promise.then(result=> {
+      cb(null, result);
+    }).catch(cb);
+  } else {
+    return promise;
+  }
+};
+OrderDao.prototype.redundancySku = function (tran, order_id, cb) {
+  let promise = co(function*() {
+    let sql = `SELECT id, sku_id FROM ?? WHERE del_flag = 1 AND order_id = ? `;
+    let params = [tables.buss_order_sku, order_id];
+    let _p = yield new Promise((resolve, reject)=> {
+      tran.query(sql, params, (err, result)=> {
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
+    for (let i = 0; i < _p.length; i++) {
+      let obj = _p[i];
+      let result = yield OrderDao.prototype.findProductById(tran, obj.sku_id);
+      let tmp_obj = {};
+      try {
+        tmp_obj.sku = JSON.stringify(result.sku);
+        tmp_obj.spu = JSON.stringify(result.spu);
+        tmp_obj.spc = JSON.stringify(result.spc);
+      } catch (err) {
+        return Promise.reject('JSON.stringify ERROR');
+      }
+      yield new Promise((resolve, reject) => {
+        let update_sql = `update ?? set ? where id = ? `;
+        tran.query(update_sql, [tables.buss_order_sku, tmp_obj, obj.id], function (err) {
+          if (err)return reject(err);
+          resolve();
+        });
+      });
+    }
+  });
+  if (typeof cb == 'function') {
+    promise.then(result=> {
+      cb(null, result);
+    }).catch(cb);
+  } else {
+    return promise;
+  }
+};
+OrderDao.prototype.insertOrderSku = function (tran, obj, cb) {
+  let promise = co(function*() {
+    let result = yield OrderDao.prototype.findProductById(tran, obj.sku_id);
+    let tmp_obj = Object.assign(obj);
+    try {
+      // tmp_obj.isAddition = result.spc.isAddition;
+      // tmp_obj.product_id = result.spu.id;
+      // tmp_obj.category_id = result.spc.id;
+      tmp_obj.sku = JSON.stringify(result.sku);
+      tmp_obj.spu = JSON.stringify(result.spu);
+      tmp_obj.spc = JSON.stringify(result.spc);
+    } catch (err) {
+
+    } finally {
+      yield new Promise((resolve, reject) => {
+        let insert_sql = `insert into ?? set ?`;
+        tran.query(insert_sql, [tables.buss_order_sku, tmp_obj], function (err) {
+          if (err)return reject(err);
+          resolve();
+        });
+      });
+    }
+  });
+  if (typeof cb == 'function') {
+    promise.then(result=> {
+      cb(null, result);
+    }).catch(cb);
+  } else {
+    return promise;
+  }
 };
 OrderDao.prototype.batchInsertOrderSku = function(params) {
   let sql = "insert into " + tables.buss_order_sku + "(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price,amount) values ?";
@@ -388,6 +504,9 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
   let columns = ['br.delivery_type',
     'bo.owner_name',
     'bo.id',
+    'bo.bind_order_id',
+    'bo.origin_order_id',
+    'bo.payment_amount',
     'bo.owner_mobile',
     'br.id as recipient_id',
     'br.`name` as recipient_name',
@@ -418,6 +537,9 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
     'bpc.isAddition',
     'bos.amount',
     'bos.num',
+    'bos.sku',
+    'bos.spu',
+    'bos.spc',
     'bps.size',
     'bps.price',
     'bps.original_price',
@@ -442,7 +564,7 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
     'su3.name as last_op_cs_name'
   ].join(',');
   let sql = "select " + columns + " from ?? bo",
-    params = [];
+      params = [];
   params.push(tables.buss_order);
   sql += " left join ?? br on bo.recipient_id = br.id";
   params.push(tables.buss_recipient);
@@ -487,7 +609,31 @@ OrderDao.prototype.findOrderById = function(orderIdOrIds) {
     params.push(orderIdOrIds);
   }
 
-  return baseDao.select(sql, params);
+  return co(function* () {
+    let result = yield baseDao.select(sql, params);
+    result.forEach(curr=> {
+      if(curr.sku && curr.spu && curr.spc){
+        try{
+          curr.sku = JSON.parse(curr.sku);
+          curr.spu = JSON.parse(curr.spu);
+          curr.spc = JSON.parse(curr.spc);
+          curr.product_name = curr.spu.name;
+          curr.display_name = curr.sku.display_name;
+          curr.category_id = curr.spu.category_id;
+          curr.isAddition = curr.spc.isAddition;
+          curr.size = curr.sku.size;
+          curr.price = curr.sku.price;
+          curr.original_price = curr.sku.original_price;
+          delete curr.sku;
+          delete curr.spu;
+          delete curr.spc;
+        }catch (err){
+
+        }
+      }
+    });
+    return result;
+  });
 };
 /**
  * query for the order list by the given terms
@@ -531,7 +677,11 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
     'su3.mobile as deliveryman_mobile',
     'su4.name as last_opt_cs',
     'bo.updated_time',
-    'bo.greeting_card'
+    'bo.greeting_card',
+    'bob1.id as bind_order_id',
+    'bob1.created_time as bind_created_time',
+    'bob2.id as by_bind_order_id',
+    'bob2.created_time as by_bind_created_time'
   ];
   if (query_data.list_products) {
     columns_arr = columns_arr.concat(['bp.`name` as product_name',
@@ -551,7 +701,8 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
   }
   let columns = columns_arr.join(',');
   let params = [],
-    data_scopes = query_data.user.data_scopes;
+      data_scopes = query_data.user.data_scopes;
+  let need_ds_flag = systemUtils.isDoOrderDataFilter(query_data);
   let doFt = doFullText(query_data);
   let sql = "select " + columns + " from ?? bo ";
   // 当使用配送时间作为查询过滤条件时,强制使用相关索引
@@ -573,25 +724,21 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
   }
   sql += " inner join ?? br on bo.recipient_id = br.id";
   params.push(tables.buss_recipient);
-  if (query_data.city_id) {
-    sql += " inner join ?? dr2 on dr2.id = br.regionalism_id and dr2.parent_id = ?";
-    params.push(tables.dict_regionalism);
-    params.push(query_data.city_id);
-  }
-  if (query_data.province_id && !query_data.city_id) {
+  if (query_data.province_id || query_data.city_id || need_ds_flag) {
     sql += " inner join ?? dr2 on dr2.id = br.regionalism_id";
-    sql += " inner join ?? dr3 on dr2.parent_id = dr3.id and dr3.parent_id = ?";
     params.push(tables.dict_regionalism);
+    if (query_data.city_id || need_ds_flag) {
+      sql += " left join ?? sc on sc.regionalism_id = dr2.id";
+      params.push(tables.sys_city);
+    }
+  }
+  if (query_data.province_id) {
+    sql += " inner join ?? dr3 on dr3.id = dr2.parent_id and dr3.parent_id = ?";
     params.push(tables.dict_regionalism);
     params.push(query_data.province_id);
   }
   sql += " left join ?? bds2 on bo.delivery_id = bds2.id";
   params.push(tables.buss_delivery_station);
-  if (data_scopes.indexOf(constant.DS.CITY.id) !== -1 && !query_data.user.is_headquarters) {
-    sql += " inner join ?? dr3 on dr3.id = br.regionalism_id";
-    params.push(tables.dict_regionalism);
-
-  }
   if (query_data.list_products) {
     sql += " left join ?? bosku on bo.id = bosku.order_id and bosku.del_flag = ?";
     params.push(tables.buss_order_sku);
@@ -615,6 +762,10 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
   params.push(tables.sys_user);
   sql += " left join ?? bpm on bpm.id = bo.pay_modes_id";
   params.push(tables.buss_pay_modes);
+  sql += " left join ?? bob1 on bob1.id = bo.bind_order_id";
+  params.push(tables.buss_order);
+  sql += " left join ?? bob2 on bob2.bind_order_id = bo.id";
+  params.push(tables.buss_order);
 
   sql += " where 1=1";
   if (query_data.owner_mobile) {
@@ -639,10 +790,25 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
   } else if (query_data.is_submit == 1) {
     sql += " and bo.is_submit = 1";
   }
+  if (query_data.city_id) {
+    if (query_data.is_standard_area == '1') {
+      sql += " and dr2.parent_id = ?";
+      params.push(query_data.city_id);
+    }else {
+      sql += " and ((sc.is_city = 1 and dr2.id = ? ) or (sc.is_city = 0 and dr2.parent_id = ? ) or (dr2.id = ? ))";
+      params.push(query_data.city_id);
+      params.push(query_data.city_id);
+      params.push(query_data.city_id.toString().replace(/\d{2}$/, '99'));
+    }
+  }
   if (query_data.src_id) {
-    sql += " and (src_id = ? or bos.parent_id = ?)";
+    sql += " and (bos.id = ? or bos.parent_id = ?)";
     params.push(query_data.src_id);
     params.push(query_data.src_id);
+  }
+  if (query_data.coupon) {
+    sql += " and bo.coupon is not null and bo.coupon <> '' and bo.coupon like ? ";
+    params.push(`%${query_data.coupon}%`);
   }
   if (query_data.status) {
     if (Array.isArray(query_data.status)) {
@@ -694,35 +860,34 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
     params.push('%' + query_data.keywords + '%');
   }
   // data filter begin
-  let ds_sql = "",
-    temp_sql = "";
-  if (!toolUtils.isEmptyArray(data_scopes)) {
-    ds_sql += " and (";
-    data_scopes.forEach((curr) => {
-
-      if (curr == constant.DS.STATION.id) {
-        temp_sql += " or bo.delivery_id in " + dbHelper.genInSql(query_data.user.station_ids);
-      } else if (curr == constant.DS.CITY.id) {
-        if (query_data.user.is_headquarters) {
-          temp_sql += "";
-        } else {
-          temp_sql += " or dr3.parent_id in " + dbHelper.genInSql(query_data.user.city_ids);
+  let ds_sql = "";
+  if (need_ds_flag) {
+    let temp_sql = '';
+    let temp_city_ids;
+    if (!toolUtils.isEmptyArray(data_scopes)) {
+      data_scopes.forEach((curr) => {
+        if (curr == constant.DS.STATION.id) {
+          temp_sql += " or bo.delivery_id in " + dbHelper.genInSql(query_data.user.station_ids);
+        } else if (curr == constant.DS.CITY.id) {
+          if (!temp_city_ids) {
+            temp_city_ids = _.isArray(query_data.user.city_ids) ? query_data.user.city_ids : [];
+            temp_city_ids = temp_city_ids.map(id=> id.toString().replace(/\d{2}$/, '99'));
+          }
+          temp_sql += " or sc.regionalism_id in " + dbHelper.genInSql(query_data.user.city_ids);
+          temp_sql += " or dr2.id in " + dbHelper.genInSql(temp_city_ids);
+        } else if (curr == constant.DS.SELF_DELIVERY.id) {
+          temp_sql += " or bo.deliveryman_id = ?";
+          params.push(query_data.user.id);
+        } else if (curr == constant.DS.SELF_CHANNEL.id) {
+          temp_sql += " or bo.src_id in " + dbHelper.genInSql(query_data.user.src_ids);
         }
-      } else if (curr == constant.DS.SELF_DELIVERY.id) {
-        temp_sql += " or bo.deliveryman_id = ?";
-        params.push(query_data.user.id);
-      } else if (curr == constant.DS.ALLCOMPANY.id) {
-        temp_sql += " or 1 = 1";
-      } else if (curr == constant.DS.SELF_CHANNEL.id && !query_data.user.is_headquarters) {
-        temp_sql += " or bo.src_id in " + dbHelper.genInSql(query_data.user.src_ids);
-      }
-    });
-    ds_sql += temp_sql.replace(/^ or/, '');
-    ds_sql += ")";
-
-  }
-  if (temp_sql.trim() === "" || query_data.user && (query_data.user.is_admin)) {
-    ds_sql = "";
+      });
+    }
+    if(temp_sql !== ''){
+      ds_sql = ' and (' + temp_sql.replace(/^ or/, '') + ')';
+    }else{
+      ds_sql = ' and 1 = 0';
+    }
   }
   // data filter end
 
@@ -816,10 +981,10 @@ OrderDao.prototype.findOrderList = function(query_data,isExcelExport) {
  */
 OrderDao.prototype.editOrder = function(order_obj, order_id, recipient_obj, recipient_id, products, add_skus, delete_skuIds, update_skus) {
   let order_sql = this.base_update_sql + " where id = ?",
-    recipent_sql = order_sql,
-    recipient_params = [tables.buss_recipient, recipient_obj, recipient_id],
-    order_params = [tables.buss_order, order_obj, order_id],
-    userId = order_obj.update_by;
+      recipent_sql = order_sql,
+      recipient_params = [tables.buss_recipient, recipient_obj, recipient_id],
+      order_params = [tables.buss_order, order_obj, order_id],
+      userId = order_obj.update_by;
   if (toolUtils.isEmptyArray(add_skus)) add_skus = [];
   if (toolUtils.isEmptyArray(update_skus)) update_skus = [];
   return baseDao.trans().then(transaction => {
@@ -842,7 +1007,7 @@ OrderDao.prototype.editOrder = function(order_obj, order_id, recipient_obj, reci
           async.each(
               add_skus,
               (curr, cb) => {
-                transaction.query(this.base_insert_sql, [tables.buss_order_sku, curr], cb);
+                OrderDao.prototype.insertOrderSku(transaction, curr, cb);
               },
               err => {
                 if (err) return reject(err);
@@ -882,6 +1047,7 @@ OrderDao.prototype.editOrder = function(order_obj, order_id, recipient_obj, reci
     }).then(ignore => {
       return new Promise((resolve, reject) => {
         transaction.commit(err => {
+          backup.url_post(order_id, true);
           transaction.release();
           if (err) return reject(err);
           resolve();
@@ -907,7 +1073,7 @@ OrderDao.prototype.editOrder = function(order_obj, order_id, recipient_obj, reci
  */
 OrderDao.prototype.updateRecipient = function(recipient_obj, recipient_id) {
   let sql = this.base_update_sql + " where id = ?",
-    params = [tables.buss_recipient, recipient_obj, recipient_id];
+      params = [tables.buss_recipient, recipient_obj, recipient_id];
   return baseDao.update(sql, params);
 };
 /**
@@ -942,12 +1108,12 @@ OrderDao.prototype.batchInsertOrderHistory = function(order_history_params) {
  */
 OrderDao.prototype.findOrderHistory = function(query_data) {
   let columns = [
-      'boh.order_id',
-      'boh.`option`',
-      'boh.created_time',
-      'su.`name` as created_by'
-    ].join(','),
-    params = [];
+        'boh.order_id',
+        'boh.`option`',
+        'boh.created_time',
+        'su.`name` as created_by'
+      ].join(','),
+      params = [];
   let sql = "select " + columns + " from ?? boh";
   params.push(tables.buss_order_history);
   sql += " left join ?? su on su.id = boh.created_by";
@@ -975,8 +1141,8 @@ OrderDao.prototype.findOrderHistory = function(query_data) {
  */
 OrderDao.prototype.findOrdersByIds = function(order_ids) {
   let columns = [
-      'bo.*',
-      'dr.parent_id AS city_id'
+    'bo.*',
+    'dr.parent_id AS city_id'
   ];
   let sql = `SELECT ${columns.join()} FROM ?? bo `;
   let params = [tables.buss_order];
@@ -1002,28 +1168,32 @@ OrderDao.prototype.updateOrders = function(update_obj, order_ids) {
  */
 OrderDao.prototype.insertOrderInTransaction = function(req) {
   let delivery_type = req.body.delivery_type,
-    owner_name = req.body.owner_name,
-    owner_mobile = req.body.owner_mobile,
-    recipient_name = req.body.recipient_name,
-    recipient_mobile = req.body.recipient_mobile,
-    regionalism_id = req.body.regionalism_id,
-    recipient_address = req.body.recipient_address,
-    recipient_landmark = req.body.recipient_landmark,
-    delivery_id = req.body.delivery_id || 0,
-    src_id = req.body.src_id,
-    pay_modes_id = req.body.pay_modes_id,
-    pay_status = req.body.pay_status,
-    delivery_time = req.body.delivery_time,
-    invoice = req.body.invoice,
-    remarks = req.body.remarks,
-    total_amount = req.body.total_amount,
-    total_original_price = req.body.total_original_price,
-    total_discount_price = req.body.total_discount_price,
-    products = req.body.products,
-    prefix_address = req.body.prefix_address,
-    greeting_card = req.body.greeting_card,
-    coupon = req.body.coupon,
-    merchant_id = req.body.merchant_id;
+      owner_name = req.body.owner_name,
+      owner_mobile = req.body.owner_mobile,
+      recipient_name = req.body.recipient_name,
+      recipient_mobile = req.body.recipient_mobile,
+      regionalism_id = req.body.regionalism_id,
+      recipient_address = req.body.recipient_address,
+      recipient_landmark = req.body.recipient_landmark,
+      delivery_id = req.body.delivery_id || 0,
+      src_id = req.body.src_id,
+      pay_modes_id = req.body.pay_modes_id,
+      pay_status = req.body.pay_status,
+      delivery_time = req.body.delivery_time,
+      invoice = req.body.invoice,
+      remarks = req.body.remarks,
+      total_amount = req.body.total_amount,
+      total_original_price = req.body.total_original_price,
+      total_discount_price = req.body.total_discount_price,
+      products = req.body.products,
+      prefix_address = req.body.prefix_address,
+      greeting_card = req.body.greeting_card,
+      coupon = req.body.coupon,
+      merchant_id = req.body.merchant_id;
+  let orderId;
+  let bind_order_id = req.body._bind_order_id;
+  let origin_order_id = req.body.origin_order_id;
+  let payment_amount = req.body.payment_amount;
   let recipientObj = {
     regionalism_id: regionalism_id,
     name: recipient_name,
@@ -1068,13 +1238,18 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
           last_opt_cs: req.session.user.id,
           merchant_id: merchant_id
         };
+        if (bind_order_id) {
+          orderObj.bind_order_id = bind_order_id;
+          orderObj.origin_order_id = origin_order_id;
+          orderObj.payment_amount = payment_amount;
+        }
         // order
         transaction.query(this.base_insert_sql, [tables.buss_order, systemUtils.assembleInsertObj(req, orderObj)], (order_err, result) => {
           if (order_err || !result.insertId) {
             return reject(order_err || new TiramisuError(errorMessage.FAIL));
           }
-          let orderId = result.insertId,
-            params = [];
+          orderId = result.insertId;
+          let params = [];
           products.forEach((curr) => {
             let arr = [];
             arr.push(orderId);
@@ -1108,14 +1283,20 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
             order_id: orderId,
             option: '添加订单'
           };
+          if (req.body.bind_order_id) {
+            order_history_obj.option += `\n当前订单关联于旧订单{${req.body.bind_order_id}}`;
+          }
           let skus_sql = "insert into " + tables.buss_order_sku + "(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price,amount) values ?";
           transaction.query(skus_sql, [params], err => {
             if (err) return reject(err);
-            transaction.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], err => {
+            OrderDao.prototype.redundancySku(transaction, orderId, err=>{
               if (err) return reject(err);
-              transaction.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], err => {
+              transaction.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], err => {
                 if (err) return reject(err);
-                resolve();
+                transaction.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], err => {
+                  if (err) return reject(err);
+                  resolve();
+                });
               });
             });
           });
@@ -1125,9 +1306,10 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
     }).then(ignore => {
       return new Promise((resolve, reject) => {
         transaction.commit(err => {
+          backup.url_post(orderId, true);
           transaction.release();
           if (err) return reject(err);
-          resolve();
+          resolve(orderId);
         });
       });
     }).catch(err => {
@@ -1144,54 +1326,54 @@ OrderDao.prototype.insertOrderInTransaction = function(req) {
 
 // TODO: remove after shutting down old system
 const srcIdMapping = new Map(
-  [
-    [10000, 1],
-    [10001, 2],
-    [10002, 3],
-    [10003, 4],
-    [10004, 5],
-    [10005, 6],
-    [10006, 7],
-    [10007, 8],
-    [10008, 9],
-    [10009, 10],
-    [10010, 75],
-    [10011, 12],
-    [10012, 13],
-    [10013, 14],
-    [10014, 64],
-    [10015, 16],
-    [10016, 17],
-    [10017, 18],
-    [10018, 19],
-    [10020, 21],
-    [10021, 22],
-    [10023, 24],
-    [10024, 25],
-    [10025, 26],
-    [10026, 27],
-    [10027, 28],
-    [11027, 29],
-    [11029, 30],
-    [11030, 63],
-    [12030, 32],
-    [12031, 62],
-    [12032, 69],
-    [12033, 35],
-    [12034, 54],
-    [12035, 53],
-    [12036, 66],
-    [12037, 55],
-    [12038, 67],
-    [12039, 58],
-    [11007, 38],
-    [11012, 39],
-    [11013, 40],
-    [11014, 41],
-    [11015, 42],
-    [12011, 76],
-    [12012, 65],
-  ]
+    [
+      [10000, 1],
+      [10001, 2],
+      [10002, 3],
+      [10003, 4],
+      [10004, 5],
+      [10005, 6],
+      [10006, 7],
+      [10007, 8],
+      [10008, 9],
+      [10009, 10],
+      [10010, 75],
+      [10011, 12],
+      [10012, 13],
+      [10013, 14],
+      [10014, 64],
+      [10015, 16],
+      [10016, 17],
+      [10017, 18],
+      [10018, 19],
+      [10020, 21],
+      [10021, 22],
+      [10023, 24],
+      [10024, 25],
+      [10025, 26],
+      [10026, 27],
+      [10027, 28],
+      [11027, 29],
+      [11029, 30],
+      [11030, 63],
+      [12030, 32],
+      [12031, 62],
+      [12032, 69],
+      [12033, 35],
+      [12034, 54],
+      [12035, 53],
+      [12036, 66],
+      [12037, 55],
+      [12038, 67],
+      [12039, 58],
+      [11007, 38],
+      [11012, 39],
+      [11013, 40],
+      [11014, 41],
+      [11015, 42],
+      [12011, 76],
+      [12012, 65],
+    ]
 );
 
 // TODO: move to order submit when tiramisu is online
@@ -1211,28 +1393,29 @@ const sendRedwineMessage = new Set([
 
 OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
   let delivery_type = req.body.delivery_type,
-    owner_name = req.body.owner_name,
-    owner_mobile = req.body.owner_mobile,
-    recipient_name = req.body.recipient_name,
-    recipient_mobile = req.body.recipient_mobile,
-    regionalism_id = req.body.regionalism_id,
-    recipient_address = req.body.recipient_address || '',
-    recipient_landmark = req.body.recipient_landmark || '',
-    src_id = req.body.src_id >= 10000 ? srcIdMapping.get(req.body.src_id) : req.body.src_id,
-    pay_modes_id = req.body.pay_modes_id,
-    pay_status = req.body.pay_status,
-    delivery_time = req.body.delivery_time,
-    invoice = req.body.invoice,
-    remarks = req.body.remarks,
-    total_amount = req.body.total_amount,
-    total_original_price = req.body.total_original_price,
-    total_discount_price = req.body.total_discount_price,
-    products = req.body.products,
-    greeting_card = req.body.greeting_card,
-    // TODO: notice we assume all the coupon are numbers only
-    coupon = req.body.coupon ? toolUtils.extractNumbers(req.body.coupon) : null,
-    merchant_id = req.body.merchant_id,
-    shop_id = req.body.shop_id;
+      owner_name = req.body.owner_name,
+      owner_mobile = req.body.owner_mobile,
+      recipient_name = req.body.recipient_name,
+      recipient_mobile = req.body.recipient_mobile,
+      regionalism_id = req.body.regionalism_id,
+      recipient_address = req.body.recipient_address || '',
+      recipient_landmark = req.body.recipient_landmark || '',
+      src_id = req.body.src_id >= 10000 ? srcIdMapping.get(req.body.src_id) : req.body.src_id,
+      pay_modes_id = req.body.pay_modes_id,
+      pay_status = req.body.pay_status,
+      delivery_time = req.body.delivery_time,
+      invoice = req.body.invoice,
+      remarks = req.body.remarks,
+      total_amount = req.body.total_amount,
+      total_original_price = req.body.total_original_price,
+      total_discount_price = req.body.total_discount_price,
+      products = req.body.products,
+      greeting_card = req.body.greeting_card,
+      // TODO: notice we assume all the coupon are numbers only
+      coupon = req.body.coupon ? toolUtils.extractNumbers(req.body.coupon) : null,
+      merchant_id = req.body.merchant_id,
+      shop_id = req.body.shop_id;
+  let orderId;
   let recipientObj = {
     regionalism_id: regionalism_id,
     name: recipient_name,
@@ -1249,10 +1432,10 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
       let sql = this.base_select_sql + 'and merchant_id = ? ';
       transaction.query(sql, [['id'], tables.buss_order, del_flag.SHOW, merchant_id], (exist_err, result) => {
         if (exist_err) {
-            return reject(new TiramisuError(errorMessage.SQL_ERROR, exist_err.message));
+          return reject(new TiramisuError(errorMessage.SQL_ERROR, exist_err.message));
         }
         if (result.length > 0) {
-            return reject(new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, merchant_id));
+          return reject(new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, merchant_id));
         }
         // recipient
         transaction.query(this.base_insert_sql, [tables.buss_recipient, recipientObj], (recipient_err, info) => {
@@ -1294,18 +1477,11 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
           };
           // order
           transaction.query(this.base_insert_sql, [tables.buss_order, systemUtils.assembleInsertObj(req, orderObj)], (order_err, result) => {
-            if (order_err) {
-              if (order_err.code === 'ER_DUP_ENTRY') {
-                return reject(new TiramisuError(errorMessage.DUPLICATE_EXTERNAL_ORDER, orderObj.merchant_id));
-              } else {
-                return reject(new TiramisuError(errorMessage.SQL_ERROR, order_err.message));
-              }
+            if (order_err || !result.insertId) {
+              return reject(order_err || new TiramisuError(errorMessage.FAIL));
             }
-            if (!result.insertId) {
-              return reject(new TiramisuError(errorMessage.FAIL));
-            }
-            let orderId = result.insertId,
-              params = [];
+            orderId = result.insertId;
+            let params = [];
             products.forEach((curr) => {
               let arr = [];
               arr.push(orderId);
@@ -1329,9 +1505,12 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
               recipient_mobile: recipient_mobile,
               recipient_address: systemUtils.encodeForFulltext(recipient_address),
               landmark: systemUtils.encodeForFulltext(recipient_landmark),
-              merchant_id: merchant_id
+              merchant_id: merchant_id,
+              // coupon : coupon,
+              owner_mobile_suffix : owner_mobile.substring(owner_mobile.length - 5),
+              recipient_mobile_suffix : recipient_mobile.substring(recipient_mobile.length - 5)
             };
-            if(coupon) order_fulltext_obj.coupon = coupon;
+            if (coupon) order_fulltext_obj.coupon = coupon;
             let order_history_obj = {
               order_id: orderId,
               option: '添加订单',
@@ -1340,11 +1519,14 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
             let skus_sql = "insert into " + tables.buss_order_sku + "(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price,amount) values ?";
             transaction.query(skus_sql, [params], err => {
               if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
-              transaction.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], err => {
-                if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
-                transaction.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], err => {
+              OrderDao.prototype.redundancySku(transaction, orderId, err=> {
+                if (err) return reject(new TiramisuError(errorMessage.REDUNDANCY_ERROR, err));
+                transaction.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], err => {
                   if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
-                  resolve();
+                  transaction.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], err => {
+                    if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
+                    resolve();
+                  });
                 });
               });
             });
@@ -1354,6 +1536,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
     }).then(ignore => {
       return new Promise((resolve, reject) => {
         transaction.commit(err => {
+          backup.url_post(orderId, true);
           transaction.release();
           if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
           // TODO: move to submit when tiramisu is online
@@ -1383,7 +1566,7 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
       });
     });
   });
-};
+}
 /**
  * batch update order_fulltext records
  * @param orderIds
@@ -1400,8 +1583,8 @@ function doFullText(query_data) {
 
   let fuzzy_handler = function(sorted_rules){
     return sorted_rules === constant.OSR.DELIVER_LIST
-            || sorted_rules === constant.OSR.DELIVERY_EXCHANGE
-            || sorted_rules === constant.OSR.RECEIVE_LIST;
+        || sorted_rules === constant.OSR.DELIVERY_EXCHANGE
+        || sorted_rules === constant.OSR.RECEIVE_LIST;
   };
 
   let keywords = query_data.keywords;
@@ -1416,5 +1599,141 @@ function doFullText(query_data) {
     return true;
   }
 }
+
+OrderDao.prototype.findOrderBackupById = function (order_id) {
+  return co(function*() {
+    let sql = `SELECT * FROM ?? WHERE id = ? `;
+    let params = [tables.buss_order, order_id];
+
+    let order_info = yield baseDao.select(sql, params);
+    if (!order_info || order_info.length == 0) return Promise.reject(`not found order_id: ${order_id}`);
+    order_info = order_info[0];
+
+    params = [tables.buss_recipient, order_info.recipient_id];
+    let order_recipient = yield baseDao.select(sql, params);
+    order_recipient = order_recipient[0];
+
+    let sku_sql = `SELECT * FROM ?? WHERE del_flag = 1 AND order_id = ? `;
+    params = [tables.buss_order_sku, order_id];
+    let order_sku = yield baseDao.select(sku_sql, params);
+    order_sku.forEach(curr=> {
+      if (curr.sku && curr.spu && curr.spc) {
+        try {
+          curr.sku = JSON.parse(curr.sku);
+          curr.spu = JSON.parse(curr.spu);
+          curr.spc = JSON.parse(curr.spc);
+        } catch (err) {
+        }
+      }
+    });
+
+    order_info.products = order_sku;
+    order_info.recipient = order_recipient;
+    return order_info;
+  });
+}
+
+OrderDao.prototype.findRelateListById = function (query) {
+  let page_no = query.page_no || 0;
+  let page_size = query.page_size || 10;
+  let sort_type = query.sort_type || 'DESC';
+  let columns = [
+    'bo.id',
+    'su.name AS created_by',
+    'bo.created_time'
+  ];
+  let sql_info = `SELECT ${columns.join()} FROM `;
+  let sql = `?? bo `;
+  let params = [tables.buss_order];
+  sql += `LEFT JOIN ?? su ON su.id = bo.created_by `;
+  params.push(tables.sys_user);
+  sql += `WHERE bo.id = ? OR bo.origin_order_id = ? `;
+  params.push(query.order_id);
+  params.push(query.order_id);
+
+  return co(function *() {
+    let total_sql = `SELECT count(*) AS total FROM ` + sql;
+    let _res = {};
+    let total = yield baseDao.select(total_sql, params);
+    _res.total = total[0].total;
+
+    sql += `ORDER BY created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+    _res.list = yield baseDao.select(sql_info + sql, params);
+    _res.page_no = page_no;
+    _res.page_size = page_size;
+    return _res;
+  });
+};
+
+OrderDao.prototype.isCanBind = function (order_id) {
+  return co(function *() {
+    let sql = `SELECT bo.id FROM ?? bo `;
+    let params = [tables.buss_order];
+    sql += `WHERE (bo.id = ? AND bo.status != 'CANCEL' AND bo.status != 'EXCEPTION' ) `;
+    params.push(order_id);
+    sql += `OR bo.bind_order_id = ? `;
+    params.push(order_id);
+    let info = yield baseDao.select(sql, params);
+    if (!info || info.length == 0) return Promise.resolve(true);
+    return Promise.resolve(false);
+  });
+};
+
+OrderDao.prototype.isBind = function (order_id) {
+  return co(function *() {
+    let sql = `SELECT bo.id FROM ?? bo `;
+    let params = [tables.buss_order];
+    sql += `WHERE bo.bind_order_id = ? `;
+    params.push(order_id);
+    let info = yield baseDao.select(sql, params);
+    if (!info || info.length == 0) return Promise.resolve(false);
+    return Promise.resolve(true);
+  });
+};
+
+OrderDao.prototype.joinOrderId = function (order_id) {
+  let sql = `SELECT bo.id, bo.created_time FROM ?? bo WHERE bo.id = ? `;
+  let params = [tables.buss_order, order_id];
+
+  return co(function *() {
+    let info = yield baseDao.select(sql, params);
+    if (!info || info.length == 0) return Promise.reject('not found order_id');
+    info = info[0];
+    return systemUtils.getShowOrderId(info.id, info.created_time);
+  });
+};
+
+OrderDao.prototype.findOrderBackupById = function (order_id) {
+  return co(function*() {
+    let sql = `SELECT * FROM ?? WHERE id = ? `;
+    let params = [tables.buss_order, order_id];
+
+    let order_info = yield baseDao.select(sql, params);
+    if (!order_info || order_info.length == 0) return Promise.reject(`not found order_id: ${order_id}`);
+    order_info = order_info[0];
+
+    params = [tables.buss_recipient, order_info.recipient_id];
+    let order_recipient = yield baseDao.select(sql, params);
+    order_recipient = order_recipient[0];
+
+    let sku_sql = `SELECT * FROM ?? WHERE del_flag = 1 AND order_id = ? `;
+    params = [tables.buss_order_sku, order_id];
+    let order_sku = yield baseDao.select(sku_sql, params);
+    order_sku.forEach(curr=> {
+      if (curr.sku && curr.spu && curr.spc) {
+        try {
+          curr.sku = JSON.parse(curr.sku);
+          curr.spu = JSON.parse(curr.spu);
+          curr.spc = JSON.parse(curr.spc);
+        } catch (err) {
+        }
+      }
+    });
+
+    order_info.products = order_sku;
+    order_info.recipient = order_recipient;
+    return order_info;
+  });
+};
 
 module.exports = OrderDao;

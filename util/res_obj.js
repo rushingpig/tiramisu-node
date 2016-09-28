@@ -82,6 +82,10 @@ module.exports = {
     code: '2011',
     msg: '无效的一级来源渠道id...'
   },
+  ABORTED_BY_REFUND: {
+    code: '2012',
+    msg: '该订单有未处理的退款请求，请先取消退款'
+  },
   NO_OPTIONAL_STATION: {
     code: '3001',
     msg: '没有可选的配送站...'
@@ -139,6 +143,14 @@ module.exports = {
   SQL_ERROR: {
     code: '2009',
     msg: 'Error happened when performing query'
+  },
+  DUPLICATE_SKU_SIZE: {
+    code: '2016',
+    msg: '规格名称重复'
+  },
+  REDUNDANCY_ERROR: {
+    code: '2013',
+    msg: 'Error order info redundancy'
   }
 };
 

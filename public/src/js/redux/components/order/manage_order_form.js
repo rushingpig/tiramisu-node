@@ -120,11 +120,11 @@ class ManageAddForm extends Component {
       history_orders,
     } = this.props;
 
-    var { getHistoryOrders, checkHistoryOrder, getCopyOrderById, copyOrder } = this.props.actions;
+    var { getHistoryOrders, checkHistoryOrder, getCopyOrderById, getBindOrderById, copyOrder } = this.props.actions;
 
     var { save_ing, save_success, submit_ing, 
       all_delivery_time, all_pay_status, all_order_srcs, 
-      delivery_stations, all_pay_modes} = this.props['form-data'];
+      delivery_stations, all_pay_modes, data: { bind_order_id, operatorType, payment_amount }} = this.props['form-data'];
     var {provinces, cities, districts, delivery_shops} = this.props.area;
     var {invoices, selected_order_src_level1_id = src_id.value, groupbuy_psd, groupbuy_check_ing, groupbuy_msg, groupbuy_success, auto_match_ing} = this.state;
 
@@ -279,7 +279,15 @@ class ManageAddForm extends Component {
         <label>{'发票备注：'}</label>
         <textarea {...invoice} placeholder="" rows="2" cols="22" style={{width: 202}} className={`form-control input-xs ${invoice.error}`} />
       </div>
-
+      {
+        operatorType == 'RELATE' && bind_order_id &&
+        <div className='form-group form-inline bg-warning bordered'>
+          <label>{'　关联订单: 该订单将关联订单号为　'}</label>
+          <input className='form-control input-xs' type = 'text' readOnly value={bind_order_id} />
+          <label>{'　的订单，原订单的支付金额为 ￥'}</label>
+          <input style={{width: 80}} className='form-control input-xs' type = 'text' readOnly value={payment_amount / 100} />
+        </div>
+      }
       <hr className="dotted" />
       {this.props.children}
       <div className="form-group">
@@ -311,7 +319,7 @@ class ManageAddForm extends Component {
           ref="history_orders_modal"
           phone_num={owner_mobile.value} 
           data={history_orders}
-          {...{getHistoryOrders, checkHistoryOrder, getCopyOrderById, copyOrder}} />
+          {...{getHistoryOrders, checkHistoryOrder, getCopyOrderById, copyOrder, getBindOrderById}} />
     </div>
     )
   }
@@ -381,21 +389,19 @@ class ManageAddForm extends Component {
     return $(findDOMNode(this.refs[_refs])).find('option:selected').html();
   }
   handleCreateOrder(form_data){
-    //二次保险（防止重复提交）
-    if(!this._insurance_){
-      this._insurance_ = true;
-      this.props.actions.createOrder(form_data)
-        .done(function(){
-          this._insurance_ = undefined;
-          history.push('/om/index');
-          Noty('success', '保存成功');
-          this.props.actions.resetOrderStore(); //重置order_manage状态
-          this.props.actions.destroyForm('order_manage_filter'); //重置order_manage 过滤条件
-        }.bind(this))
-        .fail(function(msg, code){
-          Noty('error', msg || '网络繁忙，请稍后再试');
-        });
+    if(this.props['form-data'].data.operatorType == 'RELATE'  && this.props['form-data'].data.bind_order_id ){
+      form_data.bind_order_id = this.props['form-data'].data.bind_order_id;
     }
+    this.props.actions.createOrder(form_data)
+      .done(function(){
+        Noty('success', '保存成功');
+        this.props.actions.resetOrderStore(); //重置order_manage状态
+        this.props.actions.destroyForm('order_manage_filter'); //重置order_manage 过滤条件
+        history.push('/om/index');
+      }.bind(this))
+      .fail(function(msg, code){
+        Noty('error', msg || '网络繁忙，请稍后再试');
+      });
   }
   handleSaveOrder(form_data){
     this.props.actions.saveOrder(form_data)
@@ -434,7 +440,7 @@ class ManageAddForm extends Component {
   }
   componentDidMount(){
     var {getProvincesSignal, getOrderSrcs, getDeliveryStations, getPayModes} = this.props.actions;
-    getProvincesSignal('authority');
+    getProvincesSignal();
     getOrderSrcs();
     getPayModes();
     // getDeliveryStations();
@@ -470,8 +476,9 @@ class ManageAddForm extends Component {
   onProvinceChange(callback, e){
     var {value} = e.target;
     this.props.actions.resetCities();
-    if(value != this.refs.province.props['default-value'])
-      this.props.actions.getCitiesSignal(value, 'authority');
+    if(value != this.refs.province.props['default-value']){
+      this.props.actions.getCitiesSignal({ province_id: value, is_standard_area: 1 });
+    }
     callback(e);
     this.props.actions.getDeliveryStations({city_id: SELECT_DEFAULT_VALUE}); //等同于clear stations数据
     this.props.actions.triggerFormUpdate('add_order', 'delivery_id', SELECT_DEFAULT_VALUE)
@@ -481,7 +488,7 @@ class ManageAddForm extends Component {
     this.props.actions.resetDistricts();
     this.props.actions.getDeliveryStations({city_id: value});
     if(value != this.refs.city.props['default-value'])
-      this.props.actions.getDistricts(value);
+      this.props.actions.getStandardDistricts(value);
     callback(e);
     this.props.actions.triggerFormUpdate('add_order', 'delivery_id', SELECT_DEFAULT_VALUE)
   }

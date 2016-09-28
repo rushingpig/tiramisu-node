@@ -12,6 +12,7 @@ import * as OrderManageActions from 'actions/order_manage';
 import * as FormActions from 'actions/form';
 import { getOrderSrcs, getDeliveryStations, autoGetDeliveryStations } from 'actions/order_manage_form';
 import { getStationListByScopeSignal, resetStationListWhenScopeChange } from 'actions/station_manage';
+import * as RefundActions from 'actions/refund_modal';
 
 import DatePicker from 'common/datepicker';
 import Select from 'common/select';
@@ -24,6 +25,7 @@ import { tableLoader, get_table_empty } from 'common/loading';
 import StdModal from 'common/std_modal';
 import RecipientInfo from 'common/recipient_info';
 import ToolTip from 'common/tooltip';
+import AddressSelector from 'common/address_selector';
 
 import LazyLoad from 'utils/lazy_load';
 import { colour, Noty, core, dom } from 'utils/index';
@@ -36,6 +38,9 @@ import OrderDetailModal from './order_detail_modal';
 import AlterDeliveryModal from './manage_alter_delivery_modal';
 import OrderSrcsSelects from 'common/order_srcs_selects';
 import OperationRecordModal from 'common/operation_record_modal.js';
+import BindOrderRecordModal from 'common/bind_order_record_modal.js';
+
+import RefundModal from './refund_detail_modal.js';
 
 class TopHeader extends Component {
   render(){
@@ -90,7 +95,8 @@ class FilterHeader extends Component {
       selected_order_src_level1_id: SELECT_DEFAULT_VALUE,
       search_ing: false,
       search_by_keywords_ing: false,
-    }
+    };
+    this.AddressSelectorHook = this.AddressSelectorHook.bind(this);
   }
   render(){
     var { 
@@ -103,15 +109,18 @@ class FilterHeader extends Component {
         src_id,
         province_id,
         city_id,
+        district_id,
         delivery_id,
         status,
         order_by
       },
       provinces,
       cities,
+      districts,
       stations: {station_list},
       all_order_srcs,
       all_order_status,
+      actions
     } = this.props;
     var { search_ing, search_by_keywords_ing, all_order_bys } = this.state;
 
@@ -128,16 +137,16 @@ class FilterHeader extends Component {
           <Select {...is_deal} options={this.state.deal_opts} default-text="是否处理" className="space-right"/>
           {
             V( 'OrderManageChannelFilter' )
-              ?<OrderSrcsSelects {...{all_order_srcs, src_id}} actions={this.props.actions} reduxFormName="order_manage_filter" />
-              :null
+              ? <OrderSrcsSelects {...{all_order_srcs, src_id, actions}} reduxFormName="order_manage_filter" />
+              : null
           }
           
           {
             V( 'OrderManageAddressFilter' )
-              ? [
-                  <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" key="province" className="space-right"/>,
-                  <Select {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>
-                ]
+              ? <AddressSelector
+                  {...{ province_id, city_id, district_id, provinces, cities, districts, actions,
+                   AddressSelectorHook: this.AddressSelectorHook, form: 'order_manage_filter' }}
+                />
               : null
           }
           { 
@@ -156,42 +165,23 @@ class FilterHeader extends Component {
   }
   componentDidMount(){
     setTimeout(()=>{
-      var { getProvincesSignal, getCitiesSignal, getOrderSrcs  } = this.props.actions;
-      var { fields: { province_id, city_id }, getStationListByScopeSignal } = this.props;
-      getProvincesSignal('authority');
-      province_id.value && getCitiesSignal( province_id.value, 'authority' );
+      var { getOrderSrcs  } = this.props.actions;
+      var { fields: { province_id, city_id, district_id }, getStationListByScopeSignal } = this.props;
       var data = {};
-      data.signal = 'authority';
       if(province_id.value != SELECT_DEFAULT_VALUE)
         data.province_id = province_id.value;
       if(city_id.value != SELECT_DEFAULT_VALUE)
         data.city_id = city_id.value;
+      if(city_id.value != SELECT_DEFAULT_VALUE)
+        data.city_id = district_id.value;
       getStationListByScopeSignal(data);
       getOrderSrcs();
       LazyLoad('noty');
-    },0)
+    }, 0);
   }
-  onProvinceChange(callback, e){
-    var {value} = e.target;
-    this.props.actions.resetCities();
-    if(value != this.refs.province.props['default-value']){
-      var $city = $(findDOMNode(this.refs.city));
-      this.props.getStationListByScopeSignal({ province_id: value ,signal:'authority'});
-      this.props.actions.getCitiesSignal(value, 'authority').done(() => {
-        $city.trigger('focus'); //聚焦已使city_id的值更新
-      });}else{
-        this.props.resetStationListWhenScopeChange();
-      }
-    callback(e);
-  }
-  onCityChange(callback, e){
-    var {value} = e.target;
-    if(value != this.refs.city.props['default-value'])
-      this.props.getStationListByScopeSignal({ city_id: value, signal: 'authority' });
-    else{
-      this.props.resetStationListWhenScopeChange();     
-    }
-    callback(e);
+  AddressSelectorHook(e, data){
+    this.props.resetStationListWhenScopeChange('order_manage_filter');
+    this.props.getStationListByScopeSignal({ ...data });
   }
   search(search_in_state){
     this.setState({[search_in_state]: true});
@@ -215,6 +205,7 @@ FilterHeader = reduxForm({
     'src_id',
     'province_id',
     'city_id',
+    'district_id',
     'order_by',
     'status',
     'delivery_id',
@@ -237,8 +228,10 @@ var OrderRow = React.createClass({
             [<a onClick={this.alterOrderRemarks} key="OrderManageAlterRemarks" href="javascript:;" className="nowrap">[修改备注]</a>, <br key="3" />],
             [<a onClick={this.alterDelivery} key="OrderManageAlterDelivery" href="javascript:;" className="nowrap">[修改配送]</a>, <br key="4" />],
             [<a onClick={this.alterStation} key="OrderManageAlterStation" href="javascript:;" className="nowrap">[分配配送站]</a>, <br key="5" />],
-            [<a onClick={this.cancelOrder} key="OrderManageCancel" href="javascript:;" className="nowrap">[订单取消]</a>],
-            [<a onClick={this.orderException} key="OrderManageException" href="javascript:;" className="nowrap">[订单异常]</a>]
+            [<a onClick={this.cancelOrder} key="OrderManageCancel" href="javascript:;" className="nowrap">[订单取消]</a>, <br key="6" />],
+            [<a onClick={this.orderException} key="OrderManageException" href="javascript:;" className="nowrap">[订单异常]</a>, <br key="7" />],
+            [<a key='OrderManageRefundApplying' href='javascript:;' className='nowrap'>[退款中]</a>],
+            [<a onClick={this.applyRefund} key='OrderManageRefundApply' href='javascript:;' className='nowrap'>[申请退款]</a>],
           )
         }
         </td>
@@ -304,6 +297,14 @@ var OrderRow = React.createClass({
         </td>
         <td>{props.delivery_name}</td>
         <td><div className="time">{props.delivery_time || '未知'}</div></td>
+        <td>
+          {
+            props.bind_order_id ?
+              <a className='inline-block time' onClick = {this.viewBindOrderRecord}>{props.bind_order_id}</a>
+              :
+              <div className='bordered bold' style={{backgroundColor: '#dac7a7', color: props.bind_order_id ? '#E44949' : '#2FB352'}}>{'无'}</div>
+          }
+        </td>
         <td>{props.is_submit == '1' ? '是' : '否'}</td>
         <td>{props.is_deal == '1' ? '是' : '否'}</td>
         <td>{props.city}</td>
@@ -316,7 +317,7 @@ var OrderRow = React.createClass({
     )
   },
   ACL: function(){
-    var { status } = this.props;
+    var { status, refund_status, is_bind } = this.props;
     var roles = null;
     switch( status ){
       case 'UNTREATED':
@@ -336,6 +337,19 @@ var OrderRow = React.createClass({
       default:
         roles = []; break;
     }
+    switch(refund_status ){
+      case 'COMPLETED':
+      case 'CANCEL':
+        if(!is_bind )
+          roles.push('OrderManageRefundApply');break;
+      case 'UNTREATED':
+      case 'TREATED':
+      case 'REVIEWED':
+        roles.push('OrderManageRefundApplying');break;
+      default:
+        if(!is_bind )
+          roles.push('OrderManageRefundApply');break;
+    }
     roles.push('OrderManageView');
     var results = []
     for(var i=0,len=arguments.length; i<len; i++){
@@ -349,16 +363,16 @@ var OrderRow = React.createClass({
   activeOrder(){
     var { 
       order_id, active_order_id, activeOrder, prepareDeliveryDataOK,
-      getProvincesSignal, getCitiesSignal, getDistricts, getDeliveryShops, getDeliveryStations
+      getProvincesSignal, getStandardCitiesSignal, getStandardDistricts, getDeliveryShops, getDeliveryStations
     } = this.props;
     if(order_id != active_order_id){
       activeOrder(order_id).done(function(data){
         //这里拉取数据完全是为了给“修改配送”modal使用
         setTimeout(function(){
           $.when(
-            getProvincesSignal('authority'),
-            getCitiesSignal(data.province_id, 'authority'),
-            getDistricts(data.city_id),
+            getProvincesSignal(),
+            getStandardCitiesSignal({ province_id: data.province_id }),
+            getStandardDistricts(data.city_id),
             getDeliveryShops(data.regionalism_id),
             getDeliveryStations({city_id: data.city_id})
           ).done(prepareDeliveryDataOK)
@@ -399,9 +413,22 @@ var OrderRow = React.createClass({
     this.props.viewOrderOperationRecord(this.props);
     e.stopPropagation();
   },
+  viewBindOrderRecord(e){
+    this.props.viewBindOrderRecord(this.props);
+    e.stopPropagation();
+  },
   cancelOrder(e){
     this.props.showCancelOrder(this.props);
     this.activeOrder();
+    e.stopPropagation();
+  },
+  applyRefund(e){
+    /*this.props.getRefundApplyData(e.target.value)
+      .done(function(){
+        this.props.showRefund(this.props.refund_data);
+      }).bind(this);*/
+    this.props.getRefundApplyData(this.props.order_id);
+    this.props.showRefund();  
     e.stopPropagation();
   },
   orderException(e){
@@ -420,7 +447,9 @@ class ManagePannel extends Component {
     this.showAlterRemarks = this.showAlterRemarks.bind(this);
     this.showCancelOrder = this.showCancelOrder.bind(this);
     this.showOrderException = this.showOrderException.bind(this);
+    this.showRefund = this.showRefund.bind(this);
     this.viewOrderOperationRecord = this.viewOrderOperationRecord.bind(this);
+    this.viewBindOrderRecord = this.viewBindOrderRecord.bind(this);
     this.search = this.search.bind(this);
     this.refreshDataList = this.refreshDataList.bind(this);
     this.state = {
@@ -428,16 +457,19 @@ class ManagePannel extends Component {
     }
   }
   render(){
-    var { filter, area, alter_delivery_area, delivery_stations,stations,
+    var { filter, area, alter_delivery_area, delivery_stations,stations, refund_data,
       main: {submitting, prepare_delivery_data_ok},
-      activeOrder, showProductsDetail, operationRecord, dispatch, getOrderList, exportExcel, getOrderOptRecord, resetOrderOptRecord, cancelOrder, orderException, alterOrderRemarks, 
-      getStationListByScopeSignal, resetStationListWhenScopeChange } = this.props;
+      activeOrder, showProductsDetail, operationRecord, bindOrderRecord, dispatch, getOrderList, exportExcel,
+      getOrderOptRecord, resetOrderOptRecord, cancelOrder, orderException, alterOrderRemarks, getBindOrders, resetBindOrders, 
+      getStationListByScopeSignal, resetStationListWhenScopeChange, getRefundApplyData, refundApply, getRefundReasons, } = this.props;
     var { loading, refresh, page_no, total, list, check_order_info, active_order_id, show_products_detail, get_products_detail_ing } = this.props.orders;
-    var { viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, refreshDataList, showAlterRemarks } = this;
+    var { viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, 
+        showOrderException, showRefund, viewOrderOperationRecord, refreshDataList,
+        showAlterRemarks, viewBindOrderRecord } = this;
 
     var content = list.map((n, i) => {
       return <OrderRow key={n.order_id} 
-        {...{...n, active_order_id, ...this.props, viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException, viewOrderOperationRecord, showAlterRemarks}} />;
+        {...{...n, active_order_id, ...this.props, viewOrderDetail, showAlterDelivery, showAlterStation, showCancelOrder, showOrderException,showRefund, viewOrderOperationRecord, showAlterRemarks, viewBindOrderRecord}} />;
     })
     return (
       <div className="order-manage">
@@ -469,6 +501,7 @@ class ManagePannel extends Component {
                   <th>订单状态</th>
                   <th>配送站</th>
                   <th>配送时间</th>
+                  <th>关联订单</th>
                   <th>是否提交</th>
                   <th>是否处理</th>
                   <th>所属城市</th>
@@ -514,6 +547,11 @@ class ManagePannel extends Component {
         <AlterDeliveryModal ref="AlterDeliveryModal" 
           {...{submitting, ...delivery_stations, order: check_order_info, active_order_id, show_products_detail, loading: !prepare_delivery_data_ok,
             ...alter_delivery_area, actions: this.props, callback: refreshDataList}} />
+        <RefundModal refund_data = { refund_data } ref='RefundModal' editable={false} 
+          refundApply = { refundApply }
+          getRefundReasons = {getRefundReasons}
+          />
+        <BindOrderRecordModal ref='BindOrderRecordModal' {...{getBindOrders, resetBindOrders, ...bindOrderRecord}}/>
       </div>
     )
   }
@@ -552,8 +590,14 @@ class ManagePannel extends Component {
   showOrderException(order){
     this.refs.OrderExceptionModal.show(order);
   }
+  showRefund(order){
+    this.refs.RefundModal.show(order);
+  }
   viewOrderOperationRecord(order){
     this.refs.OperationRecordModal.show(order);
+  }
+  viewBindOrderRecord(order){
+    this.refs.BindOrderRecordModal.show(order);
   }
 }
 
@@ -570,7 +614,8 @@ function mapDispatchToProps(dispatch){
     autoGetDeliveryStations,
     getStationListByScopeSignal,
     resetStationListWhenScopeChange,
-    ...OrderManageActions
+    ...OrderManageActions,
+    ...RefundActions,
   }, dispatch);
   actions.dispatch = dispatch;
   return actions;
@@ -784,7 +829,7 @@ var AlterStationModal = React.createClass({
         Noty('error', msg || '网络繁忙，请稍后再试')
       })
   },
-  show(){
+  show(order){
     this.refs.modal.show();
   },
   hideCallback(){
@@ -857,3 +902,4 @@ var OrderExceptionModal = React.createClass({
     this.setState(this.getInitialState());
   }
 });
+

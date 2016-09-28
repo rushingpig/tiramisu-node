@@ -8,32 +8,37 @@
  */
 "use strict";
 var res_obj = require('../../../util/res_obj'),
-  systemUtils = require('../../../common/SystemUtils'),
-  toolUtils = require('../../../common/ToolUtils'),
-  dateUtils = require('../../../common/DateUtils'),
-  TiramisuError = require('../../../error/tiramisu_error'),
-  Constant = require('../../../common/Constant'),
-  schema = require('../../../schema'),
-  addOrder = schema.addOrder,
-  getOrder = schema.getOrder,
-  editOrder = schema.editOrder,
-  listOrder = schema.listOrder,
-  exchangeOrder = schema.exchangeOrder,
-  printApply = schema.printApply,
-  allocateStation = schema.allocateStation,
-  listOrderError = schema.listOrderError,
-  del_flag = require('../../../dao/base_dao').del_flag,
-  baseDao = require('../../../dao/base_dao'),
-  dao = require('../../../dao'),
-  OrderDao = dao.order,
-  orderDao = new OrderDao(),
-  util = require('util'),
-  _ = require('lodash'),
-  config = require('../../../config'),
-  order_excel_caption = require('../../../config/excel/OrderTpl'),
-  xlsx = require('node-xlsx');
+    systemUtils = require('../../../common/SystemUtils'),
+    toolUtils = require('../../../common/ToolUtils'),
+    dateUtils = require('../../../common/DateUtils'),
+    TiramisuError = require('../../../error/tiramisu_error'),
+    Constant = require('../../../common/Constant'),
+    schema = require('../../../schema'),
+    addOrder = schema.addOrder,
+    getOrder = schema.getOrder,
+    editOrder = schema.editOrder,
+    listOrder = schema.listOrder,
+    exchangeOrder = schema.exchangeOrder,
+    printApply = schema.printApply,
+    allocateStation = schema.allocateStation,
+    listOrderError = schema.listOrderError,
+    del_flag = require('../../../dao/base_dao').del_flag,
+    baseDao = require('../../../dao/base_dao'),
+    dao = require('../../../dao'),
+    OrderDao = dao.order,
+    orderDao = new OrderDao(),
+    refundDAo = dao.refund,
+    util = require('util'),
+    _ = require('lodash'),
+    config = require('../../../config'),
+    order_excel_caption = require('../../../config/excel/OrderTpl'),
+    xlsx = require('node-xlsx');
 var toolUtils = require('../../../common/ToolUtils');
 var request = require('request');
+var co = require('co');
+var order_backup = require('../../../api/order_backup');
+var refundDao = dao.refund;
+
 function OrderService() {
 }
 /**
@@ -107,7 +112,32 @@ OrderService.prototype.addOrder = (req, res, next) => {
   if (errors) {
     return res.api(res_obj.INVALID_PARAMS, errors);
   }
-  let promise = orderDao.insertOrderInTransaction(req).then(()=>{res.api()});
+  let promise = co(function *() {
+    if (req.body.bind_order_id) {
+      let bind_order_id = systemUtils.getDBOrderId(req.body.bind_order_id);
+      // 判断是否能被绑定
+      if (!(yield orderDao.isCanBind(bind_order_id))) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED, '所选订单号不能被绑定...'));
+      // 判断是否处在退款流程中
+      let option = yield refundDao.findOptionByOrderId(bind_order_id);
+      if (!option) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED, '所选订单号不存在...'));
+      if (option.refund_status) return Promise.reject(new TiramisuError(res_obj.OPTION_EXPIRED, '所选订单号处于退款流程中,不能被绑定...'));
+      req.body._bind_order_id = bind_order_id;
+      req.body.origin_order_id = option.origin_order_id;
+      req.body.payment_amount = option.payment_amount;
+      if (!req.body.origin_order_id || req.body.origin_order_id == '0') {
+        req.body.origin_order_id = bind_order_id;
+      }
+    }
+    let order_id = yield orderDao.insertOrderInTransaction(req);
+    let show_order_id = yield orderDao.joinOrderId(order_id);
+    let order_history = {
+      order_id: req.body._bind_order_id,
+      option: `当前订单被新订单{${show_order_id}}关联`
+    };
+    yield orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req, order_history, true));
+  }).then(()=> {
+    res.api();
+  });
   systemUtils.wrapService(res, next, promise);
 };
 
@@ -118,10 +148,10 @@ OrderService.prototype.addExternalOrder = (req, res, next) => {
     return res.api(res_obj.INVALID_PARAMS, errors);
   }
   const promise = orderDao
-    .insertExternalOrderInTransaction(req)
-    .then(() => {
-      res.api();
-    });
+      .insertExternalOrderInTransaction(req)
+      .then(() => {
+        res.api();
+      });
   systemUtils.wrapService(res, next, promise);
 };
 
@@ -133,10 +163,10 @@ OrderService.prototype.addOrderError = (req, res, next) => {
   }
   let params = req.body;
   const promise = orderDao
-    .addOrderError(systemUtils.assembleInsertObj(req,params))
-    .then(result => {
-      res.api({});
-    });
+      .addOrderError(systemUtils.assembleInsertObj(req,params))
+      .then(result => {
+        res.api({});
+      });
   systemUtils.wrapService(res, next, promise);
 };
 
@@ -148,14 +178,14 @@ OrderService.prototype.editOrderError = (req, res, next) => {
   }
   const params = req.body;
   const promise = orderDao
-    .editOrderError({status: params.status}, params.merchant_id, params.src_id)
-    .then(affectedRows => {
-      if (affectedRows !== 1) {
-        res.api(res_obj.INVALID_UPDATE_ID, {affectedRows: affectedRows}, null);
-      } else {
-        res.api({});
-      }
-    });
+      .editOrderError({status: params.status}, params.merchant_id, params.src_id)
+      .then(affectedRows => {
+        if (affectedRows !== 1) {
+          res.api(res_obj.INVALID_UPDATE_ID, {affectedRows: affectedRows}, null);
+        } else {
+          res.api({});
+        }
+      });
   systemUtils.wrapService(res, next, promise);
 };
 OrderService.prototype.listOrderError = (req,res,next) => {
@@ -169,9 +199,9 @@ OrderService.prototype.listOrderError = (req,res,next) => {
       throw new TiramisuError(res_obj.NO_MORE_PAGE_RESULTS);
     }
     let data = {
-        total : _res.result[0].total,
-        page_no : req.page_no,
-        list : []
+      total : _res.result[0].total,
+      page_no : req.page_no,
+      list : []
     };
     _res._result.forEach((curr) => {
       let obj = {
@@ -267,6 +297,13 @@ OrderService.prototype.getOrderDetail = (req, res, next) => {
         data.total_discount_price = curr.total_discount_price;  // 总实际售价
         data.total_original_price = curr.total_original_price;  // 总原价
         data.is_POS = curr.is_pos_pay;
+        if (curr.bind_order_id != '0') {
+          data.bind_order_id = curr.bind_order_id;
+        }
+        data.payment_amount = curr.payment_amount;
+        if (data.payment_amount === null) {
+          data.payment_amount = curr.total_discount_price - curr.total_amount;
+        }
       }
       if (curr.sku_id) {
         let product_obj = {
@@ -279,6 +316,7 @@ OrderService.prototype.getOrderDetail = (req, res, next) => {
           num: curr.num,
           original_price: curr.original_price,
           name: curr.product_name,
+          display_name: curr.display_name,
           atlas: curr.atlas,
           size: curr.size,
           amount: curr.amount,
@@ -309,31 +347,31 @@ OrderService.prototype.editOrder = function (is_submit) {
       return;
     }
     let orderId = systemUtils.getDBOrderId(req.params.orderId),
-      updated_time = req.body.updated_time,
-      recipient_id = req.body.recipient_id,
-      delivery_type = req.body.delivery_type,
-      owner_name = req.body.owner_name,
-      owner_mobile = req.body.owner_mobile,
-      recipient_name = req.body.recipient_name,
-      recipient_mobile = req.body.recipient_mobile,
-      regionalism_id = req.body.regionalism_id,
-      recipient_address = req.body.recipient_address,
-      recipient_landmark = req.body.recipient_landmark,
-      delivery_id = req.body.delivery_id || 0,
-      src_id = req.body.src_id,
-      pay_modes_id = req.body.pay_modes_id,
-      pay_status = req.body.pay_status,
-      delivery_time = req.body.delivery_time,
-      invoice = req.body.invoice,
-      remarks = req.body.remarks,
-      total_amount = req.body.total_amount,
-      total_original_price = req.body.total_original_price,
-      total_discount_price = req.body.total_discount_price,
-      products = req.body.products,
-      delivery_name = req.body.delivery_name,
-      greeting_card = req.body.greeting_card,
-      coupon = req.body.coupon,
-      prefix_address = req.body.prefix_address;
+        updated_time = req.body.updated_time,
+        recipient_id = req.body.recipient_id,
+        delivery_type = req.body.delivery_type,
+        owner_name = req.body.owner_name,
+        owner_mobile = req.body.owner_mobile,
+        recipient_name = req.body.recipient_name,
+        recipient_mobile = req.body.recipient_mobile,
+        regionalism_id = req.body.regionalism_id,
+        recipient_address = req.body.recipient_address,
+        recipient_landmark = req.body.recipient_landmark,
+        delivery_id = req.body.delivery_id || 0,
+        src_id = req.body.src_id,
+        pay_modes_id = req.body.pay_modes_id,
+        pay_status = req.body.pay_status,
+        delivery_time = req.body.delivery_time,
+        invoice = req.body.invoice,
+        remarks = req.body.remarks,
+        total_amount = req.body.total_amount,
+        total_original_price = req.body.total_original_price,
+        total_discount_price = req.body.total_discount_price,
+        products = req.body.products,
+        delivery_name = req.body.delivery_name,
+        greeting_card = req.body.greeting_card,
+        coupon = req.body.coupon,
+        prefix_address = req.body.prefix_address;
 
     let recipient_obj = {
       regionalism_id: regionalism_id,
@@ -380,10 +418,10 @@ OrderService.prototype.editOrder = function (is_submit) {
       }
       //===========for history begin=============
       let current_order = _res[0],
-        order_history_obj = {
-          order_id: orderId
-        },
-        add_skus = [], delete_skuIds = [], update_skus = [];
+          order_history_obj = {
+            order_id: orderId
+          },
+          add_skus = [], delete_skuIds = [], update_skus = [];
       let option = '';
       if (delivery_type != current_order.delivery_type) {
         option += '修改{配送方式}为{' + Constant.DTD[delivery_name] + '}\n';
@@ -611,8 +649,10 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
         deliveryman_id: req.query.deliveryman_id,
         print_status: req.query.print_status,
         is_greeting_card: req.query.is_greeting_card,
+        is_standard_area: req.query.is_standard_area,
         user : req.session.user,
-        order_by : req.query.order_by || 'created_time'
+        order_by : req.query.order_by || 'created_time',
+        coupon: req.query.coupon
       };
     }
 
@@ -643,7 +683,8 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
       delete query_data.order_sorted_rules;
     }
 
-    let promise = orderDao.findOrderList(systemUtils.assemblePaginationObj(req, query_data)).then((resObj) => {
+    let promise = co(function *() {
+      let resObj = yield orderDao.findOrderList(systemUtils.assemblePaginationObj(req, query_data));
       if (!resObj._result) {
         throw new TiramisuError(res_obj.FAIL);
       } else if (toolUtils.isEmptyArray(resObj._result)) {
@@ -667,6 +708,7 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
           cancel_reason: curr.cancel_reason,
           recipient_landmark: curr.landmark,
           city: city_name,
+          province_name: delivery_adds[0],
           created_by: curr.created_by,
           created_time: curr.created_time,
           delivery_time: curr.delivery_time,
@@ -701,9 +743,21 @@ OrderService.prototype.listOrders = (entrance, isBatchScan) => {
           signin_time: curr.signin_time,
           greeting_card: curr.greeting_card
         };
-
+        if (curr.bind_order_id && curr.bind_order_id != '0') {
+          list_obj.bind_order_id = systemUtils.getShowOrderId(curr.bind_order_id, curr.bind_created_time);
+        }
+        if (curr.by_bind_order_id) {
+          list_obj.is_bind = 1;
+          list_obj.by_bind_order_id = systemUtils.getShowOrderId(curr.by_bind_order_id, curr.by_bind_created_time);
+        }
+        let refund_obj = yield refundDao.findLastRefundByOrderId(curr.id);
+        if (refund_obj) {
+          list_obj.refund_status = refund_obj.status;
+        }
         data.list.push(list_obj);
       }
+      return data;
+    }).then(data=> {
       res.api(data);
     });
     systemUtils.wrapService(res, next, promise);
@@ -760,7 +814,14 @@ OrderService.prototype.cancelOrder = (req, res, next) => {
     return;
   }
   let orderId = systemUtils.getDBOrderId(req.params.orderId),updated_time = req.body.updated_time;
-  let order_promise = orderDao.findOrderById(orderId).then((_res) => {
+  let refund_promise = refundDao.getRefundInfoByOrderId(orderId).then((res) => {
+    if (res && res[0]) {
+      if (['COMPLETED', 'CANCEL'].indexOf(res[0].status) === -1) {
+        throw new TiramisuError(res_obj.ABORTED_BY_REFUND);
+      }
+    }
+    return orderDao.findOrderById(orderId);
+  }).then((_res) => {
     if (toolUtils.isEmptyArray(_res)) {
       throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
     } else if (updated_time !== _res[0].updated_time) {
@@ -788,7 +849,7 @@ OrderService.prototype.cancelOrder = (req, res, next) => {
     option : '取消订单'
   };
   let history_promise = orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
-  let promise = Promise.all([order_promise,history_promise]).then(()=>res.api());
+  let promise = Promise.all([refund_promise,history_promise]).then(()=>res.api());
   systemUtils.wrapService(res,next,promise);
 };
 
@@ -799,49 +860,49 @@ OrderService.prototype.cancelOrder = (req, res, next) => {
  * @param next
  */
 OrderService.prototype.allocateStation = (req,res,next)=>{
-    req.checkParams('orderId').notEmpty().isOrderId();
-    req.checkBody('delivery_id').isInt();
-    req.checkBody('delivery_name').notEmpty();
-    req.checkBody('updated_time').notEmpty();
-    let errors = req.validationErrors();
-    if (errors) {
-        res.api(res_obj.INVALID_PARAMS,errors);
-        return;
+  req.checkParams('orderId').notEmpty().isOrderId();
+  req.checkBody('delivery_id').isInt();
+  req.checkBody('delivery_name').notEmpty();
+  req.checkBody('updated_time').notEmpty();
+  let errors = req.validationErrors();
+  if (errors) {
+    res.api(res_obj.INVALID_PARAMS,errors);
+    return;
+  }
+  let order_id = systemUtils.getDBOrderId(req.params.orderId),
+      delivery_id = req.body.delivery_id,
+      delivery_name = req.body.delivery_name,
+      updated_time = req.body.updated_time;
+
+  let order_obj = {delivery_id};
+  systemUtils.addLastOptCs(order_obj, req);
+  let promise = orderDao.findOrderById(order_id).then((_res)=> {
+    if (toolUtils.isEmptyArray(_res)) {
+      throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
+    } else if (updated_time !== _res[0].updated_time) {
+      throw new TiramisuError(res_obj.OPTION_EXPIRED);
     }
-    let order_id = systemUtils.getDBOrderId(req.params.orderId),
-        delivery_id = req.body.delivery_id,
-        delivery_name = req.body.delivery_name,
-        updated_time = req.body.updated_time;
+    //===========for history begin=============
+    let current_order = _res[0],
+        order_history_obj = {order_id};
+    let option = '';
 
-    let order_obj = {delivery_id};
-    systemUtils.addLastOptCs(order_obj, req);
-    let promise = orderDao.findOrderById(order_id).then((_res)=> {
-        if (toolUtils.isEmptyArray(_res)) {
-            throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
-        } else if (updated_time !== _res[0].updated_time) {
-            throw new TiramisuError(res_obj.OPTION_EXPIRED);
-        }
-        //===========for history begin=============
-        let current_order = _res[0],
-            order_history_obj = {order_id};
-        let option = '';
+    if (delivery_id != current_order.delivery_id) {
+      option += '修改{配送站}为{' + delivery_name + '}\n';
+    }
 
-        if (delivery_id != current_order.delivery_id) {
-            option += '修改{配送站}为{' + delivery_name + '}\n';
-        }
-
-        order_history_obj.option = option;
-        //===========for history end=============
-        let orderPromise = orderDao.updateOrder(systemUtils.assembleUpdateObj(req,order_obj),order_id);
-        let orderHistoryPromise = null;
-        if(option){
-          orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
-        }
-        return Promise.all([orderPromise,orderHistoryPromise]);
-    }).then(()=>{
-        res.api();
-    });
-    systemUtils.wrapService(res,next,promise);
+    order_history_obj.option = option;
+    //===========for history end=============
+    let orderPromise = orderDao.updateOrder(systemUtils.assembleUpdateObj(req,order_obj),order_id);
+    let orderHistoryPromise = null;
+    if(option){
+      orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
+    }
+    return Promise.all([orderPromise,orderHistoryPromise]);
+  }).then(()=>{
+    res.api();
+  });
+  systemUtils.wrapService(res,next,promise);
 };
 /**
  * modify the info of the order about delivery
@@ -850,67 +911,67 @@ OrderService.prototype.allocateStation = (req,res,next)=>{
  * @param next
  */
 OrderService.prototype.changeDelivery = (req,res,next)=>{
-    req.checkParams('orderId').notEmpty().isOrderId();
-    req.checkBody(allocateStation);
-    let errors = req.validationErrors();
-    if (errors) {
-        res.api(res_obj.INVALID_PARAMS,errors);
-        return;
-    }
-    let order_id = systemUtils.getDBOrderId(req.params.orderId),
-        delivery_id = req.body.delivery_id,
-        delivery_name = req.body.delivery_name,
-        regionalism_id = req.body.regionalism_id,
-        delivery_type = req.body.delivery_type,
-        delivery_time = req.body.delivery_time,
-        address = req.body.recipient_address,
-        prefix_address = req.body.prefix_address,
-        updated_time = req.body.updated_time,
-        status = Constant.OS.STATION;
+  req.checkParams('orderId').notEmpty().isOrderId();
+  req.checkBody(allocateStation);
+  let errors = req.validationErrors();
+  if (errors) {
+    res.api(res_obj.INVALID_PARAMS,errors);
+    return;
+  }
+  let order_id = systemUtils.getDBOrderId(req.params.orderId),
+      delivery_id = req.body.delivery_id,
+      delivery_name = req.body.delivery_name,
+      regionalism_id = req.body.regionalism_id,
+      delivery_type = req.body.delivery_type,
+      delivery_time = req.body.delivery_time,
+      address = req.body.recipient_address,
+      prefix_address = req.body.prefix_address,
+      updated_time = req.body.updated_time,
+      status = Constant.OS.STATION;
 
-    let recipient_obj = {regionalism_id, delivery_type,address};
-    let order_obj = {delivery_id, delivery_time,status};
-    systemUtils.addLastOptCs(order_obj, req);
-    let promise = orderDao.findOrderById(order_id).then((_res)=> {
-        if (toolUtils.isEmptyArray(_res)) {
-            throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
-        } else if (updated_time !== _res[0].updated_time) {
-            throw new TiramisuError(res_obj.OPTION_EXPIRED);
-        }
-        if (!systemUtils.checkOrderDataScopes(req.session.user, _res[0]) || !systemUtils.isOrderCanUpdateStatus(_res[0].status, order_obj.status)) {
-          throw new TiramisuError(res_obj.OPTION_EXPIRED);
-        }
-        //===========for history begin=============
-        let current_order = _res[0],
-            order_history_obj = {order_id};
-        let option = '';
-        if(delivery_type != current_order.delivery_type){
-            option += '修改{配送方式}为{' + Constant.DTD[delivery_type] + '}\n';
-        }
-        if (delivery_id != current_order.delivery_id) {
-            option += '修改{配送站}为{' + delivery_name + '}\n';
-        }
-        if (delivery_time != current_order.delivery_time) {
-            option += '修改{配送时间}为{' + delivery_time + '}\n';
-        }
-        if (regionalism_id != current_order.regionalism_id || address != current_order.recipient_address) {
-            option += '修改收货地址\n';
-        }
-        order_history_obj.option = option;
-        //===========for history end=============
-        let order_fulltext_obj = {
-            order_id : order_id,
-            recipient_address : systemUtils.encodeForFulltext(prefix_address + address)
-        };
-        let orderPromise = orderDao.updateOrder(systemUtils.assembleUpdateObj(req,order_obj),order_id);
-        let recipientPromise = orderDao.updateRecipient(systemUtils.assembleUpdateObj(req,recipient_obj),current_order.recipient_id);
-        let orderHistoryPromise = orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
-        let orderFulltextPromise = orderDao.updateOrderFulltext(order_fulltext_obj,order_id);
-        return Promise.all([orderPromise,orderHistoryPromise,orderFulltextPromise,recipientPromise]);
-    }).then(()=>{
-        res.api();
-    });
-    systemUtils.wrapService(res,next,promise);
+  let recipient_obj = {regionalism_id, delivery_type,address};
+  let order_obj = {delivery_id, delivery_time,status};
+  systemUtils.addLastOptCs(order_obj, req);
+  let promise = orderDao.findOrderById(order_id).then((_res)=> {
+    if (toolUtils.isEmptyArray(_res)) {
+      throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
+    } else if (updated_time !== _res[0].updated_time) {
+      throw new TiramisuError(res_obj.OPTION_EXPIRED);
+    }
+    if (!systemUtils.checkOrderDataScopes(req.session.user, _res[0]) || !systemUtils.isOrderCanUpdateStatus(_res[0].status, order_obj.status)) {
+      throw new TiramisuError(res_obj.OPTION_EXPIRED);
+    }
+    //===========for history begin=============
+    let current_order = _res[0],
+        order_history_obj = {order_id};
+    let option = '';
+    if(delivery_type != current_order.delivery_type){
+      option += '修改{配送方式}为{' + Constant.DTD[delivery_type] + '}\n';
+    }
+    if (delivery_id != current_order.delivery_id) {
+      option += '修改{配送站}为{' + delivery_name + '}\n';
+    }
+    if (delivery_time != current_order.delivery_time) {
+      option += '修改{配送时间}为{' + delivery_time + '}\n';
+    }
+    if (regionalism_id != current_order.regionalism_id || address != current_order.recipient_address) {
+      option += '修改收货地址\n';
+    }
+    order_history_obj.option = option;
+    //===========for history end=============
+    let order_fulltext_obj = {
+      order_id : order_id,
+      recipient_address : systemUtils.encodeForFulltext(prefix_address + address)
+    };
+    let orderPromise = orderDao.updateOrder(systemUtils.assembleUpdateObj(req,order_obj),order_id);
+    let recipientPromise = orderDao.updateRecipient(systemUtils.assembleUpdateObj(req,recipient_obj),current_order.recipient_id);
+    let orderHistoryPromise = orderDao.insertOrderHistory(systemUtils.assembleInsertObj(req,order_history_obj,true));
+    let orderFulltextPromise = orderDao.updateOrderFulltext(order_fulltext_obj,order_id);
+    return Promise.all([orderPromise,orderHistoryPromise,orderFulltextPromise,recipientPromise]);
+  }).then(()=>{
+    res.api();
+  });
+  systemUtils.wrapService(res,next,promise);
 };
 /**
  * validate the coupon
@@ -945,7 +1006,14 @@ OrderService.prototype.exceptionOrder = (req,res,next)=>{
     return;
   }
   let orderId = systemUtils.getDBOrderId(req.params.orderId),updated_time = req.body.updated_time;
-  let order_promise = orderDao.findOrderById(orderId).then((_res) => {
+  let order_promise = refundDao.getRefundInfoByOrderId(orderId).then((res) => {
+    if (res && res[0]) {
+      if (['COMPLETED', 'CANCEL'].indexOf(res[0].status) === -1) {
+        throw new TiramisuError(res_obj.ABORTED_BY_REFUND);
+      }
+    }
+    return orderDao.findOrderById(orderId);
+  }).then((_res) => {
     if (toolUtils.isEmptyArray(_res)) {
       throw new TiramisuError(res_obj.INVALID_UPDATE_ID);
     } else if (updated_time !== _res[0].updated_time) {
@@ -1050,13 +1118,13 @@ OrderService.prototype.exportExcel = (req,res,next) => {
       return res.api(res_obj.FAIL);
     }
 
-  let uri = config.excel_export_host;
+    let uri = config.excel_export_host;
 
-  if(isList){
-    uri += 'list';
-  }else if(isReceiveList){
-    uri += 'delivery';
-  }
+    if(isList){
+      uri += 'list';
+    }else if(isReceiveList){
+      uri += 'delivery';
+    }
 // 请求导出excel服务
     request({
       uri : uri,
@@ -1169,9 +1237,9 @@ OrderService.prototype.exportExcel = (req,res,next) => {
 OrderService.prototype.editOrderRemarks = (req,res,next) => {
   let remarks = req.body.remarks;
   let orderId = systemUtils.getDBOrderId(req.params.orderId),
-  order_obj = {
-    remarks : remarks
-  };
+      order_obj = {
+        remarks : remarks
+      };
   systemUtils.addLastOptCs(order_obj, req);
 
   let order_history_obj = {
@@ -1185,5 +1253,19 @@ OrderService.prototype.editOrderRemarks = (req,res,next) => {
     res.api()
   });
   systemUtils.wrapService(res,next,promise);
+};
+
+OrderService.prototype.orderBackup = function (req, res, next) {
+  let promise = co(function*() {
+    let order_id = req.params.orderId || '';
+    if(order_id.length >= 16){
+      order_id = systemUtils.getDBOrderId(order_id);
+    }
+    let info = yield orderDao.findOrderBackupById(order_id);
+    yield order_backup.insert(info);
+  }).then(() => {
+    res.api();
+  });
+  systemUtils.wrapService(res, next, promise);
 };
 module.exports = new OrderService();

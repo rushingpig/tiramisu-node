@@ -20,7 +20,10 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
           ...components,
           OrderPannel:       require('../components/order/manage'),
           OrderDetailPannel: require('../components/order/manage_order_detail_pannel'),
-          AbnormalOrder:     require('../components/order/search_abnormal_order')
+          AbnormalOrder:     require('../components/order/search_abnormal_order'),
+          InvoicePannel:     require('../components/order/invoice'),
+          InvoiceVATPannel:  require('../components/order/invoice_VAT'),
+          RefundPannel:      require('../components/order/refund'),
         };
         callback();
       });
@@ -53,8 +56,11 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
       require.ensure([], require => {
         components = {
           ...components,
-          SkuSearch: require('../components/product/sku_search'),
-          SkuManage: require('../components/product/sku_management')
+          SkuSearch:         require('../components/product/sku_search'),
+          SkuManage:         require('../components/product/sku_management'),
+          SkuWebsiteManage:  require('../components/product/sku_website_management').default,
+          ViewInfo:          require('../components/product/view_info'),
+          ViewSpecfications: require('../components/product/view_specfications'),
         }
         callback();
       });
@@ -95,6 +101,27 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
         callback();
       });
       break;
+    case 'opm':
+      require.ensure([], require => {
+        components = {...components,
+          HomePageControl:          require('../components/operation/home_page_control_pannel'),
+          ProductSizeManage:        require('../components/operation/product_size_manage'),
+        };
+        callback();
+      });
+      break;
+    case 'gm':
+      require.ensure([], require => {
+        components = {...components,
+          GroupbuyManagePannel:        require('../components/groupbuys/program_manage'),
+          ProgramFormManage:           require('../components/groupbuys/program_form_detail'),
+          GroupbuyProductManagePannel: require('../components/groupbuys/products_manage'),
+          ProductFormMange:            require('../components/groupbuys/products_form_detail'),
+          CouponManagePannel:          require('../components/groupbuys/coupon_manage'),
+        };
+        callback();
+      });
+      break;
     default:
       break;
   }
@@ -113,8 +140,9 @@ const App = () => (
           <Route path="add" onEnter={onEnter('OrderManageAddOrder')} getComponent={get('OrderDetailPannel')} />
           <Route path=":id" getComponent={get('OrderDetailPannel')} />
         </Route>
-        <Route path="refund"  component={ComingSoon} />
-        <Route path="invoice" component={ComingSoon} />
+        <Route path="refund"  onEnter={onEnter('OrderRefundAccess')} getComponent={get('RefundPannel')} />
+        <Route path="invoice" onEnter={onEnter('OrderInvoiceAccess')} getComponent={get('InvoicePannel')} />
+        <Route path="VATinvoice" onEnter={onEnter('OrderVATInvoiceAccess')} getComponent={get('InvoiceVATPannel')} />
         <Route path="winning" component={ComingSoon} />
         <Route path="ao" onEnter={onEnter('OrderAbnormalManageAccess')} getComponent={get('AbnormalOrder')} />
       </Route>
@@ -161,7 +189,13 @@ const App = () => (
       <Route path="pm" onEnter={getComponents('pm')}>
         <Route path="sku_manage">
           <IndexRoute onEnter={onEnter('ProductionManageAccess')} getComponent={get('SkuSearch')} />
-          <Route path="add" onEnter={onEnter('ProductionManageAdd')} getComponent={get('SkuManage')} />
+          <Route path="add" onEnter={onEnter('ProductionManageAddAccess')} getComponent={get('SkuManage')} />
+          <Route path="edit/:productId" onEnter={onEnter('ProductionManageEditAccess')} getComponent={get('SkuManage')} />
+          <Route path="edit_website/:productId" onEnter={onEnter('ProductionManageEditWebsiteAccess')} getComponent={get('SkuWebsiteManage')} />
+          <Route path="view">
+            <Route path="info/:cityId/:productId" onEnter={onEnter('ProductionViewInfoAccess')} getComponent={get('ViewInfo')} />
+            <Route path="specfications/:cityId/:productId" onEnter={onEnter('ProductionViewSpecAccess')} getComponent={get('ViewSpecfications')} />
+          </Route>
         </Route>
         <Route path="cam" onEnter={getComponents('cam', onEnter('CategoryManageAccess'))}>
           <IndexRoute getComponent={get('CategoryManage')} />
@@ -176,6 +210,23 @@ const App = () => (
         </Route>
       </Route>
 
+      <Route path="opm" onEnter={getComponents('opm')}>
+        <Route path="hpc" onEnter={onEnter('HomePageControlAccess')} getComponent={get('HomePageControl')} />
+        <Route path="psm" onEnter={onEnter('ProductSizeManageAccess')} getComponent={get('ProductSizeManage')} />
+      </Route>
+
+      <Route path='gm' onEnter={getComponents('gm')}>
+        <Route path='pg'>
+          <IndexRoute getComponent={get('GroupbuyManagePannel')} onEnter={onEnter('GroupbuyProgramManageAccess')} />
+          <Route path='add' onEnter={onEnter('GroupbuyProgramManageAdd')} getComponent={get('ProgramFormManage')} />
+          <Route path='edit/:id' onEnter={onEnter('GroupbuyProgramManageEdit')} getComponent={get('ProgramFormManage')} />
+        </Route>
+        <Route path='pd'>
+          <IndexRoute getComponent={get('GroupbuyProductManagePannel')} onEnter={onEnter('GroupbuyProductManageAccess')} />
+          <Route path='add' onEnter={onEnter('GroupbuyProductManageAdd')} getComponent={get('ProductFormMange')} />
+        </Route>
+        <Route path='cp' onEnter={onEnter('GroupbuyCouponManageAccess')} getComponent={get('CouponManagePannel')} />
+      </Route>
 
       <Redirect from="logout" to="/" />
       <Route path="403" component={NoPermission} />

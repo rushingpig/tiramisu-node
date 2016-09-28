@@ -5,6 +5,7 @@ import login from './login';
 import orderManage from './order_manage';
 import orderManageForm from './order_manage_form';
 import orderAbnormal from './order_abnormal';
+import refundManage from './refund';
 import deliveryChange from './delivery_change';
 import deliveryManage from './delivery_manage';
 import distributeManage from './distribute_manage';
@@ -24,7 +25,19 @@ import categorySearch from './category_search';
 import categoryManage from './category_manage';
 import citiesSelector from './cities_selector';
 import productSKUManagement from './product_sku_management';
+import productSKUWebsiteManagement from './product_sku_website_manage';
 import productSKUSearch from './product_sku_search';
+import productViewInfo from './product_view_info';
+import productViewSpecifications from './product_view_specifications';
+import operationHomePageControl from './operation_home_page_control';
+import operationProductSizeManage from './operation_product_size_manage';
+import invoiceManage from './order/invoice';
+import invoiceVATManage from './order/invoice_VAT';
+import groupbuysProgramManage from './groupbuys/program_manage';
+import groupbuysProgramFormManage from './groupbuys/program_form';
+import groupbuysProductsManage from './groupbuys/products_manage';
+import groupbuysProductsFormManage from './groupbuys/products_form';
+import groupbuysCouponManage from './groupbuys/coupon_manage';
 
 const rootReducer = combineReducers({
   form,
@@ -33,6 +46,7 @@ const rootReducer = combineReducers({
   orderManage,
   orderManageForm,
   orderAbnormal,
+  refundManage,
   deliveryChange,
   deliveryManage,
   distributeManage,
@@ -52,7 +66,19 @@ const rootReducer = combineReducers({
   categoryManage,
   citiesSelector,
   productSKUManagement,
-  productSKUSearch
+  productSKUWebsiteManagement,
+  productViewInfo,
+  productViewSpecifications,
+  operationHomePageControl,
+  operationProductSizeManage,
+  productSKUSearch,
+  invoiceManage,
+  invoiceVATManage,
+  groupbuysProgramManage,
+  groupbuysProgramFormManage,
+  groupbuysProductsManage,
+  groupbuysProductsFormManage,
+  groupbuysCouponManage,
 });
 
 export default rootReducer

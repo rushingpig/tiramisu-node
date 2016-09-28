@@ -60,7 +60,16 @@ class HistoryOrders extends Component {
     var { checkHistoryOrder } = this.props;
     var { page_no, total, list, check_order_info, active_order_id } = this.props.data;
     var { viewDetail } = this;
-
+    var active_order_arr = list.filter( m => m.order_id == active_order_id);
+    var active_order = {}
+    var relateBtnActive = false;
+    if(active_order_arr.length > 0){
+      active_order = active_order_arr[0];
+      relateBtnActive =( active_order.status == 'CANCEL' || active_order.status == 'EXCEPTION' ) && 
+                        ( !active_order.refund_status || active_order.refund_status == 'CANCEL'
+                         || active_order.refund_status == 'COMPLETED')
+                        && !active_order.is_bind ;
+    }
     var content = list.map((n, i) => {
       return <OrderRow key={n.order_id} {...{...n, active_order_id, viewDetail, checkHistoryOrder}} />;
     })
@@ -75,6 +84,8 @@ class HistoryOrders extends Component {
         <button onClick={this.search.bind(this, 0)} className="btn btn-default btn-xs">查询</button>
         {'　'}
         <button onClick={this.copyOrder.bind(this)} className="btn btn-default btn-xs">复制订单</button>
+        {'　'}
+        <button onClick={this.bindOrder.bind(this)} disabled = { !relateBtnActive } className="btn btn-default btn-xs">关联订单</button>
         <span className="pull-right theme">{ window.xfxb.user.name }</span>
       </div>
       <div className="table-responsive">
@@ -166,6 +177,21 @@ class HistoryOrders extends Component {
     }else{
       Noty('warning', '请点击选择你想要复制的订单');
     }
+  }
+  bindOrder(){
+    var { data: {check_order_info}, getBindOrderById, copyOrder } = this.props;
+    if(check_order_info){
+      getBindOrderById(check_order_info.order_id)
+        .done(() => {
+          copyOrder();
+          this.refs.modal.hide();
+        })
+        .fail((msg) => {
+          Noty('error', msg || '网络繁忙，请稍后再试')
+        })
+    }else{
+      Noty('warning', '请点击选择你想要关联订单');
+    }   
   }
   show(){
     this.refs.modal.show();

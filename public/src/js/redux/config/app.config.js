@@ -80,9 +80,21 @@ export default {
     'PAYED': '已付款',
     'PARTPAYED': '部分付款',
   },
+  invoice_status: {
+    WAITING: {value:'等待中'},
+    UNTREATED: {value: '未开具'},
+    COMPLETED: {value: '已开具'},
+    DELIVERY: {value: '已发货'},
+    CANCEL: {value: '已取消'},
+  },
   INVOICE: {
     YES: 1,
     NO: 0
+  },
+  DELIVERY_COMPANIES: {
+   UC: {express_type: 'UC', exppress_name: '优速'},
+   SF: {express_type: 'SF', exppress_name: '顺丰'},
+   YD: {express_type: 'YD', exppress_name: '韵达'},
   },
   YES_OR_NO: [{id: 1, text: '是'}, {id: 0, text: '否'}],
 
@@ -96,6 +108,13 @@ export default {
     'UNPRINTABLE': '是',
     'AUDITING': '是',
     'REPRINTABLE': '否',
+  },
+  REFUND_STATUS: {
+    'UNTREATED': {value: '未处理', key: 0, color: '#E44949', bg: '#dac7a7'},
+    'TREATED': {value: '未审核',  key: 0, color: '#585353', bg: '#dac7a7'},
+    'REVIEWED': {value: '已审核', key: 0, color: '#585353', bg: '#dac7a7'},
+    'COMPLETED': {value: '退款完成', key: 100, color: '#2FB352', bg: '#dac7a7'},
+    'CANCEL': {value: '退款取消', key: -10, color: '#2FB352', bg: '#dac7a7'}
   },
   SRC: {
     group_site: 3, //团购网站
@@ -131,5 +150,24 @@ export default {
   SIGN_STATUS_EXCEPTION: 'EXCEPTION',
 
   MAX: 500, //
+
+  ACCOUNT_TYPE: {
+    BANK_CARD: '银行卡',
+    'ALIPAY': '支付宝',
+    'WECHAT': '微信',
+  },
+
+  REFUND_TYPE: {
+    'PART': '部分退款',
+    'FULL': '全额退款',
+    'OVERFULL': '超额退款',
+  },
+
+  REFUND_WAY: {
+    'THIRD_PARTY': '第三方平台原返',
+    'FINANCE': '财务部退款',
+    'CS': '客服部退款',
+  },
+
 
 }

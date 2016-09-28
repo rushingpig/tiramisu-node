@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { getGlobalStore, getGlobalState } from 'stores/getter';
 import * as FormActions from 'actions/user_manage_form';
+import { map } from 'utils/index';
 
 import { area } from './area_select';
 import {dept_role} from './dept_role';
@@ -18,8 +19,13 @@ var initial_state={
 	},
 	stations:{
 
-	}
+	},
+	cities_standard: [],
 };
+
+function _t(data){
+  return map(data, (text, id) => ({id, text}))
+}
 
 function mainForm(state=initial_state,action){
 	switch(action.type){
@@ -66,7 +72,10 @@ function mainForm(state=initial_state,action){
 					role_ids:role_ids,roles_in:roles_in,stations_in:stations_in,cities_in:cities_in,
 					tmp_roles:tmp_roles,tmp_cities:tmp_cities,tmp_stations:tmp_stations, is_national,en_delivery}};
 			})();
-			/*{...state,data:clone(action.data)};*/
+		case FormActions.GET_CITIES_SIGNAL_STANDARD:
+		  return {...state, cities_standard: _t(action.data)}
+		case FormActions.RESET_CITIES_SIGNAL_STANDARD:
+		  return {...state, cities_standard: []}
 		case FormActions.SAVE_USER_INFO_ING:
 		  return {...state, save_ing: true }
 		case FormActions.SAVE_USER_INFO_SUCCESS:

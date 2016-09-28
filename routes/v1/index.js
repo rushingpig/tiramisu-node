@@ -36,6 +36,7 @@ router.use('/i', routerI);
 routerI.post('/order', orderService.addExternalOrder);
 routerI.post('/order/error', orderService.addOrderError);
 routerI.put('/order/error', orderService.editOrderError);
+routerI.post('/order/:orderId/backup', orderService.orderBackup);
 //=====================router for business begin====================
 
 //*********************
@@ -43,6 +44,7 @@ routerI.put('/order/error', orderService.editOrderError);
 //*********************
 a.get('/provinces',addressService.getProvinces);    // 获取所有省份信息
 a.get('/province/:provinceId/cities',addressService.getCities); // 获取指定省份下的所有城市信息
+a.get('/city/:cityId/cities', addressService.getCities); // 获取指定城市下的所有开通城市
 a.get('/provinces/cities', addressService.getProvincesAndCites); // 获取所有省份与城市信息
 //a.get(/^\/city\/(\d+)\/districts$/,addressService.getDistricts);
 a.get('/city/:cityId/districts', addressService.getDistricts); // 获取指定城市下的所有行政区域信息
@@ -74,6 +76,15 @@ a.get('/product/category/:id/secondary', categoryService.getSecondaryCategoriesB
 a.get('/product/category/:id/details', categoryService.getCategoryDetailsById); // 查询分类详情
 a.get('/product/sku/size', productService.getAllSize); // 规格提示
 a.get('/product/details', productService.getProductDetails); // 根据多个条件搜索产品详情
+a.get('/product/skus', productService.getProductAndSku); // 查看产品信息
+a.get('/product/skus/price', productService.listSkuPrice); // 查看产品规格价格列表
+a.get('/product/skus/details', productService.getProductAndSkuWithRegions); // 获取产品信息(用于产品&sku编辑)
+a.get('/product/skus/xlsx', productService.exportSku); // 导出sku
+a.get('/product/info/cities', productService.getProductDetailCities); // 获取可添加商品详情和已添加商品详情的城市
+a.get('/product/info', productService.getProductDetailByProductIdAndRegionId); // 获取商品详情
+
+a.get('/product/skus/sizes', productService.getSkuSize); // 获取所有管理规格信息
+a.get('/product/skus/sizes/name', productService.getSkuSizeByName); // 通过名称查询管理规格信息
 
 //**********************
 //******** POST ********
@@ -98,6 +109,9 @@ a.post('/product/categories/primary', categoryService.addPrimaryCategory);  // �
 a.post('/product/categories/secondary', categoryService.addSecondaryCategory);  // 新增二级分类
 
 a.post('/product/sku', productService.addProductWithSku);  // 新增产品
+a.post('/product/info', productService.addProductInfo);  // 新增商品详情
+
+a.post('/product/skus/sizes', productService.addSkuSize);   //新增管理规格信息
 
 //*********************
 //******** PUT ********
@@ -115,6 +129,12 @@ a.put('/product/category/secondary', categoryService.modifySecondaryCategory);  
 a.put('/product/categories/sort', categoryService.rankCategoris);  // 二级分类排序
 
 a.put('/product/skus', productService.deleteSku);  // 批量删除sku
+a.put('/product/sku', productService.modifyProductWithSku);  // 编辑产品&sku
+a.put('/product/info', productService.modifyProductInfo);  // 编辑产品&sku
+
+a.put('/product/skus/sizes/online', productService.modifySkuSizeValidation);  // 编辑管理规格信息上下线
+a.put('/product/skus/sizes/specs', productService.modifySkuSizeSpec);  // 编辑管理规格信息
+a.put('/product/skus/sizes/sort', productService.modifySkuSizeSort);  // 移动管理规格信息
 
 //************************
 //******** DELETE ********
@@ -125,6 +145,7 @@ a.delete('/order/src/:srcId', orderService.delOrderSrc); // 删除来源渠道
 a.delete('/station/:stationId', addressService.deleteStation);
 
 a.delete('/product/:productId', productService.deleteProduct);  // 删除产品及其sku
+a.delete('/product/categories/:id', categoryService.deleteCategory); // 删除分类(移动分类下产品到指定分类)
 
 //=====================router for business end======================
 

@@ -31,7 +31,7 @@ class Header extends Component {
               {this.state.time + '  星期' + this.state.weekday[this.state.day]}
             </li>
             <li className={this.state.usermenu_open ? 'open' : ''}>
-              <a href="#" className="btn btn-default dropdown-toggle"
+              <a href="javascript:;" className="btn btn-default dropdown-toggle"
                   onClick={this.toggleUserMenu.bind(this)} data-toggle="dropdown" aria-expanded="false">
                 {/*<img src="http://www.qq1234.org/uploads/allimg/141119/2252043613-8.png" alt="" />*/}
                 { this.state.user.name || '--'}

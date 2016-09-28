@@ -37,6 +37,7 @@ const URL = (function() {
     provinces:                '/provinces',
     cities:                   '/province/:provinceId/cities',
     districts:                '/city/:cityId/districts',
+    districts_and_city:       '/city/:cityId/cities',
     pay_modes:                '/pay/modes',
     order_sign:               '/order/:orderId/signin',
     order_unsign:             '/order/:orderId/unsignin',
@@ -57,6 +58,41 @@ const URL = (function() {
     delete_order_src: '/order/src/:srcId',
     update_order_src: '/order/src/:srcId',
 
+    //发票
+    company_review: '/company/:companyId/review', //公司审核
+    company_del:    '/company/:companyId', //删除公司
+    get_invoice_list: '/invoice/list',    //获取发票列表
+    invoice_apply:    '/invoice',         //发票申请
+    invoice_edit:     '/invoice/:invoiceId', //发票编辑
+    order_invoice_data: '/order/:orderId/invoice/option',  //根据订单获取发票所需数据
+    invoice_data: '/invoice/:invoiceId',  //获取发票信息
+    invoice_get_company: '/invoice/company/list', //添加发票时获取公司
+    invoice_opt_history: '/invoice/:invoiceId/history', //获取发票历史记录
+    invoice_del:         '/invoice/:invoiceId',         //删除发票
+    add_invoice_remarks: '/invoice/:invoiceId/remarks', //添加备注
+    invoice_express_edit: '/invoice/:invoiceId/express', //编辑物流
+    invoice_delivery_trace: '/express/info', //追踪物流
+    invoice_export: '/invoices/export', //导出发票信息
+
+    add_company:       '/company',   //添加开发票的公司
+    edit_company:      '/company/:companyId', // 编辑开发票公司
+    get_company_list:  '/company/list', //获取公司列表
+    company_opt_history: '/company/:companyId/history', //获取公司操作记录
+    company_invoice_history: '/company/:companyId/invoice/history', //公司开票历史记录
+
+    //退款
+    refund_apply:             '/refund',  //申请退款
+    get_refund_apply_data:    '/order/:orderId/refund/option',  //获取申请退款需要的数据
+    get_refund_detail:        '/refund/:refundId',  //获取退款详情
+    bind_orders:              '/order/:orderId/relate/list',  //获取订单关联历史记录
+    refund_history:           '/refund/:refundId/history',  //获取退款历史记录
+    handle_refund:            '/refund/:refundId',  //编辑/审核/完成退款
+    cancel_refund:            'refund/:refundId',  //取消退款
+    refund_list:              '/refund/list',  //获取退款列表
+    edit_refund_remark:       '/refund/:refundId/remarks',  //修改退款备注
+    refund_reasons:           '/refund/reason/type', //获取退款原因
+    refund_export:            '/refund/export', //退款导出
+
     //产品
     categories: '/product/categories',
     products:   '/products',
@@ -70,9 +106,11 @@ const URL = (function() {
     editPrimaryCategory:      '/product/category/primary',
     addSecondaryCategory:     '/product/categories/secondary',
     editSecondaryCategory:    '/product/category/secondary',
+    deleteSecondaryCategory:  '/product/categories/:id',
     getCategoryDetail:        '/product/category/:id/details',
     sortCategories:           '/product/categories/sort',
     activatedCity:            '/product/category/:id/regions/pc',
+    getAllSkuSize:            '/product/sku/size',
     addSku:                   '/product/sku',
     saveEditSku:              '/product/sku',
     getSku:                   '/product/skus/details',
@@ -81,7 +119,9 @@ const URL = (function() {
     viewSkuSpec:              '/product/skus/price',
     deleteSku:                '/product/skus',
     exportSkuDetail:          '/product/skus/details',
-
+    product_cities:           '/product/info/cities',
+    product_info:             '/product/info',
+    
     //送货管理
     order_exchange:     '/orders/exchange', //订单转送单列表
     order_delivery:     '/orders/delivery', //送货单管理列表
@@ -173,6 +213,30 @@ const URL = (function() {
     move_img: '/image/move',
     rename_img: '/image/name',
     all_img_dir: '/image/dir',
+
+    //运营管理
+    manage_product_sizes: '/product/skus/sizes', //获取产品所有规格
+    manage_size_add: '/product/skus/sizes', //新增管理规格
+    manage_size_edit: '/product/skus/sizes/specs', //编辑规格管理
+    manage_product_sizes_by_name: '/product/skus/sizes/name', //根据名字获取产品规格
+    manage_size_online: '/product/skus/sizes/online', //上架
+    manage_size_move: '/product/skus/sizes/sort', //规格移动
+
+    //团购
+    sku_size: '/product/sku/size', //所有已存在size
+    add_groupbuys_sku: '/group/buying/sku', //添加团购sku,
+    get_groupbuys_sku_list: '',
+    groupbuy_sku_off_shelf: '/group/buying/sku/:skuId',
+    groupbuy_pg_add_sku_list: '/group/buying/sku/list',
+
+    add_program : '/group/buying/project', //添加团购项目,
+    edit_program: '/group/buying/project/:projectId', //编辑团购项目，
+    del_program:  '/group/buying/project/:projectId', //下架团购项目，
+    get_program_list : '/group/buying/project/list', //获取团购项目列表,
+    get_product_spu_list: '/group/buying/product/list', //获取团购可供选择商品列表，
+    get_groupbuys_program_detail: '/group/buying/project/:projectId', //获取团购项目详情
+    edit_groupbuy_pd: '/group/buying/sku/:skuId', //编辑团购商品
+    get_groupbuy_sku_list: '/group/buying/sku/list', //获取团购商品列表
   };
 
   for (var a in url) {

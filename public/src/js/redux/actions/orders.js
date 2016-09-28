@@ -18,10 +18,22 @@ export function refreshDataList(){
     type: GET_ORDER_LIST_ING
   }
 }
+
+//关于三级城市的，
+function cityParamTrans(filter_data = {}){
+  if(filter_data.district_id){
+    filter_data.city_id = filter_data.district_id;
+    delete filter_data.district_id;
+  }else if(filter_data.city_id){
+    filter_data.is_standard_area = 1;
+  }
+  return filter_data;
+}
+
 export function getOrderList(data){
   return (dispatch, getState) => {
     var filter_data = getValues(getState().form.order_manage_filter);
-    filter_data = formCompile(filter_data);
+    filter_data = cityParamTrans(formCompile(filter_data));
     return GET(Url.orders.toString() + '?v=' + new Date().getTime(), {...data, ...filter_data}, GET_ORDER_LIST)(dispatch)
       // .fail(function(msg, code){
       //   if(code == NO_MORE_CODE){
@@ -65,7 +77,7 @@ export function getOrderList(data){
 export function getOrderExchangeList(data){
   return (dispatch, getState) => {
     var filter_data = getValues(getState().form.order_exchange_filter);
-    filter_data = formCompile(filter_data);
+    filter_data = cityParamTrans(formCompile(filter_data));
 /*    delete filter_data.province_id;
     delete filter_data.city_id;*/
     // dispatch({ type: GET_ORDER_LIST_ING });
@@ -76,7 +88,7 @@ export function getOrderExchangeList(data){
 export function getOrderDeliveryList(data){
   return (dispatch, getState) => {
     var filter_data = getValues(getState().form.order_delivery_filter);
-    filter_data = formCompile(filter_data);
+    filter_data = cityParamTrans(formCompile(filter_data));
     // dispatch({ type: GET_ORDER_LIST_ING });
 /*    delete filter_data.province_id;
     delete filter_data.city_id;*/
@@ -91,7 +103,7 @@ export function getOrderDeliveryList(data){
 export function getOrderDistributeList(data){
   return (dispatch, getState) => {
     var filter_data = getValues(getState().form.order_distribute_filter);
-    filter_data = formCompile(filter_data);
+    filter_data = cityParamTrans(formCompile(filter_data));
     // dispatch({ type: GET_ORDER_LIST_ING });
 /*    delete filter_data.province_id;
     delete filter_data.city_id;*/
@@ -238,9 +250,11 @@ export function getOrderOptRecord(order_id, data){
   }*/
 }
 
+
 export const RESET_ORDER_OPT_RECORD = 'RESET_ORDER_OPT_RECORD'; //先重置历史数据
 export function resetOrderOptRecord(){
   return {
     type: RESET_ORDER_OPT_RECORD,
   }
 }
+

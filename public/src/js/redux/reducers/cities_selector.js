@@ -16,7 +16,7 @@ const transformGeographiesData = source => {
 
     source.forEach(obj => {
 
-        let { province_id, province_name, city_id, city_name } = obj;
+        let { province_id, province_name, city_id, city_name, level_type } = obj;
 
         province_id = Number(province_id);
         city_id     = Number(city_id);
@@ -31,10 +31,11 @@ const transformGeographiesData = source => {
         }
 
         citiesData.set(city_id, {
-            id:       city_id,
-            name:     city_name,
-            province: province_id,
-            enable:   true
+            id:              city_id,
+            name:            city_name,
+            province:        province_id,
+            enable:          true,
+            isThirdlyRegion: level_type === 3
         });
 
         provincesData.get(province_id).list.add(city_id);
@@ -94,15 +95,16 @@ const switchType = {
         let checkedProvinces = new Set();
         let checkedCities    = new Set();
 
-        checkedCities = new Set(chekcedData.map(
-            ({ city_id }) => Number(city_id)
-        ));
+        checkedCities = new Set(chekcedData);
 
         if (checkedCities.size) {
             [...provincesData.values()].forEach(obj => {
-                const different = new Set([...obj.list].filter(id => !checkedCities.has(id))).size;
+                const provinceCitiesSet = obj.list;
+                const enableCities = [...provinceCitiesSet].filter(id => citiesData.get(id).enable);
 
-                if (different === 0) {
+                const different = enableCities.filter(id => !checkedCities.has(id)).length;
+
+                if (enableCities.length !== 0 && (different === 0)) {
                     checkedProvinces.add(obj.id);
                 }
             });
@@ -115,6 +117,7 @@ const switchType = {
             selectedProvince: 0,
             checkedProvinces,
             checkedCities,
+            originCheckedProvinces: new Set([...checkedProvinces]),
             originCheckedCities: new Set([...checkedCities])
         };
     },
@@ -279,6 +282,8 @@ const switchType = {
 
         return {
             ...state,
+            originCheckedProvinces: state.checkedProvinces,
+            originCheckedCities: state.checkedCities,
             checkedCities,
             checkedProvinces
         };
@@ -289,6 +294,15 @@ const switchType = {
             ...state,
             checkedCities: new Set(),
             checkedProvinces: new Set()
+        };
+    },
+
+    [ActionTypes.RESTORE_CHECKED_CITIES]: state => {
+        return {
+            ...state,
+            selectedProvince: initialState.selectedProvince,
+            checkedCities: clone(state.originCheckedCities),
+            checkedProvinces: clone(state.originCheckedProvinces),
         };
     },
 };

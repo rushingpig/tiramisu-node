@@ -69,11 +69,19 @@ var OperationRecordModal = React.createClass({
   },
   search(page_no){
     var { page_size, sort_type } = this.state;
-    this.props.getOrderOptRecord(this.state.data.order_id, {
-      page_no: page_no,
-      page_size,
-      sort_type
-    });
+    if (this.state.data.refund_id != undefined ){
+      this.props.getOrderOptRecord(this.state.data.refund_id, {
+        page_no: page_no,
+        page_size,
+        sort_type
+      });
+    }else{
+      this.props.getOrderOptRecord(this.state.data.order_id, {
+        page_no: page_no,
+        page_size,
+        sort_type
+      });      
+    }
   },
   show(data){
     this.refs.modal.show();

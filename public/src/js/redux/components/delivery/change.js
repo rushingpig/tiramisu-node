@@ -23,6 +23,7 @@ import LazyLoad from 'utils/lazy_load';
 import OrderProductsDetail from 'common/order_products_detail';
 import OrderDetailModal from './order_detail_modal';
 import OperationRecordModal from 'common/operation_record_modal.js';
+import AddressSelector from 'common/address_selector';
 
 import * as OrderActions from 'actions/orders';
 import * as OrderSupportActions from 'actions/order_support';
@@ -40,7 +41,8 @@ class FilterHeader extends Component {
     this.state = {
       search_ing: false,
       search_by_keywords_ing: false,
-    }
+    };
+    this.AddressSelectorHook = this.AddressSelectorHook.bind(this);
   }
   render(){
     var { 
@@ -51,9 +53,11 @@ class FilterHeader extends Component {
         delivery_id,
         province_id,
         city_id,
+        district_id
       },
       provinces,
       cities,
+      districts,
       stations: { station_list },
       changeHandler,
       change_submitting,
@@ -69,10 +73,10 @@ class FilterHeader extends Component {
           <DatePicker editable redux-form={end_time} className="short-input space-right" />
           {
             V( 'DeliveryManageChangeAddressFilter' )
-              ? [
-                  <Select {...province_id} onChange={this.onProvinceChange.bind(this, province_id.onChange)} options={provinces} ref="province" default-text="选择省份" key="province" className="space-right"/>,
-                  <Select {...city_id} onChange={this.onCityChange.bind(this, city_id.onChange)} options={cities} default-text="选择城市" ref="city" key="city" className="space-right"/>
-                ]
+              ? <AddressSelector
+                  {...{ province_id, city_id, district_id, provinces, cities, districts, actions: this.props,
+                    AddressSelectorHook: this.AddressSelectorHook, form: 'order_exchange_filter'}}
+                />
               : null
           }
           { 
@@ -99,33 +103,14 @@ class FilterHeader extends Component {
   componentDidMount(){
     setTimeout(function(){
       var { getProvincesSignal, getStationListByScopeSignal } = this.props;
-      getProvincesSignal('authority');
-      getStationListByScopeSignal({signal:'authority'});
+      getProvincesSignal();
+      getStationListByScopeSignal();
       LazyLoad('noty');
     }.bind(this),0)
   }
-  onProvinceChange(callback, e){
-    var {value} = e.target;
-    this.props.resetCities();
-    if(value != this.refs.province.props['default-value']){
-      var $city = $(findDOMNode(this.refs.city));
-      this.props.getCitiesSignal(value, 'authority').done(() => {
-        $city.trigger('focus'); //聚焦已使city_id的值更新
-      });
-      this.props.getStationListByScopeSignal({ province_id: value ,signal:'authority'});
-    }else{
-      this.props.resetStationListWhenScopeChange();
-    }
-    callback(e);
-  }
-  onCityChange(callback, e){
-    var {value} = e.target;
-    if(value != this.refs.city.props['default-value']){ 
-      this.props.getStationListByScopeSignal({ city_id: value, signal: 'authority' });
-    }else{
-      this.props.resetStationListWhenScopeChange();
-    }
-    callback(e);
+  AddressSelectorHook(e, data){
+    this.props.resetStationListWhenScopeChange('order_exchange_filter');
+    this.props.getStationListByScopeSignal({ ...data });
   }
   search(search_in_state){
     this.setState({[search_in_state]: true});
@@ -150,6 +135,7 @@ FilterHeader = reduxForm({
     'delivery_id',
     'province_id',
     'city_id',
+    'district_id'
   ]
 }, state => {
   var now = dateFormat(new Date());

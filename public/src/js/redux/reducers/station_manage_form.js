@@ -21,9 +21,9 @@ function stationEditForm(state = initial_state, action) {
       case FormActions.GET_STATION_BY_ID:
         return function(){
           var data = action.data[0];
-          var {getCities, getDistricts} = AreaActions();
-          store.dispatch(getCities(data.province_id));
-          store.dispatch(getDistricts(data.city_id));
+          var {getStandardCitiesSignal, getStandardDistricts} = AreaActions();
+          store.dispatch(getStandardCitiesSignal({province_id: data.province_id}));
+          store.dispatch(getStandardDistricts(data.city_id));
           return {...state, data: data}
         }()
           case FormActions.SAVE_STATION_INFO_ING:

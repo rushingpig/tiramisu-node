@@ -27,6 +27,7 @@ var exp_router_options = {
 //  the table list in database  ->  tiramisu
 var tables = {
 //================Sys=================
+    sys_history: 'sys_history',
     sys_user : 'sys_user',
     sys_role : 'sys_role',
     sys_menu : 'sys_menu',
@@ -58,6 +59,16 @@ var tables = {
     buss_delivery_picture: 'buss_delivery_picture',
     buss_image: 'buss_image',
     buss_directory: 'buss_directory',
+    buss_product_detail: 'buss_product_detail',
+    buss_product_detail_spec: 'buss_product_detail_spec',
+    buss_product_template: 'buss_product_template',
+    buss_product_template_data: 'buss_product_template_data',
+    buss_product_sku_size: 'buss_product_sku_size',
+    buss_product_sku_size_spec: 'buss_product_sku_size_spec',
+    buss_company: 'buss_company',
+    buss_invoice: 'buss_invoice',
+    buss_refund: 'buss_refund',
+    buss_group_project: 'buss_group_project',
 //=================Dict===================
     dict_regionalism : 'dict_regionalism',
     delivery_pay_rule: 'delivery_pay_rule'
@@ -71,7 +82,7 @@ var mysql_options = {
     host            : 'localhost',
     port            : 3306,
     user            : 'root',
-    password        : 'pigo2016',
+    password        : '',
     database        : 'tiramisu',
     charset         : 'utf8mb4',
     timezone        : 'local',
@@ -137,6 +148,10 @@ var login_required = true;
 // 导出excel的远程host
 var excel_export_host = 'http://localhost:8080/excel/order/';
 
+var backup_host = 'http://localhost:3001';
+var mongodb_uri = 'mongodb://cupcake_qa:17F2wDwxI39w@120.76.25.32:27017/cupcake';
+var express_host = 'http://192.168.31.195:8080/blissmall-express-web/express/get';
+
 module .exports = {
     exp_static_options : exp_static_options,
     exp_session_options : exp_session_options,
@@ -151,6 +166,9 @@ module .exports = {
     coupon_host : coupon_host,
     tartetatin_host: tartetatin_host,
     img_host: img_host,
-    excel_export_host : excel_export_host
+    excel_export_host : excel_export_host,
+    backup_host: backup_host,
+    mongodb_uri: mongodb_uri,
+    express_host : express_host
 };
 

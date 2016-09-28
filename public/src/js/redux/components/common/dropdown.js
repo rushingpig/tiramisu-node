@@ -50,7 +50,7 @@ class DropDownMenu extends Component {
 
   render() {
 
-    let selectedItem = {id: 0, name: "undefined", checked: false, disabled: false};
+    let selectedItem = {id: 0, name: "undefined", text: '--请选择--', checked: false, disabled: false};
     let { list } = this.props;
 
     for (let i in list) {
@@ -61,7 +61,7 @@ class DropDownMenu extends Component {
     }
 
     return (
-      <div className={"btn-group" + (this.state.showList ? ' open' : '')}>
+      <div className={"btn-group" + (this.state.showList ? ' open' : '') + ' ' + this.props.className}>
         <button type="button" className="btn btn-default btn-xs dropdown-toggle" onClick={this.handleToggleShowState}>
           {selectedItem.text}
           {' '}

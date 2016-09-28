@@ -9,16 +9,21 @@ export default [{
     "icon": "",
     "link": "/om/index"
   }, {
-    "key": "OrderRefund",
+    "key": "OrderRefundAccess",
     "name": "退款管理",
     "icon": "",
     "link": "/om/refund",
   }, {
-    "key": "om_invoice",
+    "key": "OrderInvoiceAccess",
     "name": "发票管理",
     "icon": "",
     "link": "/om/invoice",
   }, {
+    "key": "OrderVATInvoiceAccess",
+    "name": "专用发票信息管理",
+    "icon": "",
+    "link": "/om/VATinvoice",
+  },{
     "key": "om_winning",
     "name": "中奖管理",
     "icon": "",
@@ -98,12 +103,12 @@ export default [{
     "link": "/cm/img"
   }]
 }, {
-  "key": "ProductionManageAccess",
+  "key": "ProductionManage",
   "name": "产品管理",
   "short_name": "产品",
   "icon": "",
   "link": [{
-    "key": "ProductionManage",
+    "key": "ProductionManageAccess",
     "name": "商品管理",
     "icon": "",
     "link": "/pm/sku_manage"
@@ -113,6 +118,42 @@ export default [{
     "short_name": "类型",
     "icon": "",
     "link": "/pm/cam"
+  }]
+}, {
+  "key": "operation_manage",
+  "name": "运营管理",
+  "short_name": "运营",
+  "icon": "",
+  "link": [{
+    "key": "HomePageControlAccess",
+    "name": "首页运营控制",
+    "icon": "",
+    "link": "/opm/hpc"
+  }, {
+    "key": "ProductSizeManageAccess",
+    "name": "规格配置管理",
+    "icon": "",
+    "link": "/opm/psm"
+  }]
+},{
+  "key": 'GroupbuyManageAccess',
+  'name': '团购管理',
+  'short_name': '团购',
+  'icon': '',
+  'link': [{
+    'key': 'GroupbuyProgramManageAccess',
+    'name': '团购项目管理',
+    'icon': '',
+    'link': '/gm/pg',
+  }, {
+    'key': 'GroupbuyProductManageAccess',
+    'name': '团购商品管理',
+    'icon': '',
+    'link': '/gm/pd',
+  },{
+    'key': 'GroupbuyCouponManageAccess',
+    'name': '团购券管理',
+    'link': '/gm/cp',
   }]
 }, {
   "key": "authority_manage",

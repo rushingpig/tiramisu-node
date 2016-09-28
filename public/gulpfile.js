@@ -147,7 +147,7 @@ gulp.task('rev', function(){
 // });
 
 gulp.task('images', function(cb) {
-  return gulp.src(s('images/*'))
+  return gulp.src(s('images/**/*'))
     .pipe(imageop({
       optimizationLevel: 5,
       progressive: true,
@@ -168,7 +168,7 @@ gulp.task("webpack:react", function(callback) {
 gulp.task("webpack-dev-server", function(callback) {
   var port = config.webpack_port;
   //去除hot-loader功能
-  //webpack_dev_config.entry.index.unshift("webpack-dev-server/client?http://" + config.IPv4 + ":3000/", "webpack/hot/dev-server");
+  webpack_dev_config.entry.index.unshift("webpack-dev-server/client?http://" + config.IPv4 + ":3000/", "webpack/hot/dev-server");
   new WebpackDevServer(webpack(webpack_dev_config), {
     hot: false,
     stats: { colors: true },
@@ -183,7 +183,7 @@ gulp.task("wds", ['webpack-dev-server']);
 gulp.task('default', ['css', 'sass', 'scripts', 'lib', 'images', 'template:dev', 'browser-sync'], function () {
   gulp.watch(s('sass/**/*'), ['sass']);
   gulp.watch(s('js/*.js'), ['scripts']);
-  gulp.watch(s('images/*'), ['images']);
+  gulp.watch(s('images/**/*'), ['images']);
   gulp.watch(s('css/*.css'), ['css']);
   gulp.watch(s('*.html'), ['template:dev']);
 

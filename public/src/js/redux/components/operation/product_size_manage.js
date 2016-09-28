@@ -237,13 +237,13 @@ class FormCol extends Component {
       !props.editable
         ? <div className="form-group form-inline">
             <label><span style={{width: '60px', display: 'inline-block', wordBreak: 'break-all'}}>{str.join('')}</span>：</label>
-            <input
-              disabled = {props.view}
+            <textarea
+              readOnly = {props.view}
               value={props.value}
               onChange={props.onChange}
               className="form-control input-xs long-input"
               placeholder = {props.placeholder ? props.placeholder : ''}
-            />
+            ></textarea>
             {
               !props.view
               ?
@@ -263,13 +263,13 @@ class FormCol extends Component {
               onChange={props.propertyChange.bind(null, index, 'key')}
             />
             ：
-            <input
+            <textarea
               type="text"
               ref="editValue"
               value={props.value}
               className="form-control input-xs long-input"
               onChange={props.onChange}
-            />
+            ></textarea>
             <div className="inline-block">
               <i
                 style={{marginRight: 2}}

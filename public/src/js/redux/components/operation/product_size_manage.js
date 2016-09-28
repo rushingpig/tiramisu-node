@@ -238,7 +238,7 @@ class FormCol extends Component {
         ? <div className="form-group form-inline">
             <label><span style={{width: '60px', display: 'inline-block', wordBreak: 'break-all'}}>{str.join('')}</span>：</label>
             <textarea
-              disabled = {props.view}
+              readOnly = {props.view}
               value={props.value}
               onChange={props.onChange}
               className="form-control input-xs long-input"

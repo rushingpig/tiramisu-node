@@ -1518,14 +1518,15 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
             };
             let skus_sql = "insert into " + tables.buss_order_sku + "(order_id,sku_id,num,choco_board,greeting_card,atlas,custom_name,custom_desc,discount_price,amount) values ?";
             transaction.query(skus_sql, [params], err => {
-            if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
-            OrderDao.prototype.redundancySku(transaction, orderId, err=> {
-              if (err) return reject(new TiramisuError(errorMessage.REDUNDANCY_ERROR, err));
-              transaction.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], err => {
-                if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
-                transaction.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], err => {
+              if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
+              OrderDao.prototype.redundancySku(transaction, orderId, err=> {
+                if (err) return reject(new TiramisuError(errorMessage.REDUNDANCY_ERROR, err));
+                transaction.query(this.base_insert_sql, [tables.buss_order_fulltext, order_fulltext_obj], err => {
                   if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
-                  resolve();
+                  transaction.query(this.base_insert_sql, [tables.buss_order_history, systemUtils.assembleInsertObj(req, order_history_obj, true)], err => {
+                    if (err) return reject(new TiramisuError(errorMessage.SQL_ERROR, err.message));
+                    resolve();
+                  });
                 });
               });
             });
@@ -1565,7 +1566,6 @@ OrderDao.prototype.insertExternalOrderInTransaction = function(req) {
       });
     });
   });
-});
 }
 /**
  * batch update order_fulltext records

@@ -14,11 +14,16 @@ export default [{
     "icon": "",
     "link": "/om/refund",
   }, {
-    "key": "om_invoice",
+    "key": "OrderInvoiceAccess",
     "name": "发票管理",
     "icon": "",
     "link": "/om/invoice",
   }, {
+    "key": "OrderVATInvoiceAccess",
+    "name": "专用发票信息管理",
+    "icon": "",
+    "link": "/om/VATinvoice",
+  },{
     "key": "om_winning",
     "name": "中奖管理",
     "icon": "",

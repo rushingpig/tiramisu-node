@@ -30,6 +30,8 @@ import productViewInfo from './product_view_info';
 import productViewSpecifications from './product_view_specifications';
 import operationHomePageControl from './operation_home_page_control';
 import operationProductSizeManage from './operation_product_size_manage';
+import invoiceManage from './order/invoice';
+import invoiceVATManage from './order/invoice_VAT';
 
 const rootReducer = combineReducers({
   form,
@@ -58,11 +60,13 @@ const rootReducer = combineReducers({
   citiesSelector,
   productSKUManagement,
   productSKUWebsiteManagement,
-  productSKUSearch,
   productViewInfo,
   productViewSpecifications,
   operationHomePageControl,
-  operationProductSizeManage
+  operationProductSizeManage,
+  productSKUSearch,
+  invoiceManage,
+  invoiceVATManage,
 });
 
 export default rootReducer

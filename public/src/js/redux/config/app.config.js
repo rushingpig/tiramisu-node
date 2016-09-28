@@ -80,9 +80,21 @@ export default {
     'PAYED': '已付款',
     'PARTPAYED': '部分付款',
   },
+  invoice_status: {
+    WAITING: {value:'等待中'},
+    UNTREATED: {value: '未开具'},
+    COMPLETED: {value: '已开具'},
+    DELIVERY: {value: '已发货'},
+    CANCEL: {value: '已取消'},
+  },
   INVOICE: {
     YES: 1,
     NO: 0
+  },
+  DELIVERY_COMPANIES: {
+   UC: {express_type: 'UC', exppress_name: '优速'},
+   SF: {express_type: 'SF', exppress_name: '顺丰'},
+   YD: {express_type: 'YD', exppress_name: '韵达'},
   },
   YES_OR_NO: [{id: 1, text: '是'}, {id: 0, text: '否'}],
 

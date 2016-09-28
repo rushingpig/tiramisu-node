@@ -177,6 +177,7 @@ function del(target, cb){
   }
   return target;
 }
+
 function some(target, cb){
   if (target && typeof target === 'object') {
     if (core_isArray(target)) {

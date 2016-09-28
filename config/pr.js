@@ -4,6 +4,8 @@ module.exports = require('./qa');
 
 let mysql_options = module.exports.mysql_options;
 
+module.exports.backup_host = 'http://localhost:4001';
+
 //  mysql config options
 module.exports.mysql_options = {
   acquireTimeout: 10000,

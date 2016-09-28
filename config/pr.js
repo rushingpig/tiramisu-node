@@ -3,8 +3,24 @@
 module.exports = require('./qa');
 
 //  mysql config options
-module.exports.mysql_options.database = 'tiramisu_pr';
-var mysql_options = module.exports.mysql_options;
+module.exports.mysql_options = {
+  acquireTimeout: 10000,
+  waitForConnections: true,
+  queueLimit: 500,
+  connectionLimit: 50,
+  host: 'rdsp4y4r841mswksag22.mysql.rds.aliyuncs.com',
+  port: 3306,
+  user: 'xfxb_qa',
+  password: 'Xfxbqa2016',
+  database: 'tiramisu_pr',
+  charset: 'utf8mb4',
+  timezone: 'local',
+  supportBigNumbers: true,
+  multipleStatements: true, //  if in the production recommend to be false
+  dateStrings: true, //  Force date types (TIMESTAMP, DATETIME, DATE) to be returned as strings rather then inflated into JavaScript Date objects.
+  debug: false, //  when in production or test environment ,it should be set to false. it just be used in dev
+
+};
 
 //  express session config options
 module.exports.exp_session_options = function (store) {

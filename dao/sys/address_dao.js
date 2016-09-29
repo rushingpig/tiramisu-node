@@ -174,7 +174,7 @@ AddressDao.prototype.findStationsByMultipleCondition = function(query_obj) {
     if (!query_obj.user.is_admin && ds.indexOf(constant.DS.ALLCOMPANY.id) == -1 && !query_obj.user.is_headquarters) {
         if (query_obj.signal) {
             let tmp_city_str = dbHelper.genInSql(query_obj.user.city_ids);
-            sql += `AND id IN ` + dbHelper.genInSql(query_obj.user.city_ids);
+            sql += `AND dr2.id IN ${tmp_city_str} `;
             sql += `AND ( `;
             sql += `(sc.is_city = 1 AND dr.id IN ${tmp_city_str} ) `;
             sql += `OR (sc.is_city = 0 AND dr.parent_id IN ${tmp_city_str} ) `;

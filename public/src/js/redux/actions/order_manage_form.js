@@ -21,6 +21,12 @@ export function getDeliveryStations(data) {
   }
 }
 
+//放到这里是为了不与area.js中的getDistrictsAndCity发生冲突
+export const GOT_DISTRICTS_AND_CITY = 'OMF_GOT_DISTRICTS_AND_CITY';
+export function getAllDistrictsAndCity(city_id){
+  return GET(Url.districts_and_city.toString(city_id), null, GOT_DISTRICTS_AND_CITY);
+}
+
 export const AUTO_GOT_DELIVERY_STATIONS = 'AUTO_GOT_DELIVERY_STATIONS';
 export function autoGetDeliveryStations(data) {
   return POST(Url.auto_loc.toString(), data, AUTO_GOT_DELIVERY_STATIONS);

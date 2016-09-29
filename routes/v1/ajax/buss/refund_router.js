@@ -12,7 +12,7 @@ module.exports = function (router) {
     router.get('/refund/:refundId', refundService.getRefundInfo);  // 获取退款详情
     router.get('/refund/:refundId/history', refundService.getRefundHistory);  // 操作历史纪录
 
-    router.get('refunds/export',refundService.excelExport);  // 导出退款记录列表
+    router.get('/refunds/export',refundService.excelExport);  // 导出退款记录列表
 
 //**********************
 //******** POST ********

@@ -112,13 +112,17 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
       break;
     case 'gm':
       require.ensure([], require => {
-        components = {...components,
-          GroupbuyManagePannel:        require('../components/groupbuys/program_manage'),
-          ProgramFormManage:           require('../components/groupbuys/program_form_detail'),
+        components = {
+          ...components,
+          GroupbuyManagePannel: require('../components/groupbuys/program_manage'),
+          ProgramFormManage: require('../components/groupbuys/program_form_detail'),
           GroupbuyProductManagePannel: require('../components/groupbuys/products_manage'),
-          ProductFormMange:            require('../components/groupbuys/products_form_detail'),
-          CouponManagePannel:          require('../components/groupbuys/coupon_manage'),
+          ProductFormMange: require('../components/groupbuys/products_form_detail'),
+          CouponManagePannel: require('../components/groupbuys/coupon_manage'),
         };
+        callback();
+      });
+      break;
     case 'cosm':
       require.ensure([], require => {
         components = {

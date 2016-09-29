@@ -57,7 +57,7 @@ function main(state = main_state, action){
 		case Actions.OFF_SHELF:
 			var {getProductList} = Actions;
 			var { query_data, page_size, page_no, total } = state;
-			page_no = (total - page_no * page_size) === 1 ? page_no -1 : page_no;
+			page_no = (total - page_no * page_size) === 1 && page_no != 0 ? page_no -1 : page_no;
 			store.dispatch(getProductList({...query_data, page_no, page_size}));
 			return state;
 		default:

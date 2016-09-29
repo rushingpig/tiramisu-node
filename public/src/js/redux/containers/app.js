@@ -112,13 +112,13 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
       break;
     case 'gm':
       require.ensure([], require => {
-        components = {
-          ...components,
-          GroupbuyManagePannel: require('../components/groupbuys/program_manage'),
-          ProgramFormManage: require('../components/groupbuys/program_form_detail'),
-          GroupbuyProductManagePannel: require('../components/groupbuys/products_manage'),
-          ProductFormMange: require('../components/groupbuys/products_form_detail'),
-          CouponManagePannel: require('../components/groupbuys/coupon_manage'),
+      components = {
+        ...components,
+        GroupbuyManagePannel: require('../components/groupbuys/program_manage'),
+        ProgramFormManage: require('../components/groupbuys/program_form_detail'),
+        GroupbuyProductManagePannel: require('../components/groupbuys/products_manage'),
+        ProductFormMange: require('../components/groupbuys/products_form_detail'),
+        CouponManagePannel: require('../components/groupbuys/coupon_manage'),
         };
         callback();
       });
@@ -171,7 +171,7 @@ const App = () => (
         <Route path="city" onEnter ={onEnter('CityManageAccess')}>
           <IndexRoute  getComponent={get('CityPanel')} />
           <Route path="add" onEnter={onEnter('CityManageAddCity')} getComponent = {get('CityDetailPannel')} />
-          <Route path=":id" onEnter={onEnter('CityManageEdit')} getComponent = {get('CityDetailPannel')} />       
+          <Route path=":id" onEnter={onEnter('CityManageEdit')} getComponent = {get('CityDetailPannel')} />
         </Route>
         <Route path="img" onEnter={onEnter('ImageManageAccess')} getComponent={get('ImageManagePannel')}   />
       </Route>
@@ -239,6 +239,7 @@ const App = () => (
       <Route path="cosm" onEnter={getComponents('cosm', onEnter('CustomerManageAccess'))}>
         <IndexRoute getComponent={get('CustomerManage')} />
         <Route path=":id" getComponent={get('CustomerManage')} />
+      </Route>
       </Route>
 
       <Redirect from="logout" to="/" />

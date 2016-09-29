@@ -238,18 +238,19 @@ RefundDao.prototype.findRefund = function (query,excel) {
             params.push(query.city_id.toString().replace(/\d{2}$/, '99'));
         }
     }
-
     return co(function *() {
+
+        if (excel){
+            sql += ` ORDER BY bre.created_time ${sort_type}`;
+            return {sql,params};
+        }
         let count_sql = sql.replace(/^SELECT .* FROM/, `SELECT count(*) AS total FROM`);
         let _res = {};
         let total = yield baseDao.select(count_sql, params);
         _res.total = total[0].total;
 
         sql += `ORDER BY bre.created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
-        if (excel){
-            sql = sql.substring(0,sql.indexOf('LIMIT'));
-            return {sql,params};
-        }
+
         _res.list = yield baseDao.select(sql, params);
         _res.page_no = page_no;
         _res.page_size = page_size;

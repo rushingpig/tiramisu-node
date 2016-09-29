@@ -7,6 +7,7 @@ var Constant = require('../../../common/Constant');
 var dao = require('../../../dao');
 var refundDao = dao.refund;
 var orderDao = new dao.order();
+var config = require('../../../config');
 
 const schema = require('../../../schema');
 const systemUtils = require('../../../common/SystemUtils');
@@ -369,8 +370,10 @@ module.exports.excelExport = function (req,res,next) {
     } else {
         query.keywords = req.query.keywords;
     }
+
     let promise =  refundDao.findRefund(query,true).then((body) => {
         let uri = config.base_excel_host + '/refunds';
+        console.log(uri,'----------');
         request({
             uri : uri,
             method : 'post',

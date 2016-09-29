@@ -66,7 +66,14 @@ var tables = {
     buss_group_project: 'buss_group_project',
 //=================Dict===================
     dict_regionalism : 'dict_regionalism',
-    delivery_pay_rule: 'delivery_pay_rule'
+    delivery_pay_rule: 'delivery_pay_rule',
+//=================APP===================
+    app_user_auths : 'app_user_auths',
+    app_user_blacklist : 'app_user_blacklist',
+    app_user_delivery_address : 'app_user_delivery_address',
+    app_user_favorites : 'app_user_favorites',
+    app_user_profiles : 'app_user_profiles',
+    logs_user_login : 'logs_user_login'
 };
 //  mysql config options
 var mysql_options = {

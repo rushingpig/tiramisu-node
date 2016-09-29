@@ -195,6 +195,13 @@ const URL = (function() {
     module_edit: '/module/:moduleId', //编辑模块
     module_list:'/privileges/modules',
 
+    //顾客账户管理
+    customer_list: '/app/users',
+    customer: '/app/user/:uuid', //用户详情
+    customer_logs: '/app/user/:uuid/loginLogs', //登录日志
+    customer_black: '/app/user/:uuid', //加入黑名单
+    customer_export: '/app/users/export',
+
     //城市管理
     open_city_add : '/city',  //添加开通城市
     open_city_update: '/city/:cityId/info', //修改开通城市
@@ -203,7 +210,7 @@ const URL = (function() {
     regionalism_list: '/regionalisms', //获取地区列表
     open_city_detail: '/city/:cityId/info',
 
-    //用户管理
+    //后台用户管理
     alter_psd: '/user/:username/password', //修改密码
 
     //图片管理

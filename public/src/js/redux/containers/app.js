@@ -119,6 +119,12 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
           ProductFormMange:            require('../components/groupbuys/products_form_detail'),
           CouponManagePannel:          require('../components/groupbuys/coupon_manage'),
         };
+    case 'cosm':
+      require.ensure([], require => {
+        components = {
+          ...components,
+          CustomerManage: require('../components/customer')
+        }
         callback();
       });
       break;
@@ -226,6 +232,9 @@ const App = () => (
           <Route path='add' onEnter={onEnter('GroupbuyProductManageAdd')} getComponent={get('ProductFormMange')} />
         </Route>
         <Route path='cp' onEnter={onEnter('GroupbuyCouponManageAccess')} getComponent={get('CouponManagePannel')} />
+      <Route path="cosm" onEnter={getComponents('cosm', onEnter('CustomerManageAccess'))}>
+        <IndexRoute getComponent={get('CustomerManage')} />
+        <Route path=":id" getComponent={get('CustomerManage')} />
       </Route>
 
       <Redirect from="logout" to="/" />

@@ -139,7 +139,7 @@ RefundDao.prototype.findOptionByOrderId = function (order_id) {
     });
 };
 
-RefundDao.prototype.findRefund = function (query) {
+RefundDao.prototype.findRefund = function (query,excel) {
     if (!query) query = {};
     let page_no = query.page_no || 0;
     let page_size = query.page_size || 10;
@@ -246,6 +246,10 @@ RefundDao.prototype.findRefund = function (query) {
         _res.total = total[0].total;
 
         sql += `ORDER BY bre.created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
+        if (excel){
+            sql = sql.substring(0,sql.indexOf('LIMIT'));
+            return {sql,params};
+        }
         _res.list = yield baseDao.select(sql, params);
         _res.page_no = page_no;
         _res.page_size = page_size;

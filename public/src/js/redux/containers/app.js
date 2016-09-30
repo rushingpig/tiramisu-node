@@ -112,13 +112,23 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
       break;
     case 'gm':
       require.ensure([], require => {
-        components = {...components,
-          GroupbuyManagePannel:        require('../components/groupbuys/program_manage'),
-          ProgramFormManage:           require('../components/groupbuys/program_form_detail'),
-          GroupbuyProductManagePannel: require('../components/groupbuys/products_manage'),
-          ProductFormMange:            require('../components/groupbuys/products_form_detail'),
-          CouponManagePannel:          require('../components/groupbuys/coupon_manage'),
+      components = {
+        ...components,
+        GroupbuyManagePannel: require('../components/groupbuys/program_manage'),
+        ProgramFormManage: require('../components/groupbuys/program_form_detail'),
+        GroupbuyProductManagePannel: require('../components/groupbuys/products_manage'),
+        ProductFormMange: require('../components/groupbuys/products_form_detail'),
+        CouponManagePannel: require('../components/groupbuys/coupon_manage'),
         };
+        callback();
+      });
+      break;
+    case 'cosm':
+      require.ensure([], require => {
+        components = {
+          ...components,
+          CustomerManage: require('../components/customer')
+        }
         callback();
       });
       break;
@@ -161,7 +171,7 @@ const App = () => (
         <Route path="city" onEnter ={onEnter('CityManageAccess')}>
           <IndexRoute  getComponent={get('CityPanel')} />
           <Route path="add" onEnter={onEnter('CityManageAddCity')} getComponent = {get('CityDetailPannel')} />
-          <Route path=":id" onEnter={onEnter('CityManageEdit')} getComponent = {get('CityDetailPannel')} />       
+          <Route path=":id" onEnter={onEnter('CityManageEdit')} getComponent = {get('CityDetailPannel')} />
         </Route>
         <Route path="img" onEnter={onEnter('ImageManageAccess')} getComponent={get('ImageManagePannel')}   />
       </Route>
@@ -226,6 +236,10 @@ const App = () => (
           <Route path='add' onEnter={onEnter('GroupbuyProductManageAdd')} getComponent={get('ProductFormMange')} />
         </Route>
         <Route path='cp' onEnter={onEnter('GroupbuyCouponManageAccess')} getComponent={get('CouponManagePannel')} />
+      <Route path="cosm" onEnter={getComponents('cosm', onEnter('CustomerManageAccess'))}>
+        <IndexRoute getComponent={get('CustomerManage')} />
+        <Route path=":id" getComponent={get('CustomerManage')} />
+      </Route>
       </Route>
 
       <Redirect from="logout" to="/" />

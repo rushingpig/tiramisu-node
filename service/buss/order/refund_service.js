@@ -7,6 +7,7 @@ var Constant = require('../../../common/Constant');
 var dao = require('../../../dao');
 var refundDao = dao.refund;
 var orderDao = new dao.order();
+var config = require('../../../config');
 
 const schema = require('../../../schema');
 const systemUtils = require('../../../common/SystemUtils');

@@ -216,7 +216,7 @@ BaseDao.execWithConnection = function (connection, sql, params) {
             }
         });
     });
-}
+};
 
 BaseDao.del_flag = {
     SHOW: 1,
@@ -229,6 +229,10 @@ BaseDao.is_usable = {
 BaseDao.ONLY_ADMIN = {
     YEW: 1,
     NO: 0
+};
+BaseDao.IS_IN_BLACKLIST = {
+    YES : 1,
+    NO : 0
 };
 
 module.exports = BaseDao;

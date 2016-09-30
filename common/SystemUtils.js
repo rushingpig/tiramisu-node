@@ -11,6 +11,7 @@ var dateUtils = require('./DateUtils'),
   constant = require('./Constant');
 
 const OS = Constant.OS;
+const DEFAULT_DB_VARCHAR = 'NONE';
 
 module.exports = {
   /**
@@ -245,5 +246,24 @@ module.exports = {
     }
 
     return false;
+  },
+  isBlankDBValue : (str) => {
+    return str === '' || str === null || str === DEFAULT_DB_VARCHAR;
+  },
+  getSexName : (sex) => {
+
+    if(sex == 1){
+      return "男";
+    }else if(sex == 2){
+      return "女";
+    }else{
+      return "未知";
+    }
+  },
+  sanitizeAddress : (region_name) => {
+    if(module.exports.isBlankDBValue(region_name)){
+      return "";
+    }
+    return region_name;
   }
 };

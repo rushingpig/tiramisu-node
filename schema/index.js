@@ -47,5 +47,5 @@ module.exports = {
   modifySkuSizeSort: require('./buss/product/modify_sku_size_sort'),
   listAppUsers : require('./app/user/list_app_users'),
   listAppUserLoginLogs:require('./app/user/list_user_loginLogs'),
-  addHomepage: require('./buss/homepage/add_homepage')
+  modifyHomepage: require('./buss/homepage/modify_homepage')
 };

@@ -116,8 +116,6 @@ a.post('/product/info', productService.addProductInfo);  // 新增商品详情
 
 a.post('/product/skus/sizes', productService.addSkuSize);   //新增管理规格信息
 
-a.post('/homepage', homepageService.addHomepage);   // 新增首页信息
-
 //*********************
 //******** PUT ********
 //*********************

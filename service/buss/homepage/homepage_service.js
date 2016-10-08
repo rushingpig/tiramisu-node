@@ -13,21 +13,8 @@ var res_obj = require('../../../util/res_obj'),
 function HomepageService() {
 }
 
-HomepageService.prototype.addHomepage = (req, res, next) => {
-    let correct = tv4.validate(req.body, schema.addHomepage);
-    if (!correct) {
-        res.api(res_obj.INVALID_PARAMS, toolUtils.formatTv4Error(tv4.error));
-        return;
-    }
-    let promise = homepageDao.insertHomepage(req, req.body)
-        .then(() => {
-            res.api();
-        });
-    systemUtils.wrapService(res, next, promise);
-};
-
 HomepageService.prototype.modifyHomepage = (req, res, next) => {
-    let correct = tv4.validate(req.body, schema.addHomepage);
+    let correct = tv4.validate(req.body, schema.modifyHomepage);
     if (!correct) {
         res.api(res_obj.INVALID_PARAMS, toolUtils.formatTv4Error(tv4.error));
         return;

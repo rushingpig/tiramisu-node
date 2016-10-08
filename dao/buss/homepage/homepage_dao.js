@@ -34,44 +34,6 @@ HomepageDao.prototype.addHomepage = function (req, data, connection) {
 }
 
 /**
- * insert new homepage info 
- */
-HomepageDao.prototype.insertHomepage = function(req, data) {
-    let self = this;
-    return baseDao.trans().then(connection => {
-        let promises = data.map(item => {
-            // 新增城市首页数据
-            let add_promises = [];
-            item.regionalism_ids.map(regionalism_id => {
-                item.datas.forEach(data => {
-                    data.regionalism_id = regionalism_id;
-                    add_promises.push(self.addHomepage(req, data, connection));
-                })
-            });
-            return Promise.all(add_promises);
-        });
-        return Promise.all(promises)
-            .then(() => {
-                return new Promise((resolve, reject) => {
-                    connection.commit(err => {
-                        connection.release();
-                        if (err) return reject(err);
-                        resolve();
-                    });
-                });
-            }).catch(err => {
-                return new Promise((resolve, reject) => {
-                    connection.rollback(rollbackErr => {
-                        connection.release();
-                        if (rollbackErr) return reject(rollbackErr);
-                        reject(err);
-                    });
-                });
-            });;
-    });
-}
-
-/**
  * modify homepage info 
  */
 HomepageDao.prototype.modifyHomepage = function(req, data) {

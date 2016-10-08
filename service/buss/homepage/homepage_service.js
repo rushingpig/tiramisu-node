@@ -39,4 +39,18 @@ HomepageService.prototype.modifyHomepage = (req, res, next) => {
     systemUtils.wrapService(res, next, promise);
 };
 
+HomepageService.prototype.getHomepageInfo = (req, res, next) => {
+    req.checkParams('regionalism_id', 'regionalism_id can not be null').notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.api(res_obj.INVALID_PARAMS,errors);
+        return;
+    }
+    let promise = homepageDao.findHomepageInfoByRegionId(req.params.regionalism_id)
+        .then(result => {
+            res.api(result);
+        });
+    systemUtils.wrapService(res, next, promise);
+};
+
 module.exports = new HomepageService();

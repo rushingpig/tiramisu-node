@@ -87,6 +87,8 @@ a.get('/product/info', productService.getProductDetailByProductIdAndRegionId); /
 a.get('/product/skus/sizes', productService.getSkuSize); // 获取所有管理规格信息
 a.get('/product/skus/sizes/name', productService.getSkuSizeByName); // 通过名称查询管理规格信息
 
+a.get('/homepage/:regionalism_id', homepageService.getHomepageInfo); // 根据区域id获取首页信息
+
 //**********************
 //******** POST ********
 //**********************

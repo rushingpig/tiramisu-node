@@ -8,7 +8,7 @@ var baseDao = require('../../base_dao'),
 function HomepageDao() {
     this.base_table = 'buss_homepage';
     this.base_insert_sql = 'insert into ?? set ?';
-    this.base_select_sql = 'select * from ?? where 1=1 and del_flag = ? ';
+    this.base_select_sql = 'select ?? from ?? where 1=1 and del_flag = ? ';
     this.base_update_sql = 'update ?? set ?';
 }
 
@@ -113,6 +113,16 @@ HomepageDao.prototype.modifyHomepage = function(req, data) {
                 });
             });;
     });
+};
+
+/**
+ * find homepage info by regionalism_id 
+ */
+HomepageDao.prototype.findHomepageInfoByRegionId = function(regionalism_id) {
+    let sql = this.base_select_sql + ' and regionalism_id = ?';
+    let columns = ['src', 'url'];
+    let params = [columns, this.base_table, del_flag.SHOW, regionalism_id];
+    return baseDao.select(sql, params);
 };
 
 module.exports = HomepageDao;

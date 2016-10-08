@@ -21,5 +21,6 @@ module.exports = {
     role : require('./sys/role_dao'),
     category : require('./buss/product/category_dao'),
     image : require('./buss/image/image_dao'),
-    appUser : require('./app/user/app_user_dao')
+    appUser : require('./app/user/app_user_dao'),
+    homepage : require('./buss/homepage/homepage_dao')
 };

@@ -186,7 +186,14 @@ class BannerImgs extends Component {
             </Col>
           </Row>
           <div className="text-right">
-            <button disabled={!props.submitable} className="btn btn-lg btn-theme">保存</button>
+            <button
+              data-submitting={props.submitting}
+              disabled={!props.submitable}
+              onClick={props.submitHandler}
+              className="btn btn-lg btn-theme"
+            >
+              保存
+            </button>
           </div>
         </div>
       </div>
@@ -198,9 +205,8 @@ class Main extends Component {
   constructor(props) {
     super(props);
     this.showSelectImgModal = this.showSelectImgModal.bind(this);
-    // this.submit = this.submit.bind(this);
-    // this.onSubmit = this.onSubmit.bind(this);
-    // this.getProductInfo = this.getProductInfo.bind(this);
+    this.submit = this.submit.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
     this.beforeLeave = this.beforeLeave.bind(this);
   }
   render() {
@@ -215,13 +221,13 @@ class Main extends Component {
           {...main}
           actions={actions}
           cacheInfo={this.cacheInfo}
-          getProductInfo={this.getProductInfo}
         />
 
         <BannerImgs
           {...main}
           actions={actions}
           domain={imgList.domain}
+          submitHandler={this.onSubmit}
           showSelectImgModal={this.showSelectImgModal}
         />
 
@@ -261,79 +267,30 @@ class Main extends Component {
     //which用以区分是添加哪里的图片
     this.refs.selectImgModal.show(which);
   }
-  
+
   submit(){
-    const { props, props: { banners } } = this;
-    if(props.all){ //全部一致
-      if(!props.all_edited_cities.length){ //之前不存在已编辑过的城市, 那么就是添加
-        return props.actions.submitCreate({
-          product_id: productId,
-          infos: [{
-            regionalism_ids: props.all_available_cities.map(n => n.city_id),
-            info
-          }]
-        })
-      }else{  //这里就是编辑(也有新增和修改两种)
-        let new_infos = [];
-        let modified_infos = [];
-        props.all_available_cities.map(n => {
-          if(
-            props.all_edited_cities.some( m => {
-              if(m.city_id == n.city_id){
-                modified_infos.push({
-                  regionalism_id: n.city_id,
-                  detail_id: m.detail_id,
-                  ...info
-                });
-                return true;
-              }
-              return false;
-            })
-          ){
-            
-          }else{
-            new_infos.push({
-              regionalism_id: n.city_id,
-              ...info
-            });
-          }
-        })
-        return props.actions.submitEdit({
-          product_id: productId,
-          new_infos,
-          modified_infos
-        })
-      }
+    const { actions, main: {all, city_id, has_cached, submitable, banners, all_cities, cached} } = this.props;
+    const transform = ({img_key, link}) => ({src: img_key, url: link});
+    if(all){ //全部一致
+      return actions.submitEdit([{
+        regionalism_ids: all_cities,
+        datas: banners.map(transform)
+      }])
     }else{ //独立城市配置
-      let new_infos = [];
-      let modified_infos = [];
-      [
-        ...props.applicationRange.cached,
-        props.applicationRange.city_id && 
-        !props.applicationRange.cached.some( n => n.regionalism_id == props.applicationRange.city_id) && //当前没有加入缓存的城市
-        {
-          regionalism_id: props.applicationRange.city_id,
-          ...info,
-          ...(props.applicationRange.product_info ? {detail_id : props.applicationRange.product_info.id} : {})
-        }
-      ].forEach(n => {
-        if(!n) return;
-        if(props.applicationRange.all_edited_cities.some( m => m.city_id == n.regionalism_id)){
-          modified_infos.push(n);
-        }else{
-          new_infos.push(n);
-        }
-      })
-      return props.actions.submitEdit({
-        product_id: productId,
-        new_infos,
-        modified_infos,
-      })
+      if(city_id && !has_cached && submitable){ //当前未暂存的也可以保存了
+        cached.push({ city_id, datas: banners });
+      }
+      return actions.submitEdit(
+        cached.map( ({city_id, datas}) => ({
+          regionalism_ids: [city_id],
+          datas: datas.map(transform)
+        }))
+      )
     }
   }
   onSubmit(){
     const { props } = this;
-    if(props.submitable){
+    if(props.main.submitable){
       this.submit()
         .done(() => {
           Noty('success', '保存成功！');

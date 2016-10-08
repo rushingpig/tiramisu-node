@@ -18,29 +18,14 @@ export const GET_CONFIGURE_DATA = 'HPC_GET_CONFIGURE_DATA';
 export function getConfigureData(){
   return dispatch => $.when(
     Area().getProvincesSignal()(dispatch),
-    [{
-      city_id: 440100,
-      consistency: 0,
-      data: [
-        {img_key: 'url1', link: 'http://xxxx.com'},
-        {img_key: 'url2', link: 'http://xxxx.com'},
-        {img_key: 'url3', link: 'http://xxxx.com'}
-      ]
-    }]
-  ).done( (provinces, data) => {
+    Area().getAllCities()(dispatch),
+  ).done( (provinces, cities) => {
     dispatch({
       type: GET_CONFIGURE_DATA,
-      provinces: provinces[0]/*.filter(n => cities[0].can_add_cities.some(m => m.province_id == n.id))*/,
-      data
+      provinces: provinces[0],
+      all_cities: cities[0]
     })
   })
-  // return R.TEST([
-  //   // {city_id: 440100, consistency: 0, data: [
-  //   //   {img_key: 'url1', link: 'http://xxxx.com'},
-  //   //   {img_key: 'url2', link: 'http://xxxx.com'},
-  //   //   {img_key: 'url3', link: 'http://xxxx.com'}
-  //   // ]}
-  // ], GET_CONFIGURE_DATA)
 }
 
 export const SELECT_PROVINCE = 'HPC_SELECT_PROVINCE';
@@ -57,10 +42,26 @@ export function selectProvince(province_id){
 }
 
 export const SELECT_CITY = 'HPC_SELECT_CITY';
+export const GET_CITY_INFO = 'HPC_GET_CITY_INFO';
 export function selectCity(city_id){
-  return {
-    type: SELECT_CITY,
-    city_id
+  return (dispatch, getState) => {
+    var { cached } = getState().operationHomePageControl.main;
+    var cityInfo = cached.find(n => n.city_id == city_id);
+    if(cityInfo){
+      dispatch({
+        type: SELECT_CITY,
+        city_id,
+        data: cityInfo
+      })
+    }else{
+      return R.get(Url.homepage_by_city.toString(city_id)).done(
+        data => dispatch({
+          type: SELECT_CITY,
+          city_id,
+          data
+        })
+      )
+    }
   }
 }
 
@@ -103,18 +104,9 @@ export function addBanner(){
   }
 }
 
-//添加产品设置
 export const SUBMIT_INFO = 'HPC_SUBMIT_INFO';
-export function submitCreate(data){
-  return R.POST(Url.product_info.toString(), data, SUBMIT_INFO);
-  // return R.TEST(null, [
-  //   {type: SUBMIT_INFO, key: 0},
-  //   {type: SUBMIT_INFO, key: 1},
-  // ], 2000)
-}
-//编辑产品设置
 export function submitEdit(data){
-  return R.PUT(Url.product_info.toString(), data, SUBMIT_INFO);
+  return R.PUT(Url.homepage_control.toString(), data, SUBMIT_INFO);
   // return R.TEST(null, [
   //   {type: SUBMIT_INFO, key: REQUEST.ING},
   //   {type: SUBMIT_INFO, key: REQUEST.SUCCESS},

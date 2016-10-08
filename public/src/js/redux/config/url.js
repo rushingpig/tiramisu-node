@@ -228,6 +228,8 @@ const URL = (function() {
     manage_product_sizes_by_name: '/product/skus/sizes/name', //根据名字获取产品规格
     manage_size_online: '/product/skus/sizes/online', //上架
     manage_size_move: '/product/skus/sizes/sort', //规格移动
+    homepage_control: '/homepage', //首页控制
+    homepage_by_city: '/homepage/:city_id', //首页控制
 
     //团购
     sku_size: '/product/sku/size', //所有已存在size

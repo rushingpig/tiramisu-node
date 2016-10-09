@@ -113,7 +113,7 @@ class Main extends Component {
           </Col>
           <Col xs="4">
             <label>产品编码：</label>
-            <span id="product-id" className="text-muted">22179</span>
+            <span id="product-id" className="text-muted">{state.productId}</span>
             {'　'}
             {
               navigator.userAgent.search(/Chrome\/\d\d/) > -1 && (Number(navigator.userAgent.replace(/^.+Chrome\/(\d\d).+$/, "$1")) > 45) ? (

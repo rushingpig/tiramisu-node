@@ -113,11 +113,10 @@ function UserListManage(state = initial_state,action){
   switch( action.type ){
     case UserActions.GET_USER_LIST:
       return {...state,total:clone(action.data.total),list:clone(action.data.list),
-        filterdata:clone(action.filterdata), active_org_id: 0};
+        filterdata:clone(action.filterdata)};
     case UserActions.TOGGLE_DEPT_U:
       var filterdata = clone(action.filterdata);
       var active_org_id = filterdata.org_id;
-      delete filterdata.org_id;
       return {...state, active_org_id: active_org_id, 
               total:clone(action.data.total),
               list:clone(action.data.list),

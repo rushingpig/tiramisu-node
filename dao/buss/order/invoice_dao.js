@@ -9,6 +9,7 @@ var Constant = require('../../../common/Constant');
 var baseDao = require('../../base_dao');
 const del_flag = baseDao.del_flag;
 const tables = require('../../../config').tables;
+const dbHelper = require('../../../common/DBHelper');
 
 const HISTORY_COMPANY = Constant.HISTORY_TYPE.COMPANY;
 const HISTORY_INVOICE = Constant.HISTORY_TYPE.INVOICE;
@@ -135,7 +136,7 @@ InvoiceDao.prototype.findCompanyById = function (company_id) {
     return baseDao.select(sql, params);
 };
 
-InvoiceDao.prototype.findInvoiceList = function (query,excel) {
+InvoiceDao.prototype.findInvoiceList = function (query,excel,req) {
     if (!query) query = {};
     let page_no = query.page_no || 0;
     let page_size = query.page_size || 10;
@@ -230,6 +231,10 @@ InvoiceDao.prototype.findInvoiceList = function (query,excel) {
     if (query.delivery_id) {
         sql += `AND bi.delivery_id = ? `;
         params.push(query.delivery_id);
+    }
+    // 权限控制：限制查询用户所属区域信息
+    if (!req.session.user.is_headquarters) {
+        sql += ' AND br.regionalism_id in ' + dbHelper.genInSql(req.session.user.city_ids);
     }
 
     return co(function *() {

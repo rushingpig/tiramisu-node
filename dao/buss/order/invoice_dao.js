@@ -234,7 +234,7 @@ InvoiceDao.prototype.findInvoiceList = function (query,excel,req) {
     }
     // 权限控制：限制查询用户所属区域信息
     if (!req.session.user.is_headquarters) {
-        sql += ' AND br.regionalism_id in ' + dbHelper.genInSql(req.session.user.city_ids);
+        sql += ' AND dr2.id in ' + dbHelper.genInSql(req.session.user.city_ids);
     }
 
     return co(function *() {

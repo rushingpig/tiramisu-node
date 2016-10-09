@@ -641,7 +641,8 @@ const saveOption = () => (
 
     let newSku = [];
     let editSku = [];
-    let deletedSku = state.deletedSku;
+    // let deletedSku = state.deletedSku;
+    let deletedSku = [];
 
     const transformShangjiaOption = option => {
       let transformedOption = {};
@@ -662,6 +663,24 @@ const saveOption = () => (
 
       return transformedOption;
     };
+
+    const getDeletedSkuIds = function(deletedSkus){
+      var d = [];
+      const getDeletedSkuId = opt => {
+        if (opt.id && opt.id !== 0) {
+          d.push(opt.id);
+        }
+      }
+
+      deletedSkus.forEach(([cityId, cityOption]) => {
+        cityOption.shopSpecifications.forEach(getDeletedSkuId);
+
+        [...cityOption.sourceSpecifications.values()].forEach(ssArr => {
+          ssArr.forEach(getDeletedSkuId);
+        });
+      });
+      return d;
+    }
 
     const transformShopSpecificationOption = option => {
       let transformedOption = {
@@ -750,19 +769,34 @@ const saveOption = () => (
         ];
       });
 
-      Array.from(state.citiesOptions.values()).forEach(cityOpt => {
-        cityOpt.shopSpecifications.forEach(getDeletedSkuId);
+      // const getDeletedSkuId = opt => {
+      //   if (opt.id && opt.id !== 0) {
+      //     deletedSku.push(opt.id);
+      //   }
+      // }
 
-        [...cityOpt.sourceSpecifications.values()].forEach(ssArr => {
-          ssArr.forEach(getDeletedSkuId);
-        });
-      });
+      // Array.from(state.citiesOptions.values()).forEach(cityOpt => {
+      //   cityOpt.shopSpecifications.forEach(getDeletedSkuId);
+      //   [...cityOpt.sourceSpecifications.values()].forEach(ssArr => {
+      //     ssArr.forEach(getDeletedSkuId);
+      //   });
+      // });
 
     } else { // state.citiesOptionApplyRange === 1
       let checkedCities = [...citiesSelectorState.checkedCities];
-      debugger
-      [...state.citiesOptions]
-        .filter( ([cityId]) => checkedCities.some(id => id == cityId) )
+      let newSelectedCities = [];
+
+      [...state.citiesOptions].forEach(([cityId, cityOption]) => {
+        if(checkedCities.some(id => id == cityId)){
+          newSelectedCities.push([cityId, cityOption]);
+        }else{
+          deletedSku.push([cityId, cityOption]);
+        }
+      })
+
+      deletedSku = getDeletedSkuIds(deletedSku);
+
+      newSelectedCities
         .forEach(([cityId, cityOption]) => {
           if (cityId === 'all')
             return;
@@ -835,6 +869,7 @@ const saveOption = () => (
       }
     }
 
+    // return $.Deferred().resolve();
     return (addMode ? addSku(postData) : saveEditSku(postData)).then(
       (data) => {
         dispatch({

@@ -257,9 +257,9 @@ DeliveryService.prototype.auditReprintApply = (req,res,next)=>{
         return;
     }
     const validate_code = systemUtils.genValidateCode(),
-          order_id = req.body.order_id,
-          applicant_mobile = req.body.applicant_mobile,
-          order_update_obj = {};
+        order_id = req.body.order_id,
+        applicant_mobile = req.body.applicant_mobile,
+        order_update_obj = {};
     let update_obj = {
         validate_code : validate_code,
         audit_opinion : req.body.audit_opinion,
@@ -838,9 +838,9 @@ DeliveryService.prototype.reprint = (req,res,next)=>{
 
     let order_id = systemUtils.getDBOrderId(req.params.orderId),
         order_history_obj = {
-        order_id : order_id,
-        option : '重新打印订单'
-    };
+            order_id : order_id,
+            option : '重新打印订单'
+        };
 
     let reprint_apply_update_obj = {
         is_reprint : 1,
@@ -995,7 +995,7 @@ DeliveryService.prototype.print = (req,res,next)=>{
             }else if (print_status === Constant.PS.AUDITING){
                 throw new TiramisuError(res_obj.ORDER_AUDITING);
             }
-             if (!systemUtils.checkOrderDataScopes(req.session.user, curr) || !systemUtils.isOrderCanUpdateStatus(curr.status, Constant.OS.INLINE)) {
+            if (!systemUtils.checkOrderDataScopes(req.session.user, curr) || !systemUtils.isOrderCanUpdateStatus(curr.status, Constant.OS.INLINE)) {
                 throw new TiramisuError(res_obj.OPTION_EXPIRED);
             }
         });

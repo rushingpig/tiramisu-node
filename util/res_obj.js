@@ -144,6 +144,10 @@ module.exports = {
     code: '2009',
     msg: 'Error happened when performing query'
   },
+  DUPLICATE_SKU_SIZE: {
+    code: '2016',
+    msg: '规格名称重复'
+  },
   REDUNDANCY_ERROR: {
     code: '2013',
     msg: 'Error order info redundancy'
@@ -151,10 +155,6 @@ module.exports = {
   ALREADY_IN_BLACKLIST: {
     code: '2012',
     msg: '该用户已经被加入到黑名单,请设置是否可用即可'
-  },
-  DUPLICATE_SKU_SIZE: {
-    code: '2016',
-    msg: '规格名称重复'
   }
 };
 

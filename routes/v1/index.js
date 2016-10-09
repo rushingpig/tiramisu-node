@@ -17,6 +17,7 @@ var service = require('../../service'),
     orderService = service.order,
     productService = service.product,
     categoryService = service.category,
+    homepageService = service.homepage,
     Constant = require('../../common/Constant');
 var fileUtils = require('../../common/FileUtils');
 var fs = require('fs');
@@ -86,6 +87,8 @@ a.get('/product/info', productService.getProductDetailByProductIdAndRegionId); /
 a.get('/product/skus/sizes', productService.getSkuSize); // 获取所有管理规格信息
 a.get('/product/skus/sizes/name', productService.getSkuSizeByName); // 通过名称查询管理规格信息
 
+a.get('/homepage/:regionalism_id', homepageService.getHomepageInfo); // 根据区域id获取首页信息
+
 //**********************
 //******** POST ********
 //**********************
@@ -135,6 +138,8 @@ a.put('/product/info', productService.modifyProductInfo);  // 编辑产品&sku
 a.put('/product/skus/sizes/online', productService.modifySkuSizeValidation);  // 编辑管理规格信息上下线
 a.put('/product/skus/sizes/specs', productService.modifySkuSizeSpec);  // 编辑管理规格信息
 a.put('/product/skus/sizes/sort', productService.modifySkuSizeSort);  // 移动管理规格信息
+
+a.put('/homepage', homepageService.modifyHomepage);   // 编辑首页信息
 
 //************************
 //******** DELETE ********

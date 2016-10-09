@@ -37,6 +37,8 @@ var initial_state = {
   data: {
     
   },
+
+  districts_and_cities: {}, //二级市下面所有已开通的三级城市
 }
 
 function mainForm(state = initial_state, action) {
@@ -86,13 +88,22 @@ function mainForm(state = initial_state, action) {
           data.recipient_address = null;
         }
 
-        //
-        var {getCities, getDistricts, getDeliveryShops} = AreaActions();
-        store.dispatch(getCities(data.province_id));
-        store.dispatch(getDistricts(data.city_id));
-        store.dispatch(getDeliveryShops(data.regionalism_id));
-        store.dispatch(FormActions.getDeliveryStations({city_id: data.city_id}));
-        
+        //这些东西应该放到action里面的
+        delay(function(){
+          var {getStandardCities, getStandardDistricts, getDeliveryShops} = AreaActions();
+          store.dispatch(getStandardCities(data.province_id));
+          store.dispatch(getStandardDistricts(data.city_id));
+          store.dispatch(getDeliveryShops(data.regionalism_id));
+          // store.dispatch(FormActions.getDeliveryStations({city_id: data.city_id}));
+          store.dispatch(FormActions.getAllDistrictsAndCity(data.city_id)).done(function(districts_and_cities){
+            if(data.regionalism_id in districts_and_cities){
+              store.dispatch(FormActions.getDeliveryStations({city_id: data.regionalism_id}))
+            }else{
+              store.dispatch(FormActions.getDeliveryStations({city_id: data.city_id}))
+            }
+          });
+        })
+
         return {...state, data}
       })();
     case FormActions.GOT_COPY_ORDER_BY_ID:
@@ -138,7 +149,10 @@ function mainForm(state = initial_state, action) {
         store.dispatch(FormActions.getDeliveryStations({city_id: data.city_id}));
         
         return {...state, data}
-      })();      
+      })();
+
+    case FormActions.GOT_DISTRICTS_AND_CITY:
+      return {...state, districts_and_cities: action.data}
     default:
       return state;
   }

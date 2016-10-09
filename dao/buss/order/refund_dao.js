@@ -250,7 +250,6 @@ RefundDao.prototype.findRefund = function (query,excel) {
         _res.total = total[0].total;
 
         sql += `ORDER BY bre.created_time ${sort_type} LIMIT ${page_no * page_size},${page_size} `;
-
         _res.list = yield baseDao.select(sql, params);
         _res.page_no = page_no;
         _res.page_size = page_size;

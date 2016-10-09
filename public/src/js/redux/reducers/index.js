@@ -29,16 +29,16 @@ import productSKUWebsiteManagement from './product_sku_website_manage';
 import productSKUSearch from './product_sku_search';
 import productViewInfo from './product_view_info';
 import productViewSpecifications from './product_view_specifications';
+import operationHomePageControl from './operation_home_page_control';
+import operationProductSizeManage from './operation_product_size_manage';
 import invoiceManage from './order/invoice';
 import invoiceVATManage from './order/invoice_VAT';
-import operationHomePageControl from './operation_home_page_control';
-import customerManage from './customer_manage';
-import operationProductSizeManage from './operation_product_size_manage';
 import groupbuysProgramManage from './groupbuys/program_manage';
 import groupbuysProgramFormManage from './groupbuys/program_form';
 import groupbuysProductsManage from './groupbuys/products_manage';
 import groupbuysProductsFormManage from './groupbuys/products_form';
 import groupbuysCouponManage from './groupbuys/coupon_manage';
+import customerManage from './customer_manage';
 
 const rootReducer = combineReducers({
   form,
@@ -68,19 +68,19 @@ const rootReducer = combineReducers({
   citiesSelector,
   productSKUManagement,
   productSKUWebsiteManagement,
-  productSKUSearch,
   productViewInfo,
   productViewSpecifications,
+  operationHomePageControl,
+  operationProductSizeManage,
   invoiceManage,
   invoiceVATManage,
-  operationHomePageControl,
-  customerManage,
-  operationProductSizeManage,
   groupbuysProgramManage,
   groupbuysProgramFormManage,
   groupbuysProductsManage,
   groupbuysProductsFormManage,
   groupbuysCouponManage,
+  productSKUSearch,
+  customerManage
 });
 
 export default rootReducer

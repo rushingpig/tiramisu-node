@@ -21,9 +21,9 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
           OrderPannel:       require('../components/order/manage'),
           OrderDetailPannel: require('../components/order/manage_order_detail_pannel'),
           AbnormalOrder:     require('../components/order/search_abnormal_order'),
-          RefundPannel:      require('../components/order/refund'),
           InvoicePannel:     require('../components/order/invoice'),
           InvoiceVATPannel:  require('../components/order/invoice_VAT'),
+          RefundPannel:      require('../components/order/refund'),
         };
         callback();
       });
@@ -106,9 +106,22 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
         components = {...components,
           HomePageControl:          require('../components/operation/home_page_control_pannel'),
           ProductSizeManage:        require('../components/operation/product_size_manage'),
-        }
+        };
         callback();
-      })
+      });
+      break;
+    case 'gm':
+      require.ensure([], require => {
+      components = {
+        ...components,
+        GroupbuyManagePannel: require('../components/groupbuys/program_manage'),
+        ProgramFormManage: require('../components/groupbuys/program_form_detail'),
+        GroupbuyProductManagePannel: require('../components/groupbuys/products_manage'),
+        ProductFormMange: require('../components/groupbuys/products_form_detail'),
+        CouponManagePannel: require('../components/groupbuys/coupon_manage'),
+        };
+        callback();
+      });
       break;
     case 'cosm':
       require.ensure([], require => {
@@ -116,18 +129,6 @@ const getComponents = (routePath, accessControl) => (nextState, replace, callbac
           ...components,
           CustomerManage: require('../components/customer')
         }
-        callback();
-      })
-      break;
-    case 'gm':
-      require.ensure([], require => {
-        components = {...components,
-          GroupbuyManagePannel:        require('../components/groupbuys/program_manage'),
-          ProgramFormManage:           require('../components/groupbuys/program_form_detail'),
-          GroupbuyProductManagePannel: require('../components/groupbuys/products_manage'),
-          ProductFormMange:            require('../components/groupbuys/products_form_detail'),
-          CouponManagePannel:          require('../components/groupbuys/coupon_manage'),
-        };
         callback();
       });
       break;
@@ -170,7 +171,7 @@ const App = () => (
         <Route path="city" onEnter ={onEnter('CityManageAccess')}>
           <IndexRoute  getComponent={get('CityPanel')} />
           <Route path="add" onEnter={onEnter('CityManageAddCity')} getComponent = {get('CityDetailPannel')} />
-          <Route path=":id" onEnter={onEnter('CityManageEdit')} getComponent = {get('CityDetailPannel')} />       
+          <Route path=":id" onEnter={onEnter('CityManageEdit')} getComponent = {get('CityDetailPannel')} />
         </Route>
         <Route path="img" onEnter={onEnter('ImageManageAccess')} getComponent={get('ImageManagePannel')}   />
       </Route>
@@ -240,6 +241,10 @@ const App = () => (
           <Route path='add' onEnter={onEnter('GroupbuyProductManageAdd')} getComponent={get('ProductFormMange')} />
         </Route>
         <Route path='cp' onEnter={onEnter('GroupbuyCouponManageAccess')} getComponent={get('CouponManagePannel')} />
+      <Route path="cosm" onEnter={getComponents('cosm', onEnter('CustomerManageAccess'))}>
+        <IndexRoute getComponent={get('CustomerManage')} />
+        <Route path=":id" getComponent={get('CustomerManage')} />
+      </Route>
       </Route>
 
       <Redirect from="logout" to="/" />

@@ -15,8 +15,8 @@ const service = {
     product : require('./buss/product/product_service'),
     category : require('./buss/product/category_service'),
     image: require('./buss/image/image_service'),
-    appUser : require('./app/user/app_user_service')
-
+    appUser : require('./app/user/app_user_service'),
+    homepage : require('./buss/homepage/homepage_service')
 };
 
 module.exports = service;

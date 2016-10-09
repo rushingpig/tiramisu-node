@@ -1,3 +1,4 @@
+import { UPDATE_PATH } from 'redux-simple-router';
 import { combineReducers } from 'redux';
 import * as Actions from 'actions/groupbuys/products_manage';
 import { getGlobalStore, getGlobalState } from 'stores/getter';
@@ -24,6 +25,8 @@ var main_state = {
 function main(state = main_state, action){
 	var store = getGlobalStore();
 	switch(action.type){
+		case UPDATE_PATH:
+			return main_state;
 		case Actions.GOT_CATEGORIES:
 			var {data} = action;
 			var pri_pd_cates = data.filter( m => m.parent_id == 0);
@@ -54,7 +57,7 @@ function main(state = main_state, action){
 		case Actions.OFF_SHELF:
 			var {getProductList} = Actions;
 			var { query_data, page_size, page_no, total } = state;
-			page_no = (total - page_no * page_size) === 1 ? page_no -1 : page_no;
+			page_no = (total - page_no * page_size) === 1 && page_no != 0 ? page_no -1 : page_no;
 			store.dispatch(getProductList({...query_data, page_no, page_size}));
 			return state;
 		default:

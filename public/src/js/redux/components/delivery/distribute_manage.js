@@ -557,7 +557,7 @@ var PartRow = React.createClass({
       <tr>
         <td>{ props.name }</td>
         <td>{ '￥ ' + (props.unit_price/100).toString() }</td>
-        <td>{ props.sub }</td>
+        <td>{ props.size }</td>
         <td>
         <button 
           className='btn btn-sm btn-default' 
@@ -807,11 +807,11 @@ var SignedModal = React.createClass({
             <label>{'初始应收金额：￥'}</label>
             <input value={orderDetail.total_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />
             {minus_amount != 0 && 
-              [<label>{'　减：￥'}</label>,
-              <input value={minus_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />]}
+              [<label key='lbl-minus'>{'　减：￥'}</label>,
+              <input key='input-minus' value={minus_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />]}
             {plus_amount != 0 &&
-              [<label>{'　加：￥'}</label>,
-              <input value={plus_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />]}         
+              [<label key='lbl-plus'>{'　加：￥'}</label>,
+              <input key='input-plus' value={plus_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />]}         
           </div>: null}
         <div className='form-group form-inline mg-15'>
           <div className='row'>
@@ -829,8 +829,8 @@ var SignedModal = React.createClass({
             </div>
             <div className='col-xs-6'>
               {order.refund_amount && order.refund_amount != 0 ?
-                [<label>系统退款金额：￥</label>,
-                <input value={this.state.order.refund_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />]
+                [<label key='lbl-refund'>系统退款金额：￥</label>,
+                <input key='input-refund' value={this.state.order.refund_amount / 100 || 0} readOnly className="form-control input-xs short-input" style={{'width': 50}} />]
                 :null
               }
             </div>

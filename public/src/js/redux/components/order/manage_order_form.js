@@ -480,7 +480,7 @@ class ManageAddForm extends Component {
   }
   onProvinceChange(callback, e){
     var {value} = e.target;
-    this.props.actions.resetCities();
+    this.props.actions.resetCities('add_order');
     if(value != this.refs.province.props['default-value']){
       this.props.actions.getCitiesSignal({ province_id: value, is_standard_area: 1 });
     }
@@ -490,18 +490,29 @@ class ManageAddForm extends Component {
   }
   onCityChange(callback, e){
     var {value} = e.target;
-    this.props.actions.resetDistricts();
-    this.props.actions.getDeliveryStations({city_id: value});
-    if(value != this.refs.city.props['default-value'])
+    this.props.actions.resetDistricts('add_order');
+    // this.props.actions.getDeliveryStations({city_id: value});
+    this.props.actions.getDeliveryStations({city_id: SELECT_DEFAULT_VALUE}); //等同于clear stations数据
+    if(value != this.refs.city.props['default-value']){
       this.props.actions.getStandardDistricts(value);
+      this.props.actions.getAllDistrictsAndCity(value); //获取该城市下的已开通三级城市
+    }
     callback(e);
     this.props.actions.triggerFormUpdate('add_order', 'delivery_id', SELECT_DEFAULT_VALUE)
   }
   onDistrictChange(callback, e){
     var {value} = e.target;
+    var { districts_and_cities } = this.props['form-data'];
     this.props.actions.resetShops();
-    if(value != this.refs.district.props['default-value'])
+    this.props.actions.getDeliveryStations({city_id: SELECT_DEFAULT_VALUE}); //等同于clear stations数据
+    if(value != this.refs.district.props['default-value']){
       this.props.actions.getDeliveryShops(value);
+      if(value in districts_and_cities){
+        this.props.actions.getDeliveryStations({city_id: value});
+      }else{
+        this.props.actions.getDeliveryStations({city_id: this.props.fields.city_id.value});
+      }
+    }
     callback(e);
   }
   onPayModesChange(callback, e){

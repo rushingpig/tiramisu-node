@@ -46,5 +46,6 @@ module.exports = {
   addSkuSize: require('./buss/product/add_sku_size'),
   modifySkuSizeValidation: require('./buss/product/modify_sku_size_validation'),
   modifySkuSizeSpec: require('./buss/product/modify_sku_size_spec'),
-  modifySkuSizeSort: require('./buss/product/modify_sku_size_sort')
+  modifySkuSizeSort: require('./buss/product/modify_sku_size_sort'),
+  modifyHomepage: require('./buss/homepage/modify_homepage')
 };

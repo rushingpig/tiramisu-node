@@ -1,3 +1,4 @@
+import { UPDATE_PATH } from 'redux-simple-router';
 import { dateFormat, map } from 'utils/index';
 import { combineReducers } from 'redux';
 
@@ -20,6 +21,8 @@ var main_state = {
 
 function main(state = main_state, action){
 	switch(action.type){
+    case UPDATE_PATH:
+      return main_state;
 		case Actions.GET_COMPANY_LIST:
 			return {...state, ...action.data, loading: false, fresh: false}
 		case Actions.VIEW_IMG:

@@ -57,11 +57,11 @@ var tables = {
     buss_product_detail_spec: 'buss_product_detail_spec',
     buss_product_template: 'buss_product_template',
     buss_product_template_data: 'buss_product_template_data',
+    buss_product_sku_size: 'buss_product_sku_size',
+    buss_product_sku_size_spec: 'buss_product_sku_size_spec',
     buss_company: 'buss_company',
     buss_invoice: 'buss_invoice',
     buss_group_project: 'buss_group_project',
-    buss_product_sku_size: 'buss_product_sku_size',
-    buss_product_sku_size_spec: 'buss_product_sku_size_spec',
 //=================Dict===================
     dict_regionalism : 'dict_regionalism',
     delivery_pay_rule: 'delivery_pay_rule',
@@ -172,7 +172,6 @@ var excel_export_host = base_excel_host + '/order/';
 
 var backup_host = 'http://localhost:3001';
 var mongodb_uri = 'mongodb://cupcake_qa:17F2wDwxI39w@localhost:27017/cupcake';
-
 var express_host = 'http://exp.blissmall.net/express/get';
 
 module .exports = {
@@ -193,6 +192,6 @@ module .exports = {
     excel_export_host : excel_export_host,
     backup_host: backup_host,
     mongodb_uri: mongodb_uri,
-    base_excel_host : base_excel_host,
-    express_host : express_host
+    express_host : express_host,
+    base_excel_host : base_excel_host
 };

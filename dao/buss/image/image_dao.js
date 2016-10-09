@@ -71,7 +71,7 @@ ImageDao.prototype.deleteDir = function(req, ids) {
                         reject(err);
                     });
                 });
-            });;
+            });
     });
 };
 /**

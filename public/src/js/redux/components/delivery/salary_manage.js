@@ -451,8 +451,8 @@ var SalaryRow = React.createClass({
 					{
 						V('DeliveryManSalaryManageEdit')
 							?this.state.Edit_ing
-								?[<a key="a1" href='javascript:;' onClick = {this.onCancel}>[取消]</a>,<br key="br1"/>]
-								:[<a key="a2" href='javascript:;' onClick = {this.onEdit}>[编辑]</a>,<br key="br2" />]
+								?[<a key="cancel" href='javascript:;' onClick = {this.onCancel}>[取消]</a>,<br key="br-1" />]
+								:[<a key="edit" href='javascript:;' onClick = {this.onEdit}>[编辑]</a>,<br key="br-2" />]
 							:null
 					}
 					

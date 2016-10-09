@@ -13,13 +13,14 @@ module.exports = {
     city: require('./sys/city_dao'),
     delivery : require('./buss/delivery/delivery_dao'),
     order : require('./buss/order/order_dao'),
-    refund : require('./buss/order/refund_dao'),
     invoice : require('./buss/order/invoice_dao'),
+    refund : require('./buss/order/refund_dao'),
     product : require('./buss/product/product_dao'),
     group : require('./buss/product/group_dao'),
     org : require('./sys/org_dao'),
     role : require('./sys/role_dao'),
     category : require('./buss/product/category_dao'),
     image : require('./buss/image/image_dao'),
-    appUser : require('./app/user/app_user_dao')
+    appUser : require('./app/user/app_user_dao'),
+    homepage : require('./buss/homepage/homepage_dao')
 };

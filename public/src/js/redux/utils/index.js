@@ -177,6 +177,7 @@ function del(target, cb){
   }
   return target;
 }
+
 function some(target, cb){
   if (target && typeof target === 'object') {
     if (core_isArray(target)) {
@@ -339,11 +340,14 @@ function dom_fixed({ $container = $('#app-container'), dom, offsetTop} ){
     if($container.scrollTop() < scrollTop){
       dom.style.position = 'static';
     }else if($(dom).offset().top <= offsetTop){
-      !scrollTop && ( scrollTop = $container.scrollTop() ); //获取临界点，只需要一次
+      if(!scrollTop){
+        scrollTop = $container.scrollTop() + $(dom).offset().top - offsetTop; //获取临界点，只需要一次
+      }
       dom.style.position = 'fixed';
       dom.style.top = offsetTop + 'px';
     }
   }
+  scrollFunc(); //初始化一次
   $container.on('scroll', scrollFunc);
   return () => $container.off('scroll', scrollFunc)
 }

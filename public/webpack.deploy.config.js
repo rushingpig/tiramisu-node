@@ -6,7 +6,7 @@ const path       = require('path');
 const assign     = require('object-assign');
 
 //只有正式环境和pr上，采用production方式打包
-const ENV = process.env.NODE_ENV == 'production' ? 'production' : 'development';
+const ENV = (process.env.NODE_ENV == 'production' || process.env.NODE_ENV == 'pr') ? 'production' : 'development';
 
 var plugins = [
   new webpack.DefinePlugin({

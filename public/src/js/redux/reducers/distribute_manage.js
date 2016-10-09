@@ -37,6 +37,8 @@ var main_state = {
 }
 function main(state = main_state, action){
   switch (action.type) {
+    case UPDATE_PATH:
+      return main_state;
     case Actions.SIGN_ORDER:
     case Actions.UNSIGN_ORDER:
       if(action.key == REQUEST.ING){

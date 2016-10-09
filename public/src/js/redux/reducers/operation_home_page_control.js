@@ -11,14 +11,14 @@ import { SELECT_DEFAULT_VALUE, REQUEST } from 'config/app.config';
 import { Noty, map, some, del } from 'utils/index';
 
 var initial_state = {
-  all_init: false, //应用范围初始状态是否全部一致
+  // all_init: false, //应用范围初始状态是否全部一致
   all: true, //是否全部一致,
   provinces: [],
   cities: [],
   province_id: undefined,
   city_id: undefined,
 
-  configure_data: [], //[{city_id, detail_id, consistency: 是否全部一致（0：是，1：独立}]
+  configure_data: [],
   cached: [], //缓存数据
 
   selected_index: -1,
@@ -33,8 +33,14 @@ function _t(data){
   return map(data, (text, id) => ({id: +id, text}))
 }
 function checkSubmitable(banners){
-  banners = banners.filter(n => n.img_key && n.link);
-  return banners.length >=2 && banners.length <=5;
+  var s = true;
+  banners = banners.filter(n => {
+    if(n.img_key && !n.link){
+      s = false;
+    }
+    return n.img_key && n.link;
+  });
+  return s && banners.length >=2 && banners.length <=5;
 }
 function main(state = initial_state, action){
   var new_banners = undefined;
@@ -44,47 +50,34 @@ function main(state = initial_state, action){
     case Actions.SET_APPLICATION_RANGE:
       return { ...state, all: action.all }
     case Actions.GET_CONFIGURE_DATA:
-      let all = !( action.data && action.data.length && action.data.some( n => n.consistency == 1) );
       return {
         ...state,
-        all_init: all,
-        all,
-        configure_data: action.data,
         provinces: _t(action.provinces),
-        banners: all && action.data.length ? action.data[0].data : state.banners
+        all_cities: map(action.all_cities, (value, key) => key),
       }
     case AreaActions.GOT_CITIES:
-      return { ...state,
-        cities: _t(action.data).map( n => {
-          if(state.configure_data.some(m => m.city_id == n.id)){
-            n.checked = true;
-          }
-          return n;
-        })
-      }
+      return { ...state, cities: _t(action.data) }
     case Actions.SELECT_PROVINCE:
       return { ...state,
         province_id: action.province_id,
         city_id: undefined,
         banners: initial_state.banners,
         submitable: false,
+        selected_index: initial_state.selected_index,
       }
     case Actions.SELECT_CITY:
-      let city_data = state.configure_data.concat(state.cached).filter(n => n.city_id == action.city_id)[0];
-      new_banners = state.all_init && state.cached.every(n => n.city_id != action.city_id)
-          ? initial_state.banners
-          : (city_data ? city_data.data : initial_state.banners)
+      new_banners = action.data.map( ({src, url}) => ({img_key: src, link: url}) );
       return { ...state,
         city_id: action.city_id,
         selected_index: initial_state.selected_index,
         banners: new_banners,
         submitable: checkSubmitable(new_banners),
-        has_cached: state.cached.some(n => n.city_id == action.city_id),
+        has_cached: state.cached.some(n => n.city_id == action.city_id)
       }
     case Actions.CACHE_INFO:
       if(checkSubmitable(state.banners)){
         return { ...state,
-          cached: [...state.cached, {city_id: state.city_id, consistency: 1, data: clone(state.banners)}],
+          cached: [...state.cached, {city_id: state.city_id, datas: clone(state.banners)}],
           has_cached: true,
           selected_index: initial_state.selected_index
         }

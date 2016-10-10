@@ -182,7 +182,8 @@ var base_excel_host = 'http://localhost:8888/excel';
 var excel_export_host = base_excel_host + '/order/';
 
 var backup_host = 'http://localhost:3001';
-var mongodb_uri = 'mongodb://cupcake:17F2wDwxI39w@10.46.89.45:27017/tiramisu';
+var mongodb_uri = 'mongodb://tiramisu_qa:2VMIfXEdACzj@10.46.89.45:27017/tiramisu';
+var mongodb_backup_schema_name = 'order';
 var express_host = 'http://exp.blissmall.net/express/get';
 
 module .exports = {
@@ -204,5 +205,6 @@ module .exports = {
     backup_host: backup_host,
     mongodb_uri: mongodb_uri,
     express_host : express_host,
-    base_excel_host : base_excel_host
+    base_excel_host : base_excel_host,
+    mongodb_backup_schema_name: mongodb_backup_schema_name
 };

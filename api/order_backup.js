@@ -16,7 +16,7 @@ var OrderSchema = new mongoose.Schema({
     order_id: Number,
     info: Object
 });
-var OrderModel = mongoose.model('Order', OrderSchema);
+var OrderModel = mongoose.model(config.mongodb_backup_schema_name, OrderSchema);
 
 module.exports.insert = function (order_obj) {
     return new Promise((resolve, reject)=> {

@@ -141,7 +141,8 @@ const global_paths = [
     /\/v1\/a\/provinces/,
     /\/v1\/a\/province\/\d+\/cities/,
     /\/v1\/a\/city\/\d+\/districts/,
-    /\/v1\/a\/cities/
+    /\/v1\/a\/cities/,
+    /\/v1\/a\/district\/\d+\/shops/
 ];
 
 var white_ips = ['1','127.0.0.1'];

@@ -39,6 +39,7 @@ export const getDeliveryStations = _getDeliveryStations;
 export function exportExcel(){
   return (dispatch, getState) => {
     var data = getValues( getState().form.order_distribute_filter ) || {};
+    data = Utils.formCompile(data);
     if(!data.begin_time && !data.end_time){
       Utils.Noty('warning', '请选定时间');return;
     }

@@ -126,6 +126,7 @@ export function exportExcel(data){
     if(!data.begin_time && !data.end_time){
       Utils.Noty('warning', '请选定时间');return;
     }*/
+    data = Utils.formCompile(data);
     window.open(Url.delivery_export + '?' + Utils.url.toParams({...data, entrance: 'LIST'}));
   }
 

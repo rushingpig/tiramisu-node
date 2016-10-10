@@ -23,7 +23,7 @@ import RecipientInfo from 'common/recipient_info';
 import ToolTip from 'common/tooltip';
 import AddressSelector from 'common/address_selector';
 
-import { order_status, DELIVERY_MAP, YES_OR_NO ,ACCESSORY_CATE_ID, pay_status} from 'config/app.config';
+import { order_status, DELIVERY_MAP, YES_OR_NO ,ACCESSORY_CATE_ID, pay_status, SELECT_DEFAULT_VALUE} from 'config/app.config';
 import history from 'history_instance';
 import LazyLoad from 'utils/lazy_load';
 import { form, Noty, dateFormat, parseTime, dom } from 'utils/index';
@@ -78,15 +78,17 @@ class FilterHeader extends Component {
   }
   componentWillReceiveProps(nextProps){
     var { deliveryman } = nextProps;
+
     //只需要初始化一次
     if(deliveryman.load_success && !this.state._hasInitial){
       var all = {} ;
-      all.deliveryman_id = 0;
+      all.deliveryman_id = SELECT_DEFAULT_VALUE;
       all.deliveryman_name = '选择配送员';
       all.deliveryman_mobile = '';
       this.setState({ _hasInitial:true});
       var { list } = deliveryman;
-      list.unshift(all);
+      
+      list = [all, ...list];
       var build = function(){
         var new_data = list.map(function(n){
           n.py = window.makePy(n.deliveryman_name);
@@ -220,6 +222,8 @@ class FilterHeader extends Component {
       results = all_deliveryman.filter(n => n.deliveryman_name.indexOf(value) != -1)
     }
     this.setState({ filter_deliveryman_results: results, selected_deliveryman_id: results.length && results[0].deliveryman_id });
+    this.props.triggerFormUpdate('order_distribute_filter', 'deliveryman_id', (results.length && results[0].deliveryman_id) || SELECT_DEFAULT_VALUE);
+
   }
   onSelectDeliveryman(e){
     this.setState({ selected_deliveryman_id: e.target.value});

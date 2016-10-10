@@ -6,8 +6,7 @@ let mysql_options = module.exports.mysql_options;
 
 module.exports.backup_host = 'http://localhost:4001';
 
-module.exports.mongodb_uri = 'mongodb://tiramisu_qa:2VMIfXEdACzj@10.46.89.45:27017/tiramisu';
-module.exports.mongodb_backup_schema_name = 'order';
+module.exports.mongodb_backup_schema_name = 'pr_order';
 
 //  mysql config options
 module.exports.mysql_options = {

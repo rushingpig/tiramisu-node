@@ -165,7 +165,7 @@ var excel_export_host = base_excel_host + '/order/';
 
 var backup_host = 'http://localhost:3001';
 var mongodb_uri = 'mongodb://cupcake_qa:17F2wDwxI39w@localhost:27017/cupcake';
-var mongodb_backup_schema_name = 'orders_qa';
+var mongodb_backup_schema_name = 'qa_order';
 var express_host = 'http://exp.blissmall.net/express/get';
 
 module .exports = {

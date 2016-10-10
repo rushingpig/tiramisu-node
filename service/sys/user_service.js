@@ -148,7 +148,7 @@ UserService.prototype.addUser = (req,res,next) => {
         res.api();
     }).catch(err=> {
         if (err.code == 'ER_DUP_ENTRY') {
-            throw new TiramisuError(res_obj.EXIST_USERNAME, err);
+            throw new TiramisuError(res_obj.EXIST_USERNAME, res_obj.EXIST_USERNAME.msg);
         }
         throw err;
     });
